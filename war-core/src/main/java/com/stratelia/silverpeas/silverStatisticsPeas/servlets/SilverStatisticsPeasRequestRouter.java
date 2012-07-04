@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,17 +43,15 @@ import java.util.List;
 
 /**
  * Class declaration
- *
  * @author
  */
-public class SilverStatisticsPeasRequestRouter
-    extends ComponentRequestRouter<SilverStatisticsPeasSessionController> {
+public class SilverStatisticsPeasRequestRouter extends
+    ComponentRequestRouter<SilverStatisticsPeasSessionController> {
 
   private static final long serialVersionUID = -7422373100761515806L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -78,13 +76,14 @@ public class SilverStatisticsPeasRequestRouter
   /**
    * This method has to be implemented by the component request router it has to compute a
    * destination page
-   *
-   * @param function    The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param statsSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,SilverStatisticsPeasSessionController statsSC, HttpServletRequest request) {
+  public String getDestination(String function, SilverStatisticsPeasSessionController statsSC,
+      HttpServletRequest request) {
     String destination = "";
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasRequestRouter.getDestination()",
@@ -191,7 +190,7 @@ public class SilverStatisticsPeasRequestRouter
           {
             request.setAttribute("ResultData",
                 statsSC.getStatsConnexionAllGroup(hostDateBegin,
-                    hostDateEnd, filterId));
+                hostDateEnd, filterId));
 
             // graphiques
             Chart userChart = statsSC.getUserConnectionsGroupChart(
@@ -466,7 +465,7 @@ public class SilverStatisticsPeasRequestRouter
         // compute result
         Chart lineChart =
             statsSC.getEvolutionUserChart(entite, entiteId, filterLibGroup, filterIdGroup,
-                filterLibUser, filterIdUser);
+            filterLibUser, filterIdUser);
         request.getSession(true).setAttribute(ChartServlet.EVOLUTIONUSERCHART, lineChart);
         request.setAttribute("StatsData", statsSC.getCurrentStats());
 
@@ -520,7 +519,7 @@ public class SilverStatisticsPeasRequestRouter
         // compute result
         PieChart2D pieChart =
             statsSC.getPubliVentilChart(getRequestDate(hostYearBegin, hostMonthBegin),
-                filterIdGroup, filterIdUser, spaceId);
+            filterIdGroup, filterIdUser, spaceId);
         request.getSession(true).setAttribute(ChartServlet.PUBLIVENTILCHART, pieChart);
         request.setAttribute("StatsData", statsSC.getCurrentStats());
 
@@ -676,7 +675,7 @@ public class SilverStatisticsPeasRequestRouter
         // Initialize cross axis stats filter
         CrossAxisStatsFilter axisStatsFilter =
             new CrossAxisStatsFilter(monthBegin, yearBegin, monthEnd, yearEnd, firstAxisId,
-                secondAxisId);
+            secondAxisId);
 
         CrossStatisticVO crossAxisStats = statsSC.getCrossAxisStats(axisStatsFilter);
 
@@ -720,7 +719,6 @@ public class SilverStatisticsPeasRequestRouter
 
   /**
    * Set statistics session controller attributes from HttpServletRequest
-   *
    * @param request which contains the parameters
    * @param statsSC the statistics session controller Object
    */
@@ -741,7 +739,6 @@ public class SilverStatisticsPeasRequestRouter
 
   /**
    * Set connection parameter in request attributes
-   *
    * @param request the HttpServlet
    * @param statsSC the SilverStatisticsPeasSessionController object
    */
@@ -797,8 +794,7 @@ public class SilverStatisticsPeasRequestRouter
 
   /**
    * Format a year and month parameter
-   *
-   * @param sYear  the year to format
+   * @param sYear the year to format
    * @param sMonth the month to format
    * @return a request date string with the following format sYear-sMonth-01
    */
@@ -812,7 +808,6 @@ public class SilverStatisticsPeasRequestRouter
 
   /**
    * Set silver statistics session controller attributes from request
-   *
    * @param request the current http request
    * @param statsSC the statistics session controller.
    */

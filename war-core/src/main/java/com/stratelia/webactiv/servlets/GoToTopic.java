@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.servlets;
 
 import java.net.URLEncoder;
@@ -48,12 +49,12 @@ public class GoToTopic extends GoTo {
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
-          HttpServletResponse res) throws Exception {
+      HttpServletResponse res) throws Exception {
     String componentId = req.getParameter("ComponentId");
     NodePK pk = new NodePK(objectId, componentId);
     NodeDetail node = getNodeBm().getHeader(pk);
     SilverTrace.info("peasUtil", "GoToTopic.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
     setGefSpaceId(req, componentId);
     String gotoURL = URLManager.getURL(null, componentId) + node.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
@@ -63,7 +64,7 @@ public class GoToTopic extends GoTo {
     NodeBm nodeBm = null;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-              NodeBmHome.class);
+          NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       displayError(null);

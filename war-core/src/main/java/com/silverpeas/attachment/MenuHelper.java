@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.attachment;
 
 import java.io.IOException;
@@ -90,14 +91,14 @@ public class MenuHelper {
         append(attachment.getId()).append("');\">").append(resources.getString("GML.modify")).append(
         "</a></li>").append(NEW_LINE);
     if (useXMLForm) {
-      builder.append(
+      builder
+          .append(
           "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
       builder.append(attachmentId).append("','").append(language).append("');\">");
       builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(NEW_LINE);
     }
-    builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(").
-        append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append(
+    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(")
+        .append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append(
         "</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
@@ -116,8 +117,8 @@ public class MenuHelper {
     builder.append("</div>").append(NEW_LINE);
 
     builder.append("<script type=\"text/javascript\">");
-    
-    String oMenuId = "oMenu"+attachmentId; 
+
+    String oMenuId = "oMenu" + attachmentId;
 
     builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
@@ -126,7 +127,8 @@ public class MenuHelper {
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
     if (useContextualMenu) {
-      builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(attachmentId).append("\"");
+      builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(
+          attachmentId).append("\"");
       builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
     } else {
       builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).append("\"");
@@ -161,11 +163,8 @@ public class MenuHelper {
     builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
     builder.append("\", \"mouseout\", oMenu").append(attachmentId).append(".hide);");
-    
+
     if (!useContextualMenu) {
-      /*builder.append("YAHOO.util.Event.addListener(\"edit_").append(attachmentId);
-      builder.append("\", \"click\", oMenu").append(attachmentId).append(".show, null, oMenu").append(attachmentId).append(");");*/
-      
       builder.append("YAHOO.util.Event.on(\"edit_").append(attachmentId);
       builder.append("\", \"click\", function (event) {");
       builder.append("var xy = YAHOO.util.Event.getXY(event);");

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -53,10 +53,9 @@ public class PublicationImportExport {
    * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
    * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
    * dans le cas des fichiers MSoffice.
-   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
-   * @param file       - fichier destiné à être attaché à la publication d'où l'on extrait les
-   *                   informations qui iront renseigner les méta-données de la publication à creer
+   * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
+   * informations qui iront renseigner les méta-données de la publication à creer
    * @return renvoie un objet PublicationDetail
    */
   public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail,
@@ -107,13 +106,12 @@ public class PublicationImportExport {
     }
     PublicationDetail pubDetail =
         new PublicationDetail("unknown", nomPub, description, new Date(), new Date(), null,
-            userDetail.getId(), "5", null, motsClefs, content);
+        userDetail.getId(), "5", null, motsClefs, content);
     return pubDetail;
   }
 
   /**
    * Add nodes (coordinatesId) to a publication
-   *
    * @param pubPK , List of coordinateId
    * @return nothing
    */
@@ -135,8 +133,9 @@ public class PublicationImportExport {
    */
   private static PublicationBm getPublicationBm() {
     try {
-      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
+      PublicationBmHome publicationBmHome =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+          PublicationBmHome.class);
       return publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
@@ -146,7 +145,6 @@ public class PublicationImportExport {
 
   /**
    * Get unbalanced publications
-   *
    * @param componentId
    * @return ArrayList of publicationDetail
    */

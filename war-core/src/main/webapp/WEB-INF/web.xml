@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+Copyright (C) 2000 - 2011 Silverpeas
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+As a special exception to the terms and conditions of version 3.0 of
+the GPL, you may redistribute this Program in connection with Free/Libre
+Open Source Software ("FLOSS") applications as described in Silverpeas's
+FLOSS exception. You should have received a copy of the text describing
+the FLOSS exception, and it is also available here:
+"http://repository.silverpeas.com/legal/licensing"
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
 
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
@@ -78,7 +78,16 @@
         <filter-name>PortletAppEngineFilter</filter-name>
         <filter-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineFilter</filter-class>
     </filter>
-    <filter-mapping>
+<filter>
+		<description>filter for transferring relative to absolute urls</description>
+		<filter-name>AbsoluteSendRedirectFilter</filter-name>
+		<filter-class>com.silverpeas.filters.AbsoluteSendRedirectFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>AbsoluteSendRedirectFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
@@ -92,9 +101,9 @@
         <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
     </listener>
     <!--
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>-->
+<listener>
+<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>-->
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
@@ -452,16 +461,16 @@
         <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
     </servlet>
     <!--
-  <servlet>
-    <servlet-name>AjaxFileUploadServlet</servlet-name>
+<servlet>
+<servlet-name>AjaxFileUploadServlet</servlet-name>
 
-    <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
-    <init-param>
-      <param-name>UPLOAD_DIRECTORY</param-name>
-      <param-value>C:/tmp/ajax</param-value>
-    </init-param>
-  </servlet>
-  -->
+<servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
+<init-param>
+<param-name>UPLOAD_DIRECTORY</param-name>
+<param-value>C:/tmp/ajax</param-value>
+</init-param>
+</servlet>
+-->
     <servlet>
         <servlet-name>AutocompleteServlet</servlet-name>
         <servlet-class>com.stratelia.silverpeas.pdcPeas.servlets.AutocompleteServlet</servlet-class>
@@ -488,32 +497,31 @@
     </servlet>
     <servlet>
         <servlet-name>InvitationJSONServlet</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.invitation.servlets.InvitationJSONServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ProfilRequestRouter</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.profil.servlets.ProfilRequestRouter</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.profil.servlets.ProfilRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MyProfilRequestRouter</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.MyProfilRequestRouter</servlet-class>
     </servlet>
     <servlet>
-        <display-name>GoToMyProfile</display-name>
         <servlet-name>GoToMyProfile</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.GoToMyProfile</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.GoToMyProfile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MyProfilJSONServlet</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.myProfil.servlets.JSONServlet</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.myProfil.servlets.JSONServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MyContactProfilRequestRouter</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.myContactProfil.servlets.MyContactProfilRequestRouter</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.myContactProfil.servlets.MyContactProfilRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewsFeedJSONServlet</servlet-name>
-        <servlet-class>com.silverpeas.socialNetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
+        <servlet-class>com.silverpeas.socialnetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DirectoryServlet</servlet-name>
@@ -543,6 +551,18 @@
         <servlet-name>NodesJSONServlet</servlet-name>
         <servlet-class>com.silverpeas.node.servlets.GetNodes</servlet-class>
     </servlet>
+ <servlet>
+		<servlet-name>SocialNetworkLoginController</servlet-name>
+		<servlet-class>com.silverpeas.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MailExistsServlet</servlet-name>
+		<servlet-class>com.silverpeas.admin.MailExistsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>QaptchaServlet</servlet-name>
+		<servlet-class>com.silverpeas.admin.QaptchaServlet</servlet-class>
+	</servlet>
     <servlet>
         <servlet-name>LaunchWebdavEdition</servlet-name>
         <servlet-class>com.silverpeas.attachment.servlets.LaunchWebdavEdition</servlet-class>
@@ -853,11 +873,11 @@
         <url-pattern>/AjaxVersioning/*</url-pattern>
     </servlet-mapping>
     <!--
-  <servlet-mapping>
-    <servlet-name>AjaxFileUploadServlet</servlet-name>
-    <url-pattern>/ajaxupload/*</url-pattern>
-  </servlet-mapping>
-  -->
+<servlet-mapping>
+<servlet-name>AjaxFileUploadServlet</servlet-name>
+<url-pattern>/ajaxupload/*</url-pattern>
+</servlet-mapping>
+-->
     <servlet-mapping>
         <servlet-name>AutocompleteServlet</servlet-name>
         <url-pattern>/AutocompleteServlet</url-pattern>
@@ -948,6 +968,18 @@
         <servlet-name>LaunchWebdavEdition</servlet-name>
         <url-pattern>/attachment/jsp/launch.jsp</url-pattern>
     </servlet-mapping>
+<servlet-mapping>
+		<servlet-name>SocialNetworkLoginController</servlet-name>
+		<url-pattern>/SocialNetworkLogin</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MailExistsServlet</servlet-name>
+		<url-pattern>/MailExists</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>QaptchaServlet</servlet-name>
+		<url-pattern>/Qaptcha</url-pattern>
+	</servlet-mapping>
     <error-page>
         <error-code>404</error-code>
         <location>/Error404.jsp</location>

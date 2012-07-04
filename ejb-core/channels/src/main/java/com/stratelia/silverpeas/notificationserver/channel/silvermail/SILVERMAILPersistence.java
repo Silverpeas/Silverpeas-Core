@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Collection;
@@ -93,7 +94,7 @@ public class SILVERMAILPersistence {
   /**
    * @param userId
    * @param folderName
-   * @param readState not read only (0) , read only (1), all messages (-1) 
+   * @param readState not read only (0) , read only (1), all messages (-1)
    * @return
    * @throws SILVERMAILException
    */
@@ -256,10 +257,9 @@ public class SILVERMAILPersistence {
   }
 
   /**
-   * 
    * @param folderName
    * @return
-   * @throws SILVERMAILException 
+   * @throws SILVERMAILException
    */
   protected static long convertFolderNameToId(String folderName) throws SILVERMAILException {
     // pas de gestion de folder pour l'instant
@@ -267,10 +267,9 @@ public class SILVERMAILPersistence {
   }
 
   /**
-   * 
    * @param userId
    * @return
-   * @throws SILVERMAILException 
+   * @throws SILVERMAILException
    */
   protected static String getUserLogin(long userId) throws SILVERMAILException {
     String result = "";

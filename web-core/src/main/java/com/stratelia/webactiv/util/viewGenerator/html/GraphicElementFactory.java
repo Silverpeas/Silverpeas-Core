@@ -1,30 +1,39 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.CharEncoding;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -63,14 +72,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.apache.commons.lang3.CharEncoding;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -112,6 +113,7 @@ public class GraphicElementFactory {
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
   private static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
+  private static final String JQUERY_i18N_JS = "jquery.i18n.properties-min-1.0.9.js";
   private static final String SILVERPEAS_JS = "silverpeas.js";
 
   /**
@@ -154,7 +156,7 @@ public class GraphicElementFactory {
    * Get the settings for the factory.
    *
    * @return The ResourceLocator returned contains all default environment settings necessary to
-   *         know wich component to instanciate, but also to know how to generate html code.
+   * know wich component to instanciate, but also to know how to generate html code.
    */
   public static ResourceLocator getSettings() {
     return settings;
@@ -178,8 +180,8 @@ public class GraphicElementFactory {
       try {
         lookSettings =
             new ResourceLocator(
-                "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
-                silverpeasSettings);
+            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+            silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
         lookSettings = silverpeasSettings;
@@ -361,7 +363,7 @@ public class GraphicElementFactory {
     // append javascript
     code.append("<script type=\"text/javascript\">var webContext='").append(contextPath).append(
         "';").append("</script>\n");
-    
+
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/").append(SILVERPEAS_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
@@ -371,12 +373,14 @@ public class GraphicElementFactory {
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERYUI_JS).append("\"></script>\n");
     code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
+        "/util/javaScript/jquery/").append(JQUERY_i18N_JS).append("\"></script>\n");
+    code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
         "/util/javaScript/jquery/").append(JQUERY_INCLUDE_JS).append("\"></script>\n");
     if (StringUtil.isDefined(specificJS)) {
       code.append("<script type=\"text/javascript\" src=\"").append(specificJS).append(
           "\"></script>\n");
     }
-    
+
     if (isComponentMainPage()) {
       code.append("<script type=\"text/javascript\" src=\"").append(contextPath).append(
           "/util/javaScript/jquery/jquery.cookie.js\"></script>\n");
@@ -401,8 +405,8 @@ public class GraphicElementFactory {
    */
   private void appendSpecificCSS(StringBuilder code) {
     if (StringUtil.isDefined(this.spaceId)) {
-      SpaceInstLight curSpace = mainSessionController.getOrganizationController().getSpaceInstLightById(
-              this.spaceId);
+      SpaceInstLight curSpace = mainSessionController.getOrganizationController().
+          getSpaceInstLightById(this.spaceId);
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
         getSpaceLook(code, curSpace, spaceLookStyle);
@@ -413,7 +417,7 @@ public class GraphicElementFactory {
   }
 
   /**
-   * @param code  the current state of the HTML produced for the header.
+   * @param code the current state of the HTML produced for the header.
    * @param curSpace
    * @param spaceLookStyle
    */
@@ -463,7 +467,8 @@ public class GraphicElementFactory {
   private String getGenericComponentName(String componentName) {
     if ("toolbox".equalsIgnoreCase(componentName) || "kmax".equalsIgnoreCase(componentName)) {
       return "kmelia";
-    } if ("pollingstation".equalsIgnoreCase(componentName)) {
+    }
+    if ("pollingstation".equalsIgnoreCase(componentName)) {
       return "survey";
     }
     return componentName;
@@ -525,11 +530,11 @@ public class GraphicElementFactory {
   /**
    * Construct a new button.
    *
-   * @param label    The new button label
-   * @param action   The action associated exemple : "javascript:onClick=history.back()", or
-   *                 "http://www.stratelia.com/"
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:onClick=history.back()", or
+   * "http://www.stratelia.com/"
    * @param disabled Specify if the button is disabled or not. If disabled, no action will be
-   *                 possible.
+   * possible.
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    */
   public Button getFormButton(String label, String action, boolean disabled) {
@@ -606,16 +611,14 @@ public class GraphicElementFactory {
     return navigationList;
   }
 
-
-
   /**
    * Construct a new button.
    *
-   * @param label     The new button label
-   * @param action    The action associated exemple : "javascript:history.back()", or
-   *                  "http://www.stratelia.com/"
-   * @param disabled  Specify if the button is disabled or not. If disabled, no action will be
-   *                  possible.
+   * @param label The new button label
+   * @param action The action associated exemple : "javascript:history.back()", or
+   * "http://www.stratelia.com/"
+   * @param disabled Specify if the button is disabled or not. If disabled, no action will be
+   * possible.
    * @param imagePath The path where the images needed to display buttons will be found.
    * @return returns an object implementing the FormButton interface. That's the new button to use.
    * @deprecated
@@ -672,12 +675,11 @@ public class GraphicElementFactory {
   /**
    * Build a new ArrayPane.
    *
-   * @param name        The name from your array. This name has to be unique in the session. It will
-   *                    be used to put some information (including the sorted column), in the
-   *                    session. exemple : "MyToDoArrayPane"
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
    * @param pageContext The page context computed by the servlet or JSP. The PageContext is used to
-   *                    both get new request (sort on a new column), and keep the current state (via
-   *                    the session).
+   * both get new request (sort on a new column), and keep the current state (via the session).
    * @return An object implementing the ArrayPane interface.
    * @deprecated
    */
@@ -702,9 +704,9 @@ public class GraphicElementFactory {
   /**
    * Build a new ArrayPane.
    *
-   * @param name    The name from your array. This name has to be unique in the session. It will be
-   *                used to put some information (including the sorted column), in the session.
-   *                exemple : "MyToDoArrayPane"
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
    * @param request The http request (to get entering action, like sort operation)
    * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
@@ -729,11 +731,11 @@ public class GraphicElementFactory {
   /**
    * Build a new ArrayPane.
    *
-   * @param name    The name from your array. This name has to be unique in the session. It will be
-   *                used to put some information (including the sorted column), in the session.
-   *                exemple : "MyToDoArrayPane"
-   * @param url     The url to root sorting action. This url can contain parameters. exemple :
-   *                http://localhost/webactiv/Rkmelia/topicManager?topicId=12
+   * @param name The name from your array. This name has to be unique in the session. It will be
+   * used to put some information (including the sorted column), in the session. exemple :
+   * "MyToDoArrayPane"
+   * @param url The url to root sorting action. This url can contain parameters. exemple :
+   * http://localhost/webactiv/Rkmelia/topicManager?topicId=12
    * @param request The http request (to get entering action, like sort operation)
    * @param session The client session (to get the old status, like on which column we are sorted)
    * @return An object implementing the ArrayPane interface.
@@ -932,14 +934,14 @@ public class GraphicElementFactory {
   public MainSessionController getMainSessionController() {
     return mainSessionController;
   }
-  
+
   public void setHttpRequest(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
     mainSessionController =
         (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
     componentMainPage = request.getRequestURI().endsWith("/Main");
   }
-  
+
   public boolean isComponentMainPage() {
     return componentMainPage;
   }

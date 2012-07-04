@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.node.ejb;
 
 import com.silverpeas.util.StringUtil;
@@ -57,9 +58,11 @@ public class NodeDAO {
       + "nodecreationdate, nodecreatorid, nodepath, nodelevelnumber, nodefatherid, modelid, "
       + "nodestatus, instanceid, type, ordernumber, lang, rightsdependson FROM sb_node_node WHERE "
       + "nodeId = ? AND instanceId = ?";
-  private static final String COUNT_NODES_PER_LEVEL = "SELECT COUNT(nodeid) as nb FROM sb_node_node "
+  private static final String COUNT_NODES_PER_LEVEL =
+      "SELECT COUNT(nodeid) as nb FROM sb_node_node "
       + "WHERE nodelevelnumber = ? AND nodeName = ? AND instanceid = ? ";
-  private static final String COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT = "SELECT COUNT(nodeid) as nb FROM sb_node_node "
+  private static final String COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT =
+      "SELECT COUNT(nodeid) as nb FROM sb_node_node "
       + "WHERE nodeid <> ? AND nodelevelnumber = ? AND nodeName = ? AND instanceid = ? ";
   private static final String SELECT_CHILDREN_IDS = "SELECT nodeid FROM sb_node_node WHERE "
       + "nodefatherid = ? AND instanceId = ? ORDER BY nodeid";
@@ -151,7 +154,8 @@ public class NodeDAO {
         nbItems = rs.getInt(1);
       }
     } catch (SQLException e) {
-      SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnUpdate()", "root.EX_SQL_QUERY_FAILED",
+      SilverTrace.error("node", "NodeDAO.isSameNameSameLevelOnUpdate()",
+          "root.EX_SQL_QUERY_FAILED",
           "selectQuery = " + COUNT_NODES_PER_LEVEL_WITHOUT_CURRENT + " id = "
           + nd.getNodePK().getId() + " level = " + nd.getLevel() + " name = " + nd.getName()
           + " compo name = " + nd.getNodePK().getComponentName(), e);
@@ -373,7 +377,6 @@ public class NodeDAO {
 
   /**
    * Get nodeDetails by level.
-   *
    * @param con A connection to the database
    * @param nodePK
    * @param level
@@ -493,7 +496,7 @@ public class NodeDAO {
       rs = stmt.executeQuery(nodeStatement.toString());
       while (rs.next()) {
         NodeDetail nd = resultSet2NodeDetail(rs, nodePK);
-        
+
         setTranslations(con, nd);
 
         headers.add(nd);
@@ -853,7 +856,6 @@ public class NodeDAO {
 
   /**
    * Delete into the database a node but not it's descendants.
-   *
    * @param con a connection to the database
    * @param nodePK the node PK to delete.
    * @throws java.sql.SQLException
@@ -882,7 +884,6 @@ public class NodeDAO {
 
   /**
    * Check if a Node exists in database.
-   *
    * @param con the current connection to the database.
    * @param pk the node PK to find
    * @return the fat pk (pk + detail)
@@ -902,8 +903,7 @@ public class NodeDAO {
 
     } catch (NodeRuntimeException e) {
       /*
-       * NodeRuntimeException thrown by loadRow() should be replaced by
-       * returning null (not found)
+       * NodeRuntimeException thrown by loadRow() should be replaced by returning null (not found)
        */
       return null;
     }
@@ -922,8 +922,7 @@ public class NodeDAO {
 
     } catch (NodeRuntimeException e) {
       /*
-       * NodeRuntimeException thrown by loadRow() should be replaced by
-       * returning null (not found)
+       * NodeRuntimeException thrown by loadRow() should be replaced by returning null (not found)
        */
       return null;
     }
@@ -1068,7 +1067,8 @@ public class NodeDAO {
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodeName =  ? , nodeDescription = ? , nodePath = ? , ");
-    updateStatement.append(
+    updateStatement
+        .append(
         " nodeLevelNumber = ? , nodeFatherId = ? , modelId = ? , nodeStatus = ? , orderNumber = ?, lang = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? and instanceId = ?");
     PreparedStatement prepStmt = null;
@@ -1109,7 +1109,8 @@ public class NodeDAO {
     updateStatement.append("update ").append(
         nodeDetail.getNodePK().getTableName());
     updateStatement.append(" set nodePath = ? , ");
-    updateStatement.append(
+    updateStatement
+        .append(
         " nodeLevelNumber = ? , nodeFatherId = ? , instanceId = ? , orderNumber = ?, rightsDependsOn = ? ");
     updateStatement.append(" where nodeId = ? ");
     PreparedStatement prepStmt = null;
@@ -1138,7 +1139,7 @@ public class NodeDAO {
 
   public static void updateRightsDependency(Connection con, NodePK pk,
       int rightsDependsOn) throws SQLException {
-    SilverTrace.info("node", "NodeDAO.updateRightsDependency()", "root.MSG_GEN_ENTER_METHOD", 
+    SilverTrace.info("node", "NodeDAO.updateRightsDependency()", "root.MSG_GEN_ENTER_METHOD",
         "nodePK = " + pk.toString() + ", rightsDependsOn = " + rightsDependsOn);
 
     StringBuilder updateStatement = new StringBuilder();

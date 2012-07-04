@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdc.control;
 
 import com.google.common.collect.Lists;
@@ -150,12 +151,13 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         first = false;
       }
 
-      SilverpeasBeanDAO<AxisHeaderPersistence> dao = SilverpeasBeanDAOFactory.<AxisHeaderPersistence> getDAO(
-              "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
+      SilverpeasBeanDAO<AxisHeaderPersistence> dao =
+          SilverpeasBeanDAOFactory.<AxisHeaderPersistence> getDAO(
+          "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
       con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
       Collection<AxisHeaderPersistence> result =
           dao.findByWhereClause(con, new AxisPK("useless"), "id IN (" + inClause.toString() + ")");
-      
+
       List<AxisHeader> axisHeaders = new ArrayList<AxisHeader>();
       if (result != null) {
         for (AxisHeaderPersistence silverpeasBean : result) {
@@ -191,7 +193,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   /**
    * Create an used axis into the data base.
    * @param usedAxis - the object which contains all data about utilization of an axis
-   * @param treeId 
+   * @param treeId
    * @return usedAxisId
    */
   @Override
@@ -222,7 +224,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
   @Override
   public int updateUsedAxis(UsedAxis usedAxis, String treeId)
       throws PdcException {
-     Connection con = null;
+    Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
       // test si la valeur de base a été modifiée
@@ -230,9 +232,9 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
       int oldBaseValue = (getUsedAxis(usedAxis.getPK().getId())).getBaseValue();
       // si elle a été modifiée alors on reporte la modification.
       if (newBaseValue != oldBaseValue) {
-        if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(), 
-                Integer.parseInt(usedAxis.getPK().getId()), usedAxis.getAxisId(), 
-                usedAxis.getBaseValue(), treeId)) {
+        if (utilizationDAO.isAlreadyAdded(con, usedAxis.getInstanceId(),
+            Integer.parseInt(usedAxis.getPK().getId()), usedAxis.getAxisId(),
+            usedAxis.getBaseValue(), treeId)) {
           return 1;
         }
       }
@@ -289,7 +291,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
-   * @param con 
+   * @param con
    * @param axisId
    * @throws PdcException
    * @see
@@ -322,14 +324,13 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
     }
   }
 
- /**
-  * 
-  * @param con
-  * @param valueId
-  * @param axisId
-  * @param treeId
-  * @throws PdcException 
-  */
+  /**
+   * @param con
+   * @param valueId
+   * @param axisId
+   * @param treeId
+   * @throws PdcException
+   */
   @Override
   public void deleteUsedAxisByMotherValue(Connection con, String valueId,
       String axisId, String treeId) throws PdcException {
@@ -385,7 +386,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
       if (usedAxis.getBaseValue() == baseValueToUpdate) {
         try {
-          // test si la nouvelle valeur est autorisée comme nouvelle valeur de  base
+          // test si la nouvelle valeur est autorisée comme nouvelle valeur de base
           updateAllowed = !utilizationDAO.isAlreadyAdded(con, instanceId,
               Integer.parseInt(usedAxis.getPK().getId()), axisId, newBaseValue, treeId);
         } catch (Exception e) {

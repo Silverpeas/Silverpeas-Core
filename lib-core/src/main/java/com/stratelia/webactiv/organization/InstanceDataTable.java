@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
@@ -42,6 +43,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public InstanceDataTable(OrganizationSchema organization) {
     super(organization, "ST_Instance_Data");
   }
+
   static final private String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
 
   /**
@@ -76,6 +78,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
 
     insertRow(INSERT_INSTANCEDATA, idr);
   }
+
   static final private String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
       + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
 
@@ -85,6 +88,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public InstanceDataRow getInstanceData(int id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_INSTANCEDATA_BY_ID, id);
   }
+
   static final private String SELECT_INSTANCEDATA_BY_ID = "select "
       + INSTANCEDATA_COLUMNS + " from ST_Instance_Data where id = ?";
 
@@ -116,6 +120,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     }
     return params;
   }
+
   static final private String SELECT_ALL_COMPONENT_PARAMETERS = "select "
       + INSTANCEDATA_COLUMNS
       + " from ST_Instance_Data where componentId = ? order by id";
@@ -137,6 +142,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
       createInstanceData(componentId, parameter);
     }
   }
+
   static final private String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
       + " SET value = ?" + " where componentId = ? and name = ?";
 
@@ -146,6 +152,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   public void removeInstanceData(int id) throws AdminPersistenceException {
     updateRelation(REMOVE_INSTANCEDATA, id);
   }
+
   static final private String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
       + " where componentid = ?";
 

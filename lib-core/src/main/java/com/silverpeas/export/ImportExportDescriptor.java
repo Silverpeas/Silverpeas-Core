@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -33,12 +33,12 @@ import static com.silverpeas.util.StringUtil.*;
 
 /**
  * An import export descriptor is an object that provides useful information to exporters and
- * importers for performing their tasks.
- * Information is carried through import and export process parameters.
+ * importers for performing their tasks. Information is carried through import and export process
+ * parameters.
  */
 public abstract class ImportExportDescriptor {
 
-   /**
+  /**
    * A specific value for the export-import resource format indicating that no explicit format is
    * defined. In general, this specific value means the exporter or importer processes for a single
    * predefined defined format and thus it is useless to specify it.
@@ -46,11 +46,11 @@ public abstract class ImportExportDescriptor {
   public static final String NO_FORMAT = "";
 
   private String format = NO_FORMAT;
-  private Map<String, Serializable> parameters = new HashMap<String, Serializable> ();
+  private Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
   /**
-   * Gets the format in (or from) which the resource has to be exported (or imported).
-   * If no format is defined, then NO_FORMAT is returned.
+   * Gets the format in (or from) which the resource has to be exported (or imported). If no format
+   * is defined, then NO_FORMAT is returned.
    * @return the format for export and import.
    */
   public String getFormat() {
@@ -63,7 +63,7 @@ public abstract class ImportExportDescriptor {
    * @return itself.
    */
   public <O extends ImportExportDescriptor> O inFormat(String format) {
-    if (! isDefined(format)) {
+    if (!isDefined(format)) {
       this.format = NO_FORMAT;
     }
     this.format = format;
@@ -78,11 +78,12 @@ public abstract class ImportExportDescriptor {
    * @param value the parameter value.
    * @return itself.
    */
-  public <T extends Serializable, O extends ImportExportDescriptor> O withParameter(String name, final T value) {
+  public <T extends Serializable, O extends ImportExportDescriptor> O withParameter(String name,
+      final T value) {
     this.parameters.put(name, value);
     return (O) this;
   }
-  
+
   /**
    * Sets the specified process parameter with the specified value. If the parameter already exists,
    * the value is replaced with the specified one.

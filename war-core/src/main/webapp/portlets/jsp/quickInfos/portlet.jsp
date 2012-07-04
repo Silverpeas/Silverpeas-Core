@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -54,7 +55,7 @@ while (infos.hasNext())
 
     %>
 
-	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName(language)) %></span><br/><%=pubCreator.getDisplayedName()%> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
+	<table cellpadding="3" cellspacing="0" border="0" width="98%"><tr><td><span class="textePetitBold"><%=EncodeHelper.convertHTMLEntities(pub.getName(language)) %></span><br/><view:username userId="<%=pubCreator.getId()%>"/> - <%=DateUtil.getOutputDate(pub.getCreationDate(), language)%></td></tr></table>
 	<table cellpadding="1" cellspacing="0" border="0" class="intfdcolor" width="98%"><tr><td>
 	<table cellpadding="3" cellspacing="0" border="0" class="intfdcolor4" width="100%"><tr><td>
 

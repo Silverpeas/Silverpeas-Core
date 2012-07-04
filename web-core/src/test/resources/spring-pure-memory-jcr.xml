@@ -44,9 +44,9 @@
   </ctx:component-scan>
 
 
-  <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean">
+  <bean id="repository" class="com.silverpeas.jcrutil.BetterRepositoryFactoryBean" destroy-method="testCleanUp">
     <property name="configuration" value="classpath:repository-in-memory.xml" />
-    <property name="homeDir" value="file://${project.basedir}/target/tmp/temp_jackrabbit" />
+    <property name="homeDir" value="file://${basedir}/target/tmp/temp_jackrabbit" />
     <property name="configurationProperties">
       <list>
         <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>

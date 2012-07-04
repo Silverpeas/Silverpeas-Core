@@ -1,23 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.domains.DomainDriverFactory;
@@ -48,8 +48,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   private int nbConnected = 0;
 
   /**
-   * Get an organization schema from the pool.
-   */
+* Get an organization schema from the pool.
+*/
   public void getOrganizationSchema() throws AdminException {
     synchronized (this) {
       if (getOrganization() == null) {
@@ -66,8 +66,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Release the organization schema.
-   */
+* Release the organization schema.
+*/
   public void releaseOrganizationSchema() throws AdminException {
     synchronized (this) {
       nbConnected--;
@@ -81,13 +81,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * *
-   * Create a new User.
-   *
-   * @param user
-   * @return
-   * @throws Exception
-   */
+* *
+* Create a new User.
+*
+* @param user
+* @return
+* @throws Exception
+*/
   public String createUser(UserFull user) throws Exception {
     try {
       // Get a DomainDriver instance
@@ -129,12 +129,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Create a new User.
-   *
-   * @param user
-   * @return
-   * @throws Exception
-   */
+* Create a new User.
+*
+* @param user
+* @return
+* @throws Exception
+*/
   @Override
   public String createUser(UserDetail user) throws Exception {
     try {
@@ -151,11 +151,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Delete given user from Silverpeas
-   *
-   * @param userId user Id
-   * @throws Exception
-   */
+* Delete given user from Silverpeas
+*
+* @param userId user Id
+* @throws Exception
+*/
   @Override
   public void deleteUser(String userId) throws Exception {
     try {
@@ -183,9 +183,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param user
-   * @throws Exception
-   */
+* @param user
+* @throws Exception
+*/
   @Override
   public void updateUserDetail(UserDetail user) throws Exception {
     try {
@@ -205,9 +205,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param user
-   * @throws Exception
-   */
+* @param user
+* @throws Exception
+*/
   @Override
   public void updateUserFull(UserFull user) throws Exception {
     try {
@@ -287,10 +287,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param userId
-   * @return User
-   * @throws Exception
-   */
+* @param userId
+* @return User
+* @throws Exception
+*/
   public UserDetail getUserDetail(String userId) throws Exception {
     UserDetail ud = null;
     try {
@@ -335,11 +335,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param userIds
-   * @return
-   * @throws Exception
-   */
+*
+* @param userIds
+* @return
+* @throws Exception
+*/
   public UserDetail[] getUsers(String[] userIds) throws Exception {
     UserDetail[] uds = new UserDetail[userIds.length];
     try {
@@ -354,9 +354,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @return User[]
-   * @throws Exception
-   */
+* @return User[]
+* @throws Exception
+*/
   @Override
   public UserDetail[] getAllUsers() throws Exception {
     return null;
@@ -388,10 +388,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param domainId
-   * @return User[]
-   * @throws Exception
-   */
+* @param domainId
+* @return User[]
+* @throws Exception
+*/
   public UserDetail[] getAllUsers(String domainId) throws Exception {
     UserDetail[] uds = null;
 
@@ -413,11 +413,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing all users information of given domain
-   *
-   * @param domainId
-   * @throws Exception
-   */
+* Indexing all users information of given domain
+*
+* @param domainId
+* @throws Exception
+*/
   public void indexAllUsers(String domainId) throws Exception {
     String[] userIds = getUserIdsOfDomain(domainId);
     for (String userId : userIds) {
@@ -434,11 +434,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param group
-   * @return
-   * @throws Exception
-   */
+*
+* @param group
+* @return
+* @throws Exception
+*/
   @Override
   public String createGroup(Group group) throws Exception {
     Group specificGroup = new Group(group);
@@ -468,10 +468,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param groupId
-   * @throws Exception
-   */
+*
+* @param groupId
+* @throws Exception
+*/
   @Override
   public void deleteGroup(String groupId) throws Exception {
     try {
@@ -504,10 +504,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Update given group in specific domain
-   *
-   * @param group
-   */
+* Update given group in specific domain
+*
+* @param group
+*/
   @Override
   public void updateGroup(Group group) throws Exception {
     Group specificGroup = new Group(group);
@@ -547,11 +547,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * return group with given id (contains list of user ids for this group)
-   *
-   * @param groupId
-   * @return Group
-   */
+* return group with given id (contains list of user ids for this group)
+*
+* @param groupId
+* @return Group
+*/
   @Override
   public Group getGroup(String groupId) throws Exception {
     Group group = null;
@@ -590,11 +590,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * return group with given group name in domain
-   *
-   * @param groupName
-   * @return Group
-   */
+* return group with given group name in domain
+*
+* @param groupName
+* @return Group
+*/
   public Group getGroupByNameInDomain(String groupName, String domainId)
           throws Exception {
     try {
@@ -617,9 +617,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param groupId
-   * @return Group[]
-   */
+* @param groupId
+* @return Group[]
+*/
   @Override
   public Group[] getGroups(String groupId) throws Exception {
     Group[] groups = null;
@@ -652,19 +652,19 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @return Group[]
-   */
+* @return Group[]
+*/
   @Override
   public Group[] getAllGroups() throws Exception {
     return null;
   }
 
   /**
-   *
-   * @param domainId
-   * @return Group[]
-   * @throws Exception
-   */
+*
+* @param domainId
+* @return Group[]
+* @throws Exception
+*/
   public Group[] getAllGroups(String domainId) throws Exception {
     Group[] groups = null;
     try {
@@ -686,9 +686,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @return @throws Exception
-   */
+*
+* @return @throws Exception
+*/
   @Override
   public Group[] getAllRootGroups() throws Exception {
     return null;
@@ -700,12 +700,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param domainId
-   * @param groupId
-   * @return
-   * @throws Exception
-   */
+*
+* @param domainId
+* @param groupId
+* @return
+* @throws Exception
+*/
   public String[] getGroupMemberGroupIds(String domainId, String groupId) throws Exception {
     String[] groups = null;
 
@@ -729,11 +729,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param domainId
-   * @return
-   * @throws Exception
-   */
+*
+* @param domainId
+* @return
+* @throws Exception
+*/
   public Group[] getAllRootGroups(String domainId) throws Exception {
     Group[] groups = null;
 
@@ -767,11 +767,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing all groups information of given domain
-   *
-   * @param domainId
-   * @throws Exception
-   */
+* Indexing all groups information of given domain
+*
+* @param domainId
+* @throws Exception
+*/
   public void indexAllGroups(String domainId) throws Exception {
     GroupRow[] tabGroup = getAllGroupOfDomain(domainId);
     for (GroupRow group : tabGroup) {
@@ -780,10 +780,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Indexing a group
-   *
-   * @param group
-   */
+* Indexing a group
+*
+* @param group
+*/
   public void indexGroup(GroupRow group) {
 
     FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", Integer.toString(group.id));
@@ -801,29 +801,29 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Unindexing a group
-   *
-   * @param groupId
-   */
+* Unindexing a group
+*
+* @param groupId
+*/
   public void unindexGroup(String groupId) {
     FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", groupId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
   /**
-   * @param sKey
-   * @return boolean
-   */
+* @param sKey
+* @return boolean
+*/
   public Map<String, String> authenticate(String sKey) throws Exception {
     return authenticate(sKey, true);
   }
 
   /**
-   * @param sKey anthentication key
-   * @param removeKey remove after
-   * @return
-   * @throws Exception
-   */
+* @param sKey anthentication key
+* @param removeKey remove after
+* @return
+* @throws Exception
+*/
   public Map<String, String> authenticate(String sKey, boolean removeKey) throws Exception {
     Map<String, String> loginDomainId = new HashMap<String, String>();
     try {
@@ -862,8 +862,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @return Domain[]
-   */
+* @return Domain[]
+*/
   public Domain[] getAllDomains() throws AdminException {
     Domain[] valret = null;
     int i;
@@ -900,11 +900,11 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   *
-   * @param domainId
-   * @return
-   * @throws Exception
-   */
+*
+* @param domainId
+* @return
+* @throws Exception
+*/
   public long getDomainActions(String domainId) throws Exception {
     return getDomainDriver(idAsInt(domainId)).getDriverActions();
   }
@@ -1009,9 +1009,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param domainId
-   * @return String
-   */
+* @param domainId
+* @return String
+*/
   public Domain getDomain(String domainId) throws Exception {
     Domain valret = null;
 
@@ -1045,9 +1045,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * @param domainId
-   * @return DomainDriver
-   */
+* @param domainId
+* @return DomainDriver
+*/
   public DomainDriver getDomainDriver(int domainId) throws Exception {
     DomainDriver domainDriver = null;
     boolean osAllocated = false;
@@ -1097,8 +1097,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Called when Admin starts the synchronization on a particular Domain
-   */
+* Called when Admin starts the synchronization on a particular Domain
+*/
   public void beginSynchronization(String sdomainId) throws Exception {
     // Get a DomainDriver instance
     DomainDriver domainDriver = this.getDomainDriver(idAsInt(sdomainId));
@@ -1106,10 +1106,10 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Called when Admin ends the synchronization
-   *
-   * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
-   */
+* Called when Admin ends the synchronization
+*
+* @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
+*/
   public String endSynchronization(String sdomainId, boolean cancelSynchro) throws Exception {
     // Get a DomainDriver instance
     DomainDriver domainDriver = this.getDomainDriver(idAsInt(sdomainId));
@@ -1117,8 +1117,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Start a new transaction
-   */
+* Start a new transaction
+*/
   @Override
   public void startTransaction(boolean bAutoCommit) {
     try {
@@ -1130,8 +1130,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Commit transaction
-   */
+* Commit transaction
+*/
   @Override
   public void commit() throws Exception {
     try {
@@ -1144,8 +1144,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Rollback transaction
-   */
+* Rollback transaction
+*/
   @Override
   public void rollback() throws Exception {
     try {
@@ -1158,8 +1158,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Start a new transaction in specific domain driver
-   */
+* Start a new transaction in specific domain driver
+*/
   public void startTransaction(String domainId, boolean bAutoCommit) throws Exception {
     try {
       // Get a AbstractDomainDriver instance
@@ -1174,8 +1174,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Commit transaction in specific domain driver
-   */
+* Commit transaction in specific domain driver
+*/
   public void commit(String domainId) throws Exception {
     try {
       // Get a DomainDriver instance
@@ -1189,8 +1189,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   }
 
   /**
-   * Rollback transaction in specific domain driver
-   */
+* Rollback transaction in specific domain driver
+*/
   public void rollback(String domainId) throws Exception {
     try {
       // Get a DomainDriver instance
@@ -1238,5 +1238,31 @@ public class DomainDriverManager extends AbstractDomainDriver {
       userIndexation = new UserIndexation();
     }
     return userIndexation;
+  }
+  
+  @Override
+  public void resetPassword(UserDetail user, String password) throws Exception {
+    try {
+      // Get a DomainDriver instance
+      DomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
+      // Update User detail in specific domain
+      domainDriver.resetPassword(user, password);
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.resetPassword", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", "userId : "+user.getId(), e);
+    }
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+    try {
+      // Get a DomainDriver instance
+      DomainDriver domainDriver = this.getDomainDriver(idAsInt(user.getDomainId()));
+      // Update User detail in specific domain
+      domainDriver.resetEncryptedPassword(user, encryptedPassword);
+    } catch (AdminException e) {
+      throw new AdminException("DomainDriverManager.resetEncryptedPassword", SilverpeasException.ERROR,
+          "admin.EX_ERR_UPDATE_USER", "userId : "+user.getId(), e);
+    }
   }
 }

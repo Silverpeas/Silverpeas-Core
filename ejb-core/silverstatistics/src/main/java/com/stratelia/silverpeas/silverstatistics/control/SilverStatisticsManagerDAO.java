@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
@@ -46,7 +50,6 @@ import java.util.List;
 
 /**
  * This is the DAO Object for purge, agregat on the month
- *
  * @author sleroux
  */
 public class SilverStatisticsManagerDAO {
@@ -55,7 +58,6 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param statsType
    * @param valueKeys
@@ -64,7 +66,7 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   static void insertDataStatsCumul(Connection con, StatType statsType,
-          List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
     StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
     insertStatementBuf.append(conf.getTableName(statsType)).append("Cumul" + "(");
     String insertStatement;
@@ -86,7 +88,7 @@ public class SilverStatisticsManagerDAO {
     try {
 
       SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.insertDataStatsCumul",
-              "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
+          "root.MSG_GEN_PARAM_VALUE", "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
       for (String currentKey : theKeys) {
         i++;
@@ -154,17 +156,16 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param statsType
    * @param valueKeys
    * @param conf
    * @throws SQLException
-   * @throws IOException 
+   * @throws IOException
    * @see
    */
   public static void putDataStatsCumul(Connection con, StatType statsType,
-          List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
     StringBuilder updateStatementBuf = new StringBuilder("UPDATE ");
     String tableName = conf.getTableName(statsType);
@@ -248,12 +249,12 @@ public class SilverStatisticsManagerDAO {
       stmt = con.createStatement();
       String selectStatement = selectStatementBuf.toString();
       SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-              "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
+          "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
 
       rs = stmt.executeQuery(selectStatement);
       String updateStatement = updateStatementBuf.toString();
       SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-              "root.MSG_GEN_PARAM_VALUE", "updateStatement=" + updateStatement);
+          "root.MSG_GEN_PARAM_VALUE", "updateStatement=" + updateStatement);
       pstmt = con.prepareStatement(updateStatement);
       while (rs.next()) {
         rowExist = true;
@@ -264,7 +265,7 @@ public class SilverStatisticsManagerDAO {
           if (conf.isCumulKey(statsType, keyNameCurrent)) {
             countCumulKey++;
             StatDataType currentType =
-                    StatDataType.valueOf(conf.getKeyType(statsType, keyNameCurrent));
+                StatDataType.valueOf(conf.getKeyType(statsType, keyNameCurrent));
             if (StatDataType.INTEGER == currentType) {
               intToAdd = Integer.valueOf(valueKeys.get(conf.indexOfKey(statsType, keyNameCurrent)));
               if (conf.getModeCumul(statsType) == StatisticMode.Add) {
@@ -291,7 +292,7 @@ public class SilverStatisticsManagerDAO {
 
     } catch (SQLException e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.putDataStatsCumul",
-              "silverstatistics.MSG_ALIMENTATION_BD", e);
+          "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -305,18 +306,17 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param statsType
    * @param conf
    * @throws SQLException
-   * @throws IOException 
+   * @throws IOException
    * @see
    */
   public static void makeStatCumul(Connection con, StatType statsType, StatisticsConfig conf)
-          throws SQLException, IOException {
+      throws SQLException, IOException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT * FROM ").append(
-            conf.getTableName(statsType));
+        conf.getTableName(statsType));
     String selectStatement;
     String keyNameCurrent;
     Statement stmt = null;
@@ -324,7 +324,7 @@ public class SilverStatisticsManagerDAO {
 
     selectStatement = selectStatementBuf.toString();
     SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-            "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
+        "root.MSG_GEN_PARAM_VALUE", "selectStatement=" + selectStatement);
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectStatement);
@@ -337,7 +337,7 @@ public class SilverStatisticsManagerDAO {
         for (String theKey : theKeys) {
           keyNameCurrent = theKey;
           StatDataType currentType = StatDataType.valueOf(
-                  conf.getKeyType(statsType, keyNameCurrent));
+              conf.getKeyType(statsType, keyNameCurrent));
           switch (currentType) {
             case INTEGER:
               int tmpInt = rs.getInt(keyNameCurrent);
@@ -368,11 +368,11 @@ public class SilverStatisticsManagerDAO {
       }
     } catch (SQLException e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-              "silverstatistics.MSG_ALIMENTATION_BD", e);
+          "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
     } catch (IOException e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-              "silverstatistics.MSG_ALIMENTATION_BD", e);
+          "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
     } finally {
       DBUtil.close(rs, stmt);
@@ -381,7 +381,6 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param statsType
    * @param conf
@@ -389,13 +388,13 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   static void deleteTablesOfTheDay(Connection con, StatType statsType, StatisticsConfig conf)
-          throws SQLException {
+      throws SQLException {
     String deleteStatement = "DELETE FROM " + conf.getTableName(statsType);
     PreparedStatement prepStmt = null;
 
     try {
       SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.deleteTablesOfTheDay",
-              "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
+          "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
       prepStmt = con.prepareStatement(deleteStatement);
       prepStmt.executeUpdate();
     } finally {
@@ -405,7 +404,6 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param statsType
    * @param conf
@@ -413,20 +411,20 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   static void purgeTablesCumul(Connection con, StatType statsType, StatisticsConfig conf) throws
-          SQLException {
+      SQLException {
     StringBuilder deleteStatementBuf = new StringBuilder("DELETE FROM " + conf.getTableName(
-            statsType) + "Cumul WHERE dateStat<");
+        statsType) + "Cumul WHERE dateStat<");
     PreparedStatement prepStmt = null;
 
     // compute the last date to delete from
     Calendar dateOfTheDay = Calendar.getInstance();
     dateOfTheDay.add(Calendar.MONTH, -(conf.getPurge(statsType)));
     deleteStatementBuf.append(getRequestDate(dateOfTheDay.get(Calendar.YEAR),
-            dateOfTheDay.get(Calendar.MONTH) + 1));
+        dateOfTheDay.get(Calendar.MONTH) + 1));
 
     String deleteStatement = deleteStatementBuf.toString();
     SilverTrace.info("silverstatistics", "SilverStatisticsManagerDAO.purgeTablesCumul",
-            "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
+        "root.MSG_GEN_PARAM_VALUE", "deleteStatement=" + deleteStatement);
 
     try {
       prepStmt = con.prepareStatement(deleteStatement);
@@ -451,49 +449,47 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @param conf
    */
   public static void makeStatAllCumul(StatisticsConfig conf) {
     Connection con = getConnection();
     try {
       if (conf != null && con != null && conf.isValidConfigFile()) {
-        for (StatType currentType :
-                conf.getAllTypes()) {
+        for (StatType currentType : conf.getAllTypes()) {
           try {
             purgeTablesCumul(con, currentType, conf);
           } catch (SQLException e) {
             SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                    "silverstatistics.MSG_PURGE_BD", e);
+                "silverstatistics.MSG_PURGE_BD", e);
           }
           try {
             makeStatCumul(con, currentType, conf);
           } catch (SQLException e) {
             SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                    "silverstatistics.MSG_CUMUL_BD", e);
+                "silverstatistics.MSG_CUMUL_BD", e);
           } catch (IOException e) {
             SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                    "silverstatistics.MSG_CUMUL_BD", e);
+                "silverstatistics.MSG_CUMUL_BD", e);
           } finally {
             try {
               deleteTablesOfTheDay(con, currentType, conf);
             } catch (SQLException e) {
               SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                      "silverstatistics.MSG_PURGE_BD", e);
+                  "silverstatistics.MSG_PURGE_BD", e);
             }
           }
         }
       } else {
         if (con == null) {
           SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                  "silverstatistics.MSG_CONNECTION_BD");
+              "silverstatistics.MSG_CONNECTION_BD");
         }
         if (conf == null) {
           SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                  "silverstatistics.MSG_NO_CONFIG_FILE");
+              "silverstatistics.MSG_NO_CONFIG_FILE");
         } else if (!conf.isValidConfigFile()) {
           SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                  "silverstatistics.MSG_CONFIG_FILE");
+              "silverstatistics.MSG_CONFIG_FILE");
         }
       }
     } finally {
@@ -503,7 +499,6 @@ public class SilverStatisticsManagerDAO {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -512,9 +507,9 @@ public class SilverStatisticsManagerDAO {
       return DBUtil.makeConnection(DB_NAME);
     } catch (Exception e) {
       throw new StatisticsRuntimeException("SilverStatisticsManagerDAO.getConnection()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
-              "DbName=" + DB_NAME,
-              e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
+          "DbName=" + DB_NAME,
+          e);
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,19 +52,21 @@ public class InterestCenterDAO {
   /** getICByUserID sql query constant */
   public final static String GET_IC_BY_USERID_QUERY =
       "SELECT a.id, a.name, a.criteria, a.workSpaceId, a.peasId, "
-      + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interest_Center a WHERE a.ownerId = ? ";
+          + " a.authorId, a.afterDate, a.beforeDate, a.ownerId FROM SB_Interest_Center a WHERE a.ownerId = ? ";
 
   /**
-   * @param con 
-   * @param userid 
+   * @param con
+   * @param userid
    * @return a list of <code>InterestCenter</code>s by user id provided
    * @throws SQLException
-   * @throws DAOException  
+   * @throws DAOException
    */
-  public static List<InterestCenter> getICByUserID(Connection con, int userid) throws SQLException, DAOException {
+  public static List<InterestCenter> getICByUserID(Connection con, int userid) throws SQLException,
+      DAOException {
     if (con == null) {
       throw new DAOException("InterestCenterDAO.getICByUserID",
-          "InterestCenter.EX_NO_CONNECTION");    }
+          "InterestCenter.EX_NO_CONNECTION");
+    }
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -85,8 +87,9 @@ public class InterestCenterDAO {
   }
 
   /** getICByPK sql query constant */
-  public final static String GET_IC_BY_PK_QUERY = "SELECT id, name, criteria, workSpaceId, peasId, "
-          + "authorId, afterDate, beforeDate, ownerId FROM SB_Interest_Center WHERE id = ? ";
+  public final static String GET_IC_BY_PK_QUERY =
+      "SELECT id, name, criteria, workSpaceId, peasId, "
+      + "authorId, afterDate, beforeDate, ownerId FROM SB_Interest_Center WHERE id = ? ";
 
   /**
    * @param icID <code>InterestCenter</code> id
@@ -164,7 +167,7 @@ public class InterestCenterDAO {
   /** createIC sql query constant */
   public final static String CREATE_IC_QUERY =
       "INSERT  INTO SB_Interest_Center (id, name, criteria, workSpaceId, peasId, authorId, " +
-          "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+      "afterDate, beforeDate, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
    * @return id of <code>InterestCenter</code> created
@@ -234,7 +237,7 @@ public class InterestCenterDAO {
   /** updateIC sql query constant */
   public final static String UPDATE_IC_QUERY =
       "UPDATE SB_Interest_Center SET name = ?, criteria = ?, workSpaceId = ?, peasId = ?, " +
-          "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
+      "authorId = ?, afterDate = ?, beforeDate = ?, ownerId = ? WHERE id = ?";
 
   /**
    * perform updates of provided InterestCenter
@@ -296,7 +299,8 @@ public class InterestCenterDAO {
   }
 
   /** removeICByPK sql query constant */
-  public final static String REMOVE_IC_BY_PKS_LIST_QUERY = "DELETE FROM SB_Interest_Center WHERE id = ?";
+  public final static String REMOVE_IC_BY_PKS_LIST_QUERY =
+      "DELETE FROM SB_Interest_Center WHERE id = ?";
 
   /**
    * @param removeID an id of <code>InterestCenter</code> to be deleted

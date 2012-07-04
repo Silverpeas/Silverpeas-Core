@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,7 +42,7 @@ import javax.naming.Context;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -1008,10 +1008,10 @@ public class PublicationDAOTest extends AbstractTestDao {
     assertNotNull("SocialInformationPublication1 must be not null", sp1);
     List<SocialInformation> list100 = new ArrayList<SocialInformation>();
     list100.add(sp1);
-    
+
     Date begin = DateUtil.parse("2008/11/01");
     Date end = DateUtil.parse("2008/11/30");
-    
+
     List<SocialInformation> list100DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,
         user100, begin, end);
     assertEquals("Must be equal", list100.get(0), list100DOA.get(0));
@@ -1023,7 +1023,7 @@ public class PublicationDAOTest extends AbstractTestDao {
     SocialInformationPublication sp2 = new SocialInformationPublication(new PublicationWithStatus(
         (detail2), false));
     assertNotNull("SocialInformationPublication2 must be not null", sp2);
-    
+
     List<SocialInformation> list101 = new ArrayList<SocialInformation>();
     list101.add(sp2);
     List<SocialInformation> list101DOA = PublicationDAO.getAllPublicationsIDbyUserid(con,

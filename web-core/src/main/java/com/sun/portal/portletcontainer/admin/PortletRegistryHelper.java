@@ -175,8 +175,8 @@ public class PortletRegistryHelper implements PortletRegistryTags {
       registryLocation = System.getProperty("user.home") + File.separator
           + PORTLET_CONTAINER_DEFAULT_DIR_NAME;
       if (logger.isLoggable(Level.WARNING)) {
-        logger.log(Level.WARNING, "PSPL_CSPPAM0003", new String[]{
-              PORTLET_CONTAINER_DIR_PROPERTY, registryLocation});
+        logger.log(Level.WARNING, "PSPL_CSPPAM0003", new String[] {
+            PORTLET_CONTAINER_DIR_PROPERTY, registryLocation });
       }
     }
     return registryLocation;

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- * <p/>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * <p/>
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
- * the text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- * <p/>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
- * <p/>
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.util.StringUtil;
@@ -71,8 +75,8 @@ public abstract class AbstractPieChartBuilder {
         cmp = AdminReference.getAdminService().getComponentInstLight(cmpId);
       } catch (AdminException e) {
         SilverTrace.error("silverStatisticsPeas",
-                "AbstractPieChartBuilder.buildStatsByInstance()",
-                "root.EX_SQL_QUERY_FAILED", e);
+            "AbstractPieChartBuilder.buildStatsByInstance()",
+            "root.EX_SQL_QUERY_FAILED", e);
       }
       if (cmp != null) {
         long[] countValues = new long[3];
@@ -124,7 +128,6 @@ public abstract class AbstractPieChartBuilder {
   }
 
   /**
-   * 
    * @param spaceId the space identifier
    * @param currentUserId current user identifier
    * @param currentStats list of current statistics
@@ -150,9 +153,12 @@ public abstract class AbstractPieChartBuilder {
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace
           List<String> listSpaceIds = new ArrayList<String>();
-          String[] tabManageableSpaceIds = AdminReference.getAdminService().getUserManageableSpaceIds(currentUserId); // de type 123
+          String[] tabManageableSpaceIds =
+              AdminReference.getAdminService().getUserManageableSpaceIds(currentUserId); // de type
+          // 123
           for (String manageableSpaceId : tabManageableSpaceIds) {
-            SpaceInstLight espace = AdminReference.getAdminService().getSpaceInstLightById(manageableSpaceId);
+            SpaceInstLight espace =
+                AdminReference.getAdminService().getSpaceInstLightById(manageableSpaceId);
             int level = espace.getLevel();
             boolean trouve = false;
             while (level > 0) {
@@ -208,10 +214,12 @@ public abstract class AbstractPieChartBuilder {
           counts.add(String.valueOf(count3));
         }
 
-        legend.add("[" + ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName().substring(
-                0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
-        currentStats.add(new String[]{"SPACE", tabSpaceId, space.getName(), String.valueOf(count1),
-                                      String.valueOf(count2), String.valueOf(count3)});
+        legend.add("[" +
+            ((space.getName().length() > LEGEND_MAX_LENGTH) ? space.getName().substring(
+            0, LEGEND_MAX_LENGTH) : space.getName() + "]"));
+        currentStats.add(new String[] { "SPACE", tabSpaceId, space.getName(),
+            String.valueOf(count1),
+            String.valueOf(count2), String.valueOf(count3) });
       }
 
       // then manage components
@@ -230,18 +238,19 @@ public abstract class AbstractPieChartBuilder {
             counts.add(String.valueOf(count3));
           }
           legend.add((item.getName().length() > LEGEND_MAX_LENGTH) ? item.getName().substring(0,
-                  LEGEND_MAX_LENGTH) : item.getName());
-          currentStats.add(new String[]{"CMP", componentId, item.getName(), String.valueOf(count1),
-                    String.valueOf(count2), String.valueOf(count3)});
+              LEGEND_MAX_LENGTH) : item.getName());
+          currentStats.add(new String[] { "CMP", componentId, item.getName(),
+              String.valueOf(count1),
+              String.valueOf(count2), String.valueOf(count3) });
         }
       }
 
       pieChart = ChartUtil.buildPieChart(getChartTitle(),
-              buildDoubleArrayFromStringCollection(counts),
-              legend.toArray(new String[legend.size()]));
+          buildDoubleArrayFromStringCollection(counts),
+          legend.toArray(new String[legend.size()]));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
+          "AbstractPieChartBuilder.getChart()", "root.EX_SQL_QUERY_FAILED", e);
     }
 
     return pieChart;

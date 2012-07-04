@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -38,7 +42,6 @@ import java.util.List;
  * A AccessPathFieldDisplayer is an object which can display in a HTML field the current access path
  * of the form (space > subSpace > service > theme > subTheme) to a end user and can retrieve via
  * HTTP any updated value.
- *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -56,19 +59,22 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{AccessPathField.TYPE};
+    return new String[] { AccessPathField.TYPE };
   }
 
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
-   * template. <LI>the field type is not a managed type. </UL>
+   * log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
+   * </UL>
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
-          throws java.io.IOException {
+      throws java.io.IOException {
     // not applicable
   }
 
@@ -76,11 +82,13 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL> <LI>the field type is not a managed type. </UL>
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
    */
   @Override
   public void display(PrintWriter out, AccessPathField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+      PagesContext PagesContext) throws FormException {
     String value = null;
     StringBuilder html = new StringBuilder();
 
@@ -88,17 +96,17 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     String currentAccessPath = "";
     if (!AccessPathField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "AccessPathFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-              AccessPathField.TYPE);
+          AccessPathField.TYPE);
     } else {
       currentAccessPath = field.getAccessPath(PagesContext.getComponentId(),
-              PagesContext.getNodeId(), PagesContext.getContentLanguage());
+          PagesContext.getNodeId(), PagesContext.getContentLanguage());
     }
 
     if (!field.isNull()) {
       value = field.getValue(PagesContext.getLanguage());
     }
     html.append("<input id=\"").append(fieldName).append("\" name=\"").append(fieldName).append(
-            "\" type=\"text\" size=\"80\"");
+        "\" type=\"text\" size=\"80\"");
     if (value != null) {
       html.append(" value=\"").append(value).append("\"");
     } else {
@@ -110,7 +118,7 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
     html.append("/>\n");
 
     if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
-            && !template.isHidden() && PagesContext.useMandatory()) {
+        && !template.isHidden() && PagesContext.useMandatory()) {
       html.append(Util.getMandatorySnippet());
     }
     out.println(html);
@@ -123,18 +131,18 @@ public class AccessPathFieldDisplayer extends AbstractFieldDisplayer<AccessPathF
    */
   @Override
   public List<String> update(String newValue, AccessPathField field, FieldTemplate template,
-          PagesContext PagesContext) throws FormException {
+      PagesContext PagesContext) throws FormException {
 
     if (!AccessPathField.TYPE.equals(field.getTypeName())) {
       throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-              AccessPathField.TYPE);
+          AccessPathField.TYPE);
     }
 
     if (field.acceptValue(newValue, PagesContext.getLanguage())) {
       field.setValue(newValue, PagesContext.getLanguage());
     } else {
       throw new FormException("AccessPathFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-              AccessPathField.TYPE);
+          AccessPathField.TYPE);
     }
     return new ArrayList<String>();
   }

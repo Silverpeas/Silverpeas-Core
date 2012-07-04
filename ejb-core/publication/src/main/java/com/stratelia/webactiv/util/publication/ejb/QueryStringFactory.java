@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.ejb;
 
 public class QueryStringFactory extends Object {
@@ -53,7 +54,7 @@ public class QueryStringFactory extends Object {
 
   public static String getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       String tableName) {
-    synchronized(QueryStringFactory.class) {
+    synchronized (QueryStringFactory.class) {
       if (selectByBeginDateDescAndStatusAndNotLinkedToFatherId == null) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT DISTINCT(P.pubId), P.infoId, P.pubName, P.pubDescription, ");
@@ -61,7 +62,8 @@ public class QueryStringFactory extends Object {
         query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
         query.append("	P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
         query.append("P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, ");
-        query.append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+        query
+            .append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
         query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
         query.append("Father F WHERE F.pubId = P.pubId AND F.instanceId = ? ");
         query.append(" AND F.nodeId <> ?  AND P.pubStatus = ? AND (");
@@ -69,7 +71,8 @@ public class QueryStringFactory extends Object {
         query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
         query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
         query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
-        query.append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
+        query
+            .append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
         selectByBeginDateDescAndStatusAndNotLinkedToFatherId = query.toString();
       }
     }
@@ -94,7 +97,8 @@ public class QueryStringFactory extends Object {
     query.append("P.pubKeywords, P.pubContent, P.pubStatus, ");
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
-    query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate FROM ");
+    query
+        .append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate FROM ");
     query.append(tableName).append(" P, ").append(tableName).append("Father F ");
     query.append("WHERE F.instanceId = ? AND F.nodeId = ? AND F.pubId = P.pubId ");
     selectByFatherPK = query.toString();

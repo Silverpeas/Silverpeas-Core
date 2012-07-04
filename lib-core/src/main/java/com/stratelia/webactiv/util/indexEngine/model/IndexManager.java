@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.util.indexEngine.model;
 
 import com.silverpeas.util.StringUtil;
@@ -49,14 +49,14 @@ import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.index.Term;
 
 /**
- * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
- * an IndexManager between several threads use an IndexerThread.
- */
+* An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
+* an IndexManager between several threads use an IndexerThread.
+*/
 public class IndexManager {
 
   /**
-   * The fields names used by lucene to store each element of an index entry.
-   */
+* The fields names used by lucene to store each element of an index entry.
+*/
   public static final String ID = "id";
   public static final String KEY = "key";
   public static final String TITLE = "title";
@@ -78,8 +78,8 @@ public class IndexManager {
   public static final String EMBEDDED_FILE_IDS = "embeddedFileIds";
   public static final String FIELDS_FOR_FACETS = "fieldsForFacet";
   /**
-   * Exhaustive list of indexation's operations Used by objects which must be indexed
-   */
+* Exhaustive list of indexation's operations Used by objects which must be indexed
+*/
   public static final int NONE = -1;
   public static final int ADD = 0;
   public static final int REMOVE = 1;
@@ -87,9 +87,9 @@ public class IndexManager {
   private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
 
   /**
-   * The constructor takes no parameters and all the index engine parameters are taken from the
-   * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
-   */
+* The constructor takes no parameters and all the index engine parameters are taken from the
+* properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
+*/
   public IndexManager() {
     initProperties("com.stratelia.webactiv.util.indexEngine.IndexEngine");
 
@@ -100,9 +100,9 @@ public class IndexManager {
   }
 
   /**
-   * Add an entry index.
-   * @param indexEntry
-   */
+* Add an entry index.
+* @param indexEntry
+*/
   public void addIndexEntry(FullIndexEntry indexEntry) {
     indexEntry.setServerName(serverName);
     String indexPath = getIndexDirectoryPath(indexEntry);
@@ -115,8 +115,8 @@ public class IndexManager {
   }
 
   /**
-   * Optimize all the modified index.
-   */
+* Optimize all the modified index.
+*/
   public void optimize() {
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
@@ -185,9 +185,9 @@ public class IndexManager {
   }
 
   /**
-   * Remove an entry index.
-   * @param indexEntry
-   */
+* Remove an entry index.
+* @param indexEntry
+*/
   public void removeIndexEntry(IndexEntryPK indexEntry) {
     String indexPath = getIndexDirectoryPath(indexEntry);
     IndexWriter writer = getIndexWriter(indexPath, "");
@@ -200,47 +200,47 @@ public class IndexManager {
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given index entry.
-   * @param indexEntry the index entry.
-   * @return the path to the directory where are stored the index for the given index entry.
-   */
+* Return the path to the directory where are stored the index for the given index entry.
+* @param indexEntry the index entry.
+* @return the path to the directory where are stored the index for the given index entry.
+*/
   public String getIndexDirectoryPath(IndexEntry indexEntry) {
     return getIndexDirectoryPath(indexEntry.getPK());
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given index entry.
-   * @param indexEntry
-   * @return the path to the directory where are stored the index for the given index entry.
-   */
+* Return the path to the directory where are stored the index for the given index entry.
+* @param indexEntry
+* @return the path to the directory where are stored the index for the given index entry.
+*/
   public String getIndexDirectoryPath(IndexEntryPK indexEntry) {
     return getIndexDirectoryPath(null, indexEntry.getComponent());
   }
 
   /**
-   * Return the path to the directory where are stored the index for the given index entry.
-   * @param space
-   * @param component
-   * @return the path to the directory where are stored the index for the given index entry.
-   */
+* Return the path to the directory where are stored the index for the given index entry.
+* @param space
+* @param component
+* @return the path to the directory where are stored the index for the given index entry.
+*/
   public String getIndexDirectoryPath(String space, String component) {
     return FileRepositoryManager.getAbsoluteIndexPath(space, component);
   }
 
   /**
-   * Return the analyzer used to parse indexed texts and queries in the locale language.
-   * @return the analyzer used to parse indexed texts and queries in the locale language.
-   * @throws IOException
-   */
+* Return the analyzer used to parse indexed texts and queries in the locale language.
+* @return the analyzer used to parse indexed texts and queries in the locale language.
+* @throws IOException
+*/
   public Analyzer getAnalyzer() throws IOException {
     return getAnalyzer(null);
   }
 
   /**
-   * Return the analyzer used to parse indexed texts and queries in the given language.
-   * @param language the language used in a document or a query.
-   * @return the analyzer for the required language or a default analyzer.
-   */
+* Return the analyzer used to parse indexed texts and queries in the given language.
+* @param language the language used in a document or a query.
+* @return the analyzer for the required language or a default analyzer.
+*/
   public Analyzer getAnalyzer(String language) {
     Analyzer analyzer = WAAnalyzer.getAnalyzer(language);
     if (analyzer == null) {
@@ -250,10 +250,10 @@ public class IndexManager {
   }
 
   /**
-   * Get the reader specific of the file described by the file description
-   * @param file
-   * @return the reader specific of the file described by the file description
-   */
+* Get the reader specific of the file described by the file description
+* @param file
+* @return the reader specific of the file described by the file description
+*/
   public Reader getReader(FileDescription file) {
     SilverTrace.debug("indexEngine", "IndexManager.getReader",
         "root.MSG_GEN_ENTER_METHOD");
@@ -269,8 +269,8 @@ public class IndexManager {
   }
 
   /**
-   * Reads and set the index engine parameters from the given properties file
-   */
+* Reads and set the index engine parameters from the given properties file
+*/
   private void initProperties(String propertiesFileName) {
     try {
       ResourceLocator resource = new ResourceLocator(propertiesFileName, "");
@@ -295,12 +295,12 @@ public class IndexManager {
   }
 
   /**
-   * Returns an IndexWriter to the index stored at the given path. The index directory and files are
-   * created if not found.
-   * @param path the path to the index root directory
-   * @param language the language of the indexed documents.
-   * @return an IndexWriter or null if the index can't be found or create or read.
-   */
+* Returns an IndexWriter to the index stored at the given path. The index directory and files are
+* created if not found.
+* @param path the path to the index root directory
+* @param language the language of the indexed documents.
+* @return an IndexWriter or null if the index can't be found or create or read.
+*/
   private IndexWriter getIndexWriter(String path, String language) {
     IndexWriter writer = indexWriters.get(path);
     if (writer == null) {
@@ -314,7 +314,7 @@ public class IndexManager {
           createIndex = !IndexReader.indexExists(file);
         }
 
-        writer =  new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
+        writer = new IndexWriter(path, getAnalyzer(language), createIndex, MaxFieldLength.UNLIMITED);
         writer.setMaxFieldLength(maxFieldLength);
         writer.setMergeFactor(mergeFactor);
         writer.setMaxMergeDocs(maxMergeDocs);
@@ -340,10 +340,10 @@ public class IndexManager {
   }
 
   /**
-   * Method declaration
-   * @param writer
-   * @param indexEntry
-   */
+* Method declaration
+* @param writer
+* @param indexEntry
+*/
   private void indexDocs(IndexWriter writer, FullIndexEntry indexEntry) {
     try {
       writer.addDocument(makeDocument(indexEntry));
@@ -356,8 +356,8 @@ public class IndexManager {
   }
 
   /**
-   * Create a lucene Document object with the given indexEntry.
-   */
+* Create a lucene Document object with the given indexEntry.
+*/
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
@@ -590,8 +590,8 @@ public class IndexManager {
   }
 
   /**
-   * Add file to Document
-   */
+* Add file to Document
+*/
   private void addFile(Document doc, FileDescription fileDescription) {
     SilverTrace.debug("indexEngine", "IndexManager.addFile", "root.MSG_GEN_ENTER_METHOD",
         "file = " + fileDescription.getPath() + ", type = " + fileDescription.getFormat());
@@ -618,21 +618,21 @@ public class IndexManager {
   }
 
   /**
-   * Added by NEY - 22/01/2004
-   * Module Wysiwyg is reused by several modules like publication,...
-   * When you add a wysiwyg content to an object (it's the case in kmelia),
-   * we call the wysiwyg's method index to index the content of the wysiwyg.
-   * The name, description and keywords of the object are used by the index
-   * method to display them when the wysiwyg will be found by the search engine.
-   * Here, this data must be unindexed. But it must not be unstored.
-   * If it is unstored, this data will be indexed.
-   * So, if we search a word present in one of this data, two elements will
-   * be returned by the search engine :
-   * - the object
-   * - the wysiwyg
-   * @param indexEntry
-   * @return
-   */
+* Added by NEY - 22/01/2004
+* Module Wysiwyg is reused by several modules like publication,...
+* When you add a wysiwyg content to an object (it's the case in kmelia),
+* we call the wysiwyg's method index to index the content of the wysiwyg.
+* The name, description and keywords of the object are used by the index
+* method to display them when the wysiwyg will be found by the search engine.
+* Here, this data must be unindexed. But it must not be unstored.
+* If it is unstored, this data will be indexed.
+* So, if we search a word present in one of this data, two elements will
+* be returned by the search engine :
+* - the object
+* - the wysiwyg
+* @param indexEntry
+* @return
+*/
   private boolean isWysiwyg(FullIndexEntry indexEntry) {
     return "Wysiwyg".equals(indexEntry.getObjectType())
         && (indexEntry.getComponent().startsWith("kmelia")
@@ -640,8 +640,8 @@ public class IndexManager {
   }
 
   /*
-   * The lucene index engine parameters.
-   */
+* The lucene index engine parameters.
+*/
   private int maxFieldLength = 10000;
   private int mergeFactor = 10;
   private int maxMergeDocs = Integer.MAX_VALUE;

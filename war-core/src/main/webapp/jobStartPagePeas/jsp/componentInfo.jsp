@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page import="com.silverpeas.admin.localized.LocalizedOption"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedParameter"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -30,6 +31,8 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="check.jsp" %>
 
@@ -240,7 +243,7 @@ out.println(board.printBefore());
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getCreateDate())%>
 			<% if (compoInst.getCreator() != null) { %> 
-				<%=resource.getString("GML.by") %> <%=compoInst.getCreator().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=compoInst.getCreator().getId()%>" />
 			<% } %>
 		</td>
 	</tr>
@@ -251,7 +254,7 @@ out.println(board.printBefore());
 		<td align="left" valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(compoInst.getUpdateDate())%>
 			<% if (compoInst.getUpdater() != null) { %>  
-				<%=resource.getString("GML.by") %> <%=compoInst.getUpdater().getDisplayedName() %>
+				<%=resource.getString("GML.by") %> <view:username userId="<%=compoInst.getUpdater().getId()%>" />
 			<% } %>
 		</td>
 	</tr>

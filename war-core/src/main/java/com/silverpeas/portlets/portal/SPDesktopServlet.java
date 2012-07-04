@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.portlets.portal;
 
 import java.io.IOException;
@@ -75,7 +76,7 @@ public class SPDesktopServlet extends HttpServlet {
   private static final long serialVersionUID = -3241648887903159985L;
   private ServletContext context;
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
-          "com.silverpeas.portlets.PCDLogMessages");
+      "com.silverpeas.portlets.PCDLogMessages");
 
   /**
    * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.
@@ -84,7 +85,7 @@ public class SPDesktopServlet extends HttpServlet {
    */
   @Override
   public void init(ServletConfig config)
-          throws ServletException {
+      throws ServletException {
     super.init(config);
     context = config.getServletContext();
     PortletRegistryCache.init();
@@ -92,7 +93,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
-          throws ServletException, IOException {
+      throws ServletException, IOException {
 
     String spaceHomePage = null;
     String spaceId = request.getParameter("SpaceId");
@@ -106,7 +107,7 @@ public class SPDesktopServlet extends HttpServlet {
     if (isDefined(spaceHomePage)) {
       String sRequestURL = request.getRequestURL().toString();
       String m_sAbsolute =
-              sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+          sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
       String baseURL = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
       if (spaceHomePage.startsWith("/")) {
         // case of forward inside application /silverpeas
@@ -134,22 +135,22 @@ public class SPDesktopServlet extends HttpServlet {
 
       DesktopMessages.init(request);
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
-              "DesktopMessages initialized !");
+          "DesktopMessages initialized !");
       DriverUtil.init(request);
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
-              "DriverUtil initialized !");
+          "DriverUtil initialized !");
       response.setContentType(SERVLET_HTML_CONTENT_TYPE);
 
       // Get the list of visible portlets(sorted by the row number)
       try {
         ServletContextThreadLocalizer.set(context);
         PortletRegistryContext portletRegistryContext =
-                DriverUtil.getPortletRegistryContext(spContext);
+            DriverUtil.getPortletRegistryContext(spContext);
         SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
-                "portletRegistryContext retrieved !");
+            "portletRegistryContext retrieved !");
         String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
         PortletContent portletContent =
-                getPortletContentObject(portletWindowName, context, request, response);
+            getPortletContentObject(portletWindowName, context, request, response);
         String portletRemove = DriverUtil.getPortletRemove(request);
         if (portletRemove != null && portletWindowName != null) {
           portletRegistryContext.removePortletWindow(portletWindowName);
@@ -158,7 +159,8 @@ public class SPDesktopServlet extends HttpServlet {
         }
         Set<PortletContent> portletContents = null;
         if (portletWindowName == null) {
-          portletContents = getAllPortletContents(request, response, portletContent, portletRegistryContext);
+          portletContents =
+              getAllPortletContents(request, response, portletContent, portletRegistryContext);
         } else {
           String driverAction = DriverUtil.getDriverAction(request);
           if (WindowInvokerConstants.ACTION.equals(driverAction)) {
@@ -174,7 +176,7 @@ public class SPDesktopServlet extends HttpServlet {
             }
           } else if (WindowInvokerConstants.RENDER.equals(driverAction)) {
             portletContents =
-                    getAllPortletContents(request, response, portletContent, portletRegistryContext);
+                getAllPortletContents(request, response, portletContent, portletRegistryContext);
           } else if (WindowInvokerConstants.RESOURCE.equals(driverAction)) {
             initPortletContent(portletContent, request);
             portletContent.getResources();
@@ -182,18 +184,18 @@ public class SPDesktopServlet extends HttpServlet {
         }
         if (portletContents != null) {
           Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-                  getPortletWindowContents(request, portletContents, portletRegistryContext,
-                  spContext);
+              getPortletWindowContents(request, portletContents, portletRegistryContext,
+              spContext);
           setPortletWindowData(request, portletWindowContents);
           InvokerUtil.setResponseProperties(request, response,
-                  portletContent.getResponseProperties());
+              portletContent.getResponseProperties());
           RequestDispatcher rd = context.getRequestDispatcher(getPresentationURI(request));
           rd.forward(request, response);
           InvokerUtil.clearResponseProperties(portletContent.getResponseProperties());
         }
       } catch (Exception e) {
         SilverTrace.error("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
-                "Portlets exception !", e);
+            "Portlets exception !", e);
       } finally {
         ServletContextThreadLocalizer.set(null);
       }
@@ -208,12 +210,12 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the PortletWindowData object for the portlet window.
    */
   private PortletWindowData getPortletWindowData(final HttpServletRequest request,
-          String portletWindowName) {
+      String portletWindowName) {
     HttpSession session = request.getSession(true);
     PortletWindowData portletWindowDataToFind = null;
     Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-            (Map<String, SortedSet<PortletWindowData>>) session.getAttribute(
-            DesktopConstants.PORTLET_WINDOWS);
+        (Map<String, SortedSet<PortletWindowData>>) session.getAttribute(
+        DesktopConstants.PORTLET_WINDOWS);
     boolean found = false;
     if (portletWindowContents != null) {
       Set<Map.Entry<String, SortedSet<PortletWindowData>>> set = portletWindowContents.entrySet();
@@ -239,7 +241,7 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   private void setPortletWindowData(final HttpServletRequest request,
-          final Map<String, SortedSet<PortletWindowData>> portletWindowContents) {
+      final Map<String, SortedSet<PortletWindowData>> portletWindowContents) {
     HttpSession session = request.getSession(true);
     session.removeAttribute(DesktopConstants.PORTLET_WINDOWS);
     session.setAttribute(DesktopConstants.PORTLET_WINDOWS, portletWindowContents);
@@ -255,9 +257,9 @@ public class SPDesktopServlet extends HttpServlet {
    * @return a Map of portlet data and title for all portlet windows.
    */
   private Set<PortletContent> getAllPortletContents(HttpServletRequest request,
-          HttpServletResponse response,
-          PortletContent portletContent, PortletRegistryContext portletRegistryContext) throws
-          InvokerException {
+      HttpServletResponse response,
+      PortletContent portletContent, PortletRegistryContext portletRegistryContext) throws
+      InvokerException {
     String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
     ChannelState portletWindowState = getPortletWindowState(request, portletWindowName);
     Set<PortletContent> portletContents;
@@ -280,13 +282,13 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the initialized portlet content.
    */
   private PortletContent initPortletContent(final PortletContent portletContent,
-          final HttpServletRequest request) throws InvokerException {
+      final HttpServletRequest request) throws InvokerException {
     String portletWindowName = portletContent.getPortletWindowName();
     portletContent.setPortletWindowMode(getPortletWindowMode(request, portletWindowName));
     portletContent.setPortletWindowState(getPortletWindowState(request, portletWindowName));
     return portletContent;
   }
-  
+
   /**
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
    * @param request the HttpServletRequest Object
@@ -295,12 +297,12 @@ public class SPDesktopServlet extends HttpServlet {
    * @return a Map of portlet data and title for the portlet windows specified in the portletList
    */
   private Set<PortletContent> getPortletContents(final HttpServletRequest request,
-          final HttpServletResponse response,
-          final List<String> portletList) throws InvokerException {
+      final HttpServletResponse response,
+      final List<String> portletList) throws InvokerException {
     Set<PortletContent> portletContents = new HashSet<PortletContent>();
     for (String portletWindowName : portletList) {
       PortletContent portletContent =
-              getPortletContentObject(portletWindowName, context, request, response);
+          getPortletContentObject(portletWindowName, context, request, response);
       portletContent = initPortletContent(portletContent, request);
       portletContents.add(portletContent);
     }
@@ -315,15 +317,15 @@ public class SPDesktopServlet extends HttpServlet {
    * @return a Map of PortletWindowData for the portlet windows
    */
   private Map<String, SortedSet<PortletWindowData>> getPortletWindowContents(
-          final HttpServletRequest request, final Set<PortletContent> portletContents,
-          final PortletRegistryContext portletRegistryContext, String spContext) {
+      final HttpServletRequest request, final Set<PortletContent> portletContents,
+      final PortletRegistryContext portletRegistryContext, String spContext) {
     SortedSet<PortletWindowData> portletWindowContentsThin = new TreeSet<PortletWindowData>();
     SortedSet<PortletWindowData> portletWindowContentsThick = new TreeSet<PortletWindowData>();
-    for (PortletContent portletContent: portletContents) {
+    for (PortletContent portletContent : portletContents) {
       String portletWindowName = portletContent.getPortletWindowName();
       try {
         PortletWindowData portletWindowData =
-                getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
+            getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
         } else if (portletWindowData.isThick()) {
@@ -336,22 +338,23 @@ public class SPDesktopServlet extends HttpServlet {
       }
     }
     Map<String, SortedSet<PortletWindowData>> portletWindowContents =
-            new HashMap<String, SortedSet<PortletWindowData>>();
+        new HashMap<String, SortedSet<PortletWindowData>>();
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
-    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[]{String.valueOf(portletWindowContentsThin.
-              size()), String.valueOf(portletWindowContentsThick.size())});
+    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] {
+        String.valueOf(portletWindowContentsThin.
+        size()), String.valueOf(portletWindowContentsThick.size()) });
 
     return portletWindowContents;
   }
 
   private URL executeProcessAction(final HttpServletRequest request,
-          final PortletContent portletContent) throws InvokerException {
+      final PortletContent portletContent) throws InvokerException {
     String portletWindowName = DriverUtil.getPortletWindowFromRequest(request);
     ChannelMode portletWindowMode =
-            DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
+        DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
     ChannelState portletWindowState =
-            DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
+        DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
     portletContent.setPortletWindowName(portletWindowName);
     portletContent.setPortletWindowMode(portletWindowMode);
     portletContent.setPortletWindowState(portletWindowState);
@@ -365,7 +368,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the list of visible portlet windows from the portlet registry.
    */
   protected List<String> getVisiblePortletWindows(
-          final PortletRegistryContext portletRegistryContext) throws InvokerException {
+      final PortletRegistryContext portletRegistryContext) throws InvokerException {
     List<String> visiblePortletWindows = null;
     try {
       visiblePortletWindows = portletRegistryContext.getVisiblePortletWindows(PortletType.LOCAL);
@@ -377,19 +380,19 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   /**
-   * Gets the state of the portlet window identified by the specified name.
-   * It looks for the state in the request (current portlet window). If not found, it looks for
-   * it among the available portlets in the session.
+   * Gets the state of the portlet window identified by the specified name. It looks for the state
+   * in the request (current portlet window). If not found, it looks for it among the available
+   * portlets in the session.
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the state of the specified portlet window.
    */
   protected ChannelState getPortletWindowState(final HttpServletRequest request,
-          String portletWindowName) {
+      String portletWindowName) {
     ChannelState portletWindowState = ChannelState.NORMAL;
     if (portletWindowName != null) {
       portletWindowState =
-              DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
+          DriverUtil.getPortletWindowStateOfPortletWindow(request, portletWindowName);
       if (portletWindowState == null) {
         portletWindowState = getPortletWindowStateFromSavedData(request, portletWindowName);
       }
@@ -398,19 +401,19 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   /**
-   * Gets the mode of the portlet window identified by the specified name.
-   * It looks for the mode in the request (current portlet window). If not found, it looks for
-   * it among the available portlets in the session.
+   * Gets the mode of the portlet window identified by the specified name. It looks for the mode in
+   * the request (current portlet window). If not found, it looks for it among the available
+   * portlets in the session.
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the mode of the specified portlet window.
    */
   protected ChannelMode getPortletWindowMode(final HttpServletRequest request,
-          String portletWindowName) {
+      String portletWindowName) {
     ChannelMode portletWindowMode = ChannelMode.VIEW;
     if (portletWindowName != null) {
       portletWindowMode =
-              DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
+          DriverUtil.getPortletWindowModeOfPortletWindow(request, portletWindowName);
       if (portletWindowMode == null) {
         portletWindowMode = getPortletWindowModeFromSavedData(request, portletWindowName);
       }
@@ -426,7 +429,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the portlet window state for the portlet window from session.
    */
   protected ChannelState getPortletWindowStateFromSavedData(final HttpServletRequest request,
-          String portletWindowName) {
+      String portletWindowName) {
     PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
     ChannelState portletWindowState = ChannelState.NORMAL;
     if (portletWindowContent != null) {
@@ -446,7 +449,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the portlet window mode for the portlet window from session.
    */
   protected ChannelMode getPortletWindowModeFromSavedData(final HttpServletRequest request,
-          String portletWindowName) {
+      String portletWindowName) {
     PortletWindowData portletWindowContent = getPortletWindowData(request, portletWindowName);
     ChannelMode portletWindowMode = ChannelMode.VIEW;
     if (portletWindowContent != null) {
@@ -459,16 +462,16 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   protected PortletContent getPortletContentObject(String portletWindowName,
-          final ServletContext context, final HttpServletRequest request,
-          final HttpServletResponse response) throws InvokerException {
+      final ServletContext context, final HttpServletRequest request,
+      final HttpServletResponse response) throws InvokerException {
     PortletContent portletContent = new PortletContent(context, request, response);
     portletContent.setPortletWindowName(portletWindowName);
     return portletContent;
   }
 
   protected PortletWindowData getPortletWindowDataObject(final HttpServletRequest request,
-          final PortletContent portletContent, final PortletRegistryContext portletRegistryContext,
-          String spContext) throws PortletRegistryException {
+      final PortletContent portletContent, final PortletRegistryContext portletRegistryContext,
+      String spContext) throws PortletRegistryException {
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     portletWindowData.init(request, portletRegistryContext, portletContent.getPortletWindowName());
     if (!portletContent.isInMinimizedWindowState()) {
@@ -512,17 +515,17 @@ public class SPDesktopServlet extends HttpServlet {
   private boolean isAnonymousUser(final HttpServletRequest request) {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl =
-            (MainSessionController) session.getAttribute(
-            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return UserDetail.isAnonymousUser(m_MainSessionCtrl.getUserId());
   }
 
   private void setUserIdAndSpaceIdInRequest(String spaceId, String userId,
-          final HttpServletRequest request) {
+      final HttpServletRequest request) {
     request.setAttribute("SpaceId", spaceId);
     request.setAttribute("UserId", userId);
     SilverTrace.debug("portlet", "SPDesktopServlet.setUserIdAndSpaceIdInRequest", "userId = "
-            + getMainSessionController(request).getUserId());
+        + getMainSessionController(request).getUserId());
   }
 
   private String prefixSpaceId(String spaceId) {
@@ -541,12 +544,11 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   /**
-   * Gets the identifier of the selected space from the request.
-   * If the space is the user personal one or it is not of type portlet, then null is returned
-   * (no specific space)
+   * Gets the identifier of the selected space from the request. If the space is the user personal
+   * one or it is not of type portlet, then null is returned (no specific space)
    * @param request the HTTP request.
-   * @return the space identifier or null if the space hasn't to be taken into account in the portlets
-   * rendering.
+   * @return the space identifier or null if the space hasn't to be taken into account in the
+   * portlets rendering.
    */
   private String getSpaceId(final HttpServletRequest request) {
     String spaceId = request.getParameter(WindowInvokerConstants.DRIVER_SPACEID);
@@ -560,7 +562,7 @@ public class SPDesktopServlet extends HttpServlet {
         }
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
         SpaceInst spaceStruct =
-                m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
+            m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -574,8 +576,8 @@ public class SPDesktopServlet extends HttpServlet {
   private MainSessionController getMainSessionController(final HttpServletRequest request) {
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl =
-            (MainSessionController) session.getAttribute(
-            MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     return m_MainSessionCtrl;
   }
@@ -585,18 +587,18 @@ public class SPDesktopServlet extends HttpServlet {
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
-    return (isDefined(getSpaceId(request))
-            && "admin".equalsIgnoreCase(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request
+        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private boolean isSpaceFrontOffice(final HttpServletRequest request) {
     String spaceId = getSpaceId(request);
     return (isDefined(spaceId) && !isDefined(request.getParameter(
-            WindowInvokerConstants.DRIVER_ROLE)));
+        WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private String getSpaceHomepage(String spaceId, final HttpServletRequest request)
-          throws UnsupportedEncodingException {
+      throws UnsupportedEncodingException {
     OrganizationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
     if (!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
@@ -609,24 +611,24 @@ public class SPDesktopServlet extends HttpServlet {
 
       // Maintenance Mode
       if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId)
-              && m_MainSessionCtrl.getUserAccessLevel().equals("U")) {
+          && m_MainSessionCtrl.getUserAccessLevel().equals("U")) {
         return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-                + "/admin/jsp/spaceInMaintenance.jsp";
+            + "/admin/jsp/spaceInMaintenance.jsp";
       }
 
       // Page d'accueil de l'espace = Composant
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST
-              && isDefined(spaceStruct.getFirstPageExtraParam())) {
+          && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
           return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-                  + URLManager.getURL("useless", componentId) + "Main";
+              + URLManager.getURL("useless", componentId) + "Main";
         }
       }
 
       // Page d'accueil de l'espace = URL
       if (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE
-              && isDefined(spaceStruct.getFirstPageExtraParam())) {
+          && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String s_sUserLogin = "%ST_USER_LOGIN%";
         String s_sUserPassword = "%ST_USER_PASSWORD%";
         String s_sUserEmail = "%ST_USER_EMAIL%";
@@ -638,37 +640,37 @@ public class SPDesktopServlet extends HttpServlet {
 
         String destination = spaceStruct.getFirstPageExtraParam();
         destination =
-                getParsedDestination(destination, s_sUserLogin, m_MainSessionCtrl.
-                getCurrentUserDetail().
-                getLogin());
+            getParsedDestination(destination, s_sUserLogin, m_MainSessionCtrl.
+            getCurrentUserDetail().
+            getLogin());
         destination =
-                getParsedDestination(destination, s_sUserFullName,
-                URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName(),
-                "UTF-8"));
+            getParsedDestination(destination, s_sUserFullName,
+            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName(),
+            "UTF-8"));
         destination =
-                getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl.
-                getUserId(), "UTF-8"));
+            getParsedDestination(destination, s_sUserId, URLEncoder.encode(m_MainSessionCtrl.
+            getUserId(), "UTF-8"));
         destination =
-                getParsedDestination(destination, s_sSessionId,
-                URLEncoder.encode(request.getSession().
-                getId(), "UTF-8"));
+            getParsedDestination(destination, s_sSessionId,
+            URLEncoder.encode(request.getSession().
+            getId(), "UTF-8"));
         destination =
-                getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl.
-                getCurrentUserDetail().
-                geteMail());
+            getParsedDestination(destination, s_sUserEmail, m_MainSessionCtrl.
+            getCurrentUserDetail().
+            geteMail());
         destination =
-                getParsedDestination(destination, s_sUserFirstName,
-                URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getFirstName(), "UTF-8"));
+            getParsedDestination(destination, s_sUserFirstName,
+            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getFirstName(), "UTF-8"));
         destination =
-                getParsedDestination(destination, s_sUserLastName,
-                URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getLastName(), "UTF-8"));
+            getParsedDestination(destination, s_sUserLastName,
+            URLEncoder.encode(m_MainSessionCtrl.getCurrentUserDetail().getLastName(), "UTF-8"));
 
         // !!!! Add the password : this is an uggly patch that use a session variable set in the
         // "AuthenticationServlet" servlet
         destination =
-                this.getParsedDestination(destination, s_sUserPassword,
-                (String) request.getSession().
-                getAttribute("Silverpeas_pwdForHyperlink"));
+            this.getParsedDestination(destination, s_sUserPassword,
+            (String) request.getSession().
+            getAttribute("Silverpeas_pwdForHyperlink"));
 
         return destination;
       }
@@ -684,8 +686,8 @@ public class SPDesktopServlet extends HttpServlet {
       sParsed += sValue;
       if (sDestination.length() > nLoginIndex + sKeyword.length()) {
         sParsed += sDestination.substring(
-                nLoginIndex + sKeyword.length(),
-                sDestination.length());
+            nLoginIndex + sKeyword.length(),
+            sDestination.length());
       }
       sDestination = sParsed;
     }

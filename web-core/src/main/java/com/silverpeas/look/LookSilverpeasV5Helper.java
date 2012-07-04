@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
- * the text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
@@ -272,11 +276,11 @@ public class LookSilverpeasV5Helper implements LookHelper {
   public String getUserId() {
     return userId;
   }
-  
+
   public UserDetail getUserDetail() {
     return orga.getUserDetail(userId);
   }
-  
+
   public UserFull getUserFull() {
     return orga.getUserFull(userId);
   }
@@ -372,7 +376,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       // Remove the current user
       nbConnectedUsers =
           SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
-              getCurrentUserDetail()) - 1;
+          getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;
   }
@@ -508,8 +512,8 @@ public class LookSilverpeasV5Helper implements LookHelper {
   }
 
   /*
-     * (non-Javadoc) @see com.silverpeas.look.LookHelper#getSpaceWallPaper()
-     */
+   * (non-Javadoc) @see com.silverpeas.look.LookHelper#getSpaceWallPaper()
+   */
   @Override
   public String getSpaceWallPaper() {
     String wallpaperURL = null;
@@ -607,7 +611,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
       try {
         publicationBm =
             EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class).create();
+            PublicationBmHome.class).create();
       } catch (Exception e) {
         throw new EJBException(e);
       }
@@ -640,7 +644,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
           getMainSessionController().getCurrentUserDetail().getLogin());
       destination = getParsedDestination(destination, "%ST_USER_FULLNAME%",
           URLEncoder.encode(getMainSessionController().getCurrentUserDetail().getDisplayedName(),
-              "UTF-8"));
+          "UTF-8"));
       destination = getParsedDestination(destination, "%ST_USER_ID%",
           URLEncoder.encode(getMainSessionController().getUserId(), "UTF-8"));
       destination = getParsedDestination(destination, "%ST_SESSION_ID%",
@@ -696,7 +700,6 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   /**
    * Returns a list of shortcuts to display on a page (home page, heading page...)
-   *
    * @param id identify the area of shorcuts
    * @param nb the number of shortcuts to retrieve
    * @return a List of Shorcut

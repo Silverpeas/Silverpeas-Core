@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.form.DataRecord;
@@ -192,7 +193,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // instance list
         List<Integer> alSilverContentIds =
             containerInterface.findSilverContentIdByPosition(pdcSC.getContainerPosition(),
-                alComponentIds);
+            alComponentIds);
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "SearchView",
             "alSilverContentIds = " + alSilverContentIds.toString());
 
@@ -209,7 +210,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // According to the finded silvercontentIds, we get the corresponding silverContent objects
         List<SilverContentInterface> alSilverContents = contentInterface.getSilverContentById(
             alSilverContentIds, pdcSC.getComponentId(), pdcSC.getUserId(), pdcSC.
-                getContainerWorkspace().getContentUserRoles());
+            getContainerWorkspace().getContentUserRoles());
         pdcSC.getContainerWorkspace().setSilverContents(alSilverContents);
         // Put the containerWorkspace int the request
         request.setAttribute("containerWorkspace", pdcSC.getContainerWorkspace());
@@ -229,8 +230,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // Compute the URL to forward to the content
         String sURLContent =
             URLManager.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC.getSpaceId(), pdcSC
-                .
-                getComponentId());
+            .
+            getComponentId());
         destination = sURLContent + destination;
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "",
             "Container forwarding to: " + destination);
@@ -238,7 +239,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // Put the containerContext in the request
         String sURLContainer =
             URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC.getSpaceId(),
-                pdcSC.getComponentId());
+            pdcSC.getComponentId());
         ContainerContextImpl containerContext = new ContainerContextImpl();
         containerContext.setContainerInstanceId(containerManager.getContainerInstanceId(pdcSC.
             getComponentId()));
@@ -270,7 +271,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         request.setAttribute("ToURL", sURLContent + destination);
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "",
             "GlobalContentForward - Container forwarding to: redirectToComponent.jsp, ToURL = "
-                + sURLContent + destination);
+            + sURLContent + destination);
 
         destination = "/pdcPeas/jsp/redirectToComponent.jsp";
 
@@ -293,7 +294,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             "root.MSG_GEN_PARAM_VALUE", "sURLContainer = " + sURLContainer);
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.GlobalContentForward",
             "root.MSG_GEN_PARAM_VALUE", "containerPeasPDC.getReturnURL() = "
-                + containerPeasPDC.getReturnURL());
+            + containerPeasPDC.getReturnURL());
 
         // Put the containerWorkspace in the request
         request.setAttribute("containerWorkspace", pdcSC.getContainerWorkspace());
@@ -438,7 +439,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = "/pdcPeas/jsp/pdcInComponent.jsp";
       } else if (function.startsWith("ChangeSearchType")) {
         boolean setAdvancedSearchItems = processChangeSearchType(function, pdcSC, request);
-        
+
         if (StringUtil.getBooleanValue(request.getParameter("ResetPDCContext"))) {
           // remove PDC search context
           pdcSC.removeAllCriterias();
@@ -729,7 +730,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         }
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function + "=> destination="
-                + destination);
+            + destination);
       } else if (function.startsWith("FromUserPanel")) {// récupération des valeurs de userPanel
         // par userPanelPeas
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
@@ -827,7 +828,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           for (String curAxis : arrayAxis) {
             pdcSC.getSearchContext().addCriteria(
                 new SearchCriteria(Integer.parseInt(curAxis.substring("Axis".length(), curAxis.
-                    indexOf('='))), curAxis.substring(curAxis.indexOf('=') + 1)));
+                indexOf('='))), curAxis.substring(curAxis.indexOf('=') + 1)));
           }
         }
 
@@ -928,21 +929,24 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       PdcSearchSessionController pdcSC) {
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
+    String datatype = request.getParameter("datatypeFilter");
+    
     ResultFilterVO filter = new ResultFilterVO();
 
     // Check filter values
-    if (StringUtil.isDefined(userId) || StringUtil.isDefined(instanceId)) {
-      if (StringUtil.isDefined(userId)) {
-        filter.setAuthorId(userId);
-      }
-      if (StringUtil.isDefined(instanceId)) {
-        filter.setComponentId(instanceId);
-      }
+    if (StringUtil.isDefined(userId)) {
+      filter.setAuthorId(userId);
+    }
+    if (StringUtil.isDefined(instanceId)) {
+      filter.setComponentId(instanceId);
+    }
+    if (StringUtil.isDefined(datatype)) {
+      filter.setDatatype(datatype);
     }
     
     // check form field facets
     for (String facetId : pdcSC.getFieldFacets().keySet()) {
-      String param = request.getParameter(facetId);
+      String param = request.getParameter(facetId+"Filter");
       if (StringUtil.isDefined(param)) {
         filter.addFormFieldSelectedFacetEntry(facetId, param);
       }
@@ -994,7 +998,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if ("clear".equals(mode)) {
       clearUserChoices(pdcSC);
     }
-    
+
     if (saveUserChoice) {
       PdcSearchRequestRouterHelper.saveUserChoices(pdcSC, request);
     }
@@ -1013,7 +1017,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       } else {
         if (helper.isDisplayPDCInHomePage() ||
             (!helper.isDisplayPDCInHomePage() && StringUtil.isDefined(pdcSC.getQueryParameters()
-                .getSpaceId()))) {
+            .getSpaceId()))) {
           initializePdcAxis(pdcSC, request);
         }
       }
@@ -1362,7 +1366,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       allSilverContentIds = contentManager.getSilverContentIdByInstanceId(instanceId);
       SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly",
           "root.MSG_GEN_PARAM_VALUE", "allSilverContentIds = " + allSilverContentIds
-              + " in instance " + instanceId);
+          + " in instance " + instanceId);
 
       // une fois les SilverContentId de l'instanceId récupérés, on ne garde que ceux qui sont
       // dans la liste résultat (alSilverContentIds).

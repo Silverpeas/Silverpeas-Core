@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,11 +24,6 @@
 
 package com.stratelia.silverpeas.notificationManager;
 
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +32,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.silverpeas.notification.model.NotificationResourceData;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class NotificationMetaData implements java.io.Serializable {
 
@@ -52,11 +54,17 @@ public class NotificationMetaData implements java.io.Serializable {
   private String componentId;
   private boolean isAnswerAllowed = false;
   private String fileName;
+  private boolean sendImmediately = false;
+  private NotifAction action;
+  private Map<String, NotificationResourceData> notificationResourceData =
+      new HashMap<String, NotificationResourceData>();
 
   private Map<String, String> titles = new HashMap<String, String>();
-  private Map<String, String> contents = new HashMap<String, String>(); 
+  private Map<String, String> contents = new HashMap<String, String>();
 
   private Map<String, SilverpeasTemplate> templates;
+
+  private String originalExtraMessage = null;
 
   /**
    * Default Constructor
@@ -102,6 +110,8 @@ public class NotificationMetaData implements java.io.Serializable {
     isAnswerAllowed = false;
     fileName = null;
     this.templates = new HashMap<String, SilverpeasTemplate>();
+    action = null;
+    notificationResourceData.clear();
   }
 
   public final void addLanguage(String language, String title, String content) {
@@ -208,7 +218,6 @@ public class NotificationMetaData implements java.io.Serializable {
    * @return the message content
    */
   public String getContent() {
-    // return content;
     return getContent(I18NHelper.defaultLanguage);
   }
 
@@ -316,9 +325,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param users the user ids that must receive this message
    */
   public void setUserRecipients(Collection<UserRecipient> users) {
-    if(users != null) {
-    this.userRecipients =  new ArrayList<UserRecipient>(users);
-    }else {
+    if (users != null) {
+      this.userRecipients = new ArrayList<UserRecipient>(users);
+    } else {
       this.userRecipients = new ArrayList<UserRecipient>();
     }
   }
@@ -348,8 +357,8 @@ public class NotificationMetaData implements java.io.Serializable {
       this.userRecipients.addAll(Arrays.asList(users));
     }
   }
-  
-   /**
+
+  /**
    * Add a user recipient to user recipients
    * @param users users to be added
    */
@@ -364,9 +373,9 @@ public class NotificationMetaData implements java.io.Serializable {
    * @param groups the groups that must receive this message
    */
   public void setGroupRecipients(Collection<GroupRecipient> groups) {
-    if(groups != null) {
-    this.groupRecipients = new ArrayList<GroupRecipient>(groups);
-    }else {
+    if (groups != null) {
+      this.groupRecipients = new ArrayList<GroupRecipient>(groups);
+    } else {
       this.groupRecipients = new ArrayList<GroupRecipient>();
     }
   }
@@ -406,6 +415,7 @@ public class NotificationMetaData implements java.io.Serializable {
   }
 
   public void addExtraMessage(String message, String label, String language) {
+    setOriginalExtraMessage(message);
     if (templates != null && !templates.isEmpty()) {
       templates.get(language).setAttribute("senderMessage", message);
     } else {
@@ -417,11 +427,51 @@ public class NotificationMetaData implements java.io.Serializable {
     }
   }
   
+  public String getOriginalExtraMessage() {
+    return originalExtraMessage;
+  }
+
+  public void setOriginalExtraMessage(String originalExtraMessage) {
+    this.originalExtraMessage = originalExtraMessage;
+  }
+
   public String getFileName() {
     return fileName;
   }
 
   public void setFileName(String fileName) {
     this.fileName = fileName;
+  }
+
+  public boolean isSendImmediately() {
+    return sendImmediately;
+  }
+
+  public void setSendImmediately(boolean sendImmediately) {
+    this.sendImmediately = sendImmediately;
+  }
+
+  public NotifAction getAction() {
+    return action;
+  }
+
+  public void setAction(NotifAction action) {
+    this.action = action;
+  }
+
+  public void setNotificationResourceData(final NotificationResourceData notificationResourceData) {
+    setNotificationResourceData(I18NHelper.defaultLanguage, notificationResourceData);
+  }
+
+  public void setNotificationResourceData(final String lang, final NotificationResourceData notificationResourceData) {
+    this.notificationResourceData.put(lang, notificationResourceData);
+  }
+
+  public NotificationResourceData getNotificationResourceData() {
+    return getNotificationResourceData(I18NHelper.defaultLanguage);
+  }
+
+  public NotificationResourceData getNotificationResourceData(final String lang) {
+    return notificationResourceData.get(lang);
   }
 }

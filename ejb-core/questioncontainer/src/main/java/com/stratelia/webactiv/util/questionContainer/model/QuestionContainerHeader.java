@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.stratelia.silverpeas.contentManager.*;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 

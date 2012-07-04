@@ -174,14 +174,23 @@ Definition des class de style Silverpeas
 
 }
 
-.bgDegradeGris {
+.bgDegradeGris,
+.userzoom-tooltip,
+.userzoom-tooltip-interaction-accessProfil ,
+.userzoom-tooltip-interaction-accessTchat ,
+.userzoom-tooltip-interaction-accessNotification ,
+.userzoom-tooltip-interaction-action-invitation,
+.userzoom-tooltip-interaction-accessTchat.disabled:hover{
+  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+}
+
+.bgDegradeGris{
   border:1px solid #cdcdcd;
   color:#333;
   margin-bottom:10px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
-  background: -moz-linear-gradient(top, #fff, #e5e5e5);
-  -pie-background: linear-gradient(#ffffff, #e5e5e5);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   min-height:14px;
 }
 
@@ -192,9 +201,9 @@ Definition des class de style Silverpeas
   border-left:0;
   margin:0;
   padding:5px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#e5e5e5));
-  background: -moz-linear-gradient(top, #fff, #e5e5e5);
-  -pie-background: linear-gradient(#ffffff, #e5e5e5);
+  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+		-moz-background-size: 100%;
+		-pie-background: linear-gradient(#ffffff, #e5e5e5);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   min-height:14px;
 }
@@ -2663,7 +2672,7 @@ caption {
   margin:7px;
   width:87px;
 }
-#directory #users .profilPhoto img {
+#directory #users .profilPhoto img{
   height:113px;
 }
 
@@ -4882,4 +4891,259 @@ input.search:focus {
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
 	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
+
+/* userzoom-tooltip-profilPhoto */
+.userzoom-tooltip {
+	border:1px solid #aeaeae;
+	position:absolute;
+	width:310px;
+	display: block;
+	z-index: 1000;
+}
+
+.userzoom-infoConnection img {
+  width: 9px;
+  height: 9px;
+}
+
+.userzoom-tooltip-profilPhoto {
+  float:left;
+  height:77px;
+  margin:7px;
+  width:60px;
+}
+
+.userzoom-tooltip-profilPhoto img {
+  height:77px;
+  width: 100%;
+}
+
+.userzoom-tooltip-info {
+	margin:7px 25px 0 7px;
+}
+
+.userzoom-tooltip-info-infoConnection {
+	border: 0 none;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.userzoom-tooltip-info-status {
+	color: #909090;
+	clear: right;
+    float: none;
+    line-height: 120%;
+    max-height: 26px;
+    overflow: hidden;
+}
+
+.userzoom-tooltip-interaction {
+	position:relative;
+	clear:both;
+	height:24px;
+}
+
+.userzoom-tooltip-interaction-action   {
+    bottom: 10px;
+    height: 40px;
+    padding-left: 10px;
+    position: absolute;
+    right: 10px;
+	bottom:24px;
+	z-index:100;
+}
+
+.userzoom-tooltip-interaction-action-invitation  {
+	border: 1px solid #aeaeae;
+    color: #333366;
+    font-size: 11px;
+	line-height:24px;
+	padding:0 8px 0 0;
+	border-radius:3px;
+	display:block;
+}
+
+.userzoom-tooltip-interaction-action-invitation span {
+	background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
+	padding-left:32px;
+	display:block;
+}
+
+.userzoom-tooltip-info-userName a{
+  font-size:11px;
+  color:#000;
+  font-weight:bold;
+  padding:0; margin:0;
+}
+
+.userzoom-tooltip-info-userName a:hover{
+  color:#333;
+}
+
+.userzoom-tooltip-interaction-accessProfil ,
+.userzoom-tooltip-interaction-accessNotification,
+.userzoom-tooltip-interaction-accessTchat {
+	position:absolute;
+	bottom:0px;
+	left:0;
+	width:33%;
+	border:1px solid #cdcdcd;
+	border-right:1px solid #fff;
+	border-bottom:0;
+	height:24px;
+	color:#333366;
+	cursor:pointer;
+}
+
+.userzoom-tooltip-interaction-accessProfil {
+	border-left:0;
+}
+
+.userzoom-tooltip-interaction-accessProfil:hover,
+.userzoom-tooltip-interaction-accessTchat:hover,
+.userzoom-tooltip-interaction-accessNotification:hover {
+	background:#E5E5E5 url();
+	color:#000
+}
+
+.userzoom-tooltip-interaction-accessTchat {
+	left:auto;
+	right:0;
+}
+
+
+.userzoom-tooltip-interaction-accessNotification {
+	left:33%;
+	
+}
+.userzoom-tooltip-interaction-accessProfil 	span,
+.userzoom-tooltip-interaction-accessTchat 	span,
+.userzoom-tooltip-interaction-accessNotification 	span{
+	background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
+	display:block;
+	height:24px;
+	line-height:24px;
+	padding-left:32px;
+}
+
+.userzoom-tooltip-interaction-accessTchat 	span{
+	background-image:url(../icons/talk2user.gif)
+}
+
+.userzoom-tooltip-interaction-accessNotification 	span{
+	background-image:url(../icons/email.gif)
+}
+
+.userzoom-tooltip-interaction-accessTchat.disabled		span{
+	background-image:url(../icons/talk2user-disabled.gif);
+	color:#bbb;
+	cursor:default;
+}
+
+.above .userzoom-tooltip-arrow {
+	background:transparent url(../icons/arrow/userzoom-tooltip-arrow.png) 0 0 no-repeat;
+	width:14px;
+	height:10px;
+	position:absolute;
+	bottom:-10px;
+	right:30px;
+}
+
+.below .userzoom-tooltip-arrow {
+	background:transparent url(../icons/arrow/userzoom-tooltip-arrow-top.png) 0 0 no-repeat;
+	width:14px;
+	height:10px;
+	position:absolute;
+	top:-103px;
+	right:30px;
+}
+
+.above.right .userzoom-tooltip-arrow , 
+.below.right .userzoom-tooltip-arrow 
+{
+	right:30px;
+}
+.above.left .userzoom-tooltip-arrow ,
+.below.left .userzoom-tooltip-arrow 
+{
+	left:30px;
+}
+
+.switch,
+.switch a{
+	border:1px solid #ccc;
+	border-radius:8px;
+	padding:6px 8px;
+	width:140px;
+	font-size:11px;
+	line-height:14px;
+	float:left;
+	margin-right:8px;
+	position:relative;
+	z-index:1000;
+	cursor:pointer
+}
+
+.switch a {
+	display:block;
+	border:0;
+	width:30px;
+	padding:6px 4px;
+	margin-right:0;
+	border-left:1px solid #ccc;
+	position:absolute;
+	border-radius:0 8px 8px 0 ;
+	top:0;
+	right:0;
+	text-align:center;
+}
+
+.switch a:first-child {
+	right:38px;
+	border-radius:0 0 0 0;
+}
+
+.switch a.active  {
+	background-color: #747474;
+    color: #FFFFFF;
+	font-weight:bold
+}
+
+.switch a:hover  {
+	background-color: #F1790F;
+    color: #FFFFFF;
+}
+
+#myprofile-socialnetworks {
+	float: left;
+    padding-top: 10px;
+    width: 100%;
+}
+
+#myprofile-socialnetworks .switch.socialnetwork{
+	width:160px;
+	float:right;
+}
+
+#myprofile-socialnetworks .a-socialnetwork p {
+	float:left;
+	color:#727272;
+	line-height:32px;
+}
+#myprofile-socialnetworks .a-socialnetwork p strong{
+	font-weight:bold;
+	color:#021035;
+}
+#myprofile-socialnetworks .a-socialnetwork p img{
+	float:left;
+	margin-right:8px;
+}
+
+#myProfile #FBPublishButton,
+#myProfile #FBLoginButton,
+#myProfile #LinkedInPublishButton,
+#myProfile #LinkedInLoginButton {
+	display: none;
 }

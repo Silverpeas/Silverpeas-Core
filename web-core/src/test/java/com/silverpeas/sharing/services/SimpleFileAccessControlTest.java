@@ -25,6 +25,7 @@
 package com.silverpeas.sharing.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -38,6 +39,7 @@ import javax.jcr.Session;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.apache.commons.io.FileUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -49,6 +51,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -58,12 +61,14 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -79,6 +84,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-sharing-datasource.xml", "/spring-sharing-service.xml",
   "/spring-pure-memory-jcr.xml"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class SimpleFileAccessControlTest {
 
   private static ReplacementDataSet dataSet;
@@ -161,6 +167,8 @@ public class SimpleFileAccessControlTest {
   @AfterClass
   public static void generalCleanUp() throws Exception {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
   }
 
   /**

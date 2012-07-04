@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,8 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="check.jsp" %>
 <%
@@ -51,9 +53,9 @@
 %>
 <html>
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function goToOperationInAnotherWindow(larg, haut) {
 	windowName = "userPanelWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
@@ -67,7 +69,7 @@ function deleteRoleContent() {
 }	
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body>
 <%
 out.println(window.printBefore());
 
@@ -110,15 +112,14 @@ out.println(board.printBefore());
 	
 	//La boucle sur les users
 	UserDetail user = null;
-	while (users.hasNext())
-	{
-		user = (UserDetail) users.next();
-		out.println("<TR>");
-		out.println("<TD align=\"center\"><IMG SRC=\""+resource.getIcon("JDP.user")+"\"></TD>");
-		out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
-		out.println("</TR>");
-	}
-%>
+	while (users.hasNext()) {
+		user = (UserDetail) users.next(); 
+	%>
+		<tr>
+		<td align="center"><img src="<%=resource.getIcon("JDP.user") %>"></td>
+		<td align="center"><view:username userId="<%=user.getId()%>"/></td>
+		</tr>
+	<% } %>
 <TR>
 	<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=resource.getIcon("JDP.px")%>"></TD>
 </TR>

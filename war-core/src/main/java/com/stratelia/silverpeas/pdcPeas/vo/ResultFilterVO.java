@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.vo;
 
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import com.silverpeas.util.StringUtil;
 public class ResultFilterVO {
   private String authorId = null;
   private String componentId = null;
+  private String datatype = null;
   private String year = null;
   private Map<String, String> formFieldFacets;
 
@@ -87,7 +89,8 @@ public class ResultFilterVO {
   }
   
   public boolean isEmpty() {
-    return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) && isSelectedFormFieldFacetsEmpty();
+    return !StringUtil.isDefined(authorId) && !StringUtil.isDefined(componentId) &&
+        !StringUtil.isDefined(datatype) && isSelectedFormFieldFacetsEmpty();
   }
   
   public Map<String, String> getFormFieldSelectedFacetEntries() {
@@ -102,6 +105,9 @@ public class ResultFilterVO {
     if (StringUtil.isDefined(componentId)) {
       str.append(" ComponentId=").append(componentId);
     }
+    if (StringUtil.isDefined(datatype)) {
+      str.append(" DataTye=").append(datatype);
+    }
     if (!isSelectedFormFieldFacetsEmpty()) {
       for (String facetId : formFieldFacets.keySet()) {
         str.append(" ").append(facetId).append("=").append(formFieldFacets.get(facetId));
@@ -111,5 +117,13 @@ public class ResultFilterVO {
       return "Facets filter is empty";
     }
     return str.toString();
+  }
+
+  public void setDatatype(String datatype) {
+    this.datatype = datatype;
+  }
+
+  public String getDatatype() {
+    return datatype;
   }
 }

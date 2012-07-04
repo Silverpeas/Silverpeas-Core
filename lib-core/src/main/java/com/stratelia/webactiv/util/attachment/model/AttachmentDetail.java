@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.io.File;
@@ -46,7 +47,8 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
  * Class declaration
  * @author
  */
-public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes, Cloneable {
+public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes,
+    Cloneable {
 
   private static final long serialVersionUID = 5441809463555598057L;
   public static final String ATTACHMENTS_FOLDER = "attachments";
@@ -267,8 +269,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
       SilverTrace.info("attachment", "AttachmentDetail.setPK()",
           "root.MSG_GEN_PARAM_VALUE", "pk is not null = " + pk.toString());
     }
-
-
 
   }
 
@@ -600,7 +600,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @see
    */
   public String getAttachmentURL(String language) {
-    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk.getId(),
+    return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getLogicalName(language), pk
+        .getId(),
         language);
   }
 
@@ -620,7 +621,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     if (thePhysicalName != null) {
       String extension = FileRepositoryManager.getFileExtension(thePhysicalName);
       if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-        valret += "&logicalName="  + FileServerUtils.replaceSpecialChars(theLogicalName);
+        valret += "&logicalName=" + FileServerUtils.replaceSpecialChars(theLogicalName);
       }
     }
     return valret;
@@ -634,7 +635,8 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     String localizedPhysicalName = getPhysicalName(language);
     String localizedLogicalName = getLogicalName(language);
 
-    String valret = FileServerUtils.getAliasURL(pk.getInstanceId(), localizedLogicalName, pk.getId());
+    String valret =
+        FileServerUtils.getAliasURL(pk.getInstanceId(), localizedLogicalName, pk.getId());
     if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
       valret += "&lang=" + language;
     }
@@ -877,7 +879,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * If 3d document
-   * @param language 
+   * @param language
    * @return true or false
    */
   public boolean isSpinfireDocument(String language) {
@@ -904,7 +906,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Is the Office file in read-only mode ?
-   * @return 
+   * @return
    * @throws AttachmentException
    */
   public boolean isReadOnly() {
@@ -1039,7 +1041,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public void setXMLModelContentType(XMLModelContentType xmlModelContentType) {
     this.xmlModelContentType = xmlModelContentType;
   }
-  
+
   public boolean isRemoveAfterImport() {
     return removeAfterImport;
   }

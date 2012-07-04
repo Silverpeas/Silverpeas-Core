@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,9 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkPersonalization.jsp"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="isMultiChannelNotif" value="<%=personalizationScc.isMultiChannelNotification()%>" />
+<c:set var="validationMessage" value="${requestScope.validationMessage}" />
 
 <%
   //Retrieve parameters
@@ -36,7 +44,7 @@
   boolean isMultiChannelNotif = personalizationScc.isMultiChannelNotification();
   
   // Liste des adresses de notification pour ce user.
-  ArrayList notifAddresses = null;
+  ArrayList<Properties> notifAddresses = null;
   
   //Mise a jour de l'espace
   if (action != null) {
@@ -57,10 +65,17 @@
   	if (action.equals("setDefault")) {
   		personalizationScc.setDefaultAddress(id);  
   		action = "NotificationView";
+      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
   	}
+    if (action.equals("setFrequency")) {
+      personalizationScc.saveDelayedUserNotificationFrequency(id);  
+      action = "NotificationView";
+      %><fmt:message key='GML.validation.update' var="validationMessage" /><%
+    }
   	if (action.equals("delete")) {
   		personalizationScc.deleteNotifAddress(id);
   		action = "NotificationView";
+      %><fmt:message key='GML.validation.delete' var="validationMessage" /><%
   	}
   } else
   	action = "NotificationView";
@@ -89,6 +104,7 @@ function deleteCanal(id){
 
 function sendChoiceChannel() {
     document.channelForm.SelectedChannels.value = getChannels();
+    document.channelForm.SelectedFrequency.value = getFrequency();
     document.channelForm.action = "SaveChannels";
     document.channelForm.submit();
 }
@@ -120,9 +136,20 @@ function getChannels()
   return items;
 }
 
+function getFrequency()
+{
+  return $("#SelectFrequency").val();
+}
+
+function onChangeFrequency()
+{
+  location.href = "personalization_Notification.jsp?id=" + getFrequency() + "&Action=setFrequency";
+}
+
 </script>
 </head>
 <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+
 <%
   browseBar.setComponentName(resource.getString("MesNotifications"));
   browseBar.setPath(resource.getString("ParametrerNotification"));
@@ -149,13 +176,21 @@ function getChannels()
   		"personalization_Notification.jsp?Action=LanguageView",
   		true);
   out.println(tabbedPane.print());
-  
+%>
+<c:if test="${not empty validationMessage}">
+  <div class="inlineMessage-ok">
+    <c:out value="${validationMessage}" />
+  </div>
+</c:if>
+<%
   out.println(frame.printBefore());
 %>
+
 <!-- AFFICHAGE HEADER -->
-<center>
+<p align="left"><b><fmt:message key="channelChoiceLabel" /></b></p>
 <form name="channelForm">
   <input type="hidden" name="SelectedChannels">
+  <input type="hidden" name="SelectedFrequency">
 <%
 
   if (testExplanation.length() > 0) {
@@ -210,10 +245,10 @@ function getChannels()
   		if (p.getProperty("isDefault").equalsIgnoreCase("true")) {
   			usedCheck = "checked";
   		}
-  			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"SelectChannel\" value=\""
-  							+ EncodeHelper.javaStringToHtmlString(p.getProperty("id")) + "\" "
-  							+ usedCheck
-  							+ ">");
+		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"SelectChannel\" value=\""
+						+ EncodeHelper.javaStringToHtmlString(p.getProperty("id")) + "\" "
+						+ usedCheck
+						+ ">");
   	}
   	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("name")));
   	arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(p.getProperty("address")));
@@ -256,6 +291,38 @@ function getChannels()
   }
   
   out.println(notif.print());
+%>
+  <br/>
+  <p align="left"><b><fmt:message key="frequencyChoiceLabel" /></b>
+  <fmt:message key="frequency${requestScope.delayedNotification.defaultFrequency.name}" var="defaultFrequencyLabel" />
+  <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+  <c:set var="frequencyOnChange" value="" />
+  <c:if test="${!isMultiChannelNotif}">
+    <c:set var="frequencyOnChange" value="javascript:onChangeFrequency();" />
+  </c:if>
+  <select id="SelectFrequency" name="SelectFrequency" onchange="${frequencyOnChange}">
+    <c:set var="currentUserFrequencyCode" value="${requestScope.delayedNotification.currentUserFrequencyCode}" />
+    <c:choose>
+      <c:when test="${empty currentUserFrequencyCode or empty requestScope.delayedNotification.frequencies}">
+        <option value="" selected="selected"><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+      </c:when>
+      <c:otherwise>
+        <option value=""><fmt:message key="frequencyDefault"><fmt:param value="${defaultFrequencyLabel}"/></fmt:message></option>
+      </c:otherwise>
+    </c:choose>
+    <c:forEach items="${requestScope.delayedNotification.frequencies}" var="frequency">
+      <c:choose>
+        <c:when test="${frequency.code eq currentUserFrequencyCode}">
+          <option value="${frequency.code}" selected="selected"><fmt:message key="frequency${frequency.name}" /></option>
+        </c:when>
+        <c:otherwise>
+          <option value="${frequency.code}"><fmt:message key="frequency${frequency.name}" /></option>
+        </c:otherwise>
+      </c:choose>
+    </c:forEach>
+  </select>
+  </p>
+<%
   if (isMultiChannelNotif) {
     // ajout bouton de validation des choix des canaux
     Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendChoiceChannel();", false);
@@ -266,6 +333,7 @@ function getChannels()
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
+
 </form>
 </body>
 </html>

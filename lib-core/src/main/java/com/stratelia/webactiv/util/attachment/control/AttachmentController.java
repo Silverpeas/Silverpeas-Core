@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.attachment.control;
 
 import com.silverpeas.form.RecordSet;
@@ -80,7 +81,7 @@ public class AttachmentController {
    */
   public AttachmentController() {
   }
-  
+
   /**
    * the constructor.
    */
@@ -93,9 +94,8 @@ public class AttachmentController {
   /**
    * Create file attached to an object who is identified by "PK" AttachmentDetail object contains an
    * attribute who identifie the link by a foreign key.
-   *
    * @param attachDetail the data of an attachement to be created.
-   * @param indexIt      tells if the attachment must be indexed or not.
+   * @param indexIt tells if the attachment must be indexed or not.
    * @return the AttachmentDetail just created
    * @throws AttachmentRuntimeException if the attachment cannot be created.
    * @author Nicolas EYSSERIC
@@ -109,11 +109,10 @@ public class AttachmentController {
   /**
    * Create file attached to an object who is identified by "PK" AttachmentDetail object contains an
    * attribute who identifie the link by a foreign key.
-   *
-   * @param attachDetail   the data of an attachement to be created.
-   * @param indexIt        tells if the attachment must be indexed or not.
+   * @param attachDetail the data of an attachement to be created.
+   * @param indexIt tells if the attachment must be indexed or not.
    * @param invokeCallback <code>true</code> if the callback methods of the components must be
-   *                       called, <code>false</code> for ignoring thoose callbacks.
+   * called, <code>false</code> for ignoring thoose callbacks.
    * @return the AttachmentDetail just created
    * @throws AttachmentRuntimeException if the attachment cannot be created.
    */
@@ -153,9 +152,8 @@ public class AttachmentController {
 
   /**
    * to update file information (title and description) AttachmentDetail object to update.
-   *
    * @param attachDetail : AttachmentDetail.
-   * @param indexIt      - indicates if attachment must be indexed or not
+   * @param indexIt - indicates if attachment must be indexed or not
    */
   public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt) {
     updateAttachment(attachDetail, indexIt, true);
@@ -274,9 +272,8 @@ public class AttachmentController {
 
   /**
    * to search all file attached to an object who is identified by "PK"
-   *
-   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
-   *           this key must be transformed to AttachmentPK
+   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
+   * object but this key must be transformed to AttachmentPK
    * @return java.util.Vector: a collection of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
    * @author Jean-Claude Groccia
@@ -299,7 +296,7 @@ public class AttachmentController {
       boolean indexIt) throws AttachmentException {
     SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
         "root.MSG_GEN_ENTER_METHOD", "fromPK = " + fromPK.toString()
-            + ", toPK = " + toPK.toString() + ", indexIt = " + indexIt);
+        + ", toPK = " + toPK.toString() + ", indexIt = " + indexIt);
 
     String toAbsolutePath = FileRepositoryManager.getAbsolutePath(toPK.getInstanceId());
     String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromPK.getInstanceId());
@@ -325,7 +322,7 @@ public class AttachmentController {
 
       SilverTrace.debug("attachment", "AttachmentController.moveAttachments",
           "root.MSG_GEN_PARAM_VALUE", "fromFile = " + fromFile.getPath()
-              + ", toFile = " + toFile.getPath());
+          + ", toFile = " + toFile.getPath());
 
       // ensure directory exists
       String testPath = createPath(toPK.getInstanceId(), attachment.getContext());
@@ -349,7 +346,7 @@ public class AttachmentController {
       } else {
         SilverTrace.error("attachment", "AttachmentController.moveAttachments",
             "root.MSG_GEN_PARAM_VALUE", "file unsuccessfully moved ! from "
-                + fromFile.getPath() + " to " + toFile.getPath());
+            + fromFile.getPath() + " to " + toFile.getPath());
       }
 
       // change foreignKey
@@ -376,7 +373,7 @@ public class AttachmentController {
             SilverTrace.debug("attachment",
                 "AttachmentController.moveAttachments",
                 "root.MSG_GEN_PARAM_VALUE", "move translation fromFile = "
-                    + fromFile.getPath() + ", toFile = " + toFile.getPath());
+                + fromFile.getPath() + ", toFile = " + toFile.getPath());
 
             if ((fromFile != null) && fromFile.exists()) {
               fromFile.renameTo(toFile);
@@ -394,7 +391,6 @@ public class AttachmentController {
 
   /**
    * to search all file attached
-   *
    * @param primaryKey the primary key of object AttachmentDetail
    * @return java.util.Vector: a collection of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
@@ -412,7 +408,6 @@ public class AttachmentController {
     }
   }
 
-
   public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context) {
     return searchAttachmentByPKAndContext(foreignKey, context, null);
@@ -420,9 +415,8 @@ public class AttachmentController {
 
   /**
    * to search all file attached by primary key of customer object and context of file attached
-   *
-   * @param pk      : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object
-   *                but this key must be transformed to AttachmentPK
+   * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
+   * this key must be transformed to AttachmentPK
    * @param context : String: the context attribute of file attached
    * @return java.util.Vector, a vector of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
@@ -447,7 +441,6 @@ public class AttachmentController {
 
   /**
    * to provide applicationIndexer service
-   *
    * @param fk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object
    * @return void
    * @author Jean-Claude Groccia
@@ -465,8 +458,9 @@ public class AttachmentController {
           SilverpeasRuntimeException.ERROR, "root.EX_RECORD_NOT_FOUND", fe);
     }
   }
-  
-  public static void attachmentIndexer(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod) {
+
+  public static void attachmentIndexer(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
     try {
       for (AttachmentDetail detail : searchAttachmentByCustomerPK(fk)) {
         createIndex(detail, startOfVisibilityPeriod, endOfVisibilityPeriod);
@@ -480,7 +474,6 @@ public class AttachmentController {
 
   /**
    * to delete all file attached to an customer object
-   *
    * @param foreignKey : the primary key of customer object.
    * @return void
    * @throws AttachmentRuntimeException when is impossible to delete
@@ -535,7 +528,6 @@ public class AttachmentController {
 
   /**
    * Delete a given attachment.
-   *
    * @param attachmentDetail the attachmentDetail object to deleted.
    * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    * @author Jean-Claude Groccia
@@ -548,10 +540,9 @@ public class AttachmentController {
 
   /**
    * Delete a given attachment.
-   *
    * @param attachmentDetail the attachmentDetail object to deleted.
-   * @param invokeCallback   <code>true</code> if the callback methods of the components must be
-   *                         called, <code>false</code> for ignoring thoose callbacks.
+   * @param invokeCallback <code>true</code> if the callback methods of the components must be
+   * called, <code>false</code> for ignoring thoose callbacks.
    * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    */
   public static void deleteAttachment(AttachmentDetail attachmentDetail,
@@ -600,8 +591,8 @@ public class AttachmentController {
     try {
       AttachmentDetail attachDetail = attachmentBm.
           getAttachmentByPrimaryKey(pk);
-      if(attachDetail != null) {
-        //l'attachment existe bien toujours en base
+      if (attachDetail != null) {
+        // l'attachment existe bien toujours en base
         deleteAttachment(attachDetail, invokeCallback);
       }
 
@@ -633,7 +624,6 @@ public class AttachmentController {
 
   /**
    * to delete a list of file attached.
-   *
    * @param vectorAttachmentDetail: the vector of attachmentDetail object to deleted
    * @return void
    * @throws AttachmentRuntimeException when is impossible to delete
@@ -649,7 +639,6 @@ public class AttachmentController {
 
   /**
    * to delete one file attached.
-   *
    * @param attachDetail : the attachmentDetail object to deleted
    * @return void
    * @throws AttachmentRuntimeException when is impossible to delete
@@ -687,7 +676,6 @@ public class AttachmentController {
   /**
    * to create file attached to an object who is identified by "PK" AttachmentDetail object contains
    * a attribute who identifie the father by a foreign key.
-   *
    * @param vectorAttachmentDetail : java.util.Vector contains a list of AttachmentDetail object.
    * @throws AttachmentRuntimeException when is impossible to create
    * @author Jean-Claude Groccia
@@ -700,13 +688,11 @@ public class AttachmentController {
     }
   }
 
-
   /**
    * to create path
-   *
-   * @param spaceId     : type String: the name of space
+   * @param spaceId : type String: the name of space
    * @param componentId : type String: the name of component
-   * @param context     : type String: string made up of the repertories separated by token ","
+   * @param context : type String: string made up of the repertories separated by token ","
    * @deprecated Warning: the token separing the repertories is ","
    */
   public static String createPath(String spaceId, String componentId,
@@ -716,10 +702,9 @@ public class AttachmentController {
 
   /**
    * To create path Warning: the token separing the repertories is ","
-   *
-   * @param spaceId     : type String: the name of space
+   * @param spaceId : type String: the name of space
    * @param componentId : type String: the name of component
-   * @param context     : type String: string made up of the repertories separated by token ","
+   * @param context : type String: string made up of the repertories separated by token ","
    */
   public static String createPath(String componentId, String context) {
     String path = null;
@@ -748,7 +733,7 @@ public class AttachmentController {
 
       path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
     } else {
-      String[] ctx = {"Attachment"};
+      String[] ctx = { "Attachment" };
 
       path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
     }
@@ -771,7 +756,7 @@ public class AttachmentController {
   /**
    * to get mime type of the file param extensionFile : type String
    *
-   * @deprecated use com.silverpeas.util.FileUtil.getMimeType(String fileName) isntead.
+   * @deprecated use com.silverpeas.util.FileUtil.getMimeType(String fileName) instead.
    */
   @Deprecated
   public static String getMimeType(String fileLogicalName) {
@@ -805,7 +790,6 @@ public class AttachmentController {
   /**
    * to delete file on server param atDetail: type AttachmentDetail: the object AttachmentDetail to
    * deleted
-   *
    * @author Jean-Claude Groccia
    * @version 1.0
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
@@ -816,7 +800,7 @@ public class AttachmentController {
     String[] ctx = FileRepositoryManager.getAttachmentContext(attachDetail.getContext());
     String filePath =
         FileRepositoryManager.getAbsolutePath(attachDetail.getPK().getComponentName(), ctx)
-            + attachDetail.getPhysicalName();
+        + attachDetail.getPhysicalName();
 
     try {
       File d = new File(filePath);
@@ -842,40 +826,40 @@ public class AttachmentController {
 
   /**
    * Method declaration
-   *
    * @param detail
    * @see
    */
   public static void createIndex(AttachmentDetail detail) {
     createIndex(detail, null, null);
   }
-  
+
   public static void createIndex(AttachmentDetail detail, Date startOfVisibilityPeriod,
       Date endOfVisibilityPeriod) {
-    
+
     if (resources.getBoolean("attachment.index.separately", true)) {
       // index the uploaded or linked file
       int attGroup = detail.getAttachmentGroup();
-  
+
       if ((attGroup == AttachmentDetail.GROUP_FILE)
           || (attGroup == AttachmentDetail.GROUP_FILE_LINK)
           || (attGroup == AttachmentDetail.GROUP_DIR)) {
         String component = detail.getPK().getComponentName();
         String fk = detail.getForeignKey().getId();
-  
+
         try {
           Iterator<String> languages = detail.getLanguages();
           while (languages.hasNext()) {
             String language = languages.next();
-            AttachmentDetailI18N translation = (AttachmentDetailI18N) detail.getTranslation(language);
-  
+            AttachmentDetailI18N translation =
+                (AttachmentDetailI18N) detail.getTranslation(language);
+
             String objectType = "Attachment" + detail.getPK().getId();
             if (I18NHelper.isI18N && !I18NHelper.isDefaultLanguage(language)) {
               objectType += "_" + language;
             }
-  
+
             FullIndexEntry indexEntry = new FullIndexEntry(component, objectType, fk);
-  
+
             indexEntry.setLang(language);
             indexEntry.setCreationDate(translation.getCreationDate());
             indexEntry.setCreationUser(translation.getAuthor());
@@ -885,19 +869,19 @@ public class AttachmentController {
             if (endOfVisibilityPeriod != null) {
               indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibilityPeriod));
             }
-  
+
             indexEntry.setTitle(translation.getLogicalName(), language);
-  
+
             String title = translation.getTitle();
             if (StringUtil.isDefined(title)) {
               indexEntry.setKeywords(title, language);
             }
-  
+
             String info = translation.getInfo();
             if (StringUtil.isDefined(info)) {
               indexEntry.setPreview(info, language);
             }
-  
+
             /*
              * le champs description est utilisé pour savoir si c'est un lien ou une copie sur le
              * fichier
@@ -910,13 +894,13 @@ public class AttachmentController {
               path = createPath(component, detail.getContext()) + File.separator
                   + translation.getPhysicalName();
             }
-  
+
             indexEntry.addFileContent(path, null, translation.getType(), translation.getLanguage());
-  
+
             if (StringUtil.isDefined(detail.getXmlForm())) {
               updateIndexEntryWithXMLFormContent(detail.getPK(), detail.getXmlForm(), indexEntry);
             }
-  
+
             IndexEngineProxy.addIndexEntry(indexEntry);
           }
         } catch (Exception e) {
@@ -937,7 +921,7 @@ public class AttachmentController {
       String objectType = "Attachment";
       PublicationTemplate pub = PublicationTemplateManager.getInstance()
           .getPublicationTemplate(indexEntry.getComponent() + ":" + objectType + ":" +
-              xmlFormName);
+          xmlFormName);
       RecordSet set = pub.getRecordSet();
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (Exception e) {
@@ -945,7 +929,7 @@ public class AttachmentController {
           "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
     }
   }
-  
+
   public static void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
     if (resources.getBoolean("attachment.index.incorporated", true)) {
       if (!indexEntry.getObjectType().startsWith("Attachment")) {
@@ -966,7 +950,6 @@ public class AttachmentController {
 
   /**
    * Method declaration
-   *
    * @param detail
    * @see
    */
@@ -984,7 +967,7 @@ public class AttachmentController {
 
       IndexEntryPK indexEntry =
           new IndexEntryPK(detail.getPK().getComponentName(), objectType, detail.getForeignKey()
-              .getId());
+          .getId());
 
       IndexEngineProxy.removeIndexEntry(indexEntry);
     } catch (Exception e) {
@@ -995,14 +978,13 @@ public class AttachmentController {
   }
 
 
-
   public static Hashtable<String, String> copyAttachmentByCustomerPKAndContext(
       WAPrimaryKey foreignKeyFrom, WAPrimaryKey foreignKeyTo, String context)
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment",
         "AttachmentController.copyAttachmentByCustomerPK",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
+        + ", foreignKeyTo=" + foreignKeyTo);
 
     Vector<AttachmentDetail> attsToCopy = searchAttachmentByPKAndContext(foreignKeyFrom, context);
 
@@ -1022,7 +1004,7 @@ public class AttachmentController {
       throws AttachmentRuntimeException {
     SilverTrace.debug("attachment", "AttachmentController.copyAttachments",
         "root.MSG_GEN_ENTER_METHOD", "foreignKeyFrom = " + foreignKeyFrom
-            + ", foreignKeyTo=" + foreignKeyTo);
+        + ", foreignKeyTo=" + foreignKeyTo);
 
     Hashtable<String, String> ids = new Hashtable<String, String>();
 
@@ -1037,10 +1019,10 @@ public class AttachmentController {
 
         copy =
             new AttachmentDetail(atPK, attToCopy.getPhysicalName(),
-                attToCopy.getLogicalName(), attToCopy.getDescription(), attToCopy.getType(),
-                attToCopy.getSize(), attToCopy.getContext(),
-                attToCopy.getCreationDate(), foreignKeyTo, attToCopy.getTitle(),
-                attToCopy.getInfo(), attToCopy.getOrderNum());
+            attToCopy.getLogicalName(), attToCopy.getDescription(), attToCopy.getType(),
+            attToCopy.getSize(), attToCopy.getContext(),
+            attToCopy.getCreationDate(), foreignKeyTo, attToCopy.getTitle(),
+            attToCopy.getInfo(), attToCopy.getOrderNum());
 
         if (!"link".equalsIgnoreCase(attToCopy.getDescription())) {
 
@@ -1099,7 +1081,6 @@ public class AttachmentController {
    * to copy one file to another on server param attDetailFrom: type AttachmentDetail: the object
    * AttachmentDetail to copy param attDetailTo: type AttachmentDetail: the object AttachmentDetail
    * to create
-   *
    * @author SCO
    * @version 1.0
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
@@ -1108,17 +1089,17 @@ public class AttachmentController {
       AttachmentDetail attDetailTo) {
     String filePathFrom =
         FileRepositoryManager.getAbsolutePath(attDetailFrom.getPK().getComponentName(),
-            FileRepositoryManager.getAttachmentContext(attDetailFrom.getContext()));
+        FileRepositoryManager.getAttachmentContext(attDetailFrom.getContext()));
     String filePathTo =
         FileRepositoryManager.getAbsolutePath(attDetailTo.getPK().getComponentName(),
-            FileRepositoryManager.getAttachmentContext(attDetailTo.getContext()));
+        FileRepositoryManager.getAttachmentContext(attDetailTo.getContext()));
     String fileNameFrom = attDetailFrom.getPhysicalName();
     String fileNameTo = attDetailTo.getPhysicalName();
 
     try {
       SilverTrace.debug("attachment", "AttachmentController.copyFileOnServer",
           "root.MSG_GEN_ENTER_METHOD", "From " + filePathFrom + fileNameFrom
-              + " To " + filePathTo + fileNameTo);
+          + " To " + filePathTo + fileNameTo);
 
       File directoryToTest = new File(filePathTo);
 
@@ -1137,12 +1118,11 @@ public class AttachmentController {
 
   /**
    * Checkin a file
-   *
    * @param attachmentId
    * @param userId
-   * @param upload       : indicates if the file has been uploaded throught a form.
-   * @param force        if the user is an Admin he can force the release.
-   * @param language     the language for the attachment.
+   * @param upload : indicates if the file has been uploaded throught a form.
+   * @param force if the user is an Admin he can force the release.
+   * @param language the language for the attachment.
    * @return false if the file is locked - true if the checkin succeeded.
    * @throws AttachmentException
    */
@@ -1237,11 +1217,10 @@ public class AttachmentController {
 
   /**
    * Checkout a file for update by user
-   *
    * @param attachmentId
    * @param userId
    * @return false if the attahcment is already checkout - true if the attachment was successfully
-   *         checked out.
+   * checked out.
    * @throws AttachmentException
    */
   public static boolean checkoutFile(String attachmentId, String userId)
@@ -1251,12 +1230,11 @@ public class AttachmentController {
 
   /**
    * Checkout a file to be updated by user
-   *
    * @param attachmentId
    * @param userId
    * @param language
    * @return false if the attachment is already checkout - true if the attachment was successfully
-   *         checked out.
+   * checked out.
    * @throws AttachmentException
    */
   public static boolean checkoutFile(String attachmentId, String userId,
@@ -1330,7 +1308,6 @@ public class AttachmentController {
 
   /**
    * Get a UserDetail
-   *
    * @param userId
    * @return the UserDetail.
    * @throws AttachmentException
@@ -1354,7 +1331,8 @@ public class AttachmentController {
     for (AttachmentDetail a : attachments) {
       AttachmentDetail clone = (AttachmentDetail) a.clone();
       // The file must be copied
-      String physicalName = java.lang.Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
+      String physicalName =
+          java.lang.Long.toString(System.currentTimeMillis()) + "." + a.getExtension();
       clone.setPhysicalName(physicalName);
       copyFileOnServer(a, clone);
       clone.setForeignKey(toForeignKey);

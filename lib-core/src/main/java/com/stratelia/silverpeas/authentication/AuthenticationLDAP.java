@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,7 +96,7 @@ public class AuthenticationLDAP extends Authentication {
     m_UserBaseDN = propFile.getString(authenticationServerName + ".LDAPUserBaseDN");
     m_UserLoginFieldName = propFile.getString(authenticationServerName + ".LDAPUserLoginFieldName");
 
-    // get parameters about user alert if password is about to expire
+    // get parameters about user alert if password is about to expire or is already expired
     m_MustAlertPasswordExpiration = getBooleanProperty(propFile, authenticationServerName
         + ".MustAlertPasswordExpiration", false);
     if (m_MustAlertPasswordExpiration) {
@@ -106,7 +106,7 @@ public class AuthenticationLDAP extends Authentication {
       m_PwdMaxAge = (propValue == null) ? Integer.MAX_VALUE : Integer.parseInt(propValue);
 
       propValue = propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldFormat");
-      m_PwdLastSetFieldFormat = ( (propValue == null) || (propValue.equals("nanoseconds")) ) ? 0 : 1;
+      m_PwdLastSetFieldFormat = ((propValue == null) || (propValue.equals("nanoseconds"))) ? 0 : 1;
 
       propValue = propFile.getString(authenticationServerName + ".PwdExpirationReminderDelay");
       m_PwdExpirationReminderDelay = (propValue == null) ? 5 : Integer.parseInt(propValue);
@@ -154,7 +154,7 @@ public class AuthenticationLDAP extends Authentication {
       }
       m_LDAPConnection = null;
     } catch (Exception ex) {
-      throw new AuthenticationHostException( "AuthenticationLDAP.closeConnection()",
+      throw new AuthenticationHostException("AuthenticationLDAP.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
           + String.valueOf(m_Port), ex);
     }
@@ -170,8 +170,7 @@ public class AuthenticationLDAP extends Authentication {
     // retrieve or not password last set date
     if (m_MustAlertPasswordExpiration) {
       attrNames = new String[] { "uid", m_PwdLastSetFieldName };
-    }
-    else {
+    } else {
       attrNames = new String[] { "uid" };
     }
     try {
@@ -206,6 +205,9 @@ public class AuthenticationLDAP extends Authentication {
             SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
       }
     }
+    if (nbDaysBeforeExpiration < 0){
+      throw new AuthenticationPasswordExpired("User=" + login);
+    }
     if (userFullDN == null) {
       throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
@@ -229,7 +231,8 @@ public class AuthenticationLDAP extends Authentication {
     }
 
     if (m_MustAlertPasswordExpiration && (nbDaysBeforeExpiration < m_PwdExpirationReminderDelay)) {
-      throw new AuthenticationPasswordAboutToExpireException("AuthenticationLDAP.internalAuthentication()",
+      throw new AuthenticationPasswordAboutToExpireException(
+          "AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.WARNING, "authentication.EX_AUTHENTICATION_PASSWORD_ABOUT_TO_EXPIRE",
           "User=" + login);
     }
@@ -249,7 +252,7 @@ public class AuthenticationLDAP extends Authentication {
     // if password last set attribute is not found, return max value : user
     // won't be notified
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? "  + (pwdLastSetAttr == null));
+        "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? " + (pwdLastSetAttr == null));
     if (pwdLastSetAttr == null) {
       return Integer.MAX_VALUE;
     }
@@ -275,16 +278,16 @@ public class AuthenticationLDAP extends Authentication {
           DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
           String ldapValue = pwdLastSetAttr.getStringValue();
           if (ldapValue == null) {
-            SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-                "authentication.NO_VALUE", "m_PwdLastSetField="+m_PwdLastSetFieldName);
+            SilverTrace.error("authentication",
+                "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+                "authentication.NO_VALUE", "m_PwdLastSetField=" + m_PwdLastSetFieldName);
             return Integer.MAX_VALUE;
-          }
-          else if (ldapValue.length() >=14 ) {
-            ldapValue = ldapValue.substring(0,14);
-          }
-          else {
-            SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-                "authentication.EX_BAD_DATE_FORMAT", "ldapValue="+ldapValue);
+          } else if (ldapValue.length() >= 14) {
+            ldapValue = ldapValue.substring(0, 14);
+          } else {
+            SilverTrace.error("authentication",
+                "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+                "authentication.EX_BAD_DATE_FORMAT", "ldapValue=" + ldapValue);
             return Integer.MAX_VALUE;
           }
           pwdLastSet = format.parse(pwdLastSetAttr.getStringValue());
@@ -294,13 +297,15 @@ public class AuthenticationLDAP extends Authentication {
         }
     }
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " + DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
+        "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " +
+        DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
 
     Date now = new Date();
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "delayInMilliseconds = " + delayInMilliseconds);
-    int delayInDays = Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
+    int delayInDays =
+        Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_EXIT_METHOD", "delayInDays = " + delayInDays);
     return delayInDays;
@@ -339,40 +344,63 @@ public class AuthenticationLDAP extends Authentication {
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
 
-      // re bind with the requested user to verify old password
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
-
-      LDAPModification mod = null;
-      if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
-        // prepare password change
-        mod = changeActiveDirectoryPassword(newPassword);        
-      } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+      LDAPModification[] mod;
+      if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
+        // re bind with the requested user to verify old password
+        m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
         // prepare password change
         mod = changeOpenDSPassword(newPassword);
+      } else { //Active Directory (something else ?)
+        // Connection must be secure on an ActiveDirectory
+        if (!m_IsSecured) {
+          Exception e = new UnsupportedOperationException(
+              "LDAP connection must be secured to allow password update");
+          throw new AuthenticationException("AuthenticationLDAP.changePassword",
+              SilverpeasException.ERROR,
+              "authentication.EX_CANT_CHANGE_USERPASSWORD", e);
+        }
+
+        // prepare password change (old password will be verified by DELETE modification)
+        mod = getActiveDirectoryPasswordChange(oldPassword, newPassword);
       }
+
       // Perform the update
       m_LDAPConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
       throw new AuthenticationHostException(
-          "AuthenticationLDAP.internalAuthentication()",
+          "AuthenticationLDAP.internalChangePassword()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
     }
   }
-  
-  private LDAPModification changeActiveDirectoryPassword(String newPassword) {
-    // Convert password to UTF-16LE
-    String newQuotedPassword = "\"" + newPassword + "\"";
-    byte[] newUnicodePassword = newQuotedPassword.getBytes(Charsets.UTF_16LE);
 
-    // prepare password change
-    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
+  private LDAPModification[] getActiveDirectoryPasswordChange(String oldPassword,String newPassword) {
+    // Convert passwords to UTF-16LE
+    byte[] oldUnicodePassword = getActiveDirectoryUnicodePwd(oldPassword);
+    byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
+    LDAPModification[] res = new LDAPModification[2];
+    res[0] = new LDAPModification(LDAPModification.DELETE, new LDAPAttribute("unicodePwd",
+        oldUnicodePassword));
+    res[1] = new LDAPModification(LDAPModification.ADD, new LDAPAttribute("unicodePwd",
         newUnicodePassword));
+    return res;
   }
-  
-  private LDAPModification changeOpenDSPassword(String newPassword) throws UnsupportedEncodingException {
+
+  private LDAPModification[] getActiveDirectoryPasswordReset(String newPassword) {
+    // Convert password to UTF-16LE
+    byte[] newUnicodePassword = getActiveDirectoryUnicodePwd(newPassword);
+    return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("unicodePwd",
+        newUnicodePassword))};
+  }
+
+  private byte[] getActiveDirectoryUnicodePwd(String password){
+    String newQuotedPassword = "\"" + password + "\"";
+    return newQuotedPassword.getBytes(Charsets.UTF_16LE);
+  }
+
+  private LDAPModification[] changeOpenDSPassword(String newPassword) throws UnsupportedEncodingException {
     // prepare password change
-    return new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("userPassword",
-        newPassword));
+    return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute("userPassword",
+        newPassword))};
   }
 
   static String[] extractBaseDNs(String baseDN) {
@@ -409,17 +437,18 @@ public class AuthenticationLDAP extends Authentication {
       LDAPSearchResults res = m_LDAPConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalResetPassword()",
+        throw new AuthenticationBadCredentialException(
+            "AuthenticationLDAP.internalResetPassword()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
             + ";LoginField=" + m_UserLoginFieldName);
       }
       LDAPEntry fe = res.next();
       userFullDN = fe.getDN();
-      
-      LDAPModification mod = null;
+
+      LDAPModification[] mod = null;
       if (!StringUtil.isDefined(ldapImpl) || "ad".equalsIgnoreCase(ldapImpl)) {
         // prepare password change
-        mod = changeActiveDirectoryPassword(newPassword);
+        mod = getActiveDirectoryPasswordReset(newPassword);
       } else if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
         // prepare password change
         mod = changeOpenDSPassword(newPassword);

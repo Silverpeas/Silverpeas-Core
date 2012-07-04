@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -20,10 +20,6 @@
  */
 package com.silverpeas.util.i18n;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -31,8 +27,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
+
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class I18NHelper {
 
@@ -229,9 +233,6 @@ public class I18NHelper {
     tr.append("</tr>\n");
     return tr.toString();
   }
-  
-  
-  
 
   public static String getHTMLSelectObject(String userLanguage, I18NBean bean,
       String selectedTranslation) {

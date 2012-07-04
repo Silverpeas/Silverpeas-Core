@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,43 +39,43 @@ import com.silverpeas.interestCenter.model.InterestCenter;
 public interface InterestCenterBm extends javax.ejb.EJBObject {
 
   /**
-   * @param userID 
+   * @param userID
    * @return a list of <code>InterestCenter</code>s by user id provided
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public List<InterestCenter> getICByUserID(int userID) throws RemoteException;
 
   /**
    * @param icPK <code>InterestCenter</code> id
    * @return InterestCenter by its id
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public InterestCenter getICByID(int icPK) throws RemoteException;
 
   /**
-   * @param ic 
+   * @param ic
    * @return id of <code>InterestCenter</code> created
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public int createIC(InterestCenter ic) throws RemoteException;
 
   /**
    * perform updates of provided InterestCenter
    * @param ic
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public void updateIC(InterestCenter ic) throws RemoteException;
 
   /**
    * @param pks ArrayList of <code>java.lang.Integer</code> - id's of <code>InterestCenter</code>s
    * to be deleted
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public void removeICByPK(List<Integer> pks) throws RemoteException;
 
   /**
    * @param pk an id of <code>InterestCenter</code> to be deleted
-   * @throws RemoteException  
+   * @throws RemoteException
    */
   public void removeICByPK(int pk) throws RemoteException;
 

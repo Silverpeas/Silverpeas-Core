@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import java.io.File;
 import java.util.Date;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -30,6 +31,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
@@ -41,7 +44,9 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
 import com.silverpeas.web.ResourceGettingTest;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -68,6 +73,13 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
 
   public SimpleDocumentResourceTest() {
     super("org.silverpeas.attachment.web", "spring-jcr-webservice.xml");
+  }
+  
+  @After
+  public void generalCleanUp() throws Exception {
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
   }
 
   @Before

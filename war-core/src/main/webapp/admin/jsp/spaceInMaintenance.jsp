@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="importFrameSet.jsp" %>
@@ -30,6 +31,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -119,12 +122,9 @@ out.println(gef.getLookStyleSheet());
 <div align="center" class="textePetitBold"><img src="../../util/icons/attachment_to_upload.gif" alt=""/></div><br/>
 &nbsp;&nbsp;
 <div align="center"><%=message.getString("homePage.feedback")%><br/>
-<%
- for (int i = 0; i < listAdmins.length; i++)
- {
-     out.println("<a href=\"mailto:"+listAdmins[i].geteMail()+"\"><img src=\"../../admin/jsp/icons/icoOutilsMail.gif\" align=\"absmiddle\" border=\"0\" alt=\"\"/>"+listAdmins[i].getDisplayedName()+"</a><br/>");
- }
-%>
+<% for (int i = 0; i < listAdmins.length; i++) { %>
+	<a href="mailto:<%=listAdmins[i].geteMail() %>"><img src="../../admin/jsp/icons/icoOutilsMail.gif" align="absmiddle" border="0" alt=""/><view:username userId="<%=listAdmins[i].getId()%>"/></a><br/>
+<% } %>
 </div>
  </td>
   </tr>

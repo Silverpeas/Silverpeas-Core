@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.clipboardPeas.control;
 
 import java.awt.datatransfer.Transferable;
@@ -123,14 +124,16 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
       if (message.equals("SHOWCLIPBOARD")) {
         // portage netscape
-        str.append(
+        str
+            .append(
             "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboard.jsp','Clipboard','width=500,height=350,alwaysRaised');");
         str.append("top.ClipboardWindow.focus();");
       } else if (message.equals("REFRESHCLIPBOARD")) {
         // portage netscape
         str.append("if(top.ClipboardWindow!=null){");
         str.append("if (!top.ClipboardWindow.closed) {");
-        str.append(
+        str
+            .append(
             "top.ClipboardWindow = window.open('../../Rclipboard/jsp/clipboardRefresh.jsp','Clipboard','width=350,height=300,alwaysRaised');");
         str.append("}");
         str.append("}");
@@ -161,8 +164,10 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
             str.append("alert ('");
             str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
             str.append("');");
-            str.append(
-                "self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=").
+            str
+                .append(
+                    "self.location.href = '../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=SERVER&messageID=")
+                .
                 append(serverMessage.getID()).append("';");
           } else if (serverMessage.getWhat().equals("JAVASCRIPT")) {
             str.append(EncodeHelper.javaStringToJsString(serverMessage.getContent()));
@@ -230,7 +235,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
 
   /**
    * Method getJavaScriptTask
-   * @param request 
+   * @param request
    * @return
    * @see
    */
@@ -371,7 +376,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *
    * @param JSPPage
    */
   public void setJSPPage(String JSPPage) {
@@ -379,7 +383,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *
    * @param TargetFrame
    */
   public void setTargetFrame(String TargetFrame) {
@@ -387,7 +390,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *
    * @return
    */
   public String getComponentRooterName() {
@@ -395,7 +397,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *
    * @return
    */
   public String getJSPPage() {
@@ -403,7 +404,6 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   *
    * @return
    */
   public String getTargetFrame() {

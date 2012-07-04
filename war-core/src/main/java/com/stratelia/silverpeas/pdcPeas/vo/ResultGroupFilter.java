@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.vo;
 
 import java.util.Collections;
@@ -32,6 +33,7 @@ public class ResultGroupFilter {
   
   private Facet authorFacet = null;
   private Facet componentFacet = null;
+  private Facet datatypeFacet = null;
   private List<Facet> formfieldFacets;
 
   /**
@@ -77,12 +79,21 @@ public class ResultGroupFilter {
     EntryComparator comparator = new EntryComparator();
     Collections.sort(authorFacet.getEntries(), comparator);
     Collections.sort(componentFacet.getEntries(), comparator);
+    Collections.sort(datatypeFacet.getEntries(), comparator);
     
     for (Facet formFieldFacet : formfieldFacets) {
       Collections.sort(formFieldFacet.getEntries(), comparator);
     }
   }
   
+  public void setDatatypeFacet(Facet datatypeFacet) {
+    this.datatypeFacet = datatypeFacet;
+  }
+
+  public Facet getDatatypeFacet() {
+    return datatypeFacet;
+  }
+
   private class EntryComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {

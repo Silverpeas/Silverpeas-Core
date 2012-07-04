@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import java.rmi.RemoteException;
@@ -112,7 +113,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private Collection<String> yearsAccess = null;
   private Collection<String> yearsVolume = null;
   private ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(
-          getLanguage());
+      getLanguage());
   private ResourceLocator settings;
   private PdcBm pdcBm = null;
 
@@ -157,17 +158,17 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   public String getUserProfile() {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.getUserProfile()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "SilverStatisticsPeasSessionController.getUserProfile()",
+        "root.MSG_GEN_ENTER_METHOD");
     String userProfile = getUserDetail().getAccessLevel();
     AdminController ac = new AdminController(getUserId());
     if (!userProfile.equals("A")
-            && ac.getUserManageableSpaceRootIds(getUserId()) != null) {
+        && ac.getUserManageableSpaceRootIds(getUserId()) != null) {
       userProfile = SPACE_ADMIN;
     }
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.getUserProfile()",
-            "root.MSG_GEN_PARAM_VALUE", "userProfile=" + userProfile);
+        "SilverStatisticsPeasSessionController.getUserProfile()",
+        "root.MSG_GEN_PARAM_VALUE", "userProfile=" + userProfile);
     return userProfile;
   }
 
@@ -179,11 +180,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllAll(dateBegin,
-              dateEnd);
+          dateEnd);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getStatsConnexionAllAll()",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasSessionController.getStatsConnexionAllAll()",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -245,7 +246,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public AxisChart getDistinctUserConnectionsChart(String dateBegin,
-          String dateEnd) {
+      String dateEnd) {
     AxisChart axisChart = null;
     try {
       // new Collection[]{dates, counts};
@@ -267,7 +268,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // title
       String title = this.getString("silverStatisticsPeas.ConnectionNumberOfDistinctUsers")
-              + " ";
+          + " ";
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
@@ -283,14 +284,14 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += formatDate(dateEnd);
 
       axisChart =
-              ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.users"), title, dates,
-              buildDoubleArrayFromStringCollection(statsUsers[1]));
+          ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), generalMessage.
+          getString("GML.users"), title, dates,
+          buildDoubleArrayFromStringCollection(statsUsers[1]));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getDistinctUserConnectionsChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -303,7 +304,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     AxisChart axisChart = null;
     try {
       Collection[] statsConnection =
-              SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
+          SilverStatisticsPeasDAOConnexion.getStatsConnexion(dateBegin, dateEnd);
       Collection<String> listDate = statsConnection[0];
       Iterator<String> itDates = listDate.iterator();
       String[] dates = new String[statsConnection[0].size()]; // au format
@@ -336,28 +337,28 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title.append(formatDate(dateEnd));
 
       axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), this.getString(
-              "silverStatisticsPeas.Connections"), title.toString(), dates,
-              buildDoubleArrayFromStringCollection(statsConnection[1]));
+          "silverStatisticsPeas.Connections"), title.toString(), dates,
+          buildDoubleArrayFromStringCollection(statsConnection[1]));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getUserConnectionsChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
   }
 
   public Collection<String[]> getStatsConnexionAllUser(String dateBegin, String dateEnd,
-          String idUser) {
+      String idUser) {
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser(dateBegin,
-              dateEnd, Integer.parseInt(idUser));
+          dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -366,7 +367,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public AxisChart getUserConnectionsUserChart(String dateBegin,
-          String dateEnd, String idUser) {
+      String dateEnd, String idUser) {
     AxisChart axisChart = null;
     try {
       UserDetail userDetail = AdminReference.getAdminService().getUserDetail(idUser);
@@ -375,7 +376,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         lastName = userDetail.getLastName();
       }
       Collection[] statsConnection = SilverStatisticsPeasDAOConnexion.getStatsUserConnexion(
-              dateBegin, dateEnd, idUser);
+          dateBegin, dateEnd, idUser);
       Collection<String> listDate = statsConnection[0];
       Iterator<String> itDates = listDate.iterator();
       String[] dates = new String[statsConnection[0].size()]; // au format
@@ -394,8 +395,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // title
       String title = this.getString("silverStatisticsPeas.LoginNumber") + " "
-              + this.getString("silverStatisticsPeas.OfUser") + " " + lastName
-              + " ";
+          + this.getString("silverStatisticsPeas.OfUser") + " " + lastName
+          + " ";
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
@@ -411,14 +412,14 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += formatDate(dateEnd);
 
       axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), this.getString(
-              "silverStatisticsPeas.Connections"), title, dates,
-              buildDoubleArrayFromStringCollection(statsConnection[1]));
+          "silverStatisticsPeas.Connections"), title, dates,
+          buildDoubleArrayFromStringCollection(statsConnection[1]));
 
     } catch (Exception se) {
       SilverTrace.error(
-              "silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsUserChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "silverStatisticsPeas",
+          "SilverStatisticsPeasSessionController.getUserConnectionsUserChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -433,15 +434,15 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public Collection<String[]> getStatsConnexionAllGroup(String dateBegin, String dateEnd,
-          String idGroup) {
+      String idGroup) {
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(dateBegin, dateEnd,
-              Integer.parseInt(idGroup));
+          Integer.parseInt(idGroup));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getStatsConnexionAllGroup()",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasSessionController.getStatsConnexionAllGroup()",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -456,7 +457,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     AxisChart axisChart = null;
     try {
       Collection[] statsConnection = SilverStatisticsPeasDAOConnexion.getStatsGroupConnexion(
-              dateBegin, dateEnd, idGroup);
+          dateBegin, dateEnd, idGroup);
       Collection<String> listDate = statsConnection[0];
       Iterator<String> itDates = listDate.iterator();
       String[] dates = new String[statsConnection[0].size()]; // au format
@@ -475,8 +476,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // title
       String title = this.getString("silverStatisticsPeas.LoginNumber") + " "
-              + this.getString("silverStatisticsPeas.OfGroup") + " "
-              + AdminReference.getAdminService().getGroupName(idGroup) + " ";
+          + this.getString("silverStatisticsPeas.OfGroup") + " "
+          + AdminReference.getAdminService().getGroupName(idGroup) + " ";
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
         // Aout,
@@ -492,14 +493,14 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += formatDate(dateEnd);
 
       axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), this.getString(
-              "silverStatisticsPeas.Connections"), title, dates,
-              buildDoubleArrayFromStringCollection(statsConnection[1]));
+          "silverStatisticsPeas.Connections"), title, dates,
+          buildDoubleArrayFromStringCollection(statsConnection[1]));
 
     } catch (Exception se) {
       SilverTrace.error(
-              "silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsGroupChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "silverStatisticsPeas",
+          "SilverStatisticsPeasSessionController.getUserConnectionsGroupChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -511,11 +512,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll(dateBegin,
-              dateEnd);
+          dateEnd);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -524,15 +525,15 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   // collection contient autant d'elements
   // que de groupes dont le user fait parti
   public Collection<String[]> getStatsConnexionGroupUser(String dateBegin,
-          String dateEnd, String idUser) {
+      String dateEnd, String idUser) {
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionAllGroup(
           dateBegin, dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupUser",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -543,11 +544,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll(dateBegin,
-              dateEnd);
+          dateEnd);
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserAll",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
@@ -555,25 +556,25 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   // donne pour chaque user d'un groupe ses stats, cad 3 infos, la collection
   // contient autant d'elements que de users dans le groupe
   public Collection<String[]> getStatsConnexionUserUser(String dateBegin, String dateEnd,
-          String idUser) {
+      String idUser) {
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(dateBegin,
-              dateEnd, Integer.parseInt(idUser));
+          dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser",
-              "root.EX_SQL_QUERY_FAILED", e);
+          "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser",
+          "root.EX_SQL_QUERY_FAILED", e);
     }
     return c;
   }
 
   protected Selection communInitUserPanel(String compoName, String operation) {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-            "ApplicationURL");
+        "ApplicationURL");
     String hostSpaceName = getString("silverStatisticsPeas.statistics");// getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
-            m_context + getComponentUrl() + compoName);
+        m_context + getComponentUrl() + compoName);
     String hostUrl = m_context + getComponentUrl() + operation;
 
     Selection sel = getSelection();
@@ -611,10 +612,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       notifMetaData.addUserRecipient(new UserRecipient(userId));
 
       notificationSender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP,
-              notifMetaData);
+          notifMetaData);
     } catch (Exception ex) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.NotifySession", "root.EX_SQL_QUERY_FAILED", ex);
+          "SilverStatisticsPeasSessionController.NotifySession", "root.EX_SQL_QUERY_FAILED", ex);
     }
   }
 
@@ -629,7 +630,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (listUserDetail != null) {
       for (SessionInfo sessionInfo : listUserDetail) {
         if (!notifiedUsers.contains(sessionInfo.getUserDetail().getId())
-                || sessionInfo.getUserDetail().isAccessGuest()) {
+            || sessionInfo.getUserDetail().isAccessGuest()) {
           notifySession(sessionInfo.getUserDetail().getId(), message);
           notifiedUsers.add(sessionInfo.getUserDetail().getId());
         }
@@ -664,11 +665,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setFilterLib(getOrganizationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourUserPanel()",
-            "filterType=" + filterType);
+        "SilverStatisticsPeasSessionController.retourUserPanel()",
+        "filterType=" + filterType);
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourUserPanel()", "filterId="
-            + filterId);
+        "SilverStatisticsPeasSessionController.retourUserPanel()", "filterId="
+        + filterId);
   }
 
   /**
@@ -678,7 +679,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public AxisChart getUserConnectionsFqChart(String dateBegin, String dateEnd,
-          String statDetail) {
+      String statDetail) {
     AxisChart axisChart = null;
     try {
       int minFreq = 0;
@@ -703,8 +704,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         maxFreq = 999;
       }
 
-      Collection[] statsUsersFq = SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd,
-              minFreq, maxFreq);
+      Collection[] statsUsersFq =
+          SilverStatisticsPeasDAOConnexion.getStatsUserFq(dateBegin, dateEnd,
+          minFreq, maxFreq);
       Collection<String> listDate = statsUsersFq[0];
       Iterator<String> itDates = listDate.iterator();
       String[] dates = new String[statsUsersFq[0].size()]; // au format MM-AAAA
@@ -722,10 +724,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // title
       String title = this.getString("silverStatisticsPeas.ConnectionNumberOfDistinctUsers")
-              + " ";
+          + " ";
       title += this.getString("silverStatisticsPeas.From") + " " + minFreq
-              + " " + this.getString("silverStatisticsPeas.To") + " " + maxFreq
-              + " " + this.getString("silverStatisticsPeas.Times") + " ";
+          + " " + this.getString("silverStatisticsPeas.To") + " " + maxFreq
+          + " " + this.getString("silverStatisticsPeas.Times") + " ";
 
       mois = dateBegin.substring(5, 7);
       if ("04".equals(mois) || "08".equals(mois) || "10".equals(mois)) {// Avril,
@@ -742,13 +744,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       title += formatDate(dateEnd);
 
       axisChart = ChartUtil.buildBarAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.users"), title,
-              dates, buildDoubleArrayFromStringCollection(statsUsersFq[1]));
+          getString("GML.users"), title,
+          dates, buildDoubleArrayFromStringCollection(statsUsersFq[1]));
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getUserConnectionsFqChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getUserConnectionsFqChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -756,7 +758,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   public String initAccessUserPanelGroup() {
     Selection sel = communInitUserPanel("AccessCallUserPanelGroup",
-            "AccessReturnFromUserPanelGroup");
+        "AccessReturnFromUserPanelGroup");
     sel.setElementSelectable(false);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
@@ -774,13 +776,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
-            "accessFilterIdGroup=" + accessFilterIdGroup);
+        "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
+        "accessFilterIdGroup=" + accessFilterIdGroup);
   }
 
   public String initAccessUserPanelUser() {
     Selection sel = communInitUserPanel("AccessCallUserPanelUser",
-            "AccessReturnFromUserPanelUser");
+        "AccessReturnFromUserPanelUser");
     sel.setSetSelectable(false);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
@@ -797,13 +799,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
-            "accessFilterIdUser=" + accessFilterIdUser);
+        "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
+        "accessFilterIdUser=" + accessFilterIdUser);
   }
 
   public String initVolumeUserPanelGroup() {
     Selection sel = communInitUserPanel("VolumeCallUserPanelGroup",
-            "VolumeReturnFromUserPanelGroup");
+        "VolumeReturnFromUserPanelGroup");
     sel.setElementSelectable(false);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
@@ -821,13 +823,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
-            "accessFilterIdGroup=" + accessFilterIdGroup);
+        "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
+        "accessFilterIdGroup=" + accessFilterIdGroup);
   }
 
   public String initVolumeUserPanelUser() {
     Selection sel = communInitUserPanel("VolumeCallUserPanelUser",
-            "VolumeReturnFromUserPanelUser");
+        "VolumeReturnFromUserPanelUser");
     sel.setSetSelectable(false);
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
@@ -844,18 +846,18 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
-            "accessFilterIdUser=" + accessFilterIdUser);
+        "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
+        "accessFilterIdUser=" + accessFilterIdUser);
   }
 
   /**
    * @return
    */
   public PieChart2D getUserVentilChart(String dateStat, String filterIdGroup,
-          String filterIdUser, String spaceId) {
+      String filterIdUser, String spaceId) {
     UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
-            formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-            spaceId, this.getMultilang(), getOrganizationController());
+        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
+        spaceId, this.getMultilang(), getOrganizationController());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -864,13 +866,13 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public AxisChart getEvolutionUserChart(String entite, String entiteId,
-          String filterLibGroup, String filterIdGroup, String filterLibUser,
-          String filterIdUser) {
+      String filterLibGroup, String filterIdGroup, String filterLibUser,
+      String filterIdUser) {
     AxisChart axisChart = null;
     try {
       currentStats.clear();
       Collection<String[]> statsUserAccess = SilverStatisticsPeasDAOAccesVolume.
-              getStatsUserEvolution(entite, entiteId, filterIdGroup, filterIdUser);
+          getStatsUserEvolution(entite, entiteId, filterIdGroup, filterIdUser);
       Iterator<String[]> itStats = statsUserAccess.iterator();
       String[] values;
       String[] dates = new String[statsUserAccess.size()]; // au format MM-AAAA
@@ -884,7 +886,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         mois = values[0].substring(5, 7);
         dates[i] = mois + "-" + annee;
         nbAccess[i] = Double.parseDouble(values[1]);
-        currentStats.add(new String[]{values[0], values[1]});
+        currentStats.add(new String[] { values[0], values[1] });
 
         i++;
       }
@@ -894,41 +896,42 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " "
-                  + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
-                  + " " + filterLibGroup;
+              + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
+              + " " + filterLibGroup;
         }
         if (!filterIdUser.equals("")) {
           title += " "
-                  + this.getString("silverStatisticsPeas.EvolutionAccessUser")
-                  + " " + filterLibUser;
+              + this.getString("silverStatisticsPeas.EvolutionAccessUser")
+              + " " + filterLibUser;
         }
         title += " "
-                + this.getString("silverStatisticsPeas.EvolutionAccessSpace")
-                + " [" + space.getName() + "]";
+            + this.getString("silverStatisticsPeas.EvolutionAccessSpace")
+            + " [" + space.getName() + "]";
       } else {// CMP
         ComponentInstLight cmp = AdminReference.getAdminService().getComponentInstLight(entiteId);
         if (!filterIdGroup.equals("") && filterIdUser.equals("")) {
           title += " "
-                  + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
-                  + " " + filterLibGroup;
+              + this.getString("silverStatisticsPeas.EvolutionAccessGroup")
+              + " " + filterLibGroup;
         }
         if (!filterIdUser.equals("")) {
           title += " "
-                  + this.getString("silverStatisticsPeas.EvolutionAccessUser")
-                  + " " + filterLibUser;
+              + this.getString("silverStatisticsPeas.EvolutionAccessUser")
+              + " " + filterLibUser;
         }
         title += " "
-                + this.getString("silverStatisticsPeas.EvolutionAccessService")
-                + " " + cmp.getLabel();
+            + this.getString("silverStatisticsPeas.EvolutionAccessService")
+            + " " + cmp.getLabel();
       }
 
-      axisChart = ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"), this.getString(
-              "silverStatisticsPeas.Access"), title, dates, nbAccess);
+      axisChart =
+          ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"), this.getString(
+          "silverStatisticsPeas.Access"), title, dates, nbAccess);
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getEvolutionUserChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getEvolutionUserChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -941,11 +944,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (StringUtil.isDefined(spaceId) && (!spaceId.equals("WA0"))) {
       try {
         SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(spaceId);
-        path.insertElementAt(new String[]{spaceId, space.getName()}, 0);
+        path.insertElementAt(new String[] { spaceId, space.getName() }, 0);
         buildPath("WA" + space.getFatherId());
       } catch (AdminException e) {
-        SilverTrace.error("silverStatisticsPeas", "SilverStatisticsPeasSessionController.buildPath",
-                "root.EX_SQL_QUERY_FAILED", e);
+        SilverTrace.error("silverStatisticsPeas",
+            "SilverStatisticsPeasSessionController.buildPath",
+            "root.EX_SQL_QUERY_FAILED", e);
       }
 
     }
@@ -966,14 +970,16 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     PieChart2D pieChart = null;
     try {
       Collection[] statsKMsInstances = SilverStatisticsPeasDAOVolumeServices.
-              getStatsInstancesServices();
+          getStatsInstancesServices();
 
       // build stats array collection
       currentStats.clear();
-      String[] kms = (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]);
-      String[] counts = (String[]) statsKMsInstances[1].toArray(new String[statsKMsInstances[1].size()]);
+      String[] kms =
+          (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]);
+      String[] counts =
+          (String[]) statsKMsInstances[1].toArray(new String[statsKMsInstances[1].size()]);
       for (int i = 0; i < kms.length; i++) {
-        currentStats.add(new String[]{kms[i], counts[i]});
+        currentStats.add(new String[] { kms[i], counts[i] });
       }
 
       pieChart = ChartUtil.buildPieChart(getString("silverStatisticsPeas.ServicesNumber"),
@@ -981,8 +987,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           (String[]) statsKMsInstances[0].toArray(new String[statsKMsInstances[0].size()]));
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getVolumeServicesChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getVolumeServicesChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return pieChart;
@@ -992,10 +998,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   public PieChart2D getPubliVentilChart(String dateStat, String filterIdGroup,
-          String filterIdUser, String spaceId) {
+      String filterIdUser, String spaceId) {
     PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
-            formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-            spaceId, getOrganizationController(), this.getMultilang());
+        formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
+        spaceId, getOrganizationController(), this.getMultilang());
     resetPath(spaceId);
     return publiBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -1005,7 +1011,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public PieChart2D getDocsVentilChart(String spaceId) {
     DocPieChartBuilder userBuilder = new DocPieChartBuilder(getUserId(),
-            spaceId, this.getMultilang());
+        spaceId, this.getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -1015,7 +1021,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public PieChart2D getDocsSizeVentilChart(String spaceId) {
     DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(
-            getUserId(), spaceId, this.getMultilang());
+        getUserId(), spaceId, this.getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -1027,7 +1033,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     AxisChart axisChart = null;
     try {
       currentStats.clear();
-      Collection<String[]> statsDocsSize = SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer();
+      Collection<String[]> statsDocsSize =
+          SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer();
       Iterator<String[]> itStats = statsDocsSize.iterator();
       String[] values;
       String annee;
@@ -1042,19 +1049,20 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         dates[i] = mois + "-" + annee;
         size[i] = Double.parseDouble(values[2]) / 1024; // size en Mo
 
-        currentStats.add(new String[]{values[0], values[1], values[2]});
+        currentStats.add(new String[] { values[0], values[1], values[2] });
         i++;
       }
 
-      axisChart = ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"), generalMessage.
-              getString("GML.size")
-              + " (Mo)", this.getString("silverStatisticsPeas.EvolutionAttachmentsTotalSize"),
-              dates, size);
+      axisChart =
+          ChartUtil.buildLineAxisChart(generalMessage.getString("GML.date"), generalMessage.
+          getString("GML.size")
+          + " (Mo)", this.getString("silverStatisticsPeas.EvolutionAttachmentsTotalSize"),
+          dates, size);
 
     } catch (Exception se) {
       SilverTrace.error("silverStatisticsPeas",
-              "SilverStatisticsPeasSessionController.getEvolutionDocsSizeChart()",
-              "root.EX_SQL_QUERY_FAILED", se);
+          "SilverStatisticsPeasSessionController.getEvolutionDocsSizeChart()",
+          "root.EX_SQL_QUERY_FAILED", se);
     }
 
     return axisChart;
@@ -1077,7 +1085,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     String stat[] = null;
 
     SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getYear()",
-            "yearValue=" + yearValue);
+        "yearValue=" + yearValue);
 
     if (years != null) {
       for (String indice : years) {
@@ -1100,7 +1108,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     String stat[] = null;
 
     SilverTrace.debug("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getMonth()",
-            "monthValue=" + monthValue);
+        "monthValue=" + monthValue);
     for (int i = 0; i < 12; i++) {
       stat = new String[2];
       stat[INDICE_VALUE] = Integer.toString(i);
@@ -1225,7 +1233,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   public ResourceLocator getSettings() {
     if (settings == null) {
       settings = new ResourceLocator(
-              "com.stratelia.silverpeas.silverStatisticsPeas.settings.silverStatisticsSettings", "");
+          "com.stratelia.silverpeas.silverStatisticsPeas.settings.silverStatisticsSettings", "");
     }
     return settings;
   }
@@ -1401,8 +1409,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     List<AxisHeader> axes = getPdcBm().getAxisByType("P");
     for (AxisHeader axisHeader : axes) {
       StatisticAxisVO axis =
-              new StatisticAxisVO(axisHeader.getPK().getId(), axisHeader.getName(), axisHeader.
-              getDescription(), false);
+          new StatisticAxisVO(axisHeader.getPK().getId(), axisHeader.getName(), axisHeader.
+          getDescription(), false);
       statsAxes.add(axis);
     }
     return statsAxes;
@@ -1432,7 +1440,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // Retrieve statistics on componentIds
       List<AccessPublicationVO> accessPublis =
-              SilverStatisticsPeasDAO.getListPublicationAccess(firstDayStr, lastDayStr);
+          SilverStatisticsPeasDAO.getListPublicationAccess(firstDayStr, lastDayStr);
 
       if (curAxisId == 0) {
         // Retrieve publication axis
@@ -1446,8 +1454,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           gSC = getPdCPublications(axisId, "/0/", components);
           nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
           StatisticVO curStat =
-                  new StatisticVO(axisId, axisHeader.getName(), axisHeader.getDescription(),
-                  nbAxisAccess);
+              new StatisticVO(axisId, axisHeader.getName(), axisHeader.getDescription(),
+              nbAxisAccess);
           stats.add(curStat);
         }
       } else {
@@ -1466,14 +1474,14 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           int nbAxisAccess = 0;
           // Check axis level number
           if (axisFilter && curAxisValue.startsWith(axisValue)
-                  && curValue.getLevelNumber() == curLevel) {
+              && curValue.getLevelNumber() == curLevel) {
             // Retrieve all the current axis publications
             gSC = getPdCPublications(Integer.toString(curAxisId), curAxisValue, components);
             nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
             // Create a new statistic value object
             StatisticVO curStat =
-                    new StatisticVO(Integer.toString(curAxisId), curValue.getName(), curValue.
-                    getDescription(), nbAxisAccess);
+                new StatisticVO(Integer.toString(curAxisId), curValue.getName(), curValue.
+                getDescription(), nbAxisAccess);
             curStat.setAxisValue(curValue.getFullPath());
             curStat.setAxisLevel(curValue.getLevelNumber());
             // Add this statistic to list
@@ -1494,12 +1502,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       }
     } catch (PdcException e) {
       SilverTrace.error("SilverStatisticsPeas",
-              SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
-              "Problem to access the PDC");
+          SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
+          "Problem to access the PDC");
     } catch (SQLException sqlEx) {
       SilverTrace.error("SilverStatisticsPeas",
-              SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
-              "Problem to retrieve statistics on axis.");
+          SilverStatisticsPeasSessionController.class.getName() + ".getAxisStats",
+          "Problem to retrieve statistics on axis.");
     }
     return stats;
   }
@@ -1512,7 +1520,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   private List<GlobalSilverContent> getPdCPublications(String axisId, String valueId,
-          List<String> componentIds) {
+      List<String> componentIds) {
     // Create search context with a new search criteria
     SearchContext context = new SearchContext();
     SearchCriteria criteria = new SearchCriteria(Integer.parseInt(axisId), valueId);
@@ -1540,7 +1548,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return
    */
   private List<GlobalSilverContent> getPdCPublications(SearchContext searchContext,
-          List<String> componentIds) {
+      List<String> componentIds) {
     // Retrieve the list of PDC publications using EJB call
     List<GlobalSilverContent> silverContentsMetier = null;
     com.silverpeas.pdc.ejb.PdcBm pdcBm = getPdcBmEJB();
@@ -1548,7 +1556,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       if (componentIds.size() > 0) {
         try {
           silverContentsMetier =
-                  pdcBm.findGlobalSilverContents(searchContext, componentIds, true, true);
+              pdcBm.findGlobalSilverContents(searchContext, componentIds, true, true);
         } catch (RemoteException e) {
           SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
         }
@@ -1561,7 +1569,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     com.silverpeas.pdc.ejb.PdcBm pdcBm = null;
     try {
       pdcBm = ((PdcBmHome) EJBUtilitaire.getEJBObjectRef(
-              JNDINames.PDCBM_EJBHOME, PdcBmHome.class)).create();
+          JNDINames.PDCBM_EJBHOME, PdcBmHome.class)).create();
     } catch (RemoteException e) {
       SilverTrace.error("LookINPI", "LookINPIHelper", "getPdcBmEJB exception", e);
     } catch (UtilException e) {
@@ -1577,8 +1585,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   public List<String> buildCustomComponentListWhereToSearch() {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasSessionController.buildComponentListWhereToSearch()",
-            "root.MSG_GEN_ENTER_METHOD");
+        "SilverStatisticsPeasSessionController.buildComponentListWhereToSearch()",
+        "root.MSG_GEN_ENTER_METHOD");
     List<String> componentList = new ArrayList<String>();
     String[] allowedComponentIds = getUserAvailComponentIds();
     // Il n'y a pas de restriction sur un espace particulier
@@ -1592,10 +1600,10 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   private boolean isSearchable(String componentId) {
     if (componentId.startsWith("silverCrawler")
-            || componentId.startsWith("gallery")
-            || componentId.startsWith("kmelia")) {
+        || componentId.startsWith("gallery")
+        || componentId.startsWith("kmelia")) {
       boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().
-              getComponentParameterValue(componentId, "privateSearch"));
+          getComponentParameterValue(componentId, "privateSearch"));
       return !isPrivateSearch;
     } else {
       return true;
@@ -1625,7 +1633,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
       // Retrieve statistics on componentIds
       List<AccessPublicationVO> accessPublis =
-              SilverStatisticsPeasDAO.getListPublicationAccess(firstDayStr, lastDayStr);
+          SilverStatisticsPeasDAO.getListPublicationAccess(firstDayStr, lastDayStr);
 
       // Retrieve the list of values from selected axes
       List<Value> firstValues = getPdcBm().getAxisValues(statsFilter.getFirstAxisId());
@@ -1660,7 +1668,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
           List<GlobalSilverContent> gSC = getPdCPublications(searchCtx, components);
           nbAxisAccess = computeAxisAccessStatistics(accessPublis, gSC);
           CrossAxisAccessVO crossAxisAccess =
-                  new CrossAxisAccessVO(firstAxisId, secondAxisId, fValue, sValue, nbAxisAccess);
+              new CrossAxisAccessVO(firstAxisId, secondAxisId, fValue, sValue, nbAxisAccess);
           listRowStats.add(crossAxisAccess);
 
         }
@@ -1669,12 +1677,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       crossStat = new CrossStatisticVO(headerColumn, firstRow, stats);
     } catch (PdcException e) {
       SilverTrace.error("SilverStatisticsPeas",
-              SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
-              "Problem to access the PDC", e);
+          SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
+          "Problem to access the PDC", e);
     } catch (SQLException sqlEx) {
       SilverTrace.error("SilverStatisticsPeas",
-              SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
-              "Problem to access statistics table", sqlEx);
+          SilverStatisticsPeasSessionController.class.getName() + ".getCrossAxisStats",
+          "Problem to access statistics table", sqlEx);
     }
     return crossStat;
   }
@@ -1686,7 +1694,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * @return the global number of access on a specific axis
    */
   private int computeAxisAccessStatistics(List<AccessPublicationVO> accessPublis,
-          List<GlobalSilverContent> gSC) {
+      List<GlobalSilverContent> gSC) {
     int nbAxisAccess = 0;
     for (GlobalSilverContent curGSC : gSC) {
       String publicationId = curGSC.getId();
@@ -1694,7 +1702,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       // Compute statistics on read publications
       for (AccessPublicationVO accessPub : accessPublis) {
         if (accessPub.getForeignPK().getId().equals(publicationId)
-                && accessPub.getForeignPK().getInstanceId().equals(instanceId)) {
+            && accessPub.getForeignPK().getInstanceId().equals(instanceId)) {
           nbAxisAccess += accessPub.getNbAccess();
         }
       }

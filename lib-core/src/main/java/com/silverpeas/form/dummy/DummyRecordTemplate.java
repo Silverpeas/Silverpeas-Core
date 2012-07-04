@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.dummy;
 
 import com.silverpeas.form.DataRecord;
@@ -45,7 +46,7 @@ public class DummyRecordTemplate implements RecordTemplate {
     fieldTemplate = new DummyFieldTemplate();
     dataRecord = new DummyDataRecord();
   }
-  
+
   public DummyRecordTemplate(RecordTemplate template) throws FormException {
     fieldTemplate = new DummyFieldTemplate();
     dataRecord = new GenericDataRecord(template);
@@ -53,7 +54,7 @@ public class DummyRecordTemplate implements RecordTemplate {
 
   /**
    * Returns all the field names of the DataRecord built on this template.
-   * @return 
+   * @return
    */
   @Override
   public String[] getFieldNames() {
@@ -62,7 +63,7 @@ public class DummyRecordTemplate implements RecordTemplate {
 
   /**
    * Returns all the field templates.
-   * @return 
+   * @return
    */
   @Override
   public FieldTemplate[] getFieldTemplates() {
@@ -73,7 +74,7 @@ public class DummyRecordTemplate implements RecordTemplate {
    * Returns the FieldTemplate of the named field.
    * @param fieldName
    * @return
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -82,8 +83,8 @@ public class DummyRecordTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   * @param fieldName 
-   * @return 
+   * @param fieldName
+   * @return
    * @throws FormException if the field name is unknown.
    */
   @Override
@@ -94,7 +95,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns an empty DataRecord built on this template.
    * @return
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
   public DataRecord getEmptyRecord() throws FormException {
@@ -104,7 +105,7 @@ public class DummyRecordTemplate implements RecordTemplate {
   /**
    * Returns true if the data record is built on this template and all the constraints are ok.
    * @param record
-   * @return 
+   * @return
    */
   @Override
   public boolean checkDataRecord(DataRecord record) {

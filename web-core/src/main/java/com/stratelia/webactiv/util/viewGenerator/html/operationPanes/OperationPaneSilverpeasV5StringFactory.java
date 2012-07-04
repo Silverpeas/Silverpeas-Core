@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,16 +32,15 @@ public class OperationPaneSilverpeasV5StringFactory {
    * encoded
    */
   private final static StringBuffer printString1;
-    private final static StringBuffer printString2;
-    static {
-      printString1 = new StringBuffer();
-      printString1.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
-      printString1.append("<tr><td><img src=\"").append(GraphicElementFactory.getIconsPath());
-      printString1.append("/tabs/1px.gif\" alt=\"\"/></td></tr>\n");
-      printString2 = new StringBuffer();
-      printString2.append("</table>\n");
-    }
-
+  private final static StringBuffer printString2;
+  static {
+    printString1 = new StringBuffer();
+    printString1.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"1\">");
+    printString1.append("<tr><td><img src=\"").append(GraphicElementFactory.getIconsPath());
+    printString1.append("/tabs/1px.gif\" alt=\"\"/></td></tr>\n");
+    printString2 = new StringBuffer();
+    printString2.append("</table>\n");
+  }
 
   public static StringBuffer getPrintString1() {
     return printString1;

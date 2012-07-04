@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,16 +26,45 @@ package com.silverpeas.util.template;
 
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SilverpeasTemplateFactory {
 
-  public static SilverpeasTemplate createSilverpeasTemplate(Properties configuration) {
+  private static final String separator = "/";
+
+  public static SilverpeasTemplate createSilverpeasTemplate(final Properties configuration) {
     return new SilverpeasStringTemplate(configuration);
   }
-  
+
   public static SilverpeasTemplate createSilverpeasTemplateOnComponents() {
-    Properties config = new Properties();
-    config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, SilverpeasStringTemplateUtil.defaultComponentsDir);
-    config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, SilverpeasStringTemplateUtil.customComponentsDir);
-    return new SilverpeasStringTemplate(config);
+    return createSilverpeasTemplateOnComponents(null);
+  }
+
+  public static SilverpeasTemplate createSilverpeasTemplateOnComponents(final String pathSuffix) {
+    final Properties config = new Properties();
+    config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
+        computePath(SilverpeasStringTemplateUtil.defaultComponentsDir, pathSuffix));
+    config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
+        computePath(SilverpeasStringTemplateUtil.customComponentsDir, pathSuffix));
+    return createSilverpeasTemplate(config);
+  }
+
+  public static SilverpeasTemplate createSilverpeasTemplateOnCore(final String pathSuffix) {
+    final Properties config = new Properties();
+    config.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
+        computePath(SilverpeasStringTemplateUtil.defaultCoreDir, pathSuffix));
+    config.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
+        computePath(SilverpeasStringTemplateUtil.customCoreDir, pathSuffix));
+    return createSilverpeasTemplate(config);
+  }
+
+  private static String computePath(final String pathBase, final String pathSuffix) {
+    final StringBuffer sb = new StringBuffer(pathBase);
+    if (StringUtils.isNotBlank(pathSuffix)) {
+      sb.append(separator);
+      sb.append(pathSuffix);
+      sb.append(separator);
+    }
+    return sb.toString().replaceAll("[/]{1,}", "/");
   }
 }

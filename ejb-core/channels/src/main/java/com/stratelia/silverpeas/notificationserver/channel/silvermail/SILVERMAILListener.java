@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -47,7 +47,7 @@ public class SILVERMAILListener extends AbstractListener {
 
   /**
    * listener of NotificationServer JMS message
-   * @param msg 
+   * @param msg
    */
   @Override
   public void onMessage(Message msg) {
@@ -65,8 +65,9 @@ public class SILVERMAILListener extends AbstractListener {
   public void send(NotificationData p_Message) throws NotificationServerException {
     try {
       Map<String, Object> keyValue = p_Message.getTargetParam();
-      String tmpSubjectString = (String) keyValue.get("SUBJECT"); //retrieves the SUBJECT key value.
-      String tmpSourceString = (String) keyValue.get("SOURCE"); //retrieves the SOURCE key value.
+      String tmpSubjectString = (String) keyValue.get("SUBJECT"); // retrieves the SUBJECT key
+      // value.
+      String tmpSourceString = (String) keyValue.get("SOURCE"); // retrieves the SOURCE key value.
       String tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL key value.
       Date tmpDate = (Date) keyValue.get("DATE"); // retrieves the DATE key value.
       SILVERMAILMessage sm = new SILVERMAILMessage();

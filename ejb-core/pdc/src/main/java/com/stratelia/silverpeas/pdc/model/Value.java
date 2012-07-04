@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -108,15 +108,16 @@ public class Value extends TreeNode implements java.io.Serializable {
   }
 
   public String getStringFullPath(String delimitor) {
-    String fullPathAsStr = "";
+    String fullPath = "";
+    Value value = null;
     for (int i = 0; i < pathValues.size(); i++) {
-      Value value = pathValues.get(i);
-      if (i != 0)  {
-        fullPathAsStr += delimitor;
+      value = pathValues.get(i);
+      if (i != 0) {
+        fullPath += delimitor;
       }
-      fullPathAsStr += value.getName();
+      fullPath += value.getName();
     }
-    return fullPathAsStr;
+    return fullPath;
   }
 
   @Override

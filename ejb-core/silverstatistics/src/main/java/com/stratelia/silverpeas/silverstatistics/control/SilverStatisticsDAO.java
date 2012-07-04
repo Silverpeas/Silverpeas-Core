@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.google.common.base.Joiner;
@@ -42,14 +43,12 @@ import java.util.List;
 
 /**
  * This is the alimentation statistics DAO Object
- *
  * @author sleroux
  */
 public class SilverStatisticsDAO {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param type
    * @param valueKeys
@@ -65,16 +64,13 @@ public class SilverStatisticsDAO {
     PreparedStatement prepStmt = null;
     int i = 0;
 
-
     Collection<String> theKeys = conf.getAllKeys(type);
     Joiner joiner = Joiner.on(",");
     joiner.appendTo(insertStatementBuf, theKeys);
     insertStatementBuf.append(") ");
 
     insertStatementBuf.append("VALUES(?");
-    for (int j = 0;
-        j < conf.getNumberOfKeys(type) - 1;
-        j++) {
+    for (int j = 0; j < conf.getNumberOfKeys(type) - 1; j++) {
       insertStatementBuf.append(",?");
     }
     insertStatementBuf.append(")");
@@ -85,8 +81,7 @@ public class SilverStatisticsDAO {
           "root.MSG_GEN_PARAM_VALUE",
           "insertStatement=" + insertStatement);
       prepStmt = con.prepareStatement(insertStatement);
-      for (String currentKey :
-          theKeys) {
+      for (String currentKey : theKeys) {
         i++;
         String currentType = conf.getKeyType(type, currentKey);
         if (currentType.equals("DECIMAL")) {
@@ -141,13 +136,12 @@ public class SilverStatisticsDAO {
   }
 
   /**
-   * 
    * @param con
    * @param type
    * @param valueKeys
    * @param conf
    * @throws SQLException
-   * @throws IOException 
+   * @throws IOException
    */
   public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
       StatisticsConfig conf) throws SQLException, IOException {

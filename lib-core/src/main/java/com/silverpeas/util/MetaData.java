@@ -1,24 +1,26 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
- * 
-* This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * 
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have recieved a copy of
- * the text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
- * 
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
- * 
-* You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
- * 
-*/
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.util;
 
 import java.text.ParseException;
@@ -49,6 +51,7 @@ public class MetaData {
 
   /**
    * Return Title of an Office document
+   *
    * @return String
    */
   public String getTitle() {
@@ -57,6 +60,7 @@ public class MetaData {
 
   /**
    * Return Subject of an Office document
+   *
    * @return String
    */
   public String getSubject() {
@@ -65,6 +69,7 @@ public class MetaData {
 
   /**
    * Return Author of an Office document
+   *
    * @return String
    */
   public String getAuthor() {
@@ -77,6 +82,7 @@ public class MetaData {
 
   /**
    * Return Comments of an Office document
+   *
    * @return String
    */
   public String getComments() {
@@ -89,6 +95,7 @@ public class MetaData {
 
   /**
    * Return Security of an Office document
+   *
    * @return String
    */
   public int getSecurity() {
@@ -97,6 +104,7 @@ public class MetaData {
 
   /**
    * Return Keywords of an Office document
+   *
    * @return String
    */
   public String getKeywords() {
@@ -105,6 +113,7 @@ public class MetaData {
 
   /**
    * Return SILVERID of an Office document
+   *
    * @return String
    */
   public String getSilverId() {
@@ -113,18 +122,45 @@ public class MetaData {
 
   /**
    * Return SILVERNAME of an Office document
+   *
    * @return String
    */
   public String getSilverName() {
     return metadata.get("SILVERNAME");
   }
 
-  /**
-   * Return LastSaveDateTime of an Office document
-   * @return String
-   */
   public Date getLastSaveDateTime() {
-    String date = metadata.get(Metadata.LAST_SAVED);
+    Date date = parseDate(Metadata.LAST_SAVED);
+    if (date == null) {
+      return parseDate(Metadata.LAST_MODIFIED);
+    }
+    return date;
+  }
+
+  /**
+   * Return CreateDateTime of an Office document
+   */
+  public Date getCreationDate() {
+    Date result = getDate(Metadata.CREATION_DATE);
+    if (result == null) {
+      result = metadata.getDate(Metadata.DATE_CREATED);
+    }
+    if (result == null) {
+      result = metadata.getDate(Metadata.DATE);
+    }
+    return result;
+  }
+
+  protected Date getDate(Property property) {
+    Date result = metadata.getDate(property);
+    if (result == null) {
+      return parseDate(property);
+    }
+    return result;
+  }
+
+  protected Date parseDate(Property property) {
+    String date = metadata.get(property);
     if (date != null) {
       try {
         return DateUtil.parse(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -133,23 +169,5 @@ public class MetaData {
       }
     }
     return null;
-  }
-
-  /**
-   * Return CreateDateTime of an Office document
-   */
-  public Date getCreationDate() {
-    Date result = metadata.getDate(Metadata.CREATION_DATE);
-    if (result == null) {
-      String date = metadata.get(Metadata.CREATION_DATE);
-      if (date != null) {
-        try {
-          return DateUtil.parse(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        } catch (ParseException ex) {
-          return null;
-        }
-      }
-    }
-    return result;
   }
 }

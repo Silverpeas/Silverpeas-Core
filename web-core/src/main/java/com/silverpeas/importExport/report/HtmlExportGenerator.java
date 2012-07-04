@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.importExport.report;
 
 import java.util.List;
@@ -96,7 +97,7 @@ public class HtmlExportGenerator {
   public static String getHtmlStyle() {
     ElementContainer xhtmlcontainer = new ElementContainer();
     xhtmlcontainer.addElement(new link().setType("text/css").setRel("stylesheet").setHref(
-          "treeview/display.css"));
+        "treeview/display.css"));
     return xhtmlcontainer.toString();
   }
 
@@ -105,7 +106,7 @@ public class HtmlExportGenerator {
    * @return
    */
   String writeEnTeteSommaire(String text) {
-    ElementContainer xhtmlcontainer = new ElementContainer();    
+    ElementContainer xhtmlcontainer = new ElementContainer();
     div entete = new div();
     entete.setClass("numberOfDocument");
     entete.addElement(encode(text));
@@ -117,7 +118,8 @@ public class HtmlExportGenerator {
     ElementContainer xhtmlcontainer = new ElementContainer();
     head header = new head();
     header.addElement(new title(title));
-    header.addElement(new meta().setContent("text/html; charset=UTF-8").setHttpEquiv("Content-Type"));
+    header.addElement(new meta().setContent("text/html; charset=UTF-8")
+        .setHttpEquiv("Content-Type"));
     header.addElement(getHtmlStyle());
     if (treeview) {
       header.addElement(new script().setType("text/javascript").setSrc("treeview/TreeView.js"));
@@ -155,10 +157,9 @@ public class HtmlExportGenerator {
   }
 
   /**
-   * 
    * @param fileName
    * @param pubIds
-   * @return 
+   * @return
    */
   public String toHTML(String fileName, Collection<String> pubIds) {
     StringBuilder sb = new StringBuilder();
@@ -249,7 +250,8 @@ public class HtmlExportGenerator {
     sb.append("</script>\n");
     sb.append("</div>");
     sb.append("<div id=\"frameContent\">");
-    sb.append(
+    sb
+        .append(
         "<iframe name=\"publis\" width=\"100%\" height=\"100%\" frameborder=\"0\" scrolling=\"auto\"/>");
     sb.append("</div>\n");
     sb.append(getEndOfPage());
@@ -269,7 +271,8 @@ public class HtmlExportGenerator {
       }
 
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
-        String componentName = orgaController.getComponentInstLight(node.getNodePK().getInstanceId()).
+        String componentName =
+            orgaController.getComponentInstLight(node.getNodePK().getInstanceId()).
             getLabel();
 
         // regarder si ce topic contient des publications
@@ -382,12 +385,13 @@ public class HtmlExportGenerator {
    * Specific Kmax
    * @param axis
    * @param language
-   * @return 
+   * @return
    */
   public String kmaxAxisToHTML(List<NodeDetail> axis, String language) {
     StringBuilder sb = new StringBuilder();
     String htmlFileExportDir = encode(fileExportDir);
-    sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") + htmlFileExportDir,
+    sb.append(getBeginningOfPage(resourceLocator.getString("importExport.index") +
+        htmlFileExportDir,
         false));
     sb.append("<body>\n");
     sb.append("<script language=\"JavaScript\" type=\"text/javascript\">\n");
@@ -412,7 +416,8 @@ public class HtmlExportGenerator {
     sb.append("<body>\n");
 
     sb.append(NEW_LINE);
-    sb.append(
+    sb
+        .append(
         "<table width=\"100%\" align=\"center\" cellspacing=\"0\" cellpadding=\"2\" bgcolor=\"#B3BFD1\">\n");
     sb.append("<tr>\n");
     sb.append("<td width=\"100%\" align=\"center\">\n");
@@ -420,9 +425,10 @@ public class HtmlExportGenerator {
     sb.append("</td>\n");
     sb.append("</tr>\n");
     sb.append("</table>\n");
-    String axisName  ;
+    String axisName;
     int axisNb = 0;
-    sb.append(
+    sb
+        .append(
         "<table border=0 width=\"100%\" valign=center cellspacing=\"0\" cellpadding=\"2\" class=\"intfdcolor\">\n");
     sb.append("<tr>\n");
     for (NodeDetail node : axis) {
@@ -441,7 +447,8 @@ public class HtmlExportGenerator {
       } else if (node.getLevel() == 3) {
         sb.append("<option value=\"").append(node.getNodePK().getId());
         sb.append("\" class=\"intfdcolor51\">");
-        sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language))).append("</option>\n");
+        sb.append(EncodeHelper.javaStringToHtmlString(node.getName(language)))
+            .append("</option>\n");
       } else {
         String spaces = "";
         for (int i = 0; i < node.getLevel() - 3; i++) {
@@ -485,11 +492,10 @@ public class HtmlExportGenerator {
   }
 
   /**
-   * 
    * @param combinationLabels
    * @param timeCriteria
    * @param iframe
-   * @return 
+   * @return
    */
   public String kmaxPublicationsToHTML(List<String> combinationLabels, String timeCriteria,
       String iframe) {
@@ -501,7 +507,8 @@ public class HtmlExportGenerator {
     sb.append(getHtmlStyle());
     sb.append("</head>\n<body>\n");
     if (!combinationLabels.isEmpty()) {
-      sb.append(
+      sb
+          .append(
           "<table width=\"100%\" align=center cellspacing=\"0\" cellpadding=\"2\" bgcolor=\"#B3BFD1\">\n");
       sb.append("<tr>\n");
       sb.append("<td width=\"100%\" align=\"center\">\n");

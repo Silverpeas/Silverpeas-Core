@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,17 +39,15 @@ import java.util.List;
 
 /**
  * Class declaration
- *
  * @author
  */
-public class InterestCenterPeasRequestRouter
-    extends ComponentRequestRouter<InterestCenterSessionController> {
+public class InterestCenterPeasRequestRouter extends
+    ComponentRequestRouter<InterestCenterSessionController> {
 
   private static final long serialVersionUID = -6581146192028464533L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -72,11 +70,11 @@ public class InterestCenterPeasRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param icSC     The component Session Control, build and initialised.
-   * @param request  The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * @param icSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function, InterestCenterSessionController icSC,
       HttpServletRequest request) {

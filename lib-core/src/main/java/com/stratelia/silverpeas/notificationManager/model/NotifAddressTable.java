@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,7 +76,8 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    * Returns all the NotifAddressRow having a given notifChannelId
    */
   public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId) throws UtilException {
-    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
+    List<NotifAddressRow> rows =
+        getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -87,7 +88,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    * Returns all the NotifAddressRow having a given userId
    */
   public NotifAddressRow[] getAllByUserId(int userId) throws UtilException {
-    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
+    List<NotifAddressRow> rows = getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -98,7 +99,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    * Returns all the rows.
    */
   public NotifAddressRow[] getAllRows() throws UtilException {
-    List<NotifAddressRow> rows =  getRows(SELECT_ALL_NOTIFADDRESS);
+    List<NotifAddressRow> rows = getRows(SELECT_ALL_NOTIFADDRESS);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
@@ -109,14 +110,14 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
    * Returns the unique row given by a no parameters query.
    */
   public NotifAddressRow getNotifAddress(String query) throws UtilException {
-    return  getUniqueRow(query);
+    return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
   public NotifAddressRow[] getNotifAddresss(String query) throws UtilException {
-    List<NotifAddressRow> rows =  getRows(query);
+    List<NotifAddressRow> rows = getRows(query);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 

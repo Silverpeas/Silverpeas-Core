@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.Subscription;
@@ -41,29 +42,30 @@ import java.util.Set;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class SubscriptionDao {
 
   public static final String ADD_SUBSCRIPTION =
-          "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
+      "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
   public static final String REMOVE_SUBSCRIPTION =
-          "DELETE FROM subscribe WHERE actorId = ? AND nodeId = ? AND componentName = ?";
+      "DELETE FROM subscribe WHERE actorId = ? AND nodeId = ? AND componentName = ?";
   public static final String REMOVE_USER_SUBSCRIPTIONS = "DELETE FROM subscribe WHERE actorId = ?";
-  public static final String SELECT_SUBSCRIPTIONS_BY_USER = "SELECT nodeId, componentName, space FROM subscribe WHERE actorId = ?";
-  public static final String SELECT_SUBSCRIBERS_FOR_NODE = "SELECT actorId FROM subscribe WHERE nodeId = ? AND componentName = ?";
-  public static final String SELECT_NODE_FOR_COMPONENT_BY_USER = "SELECT nodeId, space FROM subscribe WHERE actorId = ? AND componentName = ?";
-  public static final String REMOVE_SUBSCRIPTIONS_BY_PATH = "DELETE FROM subscribe WHERE componentName = ? AND nodeId IN ( "
-          + "	SELECT nodeId FROM sb_node_node WHERE nodePath LIKE ? AND instanceId = ?)";
+  public static final String SELECT_SUBSCRIPTIONS_BY_USER =
+      "SELECT nodeId, componentName, space FROM subscribe WHERE actorId = ?";
+  public static final String SELECT_SUBSCRIBERS_FOR_NODE =
+      "SELECT actorId FROM subscribe WHERE nodeId = ? AND componentName = ?";
+  public static final String SELECT_NODE_FOR_COMPONENT_BY_USER =
+      "SELECT nodeId, space FROM subscribe WHERE actorId = ? AND componentName = ?";
+  public static final String REMOVE_SUBSCRIPTIONS_BY_PATH =
+      "DELETE FROM subscribe WHERE componentName = ? AND nodeId IN ( "
+      + "	SELECT nodeId FROM sb_node_node WHERE nodePath LIKE ? AND instanceId = ?)";
 
   SubscriptionDao() {
   }
 
   /**
    * Method declaration
-   *
-   *
    * @param con
    * @param subscription
    * @throws SQLException
@@ -86,8 +88,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
-   *
    * @param con
    * @param subscription
    * @throws SQLException
@@ -109,8 +109,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
-   *
    * @param con
    * @param userId
    * @throws SQLException
@@ -118,7 +116,7 @@ public class SubscriptionDao {
    */
   public void remove(Connection con, String userId) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.removeByUser",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_USER_SUBSCRIPTIONS);
@@ -131,7 +129,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param componentName
    * @param path
@@ -139,7 +136,7 @@ public class SubscriptionDao {
    * @see
    */
   public void removeByNodePath(Connection con, String componentName, String path) throws
-          SQLException {
+      SQLException {
     String likePath = path + '%';
     PreparedStatement prepStmt = null;
     try {
@@ -155,9 +152,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
-   *
-   *
    * @param con
    * @param userId
    * @return
@@ -165,7 +159,7 @@ public class SubscriptionDao {
    * @see
    */
   public Collection<? extends Subscription> getSubscriptionsBySubscriber(Connection con,
-          String userId) throws SQLException {
+      String userId) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getNodePKsByActor", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -176,7 +170,7 @@ public class SubscriptionDao {
       List<NodeSubscription> list = new ArrayList<NodeSubscription>();
       while (rs.next()) {
         NodePK nodePK = new NodePK(String.valueOf(rs.getInt("nodeId")), rs.getString("space"), rs.
-                getString("componentName"));
+            getString("componentName"));
         list.add(new NodeSubscription(userId, nodePK));
       }
       return list;
@@ -187,8 +181,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
-   *
    * @param con
    * @param userId
    * @param componentName
@@ -196,11 +188,12 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public Collection<? extends Subscription> getSubscriptionsBySubscriberAndComponent(Connection con,
-          String userId,
-          String componentName) throws SQLException {
+  public Collection<? extends Subscription> getSubscriptionsBySubscriberAndComponent(
+      Connection con,
+      String userId,
+      String componentName) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getNodePKsBySubscriberComponent",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -210,7 +203,8 @@ public class SubscriptionDao {
       rs = prepStmt.executeQuery();
       List<NodeSubscription> list = new ArrayList<NodeSubscription>();
       while (rs.next()) {
-        NodePK nodePK = new NodePK(String.valueOf(rs.getInt("nodeId")), rs.getString("space"), componentName);
+        NodePK nodePK =
+            new NodePK(String.valueOf(rs.getInt("nodeId")), rs.getString("space"), componentName);
         list.add(new NodeSubscription(userId, nodePK));
       }
       return list;
@@ -221,9 +215,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
-   *
-   *
    * @param con
    * @param key
    * @return
@@ -231,7 +222,8 @@ public class SubscriptionDao {
    * @see
    */
   public Collection<String> getSubscribers(Connection con, WAPrimaryKey key) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getActorPKsByNodePK", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscriptionDao.getActorPKsByNodePK",
+        "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -250,7 +242,7 @@ public class SubscriptionDao {
   }
 
   public Collection<String> getSubscribers(Connection con, Collection<? extends WAPrimaryKey> pks)
-          throws SQLException {
+      throws SQLException {
     Set<String> result = new HashSet<String>();
     for (WAPrimaryKey pk : pks) {
       findSubscribers(con, pk, result);
@@ -259,7 +251,7 @@ public class SubscriptionDao {
   }
 
   void findSubscribers(Connection con, WAPrimaryKey pk, Collection<String> result)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.findSubscribers", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

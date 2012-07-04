@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
@@ -44,15 +45,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The Web representation of the position of a Silverpeas's resource in the classification plan
- * (PdC). As such, it publishes only some of the business classification's position attributes.
- * 
- * A position of a resource on the PdC defines an atomic semantic information about its content.
- * As such, it can be a single or a set of values in the different PdC's axis. An axis value
- * can be a single semantic term or a hierarchical tree of semantic terms carrying a deeper
- * exactness about the concept's value. For example, in a geographic axis, the value France can be
- * a tree in which it is splited into regions, departments, towns, and so on, each of theses terms
- * giving a more accuracy about a geographic position (that is the semantic concept of the
- * geographic axis).
+ * (PdC). As such, it publishes only some of the business classification's position attributes. A
+ * position of a resource on the PdC defines an atomic semantic information about its content. As
+ * such, it can be a single or a set of values in the different PdC's axis. An axis value can be a
+ * single semantic term or a hierarchical tree of semantic terms carrying a deeper exactness about
+ * the concept's value. For example, in a geographic axis, the value France can be a tree in which
+ * it is splited into regions, departments, towns, and so on, each of theses terms giving a more
+ * accuracy about a geographic position (that is the semantic concept of the geographic axis).
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -68,8 +67,8 @@ public class PdcPositionEntity implements Exposable {
 
   /**
    * Creates a Web entity representing a position on the PdC from the specified business
-   * classification position. It is expressed in the specified language and it is located in the
-   * PdC classification identified by the specified URI. 
+   * classification position. It is expressed in the specified language and it is located in the PdC
+   * classification identified by the specified URI.
    * @param position the ClassifyPosition instance the web entity should represent.
    * @param inLanguage the language in which the position should expressed.
    * @param inClassificationByURI the URI identifying the PdC classification to which the position
@@ -77,18 +76,18 @@ public class PdcPositionEntity implements Exposable {
    * @return a PdcPositionEntity instance.
    */
   public static PdcPositionEntity fromClassifyPosition(final ClassifyPosition position,
-          String inLanguage, final URI inClassificationByURI) {
+      String inLanguage, final URI inClassificationByURI) {
     String positionId = String.valueOf(position.getPositionId());
     return new PdcPositionEntity(
-            fromClassifyValues(position.getListClassifyValue(), inLanguage)).withURI(
-            inClassificationByURI, positionId).
-            withId(positionId);
+        fromClassifyValues(position.getListClassifyValue(), inLanguage)).withURI(
+        inClassificationByURI, positionId).
+        withId(positionId);
   }
-  
+
   /**
    * Creates a Web entity representing a position on the PdC from the specified business
-   * classification position. It is expressed in the specified language and it is located in the
-   * PdC classification identified by the specified URI. 
+   * classification position. It is expressed in the specified language and it is located in the PdC
+   * classification identified by the specified URI.
    * @param position the position on the PdC the web entity should represent.
    * @param inLanguage the language in which the position should expressed.
    * @param inClassificationByURI the URI identifying the PdC classification to which the position
@@ -96,9 +95,9 @@ public class PdcPositionEntity implements Exposable {
    * @return a PdcPositionEntity instance.
    */
   public static PdcPositionEntity fromPdcPosition(final PdcPosition position, String inLanguage,
-          final URI inClassificationByURI) {
+      final URI inClassificationByURI) {
     return new PdcPositionEntity(fromPdcAxisValues(position.getValues(), inLanguage)).withURI(
-            inClassificationByURI, position.getId()).withId(position.getId());
+        inClassificationByURI, position.getId()).withId(position.getId());
   }
 
   /**
@@ -126,7 +125,7 @@ public class PdcPositionEntity implements Exposable {
     }
     return new ClassifyPosition(positionId, classifyValues);
   }
-  
+
   public PdcPosition toPdcPosition() {
     PdcPosition position = new PdcPosition().withId(id);
     for (PdcPositionValueEntity valueEntity : values) {
@@ -167,8 +166,8 @@ public class PdcPositionEntity implements Exposable {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    return !(this.values != other.values && (this.values == null
-            || !this.values.equals(other.values)));
+    return !(this.values != other.values && (this.values == null || !this.values
+        .equals(other.values)));
   }
 
   @Override
@@ -196,21 +195,24 @@ public class PdcPositionEntity implements Exposable {
       uriAsStr = getURI().toString();
     }
     return "PdcPositionEntity{id=" + getId() + ", uri=" + uriAsStr + ", values="
-            + valueArray.toString() + "}";
+        + valueArray.toString() + "}";
   }
 
   private static List<PdcPositionValueEntity> fromClassifyValues(final List<ClassifyValue> values,
-          String inLanguage) {
-    List<PdcPositionValueEntity> positionValues = new ArrayList<PdcPositionValueEntity>(values.size());
+      String inLanguage) {
+    List<PdcPositionValueEntity> positionValues =
+        new ArrayList<PdcPositionValueEntity>(values.size());
     for (ClassifyValue value : values) {
       positionValues.add(PdcPositionValueEntity.fromClassifiyValue(value, inLanguage));
     }
     return positionValues;
   }
-  
-  private static List<PdcPositionValueEntity> fromPdcAxisValues(final Collection<PdcAxisValue> values,
-          String inLanguage) {
-    List<PdcPositionValueEntity> positionValues = new ArrayList<PdcPositionValueEntity>(values.size());
+
+  private static List<PdcPositionValueEntity> fromPdcAxisValues(
+      final Collection<PdcAxisValue> values,
+      String inLanguage) {
+    List<PdcPositionValueEntity> positionValues =
+        new ArrayList<PdcPositionValueEntity>(values.size());
     for (PdcAxisValue value : values) {
       positionValues.add(PdcPositionValueEntity.fromPdcAxisValue(value, inLanguage));
     }
@@ -227,7 +229,8 @@ public class PdcPositionEntity implements Exposable {
   /**
    * Sets the synonyms for each value of this position from the specified thesaurus.
    * @param userThesaurus a user thesaurus from which synonyms can be get.
-   * @throws ThesaurusException if an error occurs while getting the synonyms of this position's values.
+   * @throws ThesaurusException if an error occurs while getting the synonyms of this position's
+   * values.
    */
   protected void setSynonymsFrom(final UserThesaurusHolder userThesaurus) throws ThesaurusException {
     for (PdcPositionValueEntity pdcPositionValue : values) {
@@ -243,7 +246,7 @@ public class PdcPositionEntity implements Exposable {
     } else {
       String requestURI = baseURI.toString();
       this.uri = URI.create(requestURI.substring(0, requestURI.lastIndexOf("?")) + positionPath
-              + "?" + query);
+          + "?" + query);
     }
     return this;
   }

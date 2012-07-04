@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,10 +128,10 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       out.println("   	}");
       out.println("   } ");
     }
-   
-    if (!template.isReadOnly()) { 
-       Util.includeFileNameLengthChecker(template, pageContext, out);
-       Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
+
+    if (!template.isReadOnly()) {
+      Util.includeFileNameLengthChecker(template, pageContext, out);
+      Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
     }
   }
 
@@ -158,7 +158,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
-            ", fieldType = " + field.getTypeName());
+        ", fieldType = " + field.getTypeName());
 
     String html = "";
 
@@ -185,14 +185,14 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html = "<img alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\" width=\"20\">&nbsp;";
         html +=
             "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-                attachment.getLogicalName() + "</a>";
+            attachment.getLogicalName() + "</a>";
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       html +=
           "<input type=\"file\" size=\"50\" id=\"" + fieldName + "\" name=\"" + fieldName + "\"/>";
       html +=
           "<input type=\"hidden\" id=\"" + fieldName + FileField.PARAM_ID_SUFFIX + "\" name=\"" +
-              fieldName + FileField.PARAM_NAME_SUFFIX + "\" value=\"" + attachmentId + "\"/>";
+          fieldName + FileField.PARAM_NAME_SUFFIX + "\" value=\"" + attachmentId + "\"/>";
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
@@ -201,19 +201,19 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
             "<img alt=\"\" align=\"top\" src=\"" + attachment.getAttachmentIcon() +
-                "\" width=\"20\"/>&nbsp;";
+            "\" width=\"20\"/>&nbsp;";
         html +=
             "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
-                attachment.getLogicalName() + "</a>";
+            attachment.getLogicalName() + "</a>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div" +
-                fieldName + "').style.display='none';" + "document." + pagesContext.getFormName() +
-                "." + fieldName + FileField.PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId +
-                "';" + "\">";
+            fieldName + "').style.display='none';" + "document." + pagesContext.getFormName() +
+            "." + fieldName + FileField.PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId +
+            "';" + "\">";
         html +=
             "<img src=\"" + deleteImg + "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" +
-                deleteLab + "\" align=\"top\" title=\"" + deleteLab + "\"/></a>";
+            deleteLab + "\" align=\"top\" title=\"" + deleteLab + "\"/></a>";
         html += "</span>";
       }
 
@@ -316,7 +316,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         }
         logicalName =
             logicalName
-                .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+            .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
         String type = FileRepositoryManager.getFileExtension(logicalName);
         mimeType = item.getContentType();
         if (mimeType.equals("application/x-zip-compressed")) {
@@ -344,7 +344,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         if (size > 0) {
           AttachmentDetail ad =
               createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-                  size, FileFieldDisplayer.CONTEXT_FORM_FILE, userId);
+              size, FileFieldDisplayer.CONTEXT_FORM_FILE, userId);
 
           if (pagesContext.isVersioningUsed()) {
             // mode versioning
@@ -400,7 +400,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     // create AttachmentDetail Object
     AttachmentDetail ad =
         new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context,
-            new Date(), foreignKey);
+        new Date(), foreignKey);
     ad.setAuthor(userId);
 
     return ad;
@@ -426,7 +426,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
     Document document =
         new Document(docPK, pubPK, attachment.getLogicalName(), "", -1, userId, new Date(), null,
-            null, null, null, 0, 0);
+        null, null, null, 0, 0);
 
     document.setWorkList((ArrayList<Worker>) getWorkers(componentId, userId));
 

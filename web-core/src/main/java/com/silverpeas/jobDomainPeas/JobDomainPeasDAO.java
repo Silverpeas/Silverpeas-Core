@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package com.silverpeas.jobDomainPeas;
 
@@ -43,19 +43,19 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Class declaration Get connections data from database
- * @author
- */
+* Class declaration Get connections data from database
+* @author
+*/
 public class JobDomainPeasDAO {
 
   private static final String DB_NAME = JNDINames.SILVERPEAS_DATASOURCE;
 
   /**
-   * Création de la table Domain<domainName>_Group
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Création de la table Domain<domainName>_Group
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void createTableDomain_Group(String domainName)
       throws SQLException {
     SilverTrace
@@ -63,9 +63,9 @@ public class JobDomainPeasDAO {
             "root.MSG_GEN_ENTER_METHOD");
 
     String createQuery = " CREATE TABLE Domain" + domainName + "_Group " + "("
-        + "	id int NOT NULL ," + "	superGroupId int NULL ,"
-        + "	name varchar(100) NOT NULL ," + "	description varchar(400) NULL ,"
-        + "	grSpecificInfo varchar(50) NULL" + ")";
+        + " id int NOT NULL ," + " superGroupId int NULL ,"
+        + " name varchar(100) NOT NULL ," + " description varchar(400) NULL ,"
+        + " grSpecificInfo varchar(50) NULL" + ")";
 
     Statement stmt = null;
     Connection myCon = getConnection();
@@ -80,11 +80,11 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Suppression de la table Domain<domainName>_Group
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Suppression de la table Domain<domainName>_Group
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void dropTableDomain_Group(String domainName)
       throws SQLException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasDAO.dropTableDomain_Group",
@@ -104,11 +104,11 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Création de la table Domain<domainName>_User
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Création de la table Domain<domainName>_User
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void createTableDomain_User(String domainName)
       throws SQLException {
     SilverTrace.info("jobDomainPeas",
@@ -157,11 +157,11 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Suppression de la table Domain<domainName>_User
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Suppression de la table Domain<domainName>_User
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void dropTableDomain_User(String domainName)
       throws SQLException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasDAO.dropTableDomain_User",
@@ -181,11 +181,11 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Création de la table Domain<domainName>_Group_User_Rel
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Création de la table Domain<domainName>_Group_User_Rel
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void createTableDomain_Group_User_Rel(String domainName)
       throws SQLException {
     SilverTrace.info("jobDomainPeas",
@@ -209,11 +209,11 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Suppression de la table Domain<domainName>_Group_User_Rel
-   * @param domainName
-   * @throws SQLException
-   * @see
-   */
+* Suppression de la table Domain<domainName>_Group_User_Rel
+* @param domainName
+* @throws SQLException
+* @see
+*/
   public static void dropTableDomain_Group_User_Rel(String domainName)
       throws SQLException {
     SilverTrace.info("jobDomainPeas",
@@ -234,10 +234,10 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Method declaration
-   * @return
-   * @see
-   */
+* Method declaration
+* @return
+* @see
+*/
   private static Connection getConnection() {
     try {
       Connection con = DBUtil.makeConnection(DB_NAME);
@@ -251,10 +251,10 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @see
-   */
+* Method declaration
+* @param con
+* @see
+*/
   private static void freeConnection(Connection con) {
     if (con != null) {
       try {
@@ -267,12 +267,12 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection des groupes à synchroniser en insert ou update de la table Domain<domainName>_Group
-   * @param domainName
-   * @return Collection de Group
-   * @throws SQLException
-   * @see
-   */
+* Sélection des groupes à synchroniser en insert ou update de la table Domain<domainName>_Group
+* @param domainName
+* @return Collection de Group
+* @throws SQLException
+* @see
+*/
   public static Collection<Group> selectGroupSynchroInsertUpdateTableDomain_Group(
       Domain domain) throws SQLException {
     SilverTrace.info("jobDomainPeas",
@@ -314,12 +314,12 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection des utilisateurs à synchroniser en insert ou update de la table
-   * Domain<domainName>_User
-   * @param domain
-   * @return Collection de UserFull
-   * @throws SQLException
-   */
+* Sélection des utilisateurs à synchroniser en insert ou update de la table
+* Domain<domainName>_User
+* @param domain
+* @return Collection de UserFull
+* @throws SQLException
+*/
   public static Collection<UserFull> selectUserSynchroInsertUpdateTableDomain_User(
       Domain domain) throws SQLException {
     SilverTrace.info("jobDomainPeas",
@@ -360,12 +360,12 @@ public class JobDomainPeasDAO {
   }
 
   /**
-   * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
-   * @param domainName
-   * @return Collection de UserDetail
-   * @throws SQLException
-   * @see
-   */
+* Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
+* @param domainName
+* @return Collection de UserDetail
+* @throws SQLException
+* @see
+*/
   public static Collection<UserDetail> selectUserSynchroDeleteTableDomain_User(Domain domain)
       throws SQLException {
     SilverTrace.info("jobDomainPeas",

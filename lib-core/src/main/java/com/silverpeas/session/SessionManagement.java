@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -24,25 +24,33 @@
 
 package com.silverpeas.session;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.Collection;
 
-import com.stratelia.webactiv.beans.admin.UserDetail;
-
 /**
- * It defines the contract the session management implementation in Silverpeas should implement.
- * It should have only one activated implementation in Sivlerpeas and it should be managed by an
- * IoC container under the name 'sessionManager'.
+ * It defines the contract the session management implementation in Silverpeas should implement. It
+ * should have only one activated implementation in Sivlerpeas and it should be managed by an IoC
+ * container under the name 'sessionManager'.
  */
 public interface SessionManagement {
 
   /**
-   * Gets all the connected users and the duration of their session.
-   * @return Collection of SessionInfo
+   * Gets the session information about all the connected users that are accessible to the specified
+   * user.
+   * 
+   * According to the domain level isolation, a user can see either all the others connected users 
+   * or only thoses in the same domain.
+   * @return Collection of session information.
    */
   Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user);
 
   /**
-   * Gets the count of connected users.
+   * Gets the count of users that are connected to Silverpeas.
+   * 
+   * The domain level isolation applied to the running Silverpeas is taken into account in the
+   * computation of the connected user count: either all the connected users are taken into account
+   * or only thoses in the same domain.
+   *
    * @return the count of connected users
    */
   int getNbConnectedUsersList(UserDetail user);
@@ -53,6 +61,13 @@ public interface SessionManagement {
    * @return the information about the session mapped to the specified key.
    */
   SessionInfo getSessionInfo(String sessionKey);
+  
+  /**
+   * Is the specified user currently connected to Silverpeas?
+   * @param user the user for which the connection is checked.
+   * @return true if the user is connected, false otherwise.
+   */
+  boolean isUserConnected(UserDetail user);
 
   /**
    * Opens a new session for a user with the specified information.

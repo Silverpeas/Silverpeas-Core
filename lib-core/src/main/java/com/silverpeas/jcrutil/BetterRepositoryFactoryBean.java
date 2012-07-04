@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -25,7 +25,7 @@ package com.silverpeas.jcrutil;
  *
  * $Id: BetterRepositoryFactoryBean.java,v 1.2 2009/04/01 14:10:07 ehugonnet Exp $ $Revision: 1.2 $
  */
-import com.silverpeas.util.StringUtil;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -37,11 +37,14 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -54,10 +57,13 @@ import org.springframework.core.io.ResourceLoader;
 import org.springmodules.jcr.RepositoryFactoryBean;
 import org.xml.sax.InputSource;
 
+import com.silverpeas.util.StringUtil;
+
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.
  * Use this factory bean when you have to manually configure the repository; for retrieving the
- * repository from JNDI use the JndiObjectFactoryBean
+ * repository from JNDI use the JndiObjectFactoryBean 
+ * <code>
  * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration :
  * <code>
  * &lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
@@ -126,8 +132,8 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
       InitialContext ic = new InitialContext();
       prepareContext(ic, jndiName);
       RegistryHelper.registerRepository(new InitialContext(), jndiName,
-          getConfiguration().getFile().
-          getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(), true);
+          getConfiguration().getFile().getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(),
+          true);
       return (Repository) ic.lookup(jndiName);
     } catch (RepositoryException ex) {
       Logger.getLogger(BetterRepositoryFactoryBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -244,6 +250,17 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
       ((JackrabbitRepository) repository).shutdown();
     }
   }
+  
+  public void testCleanUp() throws IOException {
+    // force cast (but use only the interface)
+    if (repository instanceof JackrabbitRepository) {
+      ((JackrabbitRepository) repository).shutdown();
+    }
+     FileUtils.deleteQuietly(homeDir.getFile());
+  }
+  
+  
+  
 
   /**
    * @return Returns the defaultRepDir.

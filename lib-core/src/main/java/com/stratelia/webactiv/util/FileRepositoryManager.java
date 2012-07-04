@@ -1,15 +1,19 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * <<<<<<< HEAD As a special exception to the terms and conditions of version 3.0 of the GPL, you
+ * may redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing" ======= As a special exception to the terms and
+ * conditions of version 3.0 of the GPL, you may redistribute this Program in connection with
+ * Free/Libre Open Source Software ("FLOSS") applications as described in Silverpeas's FLOSS
+ * exception. You should have received a copy of the text describing the FLOSS exception, and it is
+ * also available here: "http://www.silverpeas.org/legal/licensing" >>>>>>> master
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -29,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.StringTokenizer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -47,6 +52,8 @@ public class FileRepositoryManager {
   static final String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
       + separatorChar + "avatar");
   final static String tempPath;
+  static String domainPropertiesFolderPath;
+  static String domainAuthenticationPropertiesFolderPath;
   final static ResourceLocator uploadSettings = new ResourceLocator(
       "com.stratelia.webactiv.util.uploads.uploadSettings", "");
   static final ResourceLocator utilMessages = new ResourceLocator(
@@ -65,6 +72,16 @@ public class FileRepositoryManager {
     } else {
       tempPath = temporaryPath;
     }
+
+    StringBuilder path = new StringBuilder();
+    path.append(System.getenv("SILVERPEAS_HOME")).append(File.separator);
+    path.append("properties").append(File.separator);
+    path.append("com").append(File.separator);
+    path.append("stratelia").append(File.separator);
+    path.append("silverpeas").append(File.separator);
+
+    domainPropertiesFolderPath = path.toString() + "domains" + File.separator;
+    domainAuthenticationPropertiesFolderPath = path.toString() + "authentication" + File.separator;
   }
 
   /**
@@ -72,7 +89,7 @@ public class FileRepositoryManager {
    * @param sComponentId
    * @return
    */
-  @Deprecated  
+  @Deprecated
   public static String getAbsolutePath(String sSpaceId, String sComponentId) {
     SilverTrace.debug("util", "FileRepositoryManager.getAbsolutePath",
         "concat: sSpaceId = " + sSpaceId + " sComponentId= " + sComponentId);
@@ -132,15 +149,24 @@ public class FileRepositoryManager {
 
   /**
    * Construct an OS specific relative path.
+   *
    * @param directories the names of sub directory. (path1, path2,...)
    * @return path1/path2/.../
    */
-   public static String getRelativePath(String... directories) {
+  public static String getRelativePath(String... directories) {
     return StringUtil.join(directories, separatorChar) + separatorChar;
   }
 
   public static String getTemporaryPath() {
     return tempPath + separatorChar;
+  }
+
+  static public String getDomainPropertiesPath(String domainName) {
+    return domainPropertiesFolderPath + "domain" + domainName + ".properties";
+  }
+
+  static public String getDomainAuthenticationPropertiesPath(String domainName) {
+    return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
   }
 
   public static String getTemporaryPath(String sSpaceId, String sComponentId) {
@@ -156,7 +182,7 @@ public class FileRepositoryManager {
         "particularSpace = " + particularSpace + " sComponentId= " + componentId);
     if (particularSpace != null && (particularSpace.startsWith("user@") || particularSpace.equals(
         "transverse"))) {
-      return indexUpLoadPath + separatorChar + particularSpace + separatorChar + componentId 
+      return indexUpLoadPath + separatorChar + particularSpace + separatorChar + componentId
           + separatorChar + "index";
     }
     return indexUpLoadPath + separatorChar + componentId + separatorChar + "index";
@@ -169,7 +195,7 @@ public class FileRepositoryManager {
    * @throws Exception
    * @deprecated
    */
-  @Deprecated  
+  @Deprecated
   public static void createAbsolutePath(String spaceId, String componentId, String directoryName) {
     FileFolderManager.createFolder(getAbsolutePath(componentId) + directoryName);
   }

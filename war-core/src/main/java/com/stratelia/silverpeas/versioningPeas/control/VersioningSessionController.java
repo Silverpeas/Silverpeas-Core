@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioningPeas.control;
 
 import java.io.File;
@@ -158,7 +159,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param spaceId
    * @param componentId
    * @param spaceLabel
-   * @param componentLabel 
+   * @param componentLabel
    */
   public void setAttributesContext(String spaceId, String componentId, String spaceLabel,
       String componentLabel) {
@@ -245,7 +246,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * To generate path to icon of document
    * @param physicalName
-   * @return 
+   * @return
    */
   public String getDocumentVersionIconPath(String physicalName) {
     return getDocumentVersionIconPath(physicalName, false);
@@ -255,7 +256,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * To generate path to icon of document
    * @param physicalName
    * @param isReadOnly
-   * @return 
+   * @return
    */
   public String getDocumentVersionIconPath(String physicalName,
       boolean isReadOnly) {
@@ -274,7 +275,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   /**
    * To generate path to icon for status of document
    * @param status
-   * @return 
+   * @return
    */
   public String getDocumentVersionStatusIconPath(int status) {
     if (status == 0) {
@@ -316,7 +317,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param owner_id
    * @param date
    * @param status
-   * @return 
+   * @return
    */
   public String getDocumentVersionStatusIconAlt(String msg, int owner_id, String date, int status) {
     String message = msg;
@@ -348,7 +349,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param logicalName
    * @param physicalName
    * @param mimeType
-   * @return 
+   * @return
    * @deprecated
    */
   public String getDocumentVersionURL(String space, String component_name,
@@ -642,7 +643,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     setEditingDocument(document);
     if (initialVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
       CallBackManager callBackManager = CallBackManager.get();
-      callBackManager.invoke(CallBackManager.ACTION_VERSIONING_ADD, document.getOwnerId(), document.
+      callBackManager.invoke(CallBackManager.ACTION_VERSIONING_ADD, document.getOwnerId(), document
+          .
           getForeignKey().getInstanceId(), document.getForeignKey().getId());
 
       if (isIndexable()) {
@@ -680,7 +682,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * to update document (Save it to DB)   
+   * to update document (Save it to DB)
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -697,7 +699,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document out
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -710,7 +711,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document in
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -729,7 +729,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to check document in
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -853,7 +852,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to validate document
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -868,7 +866,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to delete document
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -897,7 +894,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to refuse document
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -911,7 +907,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to create index for search engeen
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -923,7 +918,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to store in controller editing document
-  
    * @exception
    * @author Michael Nikolaenko
    * @version 1.0
@@ -953,7 +947,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * to store in controller editing document and set lists of readers and workers
-  
    * @exception RemoteException
    * @author Michael Nikolaenko
    * @version 1.0
@@ -990,7 +983,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (isWriter(document, userId)) {
       return true;
     }
-    
+
     if (VER_USE_NONE.equals(fileRightsMode)) {
       // No specific rights activated on document
       // Check rights according to rights of component (or topic)
@@ -1038,7 +1031,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     return isReader;
   }
-  
+
   private boolean isComponentAvailable(String userId) {
     return getOrganizationController().isComponentAvailable(getComponentId(), userId);
   }
@@ -1400,7 +1393,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public void updateDocumentProfile(ProfileInst profile) throws RemoteException {
     profile.removeAllGroups();
     profile.removeAllUsers();
-    profile.setGroupsAndUsers(getSelection().getSelectedSets(), getSelection().getSelectedElements());
+    profile.setGroupsAndUsers(getSelection().getSelectedSets(), getSelection()
+        .getSelectedElements());
     updateProfileInst(profile);
   }
 
@@ -1440,7 +1434,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   public ProfileInst getCurrentProfile(String role) throws RemoteException {
     ProfileInst profileInst = null;
     String documentId = getEditingDocument().getPk().getId();
-    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId, 
+    List<ProfileInst> profiles = getAdmin().getProfilesByObject(documentId,
         ObjectType.DOCUMENT.getCode(), getComponentId());
     if (profiles != null && !profiles.isEmpty()) {
       profileInst = getProfile(profiles, role);
@@ -1456,7 +1450,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         return getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
       }
     }
-    //Rights of the component
+    // Rights of the component
     return getComponentProfile(role);
   }
 
@@ -1724,7 +1718,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     ArrayList<Worker> newListWorkers = new ArrayList<Worker>();
 
     // Remove workers (groups) not in groupIds
-    for (Worker worker : workers){
+    for (Worker worker : workers) {
       if (groupIds.contains(String.valueOf(worker.getId()))
           && worker.getType().equals(SET_TYPE_GROUP) && worker.isUsed()) {
         mapCurrentWorkers.put(
@@ -1735,7 +1729,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
     Worker worker = null;
     Group groupDetail = null;
-    
+
     // Add new workers (groups) from groupIds
     boolean isUsed = true;
     boolean isSaved = false;
@@ -1844,7 +1838,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   /**
    * @param value
-   */ 
+   */
   public void setAlreadyMerged(boolean value) {
     this.alreadyMerged = value;
   }

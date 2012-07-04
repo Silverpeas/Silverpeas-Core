@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -237,7 +237,7 @@ public class InfoDAO {
 
     try {
       stmt = con.createStatement();
-      rs = stmt.executeQuery(selectStatement);     
+      rs = stmt.executeQuery(selectStatement);
       String htmlDisplayer = "";
       String htmlEditor = "";
       String id = null;
@@ -706,7 +706,8 @@ public class InfoDAO {
     InfoImagePK infoImagePK = new InfoImagePK("unknown", infoPK);
     String tableName = infoImagePK.getTableName();
 
-    String updateStatement = "update " + tableName + " set infoId = ? , infoImagePhysicalName = ? ,"
+    String updateStatement =
+        "update " + tableName + " set infoId = ? , infoImagePhysicalName = ? ,"
         + " infoImageLogicalName = ? , infoImageDescription = ? , infoImageType = ? , "
         + "infoImageSize = ? , infoImageDisplayOrder = ? where infoImageId = ? ";
     PreparedStatement prepStmt = null;

@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.tools.checkAttachments;
 
 import com.silverpeas.tools.checkAttachments.model.CheckAttachmentDetail;
@@ -57,8 +81,8 @@ public class CheckAttachmentsBatch {
       this.language = reqLanguage;
       listAttachments = getAttachments(attachmentType);
     } catch (Exception e) {
-       SilverTrace.error("admin", "CheckAttachmentBatch.check()",
-                "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.error("admin", "CheckAttachmentBatch.check()",
+          "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.check()",
           SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     }
@@ -66,7 +90,7 @@ public class CheckAttachmentsBatch {
   }
 
   /**
-   * Get orphans attachments (physicalName without logicalName in db) 
+   * Get orphans attachments (physicalName without logicalName in db)
    */
   public List<OrphanAttachment> getOrphansFiles(String context) throws RemoteException {
     if (!StringUtil.isDefined(context)) {
@@ -76,20 +100,20 @@ public class CheckAttachmentsBatch {
     List<OrphanAttachment> orphansList = new ArrayList<OrphanAttachment>();
     OrganizationController oc = new OrganizationController();
 
-    //Get all spaces
+    // Get all spaces
     String[] spaces = oc.getAllRootSpaceIds();
     if (spaces != null) {
       for (String space : spaces) {
         SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
             "root.MSG_GEN_PARAM_VALUE", "spaceid = " + space);
         String[] componentsId = oc.getAllComponentIdsRecur(space);
-        //get all components name Folders
+        // get all components name Folders
         for (int j = 0; componentsId != null && j < componentsId.length; j++) {
           String pathFolder = FileRepositoryManager.getAbsolutePath(componentsId[j])
               + contextAttachment + File.separator + context + File.separator;
           SilverTrace.info("admin", "CheckAttachmentBatch.getOrphansFiles(context)",
               "root.MSG_GEN_PARAM_VALUE", "pathFolder = " + pathFolder);
-          //get all files inside
+          // get all files inside
           File path = new File(pathFolder);
           File[] listFiles = path.listFiles();
 
@@ -129,7 +153,8 @@ public class CheckAttachmentsBatch {
    */
   public List<AttachmentDetail> getAttachmentsByPhysicalName(String physicalName) {
     List<AttachmentDetail> listAttachements = new ArrayList<AttachmentDetail>();
-    String query = "SELECT attachmentId, instanceId FROM sb_attachment_attachment WHERE attachmentPhysicalName = ?";
+    String query =
+        "SELECT attachmentId, instanceId FROM sb_attachment_attachment WHERE attachmentPhysicalName = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     Connection con = null;
@@ -144,14 +169,15 @@ public class CheckAttachmentsBatch {
         AttachmentPK attPK = new AttachmentPK(attachmentId, instanceId);
         AttachmentDetail attDetail = AttachmentController.searchAttachmentByPK(attPK);
         if (attDetail != null) {
-          SilverTrace.info("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
+          SilverTrace.info("admin",
+              "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
               "root.MSG_GEN_PARAM_VALUE", "attDetail = " + attDetail.getPK().getId());
           listAttachements.add(attDetail);
         }
       }
     } catch (SQLException e) {
       SilverTrace.error("admin", "CheckAttachmentBatch.getAttachmentsByPhysicalName(physicalName)",
-              "root.MSG_GEN_PARAM_VALUE", e);
+          "root.MSG_GEN_PARAM_VALUE", e);
       throw new AttachmentRuntimeException("CheckAttachmentsBatch.getAttachmentsByPhysicalName()",
           SilverpeasException.ERROR, "Erreur lors de la recuperation des attachments", e);
     } finally {
@@ -164,14 +190,15 @@ public class CheckAttachmentsBatch {
 
   /**
    * Get List of attachments (list form DB)
-   * @param attachmentType 
+   * @param attachmentType
    * @return List of CheckAttachmentDetail
    */
   public List<CheckAttachmentDetail> getAttachments(String attachmentType) throws SQLException,
       RemoteException {
     Connection con = openConnection();
     List<CheckAttachmentDetail> results = new ArrayList<CheckAttachmentDetail>();
-    String query = "select attachmentId, attachmentPhysicalName, attachmentLogicalName, instanceId, attachmentcontext from sb_attachment_attachment order by attachmentLogicalName";
+    String query =
+        "select attachmentId, attachmentPhysicalName, attachmentLogicalName, instanceId, attachmentcontext from sb_attachment_attachment order by attachmentLogicalName";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     OrganizationController orgaController = new OrganizationController();
@@ -188,9 +215,10 @@ public class CheckAttachmentsBatch {
           if (attDetail.getContext().equals(attachmentType)) {
             display = true;
           }
-          if (attachmentType.equals("ImagesWysiwyg")) //Images from pub and node wysiwyg
+          if (attachmentType.equals("ImagesWysiwyg")) // Images from pub and node wysiwyg
           {
-            if (attDetail.getContext().endsWith("Images") && !attDetail.getContext().equals("Images")
+            if (attDetail.getContext().endsWith("Images") &&
+                !attDetail.getContext().equals("Images")
                 && !attDetail.getContext().equals("XMLFormImages")) {
               display = true;
             }
@@ -236,12 +264,16 @@ public class CheckAttachmentsBatch {
                     + displayPath(pubDetail, false, 3) + " > " + pubDetail.getName(language);
                 cad.setPublicationPath(publicationPath);
 
-                String actionsDate = orgaController.getUserDetail(pubDetail.getCreatorId()).
-                    getDisplayedName() + " le " + DateUtil.getOutputDate(pubDetail.getCreationDate(),
+                String actionsDate =
+                    orgaController.getUserDetail(pubDetail.getCreatorId()).
+                    getDisplayedName() + " le " +
+                    DateUtil.getOutputDate(pubDetail.getCreationDate(),
                     language);
                 if (pubDetail.getUpdateDate() != null) {
-                  actionsDate += "- Revu par " + orgaController.getUserDetail(
-                      pubDetail.getUpdaterId()).getDisplayedName() + " le " + DateUtil.getOutputDate(pubDetail.
+                  actionsDate +=
+                      "- Revu par " + orgaController.getUserDetail(
+                      pubDetail.getUpdaterId()).getDisplayedName() + " le " +
+                      DateUtil.getOutputDate(pubDetail.
                       getUpdateDate(), language);
                 }
                 cad.setActionsDate(actionsDate);
@@ -259,7 +291,8 @@ public class CheckAttachmentsBatch {
             if (att.exists()) {
               if (att.length() != attDetail.getSize()) {
                 cad.setStatus(
-                    "Taille en BD: " + attDetail.getSize() + " octets, Lue: " + att.length() + " octets");
+                    "Taille en BD: " + attDetail.getSize() + " octets, Lue: " + att.length() +
+                    " octets");
               } else {
                 cad.setStatus("OK");
               }
@@ -298,8 +331,10 @@ public class CheckAttachmentsBatch {
           nodeInPath = iterator.next();
           if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
             if (!nodeInPath.getNodePK().getId().equals("0")) {
-              linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(nodeInPath.
-                  getNodePK().getId()).append("')\">").append(EncodeHelper.javaStringToHtmlString(nodeInPath.
+              linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
+                  nodeInPath.
+                  getNodePK().getId()).append("')\">").append(
+                  EncodeHelper.javaStringToHtmlString(nodeInPath.
                   getName())).append("</a>");
               pathString.append(nodeInPath.getName());
               if (iterator.hasNext()) {
@@ -332,7 +367,8 @@ public class CheckAttachmentsBatch {
       pubDetail = completePublication.getPublicationDetail();
 
     } catch (Exception e) {
-      SilverTrace.error("admin", "CheckAttachmentBatch.getPublicationDetail()", "publication.GETTING_PUBLICATION_DETAIL_FAILED" + " pubPK=" + pubPK.
+      SilverTrace.error("admin", "CheckAttachmentBatch.getPublicationDetail()",
+          "publication.GETTING_PUBLICATION_DETAIL_FAILED" + " pubPK=" + pubPK.
           toString(), e);
     }
     return pubDetail;

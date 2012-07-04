@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.attachment.control;
 
 import com.silverpeas.scheduler.Job;
@@ -42,8 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class AttachmentSchedulerImpl
-    implements SchedulerEventListener {
+public class AttachmentSchedulerImpl implements SchedulerEventListener {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS_ACTIFY = "A_ProcessActify";
   public static final String ATTACHMENT_JOB_NAME_PURGE_ACTIFY = "A_PurgeActify";
@@ -60,7 +60,7 @@ public class AttachmentSchedulerImpl
         String cronSchedulePurge = resources.getString("ScheduledPurgeActify");
 
         SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-      Scheduler scheduler = schedulerFactory.getScheduler();
+        Scheduler scheduler = schedulerFactory.getScheduler();
 
         scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY);
         scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PURGE_ACTIFY);
@@ -169,7 +169,7 @@ public class AttachmentSchedulerImpl
    * @return the job for processing actify.
    */
   private Job processActify() {
-    return new Job(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY)    {
+    return new Job(ATTACHMENT_JOB_NAME_PROCESS_ACTIFY) {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {
@@ -183,7 +183,7 @@ public class AttachmentSchedulerImpl
    * @return the job for purging actify.
    */
   private Job purgeActify() {
-    return new Job(ATTACHMENT_JOB_NAME_PURGE_ACTIFY)    {
+    return new Job(ATTACHMENT_JOB_NAME_PURGE_ACTIFY) {
 
       @Override
       public void execute(JobExecutionContext context) throws Exception {

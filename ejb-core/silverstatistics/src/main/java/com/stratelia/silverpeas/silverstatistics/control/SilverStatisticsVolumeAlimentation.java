@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.control;
 
 import com.silverpeas.silverstatistics.ComponentStatisticsInterface;
@@ -39,7 +43,6 @@ import java.util.ResourceBundle;
 /**
  * This is the alimentation for the statistics on volume. It gets the number of elements from each
  * components from each space. All components must implements the ComponentStatisticsInterface.
- *
  * @author sleroux
  */
 public class SilverStatisticsVolumeAlimentation {
@@ -50,23 +53,21 @@ public class SilverStatisticsVolumeAlimentation {
   static {
     try {
       resources = FileUtil.loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics",
-              Locale.getDefault());
+          Locale.getDefault());
     } catch (Exception ex) {
       SilverTrace.error("silverstatistics", "SilverStatisticsVolumeAlimentation",
-              "root.EX_CLASS_NOT_INITIALIZED", ex);
+          "root.EX_CLASS_NOT_INITIALIZED", ex);
     }
   }
 
   /**
    * Method declaration
-   *
    * @see
    */
   public static void makeVolumeAlimentationForAllComponents() {
     java.util.Date now = new java.util.Date();
     // get all spaces
     List<String> listAllSpacesId = getAllSpacesAndAllSubSpacesId();
-
 
     if (listAllSpacesId != null && !listAllSpacesId.isEmpty()) {
 
@@ -78,22 +79,23 @@ public class SilverStatisticsVolumeAlimentation {
         for (ComponentInst ci : listAllComponentsInst) {
           String currentComponentsId = ci.getId();
           // get all elements from a component
-          Collection<UserIdCountVolumeCouple> collectionUserIdCountVolume = getCollectionUserIdCountVolume(
-                  currentSpaceId, ci);
+          Collection<UserIdCountVolumeCouple> collectionUserIdCountVolume =
+              getCollectionUserIdCountVolume(
+              currentSpaceId, ci);
 
           if (collectionUserIdCountVolume != null) {
             for (UserIdCountVolumeCouple currentUserIdCountVolume : collectionUserIdCountVolume) {
               SilverTrace.debug("silverstatistics",
-                      "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
-                      "userId= " + currentUserIdCountVolume.getUserId() + " countVolume=  "
-                      + currentUserIdCountVolume.getCountVolume() + " name= " + ci.getName()
-                      + " spaceId= " + currentSpaceId + " compoId= " + currentComponentsId);
+                  "SilverStatisticsVolumeAlimentation.makeVolumeAlimentationForAllComponents",
+                  "userId= " + currentUserIdCountVolume.getUserId() + " countVolume=  "
+                  + currentUserIdCountVolume.getCountVolume() + " name= " + ci.getName()
+                  + " spaceId= " + currentSpaceId + " compoId= " + currentComponentsId);
 
               // notify statistics
               SilverStatisticsManager.getInstance().addStatVolume(
-                      currentUserIdCountVolume.getUserId(),
-                      currentUserIdCountVolume.getCountVolume(), now, ci.getName(), currentSpaceId,
-                      currentComponentsId);
+                  currentUserIdCountVolume.getUserId(),
+                  currentUserIdCountVolume.getCountVolume(), now, ci.getName(), currentSpaceId,
+                  currentComponentsId);
             }
           }
         }
@@ -103,7 +105,6 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -118,7 +119,6 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   *
    * @param spaceId
    * @return
    * @see
@@ -130,41 +130,40 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Method declaration
-   *
    * @param spaceId
    * @param componentId
    * @return
    * @see
    */
   private static Collection<UserIdCountVolumeCouple> getCollectionUserIdCountVolume(String spaceId,
-          ComponentInst ci) {
+      ComponentInst ci) {
     Collection<UserIdCountVolumeCouple> c = null;
     try {
       SilverTrace.info("silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "root.MSG_GEN_PARAM_VALUE", "spaceId=" + spaceId);
       SilverTrace.info(
-              "silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
+          "silverstatistics",
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "root.MSG_GEN_PARAM_VALUE", "componentId=" + ci.getId());
       String className = getComponentStatisticsClassName(ci.getName());
       if (className != null) {
         ComponentStatisticsInterface myCompo = (ComponentStatisticsInterface) Class.forName(
-                className).newInstance();
+            className).newInstance();
         Collection<UserIdCountVolumeCouple> v = (Collection<UserIdCountVolumeCouple>) myCompo.
-                getVolume(spaceId, ci.getId());
+            getVolume(spaceId, ci.getId());
         c = agregateUser(v);
       }
     } catch (ClassNotFoundException ce) {
       SilverTrace.info("silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
-              "component = " + ci.getName(), ce);
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_NOT_FOUND",
+          "component = " + ci.getName(), ce);
     } catch (Exception e) {
       SilverTrace.error("silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-              "component = " + ci.getName(), e);
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
+          "component = " + ci.getName(), e);
     }
     return c;
   }
@@ -177,16 +176,16 @@ public class SilverStatisticsVolumeAlimentation {
     } catch (MissingResourceException e) {
       componentStatisticsClassName = null;
       SilverTrace.error("silverstatistics",
-              "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
-              "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
-              "No statistic implementation class for component '" + componentName + "'");
+          "SilverStatisticsVolumeAlimentation.getCollectionUserIdCountVolume()",
+          "silverstatistics.EX_SUPPLY_VOLUME_COMPONENT_FAILED",
+          "No statistic implementation class for component '" + componentName + "'");
     }
 
     return componentStatisticsClassName;
   }
 
   private static Collection<UserIdCountVolumeCouple> agregateUser(
-          Collection<UserIdCountVolumeCouple> in) {
+      Collection<UserIdCountVolumeCouple> in) {
 
     if (in == null) {
       return null;
@@ -200,24 +199,24 @@ public class SilverStatisticsVolumeAlimentation {
       // sinon on modifie le countVolume et on passe au suivant
       UserIdCountVolumeCouple eltOut = getCouple(myArrayList, eltIn);
       SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-              "eltIn.getUserId() = " + eltIn.getUserId() + "eltIn.getCountVolume() = " + eltIn.
-              getCountVolume());
+          "eltIn.getUserId() = " + eltIn.getUserId() + "eltIn.getCountVolume() = " + eltIn.
+          getCountVolume());
       if (eltOut == null) {
         myArrayList.add(eltIn);
         SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-                "add eltIn");
+            "add eltIn");
       } else {
         eltOut.setCountVolume(eltIn.getCountVolume() + eltOut.getCountVolume());
         SilverTrace.debug("silverstatistics", "SilverStatisticsVolumeAlimentation.agregateUser)",
-                "eltOut.getUserId() = " + eltOut.getUserId() + "eltOut.getCountVolume() = " + eltOut.
-                getCountVolume());
+            "eltOut.getUserId() = " + eltOut.getUserId() + "eltOut.getCountVolume() = " + eltOut.
+            getCountVolume());
       }
     }
     return myArrayList;
   }
 
   private static UserIdCountVolumeCouple getCouple(Collection<UserIdCountVolumeCouple> in,
-          UserIdCountVolumeCouple eltIn) {
+      UserIdCountVolumeCouple eltIn) {
     for (UserIdCountVolumeCouple elt : in) {
       if (elt.getUserId().equals(eltIn.getUserId())) {
         return elt;

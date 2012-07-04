@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,7 +60,7 @@ public abstract class AbstractTable<T> {
    * "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
    */
   static public String aliasColumns(String rowAlias, String columnList) {
-      StringBuilder result = new StringBuilder();
+    StringBuilder result = new StringBuilder();
     StringTokenizer st = new StringTokenizer(columnList, ",");
 
     String column;
@@ -99,7 +99,7 @@ public abstract class AbstractTable<T> {
       throw new SQLException(e.toString());
     }
 
-    if (nextId == 0){
+    if (nextId == 0) {
       return 1;
     }
     return nextId;

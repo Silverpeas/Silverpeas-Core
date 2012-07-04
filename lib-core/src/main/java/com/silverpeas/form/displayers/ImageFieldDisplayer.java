@@ -1,24 +1,41 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.fileupload.FileItem;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -35,6 +52,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -44,21 +62,10 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
  * any file.
- *
  * @see Field
  * @see FieldTemplate
  * @see Form
@@ -72,15 +79,18 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * Returns the name of the managed types.
    */
   public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
+    return new String[] { FileField.TYPE };
   }
 
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
-   * template. <LI>the field type is not a managed type. </UL>
+   * log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>the fieldName is unknown by the template.
+   * <LI>the field type is not a managed type.
+   * </UL>
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
@@ -117,8 +127,9 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL> <LI>the field type is not a managed type. </UL>
-   *
+   * <UL>
+   * <LI>the field type is not a managed type.
+   * </UL>
    * @param out
    * @param field
    * @param template
@@ -129,8 +140,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
-        + ", fieldType = "
-        + field.getTypeName());
+        + ", fieldType = " + field.getTypeName());
     String fieldName = template.getFieldName();
     String language = pagesContext.getLanguage();
 
@@ -353,7 +363,6 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   /**
    * Method declaration
-   *
    * @return
    */
   @Override
@@ -363,7 +372,6 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   /**
    * Method declaration
-   *
    * @return
    */
   @Override
@@ -395,6 +403,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         String type = FileRepositoryManager.getFileExtension(logicalName);
         String mimeType = item.getContentType();
 
+
         String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
 
         File dir = getImagePath(componentId, physicalName);
@@ -408,6 +417,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
           AttachmentDetail ad = createAttachmentDetail(objectId, componentId, physicalName,
               logicalName, mimeType,
               size, ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
+
           ad = AttachmentController.createAttachment(ad, true);
           attachmentId = ad.getPK().getId();
         } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
@@ -41,7 +42,6 @@ import java.util.StringTokenizer;
 
 /**
  * Class declaration
- *
  * @author SLR
  */
 public class StatisticsConfig {
@@ -61,7 +61,6 @@ public class StatisticsConfig {
 
   /**
    * Constructor declaration
-   *
    * @see
    */
   public StatisticsConfig() {
@@ -103,17 +102,21 @@ public class StatisticsConfig {
         }
 
         try {
-          currentType.setModeCumul(StatisticMode.valueOf(resource.getString(STATSMODECUMUL + currentType.
+          currentType.setModeCumul(StatisticMode.valueOf(resource.getString(STATSMODECUMUL +
+              currentType.
               getName())));
         } catch (MissingResourceException e) {
           SilverTrace.info("silverstatistics", "StatisticsConfig.init", "setModeCumul", e);
         }
 
-        StringTokenizer stKeyName = new StringTokenizer(resource.getString(STATSKEYNAME + currentType.
+        StringTokenizer stKeyName =
+            new StringTokenizer(resource.getString(STATSKEYNAME + currentType.
             getName()), tokenSeparator);
-        StringTokenizer stKeyType = new StringTokenizer(resource.getString(STATSKEYTYPE + currentType.
+        StringTokenizer stKeyType =
+            new StringTokenizer(resource.getString(STATSKEYTYPE + currentType.
             getName()), tokenSeparator);
-        StringTokenizer stKeyCumul = new StringTokenizer(resource.getString(STATSKEYSCUMUL + currentType.
+        StringTokenizer stKeyCumul =
+            new StringTokenizer(resource.getString(STATSKEYSCUMUL + currentType.
             getName()), tokenSeparator);
 
         while (stKeyName.hasMoreTokens()) {
@@ -137,10 +140,8 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @return
    * @throws SilverStatisticsConfigException
-   *
    * @see
    */
   public void init() throws SilverStatisticsConfigException {
@@ -151,7 +152,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @return
    * @see
@@ -165,7 +165,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @param keyName
    * @return
@@ -180,7 +179,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @return
    * @see
@@ -194,7 +192,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @return
    * @see
@@ -208,7 +205,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @return
    * @see
@@ -233,7 +229,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param idFamilyStats
    * @return
    * @see
@@ -244,7 +239,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param idFamilyStats
    * @return
    * @see
@@ -258,7 +252,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @param keyName
    * @return
@@ -273,7 +266,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param StatsType
    * @param keyName
    * @return
@@ -288,7 +280,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -298,7 +289,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @return
    * @see
@@ -312,14 +302,12 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
   public boolean isValidConfigFile() {
     boolean valueReturn = true;
-    for (StatType typeCurrent :
-        allStatisticsConfig.keySet()) {
+    for (StatType typeCurrent : allStatisticsConfig.keySet()) {
       if (!initGood) {
         valueReturn = false;
       }
@@ -338,7 +326,6 @@ public class StatisticsConfig {
 
   /**
    * Method declaration
-   *
    * @param typeOfStats
    * @param dataArray
    * @return
@@ -346,7 +333,8 @@ public class StatisticsConfig {
    */
   public boolean isGoodDatas(StatType typeOfStats, List<?> dataArray) {
     return initGood && this.isExist(typeOfStats) && allStatisticsConfig.get(typeOfStats).
-        hasGoodCumulKey() && allStatisticsConfig.get(typeOfStats).isDateStatKeyExist() && dataArray.
+        hasGoodCumulKey() && allStatisticsConfig.get(typeOfStats).isDateStatKeyExist() &&
+        dataArray.
         size() == this.getNumberOfKeys(typeOfStats);
   }
 }

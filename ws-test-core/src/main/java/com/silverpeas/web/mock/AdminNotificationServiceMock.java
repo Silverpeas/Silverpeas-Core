@@ -1,8 +1,7 @@
 package com.silverpeas.web.mock;
 
-import javax.inject.Named;
-
 import com.silverpeas.admin.notification.AdminNotificationService;
+import javax.inject.Named;
 
 @Named("adminNotificationService")
 public class AdminNotificationServiceMock implements AdminNotificationService {

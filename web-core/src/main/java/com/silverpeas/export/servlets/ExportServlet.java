@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.export.servlets;
 
 import java.io.IOException;
@@ -47,12 +48,12 @@ public class ExportServlet extends HttpServlet {
   private static final String FIELD_SEPARATOR = ";";
   // private static final String EXPORT_ENCODING_UNICODE = "UTF8";
   private static final String EXPORT_ENCODING_DEFAULT = "UTF8";
- // private static final String EXPORT_ENCODING_ISO = "ISO-8859-1";
+  // private static final String EXPORT_ENCODING_ISO = "ISO-8859-1";
 
   private static final String exportEncoding =
       new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "")
-          .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
+      "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "")
+      .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
 
   private HtmlCleaner cleaner = new HtmlCleaner();
 
@@ -62,7 +63,7 @@ public class ExportServlet extends HttpServlet {
     // Prepare response
     response.setContentType("text/csv");
     response.setCharacterEncoding(exportEncoding);
-    
+
     response.setHeader("Content-Disposition", "attachment; fileName=export_data_" +
         System.currentTimeMillis() + ".csv");
     PrintWriter out = response.getWriter();

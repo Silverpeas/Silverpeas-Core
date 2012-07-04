@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -27,7 +27,6 @@ package com.silverpeas.web.mock;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +66,16 @@ public class SessionManagerMock implements SessionManagement {
   @Override
   public void closeSession(String sessionKey) {
     sessions.remove(sessionKey);
+  }
+
+  @Override
+  public boolean isUserConnected(UserDetail user) {
+    for (SessionInfo session : sessions.values()) {
+      if (user.getId().equals(session.getUserDetail().getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

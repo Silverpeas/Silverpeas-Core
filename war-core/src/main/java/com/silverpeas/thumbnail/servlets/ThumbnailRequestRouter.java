@@ -20,12 +20,20 @@
  */
 package com.silverpeas.thumbnail.servlets;
 
+import java.io.File;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
 import com.silverpeas.thumbnail.ThumbnailSessionController;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -35,10 +43,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import java.io.File;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
 
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
@@ -147,7 +151,6 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         type = fileName.substring(fileName.lastIndexOf(".") + 1,
             fileName.length());
       }
-
       // is there a type?
       if (type == null || type.length() == 0) {
         return "EX_MSG_NO_TYPE_ERROR";
@@ -426,4 +429,5 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
   public String getSessionControlBeanName() {
     return "thumbnail";
   }
+
 }

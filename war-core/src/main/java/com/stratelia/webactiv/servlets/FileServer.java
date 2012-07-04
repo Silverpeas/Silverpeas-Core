@@ -1,31 +1,45 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.servlets;
+
+import java.io.*;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -35,20 +49,6 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.*;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
@@ -60,8 +60,6 @@ import static com.stratelia.webactiv.util.FileServerUtils.*;
 public class FileServer extends HttpServlet {
 
   private static final long serialVersionUID = 6377810839728682983L;
-
-  
 
   /**
    * @param spaceId
@@ -185,8 +183,7 @@ public class FileServer extends HttpServlet {
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
-          .searchAttachmentById(new
-              SimpleDocumentPK(attachmentId, componentId), language);
+          .searchAttachmentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
         mimeType = attachment.getContentType();
         sourceFile = attachment.getFilename();
@@ -223,9 +220,9 @@ public class FileServer extends HttpServlet {
         || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-              + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() +
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
+          + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
+      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.
+          getGeneralResourceLocator().getString("sessionTimeout"));
     }
     if (typeUpload != null) {
       filePath = sourceFile;
@@ -248,8 +245,8 @@ public class FileServer extends HttpServlet {
       tempFile = File.createTempFile("zipfile", ".zip", new File(tempDirectory));
       SilverTrace.debug("peasUtil", "FileServer.doPost()",
           "root.MSG_GEN_PARAM_VALUE", " filePath =" + filePath
-              + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
-              + " fileName=" + fileName);
+          + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
+          + " fileName=" + fileName);
       zipFile(filePath, tempFile.getCanonicalPath(), fileName);
       filePath = tempFile.getCanonicalPath();
     }
@@ -288,7 +285,7 @@ public class FileServer extends HttpServlet {
       } catch (Exception e) {
         SilverTrace.warn("peasUtil", "FileServer.doPost",
             "peasUtil.CANNOT_WRITE_STATISTICS", "pubPK = " + pubPK
-                + " and nodeId = " + nodeId, e);
+            + " and nodeId = " + nodeId, e);
       }
     }
   }
@@ -296,13 +293,12 @@ public class FileServer extends HttpServlet {
   // check if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    boolean isAllowed = false;
+    boolean isAllowed;
 
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      if ("yes".equalsIgnoreCase(
-          controller.getComponentParameterValue(componentId, "publicFiles"))) {
+      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(componentId, "publicFiles"))) {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
@@ -366,14 +362,13 @@ public class FileServer extends HttpServlet {
   }
 
   // End Add By Mohammed Hguig
-
   /**
    * This method writes the result of the preview action.
    *
-   * @param res          - The HttpServletResponse where the html code is write
+   * @param res - The HttpServletResponse where the html code is write
    * @param htmlFilePath - the canonical path of the html document generated by the parser tools. if
-   *                     this String is null that an exception had been catched the html document
-   *                     generated is empty !! also, we display a warning html page
+   * this String is null that an exception had been catched the html document generated is empty !!
+   * also, we display a warning html page
    */
   private void displayHtmlCode(HttpServletResponse res, String htmlFilePath)
       throws IOException {

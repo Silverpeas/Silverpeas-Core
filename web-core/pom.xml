@@ -271,6 +271,7 @@
     <testResources>      
        <testResource>
         <directory>${basedir}/src/test/resources/</directory>
+        <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
           <include>**/*.png</include>
@@ -279,11 +280,12 @@
         <excludes>
           <exclude>**/*.properties</exclude>
           <exclude>**/*.xml</exclude>
+          <exclude>**/*.txt</exclude>
         </excludes>
-        <filtering>false</filtering>
       </testResource>
       <testResource>
         <directory>${basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
          <includes>
           <include>**/*.properties</include>
           <include>**/*.xml</include>
@@ -291,8 +293,8 @@
         </includes>
         <excludes>
           <exclude>**/index/**/*</exclude>
+          <exclude>**/*.png</exclude>
         </excludes>
-        <filtering>true</filtering>
       </testResource>     
     </testResources>
     <filters>

@@ -1,23 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.silverpeas.versioning.ejb;
 
 import java.sql.Connection;
@@ -48,14 +48,14 @@ public class VersioningDAO {
 
   private static final long serialVersionUID = 9119204206579998454L;
   /**
-   * Date format pattern constant. This patters is used in db operations
-   */
+* Date format pattern constant. This patters is used in db operations
+*/
   public final static String DATE_FORMAT = "yyyy/MM/dd";
   private final static int nameMaxLength = 100;
   public final static String GET_DOCUMENT_BYID_QUERY = "SELECT documentId, "
     + " documentName, documentDescription, documentStatus, documentOwnerId, "
     + " documentCheckoutDate, documentInfo, foreignId, instanceId, typeWorkList, "
-    + " currentWorkListOrder, alertDate, expiryDate, documentordernum  FROM "
+    + " currentWorkListOrder, alertDate, expiryDate, documentordernum FROM "
     + "sb_version_document WHERE documentId = ? ";
   public final static String GET_DOCUMENT_BYFOREIGNID_QUERY = "SELECT documentId, "
     + " documentName, documentDescription, documentStatus, documentOwnerId, "
@@ -88,12 +88,12 @@ public class VersioningDAO {
     + "versionMimeType, versionSize, instanceId, xmlForm FROM sb_version_version WHERE versionId = ? ";
 
   /**
-   * @param conn
-   * @param pk
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param pk
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static Document getDocument(Connection conn, DocumentPK pk)
     throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -127,14 +127,14 @@ public class VersioningDAO {
   }
 
   /**
-   * Get documents
-   *
-   * @param conn
-   * @param foreignID
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* Get documents
+*
+* @param conn
+* @param foreignID
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static List<Document> getDocuments(Connection conn, WAPrimaryKey foreignID)
     throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -174,11 +174,11 @@ public class VersioningDAO {
   }
 
   /**
-   * @param con
-   * @param instanceId
-   * @return
-   * @throws SQLException
-   */
+* @param con
+* @param instanceId
+* @return
+* @throws SQLException
+*/
   public static List<Document> getDocumentsByInstanceId(Connection con,
     String instanceId) throws SQLException {
     SilverTrace.info("versioning", "VersioningDAO.getDocumentsByInstanceId()",
@@ -204,13 +204,13 @@ public class VersioningDAO {
   }
 
   /**
-   * @param rs
-   * @param con
-   * @param spaceID
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param rs
+* @param con
+* @param spaceID
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   private static Document getDocFormRS(ResultSet rs, Connection con,
     String spaceID) throws SQLException, VersioningRuntimeException {
     Document doc = new Document();
@@ -282,15 +282,15 @@ public class VersioningDAO {
     + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   /**
-   * Create Document
-   *
-   * @param conn
-   * @param document
-   * @param initialVersion
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* Create Document
+*
+* @param conn
+* @param document
+* @param initialVersion
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static DocumentPK createDocument(Connection conn, Document document,
     DocumentVersion initialVersion) throws SQLException,
     VersioningRuntimeException {
@@ -382,11 +382,11 @@ public class VersioningDAO {
     + "currentWorkListOrder = ?, alertDate = ?, expiryDate = ? WHERE documentId = ? ";
 
   /**
-   * @param conn
-   * @param document
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param document
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void updateDocument(Connection conn, Document document)
     throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -442,12 +442,12 @@ public class VersioningDAO {
     + "SET foreignId = ?, instanceId = ? WHERE documentId = ? ";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @param foreignKey
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @param foreignKey
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void updateDocumentForeignKey(Connection conn,
     DocumentPK documentPK, ForeignPK foreignKey) throws SQLException,
     VersioningRuntimeException {
@@ -466,11 +466,11 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param document
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param document
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void updateWorkList(Connection conn, Document document)
     throws SQLException, VersioningRuntimeException {
     List<Worker> workers = document.getWorkList();
@@ -503,15 +503,15 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param documentPK
-   * @param ownerId
-   * @param checkOutDate
-   * @param alertDate
-   * @param expiryDate
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @param ownerId
+* @param checkOutDate
+* @param alertDate
+* @param expiryDate
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void checkDocumentOut(Connection conn, DocumentPK documentPK,
     int ownerId, Date checkOutDate, Date alertDate, Date expiryDate)
     throws SQLException, VersioningRuntimeException {
@@ -563,15 +563,15 @@ public class VersioningDAO {
     }
   }
   public static final String CHECKIN_DOCUMENT_QUERY = "UPDATE sb_version_document"
-    + " SET documentownerid = -1,  documentStatus = 0 , alertDate = null , expiryDate = null "
+    + " SET documentownerid = -1, documentStatus = 0 , alertDate = null , expiryDate = null "
     + "WHERE documentId = ?";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void checkDocumentIn(Connection conn, DocumentPK documentPK)
     throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -606,12 +606,12 @@ public class VersioningDAO {
     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
   /**
-   * @param conn
-   * @param newVersion
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param newVersion
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static DocumentVersionPK addDocumentVersion(Connection conn,
     DocumentVersion newVersion) throws SQLException,
     VersioningRuntimeException {
@@ -684,11 +684,11 @@ public class VersioningDAO {
     + "instanceId = ? WHERE versionId = ? ";
 
   /**
-   * @param conn
-   * @param version
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param version
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void updateDocumentVersion(Connection conn, DocumentVersion version) throws
     SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -744,12 +744,12 @@ public class VersioningDAO {
     + " FROM sb_version_version v WHERE v.documentId = ? ORDER BY v.versionId DESC";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static List<DocumentVersion> getDocumentVersions(Connection conn,
     DocumentPK documentPK) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -792,15 +792,15 @@ public class VersioningDAO {
     + "v.versionLogicalName, v.versionMimeType, v.versionSize, v.instanceId, v.xmlForm "
     + " FROM sb_version_version v WHERE (v.documentId = ?) AND (versionMajorNumber = "
     + "(SELECT MAX(versionMajorNumber) FROM sb_version_version a "
-    + "WHERE a.documentId = ? AND a.versionType = 0 )  )";
+    + "WHERE a.documentId = ? AND a.versionType = 0 ) )";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static DocumentVersion getLastPublicDocumentVersion(Connection conn,
     DocumentPK documentPK) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -839,12 +839,12 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param pk
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param pk
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static DocumentVersion getDocumentVersion(Connection conn,
     DocumentVersionPK pk) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -864,7 +864,7 @@ public class VersioningDAO {
       try {
         prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       } catch (NumberFormatException e) {
-        throw new VersioningRuntimeException("VersioningDAO.getDocumentVersion", 
+        throw new VersioningRuntimeException("VersioningDAO.getDocumentVersion",
           SilverTrace.TRACE_LEVEL_ERROR, "root.EX_WRONG_PK", pk.toString(), e);
       }
       rs = prepStmt.executeQuery();
@@ -879,13 +879,13 @@ public class VersioningDAO {
   }
 
   /**
-   * Get document version from RseultSet
-   *
-   * @param rs
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* Get document version from RseultSet
+*
+* @param rs
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   private static DocumentVersion getDocVersionFormRS(ResultSet rs)
     throws SQLException, VersioningRuntimeException {
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
@@ -927,11 +927,11 @@ public class VersioningDAO {
     + "WHERE documentId = ? ";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void deleteDocument(Connection conn, DocumentPK documentPK)
     throws SQLException, VersioningRuntimeException {
     SilverTrace.info("versioning", "VersioningDAO.deleteDocument()",
@@ -980,16 +980,16 @@ public class VersioningDAO {
     + " documentId, versionMajorNumber , versionMinorNumber, versionAuthorId, "
     + " versionCreationDate, versionComments, versionType, versionStatus, versionPhysicalname, "
     + " versionLogicalName, versionMimeType, versionSize, instanceId, xmlForm "
-    + " FROM sb_version_version WHERE documentId = ?  AND versionMinorNumber = 0 "
+    + " FROM sb_version_version WHERE documentId = ? AND versionMinorNumber = 0 "
     + " ORDER BY versionMajorNumber DESC";
 
   /**
-   * @param conn
-   * @param documentPK
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param documentPK
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static List<DocumentVersion> getAllPublicDocumentVersions(Connection conn,
     DocumentPK documentPK) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -1026,11 +1026,11 @@ public class VersioningDAO {
   }
 
   /**
-   * @param con
-   * @param instanceId
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param con
+* @param instanceId
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void deleteDocumentsByInstanceId(Connection con,
     String instanceId) throws SQLException, VersioningRuntimeException {
     SilverTrace.info("versioning", "VersioningDAO.deleteDocumentsByInstanceId()",
@@ -1047,12 +1047,12 @@ public class VersioningDAO {
     + "FROM sb_version_document WHERE documentOwnerId = ? AND documentStatus = 1 ";
 
   /**
-   * @param conn
-   * @param ownerId
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param ownerId
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static List<Document> getAllFilesReserved(Connection conn, int ownerId)
     throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -1084,13 +1084,13 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param date
-   * @param alert
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param date
+* @param alert
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static List<Document> getAllFilesReservedByDate(Connection conn, Date date,
     boolean alert) throws SQLException, VersioningRuntimeException {
     if (conn == null) {
@@ -1131,11 +1131,11 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param date
-   * @return
-   * @throws SQLException
-   */
+* @param conn
+* @param date
+* @return
+* @throws SQLException
+*/
   public static List<Document> getAllDocumentsToLib(Connection conn, Date date)
     throws SQLException {
     if (conn == null) {
@@ -1171,13 +1171,13 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param componentId
-   * @param groupsIds
-   * @param usersIds
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param componentId
+* @param groupsIds
+* @param usersIds
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static void insertReadersAccessList(Connection conn,
     String componentId, List<String> groupsIds, List<String> usersIds)
     throws SQLException, VersioningRuntimeException {
@@ -1216,14 +1216,14 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param componentId
-   * @param groupsIds
-   * @param usersIds
-   * @return
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param componentId
+* @param groupsIds
+* @param usersIds
+* @return
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   public static String insertReadersAccessGroupsList(Connection conn,
     String componentId, List<String> groupsIds, List<String> usersIds)
     throws SQLException, VersioningRuntimeException {
@@ -1255,14 +1255,14 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param role
-   * @param componentId
-   * @param groupsIds
-   * @param usersIds
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param role
+* @param componentId
+* @param groupsIds
+* @param usersIds
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   private static void insertAccessListContent(Connection conn, int accessId,
     List<String> groupsIds, List<String> usersIds) throws SQLException,
     VersioningRuntimeException {
@@ -1280,13 +1280,13 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param accessId
-   * @param groupsIds
-   * @param usersIds
-   * @throws SQLException
-   * @throws VersioningRuntimeException
-   */
+* @param conn
+* @param accessId
+* @param groupsIds
+* @param usersIds
+* @throws SQLException
+* @throws VersioningRuntimeException
+*/
   private static void insertAccessGroupsListContent(Connection conn,
     int accessId, List<String> groupsIds, List<String> usersIds)
     throws SQLException, VersioningRuntimeException {
@@ -1304,12 +1304,12 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param setType
-   * @param setTypeId
-   * @param accessId
-   * @throws SQLException
-   */
+* @param conn
+* @param setType
+* @param setTypeId
+* @param accessId
+* @throws SQLException
+*/
   public static void insertAccessListContentRow(Connection conn, String setType, int setTypeId,
     int accessId) throws SQLException {
     SilverTrace.debug("versioning", "VersioningDAO.insertAccessListContentRow",
@@ -1336,11 +1336,11 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param role
-   * @param componentId
-   * @throws SQLException
-   */
+* @param conn
+* @param role
+* @param componentId
+* @throws SQLException
+*/
   public static void removeReadersAccessList(Connection conn, String componentId)
     throws SQLException {
     SilverTrace.debug("versioning", "VersioningDAO.removeAccessList",
@@ -1367,12 +1367,12 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param profile
-   * @param componentId
-   * @return
-   * @throws SQLException
-   */
+* @param conn
+* @param profile
+* @param componentId
+* @return
+* @throws SQLException
+*/
   public static List<String> getReadersAccessListGroups(Connection conn,
     String componentId) throws SQLException {
     if (conn == null) {
@@ -1388,7 +1388,7 @@ public class VersioningDAO {
       try {
         prepStmt.setString(1, componentId);
       } catch (NumberFormatException e) {
-        throw new VersioningRuntimeException("VersioningDAO.getAccessListGroups", 
+        throw new VersioningRuntimeException("VersioningDAO.getAccessListGroups",
           SilverTrace.TRACE_LEVEL_DEBUG, "root.EX_WRONG_PK", componentId, e);
       }
 
@@ -1404,12 +1404,12 @@ public class VersioningDAO {
   }
 
   /**
-   * @param conn
-   * @param profile
-   * @param componentId
-   * @return
-   * @throws SQLException
-   */
+* @param conn
+* @param profile
+* @param componentId
+* @return
+* @throws SQLException
+*/
   public static List<String> getReadersAccessListUsers(Connection conn,
     String componentId) throws SQLException {
     if (conn == null) {

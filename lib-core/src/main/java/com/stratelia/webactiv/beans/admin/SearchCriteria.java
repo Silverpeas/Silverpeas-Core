@@ -131,4 +131,28 @@ public class SearchCriteria {
   public String getCriterionOnName() {
     return (String) criteria.get(NAME);
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final SearchCriteria other = (SearchCriteria) obj;
+    if (this.criteria != other.criteria &&
+            (this.criteria == null || !this.criteria.equals(other.criteria))) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 53 * hash + (this.criteria != null ? this.criteria.hashCode() : 0);
+    return hash;
+  }
+  
 }

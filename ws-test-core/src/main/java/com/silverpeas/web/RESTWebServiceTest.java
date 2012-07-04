@@ -1,35 +1,35 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have recieved a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.org/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.web;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.web.mock.AccessControllerMock;
-import com.silverpeas.web.mock.OrganizationControllerMock;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -44,17 +44,16 @@ import java.util.UUID;
 import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 
 /**
- * The base class for testing REST web services in Silverpeas.
- * This base class wraps all of the mechanismes required to prepare the environment for testing
- * web services with Jersey and Spring in the context of Silverpeas.
- * @param <T> the test resources wrapper in use in the test cases.
- */
+* The base class for testing REST web services in Silverpeas.
+* This base class wraps all of the mechanismes required to prepare the environment for testing
+* web services with Jersey and Spring in the context of Silverpeas.
+* @param <T> the test resources wrapper in use in the test cases.
+*/
 public abstract class RESTWebServiceTest<T extends TestResources> extends JerseyTest {
 
   protected static final String CONTEXT_NAME = "silverpeas";
@@ -62,12 +61,12 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   private Client webClient;
 
   /**
-   * Constructs a new test case on the REST web service testing.
-   * It bootstraps the runtime context into which the REST web service to test will run.
-   * @param webServicePackage the Java package in which is defined the web service to test.
-   * @param springContext the Spring context configuration file that accompanies the web service to
-   * test.
-   */
+* Constructs a new test case on the REST web service testing.
+* It bootstraps the runtime context into which the REST web service to test will run.
+* @param webServicePackage the Java package in which is defined the web service to test.
+* @param springContext the Spring context configuration file that accompanies the web service to
+* test.
+*/
   public RESTWebServiceTest(String webServicePackage, String springContext) {
     super(new WebAppDescriptor.Builder(webServicePackage).contextPath(CONTEXT_NAME).
             contextParam("contextConfigLocation", "classpath:/" + springContext).
@@ -84,11 +83,11 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
-   * Gets the component instances to take into account in tests. Theses component instances will be
-   * considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
-   * @return an array with the identifier of the component instances to take into account in tests.
-   * The array cannot be null but it can be empty.
-   */
+* Gets the component instances to take into account in tests. Theses component instances will be
+* considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+* @return an array with the identifier of the component instances to take into account in tests.
+* The array cannot be null but it can be empty.
+*/
   abstract public String[] getExistingComponentInstances();
 
   /**
@@ -109,27 +108,29 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   @Before
   public void prepareMockedResources() {
     testResources = (T) TestResources.getTestResources();
-    PersonalizationService mockedPersonalizationService = mock(PersonalizationService.class);
+    PersonalizationService mock = testResources.getPersonalizationServiceMock();
     UserPreferences preferences = new UserPreferences(TestResources.DEFAULT_LANGUAGE, "", "", false,
             true, true, UserMenuDisplay.DISABLE);
-    when(mockedPersonalizationService.getUserSettings(anyString())).thenReturn(preferences);
-    getMockedPersonalizationService().setPersonalizationService(mockedPersonalizationService);
+    when(mock.getUserSettings(anyString())).thenReturn(preferences);
     for (String componentId : getExistingComponentInstances()) {
-      getMockedOrganizationController().addComponentInstance(componentId);
+      addComponentInstance(componentId);
     }
     for (String toolId : getExistingTools()) {
-      getMockedOrganizationController().addTool(toolId);
+      addTool(toolId);
     }
   }
 
   /**
-   * Authenticates the user to use in the tests.
-   * The user will be added in the context of the mocked organization controller.
-   * @param theUser the user to authenticate.
-   * @return the key of the opened session.
-   */
+* Authenticates the user to use in the tests.
+* The user will be added in the context of the mocked organization controller.
+* @param theUser the user to authenticate.
+* @return the key of the opened session.
+*/
   public String authenticate(final UserDetail theUser) {
-    getMockedOrganizationController().addUserDetail(theUser);
+    getTestResources().registerUser(theUser);
+    for (String componentId : getExistingComponentInstances()) {
+      setComponentAccessibilityToUser(componentId, theUser.getId());
+    }
     SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), theUser);
     return getTestResources().getSessionManagerMock().openSession(session);
   }
@@ -139,43 +140,54 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
    * it, please override the TestResources class.
    * @return the detail about the user in use in the current test case.
    */
-  public UserDetail aUser() {
+  public UserDetailWithProfiles aUser() {
     return getTestResources().aUser();
   }
 
   /**
-   * Denies the access to the silverpeas resources to all users.
-   */
+* Denies the access to the silverpeas resources to all users.
+*/
   public void denieAuthorizationToUsers() {
-    getMockedAccessController().setAuthorization(false);
+    getAccessControllerMock().setAuthorization(false);
   }
 
   /**
-   * Gets the resources in use in the current test case.
-   * @return a TestResources instance.
-   */
+* Gets the resources in use in the current test case.
+* @return a TestResources instance.
+*/
   public T getTestResources() {
     return testResources;
   }
 
   /**
-   * Adds the specified component instance among the existing ones and that will be used in tests.
-   * @param componentId the unique identifier of the component instance to use in tests.
-   */
+* Adds the specified component instance among the existing ones and that will be used in tests.
+* @param componentId the unique identifier of the component instance to use in tests.
+*/
   public void addComponentInstance(String componentId) {
-    getMockedOrganizationController().addComponentInstance(componentId);
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isComponentExist(componentId)).thenReturn(true);
+  }
+  
+  public void addTool(String toolId) {
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isToolAvailable(toolId)).thenReturn(true);
+  }
+  
+  public void setComponentAccessibilityToUser(String componentId, String userId) {
+    OrganizationController mock = getOrganizationControllerMock();
+    when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
   }
 
-  protected OrganizationControllerMock getMockedOrganizationController() {
-    return (OrganizationControllerMock) getTestResources().getOrganizationControllerMock();
+  protected OrganizationController getOrganizationControllerMock() {
+    return getTestResources().getOrganizationControllerMock();
   }
 
-  protected AccessControllerMock getMockedAccessController() {
-    return (AccessControllerMock) getTestResources().getAccessControllerMock();
+  protected AccessControllerMock getAccessControllerMock() {
+    return getTestResources().getAccessControllerMock();
   }
 
-  protected MockablePersonalizationService getMockedPersonalizationService() {
-    return (MockablePersonalizationService) getTestResources().getPersonalizationServiceMock();
+  protected PersonalizationService getPersonalizationServiceMock() {
+    return getTestResources().getPersonalizationServiceMock();
   }
   
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {

@@ -1,3 +1,27 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -10,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.silverpeas.socialNetwork.relationShip.RelationShipService;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -21,32 +45,21 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class DirectoryService {
 
- private List<UserDetail> lastAlllistUsersCalled;
+  private List<UserDetail> lastAlllistUsersCalled;
   private List<UserDetail> lastListUsersCalled;
-  private OrganizationController organizationController=new OrganizationController();
+  private OrganizationController organizationController = new OrganizationController();
   private String userId;
   private RelationShipService relationShipService = new RelationShipService();
 
-
-
-
-
-
   /**
    * Standard Session Controller Constructeur
-   *
-   *
-   * @param mainSessionCtrl   The user's profile
-   * @param componentContext  The component's profile
-   *
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
 
-
   /**
-
-   *get All Users
-   *
+   * get All Users
    * @see
    */
   public List<UserDetail> getAllUsers() {
@@ -57,8 +70,7 @@ public class DirectoryService {
   }
 
   /**
-   *get all Users that their Last Name  begin with 'Index'
-   *
+   *get all Users that their Last Name begin with 'Index'
    * @param index:Alphabetical Index like A,B,C,E......
    * @see
    */
@@ -75,8 +87,7 @@ public class DirectoryService {
   }
 
   /**
-   *get all User that  heir  lastname or first name  Last Name  like  "Key"
-   *
+   *get all User that heir lastname or first name Last Name like "Key"
    * @param Key:the key of search
    * @see
    */
@@ -95,7 +106,6 @@ public class DirectoryService {
 
   /**
    *get all User of the Group who has Id="groupId"
-   *
    * @param groupId:the ID of group
    * @see
    */
@@ -107,8 +117,6 @@ public class DirectoryService {
 
   /**
    *get all User "we keep the last list of All users"
-   *
-   *
    * @see
    */
   public List<UserDetail> getLastListOfAllUsers() {
@@ -117,9 +125,7 @@ public class DirectoryService {
   }
 
   /**
-   *get the last list of users colled   " keep the session"
-   *
-   *
+   *get the last list of users colled " keep the session"
    * @see
    */
   public List<UserDetail> getLastListOfUsersCallded() {
@@ -128,14 +134,14 @@ public class DirectoryService {
 
   /**
    *return All users of Space who has Id="spaceId"
-   *
    * @param spaceId:the ID of Space
    * @see
    */
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
-    lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getUserDetails(lus.toArray(new String[lus.
+    lastAlllistUsersCalled =
+        Arrays.asList(getOrganizationController().getUserDetails(lus.toArray(new String[lus.
         size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
@@ -157,7 +163,6 @@ public class DirectoryService {
 
     return lus;
 
-
   }
 
   public List<String> fillList(List<String> ol, List<String> nl) {
@@ -172,7 +177,6 @@ public class DirectoryService {
 
   /**
    *return All user of Domaine who has Id="domainId"
-   *
    * @param domainId:the ID of Domaine
    * @see
    */
@@ -195,9 +199,9 @@ public class DirectoryService {
     return this.getOrganizationController().getUserFull(userId);
 
   }
- /**
-   *return contacts  of user who has Id="domainId"
-   *
+
+  /**
+   *return contacts of user who has Id="domainId"
    * @param domainId:the ID of Domaine
    * @see
    */
@@ -215,16 +219,18 @@ public class DirectoryService {
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
+
   /**
-   *return contacts  of user who has Id="domainId"
-   *
+   *return contacts of user who has Id="domainId"
    * @param domainId:the ID of Domaine
    * @see
    */
-  public List<UserDetail> getCommonContacts(String userId1,String userId2) {
+  public List<UserDetail> getCommonContacts(String userId1, String userId2) {
     lastAlllistUsersCalled = new ArrayList<UserDetail>();
     try {
-      List<String> contactsIds = relationShipService.getAllCommonContactsIds(Integer.parseInt(userId1),Integer.parseInt(userId2));
+      List<String> contactsIds =
+          relationShipService.getAllCommonContactsIds(Integer.parseInt(userId1), Integer
+          .parseInt(userId2));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -236,12 +242,11 @@ public class DirectoryService {
     return lastAlllistUsersCalled;
   }
 
-  
- 
-public OrganizationController getOrganizationController() {
+  public OrganizationController getOrganizationController() {
     return organizationController;
   }
-public void setUserId(String userId) {
+
+  public void setUserId(String userId) {
     this.userId = userId;
   }
 
