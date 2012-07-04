@@ -54,6 +54,13 @@ public class LocalizedParameter {
     return realParameter.getHelp().get(DisplayI18NHelper.getDefaultLanguage());
   }
 
+  public String getWarning() {
+    if (realParameter.getWarning().containsKey(lang)) {
+      return realParameter.getWarning().get(lang);
+    }
+    return realParameter.getWarning().get(DisplayI18NHelper.getDefaultLanguage());
+  }
+
   public String getLabel() {
     if (realParameter.getLabel().containsKey(lang)) {
       return realParameter.getLabel().get(lang);

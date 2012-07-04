@@ -66,6 +66,9 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 			checked = "checked";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+"/>");
+    if (StringUtil.isDefined(parameter.getWarning())) {
+      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    }
 	}
 	else if (isSelect)
 	{
@@ -176,9 +179,9 @@ function B_VALIDER_ONCLICK() {
 			parameter = (LocalizedParameter) parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
-                if (document.infoInstance.<%=parameter.getName()%>.checked) 
+                if (document.infoInstance.<%=parameter.getName()%>.checked)
 		        	document.infoInstance.<%=parameter.getName()%>.value = "yes";
-                 else 
+                 else
                   document.infoInstance.<%=parameter.getName()%>.value = "no";
 		    <%
 			}

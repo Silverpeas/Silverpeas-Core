@@ -52,13 +52,16 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	if (parameter.isAlwaysUpdatable()) {
         disabled = "";
     }
-			   
+
 	if (parameter.isCheckbox()) {
 		String checked = "";
 		if (StringUtil.getBooleanValue(parameter.getValue())) {
 			checked = "checked";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
+    if (StringUtil.isDefined(parameter.getWarning())) {
+      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    }
 	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
 		if (options != null) {
@@ -75,7 +78,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 					selected = "selected=\"selected\"";
 				}
 				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
-			}		
+			}
 			out.println("</select>");
 		}
 	} else if (parameter.isRadio()) {
@@ -91,7 +94,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 	          }
 	          out.println("<input type=\"radio\" name=\"" + parameter.getName() + "\" value=\"" + value + "\"" + checked + ">");
 	          out.println(name + "&nbsp;<br/>");
-        	}	
+        	}
 		} else {
 			out.println(parameter.getValue());
 		}
@@ -104,7 +107,7 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 		if (parameter.getSize() != null && parameter.getSize().intValue() > 0) {
 			sSize = parameter.getSize().toString();
 		}
-		
+
 		String value = parameter.getValue();
 		if (!StringUtil.isDefined(value)) {
 		  value = "";
@@ -140,7 +143,7 @@ if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
 String m_ComponentIcon = iconsPath+"/util/icons/component/"+compoInst.getName()+"Small.gif";
 
 browseBar.setComponentId(compoInst.getId());
-browseBar.setExtraInformation(resource.getString("GML.modify"));	
+browseBar.setExtraInformation(resource.getString("GML.modify"));
 browseBar.setI18N(compoInst, resource.getLanguage());
 
 TabbedPane tabbedPane = gef.getTabbedPane();
@@ -150,7 +153,7 @@ for (ProfileInst theProfile : m_Profiles) {
 	String prof = resource.getString(profile.replace(' ', '_'));
 	if (prof.equals("")) {
 		prof = profile;
-	}	
+	}
 	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
 }
 %>
@@ -176,58 +179,58 @@ function cancel() {
 function validate() {
 	if (isCorrectForm()) {
 		<%
-		for(int nI=0; parameters != null && nI < parameters.size(); nI++) { 
+		for(int nI=0; parameters != null && nI < parameters.size(); nI++) {
 		  	LocalizedParameter parameter = parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
 		    	if (document.infoInstance.<%=parameter.getName()%>.checked) {
 		        	document.infoInstance.<%=parameter.getName()%>.value = "yes";
-		    	} else { 
+		    	} else {
 		        	document.infoInstance.<%=parameter.getName()%>.value = "no";
 		    	}
 		    <%
 			}
 			%>
 			document.infoInstance.<%=parameter.getName()%>.disabled = false;
-		<% } %>	
+		<% } %>
 		document.infoInstance.submit();
 	}
 }
 
-function isCorrectForm() {		
+function isCorrectForm() {
 	var errorMsg = "";
 	var errorNb = 0;
-	
+
 	var name = stripInitialWhitespace(document.infoInstance.NameObject.value);
 	var desc = document.infoInstance.Description;
-	
+
 	if (isWhitespace(name)) {
 		errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-		errorNb++; 
+		errorNb++;
 	}
-	
+
 	var textAreaLength = 400;
 	var s = desc.value;
 	if (! (s.length <= textAreaLength)) {
 		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-	   	errorNb++; 
-	}  	  	
-	
+	   	errorNb++;
+	}
+
 	<%
-	for(int nI=0; parameters != null && nI < parameters.size(); nI++) { 
+	for(int nI=0; parameters != null && nI < parameters.size(); nI++) {
 	  	LocalizedParameter parameter = parameters.get(nI);
 		if (parameter.isMandatory() && !parameter.isRadio()) {
 		%>
 			var paramValue = stripInitialWhitespace(document.infoInstance.<%=parameter.getName()%>.value);
 			if (isWhitespace(paramValue)) {
 				errorMsg+="  - '<%=parameter.getLabel()%>' <%=resource.getString("MustContainsText")%>\n";
-				errorNb++; 
+				errorNb++;
 			}
 		<%
 		}
 	}
-	%>		 	
-	
+	%>
+
 	switch(errorNb) {
 	case 0 :
 	    result = true;
@@ -243,11 +246,11 @@ function isCorrectForm() {
 	    result = false;
 	    break;
 	}
-	return result;	
-     
+	return result;
+
 }
 
-function toDoOnLoad() {  
+function toDoOnLoad() {
     document.infoInstance.NameObject.focus();
 }
 
@@ -278,12 +281,12 @@ out.println(frame.printBefore());
 out.println(board.printBefore());
 %>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
-	<tr> 
+	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.type")%> :</td>
 		<td><img src="<%=m_ComponentIcon%>" class="componentIcon" alt=""/>&nbsp;<%=m_JobPeas%></td>
 	</tr>
 	<%=I18NHelper.getFormLine(resource, compoInst, translation)%>
-	<tr> 
+	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
 		<td><input type="text" name="NameObject" id="compoName" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(compoInst.getLabel())%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
 	</tr>
@@ -318,7 +321,7 @@ out.println(board.printBefore());
 	if (parameters.size() >= 5) {
 		on2Columns = true;
 	}
-	
+
 	if (on2Columns) {
 		out.println("<td>");
 		out.println("<table border=\"0\" width=\"100%\">");
@@ -349,15 +352,15 @@ out.println(board.printBefore());
 			out.println("</tr>");
 		}
 	}
-	
+
 	for(int nI=0; hiddenParameters != null && nI < hiddenParameters.size(); nI++) {
 	  	LocalizedParameter parameter = hiddenParameters.get(nI);
 		out.println("<input type=\"hidden\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\"/>\n");
 	}
 %>
-	<tr align="left"> 
+	<tr align="left">
 		<td colspan="3"><br/>(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%>)</td>
-	</tr>	
+	</tr>
 </table>
 <%
 	out.println(board.printAfter());
@@ -365,7 +368,7 @@ out.println(board.printBefore());
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton( gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validate();", false));
 	buttonPane.addButton( gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=cancel();", false));
-	out.println("<br/><center>"+buttonPane.print()+"</center>");	
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 	out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
