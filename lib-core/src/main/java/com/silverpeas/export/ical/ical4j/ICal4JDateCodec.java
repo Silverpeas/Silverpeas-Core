@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.export.ical.ical4j;
 
 import com.silverpeas.export.EncodingException;
@@ -34,9 +35,9 @@ import java.text.ParseException;
 public class ICal4JDateCodec {
 
   /**
-   * Sets a shareable instance accessible through the anICal4DateCodec() class method.
-   * It is always possible to manage in a multiple instances way this codec by calling explicitly
-   * and directly the constructor.
+   * Sets a shareable instance accessible through the anICal4DateCodec() class method. It is always
+   * possible to manage in a multiple instances way this codec by calling explicitly and directly
+   * the constructor.
    */
   private static final ICal4JDateCodec instance = new ICal4JDateCodec();
 
@@ -70,8 +71,8 @@ public class ICal4JDateCodec {
 
   /**
    * Encodes the specified Silverpeas date into an iCal4J date set or not in UTC according to the
-   * specified UTC flag. If the UTC flag is positioned at false, then the encoded date is set in
-   * the same timezone than the specified date to encode.
+   * specified UTC flag. If the UTC flag is positioned at false, then the encoded date is set in the
+   * same timezone than the specified date to encode.
    * @param aDate the date to encode.
    * @param inUTC the UTC flag indicating whether the iCal4J date must be set in UTC. If false, the
    * encoded date will be in the same timezone than the specified date.

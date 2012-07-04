@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,10 +63,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
    */
   public static Collection<String[]> getStatsVolumeServer() throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer",
-            "root.MSG_GEN_ENTER_METHOD");
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServer",
+        "root.MSG_GEN_ENTER_METHOD");
     String selectQuery = " SELECT dateStat, fileDir, sizeDir"
-            + " FROM SB_Stat_SizeDirCumul" + " ORDER BY dateStat";
+        + " FROM SB_Stat_SizeDirCumul" + " ORDER BY dateStat";
     return getStatsVolumeServerFromQuery(selectQuery);
   }
 
@@ -78,10 +78,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @see
    */
   private static Collection<String[]> getStatsVolumeServerFromQuery(String selectQuery)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServerFromQuery",
-            "selectQuery=" + selectQuery);
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVolumeServerFromQuery",
+        "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -104,7 +104,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @see
    */
   private static Collection<String[]> getStatsVolumeServerFromResultSet(ResultSet rs)
-          throws SQLException {
+      throws SQLException {
     List<String[]> myList = new ArrayList<String[]>();
     String stat[] = null;
 
@@ -130,17 +130,17 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   public static Hashtable<String, String[]> getStatsAttachmentsVentil(String currentUserId)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsVentil",
-            "root.MSG_GEN_ENTER_METHOD");
+        "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsVentil",
+        "root.MSG_GEN_ENTER_METHOD");
 
     Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
     // value=new String[3] {nb, null, null}
 
     String selectQuery = "SELECT instanceId, COUNT(*) "
-            + "FROM SB_Attachment_Attachment " + "GROUP BY instanceId "
-            + "ORDER BY COUNT(*) DESC";
+        + "FROM SB_Attachment_Attachment " + "GROUP BY instanceId "
+        + "ORDER BY COUNT(*) DESC";
 
     Map<String, String> intermedHash = getHashtableFromQuery(selectQuery);
     AdminController myAdminController = new AdminController("");
@@ -164,19 +164,19 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   public static Hashtable<String, String[]> getStatsVersionnedAttachmentsVentil(
-          String currentUserId) throws SQLException {
+      String currentUserId) throws SQLException {
     SilverTrace.info(
-            "silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
-            "root.MSG_GEN_ENTER_METHOD");
+        "silverStatisticsPeas",
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
+        "root.MSG_GEN_ENTER_METHOD");
     // key=componentId, value=new
     // String[3] {nb, null, null}
     Hashtable<String, String[]> resultat = new Hashtable<String, String[]>();
 
     String selectQuery = "SELECT v.instanceId, COUNT(*) "
-            + "FROM SB_Version_Version v , SB_Version_Document d "
-            + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
-            + "ORDER BY COUNT(*) DESC";
+        + "FROM SB_Version_Version v , SB_Version_Document d "
+        + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
+        + "ORDER BY COUNT(*) DESC";
 
     return extractResults(currentUserId, selectQuery);
   }
@@ -187,16 +187,15 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   public static Hashtable<String, String[]> getStatsAttachmentsSizeVentil(String currentUserId)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsSizeVentil",
-            "root.MSG_GEN_ENTER_METHOD");
-
+        "SilverStatisticsPeasDAOVolumeServer.getStatsAttachmentsSizeVentil",
+        "root.MSG_GEN_ENTER_METHOD");
 
     String selectQuery = "SELECT instanceId, SUM(CAST(attachmentSize AS decimal)) "
-            + "FROM SB_Attachment_Attachment "
-            + "GROUP BY instanceId "
-            + "ORDER BY SUM(CAST(attachmentSize AS decimal)) DESC";
+        + "FROM SB_Attachment_Attachment "
+        + "GROUP BY instanceId "
+        + "ORDER BY SUM(CAST(attachmentSize AS decimal)) DESC";
 
     return extractResults(currentUserId, selectQuery);
   }
@@ -207,21 +206,21 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   public static Hashtable<String, String[]> getStatsVersionnedAttachmentsSizeVentil(
-          String currentUserId) throws SQLException {
+      String currentUserId) throws SQLException {
     SilverTrace.info("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
-            "root.MSG_GEN_ENTER_METHOD");
+        "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsSizeVentil",
+        "root.MSG_GEN_ENTER_METHOD");
 
     String selectQuery = "SELECT v.instanceId, SUM(versionSize) "
-            + "FROM SB_Version_Version v , SB_Version_Document d "
-            + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
-            + "ORDER BY SUM(versionSize) DESC";
+        + "FROM SB_Version_Version v , SB_Version_Document d "
+        + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
+        + "ORDER BY SUM(versionSize) DESC";
 
     return extractResults(currentUserId, selectQuery);
   }
 
   private static Hashtable<String, String[]> extractResults(String currentUserId,
-          String selectQuery) throws SQLException {
+      String selectQuery) throws SQLException {
     Hashtable<String, String[]> resultat = new Hashtable<String, String[]>(); // key=componentId,
     // value=new String[3] {nb, null, null}
     Map<String, String> intermedHash = getHashtableFromQuery(selectQuery);
@@ -234,7 +233,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
       String spaceId = compInst.getDomainFatherId(); // ex : WA123
 
       String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
-              currentUserId);
+          currentUserId);
 
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
@@ -261,10 +260,10 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   private static Map<String, String> getHashtableFromQuery(String selectQuery)
-          throws SQLException {
+      throws SQLException {
     SilverTrace.debug("silverStatisticsPeas",
-            "SilverStatisticsPeasDAOVolumeServer.getHashtableFromQuery",
-            "selectQuery=" + selectQuery);
+        "SilverStatisticsPeasDAOVolumeServer.getHashtableFromQuery",
+        "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
     Map<String, String> ht = null;
@@ -289,7 +288,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
    * @throws SQLException
    */
   private static Map<String, String> getHashtableFromResultset(ResultSet rs)
-          throws SQLException {
+      throws SQLException {
     Map<String, String> result = new HashMap<String, String>();
     long count = 0;
 

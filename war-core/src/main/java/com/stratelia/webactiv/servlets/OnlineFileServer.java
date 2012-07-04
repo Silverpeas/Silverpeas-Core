@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -103,7 +103,8 @@ public class OnlineFileServer extends HttpServlet {
     if (StringUtil.isDefined(documentId)) {
       String versionId = req.getParameter("VersionId");
       VersioningUtil versioning = new VersioningUtil();
-      DocumentVersionPK versionPK = new DocumentVersionPK(Integer .parseInt(versionId), "useless", componentId);
+      DocumentVersionPK versionPK =
+          new DocumentVersionPK(Integer.parseInt(versionId), "useless", componentId);
       DocumentVersion version = versioning.getDocumentVersion(versionPK);
 
       if (version != null) {
@@ -116,7 +117,9 @@ public class OnlineFileServer extends HttpServlet {
       }
     }
 
-    String filePath = FileRepositoryManager.getAbsolutePath(componentId)  + directory + File.separator + sourceFile;
+    String filePath =
+        FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator +
+        sourceFile;
     res.setContentType(mimeType);
     display(res, filePath);
   }
@@ -176,7 +179,7 @@ public class OnlineFileServer extends HttpServlet {
         "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
     message = new StringReader(resourceLocator.getString("warning"));
     try {
-      IOUtils.copy(message, output);     
+      IOUtils.copy(message, output);
     } catch (Exception e) {
       SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");

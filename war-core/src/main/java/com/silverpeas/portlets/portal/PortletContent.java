@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.portlets.portal;
 
 import java.net.URL;
@@ -50,7 +51,7 @@ public class PortletContent {
   private WindowInvoker windowInvoker;
 
   public PortletContent(ServletContext context, HttpServletRequest request,
-          HttpServletResponse response) throws InvokerException {
+      HttpServletResponse response) throws InvokerException {
     this.request = request;
     this.response = response;
     this.windowInvoker = getWindowInvoker(context, request, response);
@@ -67,23 +68,23 @@ public class PortletContent {
   public void setPortletWindowState(ChannelState portletWindowState) {
     windowInvoker.setPortletWindowState(portletWindowState);
   }
-  
+
   public ChannelMode getPortletWindowMode() {
     return windowInvoker.getPortletWindowMode();
   }
-  
+
   public ChannelState getPortletWindowState() {
     return windowInvoker.getPortletWindowState();
   }
-  
+
   public boolean isInNormalWindowState() {
     return windowInvoker.getPortletWindowState().equals(ChannelState.NORMAL);
   }
-  
+
   public boolean isInMaximizedWindowState() {
     return windowInvoker.getPortletWindowState().equals(ChannelState.MAXIMIZED);
   }
-  
+
   public boolean isInMinimizedWindowState() {
     return windowInvoker.getPortletWindowState().equals(ChannelState.MINIMIZED);
   }
@@ -109,7 +110,7 @@ public class PortletContent {
         LogRecord logRecord = new LogRecord(Level.SEVERE, "PSPCD_CSPPD0048");
         logRecord.setLoggerName(logger.getName());
         logRecord.setThrown(ex);
-        logRecord.setParameters(new String[]{getPortletWindowName()});
+        logRecord.setParameters(new String[] { getPortletWindowName() });
         logger.log(logRecord);
       }
       return "";
@@ -133,8 +134,8 @@ public class PortletContent {
   }
 
   protected final WindowInvoker getWindowInvoker(ServletContext context,
-          HttpServletRequest request, HttpServletResponse response)
-          throws InvokerException {
+      HttpServletRequest request, HttpServletResponse response)
+      throws InvokerException {
     WindowInvoker pwInvoker = new PortletWindowInvoker();
     pwInvoker.init(context, request, response);
     return pwInvoker;

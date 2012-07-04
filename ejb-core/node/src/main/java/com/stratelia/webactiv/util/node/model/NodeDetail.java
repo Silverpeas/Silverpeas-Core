@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.node.model;
 
 import com.silverpeas.util.StringUtil;
@@ -76,8 +77,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   private void init(String id, String name, String description,
-          String creationDate, String creatorId, String path, String level,
-          String fatherId) {
+      String creationDate, String creatorId, String path, String level,
+      String fatherId) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -91,8 +92,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   private void init(String id, String name, String description,
-          String creationDate, String creatorId, String path, String level,
-          String fatherId, String type) {
+      String creationDate, String creatorId, String path, String level,
+      String fatherId, String type) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -123,8 +124,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public NodeDetail(NodePK nodePK, String name, String description, String creationDate,
-          String creatorId, String path, int level, NodePK fatherPK,
-          Collection<NodeDetail> childrenDetails) {
+      String creatorId, String path, int level, NodePK fatherPK,
+      Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -152,20 +153,20 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
    * @since 1.0
    */
   public NodeDetail(String id, String name, String description, String creationDate,
-          String creatorId, String path, String level, String fatherId) {
+      String creatorId, String path, String level, String fatherId) {
     init(id, name, description, creationDate, creatorId, path, level, fatherId);
   }
 
   public NodeDetail(String id, String name, String description,
-          String creationDate, String creatorId, String path, String level,
-          String fatherId, String type) {
+      String creationDate, String creatorId, String path, String level,
+      String fatherId, String type) {
     init(id, name, description, creationDate, creatorId, path, level, fatherId, type);
   }
 
   public NodeDetail(NodePK nodePK, String name, String description,
-          String creationDate, String creatorId, String path, int level,
-          NodePK fatherPK, String modelId, String status,
-          Collection<NodeDetail> childrenDetails, String type) {
+      String creationDate, String creatorId, String path, int level,
+      NodePK fatherPK, String modelId, String status,
+      Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -182,9 +183,9 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   public NodeDetail(String id, String name, String description,
-          String creationDate, String creatorId, String path, int level,
-          String fatherId, String modelId, String status,
-          Collection<NodeDetail> childrenDetails, String type) {
+      String creationDate, String creatorId, String path, int level,
+      String fatherId, String modelId, String status,
+      Collection<NodeDetail> childrenDetails, String type) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -201,8 +202,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   public NodeDetail(NodePK nodePK, String name, String description,
-          String creationDate, String creatorId, String path, int level,
-          NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
+      String creationDate, String creatorId, String path, int level,
+      NodePK fatherPK, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = nodePK;
     this.name = name;
     this.description = description;
@@ -218,8 +219,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   }
 
   public NodeDetail(String id, String name, String description,
-          String creationDate, String creatorId, String path, int level,
-          String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
+      String creationDate, String creatorId, String path, int level,
+      String fatherId, String modelId, String status, Collection<NodeDetail> childrenDetails) {
     this.nodePK = new NodePK(id);
     this.name = name;
     this.description = description;
@@ -474,9 +475,9 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   @Override
   public String toString() {
     return "(pk = " + getNodePK().toString() + ", name = " + getName()
-            + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
-            + getFatherPK().toString() + ", type = " + type + ", order = "
-            + getOrder() + ")";
+        + ", path = " + getPath() + ", level = " + getLevel() + ", fatherPK = "
+        + getFatherPK().toString() + ", type = " + type + ", order = "
+        + getOrder() + ")";
   }
 
   public String getType() {
@@ -493,8 +494,8 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
       return false;
     }
     return (getNodePK().getId().equals(((NodeDetail) other).getNodePK().getId()))
-            && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().
-            getComponentName()));
+        && (getNodePK().getComponentName().equals(((NodeDetail) other).getNodePK().
+        getComponentName()));
   }
 
   @Override
@@ -520,13 +521,13 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
 
   public String getLink() {
     return URLManager.getSimpleURL(URLManager.URL_TOPIC, getNodePK().getId(),
-            getNodePK().getInstanceId());
+        getNodePK().getInstanceId());
   }
 
   public String getPermalink() {
     if (URLManager.displayUniversalLinks()) {
       return URLManager.getSimpleURL(URLManager.URL_TOPIC, this.nodePK.getId(), this.nodePK.
-              getInstanceId());
+          getInstanceId());
     }
     return null;
   }
@@ -574,7 +575,7 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   public boolean isUseId() {
     return useId;
   }
-  
+
   public boolean hasFather() {
     return !this.fatherPK.isUnclassed();
   }

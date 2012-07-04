@@ -1,26 +1,26 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection withWriter Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have recieved a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.org/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.annotation.Authorized;
@@ -45,19 +45,19 @@ import javax.ws.rs.core.Response.Status;
 import com.silverpeas.annotation.RequestScoped;
 
 /**
- * A REST Web resource that represents the classification of a Silverpeas's resource on the
- * classification plan (named PdC).
- * 
- * A classification on the PdC is defined by the different positions of the classified resource 
- * on the axis of the PdC. A position is then a set of one or more values in the different axis of
- * the PdC. A classification on the PdC can be or not modifiable; by default a predefined
- * classification used to classify new published contents isn't modifiable whereas the classification
- * of a content can be modified.
- * 
- * The positions of a given classification can be accessed with this Web resource by the URI of the
- * position; classifications and positions are exposed in the Web by Silverpeas and are thus
- * uniquely identified by an URI in the Web.
- */
+* A REST Web resource that represents the classification of a Silverpeas's resource on the
+* classification plan (named PdC).
+*
+* A classification on the PdC is defined by the different positions of the classified resource
+* on the axis of the PdC. A position is then a set of one or more values in the different axis of
+* the PdC. A classification on the PdC can be or not modifiable; by default a predefined
+* classification used to classify new published contents isn't modifiable whereas the classification
+* of a content can be modified.
+*
+* The positions of a given classification can be accessed with this Web resource by the URI of the
+* position; classifications and positions are exposed in the Web by Silverpeas and are thus
+* uniquely identified by an URI in the Web.
+*/
 @Service
 @RequestScoped
 @Path("pdc/{componentId}/{contentId}")
@@ -81,14 +81,14 @@ public class PdcClassificationResource extends RESTWebService {
   }
 
   /**
-   * Gets classification on the PdC of the resource identified by the requested URI.
-   * The PdC classification is sent back in JSON.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the requested resource, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return a web entity representing the PdC classification of the resource. The entity is 
-   * serialized in JSON.
-   */
+* Gets classification on the PdC of the resource identified by the requested URI.
+* The PdC classification is sent back in JSON.
+* If the user isn't authentified, a 401 HTTP code is returned.
+* If the user isn't authorized to access the requested resource, a 403 is returned.
+* If a problem occurs when processing the request, a 503 HTTP code is returned.
+* @return a web entity representing the PdC classification of the resource. The entity is
+* serialized in JSON.
+*/
   @GET
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPdCClassification() {
@@ -105,17 +105,17 @@ public class PdcClassificationResource extends RESTWebService {
   }
 
   /**
-   * Deletes the specified existing position by its unique identifier.
-   * If the PdC position doesn't exist, nothing is done, so that the HTTP DELETE request remains
-   * indempotent as defined in the HTTP specification.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the resource PdC classification, a 403 is returned.
-   * If the position is the single one for the content on the PdC and the PdC contains at least one
-   * mandatory axis, a 409 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param positionId the unique identifier of the position to delete in the classification of
-   * the requested resource.
-   */
+* Deletes the specified existing position by its unique identifier.
+* If the PdC position doesn't exist, nothing is done, so that the HTTP DELETE request remains
+* indempotent as defined in the HTTP specification.
+* If the user isn't authentified, a 401 HTTP code is returned.
+* If the user isn't authorized to access the resource PdC classification, a 403 is returned.
+* If the position is the single one for the content on the PdC and the PdC contains at least one
+* mandatory axis, a 409 is returned.
+* If a problem occurs when processing the request, a 503 HTTP code is returned.
+* @param positionId the unique identifier of the position to delete in the classification of
+* the requested resource.
+*/
   @DELETE
   @Path("{positionId}")
   public void deletePdcPosition(@PathParam("positionId") int positionId) {
@@ -135,18 +135,18 @@ public class PdcClassificationResource extends RESTWebService {
   }
 
   /**
-   * Adds a new position on the PdC into the classification of the resource identified by the
-   * requested URI.
-   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
-   * returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param newPosition a web entity representing the PdC position to add. The entity is passed 
-   * within the request and it is serialized in JSON.
-   * @return the response with the status of the position adding and, in the case of a successful
-   * operation, the new PdC classification of the resource resulting of the position adding.
-   */
+* Adds a new position on the PdC into the classification of the resource identified by the
+* requested URI.
+* If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
+* returned.
+* If the user isn't authentified, a 401 HTTP code is returned.
+* If the user isn't authorized to access the comment, a 403 is returned.
+* If a problem occurs when processing the request, a 503 HTTP code is returned.
+* @param newPosition a web entity representing the PdC position to add. The entity is passed
+* within the request and it is serialized in JSON.
+* @return the response with the status of the position adding and, in the case of a successful
+* operation, the new PdC classification of the resource resulting of the position adding.
+*/
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -176,18 +176,18 @@ public class PdcClassificationResource extends RESTWebService {
   }
 
   /**
-   * Updates an existing position on the PdC into the classification of the resource identified by the
-   * requested URI.
-   * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
-   * returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If the user isn't authorized to access the comment, a 403 is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param modifiedPosition a web entity representing the new state of the PdC position to update.
-   * The entity is passed within the request and it is serialized in JSON.
-   * @return the response with the status of the position update and, in the case of a successful
-   * operation, the new PdC classification of the resource resulting of the position update.
-   */
+* Updates an existing position on the PdC into the classification of the resource identified by the
+* requested URI.
+* If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
+* returned.
+* If the user isn't authentified, a 401 HTTP code is returned.
+* If the user isn't authorized to access the comment, a 403 is returned.
+* If a problem occurs when processing the request, a 503 HTTP code is returned.
+* @param modifiedPosition a web entity representing the new state of the PdC position to update.
+* The entity is passed within the request and it is serialized in JSON.
+* @return the response with the status of the position update and, in the case of a successful
+* operation, the new PdC classification of the resource resulting of the position update.
+*/
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

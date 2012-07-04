@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.glossary;
 
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -51,7 +55,6 @@ public class HighlightGlossaryTerms {
    * Search all the term contained in the given glossary and highlight, one or all of the
    * occurrences found in the given text. The regular expression used to retrieve the occurrence
    * works only in HTML code, not in plain text. This code is designed to parse HTML code.
-   *
    * @param publicationContent the publication text used to perform the highlight operation
    * @param className the css class name used to "mark" the highlighted term and format his
    * displaying
@@ -61,9 +64,8 @@ public class HighlightGlossaryTerms {
    * @return a String which contain given publication with highlight term.
    */
   public String searchReplace(String publicationContent, String className, String axisId,
-          boolean onlyFirst, String language) {
+      boolean onlyFirst, String language) {
     String replacedContent = publicationContent;
-
 
     List<Value> glossary = null;
     // get the glossary terms
@@ -79,14 +81,15 @@ public class HighlightGlossaryTerms {
     if (glossary != null && !glossary.isEmpty()) {
       for (Value node : glossary) {
         replacedContent = highlight(node.getName(language), replacedContent, node.getDescription(
-                language), className, onlyFirst);
+            language), className, onlyFirst);
       }
     }
     return replacedContent;
 
   }
 
-  String highlight(String term, String content, String definition,  String className, boolean onlyFirst) {
+  String highlight(String term, String content, String definition, String className,
+      boolean onlyFirst) {
     // escape HTML character
     String escapedTerm = StringEscapeUtils.escapeHtml(term);
     // regular expression which allows to search all the term except the HTML tag
@@ -95,8 +98,8 @@ public class HighlightGlossaryTerms {
 
     // highlights the term
     String replacement =
-            "<a href=\"#\" class=\"" + className + "\" title=\"" + definition.replaceAll("\"",
-            "&quot;") + "\">" + escapedTerm + "</a>";
+        "<a href=\"#\" class=\"" + className + "\" title=\"" + definition.replaceAll("\"",
+        "&quot;") + "\">" + escapedTerm + "</a>";
 
     if (onlyFirst) {
       // highlights only the first occurrence

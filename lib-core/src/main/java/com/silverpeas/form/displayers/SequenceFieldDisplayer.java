@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,8 +43,8 @@ import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * A SequenceFieldDisplayer is an object which can display a value corresponding to the setting of
- * a sequence. A such value is only readable to guaranty validity of each value belonging to the
+ * A SequenceFieldDisplayer is an object which can display a value corresponding to the setting of a
+ * sequence. A such value is only readable to guaranty validity of each value belonging to the
  * sequence (unicity for instance).
  * @see Field
  * @see FieldTemplate
@@ -58,24 +58,24 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
    * value format follows the field's setting. The field's name is used to name the html form input.
    */
   public void display(PrintWriter out, SequenceField field, FieldTemplate template,
-    PagesContext pagesContext)
-  throws FormException {
+      PagesContext pagesContext)
+      throws FormException {
     if (!template.getTypeName().equals(SequenceField.TYPE)) {
       SilverTrace.info("form", "SequenceFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-        SequenceField.TYPE);
+          SequenceField.TYPE);
     }
-    
+
     SequenceField sequenceField = null;
     if (!SequenceField.TYPE.equals(field.getTypeName())) {
       SilverTrace.info("form", "SequenceFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
-        SequenceField.TYPE);
+          SequenceField.TYPE);
     } else {
       sequenceField = field;
     }
-    
+
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
-    
+
     String value = "";
     if (field.isNull()) {
       if (sequenceField != null) {
@@ -89,14 +89,14 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
           startValue = Integer.parseInt(parameters.get("startValue"));
         }
         boolean reuseAvailableValues = (parameters.containsKey("reuseAvailableValues")
-          && "true".equals(parameters.get("reuseAvailableValues")));
+            && "true".equals(parameters.get("reuseAvailableValues")));
         value = sequenceField.getNextValue(fieldName, template.getTemplateName(),
-          pagesContext.getComponentId(), minLength, startValue, reuseAvailableValues);
+            pagesContext.getComponentId(), minLength, startValue, reuseAvailableValues);
       }
     } else {
       value = field.getValue(language);
     }
-    
+
     Input input = new Input();
     input.setID(fieldName);
     input.setName(fieldName);
@@ -104,24 +104,24 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
     input.setType(Input.text);
     input.setSize(value.length() + 2);
     input.setReadOnly(true);
-    
+
     out.println(input.toString());
   }
-  
+
   /**
    * Since the field is always in readonly state, no javascripts are needed to control the value
    * given to the field.
    */
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
-  throws IOException {
+      throws IOException {
     if (!template.getTypeName().equals(SequenceField.TYPE)) {
       SilverTrace.info("form", "SequenceFieldDisplayer.displayScripts",
-        "form.INFO_NOT_CORRECT_TYPE", SequenceField.TYPE);
+          "form.INFO_NOT_CORRECT_TYPE", SequenceField.TYPE);
     }
   }
-  
+
   /**
-   * Returns the number of returned html objects. 
+   * Returns the number of returned html objects.
    */
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
@@ -133,25 +133,25 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
   public boolean isDisplayedMandatory() {
     return false;
   }
-  
+
   /**
    * Updates the value of the field. The field's name is used to retrieve the HTTP parameter from
    * the request.
    */
   public List<String> update(String value, SequenceField field, FieldTemplate template,
-    PagesContext pagesContext)
-  throws FormException {
+      PagesContext pagesContext)
+      throws FormException {
     if (!SequenceField.TYPE.equals(field.getTypeName())) {
       throw new FormException("SequenceFieldDisplayer.update", "form.EX_NOT_CORRECT_TYPE",
-        SequenceField.TYPE);
+          SequenceField.TYPE);
     }
     if (field.acceptValue(value, pagesContext.getLanguage())) {
       field.setValue(value, pagesContext.getLanguage());
     } else {
       throw new FormException("SequenceFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE",
-        SequenceField.TYPE);
+          SequenceField.TYPE);
     }
     return new ArrayList<String>();
   }
-  
+
 }

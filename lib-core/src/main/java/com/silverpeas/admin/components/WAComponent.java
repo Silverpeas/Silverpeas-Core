@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.admin.components;
 
 import java.util.ArrayList;
@@ -43,59 +44,50 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="WAComponentType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="label" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="description" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="suite" type="{http://silverpeas.org/xml/ns/component}multilang"/>
- *         &lt;element name="visible" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="visibleInPersonalSpace" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="portlet" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="router" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="instanceClassName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="profiles">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="profile" type="{http://silverpeas.org/xml/ns/component}ProfileType" maxOccurs="unbounded" minOccurs="0"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="parameters" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="parameter" type="{http://silverpeas.org/xml/ns/component}ParameterType" maxOccurs="unbounded" minOccurs="0"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name=&quot;WAComponentType&quot;&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name=&quot;name&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;label&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;description&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;suite&quot; type=&quot;{http://silverpeas.org/xml/ns/component}multilang&quot;/&gt;
+ *         &lt;element name=&quot;visible&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
+ *         &lt;element name=&quot;visibleInPersonalSpace&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot; minOccurs=&quot;0&quot;/&gt;
+ *         &lt;element name=&quot;portlet&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}boolean&quot;/&gt;
+ *         &lt;element name=&quot;router&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot; minOccurs=&quot;0&quot;/&gt;
+ *         &lt;element name=&quot;instanceClassName&quot; type=&quot;{http://www.w3.org/2001/XMLSchema}string&quot;/&gt;
+ *         &lt;element name=&quot;profiles&quot;&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name=&quot;profile&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ProfileType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name=&quot;parameters&quot; minOccurs=&quot;0&quot;&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base=&quot;{http://www.w3.org/2001/XMLSchema}anyType&quot;&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name=&quot;parameter&quot; type=&quot;{http://silverpeas.org/xml/ns/component}ParameterType&quot; maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot;/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "WAComponentType", propOrder = {
-    "name",
-    "label",
-    "description",
-    "suite",
-    "visible",
-    "visibleInPersonalSpace",
-    "portlet",
-    "router",
-    "instanceClassName",
-    "profiles",
+@XmlType(name = "WAComponentType", propOrder = { "name", "label", "description", "suite",
+    "visible", "visibleInPersonalSpace", "portlet", "router", "instanceClassName", "profiles",
     "parameters" })
 public class WAComponent {
   @XmlTransient

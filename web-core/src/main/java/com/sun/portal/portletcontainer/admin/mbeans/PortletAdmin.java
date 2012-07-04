@@ -184,8 +184,8 @@ public class PortletAdmin implements PortletAdminMBean {
     File destFile = new File(warFileLocation, warName);
     boolean remove = destFile.delete();
     if (logger.isLoggable(Level.FINEST)) {
-      logger.log(Level.FINEST, "PSPL_CSPPCWU0011", new String[]{
-            destFile.getAbsolutePath(), String.valueOf(remove)});
+      logger.log(Level.FINEST, "PSPL_CSPPCWU0011", new String[] {
+          destFile.getAbsolutePath(), String.valueOf(remove) });
     }
     return remove;
   }

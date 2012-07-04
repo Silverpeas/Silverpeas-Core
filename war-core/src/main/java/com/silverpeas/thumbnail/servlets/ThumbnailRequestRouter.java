@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.thumbnail.servlets;
 
 import com.silverpeas.thumbnail.ThumbnailRuntimeException;
@@ -48,7 +49,7 @@ import java.util.List;
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
   private static final long serialVersionUID = -2685660972761271210L;
 
   public String getDestination(String function,
@@ -151,8 +152,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
       String fileName = fullFileName
           .substring(
-              fullFileName.lastIndexOf(File.separator) + 1,
-              fullFileName.length());
+          fullFileName.lastIndexOf(File.separator) + 1,
+          fullFileName.length());
 
       if (fileName.lastIndexOf(".") != -1) {
         type = fileName.substring(fileName.lastIndexOf(".") + 1,
@@ -379,8 +380,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
       String fileName = fullFileName
           .substring(
-              fullFileName.lastIndexOf(File.separator) + 1,
-              fullFileName.length());
+          fullFileName.lastIndexOf(File.separator) + 1,
+          fullFileName.length());
       SilverTrace.info("thumbnail",
           "ThumbnailRequestRouter.createAttachment",
           "root.MSG_GEN_PARAM_VALUE", "file = " + fileName);
@@ -398,8 +399,8 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
       if (type == null || type.length() == 0) {
         throw new ThumbnailRuntimeException(
-                  "ThumbnailRequestRouter.saveFile()",
-                  SilverpeasRuntimeException.ERROR, "thumbnail_MSG_TYPE_KO");
+            "ThumbnailRequestRouter.saveFile()",
+            SilverpeasRuntimeException.ERROR, "thumbnail_MSG_TYPE_KO");
       }
 
       String physicalName = new Long(new Date().getTime()).toString()
@@ -446,7 +447,7 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
 
   @Override
   public ThumbnailSessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext context) {
+      MainSessionController mainSessionCtrl, ComponentContext context) {
     return new ThumbnailSessionController(mainSessionCtrl, context);
   }
 

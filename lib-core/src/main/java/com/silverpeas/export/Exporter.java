@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -28,22 +28,20 @@ import java.io.Serializable;
 
 /**
  * This interface defines the features an exporter of serializable resources in Silverpeas have to
- * satisfy. All exporter in Silverpeas should implement this interface.
- *
- * An exporter in Silverpeas is defined for a specific type of serializable resources and it has the
- * responsability to know how to export them into a specific or a specified format.
+ * satisfy. All exporter in Silverpeas should implement this interface. An exporter in Silverpeas is
+ * defined for a specific type of serializable resources and it has the responsability to know how
+ * to export them into a specific or a specified format.
  * @param <T> The type of the serializable resources to export.
  */
 public interface Exporter<T extends Serializable> {
 
   /**
    * Exports the specified serializable resource according to the export information carried by the
-   * specified export descriptor.
-   * The serializable resource is exported by using either the writer or the output stream provided
-   * by the descriptor. According to the kind of the writer or of the output stream, the way the
-   * resource is actually exported can be customized (export in a file, in a string, through a
-   * web service, ...).
-   * Once the export is done (with success or failure), the writer and the output stream is closed.
+   * specified export descriptor. The serializable resource is exported by using either the writer
+   * or the output stream provided by the descriptor. According to the kind of the writer or of the
+   * output stream, the way the resource is actually exported can be customized (export in a file,
+   * in a string, through a web service, ...). Once the export is done (with success or failure),
+   * the writer and the output stream is closed.
    * @param descriptor the export descriptor in which information about the export process is
    * indicated.
    * @param serializable the serializable resource to export.

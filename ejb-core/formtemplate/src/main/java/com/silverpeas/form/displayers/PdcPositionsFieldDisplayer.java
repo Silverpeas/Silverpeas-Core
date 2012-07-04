@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,10 +60,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * @see FieldDisplayer
  */
 public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField> {
-  
+
   private PdcBm pdcBm = null;
   private ContentManager contentManager = null;
-  
+
   /**
    * Constructor uses for test purpose only
    */
@@ -77,7 +77,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
    */
   public PdcPositionsFieldDisplayer() {
   }
-  
+
   /**
    * Returns the name of the managed types.
    */
@@ -127,17 +127,19 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
       // get PDC positions
       try {
         ContentManager contentManager = getContentManager();
-        int silverContentId = contentManager.getSilverContentId(context.getObjectId(), context.getComponentId());
-        List<ClassifyPosition> positions = getPdcBm().getPositions(silverContentId, context.getComponentId());
-        
+        int silverContentId =
+            contentManager.getSilverContentId(context.getObjectId(), context.getComponentId());
+        List<ClassifyPosition> positions =
+            getPdcBm().getPositions(silverContentId, context.getComponentId());
+
         ElementContainer result = new ElementContainer();
         Table positionsTables = new Table();
         positionsTables.setClass("pdcPositionsField");
         for (ClassifyPosition position : positions) {
           String valueId = position.getValueOnAxis(Integer.parseInt(axisId));
           if (StringUtil.isDefined(valueId)) {
-            valueId = valueId.substring(0, valueId.length()-1);
-            valueId = valueId.substring(valueId.lastIndexOf('/')+1, valueId.length());
+            valueId = valueId.substring(0, valueId.length() - 1);
+            valueId = valueId.substring(valueId.lastIndexOf('/') + 1, valueId.length());
             TR row = new TR();
             TD cell = new TD();
             Value value = getPdcBm().getValue(axisId, valueId);
@@ -149,21 +151,23 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
         result.addElement(positionsTables);
         out.println(positionsTables.toString());
       } catch (ContentManagerException e) {
-        SilverTrace.debug("form", "PdcPositionsDisplayer.getParameterValues", "form.EX_CANT_READ_VALUE",
+        SilverTrace.debug("form", "PdcPositionsDisplayer.getParameterValues",
+            "form.EX_CANT_READ_VALUE",
             "axisId = " + axisId + ", objectId=" + context.getObjectId(), e);
       } catch (PdcException pe) {
-        SilverTrace.debug("form", "PdcPositionsDisplayer.getParameterValues", "form.EX_CANT_READ_VALUE",
+        SilverTrace.debug("form", "PdcPositionsDisplayer.getParameterValues",
+            "form.EX_CANT_READ_VALUE",
             "axisId = " + axisId + ", objectId=" + context.getObjectId(), pe);
       }
     }
-    
+
   }
 
   private ContentManager getContentManager() throws ContentManagerException {
     if (contentManager == null) {
       contentManager = new ContentManager();
     }
-    
+
     return contentManager;
   }
 
@@ -173,7 +177,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
     // nothing to do as this displayer is for readonly purpose.
     return new ArrayList<String>();
   }
-  
+
   @Override
   public List<String> update(String values, TextField field, FieldTemplate template,
       PagesContext PagesContext) throws FormException {
@@ -191,12 +195,12 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 1;
   }
-  
+
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
       pdcBm = (PdcBm) new PdcBmImpl();
     }
     return pdcBm;
   }
- 
+
 }

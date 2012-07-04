@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.calendar;
 
 import com.stratelia.webactiv.util.DateUtil;
@@ -29,8 +30,8 @@ import java.util.TimeZone;
 import static java.util.Calendar.*;
 
 /**
- * A date on a day of a month and in year.
- * The time isn't represented here. Please refers to DateTime to models also the time.
+ * A date on a day of a month and in year. The time isn't represented here. Please refers to
+ * DateTime to models also the time.
  */
 public class Date extends java.util.Date implements Datable<Date>, Cloneable {
 
@@ -67,8 +68,8 @@ public class Date extends java.util.Date implements Datable<Date>, Cloneable {
   }
 
   /**
-   * Creates a date on the specified year in the specified month (1 to 12) and in the specified
-   * day (1 to 31).
+   * Creates a date on the specified year in the specified month (1 to 12) and in the specified day
+   * (1 to 31).
    * @param year the year.
    * @param month the month (1 for january, 12 for december).
    * @param dayOfMonth the day of month: 1 to 28,29,30,31 according to the month.

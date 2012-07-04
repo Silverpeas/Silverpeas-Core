@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.domains.silverpeasdriver;
 
 import com.silverpeas.util.StringUtil;
@@ -69,7 +70,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
-   * @throws Exception 
+   * @throws Exception
    */
   @Override
   public void initFromProperties(ResourceLocator rs) throws Exception {
@@ -102,7 +103,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   /**
-   * 
    * @param ud
    * @return the new user id.
    */
@@ -121,15 +121,14 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   /**
-   * 
    * @param userId
    */
   @Override
   public void deleteUser(String userId) {
-    if(StringUtil.isInteger(userId))    {
+    if (StringUtil.isInteger(userId)) {
       SPUser user = userDao.findOne(Integer.valueOf(userId));
-      if(user.getGroups() != null) {
-        for(SPGroup group : user.getGroups()) {
+      if (user.getGroups() != null) {
+        for (SPGroup group : user.getGroups()) {
           group.getUsers().remove(user);
           groupDao.saveAndFlush(group);
         }
@@ -156,7 +155,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     oldUser.setCellphone(userFull.getValue("cellularPhone"));
     oldUser.setAddress(userFull.getValue("address"));
     oldUser.setLoginmail("");
-    
+
     // Only update password when this field has been filled
     if (StringUtil.isDefined(userFull.getPassword())) {
       if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
@@ -174,11 +173,11 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   /**
-   * @param ud 
+   * @param ud
    */
   @Override
   public void updateUserDetail(UserDetail ud) {
-    if(StringUtil.isInteger(ud.getSpecificId()))    {
+    if (StringUtil.isInteger(ud.getSpecificId())) {
       SPUser user = userDao.findOne(Integer.valueOf(ud.getSpecificId()));
       if (user != null) {
         userDao.save(convertToSPUser(ud, user));
@@ -192,7 +191,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public UserDetail getUser(String userId) {
-    if(!StringUtil.isInteger(userId)) {
+    if (!StringUtil.isInteger(userId)) {
       return null;
     }
     SPUser spUser = userDao.findOne(Integer.parseInt(userId));
@@ -201,7 +200,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
   @Override
   public UserFull getUserFull(String userId) {
-    if(!StringUtil.isInteger(userId)) {
+    if (!StringUtil.isInteger(userId)) {
       return null;
     }
     SPUser user = userDao.findOne(Integer.valueOf(userId));
@@ -342,7 +341,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
         group.getParent().getSubGroups().add(subGroup);
         groupDao.saveAndFlush(subGroup);
       }
-     SPGroup parent = group.getParent();
+      SPGroup parent = group.getParent();
       if (parent != null && parent != null) {
         parent.getSubGroups().remove(group);
         groupDao.saveAndFlush(parent);
@@ -352,9 +351,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   /**
-   * 
    * @param group
-   * @throws AdminException 
+   * @throws AdminException
    */
   @Override
   public void updateGroup(Group group) throws AdminException {
@@ -462,7 +460,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   /**
    * @param userId
    * @param groupId
-   * @throws Exception  
+   * @throws Exception
    */
   public void addUserInGroup(String userId, String groupId) throws Exception {
     SPUser user = userDao.findOne(Integer.valueOf(userId));
@@ -525,7 +523,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   SPUser convertToSPUser(UserDetail detail, SPUser user) {
-    if (StringUtil.isDefined(detail.getSpecificId()) && StringUtil.isInteger(detail.getSpecificId())) {
+    if (StringUtil.isDefined(detail.getSpecificId()) &&
+        StringUtil.isInteger(detail.getSpecificId())) {
       user.setId(Integer.valueOf(detail.getId()));
     }
     user.setFirstname(detail.getFirstName());
@@ -542,5 +541,31 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     detail.setLogin(user.getLogin());
     detail.seteMail(user.getEmail());
     return detail;
+  }
+
+  @Override
+  public void resetPassword(UserDetail userDetail, String password) throws Exception {
+    SPUser user = userDao.findOne(Integer.valueOf(userDetail.getId()));
+    user.setPassword( encrypt(password) );
+    user.setPasswordValid(true);
+    userDao.saveAndFlush(user);
+  }
+
+  private String encrypt(String password) {
+    if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) ) {
+      return UnixMD5Crypt.crypt(password);
+    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)) {
+      return CryptMD5.crypt(password);
+    } else {
+      return password;
+    }
+  }
+
+  @Override
+  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws Exception {
+    SPUser user = userDao.findOne(Integer.valueOf(userDetail.getId()));
+    user.setPassword( encryptedPassword );
+    user.setPasswordValid(true);
+    userDao.saveAndFlush(user);
   }
 }

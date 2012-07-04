@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -28,70 +29,64 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * A content managed in the Silverpeas collaborative portal.
- * 
- * A content in Silverpeas is resource with a content (that can be empty); for example, a publication
- * in Silverpeas is a content.
- * This interface defines the common properties the different type of content in Silverpeas has
- * to support.
+ * A content managed in the Silverpeas collaborative portal. A content in Silverpeas is resource
+ * with a content (that can be empty); for example, a publication in Silverpeas is a content. This
+ * interface defines the common properties the different type of content in Silverpeas has to
+ * support.
  */
 public interface SilverpeasContent extends Serializable {
-  
+
   /**
    * Gets the identifier of this content in the Silverpeas component providing it. This identifier
    * is only unique among all of the contents managed by the same component (whatever its different
-   * instances).
-   * 
-   * As each type of contents in Silverpeas is provided by a single Silverpeas component, the
-   * identifier of a content is then specific to the component it belongs to. It is a way for an
-   * instance of a such component to identify uniquely the different contents it manages. So, each
-   * component can have their own policy to identify their content, whatever the way they are
-   * identified in Silverpeas.
+   * instances). As each type of contents in Silverpeas is provided by a single Silverpeas
+   * component, the identifier of a content is then specific to the component it belongs to. It is a
+   * way for an instance of a such component to identify uniquely the different contents it manages.
+   * So, each component can have their own policy to identify their content, whatever the way they
+   * are identified in Silverpeas.
    * @return the identifier of this content.
    */
   String getId();
-  
+
   /**
    * Gets the unique identifier of the Silverpeas component instance that manages this content.
    * @return the unique identifier of the component instance in the Silverpeas collaborative portal.
    */
   String getComponentInstanceId();
-  
+
   /**
    * Gets the unique identifier of this content among all the contents managed in the Silverpeas
    * collaborative portal. It is the alone unique identifier of a content in the whole Silverpeas
    * portal and it is refered as the Silverpeas content identifier or the silver content identifier.
-   * 
    * For each content put into the Silverpeas collaborative portal, an entry is uniquely created in
    * the whole system so that is can be refered by transversal services and by component instances
-   * others the one that manages it.
-   * 
-   * For compatibility reason, the Silverpeas content identifier of contents that are no yet taken
-   * into account in the whole system isn't defined, so an empty string is then returned.
-   * @return the unique identifier of this content in the whole Silverpeas collaborative portal.
-   * Can be empty if no such identifier is defined for the type of this content.
+   * others the one that manages it. For compatibility reason, the Silverpeas content identifier of
+   * contents that are no yet taken into account in the whole system isn't defined, so an empty
+   * string is then returned.
+   * @return the unique identifier of this content in the whole Silverpeas collaborative portal. Can
+   * be empty if no such identifier is defined for the type of this content.
    */
   String getSilverpeasContentId();
-  
+
   /**
    * Gets the author that has created this content.
    * @return the detail about the user that created this content.
    */
   UserDetail getCreator();
-  
+
   /**
    * Gets the date at which this content was created.
    * @return the date at which this content was created.
    */
   Date getCreationDate();
-  
+
   /**
    * Gets the title of this content if any.
    * @return the resource title. Can be empty if no title was set or no title is defined for a such
    * content.
    */
   String getTitle();
-  
+
   /**
    * Gets the description of this content if any.
    * @return the resource description. Can be empty if no description was set or no description is defined for a such

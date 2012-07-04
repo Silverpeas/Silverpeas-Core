@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -32,8 +33,8 @@ import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.script;
 
 /**
- * An (X)HTML video player with javascript.
- * The video player is set up and rendered by using javascript.
+ * An (X)HTML video player with javascript. The video player is set up and rendered by using
+ * javascript.
  */
 public class VideoPlayer {
 
@@ -41,20 +42,21 @@ public class VideoPlayer {
   private static final String playerUrl = webContext + "/util/flowplayer/flowplayer-3.2.7.swf";
   private static final Random randomGenerator = new Random();
   private static final String flowPlayerJS = webContext
-          + "/util/javaScript/flowplayer/flowplayer-3.2.6.min.js";
+      + "/util/javaScript/flowplayer/flowplayer-3.2.6.min.js";
   private static final String flowPlayerCSS = webContext + "/util/styleSheets/flowplayer.css";
   private static final String playerStyle = "<link type='text/css' href='" + flowPlayerCSS
-          + "' rel='stylesheet' />";
-  private static final String templateScript = "flowplayer(''{0}'', ''{1}'', '{'wmode: ''opaque'', "
-          + "clip: '{' autoBuffering: {2}, autoPlay: {3} '}' '}')";
+      + "' rel='stylesheet' />";
+  private static final String templateScript =
+      "flowplayer(''{0}'', ''{1}'', '{'wmode: ''opaque'', "
+      + "clip: '{' autoBuffering: {2}, autoPlay: {3} '}' '}')";
   private String videoURL = "";
   private boolean autoplay = false;
   private String width = "425px";
   private String height = "300px";
 
   /**
-   * Creates a new displayer of a video player that will play the video at the specified URL.
-   * By default the width and the height of the video player is respectively 425 pixels and 300 pixels.
+   * Creates a new displayer of a video player that will play the video at the specified URL. By
+   * default the width and the height of the video player is respectively 425 pixels and 300 pixels.
    * @param videoURL the URL of the video to play.
    * @param autoplay the video playing should be autostarted?
    */
@@ -145,15 +147,15 @@ public class VideoPlayer {
    */
   public void init(final ConcreteElement element) {
     script cssLoading = new script("$(head).append(\"" + playerStyle + "\")").setType(
-            "text/javascript");
+        "text/javascript");
     script jsInclusion = new script().setType("text/javascript").setSrc(flowPlayerJS);
     if (element instanceof ElementContainer) {
       ElementContainer container = (ElementContainer) element;
       container.addElement(cssLoading).
-              addElement(jsInclusion);
+          addElement(jsInclusion);
     } else {
       element.addElementToRegistry(cssLoading).
-              addElementToRegistry(jsInclusion);
+          addElementToRegistry(jsInclusion);
     }
   }
 
@@ -174,8 +176,8 @@ public class VideoPlayer {
       }
     }
     script player = new script(MessageFormat.format(templateScript, videoId, playerUrl,
-            !isAutoplay(),
-            isAutoplay())).setType("text/javascript");
+        !isAutoplay(),
+        isAutoplay())).setType("text/javascript");
     if (element instanceof ElementContainer) {
       ((ElementContainer) element).addElement(player);
     } else {

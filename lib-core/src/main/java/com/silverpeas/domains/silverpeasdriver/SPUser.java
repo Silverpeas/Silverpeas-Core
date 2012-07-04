@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.domains.silverpeasdriver;
 
 import com.google.common.base.CharMatcher;
@@ -39,31 +40,30 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- *
  * @author ehugonnet
  */
 @Entity
 @Table(name = "domainsp_user")
-@NamedQueries({
-  @NamedQuery(name = "SPUser.findByFirstname", query = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
-  @NamedQuery(name = "SPUser.findByLastname", query = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
-  @NamedQuery(name = "SPUser.findByPhone", query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
-  @NamedQuery(name = "SPUser.findByHomephone", query = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
-  @NamedQuery(name = "SPUser.findByCellphone", query = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
-  @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
-  @NamedQuery(name = "SPUser.findByAddress", query = "SELECT s FROM SPUser s WHERE s.address = :address"),
-  @NamedQuery(name = "SPUser.findByTitle", query = "SELECT s FROM SPUser s WHERE s.title = :title"),
-  @NamedQuery(name = "SPUser.findByCompany", query = "SELECT s FROM SPUser s WHERE s.company = :company"),
-  @NamedQuery(name = "SPUser.findByPosition", query = "SELECT s FROM SPUser s WHERE s.position = :position"),
-  @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
-  @NamedQuery(name = "SPUser.findByLogin", query = "SELECT s FROM SPUser s WHERE s.login = :login"),
-  @NamedQuery(name = "SPUser.findByPassword", query = "SELECT s FROM SPUser s WHERE s.password = :password"),
-  @NamedQuery(name = "SPUser.findByPasswordvalid", query = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
-  @NamedQuery(name = "SPUser.findByLoginmail", query = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
-  @NamedQuery(name = "SPUser.findByEmail", query = "SELECT s FROM SPUser s WHERE s.email = :email")})
+@NamedQueries( {
+    @NamedQuery(name = "SPUser.findByFirstname", query = "SELECT s FROM SPUser s WHERE s.firstname = :firstname"),
+    @NamedQuery(name = "SPUser.findByLastname", query = "SELECT s FROM SPUser s WHERE s.lastname = :lastname"),
+    @NamedQuery(name = "SPUser.findByPhone", query = "SELECT s FROM SPUser s WHERE s.phone = :phone"),
+    @NamedQuery(name = "SPUser.findByHomephone", query = "SELECT s FROM SPUser s WHERE s.homephone = :homephone"),
+    @NamedQuery(name = "SPUser.findByCellphone", query = "SELECT s FROM SPUser s WHERE s.cellphone = :cellphone"),
+    @NamedQuery(name = "SPUser.findByFax", query = "SELECT s FROM SPUser s WHERE s.fax = :fax"),
+    @NamedQuery(name = "SPUser.findByAddress", query = "SELECT s FROM SPUser s WHERE s.address = :address"),
+    @NamedQuery(name = "SPUser.findByTitle", query = "SELECT s FROM SPUser s WHERE s.title = :title"),
+    @NamedQuery(name = "SPUser.findByCompany", query = "SELECT s FROM SPUser s WHERE s.company = :company"),
+    @NamedQuery(name = "SPUser.findByPosition", query = "SELECT s FROM SPUser s WHERE s.position = :position"),
+    @NamedQuery(name = "SPUser.findByBoss", query = "SELECT s FROM SPUser s WHERE s.boss = :boss"),
+    @NamedQuery(name = "SPUser.findByLogin", query = "SELECT s FROM SPUser s WHERE s.login = :login"),
+    @NamedQuery(name = "SPUser.findByPassword", query = "SELECT s FROM SPUser s WHERE s.password = :password"),
+    @NamedQuery(name = "SPUser.findByPasswordvalid", query = "SELECT s FROM SPUser s WHERE s.passwordvalid = :passwordvalid"),
+    @NamedQuery(name = "SPUser.findByLoginmail", query = "SELECT s FROM SPUser s WHERE s.loginmail = :loginmail"),
+    @NamedQuery(name = "SPUser.findByEmail", query = "SELECT s FROM SPUser s WHERE s.email = :email") })
 public class SPUser implements Serializable {
   private static final long serialVersionUID = 2645559023438948622L;
-  
+
   @Id
   @Basic(optional = false)
   @NotNull
@@ -77,7 +77,9 @@ public class SPUser implements Serializable {
   @Size(min = 1, max = 100)
   @Column(name = "lastname")
   private String lastname;
-  // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
+  // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$",
+  // message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or
+  // fax number consider using this annotation to enforce field validation
   @Size(max = 20)
   @Column(name = "phone")
   private String phone;
@@ -87,7 +89,9 @@ public class SPUser implements Serializable {
   @Size(max = 20)
   @Column(name = "cellphone")
   private String cellphone;
-  // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$", message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or fax number consider using this annotation to enforce field validation
+  // @Pattern(regexp="^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$",
+  // message="Invalid phone/fax format, should be as xxx-xxx-xxxx")//if the field contains phone or
+  // fax number consider using this annotation to enforce field validation
   @Size(max = 20)
   @Column(name = "fax")
   private String fax;
@@ -121,14 +125,15 @@ public class SPUser implements Serializable {
   @Size(max = 100)
   @Column(name = "loginmail")
   private String loginmail;
-  // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+  // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+  // message="Invalid email")//if the field contains email address consider using this annotation to
+  // enforce field validation
   @Size(max = 100)
   @Column(name = "email")
   private String email;
   @ManyToMany(mappedBy = "users")
   private Set<SPGroup> groups;
-  
-  
+
   @Transient
   static final CharMatcher booleanConverter = CharMatcher.is('Y').or(CharMatcher.is('y'));
 
@@ -275,9 +280,9 @@ public class SPUser implements Serializable {
   }
 
   public void setPasswordValid(boolean passwordvalid) {
-    if(passwordvalid) {
+    if (passwordvalid) {
       this.passwordvalid = 'Y';
-    }else {
+    } else {
       this.passwordvalid = 'N';
     }
   }
@@ -330,5 +335,5 @@ public class SPUser implements Serializable {
   public String toString() {
     return "com.silverpeas.domains.silverpeasdriver.SPUser[ id=" + id + " ]";
   }
-  
+
 }

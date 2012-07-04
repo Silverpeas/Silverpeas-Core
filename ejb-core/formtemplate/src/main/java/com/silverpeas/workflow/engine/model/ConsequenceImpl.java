@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine.model;
 
 import java.io.Serializable;
@@ -39,7 +43,7 @@ import com.silverpeas.workflow.engine.AbstractReferrableObject;
  * Class implementing the representation of the &lt;consequence&gt; element of a Process Model.
  */
 public class ConsequenceImpl extends AbstractReferrableObject implements Consequence,
-        AbstractDescriptor, Serializable {
+    AbstractDescriptor, Serializable {
 
   private static final long serialVersionUID = -905677587105320693L;
   private String item;
@@ -75,7 +79,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   public State getTargetState(String strStateName) {
     for (int i = 0; i < targetStateList.size(); i++) {
       if (((StateSetter) targetStateList.get(i)).getState().getName().equals(
-              strStateName)) {
+          strStateName)) {
         return ((StateSetter) targetStateList.get(i)).getState();
       }
     }
@@ -85,7 +89,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Get the target states
-   *
    * @return the target states as a Vector
    */
   public State[] getTargetStates() {
@@ -138,7 +141,7 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
   public State getUnsetState(String strStateName) {
     for (int i = 0; i < unsetStateList.size(); i++) {
       if (((StateSetter) unsetStateList.get(i)).getState().getName().equals(
-              strStateName)) {
+          strStateName)) {
         return ((StateSetter) unsetStateList.get(i)).getState();
       }
     }
@@ -148,7 +151,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Get the states to unset
-   *
    * @return the states to unset as a Vector
    */
   public State[] getUnsetStates() {
@@ -182,7 +184,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Get the flag that specifies if instance has to be removed
-   *
    * @return true if instance has to be removed
    */
   public boolean getKill() {
@@ -191,7 +192,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Set the flag that specifies if instance has to be removed
-   *
    * @param kill true if instance has to be removed
    */
   public void setKill(boolean kill) {
@@ -200,16 +200,14 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Get all the users that have to be notified
-   *
    * @return QualifiedUsers object containing notified users
    */
   public List<QualifiedUsers> getNotifiedUsers() {
-     return this.notifiedUsersList;
+    return this.notifiedUsersList;
   }
 
   /**
    * Set all the users that have to be notified
-   *
    * @param QualifiedUsers object containing notified users
    */
   public void setNotifiedUsers(List<QualifiedUsers> notifiedUsersList) {
@@ -246,7 +244,6 @@ public class ConsequenceImpl extends AbstractReferrableObject implements Consequ
 
   /**
    * Check if the consequence is verified or not
-   *
    * @param itemValue - the value of the folder item (specified in xml attribute 'item'
    * @return true if the consequence is verified
    */

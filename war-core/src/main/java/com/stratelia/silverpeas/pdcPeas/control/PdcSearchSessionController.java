@@ -1,23 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.silverpeas.pdcPeas.control;
 
 import java.io.File;
@@ -224,13 +224,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retrieve the external silverpeas server configuration from pdcPeasSettings file<br> Using the
-   * following keys<br> <ul> <li>external.search.server.CPT.name=ADEF</li>
-   * <li>external.search.server.CPT.data.path=D:\\silverpeas\\data</li>
-   * <li>external.search.server.CPT.component.filters=kmelia</li>
-   * <li>external.search.server.CPT.url=http://monserveur/silverpeas</li> </ul> Where CPT is the
-   * number of external servers starting from 1 to N
-   */
+* Retrieve the external silverpeas server configuration from pdcPeasSettings file<br> Using the
+* following keys<br> <ul> <li>external.search.server.CPT.name=ADEF</li>
+* <li>external.search.server.CPT.data.path=D:\\silverpeas\\data</li>
+* <li>external.search.server.CPT.component.filters=kmelia</li>
+* <li>external.search.server.CPT.url=http://monserveur/silverpeas</li> </ul> Where CPT is the
+* number of external servers starting from 1 to N
+*/
   private void getExternalSPConfig() {
     if (isEnableExternalSearch) {
       curServerName = getSettings().getString("server.name");
@@ -273,14 +273,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * PDC search methods (via DomainsBar) /
-   *
-   * @throws Exception
-   * ****************************************************************************************************************
-   */
+* PDC search methods (via DomainsBar) /
+*
+* @throws Exception
+* ****************************************************************************************************************
+*/
   public void setPDCResults(List<GlobalSilverContent> globalSilverContents) throws Exception {
     indexOfFirstItemToDisplay = 0;
     processResultsToDisplay(globalSilverContents);
@@ -302,12 +302,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * plain search methods /
-   * ****************************************************************************************************************
-   */
+* plain search methods /
+* ****************************************************************************************************************
+*/
   public void setResults(List<GlobalSilverContent> globalSilverResults) {
     indexOfFirstResultToDisplay = 0;
     setLastResults(globalSilverResults);
@@ -462,10 +462,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Main method to add external components to a query description object
-   *
-   * @param query the query description used to build Lucene query
-   */
+* Main method to add external components to a query description object
+*
+* @param query the query description used to build Lucene query
+*/
   private void addExternalComponents(QueryDescription query) {
     if (isEnableExternalSearch && !query.isSearchBySpace()) {
       for (ExternalSPConfigVO extServerCfg : this.externalServers) {
@@ -479,12 +479,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * This method retrieve the list of subfolders from external server configuration path. Then it
-   * filters each directory using the external list of authorized components.
-   *
-   * @param query the QueryDescription where adding new ExternalComponent search
-   * @param extServerCfg the external server configuration read from properties file
-   */
+* This method retrieve the list of subfolders from external server configuration path. Then it
+* filters each directory using the external list of authorized components.
+*
+* @param query the QueryDescription where adding new ExternalComponent search
+* @param extServerCfg the external server configuration read from properties file
+*/
   private void browseExternalServerDirectory(QueryDescription query, ExternalSPConfigVO extServerCfg) {
     Collection<File> listDir = new ArrayList<File>();
     try {
@@ -502,12 +502,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Filter the list of external component for Lucene search purpose
-   *
-   * @param query : the query description used to build lucene query
-   * @param extServerCfg : the external server configuration
-   * @param file : current external directory
-   */
+* Filter the list of external component for Lucene search purpose
+*
+* @param query : the query description used to build lucene query
+* @param extServerCfg : the external server configuration
+* @param file : current external directory
+*/
   private void filterExternalComponents(QueryDescription query, ExternalSPConfigVO extServerCfg,
     File file) {
     String fileName = file.getName();
@@ -589,10 +589,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Build the list of result group filter from current global search result
-   *
-   * @return new ResultGroupFilter object which contains all data to filter result
-   */
+* Build the list of result group filter from current global search result
+*
+* @return new ResultGroupFilter object which contains all data to filter result
+*/
   public ResultGroupFilter getResultGroupFilter() {
     // Return object declaration
     ResultGroupFilter res = new ResultGroupFilter();
@@ -905,12 +905,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * This method filter current array of global silver result with filter parameters
-   *
-   * @param filter
-   * @param listGSR
-   * @return list of GlobalSilverResult to display
-   */
+* This method filter current array of global silver result with filter parameters
+*
+* @param filter
+* @param listGSR
+* @return list of GlobalSilverResult to display
+*/
   private List<GlobalSilverResult> filterResult(ResultFilterVO filter,
       List<GlobalSilverResult> listGSR) {
     List<GlobalSilverResult> sortedResults = new ArrayList<GlobalSilverResult>();
@@ -1013,10 +1013,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Enhance information from result before sending them to the view
-   *
-   * @param results a list of GlobalSilverResult to enhance
-   */
+* Enhance information from result before sending them to the view
+*
+* @param results a list of GlobalSilverResult to enhance
+*/
   private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
     String titleLink = "";
     String downloadLink = "";
@@ -1182,16 +1182,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
-   * permalink
-   *
-   * @see URLManager.getSimpleURL
-   * @param resultType the result type
-   * @param markAsReadJS javascript string to mark this result as read
-   * @param indexEntry the current indexEntry
-   * @param serverName the server name string
-   * @return a string which represents an external server URL
-   */
+* Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
+* permalink
+*
+* @see URLManager.getSimpleURL
+* @param resultType the result type
+* @param markAsReadJS javascript string to mark this result as read
+* @param indexEntry the current indexEntry
+* @param serverName the server name string
+* @return a string which represents an external server URL
+*/
   private String buildExternalServerURL(String resultType, String markAsReadJS,
     MatchingIndexEntry indexEntry, String serverName) {
     StringBuilder extURLSB = new StringBuilder();
@@ -1259,12 +1259,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Cette methode construit un tableau contenant toutes les informations utiles à la construction
-   * de la JSP resultat
-   *
-   * @param matchingIndexEntries - un tableau de MatchingIndexEntry
-   * @return un tableau contenant les informations relatives aux parametres d'entrée
-   */
+* Cette methode construit un tableau contenant toutes les informations utiles à la construction
+* de la JSP resultat
+*
+* @param matchingIndexEntries - un tableau de MatchingIndexEntry
+* @return un tableau contenant les informations relatives aux parametres d'entrée
+*/
   private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
     List<MatchingIndexEntry> matchingIndexEntries) throws Exception {
     SilverTrace.info("pdcPeas",
@@ -1339,7 +1339,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         }
 
-        // Check if it's an external search before searching components information  
+        // Check if it's an external search before searching components information
         String place;
         if (isExternalComponent(result.getServerName())) {
           place = getString("pdcPeas.external.search.label") + " ";
@@ -1384,8 +1384,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @return list of current object type filter if exists, null else if
-   */
+* @return list of current object type filter if exists, null else if
+*/
   private List<String> getListObjectTypeFilter() {
     // Retrieve object type filter
     List<String> objectTypeFilter = null;
@@ -1400,10 +1400,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param result the MatchingIndexEntry to process
-   * @param objectTypeFilter the list of objectTypeFilter string
-   * @return true if we process this result and add the GlobalSilverResult to the result list
-   */
+* @param result the MatchingIndexEntry to process
+* @param objectTypeFilter the list of objectTypeFilter string
+* @return true if we process this result and add the GlobalSilverResult to the result list
+*/
   private boolean processResult(MatchingIndexEntry result, List<String> objectTypeFilter) {
     // Default loop variable
     boolean processThisResult = true;
@@ -1422,9 +1422,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param serverName the server name
-   * @return true if it's an external component, false else if
-   */
+* @param serverName the server name
+* @return true if it's an external component, false else if
+*/
   private boolean isExternalComponent(String serverName) {
     if (StringUtil.isDefined(curServerName) && !curServerName.equalsIgnoreCase(serverName)) {
       return true;
@@ -1433,9 +1433,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param serverName
-   * @return the server label
-   */
+* @param serverName
+* @return the server label
+*/
   private String getExternalServerLabel(String serverName) {
     String srvLabel = "";
     boolean srvFound = false;
@@ -1454,13 +1454,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Converts a MatchingIndexEntry to a GlobalSilverResult, mainly duplicate code from
-   * matchingIndexEntries2GlobalSilverResults, needs a Silverpeas Guru to refactor the two methods
-   *
-   * @param matchingIndexEntry
-   * @return GlobalSilverResult or null if the MatchingIndexEntry was null
-   * @throws Exception
-   */
+* Converts a MatchingIndexEntry to a GlobalSilverResult, mainly duplicate code from
+* matchingIndexEntries2GlobalSilverResults, needs a Silverpeas Guru to refactor the two methods
+*
+* @param matchingIndexEntry
+* @return GlobalSilverResult or null if the MatchingIndexEntry was null
+* @throws Exception
+*/
   public GlobalSilverResult matchingIndexEntry2GlobalSilverResult(
     MatchingIndexEntry matchingIndexEntry) {
 
@@ -1593,12 +1593,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * search from DomainsBar methods /
-   * ****************************************************************************************************************
-   */
+* search from DomainsBar methods /
+* ****************************************************************************************************************
+*/
   public void setCurrentValue(Value value) {
     this.currentValue = value;
   }
@@ -1818,12 +1818,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return contentPeasPDC;
   }
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * searchAndSelect methods /
-   * ****************************************************************************************************************
-   */
+* searchAndSelect methods /
+* ****************************************************************************************************************
+*/
   private boolean activeSelection = false;
   private Pdc m_pdc = null;
 
@@ -1862,12 +1862,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return instanceIds;
   }
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * Thesaurus methods /
-   * ****************************************************************************************************************
-   */
+* Thesaurus methods /
+* ****************************************************************************************************************
+*/
   private ThesaurusManager thesaurus = new ThesaurusManager();
   private boolean activeThesaurus = false; // thesaurus actif
   private Jargon jargon = null;// jargon utilisé par l'utilisateur
@@ -1995,8 +1995,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Returns an array of words which are not usually usefull for searching.
-   */
+* Returns an array of words which are not usually usefull for searching.
+*/
   private String[] getStopWords() {
     if (KEYWORDS == null) {
       try {
@@ -2017,12 +2017,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return KEYWORDS;
   }
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * Glossary methods /
-   * ****************************************************************************************************************
-   */
+* Glossary methods /
+* ****************************************************************************************************************
+*/
   private String showAllAxisInGlossary = null;
   private List<Value> axis_result = null;
 
@@ -2149,12 +2149,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * Interest Center methods /
-   * ****************************************************************************************************************
-   */
+* Interest Center methods /
+* ****************************************************************************************************************
+*/
   public int saveICenter(InterestCenter ic) throws PdcException {
     try {
       int userId = Integer.parseInt(getUserId());
@@ -2195,12 +2195,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * PDC Subscriptions methods /
-   * ****************************************************************************************************************
-   */
+* PDC Subscriptions methods /
+* ****************************************************************************************************************
+*/
   private PDCSubscription pdcSubscription;
 
   public PDCSubscription getPDCSubscription() {
@@ -2212,12 +2212,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ***************************************************************************************************************
-   */
+* ***************************************************************************************************************
+*/
   /**
-   * UserPanel methods /
-   * ****************************************************************************************************************
-   */
+* UserPanel methods /
+* ****************************************************************************************************************
+*/
   public String initUserPanel() throws RemoteException {
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
       "ApplicationURL");
@@ -2242,14 +2242,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   /**
-   * SearchEngine primitives *
-   */
+* SearchEngine primitives *
+*/
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   public void buildComponentListWhereToSearch(String space, String component) {
     SilverTrace.info("pdcPeas",
       "PdcSearchSessionController.buildComponentListWhereToSearch()",
@@ -2315,11 +2315,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * This method allow user to search over multiple component selection
-   *
-   * @param space
-   * @param components a list of selected components
-   */
+* This method allow user to search over multiple component selection
+*
+* @param space
+* @param components a list of selected components
+*/
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
     SilverTrace.info("pdcPeas",
       "PdcSearchSessionController.buildComponentListWhereToSearch()",
@@ -2378,15 +2378,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Returns the list of allowed spaces/domains for the current user.
-   */
+* Returns the list of allowed spaces/domains for the current user.
+*/
   public List<SpaceInstLight> getAllowedSpaces() {
     return getOrganizationController().getSpaceTreeview(getUserId());
   }
 
   /**
-   * Returns the list of allowed components for the current user in the given space/domain.
-   */
+* Returns the list of allowed components for the current user in the given space/domain.
+*/
   public List<ComponentInstLight> getAllowedComponents(String space) {
     List<ComponentInstLight> allowedList = new ArrayList<ComponentInstLight>();
     if (space != null) {
@@ -2405,8 +2405,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Returns the label of the given domain/space
-   */
+* Returns the label of the given domain/space
+*/
   public String getSpaceLabel(String spaceId) {
     SpaceInstLight spaceInst = getOrganizationController().getSpaceInstLightById(spaceId);
     if (spaceInst != null) {
@@ -2417,8 +2417,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Returns the label of the given component
-   */
+* Returns the label of the given component
+*/
   public String getComponentLabel(String spaceId, String componentId) {
     ComponentInstLight componentInst = null;
     try {
@@ -2443,20 +2443,20 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   /**
-   * AskOnce methods *
-   */
+* AskOnce methods *
+*/
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   private Vector<String[]> searchDomains = null; // All the domains available for search
 
   /**
-   * Get the search domains available for search The search domains are contained in a Vector of
-   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
-   */
+* Get the search domains available for search The search domains are contained in a Vector of
+* array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
+*/
   public Vector<String[]> getSearchDomains() {
     if (searchDomains == null) {
       setSearchDomains();
@@ -2466,9 +2466,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Set the search domains available for search The search domains are contained in a Vector of
-   * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
-   */
+* Set the search domains available for search The search domains are contained in a Vector of
+* array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
+*/
   public void setSearchDomains() {
     ResourceLocator resource = null;
     Vector<String[]> domains = new Vector<String[]>();
@@ -2518,14 +2518,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   /**
-   * Date primitives *
-   */
+* Date primitives *
+*/
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   public String getUrl(String urlBase, MatchingIndexEntry indexEntry) {
     return getUrl(urlBase, indexEntry.getComponent(), indexEntry.getParams(),
       indexEntry.getPageAndParams());
@@ -2560,14 +2560,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return validSequence;
   }
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   /**
-   * Business objects primitives *
-   */
+* Business objects primitives *
+*/
   /**
-   * ******************************************************************************************
-   */
+* ******************************************************************************************
+*/
   private PdcBm pdcBm = null; // To retrieve items from PDC
   private SearchEngine searchEngine = null; // To retrieve items using
 
@@ -2580,22 +2580,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @return true if export is enabled
-   */
+* @return true if export is enabled
+*/
   public boolean isExportEnabled() {
     return isExportEnabled;
   }
 
   /**
-   * @return type of search (Simple, Advanced or Expert)
-   */
+* @return type of search (Simple, Advanced or Expert)
+*/
   public int getSearchType() {
     return searchType;
   }
 
   /**
-   * @param i - type of the current search
-   */
+* @param i - type of the current search
+*/
   public void setSearchType(int i) {
     searchType = i;
   }
@@ -2614,12 +2614,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Cette methode construit un tableau contenant toutes les informations utiles à la construction
-   * de la JSP resultat
-   *
-   * @param matchingIndexEntries - un tableau de MatchingIndexEntry
-   * @return un tableau contenant les informations relatives aux parametres d'entrée
-   */
+* Cette methode construit un tableau contenant toutes les informations utiles à la construction
+* de la JSP resultat
+*
+* @param matchingIndexEntries - un tableau de MatchingIndexEntry
+* @return un tableau contenant les informations relatives aux parametres d'entrée
+*/
   private List<MatchingIndexEntry> filterMatchingIndexEntries(MatchingIndexEntry[] matchingIndexEntries) {
     if (matchingIndexEntries == null || matchingIndexEntries.length == 0) {
       return new ArrayList<MatchingIndexEntry>();
@@ -2662,15 +2662,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @return
-   */
+* @return
+*/
   public int getSearchScope() {
     return searchScope;
   }
 
   /**
-   * @param i
-   */
+* @param i
+*/
   public void setSearchScope(int i) {
     setIndexOfFirstResultToDisplay("0");
     searchScope = i;
@@ -2786,27 +2786,27 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * gets suggestions or spelling words if a search doesn't return satisfying results. A minimal
-   * score trigger the suggestions search (0.5 by default)
-   *
-   * @return array that contains suggestions.
-   */
+* gets suggestions or spelling words if a search doesn't return satisfying results. A minimal
+* score trigger the suggestions search (0.5 by default)
+*
+* @return array that contains suggestions.
+*/
   public List<String> getSpellingwords() {
     return spellingwords;
   }
 
   /**
-   * @return the list of current global silver result
-   */
+* @return the list of current global silver result
+*/
   public List<GlobalSilverResult> getGlobalSR() {
     return globalSR;
   }
 
   /**
-   * Set the list of current global silver result
-   *
-   * @param globalSR : the current list of result
-   */
+* Set the list of current global silver result
+*
+* @param globalSR : the current list of result
+*/
   private void setGlobalSR(List<GlobalSilverResult> globalSR, boolean setExtraInfo) {
     if (setExtraInfo) {
       setExtraInfoToResultsToDisplay(globalSR);
@@ -2847,28 +2847,28 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Gets the XML form field used to realize sorting
-   *
-   * @return the xmlFormSortValue
-   */
+* Gets the XML form field used to realize sorting
+*
+* @return the xmlFormSortValue
+*/
   public String getXmlFormSortValue() {
     return xmlFormSortValue;
   }
 
   /**
-   * Sets the XML form field used to realize sorting
-   *
-   * @param xmlFormSortValue the xmlFormSortValue to set
-   */
+* Sets the XML form field used to realize sorting
+*
+* @param xmlFormSortValue the xmlFormSortValue to set
+*/
   public void setXmlFormSortValue(String xmlFormSortValue) {
     this.xmlFormSortValue = xmlFormSortValue;
   }
 
   /**
-   * Gets the keyword to retreive the implementation class name to realize sorting or filtering
-   *
-   * @return the sortImplemtor
-   */
+* Gets the keyword to retreive the implementation class name to realize sorting or filtering
+*
+* @return the sortImplemtor
+*/
   public String getSortImplemtor() {
     if (sortImplementor == null) {
       return Keys.defaultImplementor.value();
@@ -2877,15 +2877,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param sortImplementor the sortImplementor to set
-   */
+* @param sortImplementor the sortImplementor to set
+*/
   public void setSortImplemtor(String sortImplementor) {
     this.sortImplementor = sortImplementor;
   }
 
   /**
-   * @return the isEnableExternalSearch attribute
-   */
+* @return the isEnableExternalSearch attribute
+*/
   public boolean isEnableExternalSearch() {
     return isEnableExternalSearch;
   }
@@ -2895,10 +2895,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Retrieve configuration from properties file
-   *
-   * @return a list of search type configuration value object
-   */
+* Retrieve configuration from properties file
+*
+* @return a list of search type configuration value object
+*/
   public List<SearchTypeConfigurationVO> getSearchTypeConfig() {
     if (dataSearchTypes == null) {
       List<SearchTypeConfigurationVO> configs = new ArrayList<SearchTypeConfigurationVO>();
@@ -2941,8 +2941,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @return the dataType search
-   */
+* @return the dataType search
+*/
   public String getDataType() {
     if (!StringUtil.isDefined(dataType)) {
       dataType = ALL_DATA_TYPE;
@@ -2951,8 +2951,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * @param dataType the dataType search to set
-   */
+* @param dataType the dataType search to set
+*/
   public void setDataType(String dataType) {
     this.dataType = dataType;
   }
@@ -2962,11 +2962,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Add restriction on advanced search data type
-   *
-   * @param curComp the current component identifier
-   * @return true if search engine must search through this component, false else if
-   */
+* Add restriction on advanced search data type
+*
+* @param curComp the current component identifier
+* @return true if search engine must search through this component, false else if
+*/
   public boolean isDataTypeSearch(String curComp) {
     boolean searchOn = false;
     if (isDataTypeDefined()) {

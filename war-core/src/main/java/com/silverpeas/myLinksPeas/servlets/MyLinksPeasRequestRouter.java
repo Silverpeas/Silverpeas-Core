@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,7 +70,8 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,MyLinksPeasSessionController myLinksSC, HttpServletRequest request) {
+  public String getDestination(String function, MyLinksPeasSessionController myLinksSC,
+      HttpServletRequest request) {
     SilverTrace.info("myLinksPeas", "MyLinksPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myLinksSC.getUserId() + " Function=" + function);
 
@@ -177,15 +178,16 @@ public class MyLinksPeasRequestRouter extends ComponentRequestRouter<MyLinksPeas
     return destination;
   }
 
-  private LinkDetail generateLink(HttpServletRequest request, boolean decode) throws UnsupportedEncodingException {
+  private LinkDetail generateLink(HttpServletRequest request, boolean decode)
+      throws UnsupportedEncodingException {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
     if (decode) {
       name = URLDecoder.decode(name, "UTF-8");
       description = URLDecoder.decode(description, "UTF-8");
-    }    
+    }
     String url = request.getParameter("Url");
-    
+
     // supprimer le context en début d'url
     String sRequestURL = request.getRequestURL().toString();
     String m_sAbsolute =

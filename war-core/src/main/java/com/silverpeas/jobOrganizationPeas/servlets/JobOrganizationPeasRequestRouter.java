@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,16 +34,14 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
- *
  * @author Thierry Leroi
  */
-public class JobOrganizationPeasRequestRouter
-    extends ComponentRequestRouter<JobOrganizationPeasSessionController> {
+public class JobOrganizationPeasRequestRouter extends
+    ComponentRequestRouter<JobOrganizationPeasSessionController> {
   private static final long serialVersionUID = -3952939609496239407L;
 
   /**
    * Method declaration
-   *
    * @param mainSessionCtrl
    * @param componentContext
    * @return
@@ -68,10 +66,10 @@ public class JobOrganizationPeasRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
-   * @param function          The entering request function (ex : "Main.jsp")
+   * @param function The entering request function (ex : "Main.jsp")
    * @param jobOrganizationSC The component Session Control, build and initialised.
-   * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
+   * @return The complete destination URL for a forward (ex :
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
@@ -90,12 +88,12 @@ public class JobOrganizationPeasRequestRouter
         destination = jobOrganizationSC.initSelectionPeas();
       }
       if (destination.endsWith("jopUserView.jsp")) {
-        if (jobOrganizationSC.getCurrentUserId() != null) { //l'utilisateur a sélectionné un user
+        if (jobOrganizationSC.getCurrentUserId() != null) { // l'utilisateur a sélectionné un user
           request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
           request.setAttribute("user", jobOrganizationSC.getCurrentUser());
           request.setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
-        } else if (jobOrganizationSC.getCurrentGroupId() !=
-            null) {//l'utilisateur a sélectionné un group
+        } else if (jobOrganizationSC.getCurrentGroupId() != null) {// l'utilisateur a sélectionné un
+          // group
           request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
           request.setAttribute("adminController", jobOrganizationSC.getAdminController());
         }

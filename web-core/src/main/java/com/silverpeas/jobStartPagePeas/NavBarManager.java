@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -169,7 +169,7 @@ public class NavBarManager {
 
     if (!m_user.isAccessAdmin()) {
       String[] allManageableSpaceIds = m_administrationCtrl
-           .getUserManageableSpaceIds(sUserId);
+          .getUserManageableSpaceIds(sUserId);
       // First of all, add the manageable spaces into the set
       m_ManageableSpaces.clear();
       for (String manageableSpaceId : allManageableSpaceIds) {
@@ -278,7 +278,7 @@ public class NavBarManager {
     }
     SilverTrace.info("jobStartPagePeas", "NavBarManager.setCurrentSubSpace()",
         "root.MSG_GEN_PARAM_VALUE", "Set Current SUB Space="
-            + m_CurrentSubSpaceId);
+        + m_CurrentSubSpaceId);
     return StringUtil.isDefined(m_CurrentSubSpaceId);
   }
 
@@ -387,7 +387,7 @@ public class NavBarManager {
     buildSpaceHTMLLine(valret);
     SilverTrace.info("jobStartPagePeas", "NavBarManager.buildSpaceObject()",
         "root.MSG_GEN_PARAM_VALUE", "Space=" + valret.id + " Name="
-            + valret.name + " Type=" + valret.type);
+        + valret.name + " Type=" + valret.type);
     return valret;
   }
 
@@ -422,7 +422,7 @@ public class NavBarManager {
             + space.id
             + "\"/>"
             + urlFactory(link, "space" + space.id, "", spaceName, SPACE,
-                objType, m_sContext, "", space);
+            objType, m_sContext, "", space);
       } else {
         StringBuilder sb = new StringBuilder();
         sb.append("<option ");
@@ -442,7 +442,7 @@ public class NavBarManager {
   protected boolean isAdminOfSpace(SpaceInstLight spaceInst) {
     boolean valret = m_ManageableSpaces.contains(spaceInst.getShortId())
         || m_ManageableSpaces.contains(getShortSpaceId(spaceInst
-            .getFatherId()));
+        .getFatherId()));
     SpaceInstLight parcSpaceInst = spaceInst;
 
     while (!valret && !parcSpaceInst.isRoot()) {
@@ -497,8 +497,8 @@ public class NavBarManager {
         }
         ds.htmlLine = componentsSpaces.toString()
             + urlFactory(link, "element" + m_elmtCounter++, ci.getName(),
-                label, COMPONENT, objType, m_sContext,
-                "startPageContent", ds);
+            label, COMPONENT, objType, m_sContext,
+            "startPageContent", ds);
       } else {
         ds.htmlLine = "";
       }
@@ -542,7 +542,7 @@ public class NavBarManager {
       case SPACE_COLLAPSE:
         result.append("<a href=\"").append(link).append("\"").append(target)
             .append("><img src=\"").append(m_sContext).append(
-                "/util/icons/plusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/plusTree.gif\" border=0 align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""
@@ -558,7 +558,7 @@ public class NavBarManager {
             .append("><img src=\"")
             .append(m_sContext)
             .append(
-                "/util/icons/minusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/minusTree.gif\" border=0 align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,11 +49,11 @@ import java.util.List;
 public class FileFolderManager {
 
   /**
-   * retourne une Collection d'objets File qui representent les repertoires (et
-   * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
+   * retourne une Collection d'objets File qui representent les repertoires (et seulement les
+   * repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
    * @param chemin le chemin du repertoire
-   * @return une Collection d'objets File qui representent les repertoires (et
-   * seulement les repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
+   * @return une Collection d'objets File qui representent les repertoires (et seulement les
+   * repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
    * @throws UtilException
    */
   public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
@@ -69,7 +69,8 @@ public class FileFolderManager {
     } else {
       SilverTrace.error("util", "FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS",
           chemin);
-      throw new UtilException("FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException("FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS",
+          chemin);
     }
     return resultat;
   }
@@ -127,18 +128,19 @@ public class FileFolderManager {
         }
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
+      SilverTrace
+          .error("util", "FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
     return resultat;
   }
 
   /**
-   * Retourne une Collection d'objets File qui representent les fichiers du site
-   * web contenus dans le repertoire passe en parametre et ses sous repertoires
+   * Retourne une Collection d'objets File qui representent les fichiers du site web contenus dans
+   * le repertoire passe en parametre et ses sous repertoires
    * @param chemin le chemin du repertoire du site
-   * @return une Collection d'objets File qui representent les fichiers du site
-   * web contenus dans le repertoire passe en parametre et ses sous repertoires
+   * @return une Collection d'objets File qui representent les fichiers du site web contenus dans le
+   * repertoire passe en parametre et ses sous repertoires
    * @throws UtilException
    */
   public static Collection<File> getAllWebPages(String chemin) throws UtilException {
@@ -183,7 +185,7 @@ public class FileFolderManager {
           String fichier = file.getName();
           int indexPoint = fichier.lastIndexOf(".");
           String type = fichier.substring(indexPoint + 1);
-          if ("htm".equals(type.toLowerCase())|| "html".equals(type.toLowerCase())) {
+          if ("htm".equals(type.toLowerCase()) || "html".equals(type.toLowerCase())) {
             resultat.add(file);
           }
         }
@@ -206,7 +208,7 @@ public class FileFolderManager {
     SilverTrace.info("util", "FileFolderManager.createFolder",
         "root.MSG_GEN_PARAM_VALUE", "chemin=" + chemin);
     File directory = new File(chemin);
-    if (directory == null ||  !directory.exists() || directory.isDirectory()) {
+    if (directory == null || !directory.exists() || directory.isDirectory()) {
       createFolder(directory);
     }
   }
@@ -268,7 +270,8 @@ public class FileFolderManager {
     File directory = new File(chemin);
     boolean result = FileUtils.deleteQuietly(directory);
     if (!result) {
-      SilverTrace.info("util", "FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE", chemin);
+      SilverTrace.info("util", "FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
+          chemin);
       if (throwException) {
         throw new UtilException("FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
             chemin);
@@ -337,7 +340,8 @@ public class FileFolderManager {
     File directory = new File(chemin);
     boolean result = FileUtils.deleteQuietly(directory);
     if (!result) {
-      SilverTrace.error("util", "FileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
+      SilverTrace
+          .error("util", "FileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
       throw new UtilException("fileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
     }
   }

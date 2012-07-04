@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 package com.stratelia.silverpeas.selectionPeas;
 
@@ -97,7 +96,7 @@ public class CacheManagerUsersGroups extends CacheManager {
           }
         }
       }
-      return result;
+        return result;
       case CM_SET: {
         if (SelectionPeasSettings.displayGroupsUsers) {
           Group theGroup = m_oc.getGroup(id);
@@ -116,7 +115,7 @@ public class CacheManagerUsersGroups extends CacheManager {
           }
         }
       }
-      return result;
+        return result;
     }
     return result;
   }
@@ -224,22 +223,29 @@ public class CacheManagerUsersGroups extends CacheManager {
 
   public PanelMiniFilterSelect getSelectMiniFilter(CacheType what) {
     if (what == CacheType.CM_SET) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
+      return new PanelMiniFilterSelect(
+          999,
+          Integer.toString(what.getValue()),
+          "set",
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
           URLManager.getApplicationURL() + iconResourceLocator.getString(
               "selectionPeas.unSelectAll"), localResourceLocator.getString(
-          "selectionPeas.selectAll"), localResourceLocator.getString("selectionPeas.unSelectAll"),
+              "selectionPeas.selectAll"), localResourceLocator
+              .getString("selectionPeas.unSelectAll"),
           localResourceLocator.getString("selectionPeas.selectAll"), localResourceLocator
-          .getString("selectionPeas.unSelectAll"));
+              .getString("selectionPeas.unSelectAll"));
     } else if (what == CacheType.CM_ELEMENT) {
-      return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
+      return new PanelMiniFilterSelect(
+          999,
+          Integer.toString(what.getValue()),
+          "element",
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.selectAll"),
           URLManager.getApplicationURL()
               + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
-          .getString("selectionPeas.selectAll"), localResourceLocator
-          .getString("selectionPeas.unSelectAll"), localResourceLocator
-          .getString("selectionPeas.selectAll"), localResourceLocator
-          .getString("selectionPeas.unSelectAll"));
+              .getString("selectionPeas.selectAll"), localResourceLocator
+              .getString("selectionPeas.unSelectAll"), localResourceLocator
+              .getString("selectionPeas.selectAll"), localResourceLocator
+              .getString("selectionPeas.unSelectAll"));
     } else {
       return null;
     }
@@ -251,7 +257,7 @@ public class CacheManagerUsersGroups extends CacheManager {
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
           localResourceLocator
-              .getString("selectionPeas.filter"), localResourceLocator
+          .getString("selectionPeas.filter"), localResourceLocator
           .getString("selectionPeas.filter"));
       return theArray;
     } else if (what == CacheType.CM_ELEMENT) {
@@ -259,7 +265,7 @@ public class CacheManagerUsersGroups extends CacheManager {
       theArray[0] = new PanelMiniFilterEdit(0, Integer.toString(what.getValue()), "",
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.filter"),
           localResourceLocator
-              .getString("selectionPeas.filter"), localResourceLocator
+          .getString("selectionPeas.filter"), localResourceLocator
           .getString("selectionPeas.filter"));
       return theArray;
     } else {
@@ -286,7 +292,7 @@ public class CacheManagerUsersGroups extends CacheManager {
               .getAllSubUsersNumber(theGroup.getId()));
           theValues[COL_GROUP_NBUSERS + 1] = EncodeHelper
               .javaStringToHtmlString(adminController.getDomain(theGroup.getDomainId())
-                  .getName());
+              .getName());
         } else {
           theValues = new String[3];
           theValues[COL_GROUP_NAME] = EncodeHelper
@@ -305,7 +311,7 @@ public class CacheManagerUsersGroups extends CacheManager {
               .javaStringToHtmlString(theGroup.getDescription());
           theValues[COL_GROUP_DESCRIPTION + 1] = EncodeHelper
               .javaStringToHtmlString(adminController.getDomain(theGroup.getDomainId())
-                  .getName());
+              .getName());
         } else {
           theValues = new String[2];
           theValues[COL_GROUP_NAME] = EncodeHelper
@@ -385,17 +391,19 @@ public class CacheManagerUsersGroups extends CacheManager {
 
   public PanelOperation getPanelOperation(String operation) {
     if ("DisplayBrowse".equals(operation)) {
-      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+      return new PanelOperation(
+          localResourceLocator.getString("selectionPeas.helpBrowse"),
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
           operation);
     } else if ("DisplaySearchElement".equals(operation)) {
-      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchElement"),
+      return new PanelOperation(
+          localResourceLocator.getString("selectionPeas.helpSearchElement"),
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.userSearc"),
           operation);
     } else if ("DisplaySearchSet".equals(operation)) {
       return new PanelOperation(localResourceLocator.getString("selectionPeas.helpSearchSet"),
           URLManager.getApplicationURL() + iconResourceLocator.getString(
-              "selectionPeas.groupSearc"), operation);
+          "selectionPeas.groupSearc"), operation);
     } else {
       return null;
     }

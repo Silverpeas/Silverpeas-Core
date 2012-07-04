@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,6 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerException;
 import java.util.Date;
 
-
 /**
  * This class extends the class 'SchedulerJob' for the functionality of a scheduled execution of a
  * class method.
@@ -38,15 +37,15 @@ import java.util.Date;
 public class SchedulerMethodJobMinute extends SchedulerMethodJob {
   private long m_iMs = 1000l;
 
- /**
+  /**
    * The constructor has proteceted access, because the generation of jobs should be done in a
    * central way by the class 'SimpleScheduler'
-  * @param theJobController The controller, that controls all job executions
-  * @param theJobOwner The owner of the job
-  * @param theJobName The name of the job
-  * @param iMinutes theperiod between each job
-  * @throws SchedulerException
-  */
+   * @param theJobController The controller, that controls all job executions
+   * @param theJobOwner The owner of the job
+   * @param theJobName The name of the job
+   * @param iMinutes theperiod between each job
+   * @throws SchedulerException
+   */
   protected SchedulerMethodJobMinute(SimpleScheduler theJobController,
       SchedulerEventListener theJobOwner, String theJobName, FixedPeriodJobTrigger trigger)
       throws SchedulerException {

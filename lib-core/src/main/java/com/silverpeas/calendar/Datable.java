@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -27,29 +27,25 @@ package com.silverpeas.calendar;
 import java.util.TimeZone;
 
 /**
- * A datable object is an object that represents a date in Silverpeas, whatever it is. It can be
- * a simple date (day in month in year) or a more complete one like a date time.
- *
- * Dates and datetimes are differents types as they don't have any instances in common, but they are
- * part of the same types class. As Java doesn't support the trait concept from which a
- * polymorphic familly of types can be modeled, the datable class is here introduced by a Java
- * interface with a generic type. Datable can be then considered as a type generator that satisfy a
- * bound constraint (a fix point).
+ * A datable object is an object that represents a date in Silverpeas, whatever it is. It can be a
+ * simple date (day in month in year) or a more complete one like a date time. Dates and datetimes
+ * are differents types as they don't have any instances in common, but they are part of the same
+ * types class. As Java doesn't support the trait concept from which a polymorphic familly of types
+ * can be modeled, the datable class is here introduced by a Java interface with a generic type.
+ * Datable can be then considered as a type generator that satisfy a bound constraint (a fix point).
  * @param <T> A datable type this class should generate.
  */
 public interface Datable<T extends Datable<? super T>> extends Cloneable {
 
   /**
-   * The pattern for the short ISO 8601 date representation.
-   * The date is at the accuracy to the minute and the time zone is specified as defined in the
-   * RFC 822 (indicated by the Z symbol).
+   * The pattern for the short ISO 8601 date representation. The date is at the accuracy to the
+   * minute and the time zone is specified as defined in the RFC 822 (indicated by the Z symbol).
    */
   static final String SHORT_ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mmZ";
 
   /**
-   * The pattern for the ISO 8601 date representation.
-   * The date is at the accuracy to the second and the time zone is specified as defined in the
-   * RFC 822 (indicated by the Z symbol).
+   * The pattern for the ISO 8601 date representation. The date is at the accuracy to the second and
+   * the time zone is specified as defined in the RFC 822 (indicated by the Z symbol).
    */
   static final String ISO_8601_PATTERN = "yyyy-MM-dd'T'HH:mm:ssZ";
 
@@ -98,10 +94,9 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
   boolean isEqualTo(final T anotherDatable);
 
   /**
-   * Sets the time zone this datable is defined for.
-   * If no time zone is set, then the default one is considered (the timezone of the host).
-   * The time zone can have no meaning with some datable types like for example simple date (day,
-   * month, and year).
+   * Sets the time zone this datable is defined for. If no time zone is set, then the default one is
+   * considered (the timezone of the host). The time zone can have no meaning with some datable
+   * types like for example simple date (day, month, and year).
    * @param timeZone the time zone of this datable.
    * @return itself.
    */
@@ -115,9 +110,7 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
 
   /**
    * Gets an ISO 8601 textual representation of this datable by taking into account of its
-   * underlying timezone.
-   *
-   * For date and time, the representation is at the accuracy to the second.
+   * underlying timezone. For date and time, the representation is at the accuracy to the second.
    * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
    * with the date and time separators (the hyphen for dates and the double-points for times):
    * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
@@ -129,9 +122,7 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
 
   /**
    * Gets an ISO 8601 textual representation of this datable by taking into account of its
-   * underlying timezone.
-   *
-   * For date and time, the representation is at the accuracy to the minute.
+   * underlying timezone. For date and time, the representation is at the accuracy to the minute.
    * The ISO 8601 format in which the date is returned is one of the more common in the Web, that is
    * with the date and time separators (the hyphen for dates and the double-points for times):
    * yyyy-MM-dd'T'HH:mm:ss where yyyy means the year in 4 digits, MM means the month in year in two
@@ -142,25 +133,25 @@ public interface Datable<T extends Datable<? super T>> extends Cloneable {
   String toShortISO8601();
 
   /**
-   * Gets the ISO 8601 textual representation of this date as it is in the iCal specification.
-   * The returned iCal date representation is in this datable's time zone.
-   * In the iCal specification, dates are represented in one of the ISO 8601 format, that is
-   * the complete format without any date and time separators (the hyphen character for dates and
-   * the double-points for times). In the iCal specification, no time zone information is added to
-   * the ISO 8601 representation of the date, nevertheless when the date is indicated in UTC, the
-   * 'Z' marker must be set in the date as required by the ISO 8601 standard.
+   * Gets the ISO 8601 textual representation of this date as it is in the iCal specification. The
+   * returned iCal date representation is in this datable's time zone. In the iCal specification,
+   * dates are represented in one of the ISO 8601 format, that is the complete format without any
+   * date and time separators (the hyphen character for dates and the double-points for times). In
+   * the iCal specification, no time zone information is added to the ISO 8601 representation of the
+   * date, nevertheless when the date is indicated in UTC, the 'Z' marker must be set in the date as
+   * required by the ISO 8601 standard.
    * @return the iCal textual representation of this datable and in the timezone of this datable.
    */
   String toICal();
 
   /**
-   * Gets the ISO 8601 textual representation of this date as it is in the iCal specification.
-   * The returned iCal date representation is in explicitly set in UTC.
-   * In the iCal specification, dates are represented in one of the ISO 8601 format, that is
-   * the complete format without any date and time separators (the hyphen character for dates and
-   * the double-points for times). In the iCal specification, no time zone information is added to
-   * the ISO 8601 representation of the date, nevertheless when the date is indicated in UTC, the
-   * 'Z' marker must be set in the date as required by the ISO 8601 standard.
+   * Gets the ISO 8601 textual representation of this date as it is in the iCal specification. The
+   * returned iCal date representation is in explicitly set in UTC. In the iCal specification, dates
+   * are represented in one of the ISO 8601 format, that is the complete format without any date and
+   * time separators (the hyphen character for dates and the double-points for times). In the iCal
+   * specification, no time zone information is added to the ISO 8601 representation of the date,
+   * nevertheless when the date is indicated in UTC, the 'Z' marker must be set in the date as
+   * required by the ISO 8601 standard.
    * @return the iCal textual representation of this datable and in UTC.
    */
   String toICalInUTC();

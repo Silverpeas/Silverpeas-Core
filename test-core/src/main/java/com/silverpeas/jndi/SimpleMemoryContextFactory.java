@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jndi;
 
 import javax.naming.Context;
@@ -31,8 +32,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * A factory of a naming context that uses the memory as dictionary of objects.
- * Useful to tests objets using JNDI to get dependencies.
+ * A factory of a naming context that uses the memory as dictionary of objects. Useful to tests
+ * objets using JNDI to get dependencies.
  */
 public class SimpleMemoryContextFactory implements InitialContextFactory {
 
@@ -40,17 +41,18 @@ public class SimpleMemoryContextFactory implements InitialContextFactory {
   private static SimpleMemoryContext context = new SimpleMemoryContext();
 
   /**
-   * Sets up this class as the default JNDI initial context factory.
-   * Useful if some tests uses another JNDI intial context factory.
+   * Sets up this class as the default JNDI initial context factory. Useful if some tests uses
+   * another JNDI intial context factory.
    */
   public static void setUpAsInitialContext() {
     context.clear();
     savedSystemProperties.put(Context.INITIAL_CONTEXT_FACTORY, System.getProperty(
-            Context.INITIAL_CONTEXT_FACTORY));
-    savedSystemProperties.put(Context.URL_PKG_PREFIXES, System.getProperty(Context.URL_PKG_PREFIXES));
+        Context.INITIAL_CONTEXT_FACTORY));
+    savedSystemProperties.put(Context.URL_PKG_PREFIXES, System
+        .getProperty(Context.URL_PKG_PREFIXES));
     System.setProperty(Context.INITIAL_CONTEXT_FACTORY, SimpleMemoryContextFactory.class.getName());
     System.setProperty(Context.URL_PKG_PREFIXES, SimpleMemoryContextFactory.class.getPackage().
-            getName());
+        getName());
   }
 
   /**
@@ -64,7 +66,7 @@ public class SimpleMemoryContextFactory implements InitialContextFactory {
     } else {
       System.setProperty(Context.INITIAL_CONTEXT_FACTORY, property);
     }
-    
+
     property = savedSystemProperties.get(Context.URL_PKG_PREFIXES);
     if (property != null) {
       System.setProperty(Context.URL_PKG_PREFIXES, property);

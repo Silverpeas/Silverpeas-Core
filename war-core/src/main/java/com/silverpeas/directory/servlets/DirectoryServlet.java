@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.directory.servlets;
 
 import com.silverpeas.directory.control.DirectoryService;
@@ -43,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- *
  * @author Bensalem Nabil
  */
 public class DirectoryServlet extends HttpServlet {
@@ -84,7 +84,7 @@ public class DirectoryServlet extends HttpServlet {
       String spaceId = request.getParameter("SpaceId");
       String domainId = request.getParameter("DomainId");
       String contactId = request.getParameter("ContactId");
-      // for display the common contact between me and  user who have userId equal CommonContactId
+      // for display the common contact between me and user who have userId equal CommonContactId
       String commonContactId = request.getParameter("CommonContactId");
       if (StringUtil.isDefined(groupId)) {
         users = directorySC.getAllUsersByGroup(groupId);
@@ -116,15 +116,15 @@ public class DirectoryServlet extends HttpServlet {
   /**
    *do pagination.
    *@param HttpServletRequest request.
-   *
    */
-  String doPagination(HttpServletRequest request, List<UserDetail> users, List<Member> membersToDisplay) {
+  String doPagination(HttpServletRequest request, List<UserDetail> users,
+      List<Member> membersToDisplay) {
     GraphicElementFactory gef = (GraphicElementFactory) request.getSession().getAttribute(
         GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
     int currentPage = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
-      //request.getParameter("currentPage")=currentPage*ELEMENTS_PER_PAGE
+      // request.getParameter("currentPage")=currentPage*ELEMENTS_PER_PAGE
       currentPage = Integer.parseInt(request.getParameter("Index"));
     }
     pagination = gef.getPagination(users.size(), ELEMENTS_PER_PAGE, currentPage);
@@ -153,31 +153,35 @@ public class DirectoryServlet extends HttpServlet {
   private String getHtml(List<Member> members) {
     BoardSilverpeasV5 viewBoard = new BoardSilverpeasV5();
 
-//     **************div=user**********************
+    // **************div=user**********************
     String html = "<div id=\"users\">";
     html += "<ol class=\"message_list\">";
     for (int i = 0; i < members.size(); i++) {
       Member member = members.get(i);
       html += "<li>" + "\n";
       html += viewBoard.printBefore() + "\n";
-//     **************div=infoAndPhoto**********************
+      // **************div=infoAndPhoto**********************
       html += "<div id=\"infoAndPhoto\">" + "\n";
-//     **************div=profilPhoto**********************
+      // **************div=profilPhoto**********************
       html += "<div id=\"profilPhoto\">" + "\n";
       html += "<a href=\"createPhoto\"><img" + "\n";
       html += "src=\"" + m_context + member.getUserDetail().getAvatar() + "\"" + "\n";
       html += "alt=\"viewUser\" class=\"avatar\" /> </a>" + "\n";
       html += "</div>" + "\n";
-//     **************div=info**********************
+      // **************div=info**********************
       html += "<div id=\"info\">" + "\n";
       html += "<ul>" + "\n";
       html += "<li> <a class=\"userName\" href=\"" + m_context + "/Rprofil/jsp/Main?userId="
           + member.getId() + "\"" + "\n";
-      html += "class=\"link\">" + member.getLastName() + " " + member.getFirstName() + "</a>" + "\n";
+      html +=
+          "class=\"link\">" + member.getLastName() + " " + member.getFirstName() + "</a>" + "\n";
       html += "</li>" + "\n";
       html += "<li>" + "\n";
-      html += "<a  class=\"userMail\"class=\"link\" href=\"#\" class=\"link\" onclick=\"OpenPopup(" + member.
-          getId() + ",'" + member.getLastName() + " " + member.getFirstName() + "')\">" + member.
+      html +=
+          "<a  class=\"userMail\"class=\"link\" href=\"#\" class=\"link\" onclick=\"OpenPopup(" +
+          member.
+          getId() + ",'" + member.getLastName() + " " + member.getFirstName() + "')\">" +
+          member.
           getMail() + "" + "\n";
       html += "</a>" + "\n";
       html += "</li>" + "\n";
@@ -186,17 +190,21 @@ public class DirectoryServlet extends HttpServlet {
       html += "</li>" + "\n";
       html += "<li>" + "\n";
       if (member.isConnected()) {
-        html += "<img src=\"" + m_context + "/directory/jsp/icons/connected.jpg\" width=\"10\" height=\"10\" />"
+        html +=
+            "<img src=\"" + m_context +
+            "/directory/jsp/icons/connected.jpg\" width=\"10\" height=\"10\" />"
             + multilang.getString("directory.connected") + " " + member.getDuration() + "\n";
       } else {
-        html += "<img src=\"" + m_context + "/directory/jsp/icons/deconnected.jpg\" width=\"10\" height=\"10\" />" + "\n";
+        html +=
+            "<img src=\"" + m_context +
+            "/directory/jsp/icons/deconnected.jpg\" width=\"10\" height=\"10\" />" + "\n";
 
       }
       html += "</li>" + "\n";
       html += "</ul>" + "\n";
       html += "</div>" + "\n";
       html += "</div>" + "\n";
-      //     **************div=info**********************
+      // **************div=info**********************
       html += "<div id=\"action\">" + "\n";
       if (!member.getId().equals(directorySC.getUserId())) {
         if (!member.isRelationOrInvitation(directorySC.getUserId())) {
@@ -204,7 +212,9 @@ public class DirectoryServlet extends HttpServlet {
               getLastName() + " " + member.getFirstName() + "')\">";
           html += "<span>Envoyer une invitation</span></a><br> <br>" + "\n";
         }
-        html += "<a href=\"#\"  onclick=\"OpenPopup(" + member.getId() + ",'" + member.getLastName() + " " + member.
+        html +=
+            "<a href=\"#\"  onclick=\"OpenPopup(" + member.getId() + ",'" + member.getLastName() +
+            " " + member.
             getFirstName() + "')\">";
         html += "<span>Envoyer un message</span></a>" + "\n";
       }
@@ -214,9 +224,9 @@ public class DirectoryServlet extends HttpServlet {
     }
 
     html += "<li>" + "\n";
-    String pag=pagination.printIndex("doPaganation");
-     html +=pag;
-     System.out.println(pag);
+    String pag = pagination.printIndex("doPaganation");
+    html += pag;
+    System.out.println(pag);
     html += "</li>" + "\n";
 
     html += "</ol>" + "\n";

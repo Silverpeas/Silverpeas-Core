@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,12 +71,13 @@ abstract public class AbstractTaskManager implements TaskManager {
   public Task[] getTasks(User user, String roleName,
       ProcessInstance processInstance) throws WorkflowException {
     ProcessModel model = processInstance.getProcessModel();
-    
+
     // Getting assigned states
     String[] stateNames = processInstance.getAssignedStates(user, roleName);
     SilverTrace.debug("workflowEngine",
         "AbstractTaskManager.getTasks",
-        "root.MSG_GEN_PARAM_VALUE", "assigned states (role="+roleName+", user="+user+") : " + stateNames);
+        "root.MSG_GEN_PARAM_VALUE", "assigned states (role=" + roleName + ", user=" + user +
+        ") : " + stateNames);
 
     Task[] tasks = new Task[stateNames.length];
     State state = null;
@@ -91,14 +92,13 @@ abstract public class AbstractTaskManager implements TaskManager {
           .getSentQuestions(stateNames[i]);
       Question[] relevantQuestions = processInstance
           .getRelevantQuestions(stateNames[i]);
-      
+
       if (StringUtil.isDefined(stateNames[i])) {
         state = model.getState(stateNames[i]);
-      }
-      else {
+      } else {
         state = new StateImpl("");
       }
-      
+
       if (state == null) {
         throw new WorkflowException("TaskManager.getTasks",
             "workflowEngine.EXP_UNKNOWN_STATE");

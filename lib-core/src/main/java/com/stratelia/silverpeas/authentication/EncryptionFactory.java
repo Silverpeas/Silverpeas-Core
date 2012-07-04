@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,9 +29,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 public class EncryptionFactory {
 
-
   private Class<? extends EncryptionInterface> encryptionClass;
   private static final EncryptionFactory instance = new EncryptionFactory();
+
   /**
    * -------------------------------------------------------------------------- constructor
    */
@@ -39,11 +39,12 @@ public class EncryptionFactory {
     ResourceLocator settingsFile = new ResourceLocator(
         "com.silverpeas.authentication.settings.authenticationSettings", "");
     try {
-      encryptionClass = (Class<? extends EncryptionInterface>) Class.forName(settingsFile.getString(
+      encryptionClass =
+          (Class<? extends EncryptionInterface>) Class.forName(settingsFile.getString(
           "encryptionClass", "com.stratelia.silverpeas.authentication.AuthenticationEncrypt"));
 
     } catch (ClassNotFoundException e) {
-       SilverTrace.info("authentication", "EncryptionFactory.getCustomEncryption()",
+      SilverTrace.info("authentication", "EncryptionFactory.getCustomEncryption()",
           "root.MSG_PARAM_ENTER_VALUE", "Encrypt/Decrypt Custom Class not found", e);
     }
   }

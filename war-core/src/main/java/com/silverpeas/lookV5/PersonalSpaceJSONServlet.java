@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -72,7 +72,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
 
     HttpSession session = req.getSession(true);
     MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
     OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
     String userId = m_MainSessionCtrl.getUserId();
@@ -101,12 +102,12 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       try {
         String componentId =
             psc.addComponent(helper.getUserId(), componentName, getComponentLabel(componentName,
-                helper));
+            helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (AdminException e) {
         writer.write(getResult(componentName, null, e, helper).toString());
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
-              "root.EX_NO_MESSAGE", e);
+            "root.EX_NO_MESSAGE", e);
       }
     } else if ("RemoveComponent".equals(action)) {
       String componentId = req.getParameter("ComponentId");
@@ -116,7 +117,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       } catch (AdminException e) {
         writer.write(getResult(null, componentId, e, helper).toString());
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.RemoveComponent",
-              "root.EX_NO_MESSAGE", e);
+            "root.EX_NO_MESSAGE", e);
       }
     } else if ("GetTools".equals(action)) {
       writer.write(getToolsAsJSONArray(helper));
@@ -177,7 +178,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     jsonObject.put("description", component.getDescription());
     jsonObject.put("label", getComponentLabel(component.getName(), helper));
     jsonObject.put("id", component.getId());
-    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName()+component.getId()) + "Main");
+    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName() +
+        component.getId()) +
+        "Main");
 
     return jsonObject;
   }
@@ -219,25 +222,40 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private String getToolsAsJSONArray(LookHelper helper) {
-    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", helper.getLanguage());
+    ResourceLocator message =
+        new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", helper
+        .getLanguage());
     JSONArray jsonArray = new JSONArray();
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
-      addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager.getURL(URLManager.CMP_AGENDA) + "Main");
-      addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager.getURL(URLManager.CMP_TODO) + "todo.jsp");
+      addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager
+          .getURL(URLManager.CMP_AGENDA) +
+          "Main");
+      addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager
+          .getURL(URLManager.CMP_TODO) +
+          "todo.jsp");
       addNotificationsAsTool(jsonArray, helper, message);
-      addTool(jsonArray, helper, "interestVisible", "subscriptions", message.getString("MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) + "subscriptionList.jsp");
-      addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"), URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp");
-      addTool(jsonArray, helper, "linksVisible", "links", message.getString("FavLinks"), URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "Main");
+      addTool(jsonArray, helper, "interestVisible", "subscriptions", message
+          .getString("MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) +
+          "subscriptionList.jsp");
+      addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"),
+          URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp");
+      addTool(jsonArray, helper, "linksVisible", "links", message.getString("FavLinks"), URLManager
+          .getURL(URLManager.CMP_MYLINKSPEAS) +
+          "Main");
       addFileSharingAsTool(jsonArray, helper, message);
       addWebConnectionsAsTool(jsonArray, helper, message);
-      addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent", message.getString("ScheduleEvent"), URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main");
-      addTool(jsonArray, helper, "customVisible", "personalize", message.getString("Personalization"), URLManager.getURL(URLManager.CMP_MYPROFILE) + "MyInfos");
-      addTool(jsonArray, helper, "mailVisible", "notifAdmins", message.getString("Feedback"), "javascript:notifyAdministrators()");
-      addTool(jsonArray, helper, "clipboardVisible", "clipboard", message.getString("Clipboard"), "javascript:openClipboard()");
+      addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent", message
+          .getString("ScheduleEvent"), URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main");
+      addTool(jsonArray, helper, "customVisible", "personalize", message
+          .getString("Personalization"), URLManager.getURL(URLManager.CMP_MYPROFILE) + "MyInfos");
+      addTool(jsonArray, helper, "mailVisible", "notifAdmins", message.getString("Feedback"),
+          "javascript:notifyAdministrators()");
+      addTool(jsonArray, helper, "clipboardVisible", "clipboard", message.getString("Clipboard"),
+          "javascript:openClipboard()");
     }
     return jsonArray.toString();
   }
-  
+
   private void addTool(JSONArray jsonArray, LookHelper helper, String property, String id,
       String label, String url) {
     addTool(jsonArray, helper, property, id, label, url, 0);
@@ -259,7 +277,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       try {
         Collection<SILVERMAILMessage> notifications =
             SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(helper.getUserId()),
-                "INBOX");
+            "INBOX");
         if (notifications != null) {
           nbNotifications = notifications.size();
         }
@@ -282,7 +300,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
         if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
               message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING) +
-                  "Main");
+              "Main");
         }
       } catch (Exception e) {
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",

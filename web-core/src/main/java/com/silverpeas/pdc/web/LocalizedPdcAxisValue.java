@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcAxisValue;
@@ -120,7 +121,7 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
   public String getAxisId() {
     return decoratedValue.getAxisId();
   }
-  
+
   private LocalizedPdcAxisValue(PdcAxisValue value, String forLanguage) {
     this.decoratedValue = value;
     this.language = forLanguage;
@@ -129,15 +130,15 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
   private String buildTruncatedPath(String[] splitedPath) {
     int nodeCount = splitedPath.length;
     return buildPathBetween(splitedPath, 0, NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION)
-            + SEPARATOR_PATH + TRUNCATION_SEPARATOR + SEPARATOR_PATH
-            + buildPathBetween(splitedPath, nodeCount - NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION,
-            nodeCount);
+        + SEPARATOR_PATH + TRUNCATION_SEPARATOR + SEPARATOR_PATH
+        + buildPathBetween(splitedPath, nodeCount - NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION,
+        nodeCount);
   }
 
   private String buildPathBetween(String[] splitedPath, int startIndex, int endIndex) {
     if (startIndex < 0 || startIndex >= splitedPath.length || endIndex < startIndex) {
       throw new IndexOutOfBoundsException("The indexes are out of bounds (startIndex=" + startIndex
-              + ", endIndex=" + endIndex + ")");
+          + ", endIndex=" + endIndex + ")");
     }
     String path = "";
     for (int i = startIndex; i < endIndex; i++) {

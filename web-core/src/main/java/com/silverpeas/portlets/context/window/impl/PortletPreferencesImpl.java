@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.portlets.context.window.impl;
 
 import com.sun.portal.container.EntityID;
@@ -80,7 +81,8 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   protected Map defaultMap;
   protected Set modifiedList;
   // Create a logger for this class
-  private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.context.window.impl",
+  private static final Logger logger =
+      Logger.getLogger("com.silverpeas.portlets.context.window.impl",
       "com.silverpeas.portlets.PCCTXLogMessages");
 
   public PortletPreferencesImpl(HttpServletRequest request,
@@ -140,7 +142,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
 
   @Override
   public String getValue(String key, String def) {
-    String defs[] = {def};
+    String defs[] = { def };
     String values[] = getValues(key, defs);
 
     if (values == null || values.length == 0) {
@@ -295,11 +297,11 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     }
 
     loadPrefMap(key, def);
-//    if (userPrefMap.containsKey(key)) {
-//      pref = (String) userPrefMap.get(key);
-//    } else {
-//      pref = def;
-//    }
+    // if (userPrefMap.containsKey(key)) {
+    // pref = (String) userPrefMap.get(key);
+    // } else {
+    // pref = def;
+    // }
     pref = (String) userPrefMap.get(key);
     return pref;
   }
@@ -385,7 +387,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
         pref = def;
       }
       if (logger.isLoggable(Level.INFO)) {
-        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0014", new Object[]{prefName, pref});
+        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0014", new Object[] { prefName, pref });
       }
       userPrefMap.put(prefName, pref);
     }
@@ -403,7 +405,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
       String value = (String) userPrefMap.get(key);
       prefMap.put(key, value);
       if (logger.isLoggable(Level.INFO)) {
-        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0015", new Object[]{key, value});
+        logger.log(Level.INFO, "PSPL_PCCTXCSPPCI0015", new Object[] { key, value });
       }
     }
     writePortletPreferences(prefMap);
@@ -439,21 +441,21 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
     try {
       if (logger.isLoggable(Level.FINE)) {
         logger.log(Level.FINE, "PSPL_PCCTXCSPPCI0016",
-            new Object[]{userID, portletID, portletWindowName});
+            new Object[] { userID, portletID, portletWindowName });
       }
       if (portletID != null) {
         portletRegistryContext.savePreferences(this.portletID.toString(), this.portletWindowName,
             this.userID, prefMap);
       } else {
         if (logger.isLoggable(Level.WARNING)) {
-          logger.log(Level.WARNING, "PSPL_PCCTXCSPPCI0017", new String[]{userID,
-                portletWindowName});
+          logger.log(Level.WARNING, "PSPL_PCCTXCSPPCI0017", new String[] { userID,
+              portletWindowName });
         }
       }
     } catch (Exception e) {
       if (logger.isLoggable(Level.SEVERE)) {
         logger.log(Level.SEVERE, "PSPL_PCCTXCSPPCI0018",
-            new Object[]{userID, portletID, portletWindowName});
+            new Object[] { userID, portletID, portletWindowName });
       }
     }
   }

@@ -1,26 +1,26 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection withWriter Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have recieved a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.org/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.web;
 
 import com.silverpeas.personalization.service.PersonalizationService;
@@ -50,21 +50,21 @@ import org.springframework.context.ApplicationContextAware;
 public abstract class TestResources implements ApplicationContextAware {
   
   /**
-   * The name under which a test resources must be deployed.
-   */
+* The name under which a test resources must be deployed.
+*/
   public static final String TEST_RESOURCES_NAME = "testRESTResources";
 
   /**
-   * Identifier of the default user to use in the unit tests on the REST-based web services.
-   */
+* Identifier of the default user to use in the unit tests on the REST-based web services.
+*/
   public static final String USER_ID_IN_TEST = "2";
   /**
-   * Default language to use in the unit tests on the REST-based web services.
-   */
+* Default language to use in the unit tests on the REST-based web services.
+*/
   public static final String DEFAULT_LANGUAGE = "fr";
   /**
-   * The default domain the default user belongs to.
-   */
+* The default domain the default user belongs to.
+*/
   public static final String DEFAULT_DOMAIN = "0";
   @Inject
   private SessionManagerMock sessionManagerMock;
@@ -79,10 +79,10 @@ public abstract class TestResources implements ApplicationContextAware {
   private int maxUserId = Integer.valueOf(USER_ID_IN_TEST);
 
   /**
-   * Gets a TestResources instance managed by the IoC container within which is running the test
-   * case.
-   * @return a bean managed TestResources. 
-   */
+* Gets a TestResources instance managed by the IoC container within which is running the test
+* case.
+* @return a bean managed TestResources.
+*/
   public static TestResources getTestResources() {
     assertNotNull(context);
     TestResources resources = context.getBean(TEST_RESOURCES_NAME, TestResources.class);
@@ -94,18 +94,18 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets the application context within which the current test case is actually running.
-   * @return the test case execution context (from the underlying IoC container).
-   */
+* Gets the application context within which the current test case is actually running.
+* @return the test case execution context (from the underlying IoC container).
+*/
   public ApplicationContext getApplicationContext() {
     return context;
   }
 
   /**
-   * Gets a mock of the AccessController. This mock is used to handle authorization capabilities
-   * according to the test fixture.
-   * @return mock of the access controller used in the test case.
-   */
+* Gets a mock of the AccessController. This mock is used to handle authorization capabilities
+* according to the test fixture.
+* @return mock of the access controller used in the test case.
+*/
   public AccessControllerMock getAccessControllerMock() {
     return accessControllerMock;
   }
@@ -121,21 +121,21 @@ public abstract class TestResources implements ApplicationContextAware {
   }
 
   /**
-   * Gets a mock of the personalization service. This mock is to be used in tests.
-   * This mock is created with Mockito, so you can use it for adding some behaviour to the returned
-   * mocked service. By default, the mock is configured to returns a UserPreferences object for any
-   * user with as prefered language the french (fr).
-   * @return a mock of the PersonalizationService.
-   */
+* Gets a mock of the personalization service. This mock is to be used in tests.
+* This mock is created with Mockito, so you can use it for adding some behaviour to the returned
+* mocked service. By default, the mock is configured to returns a UserPreferences object for any
+* user with as prefered language the french (fr).
+* @return a mock of the PersonalizationService.
+*/
   public PersonalizationService getPersonalizationServiceMock() {
     return personalizationServiceMockWrapper.getPersonalizationServiceMock();
   }
 
   /**
-   * Gets a mock of the session management service. This mock is to be used in tests.
-   * This mock is used to manage the sessions of the user(s) used in tests.
-   * @return a mock of the SessionManagement.
-   */
+* Gets a mock of the session management service. This mock is to be used in tests.
+* This mock is used to manage the sessions of the user(s) used in tests.
+* @return a mock of the SessionManagement.
+*/
   public SessionManagerMock getSessionManagerMock() {
     return sessionManagerMock;
   }

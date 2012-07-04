@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,7 +77,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Returns all the rows.
    */
   public NotifDefaultAddressRow[] getAllRows() throws UtilException {
-    List<NotifDefaultAddressRow> rows =  getRows(SELECT_ALL_NOTIFDEFAULTADDRESS);
+    List<NotifDefaultAddressRow> rows = getRows(SELECT_ALL_NOTIFDEFAULTADDRESS);
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
@@ -97,7 +97,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    */
   public NotifDefaultAddressRow[] getNotifDefaultAddresss(String query)
       throws UtilException {
-    List<NotifDefaultAddressRow> rows =  getRows(query);
+    List<NotifDefaultAddressRow> rows = getRows(query);
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.servlets.credentials;
 
 import com.stratelia.silverpeas.authentication.AuthenticationException;
@@ -45,13 +46,17 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
   @Override
   public String doAction(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
-    MainSessionController controller = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController controller =
+        (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (controller == null) {
       return "/Login.jsp";
     }
 
-    ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-    String passwordChangeURL = settings.getString("passwordChangeURL", "/admin/jsp/passwordAboutToExpire.jsp");
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+    String passwordChangeURL =
+        settings.getString("passwordChangeURL", "/admin/jsp/passwordAboutToExpire.jsp");
 
     try {
       String userId = controller.getUserId();
@@ -63,10 +68,12 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
       LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
       auth.changePassword(login, oldPassword, newPassword, domainId);
 
-      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      GraphicElementFactory gef =
+          (GraphicElementFactory) session
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
       String favoriteFrame = gef.getLookFrame();
 
-      return "/Main/"+favoriteFrame;
+      return "/Main/" + favoriteFrame;
     } catch (AuthenticationException e) {
       SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
           "peasCore.EX_USER_KEY_NOT_FOUND", e);
@@ -75,7 +82,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
     } catch (AdminException e) {
       SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
           "peasCore.EX_USER_KEY_NOT_FOUND", e);
-        request.setAttribute("message", getM_Multilang().getString("badCredentials"));
+      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
       return passwordChangeURL;
     }
   }

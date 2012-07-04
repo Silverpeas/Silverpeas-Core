@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -59,10 +60,10 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   * @return
    */
   public String[] getManagedTypes() {
-    return new String[]{TextField.TYPE};
+    return new String[] { TextField.TYPE };
   }
 
   /**
@@ -74,10 +75,10 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
-   * @param out 
+   * @param out
    * @param template
-   * @param PagesContext 
-   * @throws java.io.IOException  
+   * @param PagesContext
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
@@ -87,18 +88,19 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
       SilverTrace.info("form", "TimeFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-    
-    out.println("var "+template.getFieldName()+"Empty = isWhitespace(stripInitialWhitespace(field.value));");
+
+    out.println("var " + template.getFieldName() +
+        "Empty = isWhitespace(stripInitialWhitespace(field.value));");
 
     if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println("	if ("+template.getFieldName()+"Empty) {");
+      out.println("	if (" + template.getFieldName() + "Empty) {");
       out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' "
           + Util.getString("GML.MustBeFilled", language) + "\\n \";");
       out.println("		errorNb++;");
       out.println("	}");
     }
 
-    out.println(" if (!"+template.getFieldName()+"Empty) {");
+    out.println(" if (!" + template.getFieldName() + "Empty) {");
     out.println("var reg=new RegExp(\"^([01][0-9]|2[0-3]):([0-5][0-9])$\",\"g\");");
     out.println("if (!reg.test(field.value)) {");
     out.println("		errorMsg+=\"  - '" + template.getLabel(language) + "' " + Util.getString(
@@ -117,14 +119,15 @@ public class TimeFieldDisplayer extends AbstractFieldDisplayer<TextField> {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
-   * @param out 
-   * @param field 
-   * @param template 
-   * @param pageContext 
-   * @throws FormException 
+   * @param out
+   * @param field
+   * @param template
+   * @param pageContext
+   * @throws FormException
    */
   @Override
-  public void display(PrintWriter out, TextField field, FieldTemplate template, PagesContext pageContext)
+  public void display(PrintWriter out, TextField field, FieldTemplate template,
+      PagesContext pageContext)
       throws FormException {
     String value = "";
     String html = "";

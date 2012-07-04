@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/legal/licensing"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -54,51 +55,34 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 
-<!--[if lt IE 8]>
-<style>
-input{
-	background-color:#FAFAFA;
-	border:1px solid #DAD9D9;
-	width:448px;
-	text-align:left;
-    margin-left:-10px;
-    height:26px;
-    line-height:24px;
-    padding:0px 60px;
-    display:block;
-    padding:0px;
-}
-</style>
-<![endif]-->
-
 <script type="text/javascript">
 <!---
-// Public domain cookie code written by: 
+// Public domain cookie code written by:
 // Bill Dortch, hIdaho Design
-// (bdortch@netw.com) 
+// (bdortch@netw.com)
 function getCookieVal (offset) {
-	var endstr = document.cookie.indexOf (";", offset); 
+	var endstr = document.cookie.indexOf (";", offset);
     if (endstr == -1)
-    { 
+    {
     	endstr = document.cookie.length;
-    } 
-    return unescape(document.cookie.substring(offset, endstr)); 
+    }
+    return unescape(document.cookie.substring(offset, endstr));
 }
 
 function GetCookie (name) {
          var arg = name + "=";
-         var alen = arg.length; 
-         var clen = document.cookie.length; 
-         var i = 0; 
+         var alen = arg.length;
+         var clen = document.cookie.length;
+         var i = 0;
          while (i < clen) {
-         var j = i + alen; 
-             if (document.cookie.substring(i, j) == arg) 
-             return getCookieVal(j); 
-         i = document.cookie.indexOf(" ", i) + 1; 
-             if (i == 0) break; 
+         var j = i + alen;
+             if (document.cookie.substring(i, j) == arg)
+             return getCookieVal(j);
+         i = document.cookie.indexOf(" ", i) + 1;
+             if (i == 0) break;
              }
 
-     return null; 
+     return null;
      }
 
 function checkForm()
@@ -113,8 +97,8 @@ function checkForm()
 		{
 			if (form.storePassword.checked) {
               form.storePassword.click();
-            }				
-		}		
+            }
+		}
 	<% } %>
     form.action='<c:url value="/AuthenticationServlet" />';
 	form.submit();
@@ -140,6 +124,12 @@ function resetPassword() {
     }
 }
 
+function newRegistration() {
+	var form = document.getElementById("formLogin");
+    form.action ='<c:url value="/CredentialsServlet/NewRegistration" />';
+    form.submit();
+}
+
 function checkSubmit(ev)
 {
 	var touche = ev.keyCode;
@@ -149,20 +139,55 @@ function checkSubmit(ev)
 }
 -->
 </script>
-
 </head>
 <body>
-      <form id="formLogin" action="javascript:checkForm();" method="POST" accept-charset="UTF-8">
-        <div id="top"></div> <!-- Backgroud fonce -->
+      <form id="formLogin" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
+      	<% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
+	        <div id="top">
+				<fmt:message key="authentication.logon.newRegistration.tease" /> 
+				<% if (newRegistrationActive) { %> 
+					<a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration.create" /></a>
+				<% } %>
+				<% if (facebookEnabled || linkedInEnabled) {
+					if (newRegistrationActive) { %>
+						<fmt:message key="GML.or" />
+					<% } %>
+					<fmt:message key="authentication.logon.newRegistration.connect" />
+					<% if (linkedInEnabled) { %>
+						<a title="LinkedIn" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">LinkedIn</a>
+					<% } %>
+					<% if (facebookEnabled) { %>
+						<% if (linkedInEnabled) { %>
+							 <fmt:message key="GML.or" /> 
+						<% } %>
+						<a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a> 
+					<% } %>
+				<% } %>
+	        </div>
+        <% } %>
+        <% if (facebookEnabled || linkedInEnabled) {%>
+			<div id="login-socialnetwork">
+			   	<% if (linkedInEnabled) { %>
+					<a title="<fmt:message key='authentication.logon.with.linkedin' />" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">
+						<img src="util/icons/external/btn-login-linkedin.png"/>
+					</a>
+				<% } %>
+			   	<% if (facebookEnabled) { %>
+					<a title="<fmt:message key='authentication.logon.with.facebook' />" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">
+						<img src="util/icons/external/btn-login-facebook.png"/>
+					</a>
+				<% } %>
+			</div>
+		<% } %>
         <div class="page"> <!-- Centrage horizontal des elements (960px) -->
           <div class="titre"><fmt:message key="authentication.logon.title"/></div>
-            <div id="background"> <!-- image de fond du formulaire -->    	
-                <div class="cadre">   
+            <div id="background"> <!-- image de fond du formulaire -->
+                <div class="cadre">
                     <div id="header">
                         <img src="<%=logo%>" class="logo" alt="logo"/>
                         <p class="information">
                           <c:choose>
-                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">                              
+                            <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
                               <c:set var="erroMessageKey">authentication.logon.<c:out value="${param.ErrorCode}"/></c:set>
                                 <span><fmt:message key="${erroMessageKey}" /></span>
                             </c:when><c:otherwise>
@@ -179,19 +204,20 @@ function checkSubmit(ev)
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
                       </c:when>
                       <c:otherwise>
-                        <p><label><span><fmt:message key="authentication.logon.domain" /></span>
-								<select id="DomainId" name="DomainId" size="1">
+                      	<p><label><span><fmt:message key="authentication.logon.domain" /></span>
+							<select id="DomainId" name="DomainId" size="1">
                                   <c:forEach var="domain" items="${pageScope.listDomains}">
                                       <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
                                   </c:forEach>
-								</select>
-                          </label></p> 		
+							</select>
+                          </label></p> 
                       </c:otherwise>
                     </c:choose>            
                      <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
+
 					 <% if (rememberPwdActive || forgottenPwdActive) { %>
-						 <p>
 						 <% if (forgottenPwdActive) { %>
+						 <p>
 							<span class="forgottenPwd">
 							<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
 								<a href="javascript:loginQuestion()"><fmt:message key="authentication.logon.passwordForgotten" /></a>
@@ -199,29 +225,32 @@ function checkSubmit(ev)
 							 	<a href="javascript:resetPassword()"><fmt:message key="authentication.logon.passwordReinit" /></a>
 							<%} %>
 							</span>
+						</p>
 						 <% } %>
+
 						 <% if (rememberPwdActive) { %>
+						 		<p>
 								<span class="rememberPwd">
 								<% if (forgottenPwdActive) { %>
-									 | 
+									 |
 								<% } %>
 								<fmt:message key="authentication.logon.passwordRemember" /> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
+								</p>
 						<%	} %>
-						</p>
 					<% } %>
-                </div>  
+                </div>
             </div>
             <div id="copyright"><fmt:message key="GML.trademark" /></div>
         </div>
         </form><!-- Fin class="page" -->
-							  
+
 		<script type="text/javascript">
 			nbCookiesFound=0;
 			var domainId = <%=domainId%>;
-		
+
 			/* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
 			if(domainId == null && GetCookie("defaultDomain") != null)
-			{ 
+			{
 				<% for (int i = 0 ; i < listDomains.size() && listDomains.size() > 1; i++) { %>
 					if (GetCookie("defaultDomain").toString() == "<%=(listDomains.get(i).getId())%>")
 					{
@@ -229,19 +258,19 @@ function checkSubmit(ev)
 					}
 				<% } %>
 			}
-		
+
 			if(GetCookie("svpLogin") != null)
 			{
 				nbCookiesFound = nbCookiesFound + 1;
 				document.getElementById("Login").value = GetCookie("svpLogin").toString();
-			}    
-		
+			}
+
 			<%	if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
 				if(GetCookie("svpPassword") != null)
 				{
 					nbCookiesFound = nbCookiesFound + 1;
 					document.getElementById("Password").value = GetCookie("svpPassword").toString();
-				}    
+				}
 			<%	} %>
 
 			if (nbCookiesFound==2)
@@ -258,6 +287,6 @@ function checkSubmit(ev)
 			}
 			document.getElementById("formLogin").Login.focus();
 		</script>
-                    
-</body>  
+
+</body>
 </html>

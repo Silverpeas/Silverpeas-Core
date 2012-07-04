@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -26,12 +26,11 @@ package com.silverpeas.calendar;
 
 /**
  * The day of week occurrence represents an nth occurrence of the day in a week, a month or in a
- * year.
- * Such objects are mainly used to represent a rule in an event recurrence.
+ * year. Such objects are mainly used to represent a rule in an event recurrence.
  */
 public class DayOfWeekOccurrence {
 
- /**
+  /**
    * A constant that defines a specific value for all the occurrences of the represented day in a
    * week, a month or a year.
    */
@@ -41,12 +40,12 @@ public class DayOfWeekOccurrence {
   private DayOfWeek dayOfWeek;
 
   /**
-   * Creates an instance of DayOfWeekOccurrence representing the nth occurrence of the specified
-   * day of week in a month or a year.
-   * @param nth the nth occurrence of the specified day of week. It accepts negative numbers.
-   * A positive value means the nth occurrence of the day of week encountered in the month or in
-   * the year, whereas a negative value means the nth occurrence back from the end of the month or
-   * of the year.
+   * Creates an instance of DayOfWeekOccurrence representing the nth occurrence of the specified day
+   * of week in a month or a year.
+   * @param nth the nth occurrence of the specified day of week. It accepts negative numbers. A
+   * positive value means the nth occurrence of the day of week encountered in the month or in the
+   * year, whereas a negative value means the nth occurrence back from the end of the month or of
+   * the year.
    * @param dayOfWeek the day of week.
    * @return a DayOfWeekOccurrence instance.
    */
@@ -80,7 +79,6 @@ public class DayOfWeekOccurrence {
   public int nth() {
     return nth;
   }
-
 
   private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {
     if (nth < 0) {

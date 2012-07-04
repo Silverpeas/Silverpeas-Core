@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.versioning.ejb;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -177,11 +178,11 @@ public class VersioningBmEJB implements SessionBean {
       // calendar.add(Calendar.DATE, nbDay);
       SilverTrace.debug("versioning", "updateDates",
           "root.MSG_GEN_PARAM_VALUE", "calendar.getTime() AVANT = "
-              + calendar.getTime());
+          + calendar.getTime());
       addDays(calendar, nbDay);
       SilverTrace.debug("versioning", "updateDates",
           "root.MSG_GEN_PARAM_VALUE", "calendar.getTime() APRES = "
-              + calendar.getTime());
+          + calendar.getTime());
       doc.setExpiryDate(calendar.getTime());
     }
 
@@ -196,7 +197,7 @@ public class VersioningBmEJB implements SessionBean {
         int result = (nbDay * delayReservedFile) / 100;
         SilverTrace.debug("versioning", "updateDates",
             "root.MSG_GEN_PARAM_VALUE", "delayReservedFile = "
-                + delayReservedFile);
+            + delayReservedFile);
         SilverTrace.debug("versioning", "updateDates",
             "root.MSG_GEN_PARAM_VALUE", "result = " + result);
         if (result > 2) {
@@ -247,7 +248,7 @@ public class VersioningBmEJB implements SessionBean {
 
       SilverTrace.debug("versioning", "checkDocumentIn", "root.MSG_GEN_PARAM_VALUE",
           "doc.getTypeWorkList() = " + doc.getTypeWorkList() + " / doc.getTypeWorkList() = "
-              + doc.getTypeWorkList());
+          + doc.getTypeWorkList());
 
       if (doc.getTypeWorkList() == 1) {
         checkDocumentInNonOrdered(con, doc);
@@ -432,7 +433,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * From Ejb remote interface. Containing business logic for adding new version
-   *
    * @param doc
    * @param newVersion
    * @return
@@ -454,7 +454,6 @@ public class VersioningBmEJB implements SessionBean {
   /**
    * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Non-validated document
    * type
-   *
    * @param doc
    * @param newVersion
    * @return
@@ -490,7 +489,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Adding new <code>DocumentVersion</code> in a case of Non-ordered and Validated document type.
-   *
    * @param doc
    * @param newVersion
    * @return
@@ -648,7 +646,7 @@ public class VersioningBmEJB implements SessionBean {
         try {
           String message =
               (newVersion.getStatus() == DocumentVersion.STATUS_VALIDATION_REQUIRED)
-                  ? "notification.pleaseValidate" : "notification.processWork";
+              ? "notification.pleaseValidate" : "notification.processWork";
           sendNotification(nextUserID, message, docUrl, currWorker.getId(), doc);
         } catch (NotificationManagerException e) {
           SilverTrace.error("versioning", "VersioningBmEJB.sendNotification",
@@ -685,9 +683,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param workList          <code>ArrayList</code> of WorkList
+   * @param workList <code>ArrayList</code> of WorkList
    * @param skipThisValidator should the next worker be a validator or we interested only in writes
-   * @param currentUserNum    number of currently working user
+   * @param currentUserNum number of currently working user
    * @return nextWorker to work with document. Null if the end of document reached
    * @throws ArrayIndexOutOfBoundsException in a case of incorrect currentUserNum index provided
    */
@@ -712,7 +710,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param workList       vector of WorkList
+   * @param workList vector of WorkList
    * @param currentUserNum number of currently working user
    * @param skipThisWorker should the next worker be a validator or we interested only in writes
    * @return prevWorker to work with document. Null if it was the first user of document
@@ -808,9 +806,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param currDoc        affected document
-   * @param validatorID    validator user Id
-   * @param comment        associated comment
+   * @param currDoc affected document
+   * @param validatorID validator user Id
+   * @param comment associated comment
    * @param validationDate a date when validation process occured.
    */
   public void validateDocument(Document currDoc, int validatorID,
@@ -845,7 +843,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Process validation in a case of Approval, Ordered list
-   *
    * @param doc
    * @param validatorID
    * @param comment
@@ -924,7 +921,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
-   *
    * @param docVersion version to be validated
    */
   protected DocumentVersion validateDocumentVersion(DocumentVersion docVersion,
@@ -1011,7 +1007,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc    document to be checked
+   * @param doc document to be checked
    * @param userID to be checked to be the current document validator
    * @return true if userID provided can validate current version of document
    */
@@ -1037,8 +1033,8 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc            document to be checked
-   * @param userID         to be checket to be the current document validator
+   * @param doc document to be checked
+   * @param userID to be checket to be the current document validator
    * @param currentVersion of the document to be checked
    * @return true if userID provided can validate current version of document
    */
@@ -1066,7 +1062,7 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param doc    document to be checked to be checkedout
+   * @param doc document to be checked to be checkedout
    * @param userID to be checked to be checjedout user of document
    * @return true if document provided has been checked out by provided userID
    */
@@ -1088,9 +1084,9 @@ public class VersioningBmEJB implements SessionBean {
   }
 
   /**
-   * @param currDoc        affected document
-   * @param validatorID    validator user Id
-   * @param comment        associated comment
+   * @param currDoc affected document
+   * @param validatorID validator user Id
+   * @param comment associated comment
    * @param validationDate a date when validation process occured.
    */
   public void refuseDocument(Document currDoc, int validatorID, String comment,
@@ -1218,7 +1214,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Perform work on creating validated version from version provided
-   *
    * @param docVersion version to be validated
    */
   protected DocumentVersion refuseDocumentVersion(DocumentVersion docVersion,
@@ -1349,7 +1344,7 @@ public class VersioningBmEJB implements SessionBean {
     notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(userID)));
     notifMetaData.setSource(resources.getString("notification.title"));
 
-    if (documentUrl != null  && (documentUrl.length() > URLManager.getApplicationURL().length())) {
+    if (documentUrl != null && (documentUrl.length() > URLManager.getApplicationURL().length())) {
       notifMetaData.setLink(documentUrl.substring(
           URLManager.getApplicationURL().length())); // Remove the application element
     }
@@ -1371,7 +1366,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   *
    * @return an URL for provided document
    */
   protected String getDocumentUrl(Document doc) {
@@ -1385,7 +1379,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   *
    * @return language by provided user id
    */
   protected String getDefaultUserLanguage(int userID) {
@@ -1395,7 +1388,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Get the last version
-   *
    * @param documentPK
    * @return DocumentVersion
    */
@@ -1417,7 +1409,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Get a document version
-   *
    * @param documentVersionPK
    * @return DocumentVersion
    */
@@ -1438,7 +1429,6 @@ public class VersioningBmEJB implements SessionBean {
 
   /**
    * Utility method
-   *
    * @return Connection to use in all ejb db operations
    */
   protected Connection openConnection() {
@@ -1469,16 +1459,16 @@ public class VersioningBmEJB implements SessionBean {
   private void deleteIndex(Document document) {
     SilverTrace.info("versioning", "VersioningBmEJB.deleteIndex()",
         "root.MSG_GEN_ENTER_METHOD", "documentPK = "
-            + document.getPk().toString());
+        + document.getPk().toString());
 
     IndexEntryPK indexEntry = new IndexEntryPK(document.getPk().getComponentName(),
         "Versioning" + document.
-            getPk().getId(), document.getForeignKey().getId());
+        getPk().getId(), document.getForeignKey().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
   private void deleteDocumentFiles(List<DocumentVersion> versions, DocumentPK documentPK) {
-    String[] ctx = {"Versioning"};
+    String[] ctx = { "Versioning" };
     String path = FileRepositoryManager.getAbsolutePath(documentPK.getInstanceId(), ctx);
 
     // for each version, we remove according file

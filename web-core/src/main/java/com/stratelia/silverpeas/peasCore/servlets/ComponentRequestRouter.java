@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,7 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends HttpServlet {
+public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
+    HttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
@@ -105,10 +106,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
         + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
-    SilverTrace.debug("peasCore","ComponentRequestRouter.computeDestination()",
+    SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
-    if (mainSessionCtrl.isAppInMaintenance()  && !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString("redirectAppInMaintenance");
+    if (mainSessionCtrl.isAppInMaintenance() &&
+        !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
+      return GeneralPropertiesManager.getGeneralResourceLocator().getString(
+          "redirectAppInMaintenance");
     }
 
     // Get the space id and the component id required by the user
@@ -141,7 +144,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
             "peasCore.MSG_USER_NOT_ALLOWED", "User=" + mainSessionCtrl.getUserId()
-            + " | componentId=" + componentId  + " | spaceId=" + spaceId);
+            + " | componentId=" + componentId + " | spaceId=" + spaceId);
         destination = GeneralPropertiesManager.getGeneralResourceLocator()
             .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
         return destination;
@@ -157,7 +160,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         component.getSpaceLabel(), component.getComponentLabel(),
         component.getSpaceId(), component.getComponentId(),
         component.getComponentUrl() });
-    request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.getComponentUrl());
+    request.setAttribute("myComponentURL", URLManager.getApplicationURL() +
+        component.getComponentUrl());
 
     if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
         !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
@@ -301,23 +305,27 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // 1 - the componentId if component is instanciable
   // 2 - the component bean name if component is not instanciable (Personal
   // space)
-  private T getComponentSessionController( HttpSession session, String componentId) {
+  private T getComponentSessionController(HttpSession session, String componentId) {
     if (componentId == null) {
       return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName());
     }
-    return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId);
+    return (T) session
+        .getAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId);
   }
 
-  private T setComponentSessionController(HttpSession session, MainSessionController mainSessionCtrl,
+  private T setComponentSessionController(HttpSession session,
+      MainSessionController mainSessionCtrl,
       String spaceId, String componentId) {
     // ask to MainSessionController to create the ComponentContext
-    ComponentContext componentContext = mainSessionCtrl.createComponentContext(spaceId, componentId);
+    ComponentContext componentContext =
+        mainSessionCtrl.createComponentContext(spaceId, componentId);
     // instanciate a new CSC
     T component = createComponentSessionController(mainSessionCtrl, componentContext);
     if (componentId == null) {
       session.setAttribute("Silverpeas_" + getSessionControlBeanName(), component);
     } else {
-      session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId, component);
+      session.setAttribute("Silverpeas_" + getSessionControlBeanName() + "_" + componentId,
+          component);
     }
     SilverTrace.info("peasCore", "ComponentRequestRouter.setComponentSessionController",
         "peasCore.MSG_SESSION_CONTROLLER_INSTANCIATED", "spaceId=" + spaceId
@@ -326,10 +334,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   }
 
   /**
-* Set GEF and look helper space identifier
-* @param req current HttpServletRequest
-* @param componentId the component identifier
-*/
+   * Set GEF and look helper space identifier
+   * @param req current HttpServletRequest
+   * @param componentId the component identifier
+   */
   private void setGefSpaceId(HttpServletRequest req, String componentId, String spaceId) {
     HttpSession session = req.getSession(true);
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

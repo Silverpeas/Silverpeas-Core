@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -97,8 +97,8 @@ public class TextFieldImpl extends TextField {
 
       SilverTrace.debug("formTemplate", "TextFieldImpl.getSuggestions",
           "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
-              + ", componentId = " + componentId + ", templateName = "
-              + templateName);
+          + ", componentId = " + componentId + ", templateName = "
+          + templateName);
 
       rs = statement.executeQuery();
 
@@ -136,8 +136,8 @@ public class TextFieldImpl extends TextField {
     out.println("	#listAutocomplete" + fieldName + " {\n");
     out
         .println("		z-index:"
-            + zindex
-            + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
+        + zindex
+        + "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
     out.println("	}\n");
     out.println("	#" + fieldName + " {\n");
     out.println("		_position:absolute; /* abs pos needed for ie quirks */\n");

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.AbstractForm;
@@ -44,7 +48,6 @@ import java.util.List;
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
  * retrieve via HTTP any updated values.
- *
  * @see DataRecord
  * @see RecordTemplate
  * @see FieldDisplayer
@@ -71,9 +74,11 @@ public class XmlSearchForm extends AbstractForm {
    * Prints the javascripts which will be used to control the new values given to the data record
    * fields. The error messages may be adapted to a local language. The RecordTemplate gives the
    * field type and constraints. The RecordTemplate gives the local label too. Never throws an
-   * Exception but log a silvertrace and writes an empty string when : <UL> <LI>a field is unknown
-   * by the template. <LI>a field has not the required type. </UL>
-   *
+   * Exception but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>a field is unknown by the template.
+   * <LI>a field has not the required type.
+   * </UL>
    * @param jw
    * @param PagesContext
    */
@@ -84,9 +89,11 @@ public class XmlSearchForm extends AbstractForm {
   /**
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
-   * but log a silvertrace and writes an empty string when : <UL> <LI>a field is unknown by the
-   * template. <LI>a field has not the required type. </UL>
-   *
+   * but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>a field is unknown by the template.
+   * <LI>a field has not the required type.
+   * </UL>
    * @param pagesContext
    * @param record
    * @return
@@ -106,7 +113,7 @@ public class XmlSearchForm extends AbstractForm {
       out.println("<tr>");
       out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
       out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-              + "\" width=5><span class=txtNav>" + title + "</span>");
+          + "\" width=5><span class=txtNav>" + title + "</span>");
       out.println("</td>");
       out.println("</tr>");
       out.println("</table>");
@@ -117,12 +124,14 @@ public class XmlSearchForm extends AbstractForm {
     if (fieldTemplates != null && !fieldTemplates.isEmpty()) {
       Iterator<FieldTemplate> itFields = this.fieldTemplates.iterator();
       if (pagesContext.isBorderPrinted()) {
-        out.println(
-                "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+        out
+            .println(
+            "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
         out.println("<tr>");
         out.println("<td nowrap>");
-        out.println(
-                "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
+        out
+            .println(
+            "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
       } else {
         out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
       }
@@ -154,7 +163,7 @@ public class XmlSearchForm extends AbstractForm {
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "XmlSearchForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null,
-                    fe);
+                fe);
           }
         }
       }
@@ -176,7 +185,7 @@ public class XmlSearchForm extends AbstractForm {
             fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
           } catch (FormException fe) {
             SilverTrace.error("form", "XmlSearchForm.toString", "form.EXP_UNKNOWN_DISPLAYER", null,
-                    fe);
+                fe);
           }
           if (fieldDisplayer != null) {
             out.println("<tr align=center>");
@@ -189,10 +198,12 @@ public class XmlSearchForm extends AbstractForm {
             try {
               fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlSearchForm.toString", "form.EX_CANT_GET_FORM", null, fe);
+              SilverTrace
+                  .error("form", "XmlSearchForm.toString", "form.EX_CANT_GET_FORM", null, fe);
             }
             out.println("</td>");
-            out.println("</tr>");;
+            out.println("</tr>");
+            ;
             pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
           }
         }
@@ -210,8 +221,11 @@ public class XmlSearchForm extends AbstractForm {
   /**
    * Prints the HTML layout of the dataRecord using the RecordTemplate to extract labels and extra
    * informations. The value formats may be adapted to a local language. Never throws an Exception
-   * but log a silvertrace and writes an empty string when : <UL> <LI>a field is unknown by the
-   * template. <LI>a field has not the required type. </UL>
+   * but log a silvertrace and writes an empty string when :
+   * <UL>
+   * <LI>a field is unknown by the template.
+   * <LI>a field has not the required type.
+   * </UL>
    */
   @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
@@ -229,7 +243,7 @@ public class XmlSearchForm extends AbstractForm {
         out.println("<tr>");
         out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
         out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-                + "\" width=5><span class=txtNav>" + title + "</span>");
+            + "\" width=5><span class=txtNav>" + title + "</span>");
         out.println("</td>");
         out.println("</tr>");
         out.println("</table>");
@@ -245,17 +259,19 @@ public class XmlSearchForm extends AbstractForm {
 
       if (itFields != null && itFields.hasNext()) {
         if (pagesContext.isBorderPrinted()) {
-          out.println(
-                  "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
+          out
+              .println(
+              "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
           out.println("<tr>");
           out.println("<td nowrap>");
-          out.println(
-                  "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
+          out
+              .println(
+              "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
         } else {
           out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
         }
         out.println("<input TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId()
-                + "\">");
+            + "\">");
 
         out.flush();
         jw.write(sw.toString());
@@ -284,14 +300,14 @@ public class XmlSearchForm extends AbstractForm {
               }
 
               fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                      fieldDisplayerName);
+                  fieldDisplayerName);
               if (fieldDisplayer != null) {
                 lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
-                        fieldTemplate, pc);
+                    fieldTemplate, pc);
               }
             } catch (FormException fe) {
               SilverTrace.error("form", "XmlSearchForm.display",
-                      "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+                  "form.EXP_UNKNOWN_DISPLAYER", null, fe);
             }
           }
         }
@@ -312,8 +328,10 @@ public class XmlSearchForm extends AbstractForm {
               }
               fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             } catch (FormException fe) {
-              SilverTrace.error("form", "XmlSearchForm.display", "form.EXP_UNKNOWN_DISPLAYER", null,
-                      fe);            }
+              SilverTrace.error("form", "XmlSearchForm.display", "form.EXP_UNKNOWN_DISPLAYER",
+                  null,
+                  fe);
+            }
 
             if (fieldDisplayer != null) {
               sw = new StringWriter();
@@ -331,14 +349,14 @@ public class XmlSearchForm extends AbstractForm {
                 fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
               } catch (FormException fe) {
                 SilverTrace.error("form", "XmlSearchForm.display",
-                        "form.EX_CANT_GET_FORM", null, fe);
+                    "form.EX_CANT_GET_FORM", null, fe);
               }
               out.println("</td>");
               out.println("</tr>");
               out.flush();
               jw.write(sw.toString());
               pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(
-                      fieldTemplate, pc));
+                  fieldTemplate, pc));
             }
           }
         }
@@ -355,17 +373,17 @@ public class XmlSearchForm extends AbstractForm {
       }
     } catch (java.io.IOException fe) {
       SilverTrace.error("form", "XmlSearchForm.display", "form.EXP_CANT_WRITE",
-              null, fe);
+          null, fe);
     }
   }
 
   private String getParameterValue(List<FileItem> items, String parameterName) {
     SilverTrace.debug("form", "XmlSearchForm.getParameterValue",
-            "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
+        "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     FileItem item = getParameter(items, parameterName);
     if (item != null && item.isFormField()) {
       SilverTrace.debug("form", "XmlSearchForm.getParameterValue",
-              "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + item.getString());
+          "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + item.getString());
       return item.getString();
     }
     return null;
@@ -373,7 +391,7 @@ public class XmlSearchForm extends AbstractForm {
 
   private String getParameterValues(List<FileItem> items, String parameterName) {
     SilverTrace.debug("form", "XmlSearchForm.getParameterValues",
-            "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
+        "root.MSG_GEN_ENTER_METHOD", "parameterName = " + parameterName);
     String values = "";
     List<FileItem> params = getParameters(items, parameterName);
     FileItem item = null;
@@ -385,7 +403,7 @@ public class XmlSearchForm extends AbstractForm {
       }
     }
     SilverTrace.debug("form", "XmlSearchForm.getParameterValues",
-            "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + values);
+        "root.MSG_GEN_EXIT_METHOD", "parameterValue = " + values);
     return values;
   }
 
@@ -445,7 +463,7 @@ public class XmlSearchForm extends AbstractForm {
               fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
             }
             fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                    fieldDisplayerName);
+                fieldDisplayerName);
             if (fieldDisplayer != null) {
               String itemName = fieldTemplate.getFieldName();
               String itemValue = null;
@@ -453,7 +471,7 @@ public class XmlSearchForm extends AbstractForm {
               if (Field.TYPE_FILE.equals(fieldType)) {
                 FileItem image = getParameter(items, itemName);
                 if (image != null && !image.isFormField()
-                        && StringUtil.isDefined(image.getName())) {
+                    && StringUtil.isDefined(image.getName())) {
                   isEmpty = false;
                 }
               } else {
@@ -469,10 +487,10 @@ public class XmlSearchForm extends AbstractForm {
             }
           } catch (FormException fe) {
             SilverTrace.error("form", "XmlSearchForm.isEmpty",
-                    "form.EXP_UNKNOWN_FIELD", null, fe);
+                "form.EXP_UNKNOWN_FIELD", null, fe);
           } catch (Exception e) {
             SilverTrace.error("form", "XmlSearchForm.isEmpty",
-                    "form.EXP_UNKNOWN_FIELD", null, e);
+                "form.EXP_UNKNOWN_FIELD", null, e);
           }
         }
       }

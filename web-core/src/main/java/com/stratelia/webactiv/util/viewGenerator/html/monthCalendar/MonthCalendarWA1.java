@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
 
 import com.silverpeas.util.EncodeHelper;
@@ -54,9 +55,11 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
         "com.stratelia.webactiv.almanach.multilang.almanach", this.language);
     try {
       StringBuilder html = new StringBuilder();
-      html.append(
+      html
+          .append(
           "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"98%\" bgcolor=\"#000000\">");
-      html.append("<tr><td><table cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
+      html
+          .append("<tr><td><table cellpadding=\"0\" cellspacing=\"1\" border=\"0\" width=\"100%\">");
       html.append(printDayOfWeek());
       int k = super.getNumbersWeekOfMonth();
 
@@ -237,7 +240,8 @@ public class MonthCalendarWA1 extends AbstractMonthCalendar {
                   EncodeHelper.javaStringToJsString(evt[z].getName())).append(
                   "');\" onmouseout=\"return nd();\">");
             } else {
-              html.append(" title=\"").append(EncodeHelper.javaStringToHtmlString(evt[z].getName())).
+              html.append(" title=\"")
+                  .append(EncodeHelper.javaStringToHtmlString(evt[z].getName())).
                   append("\">");
             }
             html.append(title).append("</a>");

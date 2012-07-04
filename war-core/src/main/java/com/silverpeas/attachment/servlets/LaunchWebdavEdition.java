@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.attachment.servlets;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -44,21 +45,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
  * @author ehugonnet
  */
 public class LaunchWebdavEdition extends HttpServlet {
 
-  private final static byte[] KEY = new byte[]{-23, -75, -2, -17, 79, -94, -125, -14};
+  private final static byte[] KEY = new byte[] { -23, -75, -2, -17, 79, -94, -125, -14 };
   private final static String DIGITS = "0123456789abcdef";
   private static final ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
   /**
-   * Processes requests for both HTTP
-   * <code>GET</code> and
-   * <code>POST</code> methods.
-   *
+   * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -101,7 +98,6 @@ public class LaunchWebdavEdition extends HttpServlet {
 
   /**
    * Return length many bytes of the passed in byte array as a hex string.
-   *
    * @param data the bytes to be converted.
    * @return a hex representation of length bytes of data.
    */
@@ -126,7 +122,8 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<title>Edition WebDAV</title>");
     out.println("\t\t<vendor>Silverpeas</vendor>");
     out.println("\t\t<homepage href=\"http://www.silverpeas.com\"/>");
-    out.println(
+    out
+        .println(
         "\t\t<description>A simple Java webstart application to launch Online Document Edition</description>");
     out.println("\t\t<description kind=\"short\">Online Document Editor</description>");
     out.println("\t\t<icon href=\"logo.PNG\" kind=\"default\"/>");
@@ -167,12 +164,12 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
   }
-  // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+  // <editor-fold defaultstate="collapsed"
+  // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
   /**
-   * Handles the HTTP
-   * <code>GET</code> method.
-   *
+   * Handles the HTTP <code>GET</code> method.
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -185,9 +182,7 @@ public class LaunchWebdavEdition extends HttpServlet {
   }
 
   /**
-   * Handles the HTTP
-   * <code>POST</code> method.
-   *
+   * Handles the HTTP <code>POST</code> method.
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -201,7 +196,6 @@ public class LaunchWebdavEdition extends HttpServlet {
 
   /**
    * Returns a short description of the servlet.
-   *
    * @return a String containing servlet description
    */
   @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
@@ -46,7 +47,7 @@ import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.tagcloud.ejb.TagCloudBm;
 import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
 import com.silverpeas.tagcloud.model.TagCloud;
@@ -352,7 +353,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
       if (detail.isRemoveTranslation()) {
         // remove wysiwyg content
-        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(), detail.
+        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(), detail
+            .
             getLanguage());
 
         // remove xml content
@@ -1420,11 +1422,13 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
             // index embedded linked attachment (links presents in wysiwyg content)
             try {
-              List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(wysiwygContent);
+              List<String> embeddedAttachmentIds =
+                  WysiwygController.getEmbeddedAttachmentIds(wysiwygContent);
               WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
             } catch (WysiwygException e) {
-                  SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "root.MSG_GEN_ENTER_METHOD",
-                          "Unable to extract linked files from object" + indexEntry.getObjectId(), e);
+              SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent",
+                  "root.MSG_GEN_ENTER_METHOD",
+                  "Unable to extract linked files from object" + indexEntry.getObjectId(), e);
             }
           }
         }
@@ -1442,7 +1446,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         + ", pubDetail.getInfoId() = " + pubDetail.getInfoId());
     if (!isInteger(pubDetail.getInfoId())) {
       try {
-        PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(pubDetail.
+        PublicationTemplate pub =
+            PublicationTemplateManager.getInstance().getPublicationTemplate(pubDetail.
             getPK().getInstanceId() + ":" + pubDetail.getInfoId());
 
         RecordSet set = pub.getRecordSet();
@@ -1523,11 +1528,11 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
               updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
               updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
             }
-            
+
             // add versioning documents to publication's index
             // Note : attachments are added directly from indexing layer (IndexManager)
             new VersioningUtil().updateIndexEntryWithDocuments(indexEntry);
-            
+
             IndexEngineProxy.addIndexEntry(indexEntry);
           }
         }
@@ -1973,8 +1978,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   /**
-   * get my list of SocialInformationPublication
-   * according to options and number of Item and the first Index
+   * get my list of SocialInformationPublication according to options and number of Item and the
+   * first Index
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds
@@ -2001,8 +2006,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   /**
-   * get list of SocialInformationPublication of my contacts
-   * according to options and number of Item and the first Index
+   * get list of SocialInformationPublication of my contacts according to options and number of Item
+   * and the first Index
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds
@@ -2050,7 +2055,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       int maxSize, List<String> componentIds) throws RemoteException {
     Connection con = getConnection();
     try {
-      return PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, status, since, maxSize);
+      return PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, status, since,
+          maxSize);
     } catch (Exception e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getPublicationPKsByStatus()",

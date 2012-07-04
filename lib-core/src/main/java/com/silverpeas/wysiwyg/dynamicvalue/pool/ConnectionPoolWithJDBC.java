@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,15 +68,17 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
    * implementation
    */
   private synchronized static void initializeDatasource() {
-    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(), 
+    SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
         " Datasource initialization : starting ...");
     if (ds == null) {
       // check if the information for the pool creation is present.
       if (poolInfo == null) {
         SilverTrace.error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
             "wysiwig.CONNECTION_INIALIZATION_FAILED");
-        throw new TechnicalException(ConnectionPoolWithJDBC.class.toString() 
-            + " : An error occurred  during the connection initialization. The Pool information must be set");
+        throw new TechnicalException(
+            ConnectionPoolWithJDBC.class.toString()
+                +
+                " : An error occurred  during the connection initialization. The Pool information must be set");
       }
       SilverTrace.debug("wysiwyg", ConnectionPoolWithJDBC.class.toString(),
           " Datasource initialization : poolInfo detail :: " + poolInfo.toString());
@@ -86,9 +88,11 @@ public class ConnectionPoolWithJDBC implements ConnectionPool {
       try {
         cpds.setDriver(poolInfo.getDriver());
       } catch (ClassNotFoundException e) {
-        SilverTrace.error("wysiwig", ConnectionPoolWithJDBC.class.toString(), "wysiwig.DRIVER_MISSING");
-        throw new TechnicalException(ConnectionPoolWithJDBC.class.toString() +
-            " : An error occurred  during the connection initializatoin. The JDBC driver isn't in the classpath",
+        SilverTrace.error("wysiwig", ConnectionPoolWithJDBC.class.toString(),
+            "wysiwig.DRIVER_MISSING");
+        throw new TechnicalException(
+            ConnectionPoolWithJDBC.class.toString() +
+                " : An error occurred  during the connection initializatoin. The JDBC driver isn't in the classpath",
             e);
       }
       cpds.setUrl(poolInfo.getUrl());

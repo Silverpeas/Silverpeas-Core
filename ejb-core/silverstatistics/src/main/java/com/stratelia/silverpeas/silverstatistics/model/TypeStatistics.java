@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.silverstatistics.model;
 
 import com.silverpeas.util.StringUtil;
@@ -32,7 +33,6 @@ import java.util.List;
 
 /**
  * Class declaration
- *
  * @author SLR
  */
 public class TypeStatistics {
@@ -116,7 +116,8 @@ public class TypeStatistics {
 
   public void setTableName(String tableName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(tableName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
+          SilverpeasException.FATAL,
           "silverstatistics.MSG_TABLE_NAME_STATS_EMPTY", tableName);
     }
     this.tableName = tableName;
@@ -146,11 +147,13 @@ public class TypeStatistics {
 
   public void addCumulKey(String keyName) throws SilverStatisticsTypeStatisticsException {
     if (!StringUtil.isDefined(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
+          SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_NAME_STATS_EMPTY", name);
     }
     if (!hasACumulType(keyName)) {
-      throw new SilverStatisticsTypeStatisticsException("TypeStatistics", SilverpeasException.FATAL,
+      throw new SilverStatisticsTypeStatisticsException("TypeStatistics",
+          SilverpeasException.FATAL,
           "silverstatistics.MSG_CUMULKEY_TYPE_STATS_BAD_VALUE", name, keyName);
     }
     cumulKeysName.add(keyName);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -162,7 +162,7 @@ public class ExplorerField implements Field {
   public void setObjectValue(Object value) throws FormException {
     if (value instanceof ForeignPK) {
       ForeignPK pk = (ForeignPK) value;
-      setNodePK(pk.getInstanceId()+"-"+pk.getId());
+      setNodePK(pk.getInstanceId() + "-" + pk.getId());
     } else if (value == null) {
       setNodePK(null);
     } else {
@@ -279,7 +279,7 @@ public class ExplorerField implements Field {
    * The main access to the users set.
    */
   private static OrganizationController organizationController = new OrganizationController();
-  
+
   /**
    * Returns the access path of the object.
    */
@@ -316,7 +316,7 @@ public class ExplorerField implements Field {
             listPath = nodeBm.getPath(nodePk);
           } catch (RemoteException e) {
             SilverTrace.error("form", "ExplorerFieldDisplayer.display",
-                    "form.EX_CANT_GET_PATH_NODE", nodeId);
+                "form.EX_CANT_GET_PATH_NODE", nodeId);
           }
 
           if (listPath != null) {

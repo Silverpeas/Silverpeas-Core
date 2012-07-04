@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.thesaurus.control;
 
 import com.silverpeas.thesaurus.ThesaurusException;
@@ -61,7 +65,7 @@ public class ThesaurusBm {
 
   private SilverpeasBeanDAO<Vocabulary> getVocabularyDao() throws PersistenceException {
     if (vocabularyDao == null) {
-      vocabularyDao = SilverpeasBeanDAOFactory.<Vocabulary>getDAO(
+      vocabularyDao = SilverpeasBeanDAOFactory.<Vocabulary> getDAO(
           "com.silverpeas.thesaurus.model.Vocabulary");
     }
     return vocabularyDao;
@@ -69,7 +73,7 @@ public class ThesaurusBm {
 
   private SilverpeasBeanDAO<Synonym> getSynonymDao() throws PersistenceException {
     if (synonymDao == null) {
-      synonymDao = SilverpeasBeanDAOFactory.<Synonym>getDAO(
+      synonymDao = SilverpeasBeanDAOFactory.<Synonym> getDAO(
           "com.silverpeas.thesaurus.model.Synonym");
     }
     return synonymDao;
@@ -77,14 +81,13 @@ public class ThesaurusBm {
 
   private SilverpeasBeanDAO<Jargon> getJargonDao() throws PersistenceException {
     if (jargonDao == null) {
-      jargonDao = SilverpeasBeanDAOFactory.<Jargon>getDAO("com.silverpeas.thesaurus.model.Jargon");
+      jargonDao = SilverpeasBeanDAOFactory.<Jargon> getDAO("com.silverpeas.thesaurus.model.Jargon");
     }
     return jargonDao;
   }
 
   /**
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
-   *
    * @return Collection
    * @throws ThesaurusException
    * @see
@@ -101,7 +104,6 @@ public class ThesaurusBm {
 
   /**
    * Retourne le détail du vocabulaire à partir d'un idVoca
-   *
    * @param idVoca
    * @return Vocabulary
    * @throws ThesaurusException
@@ -122,7 +124,6 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau vocabulaire et retourne l'id de celui-ci
-   *
    * @param voca
    * @return long
    * @throws ThesaurusException
@@ -140,7 +141,6 @@ public class ThesaurusBm {
 
   /**
    * Retourne vrai si le vocabulaire passé en paramètre existe déjà
-   *
    * @param name
    * @return boolean
    * @throws ThesaurusException
@@ -162,7 +162,6 @@ public class ThesaurusBm {
 
   /**
    * Retourne une chaine qui a encodé les ' par des ''
-   *
    * @param name
    * @return String
    * @throws
@@ -185,7 +184,6 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le vocabulaire passé en paramètre
-   *
    * @param voca
    * @return
    * @throws ThesaurusException
@@ -203,7 +201,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime le vocabulaire passé en paramètre
-   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -246,7 +243,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les synonymes associés au vocabulaire passé en paramètre
-   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -265,7 +261,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons associés au vocabulaire passé en paramètre
-   *
    * @param idVoca
    * @return
    * @throws ThesaurusException
@@ -285,7 +280,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime tous les jargons passés en paramètre
-   *
    * @param jargons
    * @return
    * @throws ThesaurusException
@@ -304,7 +298,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime le jargon passé en paramètre
-   *
    * @param idJargon
    * @return
    * @throws ThesaurusException
@@ -324,7 +317,6 @@ public class ThesaurusBm {
 
   /**
    * Crée de nouveaux synonymes à un terme
-   *
    * @param synonyms
    * @return
    * @throws ThesaurusException
@@ -344,7 +336,6 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau synonyme à un terme
-   *
    * @param synonym
    * @return
    * @throws ThesaurusException
@@ -363,7 +354,6 @@ public class ThesaurusBm {
 
   /**
    * Retourne la liste des synonymes d'un vocabulaire, pour un terme
-   *
    * @param idVoca
    * @param idTree
    * @param idTerm
@@ -378,16 +368,16 @@ public class ThesaurusBm {
       SilverpeasBeanDAO daoS = getSynonymDao();
       IdPK pk = new IdPK();
       return daoS.findByWhereClause(pk, " idVoca=" + idVoca +
-           " AND idTree=" + idTree + " AND idTerm=" + idTerm);
+          " AND idTree=" + idTree + " AND idTerm=" + idTerm);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getSynonyms(long idVoca, long idTree, long idTerm)",
+      throw new ThesaurusException(
+          "ThesaurusBm.getSynonyms(long idVoca, long idTree, long idTerm)",
           SilverpeasException.ERROR, "Thesaurus.EX_CANT_GET_SYNONYMS", "", e);
     }
   }
 
   /**
    * Met à jour une liste de synonymes
-   *
    * @param synonyms
    * @return
    * @throws ThesaurusException
@@ -428,7 +418,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes d'un terme dans un vocabulaire
-   *
    * @param idVoca
    * @param idTree
    * @param idTerm
@@ -466,7 +455,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes passés en paramètre
-   *
    * @param idSynonyms
    * @return
    * @throws ThesaurusException
@@ -484,7 +472,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime le synonyme passés en paramètre
-   *
    * @param idSynonym
    * @return
    * @throws ThesaurusException
@@ -504,7 +491,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes de tous les termes associés à l'axe passé en paramètre
-   *
    * @param idTree
    * @return
    * @throws ThesaurusException
@@ -525,7 +511,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes de tous les termes passés en paramètre
-   *
    * @param idTree
    * @param idTerms : List de String
    * @return
@@ -547,7 +532,6 @@ public class ThesaurusBm {
 
   /**
    * Supprime les synonymes du terme passé en paramètre
-   *
    * @param idTree
    * @param idTerm
    * @return
@@ -561,7 +545,8 @@ public class ThesaurusBm {
       IdPK pk = new IdPK();
       daoS.removeWhere(con, pk, " idTree=" + idTree + " AND idTerm=" + idTerm);
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusManager.deleteSynonymsTerm", SilverpeasException.ERROR,
+      throw new ThesaurusException("ThesaurusManager.deleteSynonymsTerm",
+          SilverpeasException.ERROR,
           "Thesaurus.EX_DELETE_SYNONYMS_TERM_FAILED", "", e);
     }
   }
@@ -569,7 +554,6 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des utilisateurs utilisant le vocabulaire passé en paramètre retourne une
    * Collection de Jargon
-   *
    * @param idVoca
    * @return Collection
    * @throws ThesaurusException
@@ -588,14 +572,14 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
    * Retoune une Collection de Jargon
-   *
    * @param idUsers
    * @param type (0=UserDetail ou 1=Group)
    * @return
    * @throws ThesaurusException
    * @see
    */
-  public Collection<Jargon> getJargons(Collection<String> idUsers, int type) throws ThesaurusException {
+  public Collection<Jargon> getJargons(Collection<String> idUsers, int type)
+      throws ThesaurusException {
     Collection<Jargon> jargons = new ArrayList<Jargon>();
     try {
       SilverpeasBeanDAO daoJ = getJargonDao();
@@ -603,13 +587,13 @@ public class ThesaurusBm {
 
       for (String idUser : idUsers) {
         Collection<Jargon> theJargons = daoJ.findByWhereClause(pk, " idUser='" + idUser +
-             "'" + " AND type=" + type);
+            "'" + " AND type=" + type);
         for (Jargon jargon : theJargons) {
           jargons.add(jargon);
         }
       }
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR, 
+      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CANT_GET_JARGONS_USERS", "", e);
     }
     return jargons;
@@ -618,7 +602,6 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des jargons untilisés pas la liste des utilisateurs passés en paramètre
    * Retoune une Collection de Jargon
-   *
    * @param idUsers
    * @param type (0=UserDetail ou 1=Group)
    * @return
@@ -634,13 +617,13 @@ public class ThesaurusBm {
 
       for (String idUser : idUsers) {
         Collection<Jargon> theJargons = daoJ.findByWhereClause(con, pk, " idUser='" +
-             idUser + "'" + " AND type=" + type);
+            idUser + "'" + " AND type=" + type);
         for (Jargon jargon : theJargons) {
           jargons.add(jargon);
         }
       }
     } catch (PersistenceException e) {
-      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR, 
+      throw new ThesaurusException("ThesaurusBm.getJargons", SilverpeasException.ERROR,
           "Thesaurus.EX_CANT_GET_JARGONS_USERS", "", e);
     }
     return jargons;
@@ -648,7 +631,6 @@ public class ThesaurusBm {
 
   /**
    * Crée une liste de jargons
-   *
    * @param jargons
    * @return
    * @throws ThesaurusException
@@ -685,7 +667,6 @@ public class ThesaurusBm {
 
   /**
    * Crée une liste de jargons
-   *
    * @param jargons
    * @return
    * @throws ThesaurusException
@@ -722,7 +703,6 @@ public class ThesaurusBm {
 
   /**
    * Crée la liste des jargons d'un vocabulaire (suppression tous les jargons du voca puis création)
-   *
    * @param jargons
    * @return
    * @throws ThesaurusException
@@ -754,7 +734,6 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau jargon
-   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -772,7 +751,6 @@ public class ThesaurusBm {
 
   /**
    * Met à jour le jargon du user
-   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -795,7 +773,6 @@ public class ThesaurusBm {
 
   /**
    * Crée un nouveau jargon
-   *
    * @param jargon
    * @return
    * @throws ThesaurusException
@@ -814,7 +791,6 @@ public class ThesaurusBm {
 
   /**
    * Retourne le jargon de l'utilisateur (type 0) passé en paramètre
-   *
    * @param idUser
    * @return Jargon
    * @throws ThesaurusException
@@ -826,7 +802,7 @@ public class ThesaurusBm {
       SilverpeasBeanDAO<Jargon> daoJ = getJargonDao();
       IdPK pk = new IdPK();
       Collection<Jargon> jargons = daoJ.findByWhereClause(pk, " idUser='" + idUser +
-           "'" + " AND type=0");
+          "'" + " AND type=0");
       Iterator<Jargon> i = jargons.iterator();
       if (i.hasNext()) {
         jargon = i.next();
@@ -841,7 +817,6 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
    * Collection de Synonym
-   *
    * @param idVoca
    * @param name
    * @return Collection
@@ -862,7 +837,6 @@ public class ThesaurusBm {
   /**
    * Retourne la liste des autres synonymes d'un synonyme dans un vocabulaire retourne une
    * Collection de Synonym
-   *
    * @param idVoca
    * @param idTree
    * @return Collection

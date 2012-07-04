@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.webactiv.organization.AdminPersistenceException;
@@ -39,12 +40,12 @@ public class SpaceProfileInstManager {
   }
 
   /**
-   * Create a new space profile instance in database   * 
+   * Create a new space profile instance in database *
    * @param spaceProfileInst
    * @param DDManager
    * @param sFatherId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String createSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager DDManager, String sFatherId) throws AdminException {
@@ -63,7 +64,8 @@ public class SpaceProfileInstManager {
 
       // Update the CSpace with the links TSpaceProfile-TUser
       for (int nI = 0; nI < spaceProfileInst.getNumUser(); nI++) {
-        DDManager.getOrganization().spaceUserRole.addUserInSpaceUserRole(idAsInt(spaceProfileInst.getUser(
+        DDManager.getOrganization().spaceUserRole.addUserInSpaceUserRole(idAsInt(spaceProfileInst
+            .getUser(
             nI)), idAsInt(sSpaceProfileNodeId));
       }
 
@@ -81,9 +83,10 @@ public class SpaceProfileInstManager {
    * @param sSpaceProfileId
    * @param sFatherId
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
-  public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager, String sSpaceProfileId,
+  public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
+      String sSpaceProfileId,
       String sFatherId) throws AdminException {
     if (sFatherId == null) {
       try {
@@ -108,16 +111,17 @@ public class SpaceProfileInstManager {
       ddManager.getOrganizationSchema();
 
       // Load the profile detail
-      SpaceUserRoleRow spaceUserRole = ddManager.getOrganization().spaceUserRole.getSpaceUserRole(idAsInt(
+      SpaceUserRoleRow spaceUserRole =
+          ddManager.getOrganization().spaceUserRole.getSpaceUserRole(idAsInt(
           sSpaceProfileId));
-      
+
       SpaceProfileInst spaceProfileInst = null;
       if (spaceUserRole != null) {
         // Set the attributes of the space profile Inst
         spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
         setUsersAndGroups(ddManager, spaceProfileInst);
       }
-      
+
       return spaceProfileInst;
     } catch (Exception e) {
       throw new AdminException("SpaceProfileInstManager.getSpaceProfileInst",
@@ -134,26 +138,26 @@ public class SpaceProfileInstManager {
    * @param ddManager
    * @param spaceId
    * @param roleName
-   * @throws AdminException 
+   * @throws AdminException
    */
   public SpaceProfileInst getInheritedSpaceProfileInstByName(DomainDriverManager ddManager,
       String spaceId, String roleName)
       throws AdminException {
     return getSpaceProfileInst(ddManager, spaceId, roleName, true);
   }
-  
+
   public SpaceProfileInst getSpaceProfileInstByName(DomainDriverManager ddManager,
       String spaceId, String roleName)
       throws AdminException {
     return getSpaceProfileInst(ddManager, spaceId, roleName, false);
   }
-  
+
   private SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
       String spaceId, String roleName, boolean inherited)
       throws AdminException {
     try {
       ddManager.getOrganizationSchema();
-      
+
       int iInherited = 0;
       if (inherited) {
         iInherited = 1;
@@ -161,7 +165,8 @@ public class SpaceProfileInstManager {
 
       // Load the profile detail
       SpaceUserRoleRow spaceUserRole =
-          ddManager.getOrganization().spaceUserRole.getSpaceUserRole(idAsInt(spaceId), roleName, iInherited);
+          ddManager.getOrganization().spaceUserRole.getSpaceUserRole(idAsInt(spaceId), roleName,
+          iInherited);
 
       SpaceProfileInst spaceProfileInst = null;
       if (spaceUserRole != null) {
@@ -179,14 +184,14 @@ public class SpaceProfileInstManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-  
+
   private void setUsersAndGroups(DomainDriverManager ddManager, SpaceProfileInst spaceProfileInst)
       throws AdminPersistenceException {
-    
+
     // Get the groups
     String[] asGroupIds =
         ddManager.getOrganization().group.getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst
-            .getId()));
+        .getId()));
 
     // Set the groups to the space profile
     if (asGroupIds != null) {
@@ -206,7 +211,7 @@ public class SpaceProfileInstManager {
       }
     }
   }
-  
+
   private SpaceProfileInst spaceUserRoleRow2SpaceProfileInst(SpaceUserRoleRow spaceUserRole) {
     // Set the attributes of the space profile Inst
     SpaceProfileInst spaceProfileInst = new SpaceProfileInst();
@@ -221,18 +226,18 @@ public class SpaceProfileInstManager {
     return spaceProfileInst;
   }
 
-
   /**
    * Deletes space profile instance from Silverpeas
    * @param spaceProfileInst
    * @param ddManager
-   * @throws AdminException 
+   * @throws AdminException
    */
   public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager ddManager) throws AdminException {
     try {
       // delete the spaceProfile node
-      ddManager.getOrganization().spaceUserRole.removeSpaceUserRole(idAsInt(spaceProfileInst.getId()));
+      ddManager.getOrganization().spaceUserRole.removeSpaceUserRole(idAsInt(spaceProfileInst
+          .getId()));
     } catch (Exception e) {
       throw new AdminException("SpaceProfileInstManager.deleteSpaceProfileInst",
           SilverpeasException.ERROR, "admin.EX_ERR_DELETE_SPACEPROFILE", "space profile Id: '"
@@ -246,7 +251,7 @@ public class SpaceProfileInstManager {
    * @param ddManager
    * @param spaceProfileInstNew
    * @return
-   * @throws AdminException 
+   * @throws AdminException
    */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
       DomainDriverManager ddManager, SpaceProfileInst spaceProfileInstNew)

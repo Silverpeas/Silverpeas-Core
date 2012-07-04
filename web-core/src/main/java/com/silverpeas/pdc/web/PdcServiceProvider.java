@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
@@ -43,9 +44,9 @@ import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 /**
  * A provider of services on the classification plan (named PdC). This class implements the adaptor
  * pattern by wrapping all the features about the PdC and provided by several business services so
- * that an unified and a unique access point is provided to the PdC web resources.
- * The instances of this class are managed by the IoC container and can be then injected as
- * dependency into the PdC web resources.
+ * that an unified and a unique access point is provided to the PdC web resources. The instances of
+ * this class are managed by the IoC container and can be then injected as dependency into the PdC
+ * web resources.
  */
 @Named
 public class PdcServiceProvider {
@@ -81,17 +82,16 @@ public class PdcServiceProvider {
 
   /**
    * Adds a new position of the specified resource content on the PdC configured for the specified
-   * Silverpeas component instance.
-   * Once added, an identifier is set for the specified position.
+   * Silverpeas component instance. Once added, an identifier is set for the specified position.
    * @param position the classification position to add.
-   * @param contentId the identifier of the  content for which a new position is created on the PdC.
+   * @param contentId the identifier of the content for which a new position is created on the PdC.
    * @param componentId the identifier of the component instance that owns the PdC instance.
    * @throws ContentManagerException if no such content or component instance exists with the
    * specified identifier.
    * @throws PdcException if the position adding fails.
    */
   public void addPosition(final ClassifyPosition position, String contentId, String componentId)
-          throws ContentManagerException, PdcException {
+      throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     int positionId = getPdcBm().addPosition(silverObjectId, position, componentId);
     position.setPositionId(positionId);
@@ -102,14 +102,14 @@ public class PdcServiceProvider {
    * specified Silverpeas component instance. The position of the content on the PdC whose the
    * identifier is the one of the specified position is replaced by the passed position.
    * @param position the classification position to update.
-   * @param contentId the identifier of the  content for which the position is to update on the PdC.
+   * @param contentId the identifier of the content for which the position is to update on the PdC.
    * @param componentId the identifier of the component instance that owns the PdC instance.
    * @throws ContentManagerException if no such content or component instance exists with the
    * specified identifier.
    * @throws PdcException if the position update fails.
    */
   public void updatePosition(final ClassifyPosition position, String contentId, String componentId)
-          throws ContentManagerException, PdcException {
+      throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     getPdcBm().updatePosition(position, componentId, silverObjectId);
   }
@@ -119,19 +119,19 @@ public class PdcServiceProvider {
    * specified component instance.
    * @param positionId the identifier of the position to delete.
    * @param componentId the identifier of the component that owns the PdC instance.
-   * @throws PdcException if the position or the component identifier doesn't exist or if
-   * the deletion fails.
+   * @throws PdcException if the position or the component identifier doesn't exist or if the
+   * deletion fails.
    */
   public void deletePosition(int positionId, String contentId, String componentId) throws
-          PdcException, ContentManagerException {
+      PdcException, ContentManagerException {
     List<UsedAxis> axis = getAxisUsedInPdcFor(componentId);
     List<ClassifyPosition> positions = getAllPositions(contentId, componentId);
     if (positions.size() == 1) {
       for (UsedAxis anAxis : axis) {
         if (anAxis.getMandatory() == 1) {
           throw new PdcPositionDeletionException(getClass().getSimpleName(),
-                  SilverTrace.TRACE_LEVEL_ERROR,
-                  "Pdc.CANNOT_DELETE_VALUE");
+              SilverTrace.TRACE_LEVEL_ERROR,
+              "Pdc.CANNOT_DELETE_VALUE");
         }
       }
     }
@@ -149,7 +149,7 @@ public class PdcServiceProvider {
    * @throws PdcException if the position fetching fails.
    */
   public List<ClassifyPosition> getAllPositions(String contentId, String componentId) throws
-          ContentManagerException, PdcException {
+      ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, componentId);
     return getPdcBm().getPositions(silverObjectId, componentId);
   }
@@ -169,8 +169,8 @@ public class PdcServiceProvider {
 
   /**
    * Gets the predefined PdC classification that is associated with the specified node of the
-   * specified component instance. If the node isn't set, then the predefined PdC
-   * classification associated with the component instance is looked for.
+   * specified component instance. If the node isn't set, then the predefined PdC classification
+   * associated with the component instance is looked for.
    * @param nodeId the unique identifier of the node. A node is a generic way in Silverpeas to
    * categorize contents in a Silverpeas component.
    * @param componentId the unique identifier of the component.
@@ -181,12 +181,11 @@ public class PdcServiceProvider {
   }
 
   /**
-   * Saves or updates the specified predefined classification. The node and the component instance 
-   * related by the specified classification is indicated by its respective properties.
-   * 
-   * If the classification is empty (that is to say all of its positions are deleted), then it is
-   * removed from the persistence context. In this case, the predefined classification associated
-   * with the closest parent node is taken as the one for the related node (if any). If there is no
+   * Saves or updates the specified predefined classification. The node and the component instance
+   * related by the specified classification is indicated by its respective properties. If the
+   * classification is empty (that is to say all of its positions are deleted), then it is removed
+   * from the persistence context. In this case, the predefined classification associated with the
+   * closest parent node is taken as the one for the related node (if any). If there is no
    * predefined classification associated with a parent node or with the component instance, then
    * NONE_CLASSIFICATION is returned.
    * @param predefinedClassification the predefined classification to save or to update.
@@ -194,12 +193,12 @@ public class PdcServiceProvider {
    * if there is no predefined classification with the component instance.
    */
   PdcClassification saveOrUpdatePredefinedClassification(
-          final PdcClassification predefinedClassification) {
+      final PdcClassification predefinedClassification) {
     PdcClassification savedClassification = classificationService.savePreDefinedClassification(
-            predefinedClassification);
+        predefinedClassification);
     if (savedClassification == NONE_CLASSIFICATION) {
       savedClassification = findPredefinedClassificationForContentsIn(predefinedClassification.
-              getNodeId(), predefinedClassification.getComponentInstanceId());
+          getNodeId(), predefinedClassification.getComponentInstanceId());
     }
     return savedClassification;
   }
@@ -208,10 +207,9 @@ public class PdcServiceProvider {
    * Gets the axis used in the PdC configured for the specified component instance in order to
    * classify the specified resource content. If the resource content is already classified, then
    * the positions of the resource content on the invariant axis are kept as the only possible value
-   * on theses axis.
-   * In the case no axis are specifically used for the component instance, then all the PdC axis
-   * are sent back as axis that can be used to classify the specified content.
-   * @param contentId the identifier of the content to classify (or to refine the classification). 
+   * on theses axis. In the case no axis are specifically used for the component instance, then all
+   * the PdC axis are sent back as axis that can be used to classify the specified content.
+   * @param contentId the identifier of the content to classify (or to refine the classification).
    * It is used to find its previous classification in order to fix the value of the invariant axis.
    * @param inComponentId the identifier of the component instance.
    * @return a list of used axis.
@@ -220,7 +218,7 @@ public class PdcServiceProvider {
    * @throws PdcException if the axis cannot be fetched.
    */
   public List<UsedAxis> getAxisUsedInPdcToClassify(String contentId, String inComponentId)
-          throws ContentManagerException, PdcException {
+      throws ContentManagerException, PdcException {
     int silverObjectId = getSilverObjectId(contentId, inComponentId);
     return getPdcBm().getUsedAxisToClassify(inComponentId, silverObjectId);
   }
@@ -257,7 +255,7 @@ public class PdcServiceProvider {
   }
 
   private int getSilverObjectId(String ofTheContent, String inTheComponent) throws
-          ContentManagerException {
+      ContentManagerException {
     return getContentManager().getSilverContentId(ofTheContent, inTheComponent);
   }
 }

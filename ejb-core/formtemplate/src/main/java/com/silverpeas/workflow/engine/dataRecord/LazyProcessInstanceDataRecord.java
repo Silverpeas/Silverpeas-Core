@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.workflow.engine.dataRecord;
 
 import java.lang.reflect.Constructor;
@@ -112,7 +113,7 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
         Action action = instance.getProcessModel().getAction(fieldName);
         field.setStringValue(action.getLabel(this.role, this.lang));
         return field;
-      } // Action label 
+      } // Action label
       else if (fieldName.endsWith(".label")) {
         Field field = (Field) new TextFieldImpl();
         String actionName = fieldName.substring(0, fieldName.length() - 6);
@@ -233,6 +234,7 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
   public void setLanguage(String lang) {
     // do nothing
   }
+
   /**
    * The process instance whose data are managed by this data record.
    */

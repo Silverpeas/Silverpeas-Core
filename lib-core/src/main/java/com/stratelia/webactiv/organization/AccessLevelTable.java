@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.organization;
 
 import java.sql.PreparedStatement;
@@ -37,7 +38,7 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
    * Fetch the current access level row from a resultSet.
    * @param rs
    * @return the current access level row from a resultSet.
-   * @throws SQLException 
+   * @throws SQLException
    */
   protected AccessLevelRow fetchAccessLevel(ResultSet rs) throws SQLException {
     AccessLevelRow a = new AccessLevelRow();
@@ -49,30 +50,33 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
   /**
    * Returns all the Access levels.
    * @return all the Access levels.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public AccessLevelRow[] getAllAccessLevels() throws AdminPersistenceException {
     return getRows(SELECT_ALL_ACCESSLEVELS).toArray(
         new AccessLevelRow[getRows(SELECT_ALL_ACCESSLEVELS).size()]);
   }
+
   static final private String SELECT_ALL_ACCESSLEVELS = "SELECT id, name FROM ST_AccessLevel";
 
   /**
    * Returns the Access level whith the given id.
    * @param id
    * @return the Access level whith the given id.
-   * @throws AdminPersistenceException 
+   * @throws AdminPersistenceException
    */
   public AccessLevelRow getAccessLevel(String id) throws AdminPersistenceException {
     return getUniqueRow(SELECT_ACCESSLEVEL_BY_ID, id);
   }
-  static final private String SELECT_ACCESSLEVEL_BY_ID = "SELECT id, name FROM  ST_AccessLevel WHERE id = ?";
+
+  static final private String SELECT_ACCESSLEVEL_BY_ID =
+      "SELECT id, name FROM  ST_AccessLevel WHERE id = ?";
 
   /**
    * Fetch the current accessLevel row from a resultSet.
    * @param rs
    * @return the current accessLevel row from a resultSet.
-   * @throws SQLException 
+   * @throws SQLException
    */
   @Override
   protected AccessLevelRow fetchRow(ResultSet rs) throws SQLException {
