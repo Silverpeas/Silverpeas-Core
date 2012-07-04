@@ -21,10 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.socialNetwork.invitation.web;
+package com.silverpeas.socialnetwork.invitation.web;
 
-import static com.silverpeas.socialNetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
-import static com.silverpeas.socialNetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
+import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.JAVA_PACKAGE;
+import static com.silverpeas.socialnetwork.invitation.web.InvitationTestResources.SPRING_CONTEXT;
 
 import com.silverpeas.socialnetwork.invitation.web.InvitationEntity;
 import com.silverpeas.web.ResourceGettingTest;
