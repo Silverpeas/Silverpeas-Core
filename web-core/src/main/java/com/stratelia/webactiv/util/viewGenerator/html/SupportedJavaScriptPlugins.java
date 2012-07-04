@@ -67,5 +67,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * The CKEditor script to write and render WYSIWYG content.
    */
-  wysiwyg;
+  wysiwyg,
+  /**
+   * Silverpeas plugin to open a modal dialog box based on the JQuery UI Dialog.
+   */
+  popup;
 }
