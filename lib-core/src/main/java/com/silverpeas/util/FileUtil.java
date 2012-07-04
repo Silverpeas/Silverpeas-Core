@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.util;
 
 import java.io.File;
@@ -55,10 +55,10 @@ public class FileUtil implements MimeTypes {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
 
   /**
-   * Extract the mime-type from the file name.
-   * @param fileName the name of the file.
-   * @return the mime-type as a String.
-   */
+* Extract the mime-type from the file name.
+* @param fileName the name of the file.
+* @return the mime-type as a String.
+*/
   public static String getMimeType(String fileName) {
     String mimeType = null;
     String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
@@ -89,11 +89,11 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Create the array of strings this array represents the repertories where the files must be
-   * stored.
-   * @param context
-   * @return 
-   */
+* Create the array of strings this array represents the repertories where the files must be
+* stored.
+* @param context
+* @return
+*/
   public static String[] getAttachmentContext(String context) {
     if (!StringUtil.isDefined(context)) {
       return new String[]{BASE_CONTEXT};
@@ -108,21 +108,21 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Read the content of a file in a byte array.
-   * @param file the file to be read.
-   * @return the bytes array containing the content of the file.
-   * @throws IOException
-   */
+* Read the content of a file in a byte array.
+* @param file the file to be read.
+* @return the bytes array containing the content of the file.
+* @throws IOException
+*/
   public static byte[] readFile(File file) throws IOException {
     return FileUtils.readFileToByteArray(file);
   }
 
   /**
-   * Write a stream into a file.
-   * @param file the file to be written.
-   * @param data the data to be written.
-   * @throws IOException
-   */
+* Write a stream into a file.
+* @param file the file to be written.
+* @param data the data to be written.
+* @throws IOException
+*/
   public static void writeFile(File file, InputStream data) throws IOException {
     FileOutputStream out = null;
     try {
@@ -136,11 +136,11 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Write a stream into a file.
-   * @param file the file to be written.
-   * @param data the data to be written.
-   * @throws IOException
-   */
+* Write a stream into a file.
+* @param file the file to be written.
+* @param data the data to be written.
+* @throws IOException
+*/
   public static void writeFile(File file, Reader data) throws IOException {
     FileWriter out = null;
     try {
@@ -154,11 +154,11 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Loads a ResourceBundle from the Silverpeas configuration directory.
-   * @param name the name of the bundle.
-   * @param locale the locale of the bundle.
-   * @return the corresponding ResourceBundle if it exists - null otherwise.
-   */
+* Loads a ResourceBundle from the Silverpeas configuration directory.
+* @param name the name of the bundle.
+* @param locale the locale of the bundle.
+* @return the corresponding ResourceBundle if it exists - null otherwise.
+*/
   public static ResourceBundle loadBundle(String name, Locale locale) {
     Locale loc = locale;
     if (loc == null) {
@@ -170,27 +170,27 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Indicates if the OS is from the Microsoft Windows familly
-   * @return true if the OS is from the Microsoft Windows familly - false otherwise.
-   */
+* Indicates if the OS is from the Microsoft Windows familly
+* @return true if the OS is from the Microsoft Windows familly - false otherwise.
+*/
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
   }
 
   /**
-   * Indicates if the current file is of type archive.
-   * @param filename the name of the file.
-   * @return true is the file s of type archive - false otherwise.
-   */
+* Indicates if the current file is of type archive.
+* @param filename the name of the file.
+* @return true is the file s of type archive - false otherwise.
+*/
   public static boolean isArchive(String filename) {
     return ARCHIVE_MIME_TYPES.contains(getMimeType(filename));
   }
 
   /**
-   * Indicates if the current file is of type archive.
-   * @param filename the name of the file.
-   * @return true is the file s of type archive - false otherwise.
-   */
+* Indicates if the current file is of type archive.
+* @param filename the name of the file.
+* @return true is the file s of type archive - false otherwise.
+*/
   public static boolean isImage(String filename) {
     return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
   }

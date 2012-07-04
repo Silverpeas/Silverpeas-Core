@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,7 +46,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   ExportThread exportThread = null;
   Exception errorOccured = null;
   ExportReport exportReport = null;
-  
+
   private List<WAAttributeValuePair> items = null;
   private String rootId = null;
 
@@ -66,14 +66,15 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   /**
    * @param language
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   *                      (objectId and instanceId)
+   * (objectId and instanceId)
    * @param rootId
    * @throws ImportExportException
    */
   public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId)
-    throws ImportExportException {
+      throws ImportExportException {
     processExport(itemsToExport, rootId, ImportExport.EXPORT_FULL);
   }
+
   public void processExport(List<WAAttributeValuePair> itemsToExport, String rootId, int mode)
       throws ImportExportException {
     SilverTrace.info("importExportPeas", "ImportExportSessionController.processExport()",
@@ -119,7 +120,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    * Export Pdf attachements of selected publications to a unique PDF. Useful for a single print or
    * download.
    * @param itemsToExport : List<WAAttributeValuePair> contains ids of elements to export (objectId
-   *                      and instanceId)
+   * and instanceId)
    * @return
    * @throws ImportExportException
    */
@@ -133,7 +134,7 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   /**
    * @param language
    * @param itemsToExport a List of WAAttributeValuePair contains ids of elements to export
-   *                      (objectId and instanceId)
+   * (objectId and instanceId)
    * @param combination
    * @param timeCriteria
    * @return
@@ -146,16 +147,16 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
         language, itemsToExport, combination, timeCriteria);
     return report;
   }
-  
+
   public void processExportOfSavedItems(String mode) throws ImportExportException {
     processExport(this.items, this.rootId, Integer.parseInt(mode));
   }
-  
+
   public void saveItems(List<WAAttributeValuePair> items, String rootId) {
     this.items = items;
     this.rootId = rootId;
   }
-  
+
   public void clearItems() {
     this.items = null;
     this.rootId = null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -216,7 +216,8 @@ public class SilverLog {
         }
       }
     } catch (RuntimeException e) {
-      SilverTrace.error("silvertrace", "SilverLog.logConnexion()", "silvertrace.ERR_RUNTIME_ERROR_OCCUR", e);
+      SilverTrace.error("silvertrace", "SilverLog.logConnexion()",
+          "silvertrace.ERR_RUNTIME_ERROR_OCCUR", e);
     }
   }
 
@@ -225,7 +226,8 @@ public class SilverLog {
    */
   static protected void initAll() {
     try {
-      ResourceBundle resource = FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
+      ResourceBundle resource =
+          FileUtil.loadBundle("com.stratelia.silverpeas.silvertrace.settings.silverLog",
           new Locale("", ""));
       logDir = resource.getString("LogDir");
 
@@ -266,7 +268,8 @@ public class SilverLog {
         } else {
           appenderTypeInt = APPENDER_ALL;
         }
-        boolean appenderEnabled = MsgTrace.getBooleanProperty(resource, "appender" + i + ".enabled", true);
+        boolean appenderEnabled =
+            MsgTrace.getBooleanProperty(resource, "appender" + i + ".enabled", true);
         if ((appenderTypeInt != APPENDER_ALL) && appenderEnabled) {
           // Create the appender and attach it to his module
           addAppenderFromBundle(resource, i, appenderTypeInt);
@@ -280,7 +283,8 @@ public class SilverLog {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("silvertrace", "SilverLog.resetAll()", "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
+      SilverTrace.error("silvertrace", "SilverLog.resetAll()",
+          "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
     }
   }
 
@@ -313,7 +317,8 @@ public class SilverLog {
         break;
       case APPENDER_FILE:
         fileName = translateFileName(resource.getString("appender" + appenderNumber + ".fileName"));
-        append = MsgTrace.getBooleanProperty(resource, "appender" + appenderNumber + ".append", true);
+        append =
+            MsgTrace.getBooleanProperty(resource, "appender" + appenderNumber + ".append", true);
         addAppenderFile(layout, fileName, append);
         break;
       case APPENDER_ROLLING_FILE:

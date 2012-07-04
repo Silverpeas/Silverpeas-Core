@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.importExport;
 
 import com.silverpeas.pdc.PdcServiceFactory;
@@ -60,7 +61,7 @@ public class PdcImportExport {
    * @throws PdcException
    */
   public boolean addPositions(int silverObjectId, String componentId, PdcPositionsType positions)
-          throws PdcException {
+      throws PdcException {
     return addPositions(silverObjectId, componentId, positions.getListClassifyPosition());
   }
 
@@ -69,15 +70,16 @@ public class PdcImportExport {
    * @param silverObjectId the unique identifier of the content in Silverpeas.
    * @param componentId the unique identifier of the component instance managing the content.
    * @param positions the positions on the PdC.
-   * @return the status of the content classification: true meaning the content is correctly 
+   * @return the status of the content classification: true meaning the content is correctly
    * classified on the PdC, false meaning the content cannot be classified.
-   * @throws PdcException 
+   * @throws PdcException
    */
   public boolean addPositions(int silverObjectId, String componentId,
-          List<ClassifyPosition> positions)
-          throws PdcException {
+      List<ClassifyPosition> positions)
+      throws PdcException {
     boolean result = true;
-    List<ClassifyPosition> validPositions = getValidPositions(silverObjectId, componentId, positions);
+    List<ClassifyPosition> validPositions =
+        getValidPositions(silverObjectId, componentId, positions);
     if (positions.size() != validPositions.size()) {
       result = false;
     }
@@ -87,8 +89,9 @@ public class PdcImportExport {
           getPdcBm().addPosition(silverObjectId, classifyPos, componentId);
         } catch (PdcException ex) {
           result = false;
-          SilverTrace.error("Pdc", "PdcImportExport.addPositions(int,String,List<ClassifyPosition>)",
-                  "Pdc.CANNOT_INSERT_VALUE", ex);
+          SilverTrace.error("Pdc",
+              "PdcImportExport.addPositions(int,String,List<ClassifyPosition>)",
+              "Pdc.CANNOT_INSERT_VALUE", ex);
         }
       }
     }
@@ -106,7 +109,7 @@ public class PdcImportExport {
     PdcClassification classification;
     if (isDefined(nodeId)) {
       classification =
-              getPdcClassificationService().findAPreDefinedClassification(nodeId, componentId);
+          getPdcClassificationService().findAPreDefinedClassification(nodeId, componentId);
     } else {
       classification = getPdcClassificationService().getPreDefinedClassification(componentId);
     }
@@ -114,7 +117,7 @@ public class PdcImportExport {
   }
 
   public List<ClassifyPosition> getValidPositions(int silverObjectId, String componentId,
-          List<ClassifyPosition> positions) throws PdcException {
+      List<ClassifyPosition> positions) throws PdcException {
     List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
     // récupération des axes à utiliser pour le classement
     List<UsedAxis> usedAxis = getPdcBm().getUsedAxisToClassify(componentId, silverObjectId);
@@ -207,7 +210,7 @@ public class PdcImportExport {
    * @throws PdcException
    */
   public List<ClassifyPosition> getPositions(int silverObjectId, String sComponentId)
-          throws PdcException {
+      throws PdcException {
     List<ClassifyPosition> list = getPdcBm().getPositions(silverObjectId, sComponentId);
     if (list.isEmpty()) {
       return null;
@@ -266,7 +269,8 @@ public class PdcImportExport {
   private List<PdcValueType> getValueTree(int axisId, String fatherValueId) throws PdcException {
     List<PdcValueType> listChildrenPdcValue = new ArrayList<PdcValueType>();
     // Récupération des ids des valeurs filles directes du value père
-    List<String> listValueId = getPdcBm().getDaughterValues(Integer.toString(axisId), fatherValueId);
+    List<String> listValueId =
+        getPdcBm().getDaughterValues(Integer.toString(axisId), fatherValueId);
     if (listValueId != null) {// L'exception oject non trouvé n'est pas gérée
       // dans la méthode DAO!!!
       for (String valueId : listValueId) {

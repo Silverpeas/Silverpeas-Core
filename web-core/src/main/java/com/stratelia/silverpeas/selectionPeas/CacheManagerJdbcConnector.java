@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,7 +61,7 @@ public class CacheManagerJdbcConnector extends CacheManager {
     return new BrowseJdbcPanel(language, localResourceLocator, this, sep);
   }
 
-  public PanelProvider getCartPanelProvider(CacheType what,  SelectionExtraParams sep) {
+  public PanelProvider getCartPanelProvider(CacheType what, SelectionExtraParams sep) {
     return null;
   }
 
@@ -81,11 +81,11 @@ public class CacheManagerJdbcConnector extends CacheManager {
   }
 
   public String[][] getContentInfos(CacheType what, String id) {
-    return new String[][]{{"ci11", "ci12", "ci13", "ci14"}, {"ci21", "ci22", "ci23", "ci24"}};
+    return new String[][] { { "ci11", "ci12", "ci13", "ci14" }, { "ci21", "ci22", "ci23", "ci24" } };
   }
 
   public String[][] getContentLines(CacheType what, String id) {
-    return new String[][]{{"cl11", "cl12", "cl13", "cl14"}, {"cl21", "cl22", "cl23", "cl24"}};
+    return new String[][] { { "cl11", "cl12", "cl13", "cl14" }, { "cl21", "cl22", "cl23", "cl24" } };
   }
 
   public String getContentText(CacheType what) {
@@ -127,7 +127,8 @@ public class CacheManagerJdbcConnector extends CacheManager {
 
   public PanelOperation getPanelOperation(String operation) {
     if ("DisplayBrowse".equals(operation)) {
-      return new PanelOperation(localResourceLocator.getString("selectionPeas.helpBrowse"),
+      return new PanelOperation(
+          localResourceLocator.getString("selectionPeas.helpBrowse"),
           URLManager.getApplicationURL() + iconResourceLocator.getString("selectionPeas.browseArb"),
           operation);
     } else if ("DisplaySearchElement".equals(operation)) {
@@ -152,9 +153,9 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_SET: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "set",
             URLManager.getApplicationURL() + iconResourceLocator.getString(
-                "selectionPeas.selectAll"),
+            "selectionPeas.selectAll"),
             URLManager.getApplicationURL()
-                + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
+            + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
             .getString("selectionPeas.selectAll"), localResourceLocator
             .getString("selectionPeas.unSelectAll"), localResourceLocator
             .getString("selectionPeas.selectAll"), localResourceLocator
@@ -163,9 +164,9 @@ public class CacheManagerJdbcConnector extends CacheManager {
       case CM_ELEMENT: {
         return new PanelMiniFilterSelect(999, Integer.toString(what.getValue()), "element",
             URLManager.getApplicationURL() + iconResourceLocator.getString(
-                "selectionPeas.selectAll"),
+            "selectionPeas.selectAll"),
             URLManager.getApplicationURL()
-                + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
+            + iconResourceLocator.getString("selectionPeas.unSelectAll"), localResourceLocator
             .getString("selectionPeas.selectAll"), localResourceLocator
             .getString("selectionPeas.unSelectAll"), localResourceLocator
             .getString("selectionPeas.selectAll"), localResourceLocator

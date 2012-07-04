@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.admin.components;
 
 /**
@@ -229,7 +230,6 @@ public class Instanciateur {
 
   /**
    * Method reads the WAComponent descriptor files again and rebuild the component descriptor cache
-   *
    * @throws InstanciationException when something goes wrong
    */
   public synchronized static void rebuildWAComponentCache() throws InstanciationException {
@@ -255,7 +255,7 @@ public class Instanciateur {
   }
 
   private static Collection<File> getFileList() {
-    return FileUtils.listFiles(new File(xmlPackage), new String[]{"xml"}, true);
+    return FileUtils.listFiles(new File(xmlPackage), new String[] { "xml" }, true);
   }
 
   static String getDescriptorFullPath(String componentName) throws IOException {
@@ -315,7 +315,6 @@ public class Instanciateur {
 
   /**
    * Get the directory where the component descriptors are stored
-   *
    * @return the path to the directory
    */
   public static String getXMLPackage() {

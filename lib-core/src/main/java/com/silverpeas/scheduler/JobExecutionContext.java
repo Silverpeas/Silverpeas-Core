@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -27,9 +27,8 @@ package com.silverpeas.scheduler;
 import java.util.Date;
 
 /**
- * The context of a job execution.
- * A such object embeds information about the execution context of a job such as some
- * execution parameters or the trigger from which the execution was fired.
+ * The context of a job execution. A such object embeds information about the execution context of a
+ * job such as some execution parameters or the trigger from which the execution was fired.
  */
 public class JobExecutionContext {
 
@@ -42,7 +41,7 @@ public class JobExecutionContext {
    * @param fireTime the time at which the job has been starting.
    * @return the execution context of the job.
    */
-  public static JobExecutionContext createWith(final String jobName,  final Date fireTime) {
+  public static JobExecutionContext createWith(final String jobName, final Date fireTime) {
     JobExecutionContext context = new JobExecutionContext();
     return context.jobNamed(jobName).jobFiredAt(fireTime);
   }

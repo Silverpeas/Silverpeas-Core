@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.importExport.report;
 
 import com.silverpeas.form.DataRecord;
@@ -204,7 +205,7 @@ public class HtmlExportPublicationGenerator {
   }
 
   public String xmlFormToHTML() {
-    PublicationTemplateImpl template  ;
+    PublicationTemplateImpl template;
     try {
       template = (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
           getPublicationTemplate(publicationDetail.getPK().getInstanceId()
@@ -299,7 +300,8 @@ public class HtmlExportPublicationGenerator {
   public static String toHtmlAttachmentInfos(AttachmentDetail attDetail) {
     ElementContainer xhtmlcontainer = new ElementContainer();
     String htmlLogicalName = attDetail.getLogicalName();
-    String htmlFormatedFileSize = HtmlExportGenerator.encode(FileRepositoryManager.formatFileSize(attDetail.
+    String htmlFormatedFileSize =
+        HtmlExportGenerator.encode(FileRepositoryManager.formatFileSize(attDetail.
         getSize()));
 
     li li = new li();
@@ -314,7 +316,7 @@ public class HtmlExportPublicationGenerator {
       i.addElement(" ");
       i.addElement(attDetail.getTitle());
       li.addElement(i);
-      if (StringUtil.isDefined( attDetail.getInfo())) {
+      if (StringUtil.isDefined(attDetail.getInfo())) {
         li.addElement(" - ");
         i info = new i();
         info.addElement(HtmlExportGenerator.encode(attDetail.getInfo()));
@@ -341,9 +343,9 @@ public class HtmlExportPublicationGenerator {
 
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
-    int debutPath  ;
+    int debutPath;
     StringBuilder newHtmlText = new StringBuilder();
-    String imageSrc  ;
+    String imageSrc;
     if (lowerHtml.indexOf("src=\"", finPath) == -1) {
       // pas d'images dans le fichier
       return htmlText;
@@ -370,9 +372,9 @@ public class HtmlExportPublicationGenerator {
   public static String replaceFilesPathForExport(String htmlText) {
     String lowerHtml = htmlText.toLowerCase();
     int finPath = 0;
-    int debutPath  ;
+    int debutPath;
     StringBuilder newHtmlText = new StringBuilder();
-    String imageSrc  ;
+    String imageSrc;
     if (lowerHtml.indexOf("href=\"", finPath) == -1) {
       // pas d'images dans le fichier
       return htmlText;

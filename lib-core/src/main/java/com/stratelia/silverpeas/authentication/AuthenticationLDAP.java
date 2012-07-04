@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -105,7 +105,7 @@ public class AuthenticationLDAP extends Authentication {
       m_PwdMaxAge = (propValue == null) ? Integer.MAX_VALUE : Integer.parseInt(propValue);
 
       propValue = propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldFormat");
-      m_PwdLastSetFieldFormat = ( (propValue == null) || (propValue.equals("nanoseconds")) ) ? 0 : 1;
+      m_PwdLastSetFieldFormat = ((propValue == null) || (propValue.equals("nanoseconds"))) ? 0 : 1;
 
       propValue = propFile.getString(authenticationServerName + ".PwdExpirationReminderDelay");
       m_PwdExpirationReminderDelay = (propValue == null) ? 5 : Integer.parseInt(propValue);
@@ -153,7 +153,7 @@ public class AuthenticationLDAP extends Authentication {
       }
       m_LDAPConnection = null;
     } catch (Exception ex) {
-      throw new AuthenticationHostException( "AuthenticationLDAP.closeConnection()",
+      throw new AuthenticationHostException("AuthenticationLDAP.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
           + String.valueOf(m_Port), ex);
     }
@@ -169,8 +169,7 @@ public class AuthenticationLDAP extends Authentication {
     // retrieve or not password last set date
     if (m_MustAlertPasswordExpiration) {
       attrNames = new String[] { "uid", m_PwdLastSetFieldName };
-    }
-    else {
+    } else {
       attrNames = new String[] { "uid" };
     }
     try {
@@ -231,7 +230,8 @@ public class AuthenticationLDAP extends Authentication {
     }
 
     if (m_MustAlertPasswordExpiration && (nbDaysBeforeExpiration < m_PwdExpirationReminderDelay)) {
-      throw new AuthenticationPasswordAboutToExpireException("AuthenticationLDAP.internalAuthentication()",
+      throw new AuthenticationPasswordAboutToExpireException(
+          "AuthenticationLDAP.internalAuthentication()",
           SilverpeasException.WARNING, "authentication.EX_AUTHENTICATION_PASSWORD_ABOUT_TO_EXPIRE",
           "User=" + login);
     }
@@ -251,7 +251,7 @@ public class AuthenticationLDAP extends Authentication {
     // if password last set attribute is not found, return max value : user
     // won't be notified
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? "  + (pwdLastSetAttr == null));
+        "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? " + (pwdLastSetAttr == null));
     if (pwdLastSetAttr == null) {
       return Integer.MAX_VALUE;
     }
@@ -277,16 +277,16 @@ public class AuthenticationLDAP extends Authentication {
           DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
           String ldapValue = pwdLastSetAttr.getStringValue();
           if (ldapValue == null) {
-            SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-                "authentication.NO_VALUE", "m_PwdLastSetField="+m_PwdLastSetFieldName);
+            SilverTrace.error("authentication",
+                "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+                "authentication.NO_VALUE", "m_PwdLastSetField=" + m_PwdLastSetFieldName);
             return Integer.MAX_VALUE;
-          }
-          else if (ldapValue.length() >=14 ) {
-            ldapValue = ldapValue.substring(0,14);
-          }
-          else {
-            SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-                "authentication.EX_BAD_DATE_FORMAT", "ldapValue="+ldapValue);
+          } else if (ldapValue.length() >= 14) {
+            ldapValue = ldapValue.substring(0, 14);
+          } else {
+            SilverTrace.error("authentication",
+                "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+                "authentication.EX_BAD_DATE_FORMAT", "ldapValue=" + ldapValue);
             return Integer.MAX_VALUE;
           }
           pwdLastSet = format.parse(pwdLastSetAttr.getStringValue());
@@ -296,13 +296,15 @@ public class AuthenticationLDAP extends Authentication {
         }
     }
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
-        "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " + DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
+        "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " +
+        DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
 
     Date now = new Date();
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "delayInMilliseconds = " + delayInMilliseconds);
-    int delayInDays = Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
+    int delayInDays =
+        Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
     SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_EXIT_METHOD", "delayInDays = " + delayInDays);
     return delayInDays;
@@ -434,7 +436,8 @@ public class AuthenticationLDAP extends Authentication {
       LDAPSearchResults res = m_LDAPConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
       if (!res.hasMore()) {
-        throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalResetPassword()",
+        throw new AuthenticationBadCredentialException(
+            "AuthenticationLDAP.internalResetPassword()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
             + ";LoginField=" + m_UserLoginFieldName);
       }

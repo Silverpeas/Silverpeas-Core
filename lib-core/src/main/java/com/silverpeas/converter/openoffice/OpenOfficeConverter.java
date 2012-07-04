@@ -1,26 +1,27 @@
-/*
- *  Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as
- *  published by the Free Software Foundation, either version 3 of the
- *  License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- *  As a special exception to the terms and conditions of version 3.0 of
- *  the GPL, you may redistribute this Program in connection with Free/Libre
- *  Open Source Software ("FLOSS") applications as described in Silverpeas's
- *  FLOSS exception.  You should have recieved a copy of the text describing
- *  the FLOSS exception, and it is also available here:
- *  "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.converter.openoffice;
 
 import com.silverpeas.converter.DocumentFormatException;
@@ -39,14 +40,13 @@ import java.util.Arrays;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * A document format converter using the OpenOffice API to perform its task.
- * This class is the common one of all of the API document conversion implementation based on the
- * OpenOffice API.
+ * A document format converter using the OpenOffice API to perform its task. This class is the
+ * common one of all of the API document conversion implementation based on the OpenOffice API.
  */
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   private static final ResourceLocator settings = new ResourceLocator(
-    "com.silverpeas.converter.openoffice", "");
+      "com.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
 
@@ -64,11 +64,11 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   public File convert(final File source, final DocumentFormat format) {
     if (!isFormatSupported(format)) {
       throw new DocumentFormatException("The conversion of the file to the format " + format.
-        toString() + " isn't supported");
+          toString() + " isn't supported");
     }
     if (!isDocumentSupported(source)) {
       throw new DocumentFormatException("The format of the file " + source.getName() + " isn't "
-        + "supported by this converter");
+          + "supported by this converter");
     }
     String fileName = FilenameUtils.getBaseName(source.getName()) + "." + format.name();
     File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
@@ -87,8 +87,8 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   }
 
   /**
-   * Opens a connection to an OpenOffice service.
-   * This methods wraps the way the connection(s) life-cycle is managed.
+   * Opens a connection to an OpenOffice service. This methods wraps the way the connection(s)
+   * life-cycle is managed.
    * @return a connection to an OpenOffice service.
    * @throws ConnectException if no connection can be opened with an OpenOffice service. This can
    * occurs when no OpenOffice service is available for example.
@@ -102,8 +102,8 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   }
 
   /**
-   * Closes the connection to an OpenOffice service.
-   * This methods wraps the way the connection(s) life-cycle is managed.
+   * Closes the connection to an OpenOffice service. This methods wraps the way the connection(s)
+   * life-cycle is managed.
    * @param connection the connection to release.
    */
   protected void closeConnection(final OpenOfficeConnection connection) {
@@ -113,13 +113,13 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   }
 
   /**
-   * Gets a converter from the OpenOffice service at the end-point of the connection.
-   * This method wraps the way the OpenOfficeDocumentConverter instances are managed.
+   * Gets a converter from the OpenOffice service at the end-point of the connection. This method
+   * wraps the way the OpenOfficeDocumentConverter instances are managed.
    * @param connection the connection an OpenOffice service.
    * @return a converter of documents.
    */
   protected OpenOfficeDocumentConverter getOpenOfficeDocumentConverterFrom(
-    final OpenOfficeConnection connection) {
+      final OpenOfficeConnection connection) {
     return new OpenOfficeDocumentConverter(connection);
   }
 

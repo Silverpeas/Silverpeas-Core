@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,9 +54,9 @@ public class AnswerDAO {
 
   private static final String SQL_DELETE_QUESTION_ANSWER =
       "delete from SB_Question_Answer where questionId = ? and answerId = ? ";
-  
-  private static final String SQL_INSERT_ANSWER = 
-    "insert into SB_Question_Answer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+  private static final String SQL_INSERT_ANSWER =
+      "insert into SB_Question_Answer values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   /**
    * Build an Answer objet with data containing in the Resulset
@@ -109,7 +109,7 @@ public class AnswerDAO {
 
     String selectStatement =
         "select " + ANSWERCOLUMNNAMES +
-            " from SB_Question_Answer where questionId = ? order by answerId ";
+        " from SB_Question_Answer where questionId = ? order by answerId ";
 
     List<Answer> result = new ArrayList<Answer>();
     PreparedStatement prepStmt = null;
@@ -280,10 +280,10 @@ public class AnswerDAO {
 
     String updateStatement =
         "update SB_Question_Answer set questionId = ?," + " set answerLabel = ?,"
-            + " set answerNbPoints = ?," + " set answerIsSolution = ?,"
-            + " set answerComment = ?," + " set answerNbVoters = ?,"
-            + " set answerIsOpened = ?," + " set answerImage = ?,"
-            + " set answerQuestionLink = ?," + " where answerId = ? ";
+        + " set answerNbPoints = ?," + " set answerIsSolution = ?,"
+        + " set answerComment = ?," + " set answerNbVoters = ?,"
+        + " set answerIsOpened = ?," + " set answerImage = ?,"
+        + " set answerQuestionLink = ?," + " where answerId = ? ";
 
     PreparedStatement prepStmt = null;
 

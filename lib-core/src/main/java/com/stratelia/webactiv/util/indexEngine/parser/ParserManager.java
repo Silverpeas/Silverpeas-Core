@@ -1,23 +1,23 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+* GNU Affero General Public License as published by the Free Software Foundation, either version 3
+* of the License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+* text describing the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License along with this program.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.util.indexEngine.parser;
 
 import com.silverpeas.util.ArrayUtil;
@@ -34,34 +34,34 @@ import java.util.MissingResourceException;
 import java.util.StringTokenizer;
 
 /**
- * The ParserManager class manages all the parsers which will be used to parse the indexed files.
- */
+* The ParserManager class manages all the parsers which will be used to parse the indexed files.
+*/
 public final class ParserManager {
   
   private ParserManager() {
   }
 
   /**
-   * The map giving the parser for a specific file format. The type of this map is : Map (String ->
-   * Parser).
-   */
+* The map giving the parser for a specific file format. The type of this map is : Map (String ->
+* Parser).
+*/
   private static final Map<String, Parser> parserMap = new HashMap<String, Parser>();
   private static final Parser defaultParser = new TikaParser();
 
   /**
-   * At class initialization time, the parser's map is built and initialized from the
-   * Parsers.properties file.
-   */
+* At class initialization time, the parser's map is built and initialized from the
+* Parsers.properties file.
+*/
   static {
     init();
   }
 
   /**
-   * Get the parser for a given file format.
-   *
-   * @param format
-   * @return
-   */
+* Get the parser for a given file format.
+*
+* @param format
+* @return
+*/
   static public Parser getParser(String format) {
     Parser parser = parserMap.get(format);
     if (parser == null) {
@@ -71,8 +71,8 @@ public final class ParserManager {
   }
 
   /**
-   * Set all the parsers declared in Parsers.properties file.
-   */
+* Set all the parsers declared in Parsers.properties file.
+*/
   private static void init() {
     try {
       ResourceLocator parsersConfiguration = new ResourceLocator(
@@ -108,8 +108,8 @@ public final class ParserManager {
   }
 
   /**
-   * Returns the class name in a string like "className(args, args, ...)"
-   */
+* Returns the class name in a string like "className(args, args, ...)"
+*/
   static private String getClassName(String newCall) {
     int par = newCall.indexOf('(');
     if (par == -1) {
@@ -119,8 +119,8 @@ public final class ParserManager {
   }
 
   /**
-   * Returns the args values in a string like "className(args, args, ...)"
-   */
+* Returns the args values in a string like "className(args, args, ...)"
+*/
   static private Object[] getParameters(String newCall) {
     int lPar = newCall.indexOf('(');
     int rPar = newCall.indexOf(')');
@@ -137,8 +137,8 @@ public final class ParserManager {
   }
 
   /**
-   * Returns the args types in a string like "className(args, args, ...)"
-   */
+* Returns the args types in a string like "className(args, args, ...)"
+*/
   static private Class[] getParametersClass(String newCall) {
     int lPar = newCall.indexOf('(');
     int rPar = newCall.indexOf(')');

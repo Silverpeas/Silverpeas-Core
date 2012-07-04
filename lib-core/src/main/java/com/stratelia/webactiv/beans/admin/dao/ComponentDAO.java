@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -179,12 +179,12 @@ public class ComponentDAO {
 
   private final static String queryAllAvailableComponentIds =
       " select distinct(c.id), c.componentName"
-          + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
-          + " where c.id=r.instanceId"
-          + " and c.componentstatus is null"
-          + " and r.id=ur.userroleid"
-          + " and r.objectId is null"
-          + " and ur.userId = ? ";
+      + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
+      + " where c.id=r.instanceId"
+      + " and c.componentstatus is null"
+      + " and r.id=ur.userroleid"
+      + " and r.objectId is null"
+      + " and ur.userId = ? ";
 
   private static List<String> getAllAvailableComponentIds(Connection con, int userId,
       String componentName) throws SQLException {
@@ -273,8 +273,8 @@ public class ComponentDAO {
 
       String queryAvailableComponentIdsInSpace =
           "select distinct(c.id), c.componentName, c.ordernum"
-              + " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr"
-              + " where c.id=r.instanceId";
+          + " from st_componentinstance c, st_userrole r, st_userrole_group_rel gr"
+          + " where c.id=r.instanceId";
       if (StringUtil.isDefined(componentName)) {
         queryAvailableComponentIdsInSpace += " and c.componentName = '" + componentName + "'";
       }
@@ -310,8 +310,8 @@ public class ComponentDAO {
 
       String queryAvailableComponentIdsInSpace =
           " select distinct(c.id), c.componentName, c.ordernum"
-              + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
-              + " where c.spaceId = " + Integer.parseInt(spaceId);
+          + " from st_componentinstance c, st_userrole r, st_userrole_user_rel ur"
+          + " where c.spaceId = " + Integer.parseInt(spaceId);
       if (StringUtil.isDefined(componentName)) {
         queryAvailableComponentIdsInSpace += " and c.componentName = '" + componentName + "'";
       }
@@ -340,10 +340,10 @@ public class ComponentDAO {
 
   private final static String queryPublicComponentIdsInSpace =
       " select c.id, c.componentName, c.ordernum"
-          + " from st_componentinstance c"
-          + " where c.ispublic=1"
-          + " and c.spaceId = ?"
-          + " and c.componentstatus is null";
+      + " from st_componentinstance c"
+      + " where c.ispublic=1"
+      + " and c.spaceId = ?"
+      + " and c.componentstatus is null";
 
   private static List<ComponentInstLight> getPublicComponentsInSpace(Connection con, String spaceId)
       throws SQLException {

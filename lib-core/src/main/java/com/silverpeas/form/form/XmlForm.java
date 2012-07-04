@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.form;
 
 import com.silverpeas.form.AbstractForm;
@@ -67,7 +68,7 @@ public class XmlForm extends AbstractForm {
    * </ul>
    * @param pagesContext
    * @param record
-   * @return  
+   * @return
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
@@ -76,7 +77,8 @@ public class XmlForm extends AbstractForm {
     String language = pagesContext.getLanguage();
     PrintWriter out = new PrintWriter(sw, true);
     if (pagesContext.getPrintTitle() && StringUtil.isDefined(getTitle())) {
-      out.println(
+      out
+          .println(
           "<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
       out.println("<tr>");
       out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
@@ -102,11 +104,13 @@ public class XmlForm extends AbstractForm {
     if (itFields != null && itFields.hasNext()) {
       out.println("<input type=\"hidden\" name=\"id\" value=\"" + record.getId() + "\"/>");
       if (pagesContext.isBorderPrinted()) {
-        out.println(
+        out
+            .println(
             "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\">");
         out.println("<tr>");
         out.println("<td nowrap=\"nowrap\">");
-        out.println(
+        out
+            .println(
             "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
       } else {
         out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
@@ -256,7 +260,7 @@ public class XmlForm extends AbstractForm {
    * <li>a field is unknown by the template.</li>
    * <li>a field has not the required type.</li>
    * </ul>
-   * @param jw 
+   * @param jw
    */
   @Override
   public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
@@ -271,7 +275,8 @@ public class XmlForm extends AbstractForm {
       }
 
       if (pagesContext.getPrintTitle() && getTitle() != null && getTitle().length() > 0) {
-        out.println(
+        out
+            .println(
             "<table cellpadding=\"0\" cellspacing=\"2\" border=\"0\" width=\"98%\" class=\"intfdcolor\">");
         out.println("<tr>");
         out.println("<td class=\"intfdcolor4\" nowrap=\"nowrap\">");
@@ -296,11 +301,13 @@ public class XmlForm extends AbstractForm {
       boolean mandatory = false;
       if ((itFields != null) && (itFields.hasNext())) {
         if (pagesContext.isBorderPrinted()) {
-          out.println(
+          out
+              .println(
               "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\">");
           out.println("<tr>");
           out.println("<td nowrap=\"nowrap\">");
-          out.println(
+          out
+              .println(
               "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
         } else {
           out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
@@ -352,7 +359,8 @@ public class XmlForm extends AbstractForm {
                   lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
                 }
               } catch (FormException fe) {
-                SilverTrace.error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
+                SilverTrace
+                    .error("form", "XmlForm.display", "form.EXP_UNKNOWN_DISPLAYER", null, fe);
               }
             }
           }

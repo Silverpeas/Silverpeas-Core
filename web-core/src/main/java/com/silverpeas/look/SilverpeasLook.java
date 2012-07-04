@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.look;
 
 import java.util.Collection;
@@ -40,15 +41,14 @@ import static com.stratelia.webactiv.beans.admin.Admin.*;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
- * It is a singleton that represents the current look of the running Silverpeas.
- * Its single object provides an access to the different look of the widgets that compound
- * Silverpeas.
+ * It is a singleton that represents the current look of the running Silverpeas. Its single object
+ * provides an access to the different look of the widgets that compound Silverpeas.
  */
 public class SilverpeasLook {
 
   /**
-   * The property in which is defined the URL of the default wallpaper for the Silverpeas application.
-   * If this property is not set, then the
+   * The property in which is defined the URL of the default wallpaper for the Silverpeas
+   * application. If this property is not set, then the
    * SILVERPEAS_CONTEXT/admin/jsp/icons/silverpeasV5/bandeauTop.jpg is taken as the URL of the
    * default wallpaper, with SILVERPEAS_CONTEXT the web context at which Silverpeas is deployed.
    */
@@ -75,9 +75,9 @@ public class SilverpeasLook {
   }
 
   /**
-   * Gets the wallpaper of the specified space.
-   * The wallpaper of a space is either the path of an image specifically set for itself or, in the
-   * case it has no specific wallpaper set, the one of its closest parent space.
+   * Gets the wallpaper of the specified space. The wallpaper of a space is either the path of an
+   * image specifically set for itself or, in the case it has no specific wallpaper set, the one of
+   * its closest parent space.
    * @param spaceId the unique identifier of the space. The spaceId shouldn't be null.
    * @return the URL of the wallpaper image or null if both no wallpaper is set for the specified
    * space and for any of its parent spaces.
@@ -124,7 +124,7 @@ public class SilverpeasLook {
       id = id.substring(2);
     }
     String basePath =
-        FileRepositoryManager.getAbsolutePath("Space" + id, new String[]{"look"});
+        FileRepositoryManager.getAbsolutePath("Space" + id, new String[] { "look" });
     File dir = new File(basePath);
     if (dir.exists() && dir.isDirectory()) {
       Collection<File> wallpapers = FileUtils.listFiles(dir, FileFilterUtils.prefixFileFilter(

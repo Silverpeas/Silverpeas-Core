@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -92,15 +93,15 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
    * spécifiées en paramètre. passé en paramètre au moteur d'importExport.
-   * @param exportReport 
+   * @param exportReport
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param listItemsToExport - liste des WAAttributeValuePair contenant les id des publications à
    * exporter
    * @param exportPath - cible de l'exportation
-   * @param useNameForFolders 
+   * @param useNameForFolders
    * @return
    * @throws ImportExportException
-   * @throws IOException  
+   * @throws IOException
    */
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
@@ -154,8 +155,8 @@ public class PublicationsTypeManager {
             publicationDetail, useNameForFolders, bExportPublicationPath);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       }
-      //To avoid problems with Winzip
-      if(exportPublicationPath != null && exportPublicationPath.length() > 250) {
+      // To avoid problems with Winzip
+      if (exportPublicationPath != null && exportPublicationPath.length() > 250) {
         return null;
       }
 
@@ -380,11 +381,12 @@ public class PublicationsTypeManager {
       if (useNameForFolders || isKmax(componentId)) {
         componentLabelForm = DirectoryUtils.formatToDirectoryNamingCompliant(componentLabel);
       }
-  
+
       NodeImportExport nodeIE = new NodeImportExport();
       relativeExportPath.append(componentLabelForm);
       pathToCreate.append(File.separatorChar).append(componentLabelForm);
-      List<NodeDetail> listNodes = new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(String.
+      List<NodeDetail> listNodes =
+          new ArrayList<NodeDetail>(nodeIE.getPathOfNode(new NodePK(String.
           valueOf(topicId), "useless", componentId)));
       Collections.reverse(listNodes);
       for (NodeDetail nodeDetail : listNodes) {
@@ -398,7 +400,7 @@ public class PublicationsTypeManager {
     }
     relativeExportPath.append(separator).append(pubNameForm);
     pathToCreate.append(separator).append(pubNameForm);
-    
+
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
     String relativeExportPathAscii =
@@ -420,7 +422,7 @@ public class PublicationsTypeManager {
     }
     return relativeExportPathAscii;
   }
-  
+
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath)
       throws ImportExportException, IOException {
@@ -443,7 +445,8 @@ public class PublicationsTypeManager {
     }
   }
 
-  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail,
+  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
+      UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
@@ -559,11 +562,12 @@ public class PublicationsTypeManager {
    * @param publicationsType - objet mappé par castor contenant toutes les informations de création
    * des publications de type unitaire
    * @param targetComponentId - id du composant dans lequel creer les publications unitaires
-   * @param isPOIUsed  
+   * @param isPOIUsed
    */
   public void processImport(UserDetail userDetail, PublicationsType publicationsType,
       String targetComponentId, boolean isPOIUsed) {
-    GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
+    GEDImportExport gedIE =
+        ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
@@ -640,7 +644,8 @@ public class PublicationsTypeManager {
             // kmax : Get coordinates with value (name of the position)
             List<Coordinate> coordinates = pubType.getCoordinatesPositionsType().
                 getCoordinatesPositions();
-            boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType().getCreateEnable();
+            boolean createCoordinateAllowed =
+                pubType.getCoordinatesPositionsType().getCreateEnable();
             if (coordinates != null) {
               for (Coordinate coordinate : coordinates) {
                 if (coordinate != null) {
@@ -664,8 +669,10 @@ public class PublicationsTypeManager {
                               null);
                           nodeDetail = coordinateIE.addPosition(position, String.valueOf(
                               coordinatePointType.getAxisId()), componentId);
-                          SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
+                          SilverTrace.debug("importExport",
+                              "PublicationsTypeManager.processImport",
+                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
+                              nodeDetail);
                         }
                         if (nodeDetail != null) {
                           if (first) {
@@ -680,7 +687,8 @@ public class PublicationsTypeManager {
                       }
                     }
                     SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
+                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " +
+                        coordinatePointsPath);
                     // Add coordinate (set of coordinatePoints)
                     int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
                         toString());
@@ -701,7 +709,8 @@ public class PublicationsTypeManager {
           }
 
           // Création ou modification de la publication
-          PublicationDetail pubDetail = gedIE.createPublicationForUnitImport(unitReport, userDetail,
+          PublicationDetail pubDetail =
+              gedIE.createPublicationForUnitImport(unitReport, userDetail,
               pubDetailToCreate, nodes);
 
           try {
@@ -727,7 +736,8 @@ public class PublicationsTypeManager {
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   // Mode versioning
                   // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-                  copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
+                  copiedAttachments =
+                      attachmentIE.copyFiles(componentId, attachments, versioningIE.
                       getVersioningPath(componentId));
                   if (copiedAttachments.size() != attachments.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
@@ -736,7 +746,8 @@ public class PublicationsTypeManager {
                       Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
                 } else {
                   // Ajout des attachments
-                  copiedAttachments = attachmentIE.importAttachments(pubDetail.getId(), componentId,
+                  copiedAttachments =
+                      attachmentIE.importAttachments(pubDetail.getId(), componentId,
                       attachments, userDetail.getId(), pubDetail.isIndexable());
                   if (copiedAttachments.size() != attachments.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
@@ -766,7 +777,8 @@ public class PublicationsTypeManager {
 
                 // Create documents and versions in DB
                 versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
-                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(
+                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper
+                    .isIndexable(
                     pubDetail));
 
                 // On additionne la taille des fichiers importés au niveau du rapport
@@ -782,7 +794,8 @@ public class PublicationsTypeManager {
                 // Ajout au plan de classement s'il y en a
                 if (pubType.getPdcPositionsType() != null) {
                   boolean pdcOK =
-                      pdcIE.addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
+                      pdcIE
+                      .addPositions(silverObjectId, componentId, pubType.getPdcPositionsType());
                   if (!pdcOK) {
                     unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
                   }
@@ -838,14 +851,15 @@ public class PublicationsTypeManager {
       ImportExportException {
     publicationType.setNodePositionsType(new NodePositionsType());
     List<NodePositionType> listNodePos = new ArrayList<NodePositionType>();
-    List<NodePK> listNodePK = gedIE.getAllTopicsOfPublication(String.valueOf(publicationType.getId()),
+    List<NodePK> listNodePK =
+        gedIE.getAllTopicsOfPublication(String.valueOf(publicationType.getId()),
         publicationType.getComponentId());
     for (NodePK nodePK : listNodePK) {
       NodePositionType nodePos = new NodePositionType();
       nodePos.setId(Integer.parseInt(nodePK.getId()));
       listNodePos.add(nodePos);
     }
-    if(listNodePos.isEmpty()) {
+    if (listNodePos.isEmpty()) {
       NodePositionType nodePos = new NodePositionType();
       nodePos.setId(Integer.parseInt(NodePK.UNCLASSED_NODE_ID));
       listNodePos.add(nodePos);

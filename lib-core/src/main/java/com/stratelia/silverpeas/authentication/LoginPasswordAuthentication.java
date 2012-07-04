@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -131,7 +131,7 @@ public class LoginPasswordAuthentication {
     } catch (Exception iex) {
       throw new AuthenticationHostException("LoginPasswordAuthentication.openConnection()",
           SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" +
-              m_DriverClass, iex);
+          m_DriverClass, iex);
     }
     try {
       con = driverSQL.connect(m_JDBCUrl, info);
@@ -226,7 +226,7 @@ public class LoginPasswordAuthentication {
       SilverTrace.error("authentication",
           "LoginPasswordAuthentication.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-              + login, ex);
+          + login, ex);
       String errorCause = "Error_2";
       Exception nested = ex.getNested();
       if (nested != null) {
@@ -300,7 +300,7 @@ public class LoginPasswordAuthentication {
       } catch (Exception e) {
         SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
-                login, e);
+            login, e);
         String errorCause = "Error_2";
         return errorCause;
       }
@@ -332,7 +332,7 @@ public class LoginPasswordAuthentication {
       m_Connection = openConnection();
 
       AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
-      
+
       // Authentification test
       authenticationServer.changePassword(login, oldPassword, newPassword);
     } catch (AuthenticationException ex) {
@@ -451,7 +451,7 @@ public class LoginPasswordAuthentication {
 
       // Build a AuthenticationServer instance
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
-      
+
       // Authentification test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
@@ -476,13 +476,13 @@ public class LoginPasswordAuthentication {
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication", "LoginPasswordAuthentication.isPasswordChangeAllowed()",
           "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
-              ex.getMessage());
+          ex.getMessage());
     } finally {
       closeConnection(m_Connection);
     }
     return false;
   }
-  
+
   private AuthenticationServer getAuthenticationServer(Connection con, String domainId)
       throws AuthenticationException {
     // Get authentication server name

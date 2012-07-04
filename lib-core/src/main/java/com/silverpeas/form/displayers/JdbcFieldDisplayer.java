@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -53,7 +54,7 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
-  private final static String[] MANAGED_TYPES = new String[]{JdbcField.TYPE};
+  private final static String[] MANAGED_TYPES = new String[] { JdbcField.TYPE };
   private final static String mandatoryImg = Util.getIcon("mandatoryField");
 
   /**
@@ -65,7 +66,7 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   * @return
    */
   public String[] getManagedTypes() {
     return MANAGED_TYPES;
@@ -80,11 +81,10 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <li>the fieldName is unknown by the template.</li>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   *
    * @param out
    * @param template
    * @param pagesContext
-   * @throws java.io.IOException 
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
@@ -107,16 +107,15 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   *
    * @param out
    * @param field
    * @param template
    * @param pagesContext
-   * @throws FormException 
+   * @throws FormException
    */
   @Override
-  public void display(PrintWriter out, JdbcField field, FieldTemplate template, 
-          PagesContext pagesContext) throws FormException {
+  public void display(PrintWriter out, JdbcField field, FieldTemplate template,
+      PagesContext pagesContext) throws FormException {
     String currentUserId = pagesContext.getUserId();
     String language = pagesContext.getLanguage();
     String fieldName = template.getFieldName();
@@ -134,7 +133,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
     if (field != null) {
       Connection jdbcConnection = null;
       try {
-        jdbcConnection = field.connectJdbc(parameters.get("driverName"), parameters.get("url"), parameters.
+        jdbcConnection =
+            field.connectJdbc(parameters.get("driverName"), parameters.get("url"), parameters.
             get("login"), parameters.get("password"));
         listRes = field.selectSql(jdbcConnection, parameters.get("query"), currentUserId);
       } finally {
@@ -174,8 +174,11 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
       if (template.isMandatory() && !template.isDisabled() && !template.isReadOnly()
           && !template.isHidden() && pagesContext.useMandatory()) {
-        html.append("<img src=\"").append(mandatoryImg).append(
-            "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
+        html
+            .append("<img src=\"")
+            .append(mandatoryImg)
+            .append(
+                "\" width=\"5\" height=\"5\" border=\"0\" alt=\"\" style=\"position:absolute;left:16em;top:5px\"/>\n");
       }
 
       html.append("<script type=\"text/javascript\">\n");
@@ -196,7 +199,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
       html.append("<script type=\"text/javascript\">\n");
       html.append(" this.oACDS").append(fieldName).
           append(" = new YAHOO.util.LocalDataSource(listArray").append(fieldName).append(");\n");
-      html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('").
+      html.append("	this.oAutoComp").append(fieldName).append(" = new YAHOO.widget.AutoComplete('")
+          .
           append(fieldName).append("','container").append(fieldName).append("', this.oACDS").
           append(fieldName).append(");\n");
       html.append("	this.oAutoComp").append(fieldName).append(
@@ -212,7 +216,8 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
       html.append("	this.oAutoComp").append(fieldName).append(
           ".textboxFocusEvent.subscribe(function(){\n");
-      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append("').value;\n");
+      html.append("		var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
+          "').value;\n");
       html.append("		if(sInputValue.length == 0) {\n");
       html.append("			var oSelf = this;\n");
       html.append("			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
@@ -252,17 +257,16 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
   }
 
-  
-
   /**
    * Updates the value of the field. The fieldName must be used to retrieve the HTTP parameter from
-   * the request.  
+   * the request.
    * @param newValue
    * @param field
    * @param template
    * @param pagesContext
    * @return
-   * @throws FormException if the field type is not a managed type or if the field doesn't accept the new value.
+   * @throws FormException if the field type is not a managed type or if the field doesn't accept
+   * the new value.
    */
   public List<String> update(String newValue, JdbcField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {

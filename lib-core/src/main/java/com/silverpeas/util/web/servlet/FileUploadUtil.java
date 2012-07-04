@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.util.web.servlet;
 
 import com.silverpeas.util.StringUtil;
@@ -39,7 +43,6 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * Utility class for file uploading.
- *
  * @author ehugonnet
  */
 public class FileUploadUtil {
@@ -52,7 +55,7 @@ public class FileUploadUtil {
 
   @SuppressWarnings("unchecked")
   public static List<FileItem> parseRequest(HttpServletRequest request)
-          throws UtilException {
+      throws UtilException {
     try {
       // Create a factory for disk-based file items
       FileItemFactory factory = new DiskFileItemFactory();
@@ -63,13 +66,13 @@ public class FileUploadUtil {
       return (List<FileItem>) upload.parseRequest(request);
     } catch (FileUploadException fuex) {
       throw new UtilException("FileUploadUtil.parseRequest",
-              "Error uploading files", fuex);
+          "Error uploading files", fuex);
     }
   }
 
   @SuppressWarnings("unchecked")
   public static List<FileItem> parseRequest(HttpServletRequest request, int maxSize)
-          throws UtilException {
+      throws UtilException {
     try { // Create a factory for disk-based file items
       DiskFileItemFactory factory = new DiskFileItemFactory();
       // Set factory constraints
@@ -81,14 +84,13 @@ public class FileUploadUtil {
       return (List<FileItem>) upload.parseRequest(request);
     } catch (FileUploadException fuex) {
       throw new UtilException("FileUploadUtil.parseRequest",
-              "Error uploading files", fuex);
+          "Error uploading files", fuex);
     }
   }
 
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -97,7 +99,7 @@ public class FileUploadUtil {
    * parameter is not found.
    */
   public static String getParameter(List<FileItem> items, String parameterName,
-          String defaultValue, String encoding) {
+      String defaultValue, String encoding) {
     for (FileItem item : items) {
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
         try {
@@ -113,7 +115,6 @@ public class FileUploadUtil {
   /**
    * Get the parameter value from the list of FileItems. Returns the defaultValue if the parameter
    * is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @param defaultValue the value to be returned if the parameter is not found.
@@ -126,7 +127,6 @@ public class FileUploadUtil {
 
   /**
    * Get the parameter value from the list of FileItems. Returns null if the parameter is not found.
-   *
    * @param items the items resulting from parsing the request.
    * @param parameterName
    * @return the parameter value from the list of FileItems. Returns null if the parameter is not
@@ -176,12 +176,12 @@ public class FileUploadUtil {
       return "";
     }
     String fileName = convertPathToServerOS(file.getName());
-    return fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1, fileName.length()).trim();
+    return fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1, fileName.length())
+        .trim();
   }
 
   /**
    * Convert a path to the current OS path format.
-   *
    * @param undeterminedOsPath
    * @return server OS pah.
    */

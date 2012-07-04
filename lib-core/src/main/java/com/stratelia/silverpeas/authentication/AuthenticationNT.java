@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,6 @@
  * Created on 6 aout 2001
  */
 package com.stratelia.silverpeas.authentication;
-
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -73,15 +72,15 @@ public class AuthenticationNT extends Authentication {
       m_Client = new Socket(localAddr, m_Port);
       m_Out = new PrintWriter(m_Client.getOutputStream(), true);
       m_In = new BufferedReader(
-              new InputStreamReader(m_Client.getInputStream()));
+          new InputStreamReader(m_Client.getInputStream()));
       m_Client.setSoTimeout(m_Timeout);
     } catch (Exception ex) {
       m_Client = null;
       m_Out = null;
       m_In = null;
       throw new AuthenticationHostException("AuthenticationNT.openConnection()",
-              SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
-              "Host=" + m_Host + ";Port=" + java.lang.Integer.toString(m_Port), ex);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
+          "Host=" + m_Host + ";Port=" + java.lang.Integer.toString(m_Port), ex);
     }
   }
 
@@ -95,9 +94,9 @@ public class AuthenticationNT extends Authentication {
       m_Out = null;
       m_In = null;
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationNT.closeConnection()", 
-              SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
-              + java.lang.Integer.toString(m_Port), ex);
+      throw new AuthenticationHostException("AuthenticationNT.closeConnection()",
+          SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
+          + java.lang.Integer.toString(m_Port), ex);
     }
   }
 
@@ -106,8 +105,8 @@ public class AuthenticationNT extends Authentication {
     String pass;
     int idx;
     SilverTrace.info("authentication",
-            "AuthenticationNT.internalAuthentication()",
-            "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "User=" + login);
+        "AuthenticationNT.internalAuthentication()",
+        "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "User=" + login);
     if ((idx = login.indexOf("\\")) > 0) {
       login = login.substring(idx + 1);
     }
@@ -125,7 +124,7 @@ public class AuthenticationNT extends Authentication {
       // <passwd> + end delim
       // 
       StringBuffer sb = new StringBuffer(1 + 1 + 1 + login.length() + 1
-              + pass.length() + 1);
+          + pass.length() + 1);
       sb.append(START_DELIM);
       sb.append(LOGON_COMMAND);
       sb.append(START_DELIM);
@@ -139,19 +138,19 @@ public class AuthenticationNT extends Authentication {
       line = m_In.readLine();
     } catch (Exception ex) {
       throw new AuthenticationHostException("AuthenticationNT.internalAuthentication()",
-              SilverpeasException.ERROR, "authentication.EX_NT_ACCESS_ERROR", ex);
+          SilverpeasException.ERROR, "authentication.EX_NT_ACCESS_ERROR", ex);
     }
     if ("-OK".equalsIgnoreCase(line)) {
       SilverTrace.info("authentication", "AuthenticationNT.internalAuthentication()",
-              "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } else if ("-ERR".equalsIgnoreCase(line)) {
       throw new AuthenticationBadCredentialException("AuthenticationNT.internalAuthentication()",
-              SilverpeasException.ERROR,
-              "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User=" + login);
+          SilverpeasException.ERROR,
+          "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User=" + login);
     } else {
       throw new AuthenticationHostException("AuthenticationNT.internalAuthentication()",
-              SilverpeasException.ERROR, "authentication.EX_NT_RETURN_ERROR",
-              "Line=" + line);
+          SilverpeasException.ERROR, "authentication.EX_NT_RETURN_ERROR",
+          "Line=" + line);
     }
   }
 }

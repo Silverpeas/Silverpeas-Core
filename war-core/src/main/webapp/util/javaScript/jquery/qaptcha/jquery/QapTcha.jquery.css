@@ -1,0 +1,47 @@
+/*****************/
+/** QapTcha CSS **/
+/*****************/
+#QapTcha {
+    float: left;
+    margin-left: 5px;
+    margin-top: -20px;
+    width: 300px;
+}
+#QapTcha .clr {
+    clear: both;
+}
+#QapTcha #bgSlider {
+    background: url("images/sprites.png") no-repeat scroll 0 -22px transparent;
+    float: left;
+    height: 22px;
+    width: 202px;
+}
+#QapTcha #Slider {
+    background: url("images/sprites.png") no-repeat scroll -32px 0 transparent;
+    cursor: e-resize;
+    height: 22px;
+    margin: 0;
+    width: 48px;
+}
+#QapTcha #Icons {
+    background: url("images/sprites.png") no-repeat scroll 0 0 transparent;
+    float: left;
+    height: 16px;
+    margin-left: 10px;
+    margin-top: 7px;
+    position: relative;
+    width: 16px;
+}
+#QapTcha #TxtStatus {
+    clear: both;
+    font-family: Verdana;
+    font-size: 10px;
+    margin-left: 5px;
+    text-align: left;
+}
+#QapTcha .dropSuccess {
+    color: #568E2F;
+}
+#QapTcha .dropError {
+    color: #BB2828;
+}

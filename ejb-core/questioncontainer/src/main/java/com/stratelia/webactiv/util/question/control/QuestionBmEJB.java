@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,7 +98,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       String fatherId) throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.getQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
     Connection con = null;
 
     try {
@@ -177,7 +177,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteQuestionsByFatherPK()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", fatherId = " + fatherId);
+        + ", fatherId = " + fatherId);
     Connection con = null;
     AnswerBm answerBm = getAnswerBm();
     QuestionResultBm questionResultBm = getQuestionResultBm();
@@ -317,7 +317,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       throws RemoteException {
     SilverTrace.info("question", "QuestionBmEJB.deleteAnswerToAQuestion()",
         "root.MSG_GEN_ENTER_METHOD", "questionPK = " + questionPK
-            + ", answerPK = " + answerPK);
+        + ", answerPK = " + answerPK);
     getAnswerBm().deleteAnswerToAQuestion(new ForeignPK(questionPK),
         answerPK.getId());
   }
@@ -365,7 +365,7 @@ public class QuestionBmEJB implements javax.ejb.SessionBean, QuestionBmBusinessS
       try {
         QuestionResultBmHome questionResultBmHome = (QuestionResultBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONRESULTBM_EJBHOME,
-                QuestionResultBmHome.class);
+            QuestionResultBmHome.class);
 
         currentQuestionResultBm = questionResultBmHome.create();
       } catch (Exception e) {

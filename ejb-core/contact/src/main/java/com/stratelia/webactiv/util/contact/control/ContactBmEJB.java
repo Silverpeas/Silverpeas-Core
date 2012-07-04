@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -61,7 +61,8 @@ public class ContactBmEJB implements SessionBean {
     try {
       result = pub.getDetail();
     } catch (Exception re) {
-      throw new ContactRuntimeException("ContactBmEJB.getDetail()", SilverpeasRuntimeException.ERROR, 
+      throw new ContactRuntimeException("ContactBmEJB.getDetail()",
+          SilverpeasRuntimeException.ERROR,
           "contact.EX_GET_CONTACT_DETAIL_FAILED", "id = " + pubPK.getId().toString(), re);
     }
     return result;
@@ -107,7 +108,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.setDetail()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_SET_CONTACT_DETAIL_FAILED", "contactDetail = "
-              + detail.toString(), re);
+          + detail.toString(), re);
     }
   }
 
@@ -123,7 +124,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.addFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_ADD_TO_FATHER_FAILED", "fatherPK = "
-              + fatherPK.toString(), re);
+          + fatherPK.toString(), re);
     }
 
   }
@@ -140,7 +141,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_FROM_FATHER_FAILED", "fatherPK = "
-              + fatherPK.toString(), re);
+          + fatherPK.toString(), re);
     }
   }
 
@@ -157,7 +158,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeAllFather()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_FROM_ALLFATHERS_FAILED", "contactPK = "
-              + pubPK.toString(), re);
+          + pubPK.toString(), re);
     }
   }
 
@@ -173,7 +174,7 @@ public class ContactBmEJB implements SessionBean {
       throw new ContactRuntimeException("ContactBmEJB.removeAllIssue()",
           SilverpeasRuntimeException.ERROR,
           "contact.EX_CONTACT_REMOVE_ALLISSUES_FAILED", "fatherPK = "
-              + originPK.toString(), re);
+          + originPK.toString(), re);
     } finally {
       freeConnection(con);
     }

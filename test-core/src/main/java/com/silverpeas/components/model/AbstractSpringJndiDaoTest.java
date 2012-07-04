@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.components.model;
 
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
@@ -61,7 +62,6 @@ public abstract class AbstractSpringJndiDaoTest {
     SimpleMemoryContextFactory.setUpAsInitialContext();
   }
 
-
   @AfterClass
   public static void tearDownClass() throws Exception {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
@@ -69,10 +69,9 @@ public abstract class AbstractSpringJndiDaoTest {
 
   /**
    * Workaround to be able to use Sun's JNDI file system provider on Unix
-   *
-   * @param ic       : the JNDI initial context
+   * @param ic : the JNDI initial context
    * @param jndiName : the binding name
-   * @param ref      : the reference to be bound
+   * @param ref : the reference to be bound
    * @throws NamingException
    */
   protected static void rebind(InitialContext ic, String jndiName, Object ref) throws
@@ -93,7 +92,6 @@ public abstract class AbstractSpringJndiDaoTest {
     }
   }
 
-
   protected DatabaseOperation getTearDownOperation() throws Exception {
     return DatabaseOperation.DELETE_ALL;
   }
@@ -101,7 +99,6 @@ public abstract class AbstractSpringJndiDaoTest {
   protected DatabaseOperation getSetUpOperation() throws Exception {
     return DatabaseOperation.CLEAN_INSERT;
   }
-
 
   @Before
   public void init() throws Exception {
@@ -134,7 +131,6 @@ public abstract class AbstractSpringJndiDaoTest {
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
-
 
   protected abstract String getDatasetFileName();
 

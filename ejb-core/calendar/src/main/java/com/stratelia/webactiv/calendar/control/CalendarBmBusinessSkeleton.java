@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.calendar.control;
 
 import java.rmi.RemoteException;
@@ -33,7 +34,7 @@ import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.calendar.model.SchedulableCount;
-import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public interface CalendarBmBusinessSkeleton {
@@ -53,29 +54,29 @@ public interface CalendarBmBusinessSkeleton {
       String categoryId, String participation) throws RemoteException;
 
   /**
-   * getNextEventForUser for a particular user returns the next events scheduled. This
-   * includes all kinds of events
+   * getNextEventForUser for a particular user returns the next events scheduled. This includes all
+   * kinds of events
    */
   public List<JournalHeader> getNextEventsForUser(String day, String userId,
       String classification, Date begin, Date end) throws RemoteException;
 
   /**
-   * get Next Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
-   * includes all kinds of events
+   * get Next Social Events for a given list of my Contacts returns the next events
+   * (SocialInformationEvent). This includes all kinds of events
    */
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end) throws RemoteException;
 
   /**
-   * get Last Social Events for a given list of my Contacts returns the next events (SocialInformationEvent). This
-   * includes all kinds of events
+   * get Last Social Events for a given list of my Contacts returns the next events
+   * (SocialInformationEvent). This includes all kinds of events
    */
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
       List<String> myContactsIds, Date begin, Date end) throws RemoteException;
 
   /**
-   * get the my last Events  of information and number of Item and the first Index
-   * includes all kinds of events
+   * get the my last Events of information and number of Item and the first Index includes all kinds
+   * of events
    * @return: List <SocialInformation>
    * @param :String day,String myId , int numberOfElement, int firstIndex
    */

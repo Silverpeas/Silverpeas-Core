@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.publicationTemplate;
 
 import java.io.File;
@@ -58,8 +59,8 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
- * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas.
- * It is a singleton.
+ * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
+ * singleton.
  */
 public class PublicationTemplateManager {
 
@@ -67,10 +68,12 @@ public class PublicationTemplateManager {
   // PublicationTemplates instances associated to silverpeas components. Theses templates should
   // already exist and be loaded.
   // map externalId -> PublicationTemplate
-  private final Map<String, PublicationTemplate> externalTemplates = new HashMap<String, PublicationTemplate>();
+  private final Map<String, PublicationTemplate> externalTemplates =
+      new HashMap<String, PublicationTemplate>();
   // All of the PublicationTemplates loaded in silverpeas and identified by their XML file.
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
-  private final Map<String, PublicationTemplateImpl> templates = new HashMap<String, PublicationTemplateImpl>();
+  private final Map<String, PublicationTemplateImpl> templates =
+      new HashMap<String, PublicationTemplateImpl>();
   public static String mappingPublicationTemplateFilePath = null;
   public static String mappingRecordTemplateFilePath = null;
   public static String templateDir = null;
@@ -143,9 +146,9 @@ public class PublicationTemplateManager {
   /**
    * Returns the PublicationTemplate having the given externalId.
    * @param externalId
-   * @param templateFileName 
+   * @param templateFileName
    * @return
-   * @throws PublicationTemplateException  
+   * @throws PublicationTemplateException
    */
   public PublicationTemplate getPublicationTemplate(String externalId,
       String templateFileName) throws PublicationTemplateException {
@@ -173,8 +176,8 @@ public class PublicationTemplateManager {
 
   /**
    * Removes the PublicationTemplate having the given externalId.
-   * @param externalId 
-   * @throws PublicationTemplateException 
+   * @param externalId
+   * @throws PublicationTemplateException
    */
   public void removePublicationTemplate(String externalId) throws PublicationTemplateException {
     try {
@@ -190,7 +193,7 @@ public class PublicationTemplateManager {
    * load a publicationTemplate definition from xml file to java objects
    * @param xmlFileName the xml file name that contains publication template definition
    * @return a PublicationTemplate object
-   * @throws PublicationTemplateException  
+   * @throws PublicationTemplateException
    */
   public PublicationTemplate loadPublicationTemplate(String xmlFileName) throws
       PublicationTemplateException {
@@ -205,7 +208,7 @@ public class PublicationTemplateManager {
 
       File xmlFile = new File(xmlFilePath);
       if (xmlFile == null || !xmlFile.exists()) {
-        //file does not exist in directory, try to locate it in default one
+        // file does not exist in directory, try to locate it in default one
         xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
         xmlFile = new File(xmlFilePath);
       }
@@ -245,7 +248,7 @@ public class PublicationTemplateManager {
   /**
    * Save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
-   * @throws PublicationTemplateException  
+   * @throws PublicationTemplateException
    */
   public void savePublicationTemplate(PublicationTemplate template) throws
       PublicationTemplateException {
@@ -306,8 +309,9 @@ public class PublicationTemplateManager {
 
   /**
    * Retrieve Publication Templates
-   * @param onlyVisibles only visible templates boolean 
-   * @return only visible PublicationTemplates if onlyVisible is true, all the publication templates else if
+   * @param onlyVisibles only visible templates boolean
+   * @return only visible PublicationTemplates if onlyVisible is true, all the publication templates
+   * else if
    * @throws PublicationTemplateException
    */
   public List<PublicationTemplate> getPublicationTemplates(boolean onlyVisibles)
@@ -355,7 +359,6 @@ public class PublicationTemplateManager {
   }
 
   /**
-   * 
    * @return the list of PublicationTemplate which contains a search form
    * @throws PublicationTemplateException
    */

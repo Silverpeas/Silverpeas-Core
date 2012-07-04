@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,7 +56,9 @@ public class AuthenticationCAS extends Authentication {
     jdbcDriver = propFile.getString(authenticationServerName + ".SQLDriverClass");
     loginTableName = propFile.getString(authenticationServerName + ".SQLUserTableName");
     loginColumnName = propFile.getString(authenticationServerName + ".SQLUserLoginColumnName");
-    loginQuery = "SELECT " + loginColumnName + " FROM " + loginTableName + " WHERE " + loginColumnName + " = ?";
+    loginQuery =
+        "SELECT " + loginColumnName + " FROM " + loginTableName + " WHERE " + loginColumnName +
+        " = ?";
   }
 
   @Override
@@ -69,22 +71,22 @@ public class AuthenticationCAS extends Authentication {
       driverSQL = (Driver) Class.forName(jdbcDriver).newInstance();
     } catch (InstantiationException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-              "Driver=" + jdbcDriver, ex);
+          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+          "Driver=" + jdbcDriver, ex);
     } catch (IllegalAccessException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-              "Driver=" + jdbcDriver, ex);
+          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+          "Driver=" + jdbcDriver, ex);
     } catch (ClassNotFoundException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-              SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
-              "Driver=" + jdbcDriver, ex);
+          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER",
+          "Driver=" + jdbcDriver, ex);
     }
     try {
       connection = driverSQL.connect(jdbcUrl, info);
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
-              SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
     }
   }
 
@@ -97,14 +99,15 @@ public class AuthenticationCAS extends Authentication {
       stmt.setString(1, login);
       rs = stmt.executeQuery();
       if (!rs.next()) {
-        throw new AuthenticationBadCredentialException("AuthenticationCAS.internalAuthentication()",
-                SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
+        throw new AuthenticationBadCredentialException(
+            "AuthenticationCAS.internalAuthentication()",
+            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
       SilverTrace.info("authentication", "AuthenticationCAS.internalAuthentication()",
-              "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.internalAuthentication()",
-              SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
+          SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
     } finally {
       DBUtil.close(rs, stmt);
     }

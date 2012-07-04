@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -62,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
+
 /*
  This object is used by all the components jsp that have access to the session.
  It is initialized given a login and a password which is authenticated.
@@ -83,7 +85,7 @@ public class MainSessionController implements Clipboard {
   private String userLanguage = null;
   private ContentManager contentManager = null;
   Map<String, GenericPanel> genericPanels =
-          Collections.synchronizedMap(new HashMap<String, GenericPanel>());
+      Collections.synchronizedMap(new HashMap<String, GenericPanel>());
   Selection selection = null;
   private String userSpace = null;
   AlertUser m_alertUser = null;
@@ -162,7 +164,8 @@ public class MainSessionController implements Clipboard {
         "authenticationKey = " + authenticationKey + " sessionId=" + sessionId);
     try {
       // Authenticate the user
-      this.userId = getAdminService().authenticate(authenticationKey, sessionId, isAppInMaintenance());
+      this.userId =
+          getAdminService().authenticate(authenticationKey, sessionId, isAppInMaintenance());
       this.sessionId = sessionId;
       this.userPreferences = SilverpeasServiceProvider.getPersonalizationService()
           .getUserSettings(userId);
@@ -266,7 +269,6 @@ public class MainSessionController implements Clipboard {
         "root.MSG_GEN_EXIT_METHOD");
     return clipboardBm;
   }
-
 
   /**
    * Return the personalization EJB
@@ -521,14 +523,13 @@ public class MainSessionController implements Clipboard {
       SilverTrace.error("peasCore",
           "MainSessionController.createComponentContext",
           "peasCore.EX_CANT_CREATE_COMPONENT_CONTEXT", "sSpaceId=" + sSpaceId
-              + " | sComponent=" + sComponent, e);
+          + " | sComponent=" + sComponent, e);
     }
     return newInfos;
   }
 
   /**
    * Update the current space for the current user
-   *
    * @deprecated
    */
   public void updateUserSpace(String sSpaceId) {
@@ -537,7 +538,6 @@ public class MainSessionController implements Clipboard {
 
   /**
    * Update the current component for the current user
-   *
    * @deprecated
    */
   public void updateUserComponent(String sComponent) {

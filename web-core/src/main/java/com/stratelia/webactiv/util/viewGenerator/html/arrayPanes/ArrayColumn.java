@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 
 import static com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane.ACTION_PARAMETER_NAME;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
+
 /**
  * @author squere
  * @version
@@ -75,7 +77,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * standard method that returns the CVS-managed version string
-   * @return 
+   * @return
    */
   public static String getVersion() {
     String v = "$Id: ArrayColumn.java,v 1.6 2008/04/16 14:45:06 neysseri Exp $";
@@ -86,7 +88,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   /**
    * This method sets the routing address. This is actually the URL of the page to which requests
    * will be routed when the user clicks on a column header link.
-   * @param address 
+   * @param address
    */
   public void setRoutingAddress(String address) {
     m_RoutingAddress = address;
@@ -120,7 +122,7 @@ public class ArrayColumn implements SimpleGraphicElement {
 
   /**
    * This method changes the column behaviour, if the argument behaviour is valid
-   * @param behaviour 
+   * @param behaviour
    * @deprecated
    */
   public void setBehaviour(int behaviour) {
@@ -269,7 +271,8 @@ public class ArrayColumn implements SimpleGraphicElement {
         // standard non-javascript url. Add parameters to the url
         if (isAP == false) {
           String temp = result.toString();
-          if (temp.indexOf('?') >= 0 || href.indexOf("?") >= 0) {// there are already some parameters
+          if (temp.indexOf('?') >= 0 || href.indexOf("?") >= 0) {// there are already some
+            // parameters
             href.append(sep);
           } else {
             // there are no parameters

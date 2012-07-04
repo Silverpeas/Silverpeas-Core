@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,30 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.web;
 
 import com.stratelia.silverpeas.pdc.model.PdcException;
 
 /**
  * An exception that is thrown when a position onto a PdC cannot be deleted within a given context
- * (for example, the PdC contains some mandatory axis and the position is the only one in the 
+ * (for example, the PdC contains some mandatory axis and the position is the only one in the
  * classification of a resource onto the PdC).
  */
 public class PdcPositionDeletionException extends PdcException {
   private static final long serialVersionUID = -8201782942233535224L;
 
   public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-          String extraParams, Exception nested) {
+      String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-          Exception nested) {
+      Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
   public PdcPositionDeletionException(String callingClass, int errorLevel, String message,
-          String extraParams) {
+      String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
@@ -52,6 +53,4 @@ public class PdcPositionDeletionException extends PdcException {
     super(callingClass, errorLevel, message);
   }
 
-
-  
 }

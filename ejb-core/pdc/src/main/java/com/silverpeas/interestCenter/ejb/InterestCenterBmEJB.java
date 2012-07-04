@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,8 +81,8 @@ public class InterestCenterBmEJB implements SessionBean {
       con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       return InterestCenterDAO.createIC(con, ic);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()", 
-              "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.createIC()",
+          "InterestCenter.CANNOT_CREATE_IC", ic.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -94,8 +94,8 @@ public class InterestCenterBmEJB implements SessionBean {
       con = DBUtil.makeConnection(JNDINames.INTEREST_CENTER_DATASOURCE);
       InterestCenterDAO.updateIC(con, ic);
     } catch (Exception e) {
-      throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()", 
-              "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
+      throw new InterestCenterRuntimeException("InterestCenterBmEJB.updateIC()",
+          "InterestCenter.CANNOT_UPDATE_IC", ic.toString(), e);
     } finally {
       DBUtil.close(con);
     }
@@ -126,7 +126,6 @@ public class InterestCenterBmEJB implements SessionBean {
       DBUtil.close(con);
     }
   }
-
 
   public void ejbCreate() throws CreateException {
   }

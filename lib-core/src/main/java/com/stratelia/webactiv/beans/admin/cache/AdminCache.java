@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin.cache;
 
 import com.silverpeas.util.ArrayUtil;
@@ -49,7 +50,7 @@ public class AdminCache {
   static private boolean m_bUseCache = true;
   static private boolean m_bUseSpaceInstCache = true;
   static private Map<String, SpaceInst> m_hSpaceInstCache =
-      new ConcurrentHashMap<String, SpaceInst> ();
+      new ConcurrentHashMap<String, SpaceInst>();
   static private boolean m_bUseComponentInstCache = true;
   static private Map<String, ComponentInst> m_hComponentInstCache =
       new ConcurrentHashMap<String, ComponentInst>();
@@ -66,7 +67,8 @@ public class AdminCache {
   static private Map<String, Map<String, String[]>> m_hAvailCompoIdsCache =
       new ConcurrentHashMap<String, Map<String, String[]>>();
   static private boolean m_bUseProfileIdsCache = true;
-  static private Map<String, String[]> m_hProfileIdsCache = new ConcurrentHashMap<String, String[]>();
+  static private Map<String, String[]> m_hProfileIdsCache =
+      new ConcurrentHashMap<String, String[]>();
 
   /**
    * Admin Constructor
@@ -416,7 +418,7 @@ public class AdminCache {
           + userId);
       Map<String, String[]> spaceTable = m_hAvailCompoIdsCache.get(spaceId);
       if (spaceTable == null) {
-        spaceTable = new ConcurrentHashMap<String, String[]> ();
+        spaceTable = new ConcurrentHashMap<String, String[]>();
         m_hAvailCompoIdsCache.put(spaceId, spaceTable);
       }
       spaceTable.put(userId, compoIds);

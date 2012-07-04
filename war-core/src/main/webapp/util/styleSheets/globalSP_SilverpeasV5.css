@@ -5070,3 +5070,80 @@ input.search:focus {
 {
 	left:30px;
 }
+
+.switch,
+.switch a{
+	border:1px solid #ccc;
+	border-radius:8px;
+	padding:6px 8px;
+	width:140px;
+	font-size:11px;
+	line-height:14px;
+	float:left;
+	margin-right:8px;
+	position:relative;
+	z-index:1000;
+	cursor:pointer
+}
+
+.switch a {
+	display:block;
+	border:0;
+	width:30px;
+	padding:6px 4px;
+	margin-right:0;
+	border-left:1px solid #ccc;
+	position:absolute;
+	border-radius:0 8px 8px 0 ;
+	top:0;
+	right:0;
+	text-align:center;
+}
+
+.switch a:first-child {
+	right:38px;
+	border-radius:0 0 0 0;
+}
+
+.switch a.active  {
+	background-color: #747474;
+    color: #FFFFFF;
+	font-weight:bold
+}
+
+.switch a:hover  {
+	background-color: #F1790F;
+    color: #FFFFFF;
+}
+
+#myprofile-socialnetworks {
+	float: left;
+    padding-top: 10px;
+    width: 100%;
+}
+
+#myprofile-socialnetworks .switch.socialnetwork{
+	width:160px;
+	float:right;
+}
+
+#myprofile-socialnetworks .a-socialnetwork p {
+	float:left;
+	color:#727272;
+	line-height:32px;
+}
+#myprofile-socialnetworks .a-socialnetwork p strong{
+	font-weight:bold;
+	color:#021035;
+}
+#myprofile-socialnetworks .a-socialnetwork p img{
+	float:left;
+	margin-right:8px;
+}
+
+#myProfile #FBPublishButton,
+#myProfile #FBLoginButton,
+#myProfile #LinkedInPublishButton,
+#myProfile #LinkedInLoginButton {
+	display: none;
+}

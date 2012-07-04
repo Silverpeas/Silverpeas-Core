@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -46,54 +46,55 @@ public class JobDomainPeasGroupPathServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-	  doPost(req, resp);
+    doPost(req, resp);
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-	  
-	  HttpSession session = req.getSession(true);
 
-	  JobDomainPeasSessionController sc = (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
-	  
-	  String groupId = getGroupId(req);
-	  String result = getGroupPath(sc, groupId);
-    
-	  Writer writer = resp.getWriter();
-	  writer.write(result);
+    HttpSession session = req.getSession(true);
+
+    JobDomainPeasSessionController sc =
+        (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
+
+    String groupId = getGroupId(req);
+    String result = getGroupPath(sc, groupId);
+
+    Writer writer = resp.getWriter();
+    writer.write(result);
   }
-  
+
   private String getGroupId(HttpServletRequest req) {
-	  return req.getParameter("GroupId");
+    return req.getParameter("GroupId");
   }
 
   private String getGroupPath(JobDomainPeasSessionController sc, String groupId) {
-	  String groupPath = "";
-	  
-	  OrganizationController orgaController = sc.getOrganizationController();
-	  Group group = orgaController.getGroup(groupId);
-	  String domainId = group.getDomainId();
-	  if(domainId == null) {
-		  domainId = "-1";
-	  }
-	  Domain domain = orgaController.getDomain(domainId);
-	  
-	  //nom du domaine
-	  if("-1".equals(domainId)) {//domaine mixte
-		  groupPath += sc.getString("JDP.domainMixt");  
-	  } else {
-		  groupPath += domain.getName();
-	  }
-	  
-	  //nom du(des) groupe(s) pères
-	  List<String> groupList = orgaController.getPathToGroup(groupId);
-	  for (String elementGroupId : groupList) {
-		  groupPath += " > "+ orgaController.getGroup(elementGroupId).getName();
-	  }
-	  
-	  //nom du groupe
-	  groupPath += " > "+ group.getName();
-	  return groupPath;
+    String groupPath = "";
+
+    OrganizationController orgaController = sc.getOrganizationController();
+    Group group = orgaController.getGroup(groupId);
+    String domainId = group.getDomainId();
+    if (domainId == null) {
+      domainId = "-1";
+    }
+    Domain domain = orgaController.getDomain(domainId);
+
+    // nom du domaine
+    if ("-1".equals(domainId)) {// domaine mixte
+      groupPath += sc.getString("JDP.domainMixt");
+    } else {
+      groupPath += domain.getName();
+    }
+
+    // nom du(des) groupe(s) pères
+    List<String> groupList = orgaController.getPathToGroup(groupId);
+    for (String elementGroupId : groupList) {
+      groupPath += " > " + orgaController.getGroup(elementGroupId).getName();
+    }
+
+    // nom du groupe
+    groupPath += " > " + group.getName();
+    return groupPath;
   }
 }

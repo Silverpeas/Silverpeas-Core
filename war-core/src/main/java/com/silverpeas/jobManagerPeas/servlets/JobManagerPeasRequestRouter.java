@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,8 @@ import javax.servlet.http.HttpServletRequest;
  * Class declaration
  * @author
  */
-public class JobManagerPeasRequestRouter extends ComponentRequestRouter<JobManagerPeasSessionController> {
+public class JobManagerPeasRequestRouter extends
+    ComponentRequestRouter<JobManagerPeasSessionController> {
 
   private static final long serialVersionUID = -2003485584890163789L;
 
@@ -70,7 +71,8 @@ public class JobManagerPeasRequestRouter extends ComponentRequestRouter<JobManag
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,JobManagerPeasSessionController jobManagerSC, HttpServletRequest request) {
+  public String getDestination(String function, JobManagerPeasSessionController jobManagerSC,
+      HttpServletRequest request) {
     String destination = "";
     SilverTrace.info("jobManagerPeas", "JobManagerPeasRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + jobManagerSC.getUserId() + " Function=" + function);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,6 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.util.ArrayUtil;
 
-
 /**
  * A dummy DataRecord .
  */
@@ -41,14 +40,14 @@ public class DummyDataRecord implements DataRecord {
   public DummyDataRecord() {
     field = new TextFieldImpl();
   }
-  
+
   public DummyDataRecord(Field field) {
     field = field;
   }
 
   /**
    * Returns the data record id.
-   * @return 
+   * @return
    */
   @Override
   public String getId() {
@@ -57,7 +56,7 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Gives an id to the data record.
-   * @param externalId 
+   * @param externalId
    */
   @Override
   public void setId(String externalId) {
@@ -65,7 +64,7 @@ public class DummyDataRecord implements DataRecord {
 
   /**
    * Return true if this record has not been inserted in a RecordSet.
-   * @return 
+   * @return
    */
   @Override
   public boolean isNew() {
@@ -75,7 +74,7 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Returns the named field.
    * @param fieldName
-   * @return  
+   * @return
    */
   @Override
   public Field getField(String fieldName) {
@@ -85,7 +84,7 @@ public class DummyDataRecord implements DataRecord {
   /**
    * Returns the field at the index position in the record.
    * @param fieldIndex
-   * @return  
+   * @return
    */
   @Override
   public Field getField(int fieldIndex) {

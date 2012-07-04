@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PdcSubscriptionPeasRequestRouter
-    extends ComponentRequestRouter<PdcSubscriptionSessionController> {
+public class PdcSubscriptionPeasRequestRouter extends
+    ComponentRequestRouter<PdcSubscriptionSessionController> {
 
   private static final long serialVersionUID = -441269066150311066L;
 
@@ -60,11 +60,11 @@ public class PdcSubscriptionPeasRequestRouter
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
-   *
    * @param function The entering request function (ex : "Main.jsp")
-   * @param pdcSC    The component Session Control, build and initialised.
-   * @param request  The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex : "/notificationUser/jsp/notificationUser.jsp?flag=user")
+   * @param pdcSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   * "/notificationUser/jsp/notificationUser.jsp?flag=user")
    */
   public String getDestination(String function, PdcSubscriptionSessionController pdcSC,
       HttpServletRequest request) {
@@ -149,8 +149,7 @@ public class PdcSubscriptionPeasRequestRouter
 
   /**
    * Performs <code>Request</code> initialization for furure use in subscriptionList.jsp
-   *
-   * @param request       a <code>HttpServletRequest</code> to be forwarded
+   * @param request a <code>HttpServletRequest</code> to be forwarded
    * @param subscriptions a list of loaded PDCSubscription to be shown
    * @return jsp name
    */

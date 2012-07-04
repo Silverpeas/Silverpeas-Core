@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.indexEngine.parser.ooParser;
 
 /**
@@ -56,6 +60,7 @@ public class OOParser implements Parser {
    */
   public OOParser() {
   }
+
   private String tempFolder = null;
   private final String TMP_UNZIP_DIR = "tmpUnzipOpenOffice";
   private final Namespace NS_OO = Namespace.getNamespace("office",
@@ -84,7 +89,7 @@ public class OOParser implements Parser {
       List<String> toIndex = getFilesToIndex(path);
       String ooContents = this.parse(toIndex);
       deleteDir(new File(FileRepositoryManager.getTemporaryPath() +
-           TMP_UNZIP_DIR + File.separator + tempFolder));
+          TMP_UNZIP_DIR + File.separator + tempFolder));
       reader = new StringReader(ooContents);
     } catch (Exception e) {
       SilverTrace.error("indexEngine", "OOParser.getReader()",
@@ -114,7 +119,7 @@ public class OOParser implements Parser {
         Iterator childrenElements = body.getDescendants(new ElementFilter(NS_OOTEXT));
         while (childrenElements.hasNext()) {
           Element currentElement = (Element) childrenElements.next();
-          SilverTrace.debug("indexEngine", "OOParser.parse()", "Current Element = " 
+          SilverTrace.debug("indexEngine", "OOParser.parse()", "Current Element = "
               + currentElement.getName() + " - " + currentElement.getText());
           parsingResult.append(' ').append(currentElement.getText());
         }
@@ -144,10 +149,12 @@ public class OOParser implements Parser {
         }
       }
     } catch (JDOMException e) {
-      SilverTrace.error("indexEngine", "OOParser.parse", "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
+      SilverTrace.error("indexEngine", "OOParser.parse", "indexEngine.MSG_IO_ERROR_WHILE_PARSING",
+          e);
       deleteTmp((File) file);
     } catch (IOException e) {
-      SilverTrace.error("indexEngine", "OOParser.parse", "indexEngine.MSG_IO_ERROR_WHILE_PARSING", e);
+      SilverTrace.error("indexEngine", "OOParser.parse", "indexEngine.MSG_IO_ERROR_WHILE_PARSING",
+          e);
       deleteTmp((File) file);
     }
     SilverTrace.debug("indexEngine", "OOParser.parse()",
@@ -157,7 +164,7 @@ public class OOParser implements Parser {
 
   private List<String> getFilesToIndex(String file) {
     String dest = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR +
-         File.separator + tempFolder;
+        File.separator + tempFolder;
     unzip(file, dest);
     List<String> ls = new ArrayList<String>();
     ls.add(0, dest + File.separator + contentFile);
@@ -167,7 +174,7 @@ public class OOParser implements Parser {
 
   private List<String> unzip(String zip, String destination) {
     SilverTrace.debug("indexEngine", "OOParser.unzip()()", "root.MSG_PARAM_VALUE", "zip = " +
-         zip + " destination=" + destination);
+        zip + " destination=" + destination);
     List<String> destLs = new ArrayList<String>();
     ZipFile zipFile;
     File dest = new File(destination);
@@ -181,26 +188,29 @@ public class OOParser implements Parser {
         while (entries.hasMoreElements()) {
           ZipEntry entry = entries.nextElement();
           if (entry.getName().equals("meta.xml") ||
-               entry.getName().equals("content.xml")) {
+              entry.getName().equals("content.xml")) {
             copyInputStream(zipFile.getInputStream(entry),
                 new BufferedOutputStream(new FileOutputStream(dest +
-                 File.separator + entry.getName())));
+                File.separator + entry.getName())));
             destLs.add(dest.getAbsolutePath() + File.separator +
-                 entry.getName());
+                entry.getName());
           }
         }
         zipFile.close();
       } else {
-        SilverTrace.error("indexEngine", "OOParser.unzip", "indexEngine.MSG_IO_ERROR_WHILE_READING",
+        SilverTrace.error("indexEngine", "OOParser.unzip",
+            "indexEngine.MSG_IO_ERROR_WHILE_READING",
             dest.getAbsolutePath());
       }
     } catch (IOException e) {
       deleteDir(new File(destination));
-      SilverTrace.error("indexEngine", "OOParser.unzip", "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
+      SilverTrace.error("indexEngine", "OOParser.unzip",
+          "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
           zip, e);
     } catch (Exception e) {
       deleteDir(new File(destination));
-      SilverTrace.error("indexEngine", "OOParser.unzip", "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
+      SilverTrace.error("indexEngine", "OOParser.unzip",
+          "indexEngine.MSG_IO_ERROR_WHILE_EXTRACTING",
           zip, e);
     }
     return destLs;
@@ -232,7 +242,7 @@ public class OOParser implements Parser {
 
   protected void deleteTmp(File file) {
     String dir = FileRepositoryManager.getTemporaryPath() + TMP_UNZIP_DIR +
-         File.separator + tempFolder + File.separator + file;
+        File.separator + tempFolder + File.separator + file;
     deleteDir(new File(dir));
   }
 }

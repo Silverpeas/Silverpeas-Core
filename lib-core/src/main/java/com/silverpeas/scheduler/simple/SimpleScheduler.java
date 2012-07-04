@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.scheduler.simple;
 
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
@@ -42,15 +43,14 @@ import java.util.concurrent.Executors;
 import static com.silverpeas.scheduler.SchedulerFactory.*;
 
 /**
- * A simple scheduler implementation.
- * It provides a easy way to schedule jobs at given moments in time.
- * The job execution policy is provided by a job trigger, represented as a <code>JobTrigger</code>
- * object; <code>JobTrigger</code> objects control when the job has to be executed in a repeatedly
- * way.
- * The execution of the job itself can be actually performed in two ways:
+ * A simple scheduler implementation. It provides a easy way to schedule jobs at given moments in
+ * time. The job execution policy is provided by a job trigger, represented as a
+ * <code>JobTrigger</code> object; <code>JobTrigger</code> objects control when the job has to be
+ * executed in a repeatedly way. The execution of the job itself can be actually performed in two
+ * ways:
  * <ul>
- * <li>by a scheduling event listener through the reception of the event mapped with the
- * job execution triggering,</li>
+ * <li>by a scheduling event listener through the reception of the event mapped with the job
+ * execution triggering,</li>
  * <li>by a <code>Job</code> object that wraps the execution code.
  * </ul>
  */
@@ -82,8 +82,8 @@ public class SimpleScheduler implements Scheduler {
   }
 
   /**
-   * Unschedules the job with the specified name.
-   * If no job is scheduled under the specified name, nothing is done.
+   * Unschedules the job with the specified name. If no job is scheduled under the specified name,
+   * nothing is done.
    * @param jobName the name of the job to unschedule.
    */
   @Override
@@ -230,9 +230,8 @@ public class SimpleScheduler implements Scheduler {
   }
 
   /**
-   * An executor of job.
-   * This class is defined in order to keep the way this scheduler implementation works, whatever
-   * the interface changes are.
+   * An executor of job. This class is defined in order to keep the way this scheduler
+   * implementation works, whatever the interface changes are.
    */
   private static class JobExecutor {
 
@@ -247,8 +246,8 @@ public class SimpleScheduler implements Scheduler {
     }
 
     /**
-     * Executes the job.
-     * This method will be called by the internal mechanism of this scheduler implemenation.
+     * Executes the job. This method will be called by the internal mechanism of this scheduler
+     * implemenation.
      * @param date the date at which the execution is triggered.
      * @throws Exception an execption if an error occurs during the job execution.
      */

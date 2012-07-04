@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,56 +37,56 @@ import java.util.Collections;
 import java.util.List;
 
 public class SequenceField extends TextField {
-  
+
   private static final long serialVersionUID = -6526406111012877271L;
-  
+
   public static final String TYPE = "sequence";
-  
+
   private static final String VALUES_QUERY = "select distinct(f.fieldValue)"
-    + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
-    + " where t.templateId = r.templateId"
-    + " and r.recordId = f.recordId"
-    + " and f.fieldName = ?"
-    + " and t.externalId = ?";
-  
+      + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
+      + " where t.templateId = r.templateId"
+      + " and r.recordId = f.recordId"
+      + " and f.fieldName = ?"
+      + " and t.externalId = ?";
+
   private static final int NUMBER_ERROR = -1;
-  
+
   private String value = "";
-  
+
   public SequenceField() {
     super();
   }
-  
+
   @Override
   public String getTypeName() {
     return TYPE;
   }
-  
+
   @Override
   public void setStringValue(String value) {
     this.value = value;
   }
-  
+
   @Override
   public String getStringValue() {
     return value;
   }
-  
+
   @Override
   public boolean isReadOnly() {
     return false;
   }
-  
+
   @Override
   public boolean acceptValue(String value, String language) {
     return !isReadOnly();
   }
-  
+
   @Override
   public boolean acceptValue(String value) {
     return !isReadOnly();
   }
-  
+
   /**
    * @param fieldName The field's name.
    * @param templateName The template's name.
@@ -115,9 +115,8 @@ public class SequenceField extends TextField {
     }
     return numberToString(newValue, minLength);
   }
-  
+
   /**
-   * 
    * @param fieldName The field's name.
    * @param templateName The template's name.
    * @param componentId The id of the component containing the field.
@@ -136,8 +135,8 @@ public class SequenceField extends TextField {
       statement.setString(2, componentId + ":" + templateName);
 
       SilverTrace.debug("form", "SequenceField.getValues", "root.MSG_GEN_PARAM_VALUE",
-        "fieldName = " + fieldName + ", componentId = " + componentId + ", templateName = "
-        + templateName);
+          "fieldName = " + fieldName + ", componentId = " + componentId + ", templateName = "
+          + templateName);
 
       rs = statement.executeQuery();
       while (rs.next()) {
@@ -158,11 +157,11 @@ public class SequenceField extends TextField {
         SilverTrace.error("form", "SequenceField.getValues", "root.EX_CONNECTION_CLOSE_FAILED", e);
       }
     }
-    
+
     Collections.sort(values);
     return values;
   }
-  
+
   /**
    * @param number The number to convert.
    * @param minLength The minimum length of the result.
@@ -175,7 +174,7 @@ public class SequenceField extends TextField {
     }
     return result;
   }
-  
+
   /**
    * @param number A string corresponding to a number maybe starting with zeros
    * @return
@@ -190,10 +189,10 @@ public class SequenceField extends TextField {
         return Integer.parseInt(currentNumber);
       } catch (NumberFormatException e) {
         SilverTrace.error("form", "SequenceField.numberToInt", "form.EX_CANT_PARSE_NUMBER",
-          "number=" + number, e);
+            "number=" + number, e);
       }
     }
     return NUMBER_ERROR;
   }
-  
+
 }

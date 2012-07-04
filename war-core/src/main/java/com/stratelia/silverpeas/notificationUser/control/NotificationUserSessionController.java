@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.notificationUser.control;
 
 import java.util.ArrayList;
@@ -72,9 +73,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @see
    */
   public NotificationUserSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-            "com.stratelia.silverpeas.notificationUser.multilang.notificationUserBundle");
+        "com.stratelia.silverpeas.notificationUser.multilang.notificationUserBundle");
     setComponentRootName(URLManager.CMP_NOTIFICATIONUSER);
     sel = getSelection();
   }
@@ -99,11 +100,11 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     int uId = Integer.parseInt(getUserId());
 
     al.add(nm.getNotificationAddress(
-            NotificationParameters.ADDRESS_BASIC_POPUP, uId));
+        NotificationParameters.ADDRESS_BASIC_POPUP, uId));
     al.add(nm.getNotificationAddress(
-            NotificationParameters.ADDRESS_BASIC_SILVERMAIL, uId));
+        NotificationParameters.ADDRESS_BASIC_SILVERMAIL, uId));
     al.add(nm.getNotificationAddress(
-            NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, uId));
+        NotificationParameters.ADDRESS_BASIC_SMTP_MAIL, uId));
     return al;
   }
 
@@ -156,14 +157,13 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
       p = new Properties();
       p.setProperty("id", allUsers[i].getId());
       p.setProperty("name", allUsers[i].getLastName() + " "
-              + allUsers[i].getFirstName());
+          + allUsers[i].getFirstName());
       ar.add(p);
     }
     return ar;
   }
 
   /**
-   * 
    * @param compoId
    * @param notificationId
    * @param priorityId
@@ -171,16 +171,18 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
    * @param txtMessage
    * @param selectedUsers
    * @param selectedGroups
-   * @throws NotificationManagerException 
+   * @throws NotificationManagerException
    */
-  public void sendMessage(String compoId, String notificationId, String priorityId, String txtTitle,
-          String txtMessage, Collection<UserRecipient> selectedUsers, Collection<GroupRecipient> selectedGroups)
-          throws NotificationManagerException {
+  public void sendMessage(String compoId, String notificationId, String priorityId,
+      String txtTitle,
+      String txtMessage, Collection<UserRecipient> selectedUsers,
+      Collection<GroupRecipient> selectedGroups)
+      throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
     int notifTypeId = NotificationParameters.ADDRESS_COMPONENT_DEFINED;
     String currentPriorityId = priorityId;
     SilverTrace.debug("notificationUser", "NotificationUsersessionController.sendMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId=" + currentPriorityId);
+        "root.MSG_GEN_PARAM_VALUE", "  AVANT CONTROLE priorityId=" + currentPriorityId);
 
     if ((notificationId != null) && (notificationId.length() > 0)) {
       notifTypeId = Integer.parseInt(notificationId);
@@ -193,7 +195,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     }
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
-            Integer.parseInt(currentPriorityId), txtTitle, txtMessage);
+        Integer.parseInt(currentPriorityId), txtTitle, txtMessage);
     notifMetaData.setSender(getUserId());
     notifMetaData.setSource(getString("manualNotification"));
     notifMetaData.addUserRecipients(selectedUsers);
@@ -216,7 +218,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   public String buildOptions(ArrayList<Properties> ar, String selectValue, String selectText,
-          boolean bSorted) {
+      boolean bSorted) {
     StringBuilder valret = new StringBuilder();
     Properties elmt = null;
 
@@ -231,7 +233,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         selected = "";
       }
       valret.append("<option value=\"\" ").append(selected).append(">").
-              append(EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
+          append(EncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
       Properties[] theList = ar.toArray(new Properties[ar.size()]);
@@ -239,9 +241,10 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
         @Override
         public int compare(Properties o1, Properties o2) {
-          return o1.getProperty("name").toUpperCase().compareTo(o2.getProperty("name").toUpperCase());
-        }
-      });
+          return o1.getProperty("name").toUpperCase().compareTo(
+              o2.getProperty("name").toUpperCase());
+          }
+                });
       arToDisplay = new ArrayList<Properties>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
@@ -257,8 +260,8 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
           selected = "";
         }
         valret.append("<option value=\"").append(elmt.getProperty("id")).append("\" ").append(
-                selected).append(">").append(EncodeHelper.javaStringToHtmlString(
-                elmt.getProperty("name"))).append("</option>\n");
+            selected).append(">").append(EncodeHelper.javaStringToHtmlString(
+            elmt.getProperty("name"))).append("</option>\n");
       }
     }
     return valret.toString();
@@ -266,19 +269,19 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   // JCG
   public String initSelectionPeas(String[] idUsers, String[] idGroups,
-          String paramValues) {
+      String paramValues) {
     SilverTrace.debug("notificationUser",
-            "NotificationUsersessionController.initSelectionPeas()",
-            "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
+        "NotificationUsersessionController.initSelectionPeas()",
+        "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-            "ApplicationURL");
+        "ApplicationURL");
     String hostUrl = m_context
-            + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
-            + paramValues;
+        + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
+        + paramValues;
     String cancelUrl = m_context
-            + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
-            + paramValues;
+        + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
+        + paramValues;
     PairObject hostComponentName = new PairObject("", "");
 
     sel.resetAll();
@@ -295,7 +298,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     sel.setMultiSelect(true);
     sel.setPopupMode(true);
     if (((idUsers == null) || (idUsers.length == 0))
-            && ((idGroups == null) || (idGroups.length == 0))) {
+        && ((idGroups == null) || (idGroups.length == 0))) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
     } else {
       sel.setFirstPage(Selection.FIRST_PAGE_CART);
@@ -316,7 +319,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
     if (theTargetsUsers != null && theTargetsUsers.length() > 0) {
       if (theTargetsUsers.equals("Administrators")) {
         idUsers = this.getOrganizationController().getAdministratorUserIds(
-                getUserId());
+            getUserId());
       } else {
         idUsers = this.getIdsArrayFromIdsLine(theTargetsUsers);
       }
@@ -333,7 +336,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   public ArrayList<Properties> getSelectedUsers(String[] selectedUersId)
-          throws NotificationUserException {
+      throws NotificationUserException {
     Properties p;
     int i;
     ArrayList<Properties> ar = new ArrayList<Properties>();
@@ -346,14 +349,14 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
           p = new Properties();
           p.setProperty("id", selectedUsers[i].getId());
           p.setProperty("name", selectedUsers[i].getLastName() + " "
-                  + selectedUsers[i].getFirstName());
+              + selectedUsers[i].getFirstName());
           ar.add(p);
         }
         if (ar.size() != selectedUsers.length) {
           throw new NotificationUserException(
-                  "NotificationUserSessionControl.getSelectedUsers()",
-                  SilverpeasException.ERROR,
-                  "notificationUser.EX_CANT_GET_SELECTED_USERS_INFOS");
+              "NotificationUserSessionControl.getSelectedUsers()",
+              SilverpeasException.ERROR,
+              "notificationUser.EX_CANT_GET_SELECTED_USERS_INFOS");
         }
       }
     }
@@ -361,10 +364,10 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
   }
 
   public ArrayList<Properties> getSelectedGroups(String[] selectedGroupsId)
-          throws NotificationUserException {
+      throws NotificationUserException {
     SilverTrace.debug("notificationUser",
-            "NotificationUsersessionController.getSelectedGroups()",
-            "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
+        "NotificationUsersessionController.getSelectedGroups()",
+        "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
     Group[] selectedGroups = null;
     Properties p;
     int i;
@@ -382,9 +385,9 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         }
         if (ar.size() != selectedGroups.length) {
           throw new NotificationUserException(
-                  "NotificationUserSessionControl.getSelectedGroups()",
-                  SilverpeasException.ERROR,
-                  "notificationUser.EX_CANT_GET_SELECTED_GROUPS_INFOS");
+              "NotificationUserSessionControl.getSelectedGroups()",
+              SilverpeasException.ERROR,
+              "notificationUser.EX_CANT_GET_SELECTED_GROUPS_INFOS");
         }
       }
     }
@@ -393,8 +396,8 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
 
   private UserDetail[] getUserDetailList(String[] idUsers) {
     SilverTrace.debug("notificationUser",
-            "NotificationUsersessionController.getUserDetailList()",
-            "root.MSG_GEN_PARAM_VALUE", "Enter Method");
+        "NotificationUsersessionController.getUserDetailList()",
+        "root.MSG_GEN_PARAM_VALUE", "Enter Method");
     return this.getOrganizationController().getUserDetails(idUsers);
   }
 

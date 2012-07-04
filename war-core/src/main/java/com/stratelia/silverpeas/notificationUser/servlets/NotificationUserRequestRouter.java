@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- * <p/>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * <p/>
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of
- * the text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- * <p/>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU Affero General Public License for more details.
- * <p/>
- * You should have received a copy of the GNU Affero General Public License along with this
- * program. If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.notificationUser.servlets;
 
 import com.silverpeas.util.ArrayUtil;
@@ -38,7 +42,8 @@ import java.util.List;
  * <p/>
  * @author
  */
-public class NotificationUserRequestRouter extends ComponentRequestRouter<NotificationUserSessionController> {
+public class NotificationUserRequestRouter extends
+    ComponentRequestRouter<NotificationUserSessionController> {
 
   private static final long serialVersionUID = -5858231857279380747L;
 
@@ -51,7 +56,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
    */
   @Override
   public NotificationUserSessionController createComponentSessionController(
-          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new NotificationUserSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -76,17 +81,17 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
    */
   @Override
   public String getDestination(String function, NotificationUserSessionController nuSC,
-          HttpServletRequest request) {
+      HttpServletRequest request) {
     // remarques
     // tous les paramètres des la jsp sont transferé par la request.
     // le UserPanel étant unique par session, il est impératif de récupérér
     // les objets selectionnés via userPanel et de transporter
     // les id des ses de jsp en jsp en soumettant un formulaire.
     // En effet, la notification peut être utilisée "en même temps" que le
-    // client  utilises userPanelPeas. Cela mélange les objets selectionnée.
+    // client utilises userPanelPeas. Cela mélange les objets selectionnée.
     String destination = "";
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "function=" + function);
+        "root.MSG_GEN_PARAM_VALUE", "function=" + function);
 
     try {
       request.setCharacterEncoding("UTF-8");
@@ -104,7 +109,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
           selectedIdUsers = nuSC.initTargetsUsers(theTargetsUsers);
           selectedIdGroups = nuSC.initTargetsGroups(theTargetsGroups);
           destination = "/notificationUser/jsp/notificationSender.jsp?popupMode="
-                  + popupMode + "&editTargets=" + editTargets;
+              + popupMode + "&editTargets=" + editTargets;
         } else {
           // appel standard
           destination = "/notificationUser/jsp/notificationSender.jsp";
@@ -146,7 +151,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
         destination = "/notificationUser/jsp/notificationSender.jsp" + paramValue.toString();
       } else if (function.startsWith("sendNotif")) {
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
+            "root.MSG_GEN_PARAM_VALUE", "Enter sendNotif");
         String[] selectedIdUsers = request.getParameterValues("selectedUsers");
         List<UserRecipient> selectUserRecipients = null;
         if (selectedIdUsers != null) {
@@ -163,7 +168,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
             selectGroupRecipients.add(new GroupRecipient(selectedIdGroup));
           }
         }
-        
+
         String popupMode = request.getParameter("popupMode");
         String editTargets = request.getParameter("editTargets");
         String txtTitle = request.getParameter("txtTitle");
@@ -172,17 +177,17 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
         String priorityId = request.getParameter("priorityId");
 
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
+            "root.MSG_GEN_PARAM_VALUE", "notificationId=" + notificationId);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "priorityId=" + priorityId);
+            "root.MSG_GEN_PARAM_VALUE", "priorityId=" + priorityId);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "txtMessage=" + txtMessage);
+            "root.MSG_GEN_PARAM_VALUE", "txtMessage=" + txtMessage);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "txtTitle=" + txtTitle);
+            "root.MSG_GEN_PARAM_VALUE", "txtTitle=" + txtTitle);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
+            "root.MSG_GEN_PARAM_VALUE", "popupMode=" + popupMode);
         SilverTrace.debug("notificationUser", "NotificationUserRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
+            "root.MSG_GEN_PARAM_VALUE", "editTargets=" + editTargets);
         if (selectUserRecipients != null || selectGroupRecipients != null) {
           nuSC.sendMessage("", notificationId, priorityId, txtTitle, txtMessage,
               selectUserRecipients, selectGroupRecipients);
@@ -190,8 +195,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
         request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
         request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=sendNotif&"
-                + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
-                + popupMode + "&editTargets=" + editTargets + "&compoId=";
+            + "notificationId=&priorityId=&txtTitle=&txtMessage=&popupMode="
+            + popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else if (function.startsWith("emptyAll")) {
         request.setAttribute("SelectedIdUsers", ArrayUtil.EMPTY_STRING_ARRAY);
         request.setAttribute("SelectedIdGroups", ArrayUtil.EMPTY_STRING_ARRAY);
@@ -199,8 +204,8 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
         String editTargets = request.getParameter("editTargets");
         String popupMode = request.getParameter("popupMode");
         destination = "/notificationUser/jsp/notificationSender.jsp?Action=emptyAll&notificationId"
-                + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
-                + popupMode + "&editTargets=" + editTargets + "&compoId=";
+            + "=&priorityId=&txtTitle=&txtMessage=&popupMode="
+            + popupMode + "&editTargets=" + editTargets + "&compoId=";
       } else {
         destination = "/notificationUser/jsp/" + function;
       }
@@ -209,7 +214,7 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
       destination = "/admin/jsp/errorpageMain.jsp";
     }
     SilverTrace.info("notificationUser", "NotificationUserRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
+        "root.MSG_GEN_PARAM_VALUE", "destination=" + destination);
     return destination;
   }
 }

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jcrutil;
 
 /**
@@ -57,9 +61,8 @@ import org.xml.sax.InputSource;
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.
  * Use this factory bean when you have to manually configure the repository; for retrieving the
- * repository from JNDI use the JndiObjectFactoryBean {@link org.springframework.jndi.JndiObjectFactoryBean}.
- * Sample configuration :
- * <code>
+ * repository from JNDI use the JndiObjectFactoryBean
+ * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration : <code>
  * &lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
  * &lt;!-- normal factory beans params --&gt;
  *   &lt;property name="configuration" value="classpath:repository.xml" /&gt;
@@ -72,7 +75,6 @@ import org.xml.sax.InputSource;
  *   &lt;/property&gt;
  * &lt;/bean&gt;
  * </code>
- *
  * @see org.springframework.jndi.JndiObjectFactoryBean
  * @author Costin Leau
  * @author Emmanuel Hugonnet
@@ -121,7 +123,8 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     try {
       InitialContext ic = new InitialContext();
       prepareContext(ic, jndiName);
-      RegistryHelper.registerRepository(new InitialContext(), jndiName, getConfiguration().getFile().
+      RegistryHelper.registerRepository(new InitialContext(), jndiName, getConfiguration()
+          .getFile().
           getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(), true);
       return (Repository) ic.lookup(jndiName);
     } catch (RepositoryException ex) {
@@ -133,7 +136,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     }
     return null;
   }
-  
+
   protected static void prepareContext(InitialContext ic, String jndiName) throws
       NamingException {
     Context currentContext = ic;
@@ -186,17 +189,14 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   }
 
   /**
-   * Performs variable replacement on the given string value. Each
-   * <code>${...}</code> sequence within the given value is replaced with the value of the named
-   * parser variable. If a variable is not found in the properties an IllegalArgumentException is
-   * thrown unless
-   * <code>ignoreMissing</code> is
-   * <code>true</code>. In the later case, the missing variable is not replaced.
-   *
+   * Performs variable replacement on the given string value. Each <code>${...}</code> sequence
+   * within the given value is replaced with the value of the named parser variable. If a variable
+   * is not found in the properties an IllegalArgumentException is thrown unless
+   * <code>ignoreMissing</code> is <code>true</code>. In the later case, the missing variable is not
+   * replaced.
    * @param variables
    * @param value the original value
-   * @param ignoreMissing if
-   * <code>true</code>, missing variables are not replaced.
+   * @param ignoreMissing if <code>true</code>, missing variables are not replaced.
    * @return value after variable replacements
    * @throws IllegalArgumentException if the replacement of a referenced variable is not found
    */
@@ -296,7 +296,6 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Load all the configuration properties
-   *
    * @return
    */
   protected Properties loadConfigurationKeys() {
@@ -317,7 +316,6 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Load a Resource as a String.
-   *
    * @param config the resource
    * @return the String filled with the content of the Resource
    * @throws IOException

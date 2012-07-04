@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util.publication.ejb;
 
 import java.sql.Connection;
@@ -133,7 +134,7 @@ public class PublicationEJB implements EntityBean {
 
     return pubDetail;
   }
-  
+
   /**
    * Update the attributes of the publication
    * @param pubDetail the PublicationDetail which contains updated data
@@ -180,7 +181,7 @@ public class PublicationEJB implements EntityBean {
       if (pubDetail.getStatus() != null) {
         status = pubDetail.getStatus();
       }
-      
+
       /*
        * if(pubDetail.getUpdaterId() != null) { updaterId = pubDetail.getCreatorId(); }
        */
@@ -458,10 +459,10 @@ public class PublicationEJB implements EntityBean {
       infoPK = iPK;
       isModified = true;
       ejbStore();
-    }catch(UtilException e){
-        throw new PublicationRuntimeException("PublicationEJB.createInfoDetail()",
-                SilverpeasRuntimeException.ERROR,
-                "root.EX_CANT_INSERT_TRANSLATIONS", e);
+    } catch (UtilException e) {
+      throw new PublicationRuntimeException("PublicationEJB.createInfoDetail()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }
@@ -501,10 +502,10 @@ public class PublicationEJB implements EntityBean {
         // Creation from A to Z
         createInfoDetail(modelPK, infos);
       }
-    }catch(UtilException e){
-        throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
-                SilverpeasRuntimeException.ERROR,
-                "root.EX_CANT_INSERT_TRANSLATIONS", e);
+    } catch (UtilException e) {
+      throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }
@@ -579,10 +580,10 @@ public class PublicationEJB implements EntityBean {
         updateDate = new Date();
         isModified = true;
       }
-    }catch(UtilException e){
-        throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
-                SilverpeasRuntimeException.ERROR,
-                "root.EX_CANT_INSERT_TRANSLATIONS", e);
+    } catch (UtilException e) {
+      throw new PublicationRuntimeException("PublicationEJB.createInfoModelDetail()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_INSERT_TRANSLATIONS", e);
     } finally {
       freeConnection(con);
     }
@@ -732,7 +733,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object.
-   *
    * @param pk the PK of the Publication to instanciate
    * @return the PublicationPK of the instanciated Publication if it exists in database
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
@@ -767,7 +767,6 @@ public class PublicationEJB implements EntityBean {
 
   /**
    * Create an instance of a Publication object.
-   *
    * @param pk the PK where the Publication is instanciated
    * @param name the publication's name to instanciate
    * @return the PublicationPK of the instanciated Publication if it exists in database

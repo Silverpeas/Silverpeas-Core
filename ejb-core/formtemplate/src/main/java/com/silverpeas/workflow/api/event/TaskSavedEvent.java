@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,8 +28,9 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.model.ProcessModel;
 
 /**
- * A TaskSavedEvent object is the description of an activity that is not finished but saved to be continued later. Those descriptions are sent to the
- * workflow engine by the workflow tools when the user has save a task in a process instance.
+ * A TaskSavedEvent object is the description of an activity that is not finished but saved to be
+ * continued later. Those descriptions are sent to the workflow engine by the workflow tools when
+ * the user has save a task in a process instance.
  */
 public interface TaskSavedEvent extends GenericEvent {
   /**
@@ -41,15 +42,15 @@ public interface TaskSavedEvent extends GenericEvent {
    * Set the process instance.
    */
   public void setProcessInstance(ProcessInstance instance);
-  
+
   /**
    * Is first time saved ?
    */
   public boolean isFirstTimeSaved();
-  
+
   /**
    * Set information to know if it is the first time the current task is saved.
    */
   public void setFirstTimeSaved(boolean firstTimeSaved);
-  
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,14 +38,15 @@ import java.util.List;
  * Class declaration
  * @author Cécile Bonin
  */
-public class JobSearchPeasRequestRouter extends ComponentRequestRouter<JobSearchPeasSessionController> {
-  
-/**
+public class JobSearchPeasRequestRouter extends
+    ComponentRequestRouter<JobSearchPeasSessionController> {
+
+  /**
    * 
    */
   private static final long serialVersionUID = 9185878202301815494L;
 
-/**
+  /**
    * Method declaration
    * @param mainSessionCtrl
    * @param componentContext
@@ -76,10 +77,13 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter<JobSearch
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,JobSearchPeasSessionController jobSearchPeasSC, HttpServletRequest request) {
+  public String getDestination(String function, JobSearchPeasSessionController jobSearchPeasSC,
+      HttpServletRequest request) {
     String destination = "";
-    SilverTrace.info("jobSearchPeas", "JobSearchPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobSearchPeasSC.getUserId() + " Function=" + function);
+    SilverTrace
+        .info("jobSearchPeas", "JobSearchPeasRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + jobSearchPeasSC.getUserId() + " Function=" +
+        function);
 
     try {
       if (function.equals("Main")) {
@@ -89,22 +93,26 @@ public class JobSearchPeasRequestRouter extends ComponentRequestRouter<JobSearch
         destination = "/jobSearchPeas/jsp/jobSearchResult.jsp";
       } else if (function.equals("SearchResult")) {
         String searchField = request.getParameter("SearchField");
-        searchField = searchField.trim();//supprime les espaces avant et après la chaine
-        while(searchField.length()>=1 && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {//supprime les * et ? en début de chaine : non supportés par Lucène
-          if(searchField.length() == 1) {
+        searchField = searchField.trim();// supprime les espaces avant et après la chaine
+        while (searchField.length() >= 1 &&
+            (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {// supprime les * et ?
+          // en début de chaine :
+          // non supportés par
+          // Lucène
+          if (searchField.length() == 1) {
             searchField = "";
           } else {
             searchField = searchField.substring(1);
           }
         }
         jobSearchPeasSC.setSearchField(searchField);
-        
+
         String category = request.getParameter("Category");
         jobSearchPeasSC.setCategory(category);
-        
+
         List<SearchResult> listResult = jobSearchPeasSC.searchResult(searchField, category);
         jobSearchPeasSC.setListResult(listResult);
-        
+
         request.setAttribute("IdOrName", jobSearchPeasSC.getSearchField());
         request.setAttribute("Category", jobSearchPeasSC.getCategory());
         request.setAttribute("ListResult", jobSearchPeasSC.getListResult());

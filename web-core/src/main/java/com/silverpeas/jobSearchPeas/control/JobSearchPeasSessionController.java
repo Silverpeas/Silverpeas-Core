@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://repository.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.silverpeas.jobSearchPeas.control;
 
 import com.silverpeas.jobSearchPeas.SearchResult;
@@ -64,10 +64,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Class declaration
- *
- * @author Cécile Bonin
- */
+* Class declaration
+*
+* @author Cécile Bonin
+*/
 public class JobSearchPeasSessionController extends AbstractComponentSessionController {
 
   private AdminController myAdminController = null;
@@ -78,12 +78,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private List<SearchResult> listResult = null;
 
   /**
-   * Standard Session Controller Constructeur
-   *
-   * @param mainSessionCtrl  The user's profile
-   * @param componentContext The component's profile
-   * @see
-   */
+* Standard Session Controller Constructeur
+*
+* @param mainSessionCtrl The user's profile
+* @param componentContext The component's profile
+* @see
+*/
   public JobSearchPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
@@ -93,8 +93,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
 
   /**
-   * @return
-   */
+* @return
+*/
   public AdminController getAdminController() {
     if (null == myAdminController) {
       myAdminController = new AdminController(getUserId());
@@ -103,8 +103,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @return
-   */
+* @return
+*/
   private PublicationBm getPublicationBm() {
     if (null == publicationBm) {
       try {
@@ -120,8 +120,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @return
-   */
+* @return
+*/
   private NodeBm getNodeBm() {
     if (null == nodeBm) {
       try {
@@ -137,55 +137,55 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @return
-   */
+* @return
+*/
   public String getSearchField() {
     return searchField;
   }
 
   /**
-   * @param searchField
-   */
+* @param searchField
+*/
   public void setSearchField(String searchField) {
     this.searchField = searchField;
   }
 
   /**
-   * @return
-   */
+* @return
+*/
   public String getCategory() {
     return category;
   }
 
 
   /**
-   * @param category
-   */
+* @param category
+*/
   public void setCategory(String category) {
     this.category = category;
   }
 
 
   /**
-   * @return
-   */
+* @return
+*/
   public List<SearchResult> getListResult() {
     return listResult;
   }
 
 
   /**
-   * @param listResult
-   */
+* @param listResult
+*/
   public void setListResult(List<SearchResult> listResult) {
     this.listResult = listResult;
   }
 
 
   /**
-   * @param spaceId
-   * @return
-   */
+* @param spaceId
+* @return
+*/
   private String getPathSpace(String spaceId) {
     StringBuilder emplacement = new StringBuilder("");
     try {
@@ -207,9 +207,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param spaceId
-   * @return
-   */
+* @param spaceId
+* @return
+*/
   private List<SearchResult> searchResultSpaceId(String spaceId) {
     SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultSpaceId",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId);
@@ -250,12 +250,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+* @throws RemoteException
+* @throws ParseException
+*/
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
@@ -306,12 +306,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws ParseException
-   * @throws PdcException
-   * @throws RemoteException
-   */
+* @param searchField
+* @return
+* @throws ParseException
+* @throws PdcException
+* @throws RemoteException
+*/
   private List<SearchResult> searchResultSpace(String searchField) throws PdcException {
     //id espace
     List<SearchResult> listResult = searchResultSpaceId(searchField);
@@ -327,9 +327,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param componentId
-   * @return
-   */
+* @param componentId
+* @return
+*/
   private String getPathComponent(String componentId) {
     StringBuilder emplacement = new StringBuilder("");
     //Espace > Sous-espace
@@ -346,9 +346,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param componentId
-   * @return
-   */
+* @param componentId
+* @return
+*/
   private List<SearchResult> searchResultComponentId(String componentId) {
     SilverTrace.info("admin", "JobSearchPeasSessionController.searchResultComponentId",
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId);
@@ -388,12 +388,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+* @throws RemoteException
+* @throws ParseException
+*/
   private List<SearchResult> searchEngineResultComponent(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
 
@@ -432,10 +432,10 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+*/
   private List<SearchResult> searchResultService(String searchField) throws PdcException {
     //id service
     List<SearchResult> listResult = searchResultComponentId(searchField);
@@ -450,10 +450,10 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
 
   /**
-   * @param searchField
-   * @return
-   * @throws RemoteException
-   */
+* @param searchField
+* @return
+* @throws RemoteException
+*/
   private List<SearchResult> searchResultPublication(String searchField) throws RemoteException {
     List<SearchResult> listResult = new ArrayList<SearchResult>();
 
@@ -520,9 +520,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param group
-   * @return
-   */
+* @param group
+* @return
+*/
   private String getPathGroup(Group group) {
     StringBuilder emplacement = new StringBuilder("");
     String groupId = group.getId();
@@ -546,9 +546,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   */
+* @param searchField
+* @return
+*/
   private List<SearchResult> searchResultGroupId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>();
     Group group = getAdminController().getGroupById(searchField);
@@ -573,12 +573,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+* @throws RemoteException
+* @throws ParseException
+*/
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
@@ -619,10 +619,10 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+*/
   private List<SearchResult> searchResultGroup(String searchField) throws PdcException {
     //id group
     List<SearchResult> listResult = searchResultGroupId(searchField);
@@ -639,9 +639,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
 
 
   /**
-   * @param user
-   * @return
-   */
+* @param user
+* @return
+*/
   private List<String> getListPathUser(UserDetail user) {
     List<String> listEmplacement = new ArrayList<String>();
     String userId = user.getId();
@@ -695,9 +695,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   */
+* @param searchField
+* @return
+*/
   private List<SearchResult> searchResultUserId(String searchField) {
     List<SearchResult> listResult = new ArrayList<SearchResult>();
     UserDetail user = getAdminController().getUserDetail(searchField);
@@ -721,12 +721,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+* @throws RemoteException
+* @throws ParseException
+*/
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
     try {
@@ -764,10 +764,10 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @return
-   * @throws PdcException
-   */
+* @param searchField
+* @return
+* @throws PdcException
+*/
   private List<SearchResult> searchResultUser(String searchField) throws PdcException {
     //id user
     List<SearchResult> listResult = searchResultUserId(searchField);
@@ -783,12 +783,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * @param searchField
-   * @param category
-   * @return
-   * @throws RemoteException
-   * @throws PdcException
-   */
+* @param searchField
+* @param category
+* @return
+* @throws RemoteException
+* @throws PdcException
+*/
   public List<SearchResult> searchResult(String searchField, String category)
       throws RemoteException, PdcException {
     if ("space".equals(category)) {

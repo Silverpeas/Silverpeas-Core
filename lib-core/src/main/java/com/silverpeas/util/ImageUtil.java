@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -56,15 +56,15 @@ public class ImageUtil {
         }
         String sWidth = Double.toString(width);
         String sHeight = Double.toString(height);
-  
+
         result[0] = sWidth.substring(0, sWidth.indexOf("."));
         result[1] = sHeight.substring(0, sHeight.indexOf("."));
-        
+
         return result;
       } catch (Exception e) {
         if (image != null) {
           SilverTrace.error("util", "ImageUtil.getWidthAndHeightByWidth", "root.MSG_GEN_ERROR",
-            "File not found : " + image.getAbsolutePath());
+              "File not found : " + image.getAbsolutePath());
         }
       }
     }
@@ -104,7 +104,7 @@ public class ImageUtil {
       } catch (Exception e) {
         if (image != null) {
           SilverTrace.error("util", "ImageUtil.getWidthAndHeightByHeight", "root.MSG_GEN_ERROR",
-            "File not found : " + image.getAbsolutePath());
+              "File not found : " + image.getAbsolutePath());
         }
       }
     }
@@ -112,33 +112,32 @@ public class ImageUtil {
     result[1] = "";
     return result;
   }
-  
+
   public static String[] getWidthAndHeight(File image) {
-	    String[] result = new String[2];
-	    if (image != null && image.isFile()) {
-  	    try {
-  	      BufferedImage inputBuf = ImageIO.read(image);
-  	      // calcul de la taille de la sortie
-  	      double inputBufWidth = inputBuf.getWidth();
-  	      double inputBufHeight = inputBuf.getHeight();
-  	      String sWidth = Double.toString(inputBufWidth);
-  	      String sHeight = Double.toString(inputBufHeight);
-  
-  	      result[0] = sWidth.substring(0, sWidth.indexOf("."));
-  	      result[1] = sHeight.substring(0, sHeight.indexOf("."));
-  	      
-  	      return result;
-  	    } catch (Exception e) {
-  	      if (image != null) {
-            SilverTrace.error("util", "ImageUtil.getWidthAndHeight", "root.MSG_GEN_ERROR",
+    String[] result = new String[2];
+    if (image != null && image.isFile()) {
+      try {
+        BufferedImage inputBuf = ImageIO.read(image);
+        // calcul de la taille de la sortie
+        double inputBufWidth = inputBuf.getWidth();
+        double inputBufHeight = inputBuf.getHeight();
+        String sWidth = Double.toString(inputBufWidth);
+        String sHeight = Double.toString(inputBufHeight);
+
+        result[0] = sWidth.substring(0, sWidth.indexOf("."));
+        result[1] = sHeight.substring(0, sHeight.indexOf("."));
+
+        return result;
+      } catch (Exception e) {
+        if (image != null) {
+          SilverTrace.error("util", "ImageUtil.getWidthAndHeight", "root.MSG_GEN_ERROR",
               "File not found : " + image.getAbsolutePath());
-          }  	      
-  	    }
-	    }
-	    result[0] = "";
-      result[1] = "";
-	    return result;
-	  }
-  
+        }
+      }
+    }
+    result[0] = "";
+    result[1] = "";
+    return result;
+  }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -139,7 +139,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -227,7 +227,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getOpenedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
 
@@ -270,7 +270,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getNotClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -311,7 +311,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.getClosedQuestionContainers()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     ResultSet rs = null;
     QuestionContainerHeader questionContainerHeader = null;
@@ -535,7 +535,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.updateQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerHeader = "
-            + questionContainerHeader);
+        + questionContainerHeader);
 
     String insertStatement = "update "
         + questionContainerHeader.getPK().getTableName() + " set qcTitle = ?,"
@@ -594,7 +594,7 @@ public class QuestionContainerDAO {
     SilverTrace.info("questionContainer",
         "QuestionContainerDAO.deleteQuestionContainerHeader()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String deleteStatement = "delete from "
         + questionContainerPK.getTableName() + " where qcId = ? ";
@@ -621,7 +621,7 @@ public class QuestionContainerDAO {
       QuestionContainerPK questionContainerPK) throws SQLException {
     SilverTrace.info("questionContainer", "QuestionContainerDAO.addAVoter()",
         "root.MSG_GEN_ENTER_METHOD", "questionContainerPK = "
-            + questionContainerPK);
+        + questionContainerPK);
 
     String updateStatement = "update " + questionContainerPK.getTableName()
         + " set qcNbVoters = qcNbVoters + 1 " + " where qcId = ? ";

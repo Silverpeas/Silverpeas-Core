@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -19,8 +19,9 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.export.ical;
 
 import com.silverpeas.export.ExportDescriptor;
@@ -42,18 +43,18 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
   private ICalCodec iCalCodec;
 
   /**
-   * Exports the specified events with a writer in the iCal format.
-   * If no events are specified, then a NoDataToExportException is thrown as no export can be done.
-   * The writer with which the events have to be exported is provided by the specified
-   * export descriptor.
+   * Exports the specified events with a writer in the iCal format. If no events are specified, then
+   * a NoDataToExportException is thrown as no export can be done. The writer with which the events
+   * have to be exported is provided by the specified export descriptor.
    * @param events the events of a calendar to export.
-   * @param descriptor the export descriptor in which is passed the writer with which
-   * the events should be exported.
-   * @throws ExportException if the export fails (an IO issue occurs with the writer,
-   * no events to export, ...).
+   * @param descriptor the export descriptor in which is passed the writer with which the events
+   * should be exported.
+   * @throws ExportException if the export fails (an IO issue occurs with the writer, no events to
+   * export, ...).
    */
   @Override
-  public void export(ExportDescriptor descriptor, ExportableCalendar calendar) throws ExportException {
+  public void export(ExportDescriptor descriptor, ExportableCalendar calendar)
+      throws ExportException {
     if (calendar.isEmpty()) {
       throw new NoDataToExportException("To export to iCal, the calendar should have at least one"
           + " event");
@@ -77,7 +78,6 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
       throw new ExportException(e.getMessage(), e);
     }
   }
-
 
   /**
    * Gets the iCalCodec used to encode calendar events in iCal formatted text.

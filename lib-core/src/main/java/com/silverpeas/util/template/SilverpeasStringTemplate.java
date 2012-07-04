@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,13 +25,17 @@
 package com.silverpeas.util.template;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.antlr.stringtemplate.AutoIndentWriter;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.commons.io.IOUtils;
 
 import com.silverpeas.util.template.renderer.DateRenderer;
 
@@ -69,7 +73,16 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
       template.setAttribute(attribute.getKey(), attribute.getValue());
     }
-    return template.toString();
+    StringWriter writer = new StringWriter();
+    AutoIndentWriter out = new AutoIndentWriter(writer, "\n");
+    try {
+      template.write(out);
+    } catch (IOException e) {
+      return template.toString();
+    }finally {
+      IOUtils.closeQuietly(writer);
+    }    
+    return writer.toString();
   }
 
   @Override
@@ -84,7 +97,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
   @Override
   public String applyFileTemplateOnComponent(String componentName, String fileName) {
-    return applyFileTemplate("/"+componentName.toLowerCase()+"/" + fileName);
+    return applyFileTemplate("/" + componentName.toLowerCase() + "/" + fileName);
   }
   
   public boolean isCustomTemplateExists(String componentName, String fileName) {

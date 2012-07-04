@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.form.displayers;
 
 import java.io.PrintWriter;
@@ -58,10 +59,10 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   /**
    * Returns the name of the managed types.
-   * @return 
+   * @return
    */
   public String[] getManagedTypes() {
-    return new String[] {UserField.TYPE};
+    return new String[] { UserField.TYPE };
   }
 
   /**
@@ -73,10 +74,10 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
    * </UL>
-   * @param out 
-   * @param template 
+   * @param out
+   * @param template
    * @param pagesContext
-   * @throws java.io.IOException  
+   * @throws java.io.IOException
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
@@ -107,11 +108,11 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
-   * @param out 
-   * @param field 
+   * @param out
+   * @param field
    * @param PagesContext
-   * @param template 
-   * @throws FormException  
+   * @param template
+   * @throws FormException
    */
   @Override
   public void display(PrintWriter out, UserField field, FieldTemplate template,
@@ -153,14 +154,15 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
     }
 
     if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-      
+
       Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
       String roles = parameters.get("roles");
-      boolean usersOfInstanceOnly = StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
+      boolean usersOfInstanceOnly =
+          StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
       if (StringUtil.isDefined(roles)) {
         usersOfInstanceOnly = true;
       }
-          
+
       html +=
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
           + URLManager.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"

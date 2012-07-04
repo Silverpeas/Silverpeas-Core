@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,9 +44,9 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     try {
       QuestionContainerDetailFlavor =
           new DataFlavor(
-              Class
-                  .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
-              "QuestionContainer");
+          Class
+          .forName("com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"),
+          "QuestionContainer");
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
@@ -93,7 +93,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
     QuestionContainerPK questionContainerPK = m_questionContainer.getHeader().getPK();
     indexEntry =
         new IndexEntry(questionContainerPK.getComponentName(), "QuestionContainer",
-            questionContainerPK.getId());
+        questionContainerPK.getId());
     indexEntry.setTitle(m_questionContainer.getHeader().getName());
     return indexEntry;
   }

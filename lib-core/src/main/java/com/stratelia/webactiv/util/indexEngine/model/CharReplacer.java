@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,11 +31,14 @@ import java.util.Map;
  * A CharReplacer replace all the occurences of a given chars' set in a String with replacement
  * chars.
  * <p/>
- * <PRE> CharReplacer r = new CharReplacer(); r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
+ * 
+ * <PRE>
+ * CharReplacer r = new CharReplacer(); r.setReplacement(&quot;éèê&quot;, &quot;e&quot;);
  * r.setReplacement(&quot;àâ&quot;, &quot;a&quot;); r.setReplacement(&quot;!,.;&quot;, null);
- * <p/>
+ * &lt;p/&gt;
  * // print &quot;evenement a Grenoble&quot; System.out.println(r.replace(&quot;événement à
- * Grenoble!&quot;)); </PRE>
+ * Grenoble!&quot;));
+ * </PRE>
  */
 public class CharReplacer {
   /**
@@ -62,8 +65,12 @@ public class CharReplacer {
    * assumed equal to the last. If the replacement string is empty all occurences of the
    * toBeReplaced characters will be pruned. This statements are equivalent :
    * <p/>
-   * <PRE> setReplacement(&quot;éèê&quot;, &quot;e&quot;); setReplacement(&quot;éèê&quot;,
-   * &quot;eee&quot;); setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;); </PRE>
+   * 
+   * <PRE>
+   * setReplacement(&quot;éèê&quot;, &quot;e&quot;);
+   * setReplacement(&quot;éèê&quot;, &quot;eee&quot;);
+   * setReplacement(&quot;éèê&quot;, &quot;eeeeeeeee&quot;);
+   * </PRE>
    */
   public void setReplacement(String toBeReplaced, String replacement) {
     for (int i = 0; i < toBeReplaced.length(); i++) {

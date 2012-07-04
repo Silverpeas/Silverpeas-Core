@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jcrutil.servlets;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
@@ -58,9 +62,9 @@ public class RepositoryAccessServlet extends HttpServlet {
   private transient String jndiName = DEFAULT_JNDI_NAME;
 
   /**
-   * Initializes the servlet.<br> Please note that only one repository startup servlet may exist per
-   * webapp. it registers itself as context attribute and acts as singleton.
-   *
+   * Initializes the servlet.<br>
+   * Please note that only one repository startup servlet may exist per webapp. it registers itself
+   * as context attribute and acts as singleton.
    * @throws ServletException if a same servlet is already registered or of another initialization
    * error occurs.
    */
@@ -79,7 +83,7 @@ public class RepositoryAccessServlet extends HttpServlet {
       }
       getServletContext().setAttribute(CTX_PARAM_THIS, this);
       SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
-          "RepositoryAccessServlet.init()", "Spring context loaded.");      
+          "RepositoryAccessServlet.init()", "Spring context loaded.");
       repository = (Repository) new InitialContext().lookup(jndiName);
       SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
           "RepositoryAccessServlet initialized.", repository.toString());
@@ -161,7 +165,6 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the instance of this servlet
-   *
    * @param ctx the servlet context
    * @return this servlet
    */
@@ -177,7 +180,6 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
-   *
    * @return a JCR repository
    * @throws IllegalStateException if the repository is not available in the context.
    */
@@ -187,7 +189,6 @@ public class RepositoryAccessServlet extends HttpServlet {
 
   /**
    * Returns the JCR repository
-   *
    * @param ctx the servlet context
    * @return a JCR repository
    * @throws IllegalStateException if the repository is not available in the context.
@@ -195,5 +196,5 @@ public class RepositoryAccessServlet extends HttpServlet {
   public static Repository getRepository(ServletContext ctx) {
     return getInstance(ctx).getRepository();
   }
-  
+
 }

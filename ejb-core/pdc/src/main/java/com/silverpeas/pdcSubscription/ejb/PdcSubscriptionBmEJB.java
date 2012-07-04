@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,13 +76,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   public List<PDCSubscription> getPDCSubscriptionByUserId(int userId) {
     Connection conn = null;
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       return PdcSubscriptionDAO.getPDCSubscriptionByUserId(conn, userId);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.getPDCSubscriptionByUserId",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID", String.valueOf(userId), re);
+          "PdcSubscriptionBmEJB.getPDCSubscriptionByUserId",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID", String.valueOf(userId), re);
     } finally {
       DBUtil.close(conn);
     }
@@ -96,23 +96,23 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     PDCSubscription result = null;
 
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       result = PdcSubscriptionDAO.getPDCSubsriptionById(conn, id);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.getPDCSubsriptionById",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID",
-              String.valueOf(id), re);
+          "PdcSubscriptionBmEJB.getPDCSubsriptionById",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.CANNOT_FIND_SUBSCRIPTION_BYUSID",
+          String.valueOf(id), re);
     } finally {
       DBUtil.close(conn);
     }
 
     if (result == null) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.getPDCSubsriptionById",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.NO_SUBSCRIPTION_WITH_ID", String.valueOf(id));
+          "PdcSubscriptionBmEJB.getPDCSubsriptionById",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.NO_SUBSCRIPTION_WITH_ID", String.valueOf(id));
     }
 
     return result;
@@ -126,13 +126,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     int result = -1;
 
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       result = PdcSubscriptionDAO.createPDCSubscription(conn, subscription);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.createPDCSubscription",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.CANNOT_CREATE_SUBSCRIPTION", subscription, re);
+          "PdcSubscriptionBmEJB.createPDCSubscription",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.CANNOT_CREATE_SUBSCRIPTION", subscription, re);
     } finally {
       DBUtil.close(conn);
     }
@@ -145,19 +145,19 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    */
   public void updatePDCSubscription(PDCSubscription subscription) {
     SilverTrace.info("PdcSubscription",
-            "PdcSubscriptionBmEJB.updatePDCSubscription()",
-            "root.MSG_GEN_ENTER_METHOD", "subscription = "
-            + subscription.toString());
+        "PdcSubscriptionBmEJB.updatePDCSubscription()",
+        "root.MSG_GEN_ENTER_METHOD", "subscription = "
+        + subscription.toString());
     Connection conn = null;
 
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       PdcSubscriptionDAO.updatePDCSubscription(conn, subscription);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.updatePDCSubscription",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.CANNOT_UPDATE_SUBSCRIPTION", subscription, re);
+          "PdcSubscriptionBmEJB.updatePDCSubscription",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.CANNOT_UPDATE_SUBSCRIPTION", subscription, re);
     } finally {
       DBUtil.close(conn);
     }
@@ -170,13 +170,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     Connection conn = null;
 
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, id);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.removePDCSubscriptionById",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION", String.valueOf(id), re);
+          "PdcSubscriptionBmEJB.removePDCSubscriptionById",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION", String.valueOf(id), re);
     } finally {
       DBUtil.close(conn);
     }
@@ -188,11 +188,11 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   public void removePDCSubscriptionById(int[] ids) {
     Connection conn = null;
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       PdcSubscriptionDAO.removePDCSubscriptionById(conn, ids);
     } catch (Exception re) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.removePDCSubscriptionById",
-          PdcSubscriptionRuntimeException.ERROR,"PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
+          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.CANNOT_DELETE_SUBSCRIPTION",
           Arrays.toString(ids), re);
     } finally {
       DBUtil.close(conn);
@@ -202,18 +202,17 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Remote inteface method Implements PDCSubscription check for axis deletion. It deletes all
    * references to this axis from PDCSubscription module DB
-   *
-   * @param axisId   the axis to be checked
+   * @param axisId the axis to be checked
    * @param axisName the name of the axis
    */
   public void checkAxisOnDelete(int axisId, String axisName) {
     Connection conn = null;
     List<PDCSubscription> subscriptions = null;
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       // found all subscription uses axis provided
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
-              axisId);
+          axisId);
       if (subscriptions == null || subscriptions.isEmpty()) {
         return;
       }
@@ -232,8 +231,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkAxisOnDelete",
-              PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
-              subscriptions, e);
+          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
+          subscriptions, e);
     } finally {
       DBUtil.close(conn);
     }
@@ -242,22 +241,21 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * Implements PDCSubscription check for value deletion. It deletes all references to the path
    * containing this value from PDCSubscription module DB
-   *
-   * @param axisId   the axis to be checked
+   * @param axisId the axis to be checked
    * @param axisName the name of the axis
-   * @param oldPath  old path that would be removed soon
-   * @param newPath  new path. That will be places instead of old for this axis
+   * @param oldPath old path that would be removed soon
+   * @param newPath new path. That will be places instead of old for this axis
    * @param pathInfo should contains PdcBm.getFullPath data structure
    */
   public void checkValueOnDelete(int axisId, String axisName, List<String> oldPath,
-          List<String> newPath, List<List<String>> pathInfo) throws RemoteException {
+      List<String> newPath, List<List<String>> pathInfo) throws RemoteException {
     Connection conn = null;
     List<PDCSubscription> subscriptions = null;
 
     try {
-      conn =  DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
+      conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
       subscriptions = PdcSubscriptionDAO.getPDCSubscriptionByUsedAxis(conn,
-              axisId);
+          axisId);
       if (subscriptions == null || subscriptions.isEmpty()) {
         return;
       }
@@ -285,8 +283,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionBmEJB.checkValueOnDelete",
-              PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
-              subscriptions, e);
+          PdcSubscriptionRuntimeException.ERROR, "PdcSubscription.EX_CHECK_AXIS_FALIED",
+          subscriptions, e);
     } finally {
       DBUtil.close(conn);
     }
@@ -295,9 +293,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * This method check is any subscription that match criterias provided and sends notification if
    * succeed
-   *
    * @param classifyValues Linst of ClassifyValues to be checked
-   * @param componentId    component where classify event occures
+   * @param componentId component where classify event occures
    * @param silverObjectid object that was classified
    */
   public void checkSubscriptions(List<Value> classifyValues, String componentId, int silverObjectid) {
@@ -324,7 +321,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
             silverContent = getSilverContent(componentId, silverObjectid);
             spaceAndInstanceNames = getSpaceAndInstanceNames(componentId, organizationController);
             firstAdminId = getFirstAdministrator(organizationController,
-                    subscription.getOwnerId());
+                subscription.getOwnerId());
           }
           // The current subscription matches the new classification.
           // Now, we have to test if subscription's owner is allowed to access
@@ -335,16 +332,16 @@ public class PdcSubscriptionBmEJB implements SessionBean {
             // if user have got at least one role, sends a notification to the
             // user specified in pdcSubscription
             sendSubscriptionNotif(subscription, spaceAndInstanceNames,
-                    componentId, silverContent, firstAdminId);
+                componentId, silverContent, firstAdminId);
           }
         }
       }
 
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.checkSubscriptions",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.EX_CHECK_SUBSCR_FALIED", classifyValues, e);
+          "PdcSubscriptionBmEJB.checkSubscriptions",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.EX_CHECK_SUBSCR_FALIED", classifyValues, e);
 
     } finally {
       DBUtil.close(conn);
@@ -353,8 +350,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
   /**
    * get the silverContent object according to the given silverObjectid
-   *
-   * @param componentId    - the component where is classified the silverContent
+   * @param componentId - the component where is classified the silverContent
    * @param silverObjectId - the unique identifier of the silverContent
    * @return SilverContentInterface the object which has been classified
    */
@@ -371,12 +367,12 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       ArrayList<String> userRoles = new ArrayList<String>();
       userRoles.add("admin");
       silverContents = contentInterface.getSilverContentById(silverobjectIds,
-              componentId, "unknown", userRoles);
+          componentId, "unknown", userRoles);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException(
-              "PdcSubscriptionBmEJB.sendSubscriptionNotif",
-              PdcSubscriptionRuntimeException.ERROR,
-              "PdcSubscription.EX_CHECK_SUBSCR_FALIED", e);
+          "PdcSubscriptionBmEJB.sendSubscriptionNotif",
+          PdcSubscriptionRuntimeException.ERROR,
+          "PdcSubscription.EX_CHECK_SUBSCR_FALIED", e);
     }
     if (silverContents != null && !silverContents.isEmpty()) {
       silverContent = silverContents.get(0);
@@ -387,13 +383,12 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
   /**
    * get the names of space and instance where the object have been classified
-   *
-   * @param componentId            - the component where is classified the silverContent
+   * @param componentId - the component where is classified the silverContent
    * @param organizationController - the OrganizationController
    * @return ArrayList 1 - spaceName 2 - instanceName 3 - spaceId
    */
   private List<String> getSpaceAndInstanceNames(String componentId,
-          OrganizationController organizationController) {
+      OrganizationController organizationController) {
     ComponentInst componentInstance = organizationController.getComponentInst(componentId);
     String instanceName = componentInstance.getLabel();
     String workSpaceId = componentInstance.getDomainFatherId();
@@ -421,13 +416,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
   /**
    * @param subscription PDCSubscription to check
-   * @param axisId       id of the axis value of which should be removed
-   * @param oldPath      list of original axis paths (before deletion)
-   * @param newPath      list new axis path to be places instead of old path
+   * @param axisId id of the axis value of which should be removed
+   * @param oldPath list of original axis paths (before deletion)
+   * @param newPath list new axis path to be places instead of old path
    * @return true if subscription should be removed
    */
   protected boolean checkSubscriptionRemove(PDCSubscription subscription,
-          int axisId, List<String> oldPath, List<String> newPath) {
+      int axisId, List<String> oldPath, List<String> newPath) {
     List<Criteria> subscriptionCtx = subscription.getPdcContext();
     for (Criteria criteria : subscriptionCtx) {
       if (criteria.getAxisId() == axisId) {
@@ -444,7 +439,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return true if path provided was removed should be removed
    */
   protected boolean checkValuesRemove(String originalPath, List<String> oldPath,
-          List<String> newPath) {
+      List<String> newPath) {
     if (!originalPath.endsWith("/")) {
       originalPath += "/";
     }
@@ -463,9 +458,10 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   }
 
   /**
-   * Checks if values provided presented in provided path. <br> Ex1: path /2/3/4/5/ value: /5/
-   * result:true <br> Ex2: path /2/3/4/5/ value: /3/ result true <br> Ex2: path /2/3/4/5/ value: /8/
-   * result false
+   * Checks if values provided presented in provided path. <br>
+   * Ex1: path /2/3/4/5/ value: /5/ result:true <br>
+   * Ex2: path /2/3/4/5/ value: /3/ result true <br>
+   * Ex2: path /2/3/4/5/ value: /8/ result false
    */
   protected boolean checkValueInPath(String value, List<String> pathList) {
     for (String path : pathList) {
@@ -480,16 +476,16 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return true if subscription provided match the list of classify values
    */
   protected boolean isCorrespondingSubscription(PDCSubscription subscription,
-          List<Value> classifyValues) {
+      List<Value> classifyValues) {
     SilverTrace.info("PdcSubscription",
-            "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
-            "root.MSG_GEN_ENTER_METHOD", "subscription = "
-            + subscription.toString() + ", classifyValues = "
-            + classifyValues.toString());
+        "PdcSubscriptionBmEJB.isCorrespondingSubscription()",
+        "root.MSG_GEN_ENTER_METHOD", "subscription = "
+        + subscription.toString() + ", classifyValues = "
+        + classifyValues.toString());
     List<Criteria> searchCriterias = subscription.getPdcContext();
 
     if (searchCriterias == null || classifyValues == null || searchCriterias.isEmpty()
-            || classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
+        || classifyValues.isEmpty() || searchCriterias.size() > classifyValues.size()) {
       return false;
     }
 
@@ -534,14 +530,14 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * Sends delete notifications
    */
   protected void sendDeleteNotif(PDCSubscription subscription, String axisName,
-          boolean isValueDeleted, int fromUser, List<List<String>> path)
-          throws NotificationManagerException {
+      boolean isValueDeleted, int fromUser, List<List<String>> path)
+      throws NotificationManagerException {
     SilverTrace.info("PdcSubscription",
-            "PdcSubscriptionBmEJB.sendDeleteNotif()", "root.MSG_GEN_ENTER_METHOD");
+        "PdcSubscriptionBmEJB.sendDeleteNotif()", "root.MSG_GEN_ENTER_METHOD");
 
     final String language = getDefaultUserLanguage(subscription.getOwnerId());
     final ResourceLocator resources = new ResourceLocator(
-            "com.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
+        "com.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
     final StringBuilder message = new StringBuilder(150);
 
     if (isValueDeleted) {
@@ -567,8 +563,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
     NotificationSender notifSender = new NotificationSender("");
     NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, resources.getString(MESSAGE_DELETE_TITLE), message.
-            toString());
+        NotificationParameters.NORMAL, resources.getString(MESSAGE_DELETE_TITLE), message.
+        toString());
     notifMetaData.setSender(String.valueOf(fromUser));
     notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(subscription.getOwnerId())));
     notifMetaData.setSource(resources.getString(SOURCE_CLASSIFICATION));
@@ -579,9 +575,9 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * Sends a notification when subscription criterias math a new content classified
    */
   protected void sendSubscriptionNotif(PDCSubscription subscription,
-          List<String> spaceAndInstanceNames, String componentId,
-          SilverContentInterface silverContent,
-          int fromUserId) throws NotificationManagerException {
+      List<String> spaceAndInstanceNames, String componentId,
+      SilverContentInterface silverContent,
+      int fromUserId) throws NotificationManagerException {
     final int userID = subscription.getOwnerId();
     final String subscriptionName = subscription.getName();
     final java.util.Date classifiedDate = new java.util.Date();
@@ -593,7 +589,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
       String contentName = silverContent.getName();
       if (contentUrl != null) {
         StringBuilder documentUrlBuffer = new StringBuilder().append(
-                "/RpdcSearch/jsp/GlobalContentForward?contentURL=");
+            "/RpdcSearch/jsp/GlobalContentForward?contentURL=");
         try {
           documentUrlBuffer.append(URLEncoder.encode(contentUrl, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
@@ -609,27 +605,26 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     String instanceName = spaceAndInstanceNames.get(1);
 
     sendNotification(userID, fromUserId, subscriptionName, instanceName,
-            componentId, spaceName, classifiedDate, "standartMessage", documentUrl,
-            documentName);
+        componentId, spaceName, classifiedDate, "standartMessage", documentUrl,
+        documentName);
   }
 
-
   protected void sendNotification(int userID, int fromUserID,
-          String subscription, String component, String componentID,
-          String workSpace, java.util.Date classifiedDate,
-          String notificationMessageKey, String documentUrl, String documentName)
-          throws NotificationManagerException {
+      String subscription, String component, String componentID,
+      String workSpace, java.util.Date classifiedDate,
+      String notificationMessageKey, String documentUrl, String documentName)
+      throws NotificationManagerException {
     SilverTrace.info("PdcSubscription",
-            "PdcSubscriptionBmEJB.sendNotification()", "root.MSG_GEN_ENTER_METHOD",
-            "userID = " + userID + ", fromUserID = " + fromUserID
-            + ", subscription = " + subscription + ", componentId = "
-            + component + ", workSpaceId = " + workSpace
-            + ", notificationMessageKey = " + notificationMessageKey
-            + ", documentUrl = " + documentUrl);
+        "PdcSubscriptionBmEJB.sendNotification()", "root.MSG_GEN_ENTER_METHOD",
+        "userID = " + userID + ", fromUserID = " + fromUserID
+        + ", subscription = " + subscription + ", componentId = "
+        + component + ", workSpaceId = " + workSpace
+        + ", notificationMessageKey = " + notificationMessageKey
+        + ", documentUrl = " + documentUrl);
 
     final String language = getDefaultUserLanguage(userID);
     final ResourceLocator resources = new ResourceLocator(
-            "com.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
+        "com.silverpeas.pdcSubscription.multilang.pdcsubscription", language);
     final StringBuilder message = new StringBuilder(150);
 
     message.append(resources.getString("Subscription"));
@@ -642,7 +637,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
     NotificationSender notifSender = new NotificationSender(componentID);
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-            resources.getString(notificationMessageKey), message.toString());
+        resources.getString(notificationMessageKey), message.toString());
     notifMetaData.setSender(String.valueOf(fromUserID));
     notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(userID)));
     notifMetaData.setSource(workSpace + " - " + component);
@@ -655,7 +650,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    */
   protected String getDefaultUserLanguage(int userID) {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
-            String.valueOf(userID)).getLanguage();
+        String.valueOf(userID)).getLanguage();
   }
 
   /**

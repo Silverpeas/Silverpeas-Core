@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import com.silverpeas.util.StringUtil;
@@ -30,7 +31,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
- *
  * @author ehugonnet
  */
 public abstract class AbstractIndexer {
@@ -48,7 +48,8 @@ public abstract class AbstractIndexer {
 
   public void index(String currentSpaceId, String componentId) throws Exception {
     setSilverTraceLevel();
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
+        "root.MSG_GEN_ENTER_METHOD");
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = organizationController.getAllSpaceIds();
@@ -66,7 +67,8 @@ public abstract class AbstractIndexer {
         indexComponent(currentSpaceId, componentId);
       }
     }
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace
+        .info("applicationIndexer", "ApplicationIndexer.index()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -77,26 +79,26 @@ public abstract class AbstractIndexer {
   public void indexSpace(String spaceId) throws Exception {
     SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
         "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
-    
+
     if (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
       spaceId = spaceId.substring(2);
     }
-    
+
     // index space info
     admin.indexSpace(Integer.parseInt(spaceId));
-    
+
     // index components
     String[] componentIds = organizationController.getAllComponentIds(spaceId);
     for (String componentId : componentIds) {
       indexComponent(spaceId, componentId);
     }
-    
+
     // index sub spaces
     String[] subSpaceIds = organizationController.getAllSubSpaceIds(spaceId);
     for (String subSpaceId : subSpaceIds) {
       indexSpace(subSpaceId);
     }
-    
+
     SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
         "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
   }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.peasUtil.AccessForbiddenException;
@@ -61,12 +62,13 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for notificationUser, returns
    * "notificationUser"
-   * @return 
+   * @return
    */
   @Override
   public String getSessionControlBeanName() {
     return "pdcPeas";
   }
+
   /**
    * This is the separator string between the name of axis or values and their order in the option
    * html tag
@@ -112,7 +114,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
           request.setAttribute("ManageableAxis", pdcSC.getAxisManageables());
         }
 
-        SilverTrace.info("Pdc", "PdcRequestRouter.Main",  "root.MSG_GEN_PARAM_VALUE", 
+        SilverTrace.info("Pdc", "PdcRequestRouter.Main", "root.MSG_GEN_PARAM_VALUE",
             "list.size() = " + list.size());
         // create the new destination
         destination = "/pdcPeas/jsp/pdc.jsp";
@@ -302,7 +304,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
 
         // create the axe
         AxisHeader axisHeader = new AxisHeader(new AxisPK("unknown"), axeName,
-            axeType, ( Integer.parseInt(axeOrder)), null, null, -1,
+            axeType, (Integer.parseInt(axeOrder)), null, null, -1,
             axeDescription);
         SilverTrace.info("Pdc", "PdcRequestRouter.CreateAxis",
             "root.MSG_GEN_PARAM_VALUE", "Before creation");

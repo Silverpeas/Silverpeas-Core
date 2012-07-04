@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.Subscription;
@@ -64,7 +65,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
       return DBUtil.makeConnection(dbName);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getConnection()",
-              SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
@@ -78,7 +79,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.addSubscription()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_ADD_SUBSCRIBE", e);
     } finally {
       DBUtil.close(con);
     }
@@ -94,7 +95,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeSubscribe()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_SUBSCRIBE", e);
     } finally {
       DBUtil.close(con);
     }
@@ -102,15 +103,13 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   /**
    * Method declaration
-   *
-   *
    * @param userId
    * @see
    */
   @Override
   public void unsubscribe(String userId) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.removeUserSubscribes",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
@@ -118,7 +117,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeUserSubscribes()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_USER_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -126,7 +125,6 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   /**
    * Method declaration
-   *
    * @param node
    * @param path
    * @see
@@ -134,7 +132,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public void unsubscribeByPath(NodePK node, String path) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.removeSubscriptionsByPath",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
@@ -142,7 +140,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscribeBmEJB.removeSubscriptionsByPath()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_REMOVE_NODE_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -150,14 +148,14 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   /**
    * Method declaration
-   *
    * @param userId
    * @return
    * @see
    */
   @Override
   public Collection<? extends Subscription> getUserSubscriptions(String userId) {
-    SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscriptions", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscriptions",
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
@@ -165,7 +163,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
       return subscriptionDao.getSubscriptionsBySubscriber(con, userId);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscriptions()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
     } finally {
       DBUtil.close(con);
     }
@@ -173,7 +171,6 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   /**
    * Method declaration
-   *
    * @param userId
    * @param componentName
    * @return
@@ -183,24 +180,24 @@ public class SimpleSubscriptionService implements SubscriptionService {
   public Collection<? extends Subscription> getUserSubscriptionsByComponent(String userId,
       String componentName) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.getUserSubscriptionsByComponent",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
       return subscriptionDao.getSubscriptionsBySubscriberAndComponent(con, userId, componentName);
     } catch (Exception e) {
-      throw new SubscribeRuntimeException("SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
-              SilverpeasRuntimeException.ERROR,
-              "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e);
+      throw new SubscribeRuntimeException(
+          "SubscribeBmEJB.getUserSubscribesPKsByspaceAndcomponent()",
+          SilverpeasRuntimeException.ERROR,
+          "subscribe.CANNOT_GET_USER_SUBSCRIBES_SPACE_COMPONENT", e);
     } finally {
       DBUtil.close(con);
     }
   }
-  
+
   /**
    * Method declaration
-   *
    * @param node
    * @return
    * @see
@@ -208,14 +205,14 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public Collection<String> getSubscribers(WAPrimaryKey pk) {
     SilverTrace.info("subscribe", "SubscribeBmEJB.getNodeSubscribersId",
-            "root.MSG_GEN_ENTER_METHOD");
+        "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
       return subscriptionDao.getSubscribers(con, pk);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscribeBmEJB.getNodeSubscribersId()",
-              SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
+          SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_NODE_SUBSCRIBERS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -223,7 +220,8 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public boolean isSubscribedToComponent(String user, String componentName) {
-    Collection<? extends Subscription> subscriptions = getUserSubscriptionsByComponent(user, componentName);
+    Collection<? extends Subscription> subscriptions =
+        getUserSubscriptionsByComponent(user, componentName);
     return subscriptions != null && !subscriptions.isEmpty();
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -67,7 +67,7 @@ public class PortletStateTable extends AbstractTable<PortletStateRow> {
     if (orderField != null) {
       req = req + " order by " + orderField;
     }
-    List<PortletStateRow> rows =  getRows(req);
+    List<PortletStateRow> rows = getRows(req);
     return rows.toArray(new PortletStateRow[rows.size()]);
   }
 
@@ -75,8 +75,8 @@ public class PortletStateTable extends AbstractTable<PortletStateRow> {
    * Returns all the PortletStateRow having a given portletRowId
    */
   public PortletStateRow[] getAllByPortletRowId(int portletRowId) throws UtilException {
-    List<PortletStateRow> rows =  getRows(SELECT_ALL_PORTLETSTATE_WITH_GIVEN_PORTLETROWID,
-            portletRowId);
+    List<PortletStateRow> rows = getRows(SELECT_ALL_PORTLETSTATE_WITH_GIVEN_PORTLETROWID,
+        portletRowId);
     return rows.toArray(new PortletStateRow[rows.size()]);
   }
 
@@ -87,7 +87,7 @@ public class PortletStateTable extends AbstractTable<PortletStateRow> {
    * Returns all the PortletStateRow having a given userId
    */
   public PortletStateRow[] getAllByUserId(int userId) throws UtilException {
-    List<PortletStateRow> rows =  getRows(SELECT_ALL_PORTLETSTATE_WITH_GIVEN_USERID, userId);
+    List<PortletStateRow> rows = getRows(SELECT_ALL_PORTLETSTATE_WITH_GIVEN_USERID, userId);
     return rows.toArray(new PortletStateRow[rows.size()]);
   }
 
@@ -98,7 +98,7 @@ public class PortletStateTable extends AbstractTable<PortletStateRow> {
    * Returns all the rows.
    */
   public PortletStateRow[] getAllRows() throws UtilException {
-    List<PortletStateRow> rows =  getRows(SELECT_ALL_PORTLETSTATE);
+    List<PortletStateRow> rows = getRows(SELECT_ALL_PORTLETSTATE);
     return rows.toArray(new PortletStateRow[rows.size()]);
   }
 
@@ -116,7 +116,7 @@ public class PortletStateTable extends AbstractTable<PortletStateRow> {
    * Returns all the rows given by a no parameters query.
    */
   public PortletStateRow[] getPortletStates(String query) throws UtilException {
-    List<PortletStateRow> rows =  getRows(query);
+    List<PortletStateRow> rows = getRows(query);
     return rows.toArray(new PortletStateRow[rows.size()]);
   }
 

@@ -1,23 +1,27 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 import com.silverpeas.calendar.Datable;
@@ -36,7 +40,6 @@ import org.apache.commons.lang3.time.FastDateFormat;
 
 /**
  * DateUtil is an helper class for date manipulation.
- *
  * @author squere
  */
 public class DateUtil {
@@ -81,13 +84,13 @@ public class DateUtil {
     ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
     ICALUTCDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'",
         TimeZone.getTimeZone("UTC"));
-    ISO8601_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
+    ISO8601_FORMATTER =
+        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
         "UTC"));
   }
 
   /**
    * Display the date in a language specific standard format.
-   *
    * @param date the date to convert.
    * @param language The current user's language
    * @return A String representation of the date in the language specific format.
@@ -150,7 +153,7 @@ public class DateUtil {
     }
     FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
         language).getString("dateOutputFormat") +
-         " " + getMultilangProperties(language).getString("hourOutputFormat"));
+        " " + getMultilangProperties(language).getString("hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -175,7 +178,6 @@ public class DateUtil {
 
   /**
    * Parse the date in a language specific standard format.
-   *
    * @param string The String to convert in Date
    * @param language The current user's language
    * @throws java.text.ParseException if the input String is null, empty, or just in an incorrect
@@ -250,7 +252,6 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard output format.
-   *
    * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
@@ -260,7 +261,6 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   *
    * @param language The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
@@ -290,19 +290,17 @@ public class DateUtil {
 
   /**
    * Get the date language specific standard input format.
-   *
    * @param lang The current user's language
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
     return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " " +
-         getMultilangProperties(lang).getString("hourOutputFormat"));
+        getMultilangProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
    * Get all date multilang properties. This properties contains day and month labels, common date
    * format, and week first day.
-   *
    * @param language The current user's language.
    * @return The ResourceLocator containing all date multilang properties
    * @author squere
@@ -314,7 +312,6 @@ public class DateUtil {
 
   /**
    * Parse a special String into a Date.
-   *
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @return a java object Date
    * @throws ParseException
@@ -327,7 +324,6 @@ public class DateUtil {
 
   /**
    * Parse a special String into a Date.
-   *
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @param format (String) the whished format in according to the date parameter
    * @return a java object Date
@@ -340,7 +336,6 @@ public class DateUtil {
 
   /**
    * Test if two dates are equal
-   *
    * @param date1 first date
    * @param date2 second date
    * @return true if both dates defined the same date
@@ -394,7 +389,6 @@ public class DateUtil {
 
   /**
    * Returns the first date of month according to given date (ex. 26/08/2010)
-   *
    * @param date any date
    * @return first date of month in sql format (ie. 2010/08/01)
    */
@@ -448,13 +442,12 @@ public class DateUtil {
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
     SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " +
-         time);
+        time);
     return time;
   }
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   *
    * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
@@ -476,7 +469,6 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
-   *
    * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
@@ -494,7 +486,6 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
-   *
    * @param time the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
@@ -512,7 +503,6 @@ public class DateUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   *
    * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
@@ -534,7 +524,6 @@ public class DateUtil {
 
   /**
    * Format a Date to a String of format yyyy/MM/dd.
-   *
    * @param date the date to be formatted.
    * @return the formatted String.
    */
@@ -547,7 +536,6 @@ public class DateUtil {
 
   /**
    * Format a Calendar to a String of format yyyy/MM/dd.
-   *
    * @param calend the date to be formatted.
    * @return the formatted String.
    */
@@ -560,7 +548,6 @@ public class DateUtil {
 
   /**
    * Formats the specified date according to the specified date pattern.
-   *
    * @param date the date to format into a string.
    * @param pattern the pattern to apply in the format.
    * @return a string representation of the specified date and in the specified pattern.
@@ -573,7 +560,6 @@ public class DateUtil {
   /**
    * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
    * Calendar.
-   *
    * @param time the String to be parsed.
    * @param calend the calendar to be updated.
    */
@@ -598,7 +584,6 @@ public class DateUtil {
 
   /**
    * Format a Date to a String of format HH:mm.
-   *
    * @param date the date to be formatted.
    * @return the formatted String.
    */
@@ -611,7 +596,6 @@ public class DateUtil {
 
   /**
    * Format a Calendar to a String of format HH:mm.
-   *
    * @param calend the date to be formatted.
    * @return the formatted String.
    */
@@ -624,7 +608,6 @@ public class DateUtil {
 
   /**
    * Formats the specified date according to the ISO 8601 format.
-   *
    * @param date the date to format.
    * @return a String representation of the date in one of the ISO 8601 format (down to the minute
    * and without the UTC offset).
@@ -636,7 +619,6 @@ public class DateUtil {
   /**
    * Formats the specified date according to the short ISO 8601 format (only the day date is
    * rendered).
-   *
    * @param date the date to format.
    * @return a String representation of the date in one of the short ISO 8601 format (yyyy-MM-dd).
    */
@@ -647,7 +629,6 @@ public class DateUtil {
   /**
    * Formats the specified date according to the ISO 8601 format of the iCal format (in the timezone
    * of the date).
-   *
    * @param date the date to format.
    * @return a String representation of the date the ISO 8601 format of the iCal format (down to the
    * second).
@@ -658,7 +639,6 @@ public class DateUtil {
 
   /**
    * Formats the specified date according to the ISO 8601 format of the iCal format (in UTC).
-   *
    * @param date the date to format.
    * @return a String representation of the date the ISO 8601 format of the iCal format (down to the
    * second in UTC).
@@ -670,7 +650,6 @@ public class DateUtil {
   /**
    * Formats the specified date according to the short ISO 8601 format (only the day date is
    * rendered) used in the iCal format.
-   *
    * @param date the date to format.
    * @return a String representation of the date in one of the short ISO 8601 format (yyyyMMdd).
    */
@@ -680,7 +659,6 @@ public class DateUtil {
 
   /**
    * Parses the specified ISO 8601 formatted date and returns it as a Date instance.
-   *
    * @param date the date to parse (must satisfy one of the following pattern yyyy-MM-ddTHH:mm or
    * yyyy-MM-dd).
    * @return a date object, resulting of the parsing.
@@ -693,7 +671,6 @@ public class DateUtil {
 
   /**
    * Converts the specified date as a Datable object with the time set or not.
-   *
    * @param aDate a Java date to convert.
    * @param withTime the time in the Java date has to be taken into account.
    * @return a Datable object.
@@ -710,7 +687,6 @@ public class DateUtil {
 
   /**
    * Compute the date of the first day in the month of the specified date.
-   *
    * @param date the specified date.
    * @return a date for the first day of the month of the specified date.
    */
@@ -727,7 +703,6 @@ public class DateUtil {
 
   /**
    * Compute the date of the last day in the month of the specified date.
-   *
    * @param date the specified date.
    * @return a date for the last day of the month of the specified date.
    */

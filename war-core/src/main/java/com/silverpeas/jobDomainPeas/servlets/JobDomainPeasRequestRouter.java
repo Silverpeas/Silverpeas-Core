@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.jobDomainPeas.servlets;
 
 import com.silverpeas.jobDomainPeas.JobDomainPeasException;
@@ -64,8 +65,8 @@ import java.util.StringTokenizer;
  * Class declaration
  * @author
  */
-public class JobDomainPeasRequestRouter
-    extends ComponentRequestRouter<JobDomainPeasSessionController> {
+public class JobDomainPeasRequestRouter extends
+    ComponentRequestRouter<JobDomainPeasSessionController> {
 
   private static final long serialVersionUID = 1L;
 
@@ -110,7 +111,7 @@ public class JobDomainPeasRequestRouter
       if (!jobDomainSC.isAccessGranted()) {
         throw new JobDomainPeasException("JobDomainPeasRequestRouter.getDestination",
             SilverpeasException.ERROR, "root.EX_BAD_USER_RIGHT", "MODULE JOBDOMAIN : user "
-                + jobDomainSC.getUserId());
+            + jobDomainSC.getUserId());
       }
       // 1) Performs the action
       // ----------------------
@@ -384,7 +385,7 @@ public class JobDomainPeasRequestRouter
         } else if (function.startsWith("groupImport")) {
           bHaveToRefreshDomain =
               jobDomainSC.importGroup(EncodeHelper.htmlStringToJavaString(request.
-                  getParameter("groupName")));
+              getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
@@ -473,38 +474,38 @@ public class JobDomainPeasRequestRouter
           else if (function.startsWith("domainCreate")) {
             String newDomainId =
                 jobDomainSC.createDomain(EncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainName")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                    EncodeHelper.htmlStringToJavaString(request
-                        .getParameter("domainAuthentication")),
-                    EncodeHelper
-                        .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+                .getParameter("domainName")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
+                EncodeHelper.htmlStringToJavaString(request
+                .getParameter("domainAuthentication")),
+                EncodeHelper
+                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
             String newDomainId =
                 jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(request.
-                    getParameter("domainName")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                    EncodeHelper
-                        .htmlStringToJavaString(request.getParameter("silverpeasServerURL")));
+                getParameter("domainName")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                EncodeHelper
+                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
             String modifiedDomainId =
                 jobDomainSC.modifyDomain(EncodeHelper.htmlStringToJavaString(request.
-                    getParameter("domainName")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                    EncodeHelper
-                        .htmlStringToJavaString(request.getParameter("domainAuthentication")),
-                    EncodeHelper
-                        .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                    EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+                getParameter("domainName")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
+                EncodeHelper
+                .htmlStringToJavaString(request.getParameter("domainAuthentication")),
+                EncodeHelper
+                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                EncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
@@ -564,26 +565,26 @@ public class JobDomainPeasRequestRouter
           request.setAttribute("action", "groupCreate");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC
-                  .getString("JDP.groupAdd")
-                  +
-                  "..."));
+              .getString("JDP.groupAdd")
+              +
+              "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupModify")) {
           request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
           request.setAttribute("action", "groupModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-                  "JDP.groupUpdate") + "..."));
+              "JDP.groupUpdate") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-                  "JDP.groupImport") + "..."));
+              "JDP.groupImport") + "..."));
           destination = "groupImport.jsp";
         } else if (function.startsWith("displaySelectUserOrGroup")) {
           destination =
               jobDomainSC.initSelectionPeasForOneGroupOrUser((String) request.getAttribute(
-                  "myComponentURL"));
+              "myComponentURL"));
         } else if (function.startsWith("displayAddRemoveUsers")) {
           destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
               "myComponentURL"));
@@ -736,7 +737,7 @@ public class JobDomainPeasRequestRouter
         request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
         request.setAttribute("isDomainSync",
             ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-                || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
 
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
@@ -755,7 +756,7 @@ public class JobDomainPeasRequestRouter
         request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
         request.setAttribute("isDomainSync",
             ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-                || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
 
         request
             .setAttribute("isGroupManagerOnThisGroup", jobDomainSC.isGroupManagerOnCurrentGroup());
@@ -771,15 +772,15 @@ public class JobDomainPeasRequestRouter
 
           SilverTrace.info("jobDomainPeas", "JobDomainPeasRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "domainRight=" + domainRight
-                  + " & DomainDriver.ACTION_X509_USER = " + DomainDriver.ACTION_X509_USER);
+              + " & DomainDriver.ACTION_X509_USER = " + DomainDriver.ACTION_X509_USER);
 
           request.setAttribute("isDomainRW",
               ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
-                  || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
+              || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
           request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
           request.setAttribute("isDomainSync",
               ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-                  || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+              || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
           request.setAttribute("isX509Enabled", (domainRight & DomainDriver.ACTION_X509_USER) != 0);
           request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
           request.setAttribute("userManageableByGroupManager", jobDomainSC.

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.beans.admin;
 
 import com.google.common.base.Objects;
@@ -37,7 +38,8 @@ import java.util.List;
 /**
  * The class SpaceInst is the representation in memory of a space
  */
-public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst>, Cloneable {
+public class SpaceInst extends AbstractI18NBean implements Serializable, Comparable<SpaceInst>,
+    Cloneable {
 
   public static final String PERSONAL_SPACE_ID = "-10";
   public static final String DEFAULT_SPACE_ID = "-20";
@@ -174,7 +176,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
     if (isPersonalSpace) {
       return GeneralPropertiesManager.getGeneralMultilang(language).getString("GML.personalSpace",
-        "Mon espace");
+          "Mon espace");
     } else {
       if (!I18NHelper.isI18N) {
         return getName();
@@ -603,16 +605,16 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     if (obj instanceof SpaceInst) {
       SpaceInst other = (SpaceInst) obj;
       return Objects.equal(other.createDate, createDate)
-        && Objects.equal(other.id, id)
-        && Objects.equal(other.level, level)
-        && Objects.equal(other.look, look)
-        && Objects.equal(other.firstPageType, firstPageType)
-        && Objects.equal(other.orderNum, orderNum)
-        && Objects.equal(other.creatorUserId, creatorUserId)
-        && Objects.equal(other.description, description)
-        && Objects.equal(other.domainFatherId, domainFatherId)
-        && Objects.equal(other.firstPageExtraParam, firstPageExtraParam)
-        && Objects.equal(other.name, name);
+          && Objects.equal(other.id, id)
+          && Objects.equal(other.level, level)
+          && Objects.equal(other.look, look)
+          && Objects.equal(other.firstPageType, firstPageType)
+          && Objects.equal(other.orderNum, orderNum)
+          && Objects.equal(other.creatorUserId, creatorUserId)
+          && Objects.equal(other.description, description)
+          && Objects.equal(other.domainFatherId, domainFatherId)
+          && Objects.equal(other.firstPageExtraParam, firstPageExtraParam)
+          && Objects.equal(other.name, name);
     }
     return false;
   }
@@ -625,7 +627,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   @Override
   public SpaceInst clone() {
-    SpaceInst clone =  new SpaceInst();
+    SpaceInst clone = new SpaceInst();
 
     // clone basic information
     clone.setDescription(description);

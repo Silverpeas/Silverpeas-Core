@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,7 +62,6 @@ import java.util.Map;
 
 /**
  * Class declaration
- *
  * @author
  */
 public class ToDoSessionController extends AbstractComponentSessionController {
@@ -83,14 +82,14 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Constructor declaration
-   *
    * @see
    */
   public ToDoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "com.stratelia.webactiv.todo.multilang.todo");
     setComponentRootName(URLManager.CMP_TODO);
     try {
-      calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)
+      calendarBm =
+          EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)
           .create();
     } catch (Exception e) {
       throw new UtilException("ToDoSessionControl.ToDoSessionControl()", SilverpeasException.ERROR,
@@ -121,7 +120,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @throws TodoException
    * @see
@@ -139,7 +137,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @throws TodoException
    * @see
@@ -158,7 +155,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @throws TodoException
    * @see
@@ -176,7 +172,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param todoId
    * @return
    * @throws TodoException
@@ -199,7 +194,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @param name
    * @param description
@@ -246,7 +240,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     } catch (ParseException e) {
       throw new TodoException("ToDoSessionController.updateToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_UPDATE_TODO_DETAIL", e);
-    }catch (RemoteException e) {
+    } catch (RemoteException e) {
       throw new TodoException("ToDoSessionController.updateToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_UPDATE_TODO_DETAIL", e);
     }
@@ -255,7 +249,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @param percent
    * @throws TodoException
@@ -287,7 +280,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @param title
    * @param text
@@ -312,7 +304,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @throws TodoException
    * @see
@@ -338,7 +329,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @throws TodoException
    * @see
@@ -358,7 +348,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param name
    * @param description
    * @param priority
@@ -401,7 +390,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       todo.setEndHour(endHour);
       String result = calendarBm.addToDo(todo);
       SilverTrace.info("todo", "ToDoSessionController.addToDo()", "root.MSG_GEN_EXIT_METHOD");
-    return result;
+      return result;
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.addToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_ADD_TODO", e);
@@ -411,7 +400,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param id
    * @throws TodoException
    * @see
@@ -431,7 +419,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @throws TodoException
    * @see
    */
@@ -465,7 +452,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param todoId
    * @param userIds
    * @throws TodoException
@@ -487,7 +473,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -497,7 +482,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -510,7 +494,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -524,7 +507,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param viewType
    * @see
    */
@@ -534,7 +516,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -544,7 +525,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -554,7 +534,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param todo
    * @see
    */
@@ -564,7 +543,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @return
    * @see
    */
@@ -574,7 +552,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
    * @param attendees
    * @see
    */
@@ -584,7 +561,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Paramètre le userPannel => tous les users, sélection des users participants
-   *
    * @param
    * @return
    * @throws
@@ -633,7 +609,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Retourne une Collection de UserDetail des utilisateurs selectionnés via le userPanel
-   *
    * @param
    * @return
    * @throws TodoException
@@ -685,10 +660,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     super.close();
   }
 
-
   /**
    * ComponentInst cache mechanism
-   *
    * @param componentId
    * @return
    */
@@ -706,7 +679,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * SpaceInst cache mechanism
-   *
    * @param spaceId
    * @return
    */
@@ -721,6 +693,5 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     }
     return resultSpace;
   }
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.util;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -46,12 +47,16 @@ public class FileRepositoryManager {
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath +
       File.separatorChar + "avatar");
   static String tempPath = "";
-  final static ResourceLocator uploadSettings=  new ResourceLocator(
-          "com.stratelia.webactiv.util.uploads.uploadSettings", "");
-  static final ResourceLocator utilMessages = new ResourceLocator("com.silverpeas.util.multilang.util", "");
+  static String domainPropertiesFolderPath;
+  static String domainAuthenticationPropertiesFolderPath;
+
+  final static ResourceLocator uploadSettings = new ResourceLocator(
+      "com.stratelia.webactiv.util.uploads.uploadSettings", "");
+  static final ResourceLocator utilMessages =
+      new ResourceLocator("com.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
-  
+
   static final long ko = 1024;
   static final long mo = ko * 1024;
   static final long go = mo * 1024;
@@ -68,6 +73,16 @@ public class FileRepositoryManager {
           "util.MSG_ERROR_LOADING_PROPS",
           "com.stratelia.webactiv.general.properties");
     }
+
+    StringBuilder path = new StringBuilder();
+    path.append(System.getenv("SILVERPEAS_HOME")).append(File.separator);
+    path.append("properties").append(File.separator);
+    path.append("com").append(File.separator);
+    path.append("stratelia").append(File.separator);
+    path.append("silverpeas").append(File.separator);
+
+    domainPropertiesFolderPath = path.toString() + "domains" + File.separator;
+    domainAuthenticationPropertiesFolderPath = path.toString() + "authentication" + File.separator;
   }
 
   /**
@@ -91,7 +106,7 @@ public class FileRepositoryManager {
   static public String getAvatarPath() {
     return avatarPath;
   }
-  
+
   /**
    * Gets the path of the repository into which attachments and other files are uploaded in
    * Silverpeas.
@@ -146,6 +161,14 @@ public class FileRepositoryManager {
       path = path.concat(File.separator);
     }
     return path;
+  }
+
+  static public String getDomainPropertiesPath(String domainName) {
+    return domainPropertiesFolderPath + "domain" + domainName + ".properties";
+  }
+
+  static public String getDomainAuthenticationPropertiesPath(String domainName) {
+    return domainAuthenticationPropertiesFolderPath + "autDomain" + domainName + ".properties";
   }
 
   static public String getTemporaryPath() {
@@ -282,7 +305,7 @@ public class FileRepositoryManager {
    * Get the file size with the suitable unit
    * @param lSize : size
    * @return String
-   */  
+   */
   static public String formatFileSize(long lSize) {
     String sTo = utilMessages.getString("to", "Tb");
     String sGo = utilMessages.getString("go", "Gb");
@@ -397,7 +420,7 @@ public class FileRepositoryManager {
   public static String getIndexUpLoadPath() {
     return indexUpLoadPath + File.separator;
   }
-  
+
   /**
    * Gets the path of the repository that contains the templates to use in exports.
    * @return the path of the export template repository.

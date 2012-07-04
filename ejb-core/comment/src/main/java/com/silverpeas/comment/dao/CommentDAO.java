@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -34,10 +34,9 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * A Data Access Object that provides an access to Comment objects persisted within a data source.
- *
  * The way the data source is accessed and the nature of the data source are wrapped by the
- * implementation of this interface.
- * For each provided methods, if an error occurs a CommentRuntimeException is thrown.
+ * implementation of this interface. For each provided methods, if an error occurs a
+ * CommentRuntimeException is thrown.
  */
 public interface CommentDAO {
 
@@ -90,9 +89,14 @@ public interface CommentDAO {
   int getCommentsCountByForeignKey(final String resourceType, final ForeignPK pk);
 
   /**
+<<<<<<< HEAD
+   * Among all the publications identified by the specified primary keys, gets the most commented
+   * ones.
+=======
    * Among all the publications identified by the resource type and the specified primary keys, gets
    * the most commented ones.
    * @param resourceType type of the commented publication.
+>>>>>>> master
    * @param pks a list of primary keys refering some publications.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).

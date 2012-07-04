@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2011 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.pdc.model;
 
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -38,27 +39,22 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
- * A position of a content on some axis of the classification plan (named PdC). The positions of 
- * a given content define its classification on the PdC.
- * 
- * A position on the PdC's axis represents an atomic semantic information about its content.
- * As such, it can be made up of one or more values of axis. As a PdC axis is defined by an hierarchic
- * tree of terms, each of them being a value in the concept represented by the axis, a value in a
- * position is defined by its path in the tree from the root; the root being one of the base
- * value of the axis.
- * 
- * For example, for a position on the axis representing the concept of geography, a possible value
- * can be "France / Rhônes-Alpes / Isère / Grenoble" where Grenoble is the last term
- * of the axis valuation.
+ * A position of a content on some axis of the classification plan (named PdC). The positions of a
+ * given content define its classification on the PdC. A position on the PdC's axis represents an
+ * atomic semantic information about its content. As such, it can be made up of one or more values
+ * of axis. As a PdC axis is defined by an hierarchic tree of terms, each of them being a value in
+ * the concept represented by the axis, a value in a position is defined by its path in the tree
+ * from the root; the root being one of the base value of the axis. For example, for a position on
+ * the axis representing the concept of geography, a possible value can be
+ * "France / Rhônes-Alpes / Isère / Grenoble" where Grenoble is the last term of the axis valuation.
  */
 @Entity
 public class PdcPosition implements Serializable, Cloneable {
 
   private static final long serialVersionUID = 665144316569539208L;
-  
+
   @Id
-  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename",
-  valueColumnName = "maxId", pkColumnValue = "PdcPosition", allocationSize = 1)
+  @TableGenerator(name = "UNIQUE_ID_GEN", table = "uniqueId", pkColumnName = "tablename", valueColumnName = "maxId", pkColumnValue = "PdcPosition", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.TABLE, generator = "UNIQUE_ID_GEN")
   private Long id;
   @OneToMany(fetch = FetchType.EAGER)
@@ -90,18 +86,19 @@ public class PdcPosition implements Serializable, Cloneable {
     }
     return this;
   }
-  
+
   /**
    * Is this position on the PdC empty?
-   * @return true if this positions has no valuation in at least one of the PdC'axis, false otherwise.
+   * @return true if this positions has no valuation in at least one of the PdC'axis, false
+   * otherwise.
    */
   public boolean isEmpty() {
     return getValues().isEmpty();
   }
 
   /**
-   * Gets the values of this position on the axis of the PdC.
-   * You can add or remove any values from the returned set.
+   * Gets the values of this position on the axis of the PdC. You can add or remove any values from
+   * the returned set.
    * @return a set of PdC axis values.
    */
   public Set<PdcAxisValue> getValues() {
@@ -153,7 +150,7 @@ public class PdcPosition implements Serializable, Cloneable {
     if (this.id != null && other.id != null && !this.id.equals(other.id)) {
       return false;
     } else if (this.axisValues != other.axisValues && (this.axisValues == null || !this.axisValues.
-            equals(other.axisValues))) {
+        equals(other.axisValues))) {
       return false;
     }
     return true;
@@ -191,7 +188,7 @@ public class PdcPosition implements Serializable, Cloneable {
     }
     return position;
   }
-  
+
   /**
    * Gets the values of the specified axis that are present in this position.
    * @param axisId the unique identifier of the axis.

@@ -184,8 +184,8 @@ public class AdminServlet extends HttpServlet {
   }
 
   private boolean isSpaceBackOffice(HttpServletRequest request) {
-    return (isDefined(getSpaceId(request))
-        && "admin".equalsIgnoreCase(request.getParameter(WindowInvokerConstants.DRIVER_ROLE)));
+    return (isDefined(getSpaceId(request)) && "admin".equalsIgnoreCase(request
+        .getParameter(WindowInvokerConstants.DRIVER_ROLE)));
   }
 
   private void createPortletWindow(HttpServletRequest request, PortletAdminData portletAdminData,
@@ -212,7 +212,7 @@ public class AdminServlet extends HttpServlet {
               String message =
                   DesktopMessages.getLocalizedString(
                   AdminConstants.PORTLET_WINDOW_NAME_ALREADY_EXISTS,
-                  new String[]{portletWindowName});
+                  new String[] { portletWindowName });
               session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, message);
               isDuplicate = true;
               break;
@@ -245,7 +245,8 @@ public class AdminServlet extends HttpServlet {
             session.setAttribute(AdminConstants.CREATION_SUCCEEDED_ATTRIBUTE, message);
             AdminUtils.refreshList(request, elementId, userId, spaceId, language);
           } else {
-            session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, messageBuilder.toString());
+            session.setAttribute(AdminConstants.CREATION_FAILED_ATTRIBUTE, messageBuilder
+                .toString());
           }
         } else {
           String message = DesktopMessages.getLocalizedString(AdminConstants.INVALID_CHARACTERS);
