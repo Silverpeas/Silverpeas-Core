@@ -35,36 +35,33 @@ CREATE TABLE st_delayednotification (
 );
 
 /* Indexes */
-CREATE INDEX idx_st_dnus_id ON st_delayednotifusersetting(id);
 CREATE INDEX idx_st_dnus_userId ON st_delayednotifusersetting(userId);
 CREATE INDEX idx_st_dnus_channel ON st_delayednotifusersetting(channel);
 CREATE UNIQUE INDEX idx_st_dnus_uc ON st_delayednotifusersetting(userId, channel);
 
-CREATE INDEX idx_st_nr_id ON st_notificationresource(id);
 CREATE INDEX idx_st_nr_resourceId ON st_notificationresource(resourceId);
 
-CREATE INDEX idx_st_dn_id ON st_delayednotification(id);
 CREATE INDEX idx_st_dn_userId ON st_delayednotification(userId);
 CREATE INDEX idx_st_dn_channel ON st_delayednotification(channel);
 
 /* Constraints */
 ALTER TABLE st_delayednotifusersetting
-        ADD CONSTRAINT const_st_delayednotifusersetting_pk
+        ADD CONSTRAINT const_st_dnus_pk
         PRIMARY KEY (id);
 -- ALTER TABLE st_delayednotifusersetting
---		ADD CONSTRAINT const_st_delayednotifusersetting_fk_userId
+--		ADD CONSTRAINT const_st_dnus_fk_userId
 --		FOREIGN KEY (userId) REFERENCES ST_User(id);
 
 ALTER TABLE st_notificationresource
-        ADD CONSTRAINT const_st_notificationresource_pk
+        ADD CONSTRAINT const_st_nr_pk
         PRIMARY KEY (id);
 
 ALTER TABLE st_delayednotification
-        ADD CONSTRAINT const_st_delayednotification_pk
+        ADD CONSTRAINT const_st_dn_pk
         PRIMARY KEY (id);
 ALTER TABLE st_delayednotification
-		ADD CONSTRAINT const_st_delayednotification_fk_notificationResourceId
+		ADD CONSTRAINT const_st_dn_fk_nrId
 		FOREIGN KEY (notificationResourceId) REFERENCES st_notificationresource(id);
 --ALTER TABLE st_delayednotification
---		ADD CONSTRAINT const_st_delayednotification_fk_userId
+--		ADD CONSTRAINT const_st_dn_fk_userId
 --		FOREIGN KEY (userId) REFERENCES ST_User(id);
