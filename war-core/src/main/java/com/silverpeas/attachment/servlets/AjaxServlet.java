@@ -26,18 +26,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -46,7 +48,6 @@ public class AjaxServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    // TODO Auto-generated method stub
     doPost(req, resp);
   }
 
@@ -122,7 +123,6 @@ public class AjaxServlet extends HttpServlet {
     boolean indexIt = isIndexable(req);
 
     StringTokenizer tokenizer = new StringTokenizer(languagesToRemove, ",");
-    // create AttachmentPK with id and componentId
     SimpleDocumentPK atPK = new SimpleDocumentPK(id, getForeignPK(req).getInstanceId());
 
     try {
