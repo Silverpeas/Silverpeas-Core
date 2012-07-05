@@ -69,6 +69,10 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includeMessageMe(xhtml);
     } else if (wysiwyg.name().equals(getName())) {
       includeWysiwygEditor(xhtml);
+    } else if (popup.name().equals(getName())) {
+      includePopup(xhtml);
+    } else if (calendar.name().equals(getName())) {
+      includeCalendar(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }

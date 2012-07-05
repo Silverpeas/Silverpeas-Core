@@ -46,6 +46,9 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
+  private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
+  private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
+  private static final String STYLESHEET_CALENDAR = "fullcalendar.css";
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
   private static final String PAGINATION_TOOL = "smartpaginator";
@@ -54,6 +57,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_USERZOOM = "silverpeas-userZoom.js";
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
+  private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -139,6 +143,26 @@ public class JavascriptPluginInclusion {
     script wysiwyg = new script().setType(JAVASCRIPT_TYPE).setSrc(wysiwygPath
             + JAVASCRIPT_CKEDITOR);
     xhtml.addElement(wysiwyg);
+    return xhtml;
+  }
+  
+  public static ElementContainer includePopup(final ElementContainer xhtml) {
+    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
+            + SILVERPEAS_POPUP);
+    xhtml.addElement(popup);
+    return xhtml;
+  }
+
+  public static ElementContainer includeCalendar(final ElementContainer xhtml) {
+    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryCssPath
+            + STYLESHEET_CALENDAR);
+    script jqueryCalendar = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
+            + JQUERY_CALENDAR);
+    script sivlerpeasCalendar = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
+            + SILVERPEAS_CALENDAR);
+    xhtml.addElement(css);
+    xhtml.addElement(jqueryCalendar);
+    xhtml.addElement(sivlerpeasCalendar);
     return xhtml;
   }
 }
