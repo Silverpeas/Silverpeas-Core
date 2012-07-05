@@ -55,6 +55,7 @@ import com.silverpeas.web.ResourceGettingTest;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
+import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -188,8 +189,39 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
     WebResource webResource = resource();
-    String responseJson = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(HTTP_SESSIONKEY, getSessionKey()).type(
-        MediaType.MULTIPART_FORM_DATA).put(String.class, form);
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
+        HTTP_SESSIONKEY,
+        getSessionKey()).type(MULTIPART_FORM_DATA).put(SimpleDocumentEntity.class, form);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getTitle(), is("Upload test"));
+    assertThat(result.getDescription(),
+        is("This test is trying to simulate the update of a content"));
+    assertThat(result.getLang(), is("en"));
+  }
+
+  @Test
+  public void testUpdateDocumentWithoutContent() {
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false, new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+        thenReturn(document);
+    getTestResources().setAttachmentService(service);
+    FormDataMultiPart form = new FormDataMultiPart();
+    form.field("fileName", "/Shared/marketing/my_test_document.txt");
+    form.field("lang", "en");
+    form.field("title", "Upload test");
+    form.field("description", "This test is trying to simulate the update of a content");
+    WebResource webResource = resource();
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
+        HTTP_SESSIONKEY,
+        getSessionKey()).type(MULTIPART_FORM_DATA).put(SimpleDocumentEntity.class, form);
+    assertThat(result, is(notNullValue()));
+    assertThat(result.getTitle(), is("Upload test"));
+    assertThat(result.getDescription(),
+        is("This test is trying to simulate the update of a content"));
+    assertThat(result.getLang(), is("en"));
   }
 
   @Override
