@@ -144,6 +144,7 @@ public class TemplateDesignerRequestRouter extends
 
         request.setAttribute("Languages", templateDesignerSC.getLanguages());
         request.setAttribute("Displayer", displayer);
+        request.setAttribute("Fields", templateDesignerSC.getFields());
 
         destination = root + getDestinationFromDisplayer(displayer);
       } else if (function.equals("BackToFormField")) {
