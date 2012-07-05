@@ -123,8 +123,8 @@ public class UserNotificationBuilderTest {
           @Override
           protected void performBuild() {
             super.performBuild();
-            getNotification().setTitle("Title_ANB_1Bis");
-            getNotification().setContent("Content_ANB_1Bis");
+            getNotificationMetaData().setTitle("Title_ANB_1Bis");
+            getNotificationMetaData().setContent("Content_ANB_1Bis");
           }
         });
 
@@ -231,7 +231,7 @@ public class UserNotificationBuilderTest {
 
       @Override
       protected void performBuild(final Object resource) {
-        getNotification().setSource(resource.toString());
+        getNotificationMetaData().setSource(resource.toString());
       }
     });
     assertBuild_ARUNB_1(notifTest, "testBuild_ARUNB_1", false);
@@ -505,7 +505,7 @@ public class UserNotificationBuilderTest {
 
     @Override
     protected void perform(final ResourceDataTest resource) {
-      getNotification().setSource("aSource");
+      getNotificationMetaData().setSource("aSource");
     }
 
     @Override

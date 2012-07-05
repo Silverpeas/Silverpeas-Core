@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 /**
  * @author Yohann Chastagnier
  */
-public class DefaultUserNotification implements IUserNotification {
+public class DefaultUserNotification implements UserNotification {
 
   private NotificationMetaData notification;
 
@@ -60,7 +60,7 @@ public class DefaultUserNotification implements IUserNotification {
   }
 
   @Override
-  public NotificationMetaData getNotification() {
+  public NotificationMetaData getNotificationMetaData() {
     return notification;
   }
 

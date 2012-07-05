@@ -102,14 +102,14 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
 
   @Override
   protected void perform(final SilverpeasContent resource) {
-    getNotification().setOriginalExtraMessage(comment.getMessage());
+    getNotificationMetaData().setOriginalExtraMessage(comment.getMessage());
   }
 
   @Override
   protected void performTemplateData(final String language, final SilverpeasContent resource,
       final SilverpeasTemplate template) {
     componentMessages.setLanguage(language);
-    getNotification().addLanguage(language, getTitle(), "");
+    getNotificationMetaData().addLanguage(language, getTitle(), "");
   }
 
   @Override
