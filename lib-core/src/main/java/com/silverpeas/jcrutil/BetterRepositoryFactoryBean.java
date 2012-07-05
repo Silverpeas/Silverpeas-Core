@@ -25,7 +25,6 @@ package com.silverpeas.jcrutil;
  *
  * $Id: BetterRepositoryFactoryBean.java,v 1.2 2009/04/01 14:10:07 ehugonnet Exp $ $Revision: 1.2 $
  */
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -38,6 +37,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PreDestroy;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.naming.Context;
@@ -62,7 +62,7 @@ import com.silverpeas.util.StringUtil;
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.
  * Use this factory bean when you have to manually configure the repository; for retrieving the
- * repository from JNDI use the JndiObjectFactoryBean 
+ * repository from JNDI use the JndiObjectFactoryBean
  * <code>
  * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration :
  * <code>
@@ -243,6 +243,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   /**
    * Shutdown method.
    */
+  @PreDestroy
   @Override
   public void destroy() throws Exception {
     // force cast (but use only the interface)
@@ -250,17 +251,14 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
       ((JackrabbitRepository) repository).shutdown();
     }
   }
-  
+
   public void testCleanUp() throws IOException {
     // force cast (but use only the interface)
     if (repository instanceof JackrabbitRepository) {
       ((JackrabbitRepository) repository).shutdown();
     }
-     FileUtils.deleteQuietly(homeDir.getFile());
+    FileUtils.deleteQuietly(homeDir.getFile());
   }
-  
-  
-  
 
   /**
    * @return Returns the defaultRepDir.

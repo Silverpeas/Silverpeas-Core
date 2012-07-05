@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.web;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Date;
 
@@ -31,17 +32,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
 import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
@@ -64,7 +68,6 @@ import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
  *
  * @author ehugonnet
  */
-@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocumentTestResource> {
 
   private UserDetail user;
@@ -74,9 +77,12 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
   public SimpleDocumentResourceTest() {
     super("org.silverpeas.attachment.web", "spring-jcr-webservice.xml");
   }
-  
+
   @After
-  public void generalCleanUp() throws Exception {
+  public void testCleanUp() throws Exception {
+    JackrabbitRepository repository = getTestResources().getApplicationContext().
+        getBean("repository", JackrabbitRepository.class);
+    repository.shutdown();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
@@ -159,6 +165,31 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat((Long) response.getMetadata().getFirst(HttpHeaders.CONTENT_LENGTH), is(29L));
     assertThat((String) response.getMetadata().getFirst("content-disposition"), is(
         "attachment;filename=Test.pdf"));
+  }
+
+  @Test
+  public void testUpdateDocumentWithContent() {
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false,
+        new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+        thenReturn(document);
+    getTestResources().setAttachmentService(service);
+    FormDataMultiPart form = new FormDataMultiPart();
+    form.field("fileName", "/Shared/marketing/my_test_document.txt");
+    form.field("lang", "en");
+    form.field("title", "Upload test");
+    form.field("description", "This test is trying to simulate the update of a content");
+    String content = "This is a binary content";
+    FormDataBodyPart fdp = new FormDataBodyPart("content",
+        new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
+        MediaType.APPLICATION_OCTET_STREAM_TYPE);
+    form.bodyPart(fdp);
+    WebResource webResource = resource();
+    String responseJson = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(HTTP_SESSIONKEY, getSessionKey()).type(
+        MediaType.MULTIPART_FORM_DATA).put(String.class, form);
   }
 
   @Override

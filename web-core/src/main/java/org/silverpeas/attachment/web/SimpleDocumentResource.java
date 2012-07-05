@@ -21,12 +21,16 @@
 package org.silverpeas.attachment.web;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -36,6 +40,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -88,6 +96,41 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
+   * Delete the the specified document.
+   */
+  @DELETE
+  @Produces(MediaType.APPLICATION_JSON)
+  public void deleteDocument() {
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+  }
+
+  /**
+   * Delete the the specified document.
+   */
+  @PUT
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @Produces(MediaType.APPLICATION_JSON)
+  public SimpleDocumentEntity updateDocument(final @FormDataParam("file") InputStream uploadedInputStream,
+      final @FormDataParam("file") FormDataContentDisposition fileDetail, final @FormDataParam(
+      "lang") String lang, final @FormDataParam("title") String title, final @FormDataParam(
+      "description") String description) {
+    SimpleDocument document = getSimpleDocument(lang);
+    document.setLanguage(lang);
+    document.setTitle(title);
+    document.setDescription(description);
+    AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+    if (uploadedInputStream != null) {
+      AttachmentServiceFactory.getAttachmentService().addContent(document, uploadedInputStream, true,
+          true);
+    }
+    document = getSimpleDocument(lang);
+    URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
+        getLanguage()).build();
+    return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
+  }
+
+  /**
    * Returns all the existing translation of a SimpleDocument.
    *
    * @return all the existing translation of a SimpleDocument.
@@ -96,7 +139,8 @@ public class SimpleDocumentResource extends RESTWebService {
   @Path("translations")
   @Produces(MediaType.APPLICATION_JSON)
   public SimpleDocumentEntity[] getDocumentTanslations() {
-    List<SimpleDocumentEntity> result = new ArrayList<SimpleDocumentEntity>(I18NHelper.getNumberOfLanguages());
+    List<SimpleDocumentEntity> result = new ArrayList<SimpleDocumentEntity>(I18NHelper.
+        getNumberOfLanguages());
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocument attachment = getSimpleDocument(lang);
       if (attachment == null) {
@@ -157,7 +201,6 @@ public class SimpleDocumentResource extends RESTWebService {
         }
       }
     };
-
     return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
         document.getSize()).header("content-disposition", "attachment;filename=" + document.
         getFilename()).build();
