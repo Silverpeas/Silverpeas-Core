@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -255,7 +256,8 @@ public class LinkDAO {
       LinkDetail link) throws SQLException {
     prepStmt.setInt(1, new Integer(linkId).intValue());
     prepStmt.setString(2, link.getName());
-    prepStmt.setString(3, link.getDescription());
+    String description = StringUtil.truncate(link.getDescription(), 255);
+    prepStmt.setString(3, description);
     prepStmt.setString(4, link.getUrl());
     if (link.isVisible() == true) {
       prepStmt.setInt(5, 1);
