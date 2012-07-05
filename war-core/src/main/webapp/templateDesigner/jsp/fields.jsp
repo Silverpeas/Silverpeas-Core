@@ -49,9 +49,9 @@ Iterator fields = (Iterator) request.getAttribute("Fields");
 
 	function openFieldWindow(url, displayer) {
 		var width = "570";
-		var height = "350";
+		var height = "450";
 		if (displayer == 'radio' || displayer == 'checkbox' || displayer == 'listbox') {
-			height = "450";
+			height = "500";
 		} else if (displayer == 'ldap') {
 			height = "600";
 		} else if (displayer == 'jdbc') {
