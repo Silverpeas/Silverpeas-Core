@@ -63,7 +63,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
   @Override
   protected void initialize() {
     super.initialize();
-    getNotification().setLink(getResourceURL(resource));
+    getNotificationMetaData().setLink(getResourceURL(resource));
   }
 
   /**
@@ -87,7 +87,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
   protected void performNotificationResource(final T resource) {
     final NotificationResourceData notificationResourceData = initializeNotificationResourceData();
     performNotificationResource(resource, notificationResourceData);
-    getNotification().setNotificationResourceData(notificationResourceData);
+    getNotificationMetaData().setNotificationResourceData(notificationResourceData);
   }
 
   /**
@@ -96,8 +96,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T> extends Abstrac
    */
   protected NotificationResourceData initializeNotificationResourceData() {
     final NotificationResourceData notificationResourceData = new NotificationResourceData();
-    notificationResourceData.setComponentInstanceId(getNotification().getComponentId());
-    notificationResourceData.setResourceUrl(getNotification().getLink());
+    notificationResourceData.setComponentInstanceId(getNotificationMetaData().getComponentId());
+    notificationResourceData.setResourceUrl(getNotificationMetaData().getLink());
     if (resource instanceof SilverpeasContent) {
       fill(notificationResourceData, (SilverpeasContent) resource);
     }

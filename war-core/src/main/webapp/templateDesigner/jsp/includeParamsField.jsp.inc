@@ -3,6 +3,7 @@
 FieldTemplate 	field 		= (FieldTemplate) request.getAttribute("Field");
 String			displayer 	= (String) request.getAttribute("Displayer");
 List<String>	languages	= (List<String>) request.getAttribute("Languages");
+Iterator<FieldTemplate> existingFields = (Iterator<FieldTemplate>) request.getAttribute("Fields");
 
 String name = "";
 String mandatoryChecked = "";
@@ -85,6 +86,25 @@ if (field != null) {
 		      		}
 		      	}
 	     	}
+	     	
+	     	<%
+	     		out.print("var existingFieldNames = [");
+	     		while (existingFields.hasNext()) {
+	     			FieldTemplate existingField = existingFields.next();
+	     			if (existingField != null) {
+	     				out.print("'"+existingField.getFieldName()+"'");
+	     				if (existingFields.hasNext()) {
+	     					out.print(",");
+	     				}
+	     			}
+	     		}
+	     		out.println("];");
+	     	%>
+	     	if ($.inArray(fieldName, existingFieldNames) != -1) {
+	     		errorMsg+="  - <%=resource.getString("templateDesigner.js.nameAlreadyExist")%>\n";
+	           	errorNb++;
+	     	}
+	     	
      	<% } %>
 	}
 	

@@ -41,11 +41,11 @@ import com.stratelia.webactiv.util.ResourceLocator;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractUserNotificationBuilder implements IUserNotificationBuider {
+public abstract class AbstractUserNotificationBuilder implements UserNotificationBuider {
 
   private String title = null;
   private String content = null;
-  private IUserNotification userNotification = null;
+  private UserNotification userNotification = null;
   private final Map<String, ResourceLocator> bundles = new HashMap<String, ResourceLocator>();
 
   /**
@@ -71,18 +71,18 @@ public abstract class AbstractUserNotificationBuilder implements IUserNotificati
    */
   protected void initialize() {
     userNotification = createNotification();
-    getNotification().setMessageType(getMessageType().getId());
-    getNotification().setAction(getAction());
-    getNotification().setComponentId(getComponentInstanceId());
-    getNotification().setSender(getSender());
-    getNotification().setSendImmediately(isSendImmediatly());
+    getNotificationMetaData().setMessageType(getMessageType().getId());
+    getNotificationMetaData().setAction(getAction());
+    getNotificationMetaData().setComponentId(getComponentInstanceId());
+    getNotificationMetaData().setSender(getSender());
+    getNotificationMetaData().setSendImmediately(isSendImmediatly());
   }
 
   /**
    * Create the user notification container
    * @return
    */
-  protected IUserNotification createNotification() {
+  protected UserNotification createNotification() {
     return new DefaultUserNotification(getTitle(), getContent());
   }
 
@@ -108,8 +108,8 @@ public abstract class AbstractUserNotificationBuilder implements IUserNotificati
    * Gets the notification meta data container
    * @return
    */
-  protected final NotificationMetaData getNotification() {
-    return userNotification.getNotification();
+  protected final NotificationMetaData getNotificationMetaData() {
+    return userNotification.getNotificationMetaData();
   }
 
   /**
@@ -132,7 +132,7 @@ public abstract class AbstractUserNotificationBuilder implements IUserNotificati
    * Builds the notification data container
    */
   @Override
-  public final IUserNotification build() {
+  public final UserNotification build() {
     try {
       initialize();
       performUsersToBeNotified();
@@ -158,7 +158,7 @@ public abstract class AbstractUserNotificationBuilder implements IUserNotificati
     if (CollectionUtil.isNotEmpty(userIdsToNotify)) {
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
-        getNotification().addUserRecipient(new UserRecipient(userId));
+        getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
       }
     }
   }
