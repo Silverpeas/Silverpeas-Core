@@ -666,7 +666,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
 
     PublicationPK pubPK = new PublicationPK(publicationId, versioningSC.getComponentId());
     Document document = new Document(docPK, pubPK, name, description, Document.STATUS_CHECKINED,
-        -1, new Date(), comments, versioningSC.getComponentId(), null, null, 0, Integer.parseInt(
+        -1, new Date(), null, versioningSC.getComponentId(), null, null, 0, Integer.parseInt(
         VersioningSessionController.WRITERS_LIST_SIMPLE));
 
     String docId = versioningSC.createDocument(document, documentVersion).getId();
