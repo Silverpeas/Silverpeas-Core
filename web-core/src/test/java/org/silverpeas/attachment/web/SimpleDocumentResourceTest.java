@@ -180,9 +180,9 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     getTestResources().setAttachmentService(service);
     FormDataMultiPart form = new FormDataMultiPart();
     form.field("fileName", "/Shared/marketing/my_test_document.txt");
-    form.field("lang", "en");
-    form.field("title", "Upload test");
-    form.field("description", "This test is trying to simulate the update of a content");
+    form.field("fileLang", "en");
+    form.field("fileTitle", "Upload test");
+    form.field("fileDescription", "This test is trying to simulate the update of a content");
     String content = "This is a binary content";
     FormDataBodyPart fdp = new FormDataBodyPart("content",
         new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
@@ -210,9 +210,9 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     getTestResources().setAttachmentService(service);
     FormDataMultiPart form = new FormDataMultiPart();
     form.field("fileName", "/Shared/marketing/my_test_document.txt");
-    form.field("lang", "en");
-    form.field("title", "Upload test");
-    form.field("description", "This test is trying to simulate the update of a content");
+    form.field("fileLang", "en");
+    form.field("fileTitle", "Upload test");
+    form.field("fileDescription", "This test is trying to simulate the update of a content");
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
         HTTP_SESSIONKEY,

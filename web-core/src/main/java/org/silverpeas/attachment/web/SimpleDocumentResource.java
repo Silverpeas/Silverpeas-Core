@@ -104,6 +104,17 @@ public class SimpleDocumentResource extends RESTWebService {
     SimpleDocument document = getSimpleDocument(null);
     AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
   }
+  
+  /**
+   * Delete the the specified document.
+   */
+  @DELETE
+  @Path("content/{lang}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public void deleteContent(final @PathParam("lang") String lang) {
+    SimpleDocument document = getSimpleDocument(lang);
+    AttachmentServiceFactory.getAttachmentService().removeContent(document, lang, false);
+  }
 
   /**
    * Delete the the specified document.
@@ -111,10 +122,10 @@ public class SimpleDocumentResource extends RESTWebService {
   @PUT
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
-  public SimpleDocumentEntity updateDocument(final @FormDataParam("file") InputStream uploadedInputStream,
-      final @FormDataParam("file") FormDataContentDisposition fileDetail, final @FormDataParam(
-      "lang") String lang, final @FormDataParam("title") String title, final @FormDataParam(
-      "description") String description) {
+  public SimpleDocumentEntity updateDocument(final @FormDataParam("file_upload") InputStream uploadedInputStream,
+      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail, final @FormDataParam(
+      "fileLang") String lang, final @FormDataParam("fileTitle") String title, final @FormDataParam(
+      "fileDescription") String description) {
     SimpleDocument document = getSimpleDocument(lang);
     document.setLanguage(lang);
     document.setTitle(title);

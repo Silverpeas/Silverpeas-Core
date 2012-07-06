@@ -90,7 +90,7 @@ public class I18NHelper {
     return "";
   }
 
-  static private List<I18NLanguage> getAllLanguages(String userLanguage) {
+  public static List<I18NLanguage> getAllLanguages(String userLanguage) {
     return allLanguages.get(userLanguage);
   }
 

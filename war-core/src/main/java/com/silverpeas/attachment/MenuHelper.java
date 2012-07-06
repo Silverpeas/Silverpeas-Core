@@ -97,8 +97,8 @@ public class MenuHelper {
       builder.append(attachmentId).append("','").append(language).append("');\">");
       builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(NEW_LINE);
     }
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment(")
-        .append(attachmentId).append(")\">").append(resources.getString("GML.delete")).append(
+    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('")
+        .append(attachment.getId()).append("')\">").append(resources.getString("GML.delete")).append(
         "</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
