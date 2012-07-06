@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.myLinks.model.LinkDetail;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
@@ -119,7 +120,7 @@ public class LinkDAO {
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(linkId).intValue());
+      prepStmt.setInt(1, Integer.valueOf(linkId));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         // recuperation des colonnes du resulSet et construction de
@@ -183,7 +184,7 @@ public class LinkDAO {
     try {
       String query = "delete from SB_MyLinks_Link where linkId = ? ";
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(linkId).intValue());
+      prepStmt.setInt(1, Integer.valueOf(linkId));
       prepStmt.executeUpdate();
     } finally {
       // fermeture
@@ -222,21 +223,21 @@ public class LinkDAO {
   private static LinkDetail recupLink(ResultSet rs) throws SQLException {
     LinkDetail link = new LinkDetail();
     // recuperation des colonnes du resulSet et construction de l'objet LinkDetail
-    int linkId = rs.getInt(1);
-    String name = rs.getString(2);
-    String description = rs.getString(3);
-    String url = rs.getString(4);
+    int linkId = rs.getInt("linkId");
+    String name = rs.getString("name");
+    String description = rs.getString("description");
+    String url = rs.getString("url");
     boolean visible = false;
-    if (rs.getInt(5) == 1) {
+    if (rs.getInt("visible") == 1) {
       visible = true;
     }
     boolean popup = false;
-    if (rs.getInt(6) == 1) {
+    if (rs.getInt("popup") == 1) {
       popup = true;
     }
-    String userId = rs.getString(7);
-    String instanceId = rs.getString(8);
-    String objectId = rs.getString(9);
+    String userId = rs.getString("userId");
+    String instanceId = rs.getString("instanceId");
+    String objectId = rs.getString("objectId");
 
     link.setLinkId(linkId);
     link.setName(name);
@@ -253,16 +254,17 @@ public class LinkDAO {
 
   private static void initParam(PreparedStatement prepStmt, int linkId,
       LinkDetail link) throws SQLException {
-    prepStmt.setInt(1, new Integer(linkId).intValue());
+    prepStmt.setInt(1, linkId);
     prepStmt.setString(2, link.getName());
-    prepStmt.setString(3, link.getDescription());
+    String description = StringUtil.truncate(link.getDescription(), 255);
+    prepStmt.setString(3, description);
     prepStmt.setString(4, link.getUrl());
-    if (link.isVisible() == true) {
+    if (link.isVisible()) {
       prepStmt.setInt(5, 1);
     } else {
       prepStmt.setInt(5, 0);
     }
-    if (link.isPopup() == true) {
+    if (link.isPopup()) {
       prepStmt.setInt(6, 1);
     } else {
       prepStmt.setInt(6, 0);

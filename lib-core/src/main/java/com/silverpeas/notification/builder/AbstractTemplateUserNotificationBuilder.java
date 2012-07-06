@@ -57,6 +57,15 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   /**
    * Default constructor
    * @param resource
+   * @param fileName
+   */
+  public AbstractTemplateUserNotificationBuilder(final T resource, final String fileName) {
+    super(resource, null, fileName);
+  }
+
+  /**
+   * Default constructor
+   * @param resource
    * @param title
    * @param fileName
    */
@@ -84,7 +93,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
   }
 
   @Override
-  protected IUserNotification createNotification() {
+  protected UserNotification createNotification() {
     return new DefaultUserNotification(getTitle(), templates, getFileName());
   }
 
@@ -101,7 +110,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
       performTemplateData(curLanguage, resource, template);
       notificationResourceData = nRDBase.clone();
       performNotificationResource(curLanguage, resource, notificationResourceData);
-      getNotification().setNotificationResourceData(curLanguage, notificationResourceData);
+      getNotificationMetaData().setNotificationResourceData(curLanguage, notificationResourceData);
     }
   }
 

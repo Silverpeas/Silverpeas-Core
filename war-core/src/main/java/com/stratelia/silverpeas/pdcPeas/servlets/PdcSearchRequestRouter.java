@@ -777,9 +777,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         String id = request.getParameter("Id");
 
         request.setAttribute("WebTabId", id);
-        request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
         request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
-        request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
+        setTabsInfoIntoRequest(pdcSC, request);
         destination = "/pdcPeas/jsp/webTab.jsp";
       } else if ("markAsRead".equals(function)) {
         PdcSearchRequestRouterHelper.markResultAsRead(pdcSC, request);
@@ -1046,7 +1045,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     PdcSearchRequestRouterHelper.processSearchDomains(pdcSC, request, "SILVERPEAS");
     // put search type
     request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
-    request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
     return getDestinationDuringSearch(pdcSC, request);
   }
 
@@ -1307,7 +1305,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("ResultGroup", pdcSC.getResultGroupFilter());
 
     request.setAttribute("NbTotalResults", Integer.valueOf(pdcSC.getTotalResults()));
-    request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
     request.setAttribute("PertinenceVisible", Boolean.valueOf(pdcSC.isPertinenceVisible()));
 
     request.setAttribute("DisplayParamChoices", pdcSC.getDisplayParamChoices());
@@ -1315,7 +1312,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("NbResToDisplay", Integer.valueOf(pdcSC.getNbResToDisplay()));
     request.setAttribute("SortValue", Integer.valueOf(pdcSC.getSortValue()));
     request.setAttribute("SortOrder", pdcSC.getSortOrder());
-    request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
 
     // spelling words
     request.setAttribute("spellingWords", pdcSC.getSpellingwords());
@@ -1324,6 +1320,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("ResultPageId", pdcSC.getResultPageId());
     request.setAttribute("XmlFormSortValue", pdcSC.getXmlFormSortValue());
     request.setAttribute("sortImp", pdcSC.getSortImplemtor());
+    
+    setTabsInfoIntoRequest(pdcSC, request);
   }
 
   /**
@@ -1870,8 +1868,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
       String instanceId = request.getParameter("componentSearch");
       pdcSC.getQueryParameters().setInstanceId(instanceId);
-
-      pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
+      
+      if (pdcSC.isPlatformUsesPDC()) {
+        pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
+      } else {
+        // PDC is not used, redirect to simple search
+        pdcSC.setSearchType(PdcSearchSessionController.SEARCH_ADVANCED);
+      }
 
       if (StringUtil.getBooleanValue(request.getParameter("FromPDCFrame"))) {
         // Exclusive case to display pertinent classification axis in PDC frame
@@ -1886,6 +1889,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       HttpServletRequest request) {
     pdcSC.setSearchPage(request.getParameter("SearchPage"));
     pdcSC.setSearchPageId(request.getParameter("SearchPageId"));
+    
+    setTabsInfoIntoRequest(pdcSC, request);
 
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML) {
       request.setAttribute("PageId", pdcSC.getSearchPageId());
@@ -1896,8 +1901,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       } else {
         // put search type
         request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
-        request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
-        request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
+        
         // Add component search type
         request.setAttribute("ComponentSearchType", pdcSC.getSearchTypeConfig());
         return "/pdcPeas/jsp/globalSearch.jsp";
@@ -1911,5 +1915,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     } else {
       return "/pdcPeas/jsp/globalResult.jsp";
     }
+  }
+  
+  private void setTabsInfoIntoRequest(PdcSearchSessionController pdcSC, HttpServletRequest request) {
+    request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
+    request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());
+    request.setAttribute("ExpertSearchVisible", pdcSC.isPlatformUsesPDC());
   }
 }

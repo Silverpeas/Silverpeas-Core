@@ -470,7 +470,7 @@
 				    if (contextualMenuEnabled) {
 				      if (document.getStatus() == Document.STATUS_CHECKOUTED) { %>
 				      	<div class="workerInfo" id="worker<%=document.getPk().getId() %>" style="visibility:visible">
-			              	<%= attResources.getString("lockedBy")%> <view:username userId="<%=document.getOwnerId()%>"/>
+			              	<%= attResources.getString("lockedBy")%> <view:username userId="<%=String.valueOf(document.getOwnerId())%>"/>
 			              	<%= attResources.getString("at")%> <%=resources.getOutputDate(document.getLastCheckOutDate())%>
 			            </div>
 				  <%    } else {
