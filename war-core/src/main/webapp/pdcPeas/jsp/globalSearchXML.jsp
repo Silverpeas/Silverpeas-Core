@@ -40,6 +40,7 @@ String sortOrder = request.getParameter("sortOrder");
 String sortImp = request.getParameter("sortImp");
 String SortResXForm = request.getParameter("SortResXForm");
 
+boolean				expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
 List 				xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
@@ -124,8 +125,12 @@ function viewXmlSearch(){
 			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
 		}
 	}
-	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
-	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
+	if (expertSearchVisible) {
+	  	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
+		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
+	} else {
+	  	tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", false);
+	}
 	tabs.addTab(resource.getString("pdcPeas.SearchXml"), "#", true);	
 
 	out.println("<div id=\"tabs\">" + tabs.print() + "</div>");
@@ -171,7 +176,7 @@ function viewXmlSearch(){
         <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
         <tr align="center" id="spaceList">
           <td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td align="left" class="selectNS"><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
+          <td align="left"><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				String			incr	= "";
@@ -193,7 +198,7 @@ function viewXmlSearch(){
 	    </tr>
 		<tr align="center">
 			<td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
-			<td align="left" class="selectNS">
+			<td align="left">
 			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
 			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
 			<%
