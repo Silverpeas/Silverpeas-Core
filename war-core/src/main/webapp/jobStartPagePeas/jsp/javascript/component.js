@@ -42,49 +42,4 @@ $(document).ready(function()
 		  }
 	  }
    });
-
-  $.i18n.properties({
-    name : 'jobStartPagePeasBundle',
-    path : webContext + '/services/bundles/com/silverpeas/jobStartPagePeas/multilang/',
-    language : '$$', // by default the language of the user in the current session
-    mode : 'map'
-  });
-
-  componentParameters.attachTriggers();
 });
-
-componentParameters = {
-  attachTriggers : function() {
-    $warnings = $('div[id^="warning"]');
-    $warnings.on(
-        'addMConfirmationMessageEnds',
-        function() {
-          var $this = $(this);
-          var html = $this.html() + '<br/><br/>'
-              + $.i18n.prop('Warning.dialog.confirmation.message.end');
-          $this.html(html);
-          $this.dialog({
-            autoOpen : false,
-            modal : true,
-            title : $.i18n.prop('Warning.dialog.confirmation.message.title'),
-            height : 'auto',
-            width : 'auto',
-            buttons : {
-              "no" : function() {
-                this.close();
-              },
-              "yes" : function() {
-                this.close();
-              }
-            }
-          });
-        }).prev().click(function(event) {
-      if (event.target.type == "checkbox") {
-        if (event.target.checked) {
-          $('#warning-' + event.target.name).dialog("open");
-        }
-      }
-    });
-    $warnings.trigger('addMConfirmationMessageEnds');
-  }
-}
