@@ -53,7 +53,7 @@
 
 	<jdbc:embedded-database id="jpaDataSource" type="H2">
 		<jdbc:script
-			location="classpath:/com/silverpeas/socialnetwork/dao/create-database.sql" />
+			location="classpath:/com/silverpeas/social/dao/create-database.sql" />
 	</jdbc:embedded-database>
 
 	<import resource="spring-silverpeas.xml"/>

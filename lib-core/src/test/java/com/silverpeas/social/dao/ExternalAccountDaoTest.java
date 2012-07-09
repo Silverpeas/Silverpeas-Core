@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.dao;
+package com.silverpeas.social.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,6 +43,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.silverpeas.socialnetwork.dao.ExternalAccountDao;
 import com.silverpeas.socialnetwork.model.AccountId;
 import com.silverpeas.socialnetwork.model.ExternalAccount;
 import com.silverpeas.socialnetwork.model.SocialNetworkID;
@@ -67,7 +68,7 @@ public class ExternalAccountDaoTest {
   public void generalSetUp() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
         ExternalAccountDaoTest.class.getClassLoader().getResourceAsStream(
-        "com/silverpeas/socialnetwork/dao/socialnetwork-dataset.xml")));
+        "com/silverpeas/social/dao/socialnetwork-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);

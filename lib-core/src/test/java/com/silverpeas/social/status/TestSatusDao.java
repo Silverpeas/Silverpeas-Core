@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.status;
+package com.silverpeas.social.status;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.socialnetwork.status.Status;
