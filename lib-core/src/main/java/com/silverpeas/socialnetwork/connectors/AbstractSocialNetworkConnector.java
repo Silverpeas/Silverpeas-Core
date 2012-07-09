@@ -38,7 +38,7 @@ public abstract class AbstractSocialNetworkConnector implements SocialNetworkCon
 
   void init() {
     settings = new ResourceLocator(
-        "com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
+        "com.silverpeas.social.settings.socialNetworkSettings", "");
   }
 
   @Override

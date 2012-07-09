@@ -2834,6 +2834,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
     spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
+    spParameter.getWarning().put(I18NHelper.defaultLanguage, "");
     spParameter.setValue(processModelFileName.replaceAll("\\\\", "/"));
     spParameter.setMandatory(true);
     spParameter.setUpdatable("always");

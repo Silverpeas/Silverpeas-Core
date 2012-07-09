@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.publication.socialNetwork;
+package com.stratelia.webactiv.publication.social;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

@@ -108,6 +108,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private Date draftOutDate;
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
+  private int explicitRank = -1;
+  
   // added for the taglib
   private InfoDetail infoDetail = null;
   private List<XMLField> xmlFields = null;
@@ -1292,5 +1294,13 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   @Override
   public String getSilverpeasContentId() {
     return getSilverObjectId();
+  }
+
+  public void setExplicitRank(int explicitRank) {
+    this.explicitRank = explicitRank;
+  }
+
+  public int getExplicitRank() {
+    return explicitRank;
   }
 }

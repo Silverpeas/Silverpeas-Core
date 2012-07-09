@@ -116,6 +116,7 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
         </xs:simpleType>
       </xs:element>
       <xs:element type="multilang" name="help"/>
+      <xs:element type="multilang" name="warning" minOccurs="0" maxOccurs="1" />
       <xs:element type="xs:string" name="personalSpaceValue" minOccurs="0" maxOccurs="1" />  
     </xs:sequence>   
   </xs:complexType>  

@@ -22,20 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.invitation;
+package com.silverpeas.social.invitation;
 
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationDao;
-import com.stratelia.webactiv.util.DBUtil;
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.sql.DataSource;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -48,8 +51,9 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-import static org.junit.Assert.*;
+import com.silverpeas.socialnetwork.invitation.Invitation;
+import com.silverpeas.socialnetwork.invitation.InvitationDao;
+import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * @author Bensalem Nabil
@@ -74,7 +78,7 @@ public class TestInvitationDao {
   protected ReplacementDataSet getDataSet() throws Exception {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
             TestInvitationDao.class.getClassLoader().getResourceAsStream(
-            "com/silverpeas/socialnetwork/invitation/socialNetwork_Invitation-dataset.xml")));
+            "com/silverpeas/social/invitation/socialNetwork_Invitation-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
 
