@@ -1246,6 +1246,7 @@ public class JobStartPagePeasRequestRouter extends
           "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
       hiddenParam.getLabel().put(lang, resource.getString("JSPP.hiddenComponent"));
       hiddenParam.getHelp().put(lang, resource.getString("Help.hiddenComponent"));
+      hiddenParam.getWarning().put(lang, resource.getString("Warning.hiddenComponent"));
       hiddenParam.setOrder(-5);
       hiddenParam.setMandatory(false);
       hiddenParam.setUpdatable("always");
@@ -1263,6 +1264,7 @@ public class JobStartPagePeasRequestRouter extends
           "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
       publicParam.getLabel().put(lang, resource.getString("JSPP.publicComponent"));
       publicParam.getHelp().put(lang, resource.getString("Help.publicComponent"));
+      publicParam.getWarning().put(lang, resource.getString("Warning.publicComponent"));
       publicParam.setOrder(-6);
       publicParam.setMandatory(false);
       publicParam.setUpdatable("always");
