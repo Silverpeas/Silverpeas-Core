@@ -29,7 +29,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public enum SocialNetworkID {
   FACEBOOK, LINKEDIN;
 
-  private static ResourceLocator settings = new ResourceLocator("com.silverpeas.socialnetwork.settings.socialNetworkSettings", "");
+  private static ResourceLocator settings = new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
 
   public boolean isEnabled() {
     switch (this) {
