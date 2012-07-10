@@ -23,15 +23,16 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
