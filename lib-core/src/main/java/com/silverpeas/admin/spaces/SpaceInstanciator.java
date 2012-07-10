@@ -147,6 +147,7 @@ public class SpaceInstanciator {
       WAComponent wacomponent = allComponentsModels.get(component.getType());
       if (wacomponent != null) {
         ComponentInst ci = new ComponentInst();
+        ci.setOrderNum(space.getNumComponentInst());
         ci.setName(component.getType());
         ci.setLabel(component.getLabel());
         ci.setDescription(component.getDescription());
