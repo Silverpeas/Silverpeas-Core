@@ -69,7 +69,8 @@ public class LanguageSelectorTag extends SimpleTagSupport {
       langSelector.setName(elementName);
       List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
       for(I18NLanguage language : I18NHelper.getAllLanguages(getLangCode())) {
-        Option option = new Option(language.getCode(), language.getLabel());
+        Option option = new Option(language.getLabel(), language.getCode());
+        option.addElement(language.getLabel());
         if(getLangCode().equalsIgnoreCase(language.getCode())) {
           option.setSelected(true);
         }

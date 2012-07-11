@@ -100,10 +100,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <listener>
         <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
     </listener>
-    <!--
-<listener>
-<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-</listener>-->
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>

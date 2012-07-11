@@ -77,5 +77,10 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Silverpeas plugin to open a modal dialog box based on the JQuery UI Dialog.
    */
-  popup;
+  popup,
+  /**
+   * JQuery plugin that post a form to an IFrame and allow for a callback with the iframe content.
+   * @see http://www.jainaewen.com/files/javascript/jquery/iframe-post-form.html#api
+   */
+  iframepost;
 }

@@ -24,11 +24,12 @@
 
 package com.silverpeas.jcrutil.model;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import javax.jcr.LoginException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 
 public abstract class AbstractJcrService {
   private Repository repository;

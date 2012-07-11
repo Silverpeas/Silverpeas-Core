@@ -34,6 +34,7 @@ import org.silverpeas.attachment.webdav.WebdavRepository;
 
 import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;
@@ -52,6 +53,11 @@ public class WebdavDocumentRepository implements WebdavRepository {
     if (attachment.getId() != null) {
       contextFolder = addFolder(contextFolder, attachment.getId());
     }
+    String lang = attachment.getLanguage();
+    if (!StringUtil.isDefined(lang)) {
+      lang = I18NHelper.defaultLanguage;
+    }
+    contextFolder = addFolder(contextFolder, lang);
     addFile(contextFolder, attachment);
   }
 

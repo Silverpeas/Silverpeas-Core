@@ -24,6 +24,7 @@ import java.io.IOException;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 
 public interface WebdavRepository {

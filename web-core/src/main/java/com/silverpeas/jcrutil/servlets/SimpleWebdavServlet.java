@@ -24,10 +24,13 @@
 
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
+
 import org.apache.jackrabbit.server.CredentialsProvider;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 

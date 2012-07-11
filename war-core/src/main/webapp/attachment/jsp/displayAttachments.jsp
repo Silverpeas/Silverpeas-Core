@@ -14,7 +14,7 @@
     the FLOSS exception, and it is also available here:
     "http://www.silverpeas.org/legal/licensing"
 
-    This program is distributed in the hope that it will be useful,
+    This program is distributecheckd in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Affero General Public License for more details.
@@ -45,12 +45,14 @@
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <view:includePlugin name="qtip"/>
+<view:includePlugin name="iframepost"/>
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/yahoo-dom-event/yahoo-dom-event.js" /> '></script>
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
+
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
 <%
@@ -331,6 +333,12 @@
 <% }%>
 
 <script type="text/javascript">
+  String.prototype.format = function () {
+    var args = arguments;
+    return this.replace(/\{(\d+)\}/g, function (m, n) { return args[n]; });
+  };
+
+  
   // Create the tooltips only on document load
   $(document).ready(function() {
     // Use the each() method to gain access to each elements attributes
@@ -394,34 +402,32 @@
 
   	var pageMustBeReloadingAfterSorting = false;
   
-    function checkout(id, webdav, edit, download)
-    {
+    function checkout(id, oldId, webdav, edit, download) {
       if (id.length > 0) {
         $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
         function(data) {
           if(data == 'ok') {
-            var oMenu = eval("oMenu"+id);
+            var oMenu = eval("oMenu"+oldId);
             oMenu.getItem(3).cfg.setProperty("disabled", false);
             oMenu.getItem(0).cfg.setProperty("disabled", true);
 		        oMenu.getItem(1).cfg.setProperty("disabled", true);
-          		if (!webdav)
-          		{
-            		oMenu.getItem(2).cfg.setProperty("disabled", true);
-          		}
+            if (!webdav) {
+              oMenu.getItem(2).cfg.setProperty("disabled", true);
+            }
 		        //disable delete
 				<% if (useXMLForm) {%>
 					oMenu.getItem(2,1).cfg.setProperty("disabled", true);
 				<% } else {%>
 				    oMenu.getItem(1,1).cfg.setProperty("disabled", true);
 				<% }%>
-				$('#worker'+id).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
-          		$('#worker'+id).css({'visibility':'visible'});
+				$('#worker'+oldId).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
+          		$('#worker'+oldId).css({'visibility':'visible'});
 
           		if (edit) {
-					var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav"+id);
+					var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav".concat(oldId));
     				window.open(url,'_self');
     			} else if (download) {
-    				var url = $('#url'+id).attr('href');
+    				var url = $('#url'+oldId).attr('href');
     				window.open(url);
     			}
         	} else {
@@ -433,17 +439,17 @@
       }
     }
 
-    function checkoutAndDownload(id, webdav)
+    function checkoutAndDownload(id, oldId, webdav)
     {
-      checkout(id, webdav, false, true);
+      checkout(id, oldId, webdav, false, true);
     }
 
-    function checkoutAndEdit(id)
+    function checkoutAndEdit(id, oldId)
     {
-      checkout(id, true, true, false);
+      checkout(id, oldId, true, true, false);
     }
 
-    function checkin(id,webdav,forceRelease)
+    function checkin(id, oldId, webdav, forceRelease)
     {
       if (id.length > 0) {
         var webdavUpdate = 'false';
@@ -462,11 +468,9 @@
           if (data == "locked") {
             displayWarning(id);
           }
-          else
-          {
-            if (data == "ok")
-            {
-              menuCheckin(id);
+          else {
+            if (data == "ok") {
+              menuCheckin(oldId);
             }
           }
         }, "text");
@@ -550,9 +554,9 @@
   <% }%>
     }
 
-  function updateAttachment(attachmentId) {
-    loadAttachment(attachmentId);
-    $( "#dialog-update-form" ).dialog( "open" );
+  function updateAttachment(attachmentId, lang) {
+    loadAttachment(attachmentId, lang);
+    $( "#dialog-attachment-update" ).data('attachmentId', attachmentId).dialog( "open" );
   }
 
   <% if (useXMLForm) {%>
@@ -572,6 +576,23 @@
     }  
 
     $(document).ready(function() {
+      $("#fileLang").on("change", function (event) {Z
+        $("#fileLang option:selected").each(function () {
+          alert($(this).val());
+          loadAttachment( $("#attachmentId").val(), $(this).val());
+        });
+      });
+      
+      $( '#update-attachment-form' ).iframePostForm ({
+        json : true,
+        post : function () {
+        },
+        complete : function (response) {
+          reloadIncludingPage();
+          $( this ).dialog( "close" );
+        }
+      });
+      
       $( "#dialog-attachment-delete" ).dialog({
         autoOpen: false,
         title: '<fmt:message key="supprimerAttachment" />',
@@ -595,47 +616,31 @@
             $( this ).dialog( "close" );
           }
         },
-        close: function() {
-          allFields.val( "" ).removeClass( "ui-state-error" );
+        close: function() {          
         }
       });     
       
-      $( "#dialog-update-form" ).dialog({
+      $( "#dialog-attachment-update" ).dialog({
         autoOpen: false,
-        height: 300,
-        width: 350,
+        height: 350,
+        width: 600,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() {
-            $.ajax({
-              url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + $( "#update-attachment-form").fileLang,
-              type: "PUT",
-              data: $.toJSON(comment),
-              contentType: "application/json",
-              dataType: "json",
-              cache: false,
-              success: function(data) {
-                reloadIncludingPage();
-                $( this ).dialog( "close" );
-              }
-            }); 
-            $( this ).dialog( "close" );
+          '<fmt:message key="GML.ok"/>': function() { 
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
+            $('#update-attachment-form').attr('action', submitUrl);
+            $('#update-attachment-form').submit();
           },
           '<fmt:message key="GML.delete"/>': function() {
             $.ajax({              
-              url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + $( "#update-attachment-form").fileLang,
+              url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId')  + '/content/' + $("#fileLang").val(),
               type: "DELETE",
               contentType: "application/json",
               dataType: "json",
               cache: false,
               success: function(data) {
-                comment.text = data.text;
-                $("#comment" + commentId).find('pre.text').text('').append(data.text.replace(/\n/g, '<br/>'));
-                comments.commentsById[commentId] = data;
-                settings.callback( {
-                  type: 'update',
-                  comments: new Array( data )
-                } );
+                 reloadIncludingPage();
+                 $( this ).dialog( "close" );
               }
             }); 
             $( this ).dialog( "close" );
@@ -644,10 +649,9 @@
             $( this ).dialog( "close" );
           }
         },
-        close: function() {
-          allFields.val( "" ).removeClass( "ui-state-error" );
+        close: function() {          
         }
-      });
+      });      
       
       $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
 
@@ -675,7 +679,7 @@
       }
       sortAttachments(param);
     });
-
+    
     function sortAttachments(orderedList) {
       $.get('<c:url value="/Attachment" />', { orderedList:orderedList,Action:'Sort'},
       function(data){
@@ -700,14 +704,19 @@
     }
   <% }%>
     
-    function displayAttachment(attachment) {
-        $('#fileName').html('');
-        $('#fileName').html(attachment.fileName);
+      function displayAttachment(attachment) {
+        $('#fileName').text(attachment.fileName);
         $('#fileTitle').val(attachment.title);
-        $('#fileDesc').val(attachment.description);
+        $('#fileDescription').val(attachment.description);
       }
       
-      function loadAttachment(id) {
+      function clearAttachment() {
+        $('#fileName').html('');
+        $('#fileTitle').val('');
+        $('#fileDescription').val('');
+      }
+      
+      function loadAttachment(id, lang) {
         translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
         $.ajax({
           url: translationsUrl,
@@ -715,31 +724,35 @@
           contentType: "application/json",
           dataType: "json",
           cache: false,
-          success: function(data) {
-            alert(data);
+          success: function(data) { 
+            $('#attachmentId').val(id);
+            clearAttachment();
             $.each(data, function(index, attachment) {
-              displayAttachment(attachment);
+              if(attachment.lang == lang) {
+                displayAttachment(attachment);
+                return false;
+              }
+              return true;
             });
           }
         });
       }
-      
-     
 </script>
-        <div id="dialog-update-form" style="display:none">
-            <form name="update-attachment-form" action="<c:url value="/attachment/jsp/updateFile.jsp" />" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+        <div id="dialog-attachment-update" style="display:none">
+            <form name="update-attachment-form" id="update-attachment-form" action="<c:url value="/attachment/jsp/updateFile.jsp" />" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
               <label for="fileName"><fmt:message key="GML.file" /></label><br/>
               <span id="fileName"></span><br/>
               <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
               <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
-              <input type="file" name="file_upload" size="60" id="file_upload" /><br/>
+              <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
               <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
               <label for="fileTitle"><fmt:message key="Title"/></label><br/>
               <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
               <label for="fileDesc"><fmt:message key="GML.description" /></label><br/>
-              <textarea name="fileDesc" cols="60" rows="3" id="fileDesc"></textarea><br/>
+              <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
+              <input type="submit" value="Submit" style="display:none" />
             </form>
         </div>
         <div id="dialog-attachment-delete" style="display:none">
-          <span id="fileName"><fmt:message key="attachment.suppressionConfirmation" /></span>
+          <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
         </div>        

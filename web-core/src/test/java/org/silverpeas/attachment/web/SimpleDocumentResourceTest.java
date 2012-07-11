@@ -191,7 +191,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
         HTTP_SESSIONKEY,
-        getSessionKey()).type(MULTIPART_FORM_DATA).put(SimpleDocumentEntity.class, form);
+        getSessionKey()).type(MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -216,7 +216,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
         HTTP_SESSIONKEY,
-        getSessionKey()).type(MULTIPART_FORM_DATA).put(SimpleDocumentEntity.class, form);
+        getSessionKey()).type(MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),

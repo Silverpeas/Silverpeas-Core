@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -53,7 +54,7 @@ import org.opends.server.util.StaticUtils;
 
 /**
  * JUnit ClassRule to start an embedded OpenDJ server in a JUnit Test. Must be used with the
- * CreateLdapServer annoation
+ * CreateLdapServer annotation
  *
  * @sez org.silverpeas.ldap.CreateLdapServer
  * @author ehugonnet

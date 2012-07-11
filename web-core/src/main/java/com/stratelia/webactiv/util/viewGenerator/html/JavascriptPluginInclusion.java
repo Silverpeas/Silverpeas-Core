@@ -44,6 +44,7 @@ public class JavascriptPluginInclusion {
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
+  private static final String JQUERY_IFRAME_POST = "jquery.iframe-post-form.js";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
@@ -70,6 +71,12 @@ public class JavascriptPluginInclusion {
             + SILVERPEAS_QTIP);
     xhtml.addElement(qtip);
     xhtml.addElement(silverpeasQtip);
+    return xhtml;
+  }
+  
+  public static ElementContainer includeIFramePost(final ElementContainer xhtml) {
+    script iframePost = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_IFRAME_POST);
+    xhtml.addElement(iframePost);
     return xhtml;
   }
 

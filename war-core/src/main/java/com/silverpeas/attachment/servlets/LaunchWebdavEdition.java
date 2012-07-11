@@ -24,16 +24,13 @@
 
 package com.silverpeas.attachment.servlets;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -43,6 +40,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author ehugonnet
@@ -122,8 +124,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<title>Edition WebDAV</title>");
     out.println("\t\t<vendor>Silverpeas</vendor>");
     out.println("\t\t<homepage href=\"http://www.silverpeas.com\"/>");
-    out
-        .println(
+    out.println(
         "\t\t<description>A simple Java webstart application to launch Online Document Edition</description>");
     out.println("\t\t<description kind=\"short\">Online Document Editor</description>");
     out.println("\t\t<icon href=\"logo.PNG\" kind=\"default\"/>");

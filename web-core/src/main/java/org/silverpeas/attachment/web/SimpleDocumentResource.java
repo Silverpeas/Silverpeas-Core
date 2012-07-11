@@ -30,7 +30,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -52,6 +51,8 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
@@ -104,7 +105,7 @@ public class SimpleDocumentResource extends RESTWebService {
     SimpleDocument document = getSimpleDocument(null);
     AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
   }
-  
+
   /**
    * Delete the the specified document.
    */
@@ -117,23 +118,27 @@ public class SimpleDocumentResource extends RESTWebService {
   }
 
   /**
-   * Delete the the specified document.
+   * Update the the specified document.
    */
-  @PUT
+  @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
-  public SimpleDocumentEntity updateDocument(final @FormDataParam("file_upload") InputStream uploadedInputStream,
-      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail, final @FormDataParam(
-      "fileLang") String lang, final @FormDataParam("fileTitle") String title, final @FormDataParam(
-      "fileDescription") String description) {
+  public SimpleDocumentEntity updateDocument(
+      final @FormDataParam("file_upload") InputStream uploadedInputStream,
+      final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
+      final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
+      final @FormDataParam("fileDescription") String description) {
     SimpleDocument document = getSimpleDocument(lang);
     document.setLanguage(lang);
     document.setTitle(title);
     document.setDescription(description);
     AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
-    if (uploadedInputStream != null) {
-      AttachmentServiceFactory.getAttachmentService().addContent(document, uploadedInputStream, true,
-          true);
+    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
+        getFileName())) {
+      document.setFilename(fileDetail.getFileName());
+      document.setContentType(FileUtil.getMimeType(fileDetail.getFileName()));
+      AttachmentServiceFactory.getAttachmentService().addContent(document, uploadedInputStream,
+          true, true);
     }
     document = getSimpleDocument(lang);
     URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.

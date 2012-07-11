@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.attachment;
 
 import java.io.IOException;
@@ -70,47 +66,60 @@ public class MenuHelper {
     builder.append("<ul class=\"first-of-type\">").append(NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout('").
-        append(attachment.getId()).append("',").append(webDavOK).append(")\">").append(
-        resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
-    builder.append(
+        append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
+        append(")\">").append(resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
+    builder.
+        append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('").
-        append(attachment.getId()).append("',").append(webDavOK).append(");\">").append(
-        resources.getString("attachment.checkOutAndDownload")).append("</a></li>").append(NEW_LINE);
-    builder.append(
+        append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
+        append(");\">").append(resources.getString("attachment.checkOutAndDownload")).append(
+        "</a></li>").append(NEW_LINE);
+    builder.
+        append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('").
-        append(attachment.getId()).append("');\">").append(resources.getString(
-        "attachment.checkOutAndEditOnline")).append("</a></li>").append(NEW_LINE);
+        append(attachment.getId()).append("',").append(attachmentId).append(");\">").
+        append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>").append(
+        NEW_LINE);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin('").
-        append(attachment.getId()).append("',").append(attachment.isOpenOfficeCompatible()).
-        append(", false)\">").append(resources.getString("checkIn")).append("</a></li>").append(NEW_LINE);
+        append(attachment.getId()).append("',").append(attachmentId).append(",").append(attachment.
+        isOpenOfficeCompatible()).append(", false)\">").append(resources.getString("checkIn")).
+        append("</a></li>").append(
+        NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
-    builder.append(
+    builder.
+        append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
-        append(attachment.getId()).append("');\">").append(resources.getString("GML.modify")).append(
-        "</a></li>").append(NEW_LINE);
+        append(attachment.getId()).append("', '").append(language).append("');\">").append(
+        resources.getString("GML.modify")).append("</a></li>").append(NEW_LINE);
     if (useXMLForm) {
       builder
           .append(
           "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
       builder.append(attachmentId).append("','").append(language).append("');\">");
-      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(NEW_LINE);
+      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(
+          NEW_LINE);
     }
-    builder.append("<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('")
-        .append(attachment.getId()).append("')\">").append(resources.getString("GML.delete")).append(
+    builder.
+        append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('").
+        append(attachment.getId()).append("')\">").append(resources.getString("GML.delete")).append(
         "</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
-    builder.append(
+    builder.
+        append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('").
         append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
         append("</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
-    builder.append(
+    builder.
+        append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('");
-    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify")).append(NEW_LINE);
+    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify")).append(
+        NEW_LINE);
     builder.append("</a></li>");
     builder.append("</ul>").append(NEW_LINE);
     builder.append("</div>").append(NEW_LINE);
@@ -131,7 +140,8 @@ public class MenuHelper {
           attachmentId).append("\"");
       builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
     } else {
-      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).append("\"");
+      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).
+          append("\"");
       builder.append(", {");
     }
     builder.append("hidedelay: 100, ");

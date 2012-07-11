@@ -24,9 +24,8 @@
 
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.IOException;
+
 import javax.jcr.NamespaceException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -38,9 +37,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.jackrabbit.core.jndi.RegistryHelper;
 import org.apache.jackrabbit.core.nodetype.InvalidNodeTypeDefException;
+
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * This Class implements a servlet that is used as unified mechanism to retrieve a jcr repository
@@ -130,15 +134,14 @@ public class RepositoryAccessServlet extends HttpServlet {
     super.destroy();
     unregisterJNDI();
     log("Closing the repository ...........");
-    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
-        "Closing the repository ...........");
+    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init", "Closing the repository .....");
   }
 
   private void unregisterJNDI() {
     try {
       RegistryHelper.unregisterRepository(new InitialContext(), jndiName);
     } catch (NamingException ex) {
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.unregisterJndi",
+      SilverTrace.warn("RepositoryAccessServlet", "jackrabbit.unregisterJndi",
           "Unregistering the repository ...........", ex);
     }
   }

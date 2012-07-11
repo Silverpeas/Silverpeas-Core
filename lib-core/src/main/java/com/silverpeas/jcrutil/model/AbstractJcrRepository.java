@@ -20,9 +20,10 @@
  */
 package com.silverpeas.jcrutil.model;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
 
 public abstract class AbstractJcrRepository {
 

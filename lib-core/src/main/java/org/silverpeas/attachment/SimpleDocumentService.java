@@ -23,6 +23,26 @@
  */
 package org.silverpeas.attachment;
 
+import java.io.*;
+import java.util.Date;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.Binary;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.jcrutil.BasicDaoFactory;
@@ -32,6 +52,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -42,23 +63,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import java.io.*;
-import java.util.Date;
-import java.util.List;
 
 import static javax.jcr.Property.JCR_CONTENT;
 import static javax.jcr.Property.JCR_DATA;
@@ -374,8 +378,6 @@ public class SimpleDocumentService implements AttachmentService {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
           document.getLanguage());
-
-      String language = document.getLanguage();
       repository.updateDocument(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         // le fichier est renommé
@@ -1334,30 +1336,22 @@ public class SimpleDocumentService implements AttachmentService {
         return false;
       }
 
-      String componentId = document.getInstanceId();
       boolean invokeCallback = false;
-
       if (update || upload) {
         String workerId = document.getEditedBy();
         document.setUpdated(new Date());
         document.setUpdatedBy(workerId);
         invokeCallback = true;
       }
-      /*
-       if (upload) {
-       String uploadedFile = FileRepositoryManager.getAbsolutePath(componentId)
-       + CONTEXT_ATTACHMENTS + attachmentDetail.getPhysicalName(language);
-       long newSize = FileRepositoryManager.getFileSize(uploadedFile);
-       attachmentDetail.setSize(newSize);
-       }*/
-
       if (document.isOpenOfficeCompatible() && !upload && update) {
         webdavRepository.updateAttachment(session, document);
+        storeContent(session, document);
       } else if (document.isOpenOfficeCompatible() && (upload || !update)) {
         webdavRepository.deleteAttachmentNode(session, document);
       }
       // Remove workerId from this attachment
       document.release();
+      session.save();
       updateAttachment(document, false, invokeCallback);
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
@@ -1383,9 +1377,9 @@ public class SimpleDocumentService implements AttachmentService {
   public boolean lock(String attachmentId, String userId, String language) {
     Session session = null;
     try {
+      SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId);
       session = BasicDaoFactory.getSystemSession();
-      SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
-          attachmentId), language);
+      SimpleDocument document = repository.findDocumentById(session, pk, language);
       if (document.isReadOnly()) {
         return document.getEditedBy().equals(userId);
       }
