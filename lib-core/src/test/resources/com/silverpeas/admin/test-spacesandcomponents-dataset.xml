@@ -32,35 +32,45 @@
 
   <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
   <st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" />
+  <st_user id="3" domainid="0" specificid="3" lastname="Hetfield" login="Hetfield" accesslevel="U" />
 	
   <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
   <domainsp_user id="2" lastname="SimpleUser" login="SimpleUser"/>
+  <domainsp_user id="3" lastname="Hetfield" login="Hetfield"/>
 	
   <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>
 	
   <domainsp_group id="1" name="Groupe 1"/>
 	
-  <st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
-  <st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
-  <st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0"/>
+  <st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0" isinheritanceblocked="0"/>
+  <st_space id="2" domainfatherid="1" name="Space 1-2" firstpagetype="0" isinheritanceblocked="0"/>
+  <st_space id="3" domainfatherid="[NULL]" name="Space 2" firstpagetype="0" isinheritanceblocked="0"/>
   
-  <st_space id="4" domainfatherid="[NULL]" name="Space 4" firstpagetype="0"/>
+  <st_space id="4" domainfatherid="[NULL]" name="Space 4" firstpagetype="0" isinheritanceblocked="0"/>
   <st_space id="5" domainfatherid="4" name="4.1 (Inheritance blocked)" firstpagetype="0" isinheritanceblocked="1"/>
   <st_space id="6" domainfatherid="4" name="4.2 (Inheritance enabled)" firstpagetype="0" isinheritanceblocked="0"/>
   
-  
-  <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
-  <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>
+  <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia" isinheritanceblocked="0"/>
+  <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach" isinheritanceblocked="0"/>
+  <st_componentinstance id="3" spaceid="3" name="Documents" componentname="kmelia" isinheritanceblocked="0"/>
   
   <!-- Administrateur is publisher and user on space 1 -->
   <st_spaceuserrole id="1" spaceid="1" rolename="publisher" isinherited="0"/>
-  <st_spaceuserrole id="2" spaceid="1" rolename="user" isinherited="0"/>
+  <st_spaceuserrole id="2" spaceid="1" rolename="reader" isinherited="0"/>
   <st_spaceuserrole_user_rel spaceuserroleid="1" userid="1"/>
   <st_spaceuserrole_user_rel spaceuserroleid="2" userid="1"/>
   
-  <!-- SimpleUser is publisher on space 3 -->
+  <!-- SimpleUser is publisher on space 3 and subspace 2 -->
   <st_spaceuserrole id="3" spaceid="3" rolename="publisher" isinherited="0"/>
   <st_spaceuserrole_user_rel spaceuserroleid="3" userid="2"/>
+  <st_spaceuserrole id="4" spaceid="2" rolename="publisher" isinherited="0"/>
+  <st_spaceuserrole_user_rel spaceuserroleid="4" userid="2"/>
+  
+  <!-- Inherited profiles from space 1 -->
+  <st_spaceuserrole id="5" spaceid="2" rolename="publisher" isinherited="1"/>
+  <st_spaceuserrole id="6" spaceid="2" rolename="reader" isinherited="1"/>
+  <st_spaceuserrole_user_rel spaceuserroleid="5" userid="1"/>
+  <st_spaceuserrole_user_rel spaceuserroleid="6" userid="1"/>
   
   <!--  Application GED inherits rights of its space -->
   <st_userrole id="1" instanceid="1" rolename="publisher" isinherited="1"/>
@@ -68,15 +78,28 @@
   <st_userrole_user_rel userroleid="1" userid="1"/>
   <st_userrole_user_rel userroleid="2" userid="1"/>
   
-  <uniqueid maxid="2" tablename="st_user"/>
+  <!--  Application Almanach inherits rights of its space -->
+  <st_userrole id="3" instanceid="2" rolename="publisher" isinherited="1"/>
+  <st_userrole id="4" instanceid="2" rolename="user" isinherited="1"/>
+  <st_userrole id="5" instanceid="2" rolename="user" isinherited="0"/>
+  <st_userrole_user_rel userroleid="3" userid="1"/>
+  <st_userrole_user_rel userroleid="3" userid="2"/>
+  <st_userrole_user_rel userroleid="4" userid="1"/>
+  <st_userrole_user_rel userroleid="5" userid="3"/>
+  
+  <!--  Application Documents inherits rights of its space -->
+  <st_userrole id="6" instanceid="3" rolename="publisher" isinherited="1"/>
+  <st_userrole_user_rel userroleid="6" userid="2"/>
+  
+  <uniqueid maxid="3" tablename="st_user"/>
   <uniqueid maxid="0" tablename="st_domain"/>
-  <uniqueid maxid="2" tablename="domainsp_user"/>
+  <uniqueid maxid="3" tablename="domainsp_user"/>
   <uniqueid maxid="1" tablename="st_group"/>
   <uniqueid maxid="1" tablename="domainsp_group"/>
   <uniqueid maxid="6" tablename="st_space"/>
-  <uniqueid maxid="2" tablename="st_componentinstance"/>
-  <uniqueid maxid="3" tablename="st_spaceuserrole"/>
-  <uniqueid maxid="2" tablename="st_userrole"/>
+  <uniqueid maxid="3" tablename="st_componentinstance"/>
+  <uniqueid maxid="6" tablename="st_spaceuserrole"/>
+  <uniqueid maxid="6" tablename="st_userrole"/>
   
   <st_spaceuserrole_group_rel />
   <st_instance_data />  
