@@ -570,6 +570,10 @@ Definition des class de style Silverpeas
   color: #999999;
 }
 
+#outilsAdmin img {
+  vertical-align: middle;
+}
+
 .ongletAdminOff {
   background-color: #333
 }
