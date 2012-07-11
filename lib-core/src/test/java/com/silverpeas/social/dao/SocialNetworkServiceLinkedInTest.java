@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.dao;
+package com.silverpeas.social.dao;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -70,7 +70,7 @@ public class SocialNetworkServiceLinkedInTest {
 						SocialNetworkServiceLinkedInTest.class
 								.getClassLoader()
 								.getResourceAsStream(
-										"com/silverpeas/socialnetwork/dao/socialnetwork-dataset.xml")));
+										"com/silverpeas/social/dao/socialnetwork-dataset.xml")));
 		dataSet.addReplacementObject("[NULL]", null);
 		IDatabaseConnection connection = new DatabaseConnection(
 				dataSource.getConnection());

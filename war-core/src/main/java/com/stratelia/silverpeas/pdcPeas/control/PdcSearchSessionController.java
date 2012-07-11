@@ -157,6 +157,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   
   // facets entry selected by the user
   private ResultFilterVO selectedFacetEntries = null;
+  
+  private boolean platformUsesPDC = false;
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
     ComponentContext componentContext, String multilangBundle,
@@ -178,6 +180,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // Initialize external search
     isEnableExternalSearch = getSettings().getBoolean("external.search.enable", false);
     getExternalSPConfig();
+    
+    try {
+      platformUsesPDC = !getPdcBm().getAxis().isEmpty();
+    } catch (PdcException e) {
+      SilverTrace.info("pdcPeas", "PdcSearchSessionController()", "root.MSG_GEN_ERROR", e);
+    }
   }
 
   /**
@@ -2951,4 +2959,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public ResultFilterVO getSelectedFacetEntries() {
     return selectedFacetEntries;
   }
+  
+  public boolean isPlatformUsesPDC() {
+    return platformUsesPDC;
+  }
+ 
 }

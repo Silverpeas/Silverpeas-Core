@@ -43,10 +43,9 @@ public class ProfilSessionController extends AbstractComponentSessionController 
       ComponentContext componentContext) {
     super(mainSessionCtrl,
         componentContext,
-        "com.silverpeas.socialnetwork.multilang.socialNetworkBundle",
-        "com.silverpeas.socialnetwork.settings.socialNetworkIcons",
-        "com.silverpeas.socialnetwork.settings.socialNetworkSettings");
-
+        "com.silverpeas.social.multilang.socialNetworkBundle",
+        "com.silverpeas.social.settings.socialNetworkIcons",
+        "com.silverpeas.social.settings.socialNetworkSettings");
   }
 
   /**

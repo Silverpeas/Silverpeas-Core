@@ -156,7 +156,7 @@
     if (! $.userZoom.initialized) {
       $.i18n.properties({
         name: 'socialNetworkBundle',
-        path: webContext + '/services/bundles/com/silverpeas/socialNetwork/multilang/',
+        path: webContext + '/services/bundles/com/silverpeas/social/multilang/',
         language: '$$', /* by default the language of the user in the current session */
         mode: 'map'
       });

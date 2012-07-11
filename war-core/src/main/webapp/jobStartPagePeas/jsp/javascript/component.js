@@ -24,7 +24,7 @@
 
 **/
 
-$(document).ready(function() 
+$(document).ready(function()
 {
    // By suppling no content attribute, the library uses each elements title attribute by default
    $('img[title]').qtip({

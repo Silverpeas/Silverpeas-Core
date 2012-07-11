@@ -48,7 +48,7 @@
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
     String language = request.getLocale().getLanguage();
-    ResourceLocator multilang = new ResourceLocator("com.silverpeas.socialnetwork.multilang.socialNetworkBundle", language);
+    ResourceLocator multilang = new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle", language);
     ResourceLocator multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", language);
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
     String view = (String) request.getAttribute("View");

@@ -99,7 +99,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ParameterType", propOrder = { "name", "label", "order", "mandatory", "value",
-    "options", "type", "size", "updatable", "help", "personalSpaceValue" })
+    "options", "type", "size", "updatable", "help", "warning", "personalSpaceValue" })
 public class Parameter implements Cloneable {
 
   @XmlElement(required = true)
@@ -122,6 +122,8 @@ public class Parameter implements Cloneable {
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected HashMap<String, String> help;
+  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
+  protected HashMap<String, String> warning;
   protected String personalSpaceValue;
 
   /**
@@ -299,6 +301,25 @@ public class Parameter implements Cloneable {
   }
 
   /**
+   * Gets the value of the warning property.
+   * @return possible object is {@link Multilang }
+   */
+  public HashMap<String, String> getWarning() {
+    if (warning == null) {
+      warning = new HashMap<String, String>();
+    }
+    return warning;
+  }
+
+  /**
+   * Sets the value of the warning property.
+   * @param value allowed object is {@link Multilang }
+   */
+  public void setWarning(HashMap<String, String> value) {
+    this.warning = value;
+  }
+
+  /**
    * Gets the value of the personalSpaceValue property.
    * @return possible object is {@link String }
    */
@@ -359,6 +380,7 @@ public class Parameter implements Cloneable {
   public Parameter clone() {
     Parameter param = new Parameter();
     param.setHelp((HashMap<String, String>) getHelp().clone());
+    param.setWarning((HashMap<String, String>) getWarning().clone());
     param.setLabel((HashMap<String, String>) getLabel().clone());
     param.setMandatory(mandatory);
     param.setName(name);

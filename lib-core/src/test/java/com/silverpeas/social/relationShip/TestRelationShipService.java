@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.relationShip;
+package com.silverpeas.social.relationShip;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;

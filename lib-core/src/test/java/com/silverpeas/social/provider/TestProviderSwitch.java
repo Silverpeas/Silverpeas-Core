@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.socialnetwork.provider;
+package com.silverpeas.social.provider;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,6 +37,12 @@ import org.junit.Test;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.model.SocialInformationType;
+import com.silverpeas.socialnetwork.provider.ProviderSwitch;
+import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
+import com.silverpeas.socialnetwork.provider.SocialGalleryInterface;
+import com.silverpeas.socialnetwork.provider.SocialPublicationsInterface;
+import com.silverpeas.socialnetwork.provider.SocialRelationShipsInterface;
+import com.silverpeas.socialnetwork.provider.SocialStatusInterface;
 import com.silverpeas.socialnetwork.status.SocialInformationStatus;
 import com.silverpeas.socialnetwork.status.Status;
 

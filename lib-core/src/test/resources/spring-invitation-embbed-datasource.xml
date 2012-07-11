@@ -40,7 +40,7 @@
 	http://schemas.synyx.org/hades http://schemas.synyx.org/hades/hades.xsd">
 
   <jdbc:embedded-database id="dataSource" type="H2">
-    <jdbc:script location="classpath:/com/silverpeas/socialnetwork/create-database.sql" />
+    <jdbc:script location="classpath:/com/silverpeas/social/create-database.sql" />
   </jdbc:embedded-database>
 
 </beans>

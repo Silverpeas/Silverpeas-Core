@@ -81,11 +81,11 @@ public class NewsFeedJSONServlet extends HttpServlet {
     }
 
     ResourceLocator multilang =
-        new ResourceLocator("com.silverpeas.socialnetwork.multilang.socialNetworkBundle",
+        new ResourceLocator("com.silverpeas.social.multilang.socialNetworkBundle",
         m_MainSessionCtrl.getFavoriteLanguage());
 
     ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.socialnetwork.multilang.socialNetworkBundle", "");
+        new ResourceLocator("com.silverpeas.social.settings.socialNetworkSettings", "");
     int maxNbTries = settings.getInteger("newsFeed.maxNbTries", 10);
     int minNbDataBeforeNewTry = settings.getInteger("newsFeed.minNbDataBeforeNewTry", 15);
 

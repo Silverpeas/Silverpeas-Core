@@ -115,7 +115,8 @@ int nbTotalResults		= ((Integer) request.getAttribute("NbTotalResults")).intValu
 int indexOfFirstResult	= ((Integer) request.getAttribute("IndexOfFirstResult")).intValue();
 Boolean refreshEnabled	= (Boolean) request.getAttribute("RefreshEnabled");
 boolean externalSearchEnabled = ((Boolean) request.getAttribute("ExternalSearchEnabled")).booleanValue();
-Boolean	xmlSearch		= (Boolean) request.getAttribute("XmlSearchVisible");
+Boolean	xmlSearchVisible	= (Boolean) request.getAttribute("XmlSearchVisible");
+boolean	expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
 boolean	showPertinence	= ((Boolean) request.getAttribute("PertinenceVisible")).booleanValue();
 
 String 	displayParamChoices = (String) request.getAttribute("DisplayParamChoices"); // All || Req || Res
@@ -132,11 +133,6 @@ List<String> spellingWords = (List<String>) request.getAttribute("spellingWords"
 
 // List of Group result filter (new function added by EBO)
 ResultGroupFilter resultGroup = (ResultGroupFilter) request.getAttribute("ResultGroup");
-
-boolean isXmlSearchVisible = false;
-if (xmlSearch != null) {
-	isXmlSearchVisible = xmlSearch.booleanValue();
-}
 
 // recuperation du choix de l'utilisateur
 String keywords = (String) request.getAttribute("Keywords");
@@ -491,9 +487,13 @@ function showExternalSearchError() {
 			tabs.addTab(webTab.getLabel(), "ViewWebTab?Id="+i, false);
 		}
 	}
-	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
-	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
-	if ( isXmlSearchVisible ) {
+	if (expertSearchVisible) {
+	  	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
+		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
+	} else {
+	  	tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", false);
+	}
+	if (xmlSearchVisible) {
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", false);
     }
 
@@ -611,10 +611,10 @@ function showExternalSearchError() {
   </c:if>
 <%
 		out.println("</td></tr>");
-		out.println("<tr class=\"intfdcolor4\"><td>&nbsp;</td></tr>");
+		out.println("<tr><td>&nbsp;</td></tr>");
 
 		if (nbTotalResults > resultsOnThisPage.size()) {
-			out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
+			out.println("<tr valign=\"middle\">");
 			out.println("<td align=\"center\">");
 			out.println(pagination.printIndex("doPagination"));
 			out.println("</td>");

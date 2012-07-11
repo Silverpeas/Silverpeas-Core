@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -84,9 +83,9 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       ComponentContext componentContext) {
     super(mainSessionCtrl,
         componentContext,
-        "com.silverpeas.socialnetwork.multilang.socialNetworkBundle",
-        "com.silverpeas.socialnetwork.settings.socialNetworkIcons",
-        "com.silverpeas.socialnetwork.settings.socialNetworkSettings");
+        "com.silverpeas.social.multilang.socialNetworkBundle",
+        "com.silverpeas.social.settings.socialNetworkIcons",
+        "com.silverpeas.social.settings.socialNetworkSettings");
     adminCtrl = new AdminController(getUserId());
     invitationService = new InvitationService();
   }
@@ -333,7 +332,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
         ResourceLocator localizedMessage = new ResourceLocator(
-            "com.silverpeas.socialnetwork.multilang.socialNetworkBundle", language);
+            "com.silverpeas.social.multilang.socialNetworkBundle", language);
         notifMetaData.addLanguage(language, localizedMessage.getString(
             "myProfile.invitations.notification.send.subject", subject), "");
       }
@@ -407,7 +406,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         templates.put(language, template);
         notifMetaData.addLanguage(language, subject, "");
         ResourceLocator localizedMessage = new ResourceLocator(
-            "com.silverpeas.socialnetwork.multilang.socialNetworkBundle", language);
+            "com.silverpeas.social.multilang.socialNetworkBundle", language);
         notifMetaData.addLanguage(language, localizedMessage.getString(
             "myProfile.invitations.notification.accept.subject", subject), "");
       }
@@ -424,12 +423,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @return a SilverpeasTemplate
    */
   private SilverpeasTemplate getNewTemplate() {
-    Properties templateConfig = new Properties();
-    templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings()
-        .getString("templatePath"));
-    templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings()
-        .getString("customersTemplatePath"));
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("socialNetwork");
   }
 
   public boolean updatablePropertyExists() {

@@ -57,7 +57,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
   </bean>
   <bean id="socialGallery" class="com.silverpeas.gallery.socialNetwork.SocialGallery">
   </bean>
-  <bean id="socialPublications" class="com.stratelia.webactiv.publication.socialNetwork.SocialPublications">
+  <bean id="socialPublications" class="com.stratelia.webactiv.publication.social.SocialPublications">
   </bean>
   <bean id="socialStatus" class="com.silverpeas.socialnetwork.status.SocialStatus">
   </bean>
