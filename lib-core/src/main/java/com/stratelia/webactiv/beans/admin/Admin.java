@@ -1739,6 +1739,87 @@ public final class Admin {
       }
     }
   }
+  
+  public void moveSpace(String spaceId, String fatherId) throws AdminException {
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getFactory().getDomainDriverManager();
+    
+    if (isParent(spaceId, fatherId)) {
+      // space cannot be moved in one of its descendants
+      return;
+    }
+
+    String shortSpaceId = getDriverSpaceId(spaceId);
+    String shortFatherId = getDriverSpaceId(fatherId);
+    if (!StringUtil.isDefined(shortFatherId)) {
+      shortFatherId = "-1";
+    }
+    boolean moveOnTop = "-1".equals(shortFatherId);
+
+    try {
+      SpaceInst space = getSpaceInstById(shortSpaceId);
+      String shortOldSpaceId = getDriverSpaceId(space.getDomainFatherId());
+      
+      // Open the connections with auto-commit to false
+      domainDriverManager.startTransaction(false);
+      // move space in database
+      spaceManager.moveSpace(domainDriverManager, Integer.parseInt(shortSpaceId),
+          Integer.parseInt(shortFatherId));
+      
+      // set space in last rank
+      spaceManager.updateSpaceOrder(domainDriverManager, shortSpaceId, getAllSubSpaceIds(shortFatherId).length);
+      
+      if (useProfileInheritance) {
+        space = spaceManager.getSpaceInstById(domainDriverManager, shortSpaceId);
+        
+        // inherited rights must be removed but local rights are preserved
+        List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
+        for (SpaceProfileInst profile : inheritedProfiles) {
+          deleteSpaceProfileInst(profile.getId(), false);
+        }
+        
+        // local rights must be spreaded
+        List<SpaceProfileInst> profiles = space.getProfiles();
+        for (SpaceProfileInst profile : profiles) {
+          spreadSpaceProfile(shortSpaceId, profile);
+        }
+        
+        if (moveOnTop) {
+          // on top level, space inheritance is not applicable
+          space.setInheritanceBlocked(false);
+          spaceManager.updateSpaceInst(domainDriverManager, space);
+        } else {
+          if (!space.isInheritanceBlocked()) {
+            // space inherits rights from parent
+            SpaceInst father = getSpaceInstById(shortFatherId);
+            setSpaceProfilesToSubSpace(space, father, true, false);
+          } else {
+            // space uses only local rights
+            // let it as it is
+          }
+        }
+      }
+      
+      // commit transaction
+      domainDriverManager.commit();
+      
+      // reset caches
+      cache.resetSpaceInst();
+      TreeCache.removeSpace(shortSpaceId);
+      TreeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
+      addSpaceInTreeCache(spaceManager.getSpaceInstLightById(domainDriverManager, shortSpaceId), false);
+      if (!moveOnTop) {
+        TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
+      }
+      
+    } catch (Exception e) {
+      rollback();
+      throw new AdminException("Admin.moveSpace", SilverpeasException.ERROR,
+          "admin.EX_ERR_MOVE_Space", "spaceId = " + spaceId + ",  fatherId =" + fatherId, e);
+    } finally {
+      domainDriverManager.releaseOrganizationSchema();
+    }
+  }
 
   /**
 * Move the given component in Silverpeas.
@@ -1774,11 +1855,16 @@ public final class Admin {
         setSpaceProfilesToComponent(componentInst, null);
       }
 
-      // Set component in order
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
-          "Avant setComponentPlace: componentId=" + componentId + " idComponentBefore="
-          + idComponentBefore);
-      setComponentPlace(componentId, idComponentBefore, componentInsts);
+      if (StringUtil.isDefined(idComponentBefore) && componentInsts != null) {
+        // Set component in order
+        SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+            "Avant setComponentPlace: componentId=" + componentId + " idComponentBefore="
+            + idComponentBefore);
+        setComponentPlace(componentId, idComponentBefore, componentInsts);
+      } else {
+        // set component in last rank
+        updateComponentOrderNum(sDriverComponentId, getAllComponentIds(spaceId).length);
+      }
 
       // Update extraParamPage from Space if necessary
       SpaceInst fromSpace = getSpaceInstById(getDriverSpaceId(oldSpaceId));
@@ -2356,8 +2442,12 @@ public final class Admin {
               getDriverComponentId(component.getId()),
               componentRole);
           if (inheritedProfile != null) {
-            inheritedProfile.removeAllGroups();
-            inheritedProfile.removeAllUsers();
+            if (spaceProfile.getAllGroups().isEmpty()) {
+              inheritedProfile.removeAllGroups();
+            }
+            if (spaceProfile.getAllUsers().isEmpty()) {
+              inheritedProfile.removeAllUsers();
+            }
 
             inheritedProfile.addGroups(spaceProfile.getAllGroups());
             inheritedProfile.addUsers(spaceProfile.getAllUsers());
@@ -5089,11 +5179,11 @@ public final class Admin {
 * Return all the components Id in the subspaces available in webactiv given a space id
 */
   public String[] getAllComponentIds(String sSpaceId) throws Exception {
-    ArrayList<String> alCompoIds = new ArrayList<String>();
+    List<String> alCompoIds = new ArrayList<String>();
 
     // Get the compo of this space
     SpaceInst spaceInst = getSpaceInstById(sSpaceId);
-    ArrayList<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+    List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
 
     if (alCompoInst != null) {
       for (ComponentInst anAlCompoInst : alCompoInst) {
@@ -5101,7 +5191,7 @@ public final class Admin {
       }
     }
 
-    return arrayListToString(alCompoIds);
+    return alCompoIds.toArray(new String[0]);
   }
 
   /**
@@ -6661,18 +6751,28 @@ public final class Admin {
     }
     return newComponentLabel;
   }
+  
+  //check if spaceId is not parent of anotherSpace
+  private boolean isParent(String spaceId, String anotherSpaceId) throws AdminException {
+    if (anotherSpaceId == null) {
+      return false;
+    }
+    List<SpaceInstLight> path = TreeCache.getSpacePath(anotherSpaceId);
+    if (path.isEmpty()) {
+      path = getPathToSpace(anotherSpaceId, true);
+    }
+    for (SpaceInstLight space : path) {
+      if (spaceId.equalsIgnoreCase(space.getFullId())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   public String copyAndPasteSpace(String spaceId, String toSpaceId, String userId)
       throws AdminException {
     String newSpaceId = null;
-    boolean pasteAllowed = StringUtil.isDefined(spaceId);
-    if (StringUtil.isDefined(toSpaceId)) {
-      // First, check if target space is not a sub space of paste space
-      List<SpaceInstLight> path = TreeCache.getSpacePath(toSpaceId);
-      for (int i = 0; i < path.size() && pasteAllowed; i++) {
-        pasteAllowed = !spaceId.equalsIgnoreCase(path.get(i).getFullId());
-      }
-    }
+    boolean pasteAllowed = !isParent(spaceId, toSpaceId);
     if (pasteAllowed) {
       // paste space itself
       SpaceInst newSpace = getSpaceInstById(spaceId).clone();
@@ -6732,14 +6832,5 @@ public final class Admin {
       }
     }
     return newSpaceLabel;
-  }
-
-  private boolean isDefined(final UserDetail filter) {
-    return StringUtil.isDefined(filter.getId()) && StringUtil.isDefined(filter.getSpecificId())
-        && StringUtil.isDefined(filter.getDomainId()) && StringUtil.isDefined(filter.getLogin())
-        && StringUtil.isDefined(filter.getFirstName()) && StringUtil.isDefined(filter.getLastName())
-        && StringUtil.isDefined(filter.geteMail())
-        && StringUtil.isDefined(filter.getAccessLevel()) && StringUtil.isDefined(filter.
-        getLoginQuestion()) && StringUtil.isDefined(filter.getLoginAnswer());
   }
 }

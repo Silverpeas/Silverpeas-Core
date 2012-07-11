@@ -565,6 +565,20 @@ public class SpaceInstManager {
           "spaceId = " + spaceId, e);
     }
   }
+  
+  /*
+   * Move space from current location to space defined by fatherId
+   */
+  public void moveSpace(DomainDriverManager ddManager, int spaceId, int fatherId)
+      throws AdminException {
+    try {
+      ddManager.getOrganization().space.moveSpace(spaceId, fatherId);
+    } catch (Exception e) {
+      throw new AdminException("SpaceInstManager.moveSpace",
+          SilverpeasException.ERROR, "admin.EX_ERR_MOVING_SPACE",
+          "spaceId= " + spaceId + ", fatherId=" + fatherId, e);
+    }
+  }
 
   /*
    * Updates space in Silverpeas

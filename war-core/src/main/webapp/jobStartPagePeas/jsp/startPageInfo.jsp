@@ -28,11 +28,10 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-<%@page import="java.net.URLEncoder"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%	
-	boolean 		mode 				= new Boolean((String) request.getAttribute("mode")).booleanValue();
+	int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
 	String	 		m_SpaceId 			= (String) request.getAttribute("currentSpaceId");
 	Integer 		m_firstPageType 	= (Integer)request.getAttribute("FirstPageType");
 	
@@ -48,7 +47,7 @@
     String 			m_SpaceName 		= space.getName(resource.getLanguage());
     String 			m_Description 		= space.getDescription(resource.getLanguage());
     
-    List 		availableLooks			= gef.getAvailableLooks();
+    List<String>	availableLooks		= gef.getAvailableLooks();
     String		spaceLook				= space.getLook();
 
     if (spaceLook == null) {
@@ -71,9 +70,9 @@
         }
         
         // This space configuration
-        if (mode) {
+        if (maintenanceState == JobStartPagePeasSessionController.MAINTENANCE_THISSPACE) {
             operationPane.addOperation(resource.getIcon("JSPP.spaceUnlock"),resource.getString("JSPP.maintenanceModeToOff"),"DesactivateMaintenance");
-        } else {
+        } else if (maintenanceState == JobStartPagePeasSessionController.MAINTENANCE_OFF){
             operationPane.addOperation(resource.getIcon("JSPP.spaceLock"),resource.getString("JSPP.maintenanceModeToOn"),"ActivateMaintenance");
         }
         if (isUserAdmin || m_SubSpace != null) {
@@ -90,10 +89,13 @@
         if (JobStartPagePeasSettings.useComponentsCopy || objectsSelectedInClipboard) { 
 	        operationPane.addLine();
 	        if (JobStartPagePeasSettings.useComponentsCopy) {
-	        	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
+	        	operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.copy"),"javascript:onclick=clipboardCopy()");
+	        	if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) {
+	        		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.cut"),"javascript:onclick=clipboardCut()");
+	        	}
 	        }
 			if (objectsSelectedInClipboard) {
-				operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onClick=clipboardPaste()");
+				operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onclick=clipboardPaste()");
 			}
         }
 		operationPane.addLine();
@@ -113,25 +115,25 @@
     }
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+<style type="text/css">
+.txtlibform {
+	white-space: nowrap;
+}
+</style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 var currentLanguage = "<%=space.getLanguage()%>";
 <%
-	String lang = "";
-	Iterator codes = space.getTranslations().keySet().iterator();
-	while (codes.hasNext())
-	{
-		lang = (String) codes.next();
-		out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(space.getName(lang))+"\";\n");
-		out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(space.getDescription(lang))+"\";\n");
+	for (String lang : space.getTranslations().keySet()) {
+		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
+		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
 	}
 %>
 
@@ -155,7 +157,7 @@ function openPopup(action, larg, haut)
 <% if (m_SpaceExtraInfos.isAdmin) {
     if (isUserAdmin || (m_SubSpace != null)) { %>
 		function deleteSpace() {
-		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+Encode.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
+		    if (window.confirm("<%=resource.getString("JSPP.MessageSuppressionSpaceBegin")+" "+EncodeHelper.javaStringToJsString(m_SpaceName)+" "+resource.getString("JSPP.MessageSuppressionSpaceEnd")%>")) {
 		    	$.progressMessage();
 		    	setTimeout("location.href = \"DeleteSpace?Id=<%=space.getId()%>\";", 500);
 			}
@@ -175,7 +177,11 @@ function clipboardPaste() {
 }
 
 function clipboardCopy() {
-	top.IdleFrame.location.href = 'copy?Type=Space&Id=<%=space.getId()%>';
+	top.IdleFrame.location.href = "copy?Type=Space&Id=<%=space.getId()%>";
+}
+
+function clipboardCut() {
+	top.IdleFrame.location.href = "Cut?Type=Space&Id=<%=space.getId()%>";
 }
 
 function recoverRights() {
@@ -184,30 +190,32 @@ function recoverRights() {
 }
 -->
 </script>
-</HEAD>
-
-<BODY>
+</head>
+<body>
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());
 out.println(frame.printBefore());
 %>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<% if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) { %>
+	<div class="inlineMessage">
+		<%=resource.getString("JSPP.maintenanceStatus."+maintenanceState)%>
+	</div>
+	<br clear="all"/>
+<% } %>
+<view:board>
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.name") %> :</td>
-		<td valign="baseline" width="100%" id="spaceName"><%=Encode.javaStringToHtmlString(m_SpaceName)%></td>
+		<td class="txtlibform"><%=resource.getString("GML.name") %> :</td>
+		<td valign="baseline" width="100%" id="spaceName"><%=EncodeHelper.javaStringToHtmlString(m_SpaceName)%></td>
 	</tr>
 	<tr>
-		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("GML.description") %> :</td>
-		<td valign="top" width="100%" id="spaceDescription"><%=Encode.javaStringToHtmlParagraphe(m_Description)%></td>
+		<td class="txtlibform" valign="top"><%=resource.getString("GML.description") %> :</td>
+		<td valign="top" width="100%" id="spaceDescription"><%=EncodeHelper.javaStringToHtmlParagraphe(m_Description)%></td>
 	</tr>
 	<% if (space.getCreateDate() != null) { %>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.creationDate") %> :</td>
+		<td class="txtlibform"><%=resource.getString("GML.creationDate") %> :</td>
 		<td valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(space.getCreateDate())%>
 			<% if (space.getCreator() != null) { %>  
@@ -218,7 +226,7 @@ out.println(board.printBefore());
 	<% } %>
 	<% if (space.getUpdateDate() != null) { %>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.updateDate") %> :</td>
+		<td class="txtlibform"><%=resource.getString("GML.updateDate") %> :</td>
 		<td valign="baseline" width="100%">
 			<%=resource.getOutputDateAndHour(space.getUpdateDate())%>
 			<% if (space.getUpdater() != null) { %>  
@@ -229,20 +237,20 @@ out.println(board.printBefore());
 	<% } %>
 	<% if (!space.isRoot() && isInHeritanceEnable) { %>
 	<tr>
-		<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+		<td class="txtlibform" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 		<td align="left" valign="baseline" width="100%">
 		<% if (space.isInheritanceBlocked()) { %>
-			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
-			<input type="radio" disabled /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
+			<input type="radio" disabled="disabled" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+			<input type="radio" disabled="disabled" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
 		<% } else { %>
-			<input type="radio" disabled/> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
-			<input type="radio" disabled checked /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
+			<input type="radio" disabled="disabled"/> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+			<input type="radio" disabled="disabled" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
 		<% } %>
 		</td>
 	</tr>
 	<% } %>
 	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("JSPP.homepageType") %> :</td>
+		<td class="txtlibform"><%=resource.getString("JSPP.homepageType") %> :</td>
 		<td valign="baseline" width="100%"><%=pageType[m_firstPageType.intValue()] %></td>
 	</tr>
 	<% if (availableLooks.size() >= 2) { %>
@@ -251,34 +259,12 @@ out.println(board.printBefore());
 		<td><%=spaceLook%></td>
 	</tr>
 	<% } %>
-	<tr>
-		<td class="textePetitBold" nowrap><%=resource.getString("JSPP.maintenance") %></td>
-		<td valign="baseline" width="100%">
-			<input type="radio" <% if (mode) out.print("checked");%> name="mode" value="true" disabled>&nbsp;<%=resource.getString("JSPP.maintenanceModeOn")%>
-			<input type="radio" <% if (!mode) out.print("checked");%> name="mode" value="false" disabled>&nbsp;<%=resource.getString("JSPP.maintenanceModeOff")%>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td valign="baseline" width="100%">
-		<%
-			if (mode)
-			{
-				out.println("<b>"+resource.getString("JSPP.maintenanceStatus"));
-				out.println(resource.getString("JSPP.maintenanceTxtModeOn")+"</b>");
-			}
-		%>
-		</td>
-	</tr>
 </table>
-<%
-out.println(board.printAfter());
-%>
-</center>
+</view:board>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
