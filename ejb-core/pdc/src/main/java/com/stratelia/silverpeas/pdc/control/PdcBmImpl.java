@@ -1827,6 +1827,19 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     }
     return usedAxis;
   }
+  
+  public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
+      throws PdcException {
+    List<UsedAxis> usedAxis = getUsedAxisByInstanceId(instanceId);
+
+    for (ClassifyPosition position : positions) {
+      ClassifyPosition newPosition = checkClassifyPosition(position, usedAxis);
+      if (newPosition != null) {
+        // copy position
+        addPosition(objectId, newPosition, instanceId);
+      }
+    }
+  }
 
   /*
    * (non-Javadoc)
