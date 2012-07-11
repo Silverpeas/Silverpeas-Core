@@ -13,11 +13,11 @@ ALTER TABLE ST_NotifSended DROP CONSTRAINT PK_NotifSended;
 
 ALTER TABLE ST_NotifSendedReceiver DROP CONSTRAINT PK_NotifSendedReceiver;
 
-ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_delayednotification_pk;
-ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_delayednotification_fk_notificationResourceId;
-ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_delayednotification_fk_userId;
+ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_dn_pk;
+ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_dn_fk_nrId;
+ALTER TABLE st_delayednotification DROP CONSTRAINT const_st_dn_fk_userId;
 
-ALTER TABLE st_notificationresource DROP CONSTRAINT const_st_notificationresource_pk;
+ALTER TABLE st_notificationresource DROP CONSTRAINT const_st_nr_pk;
 
-ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_delayednotifusersetting_pk;
-ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_delayednotifusersetting_fk_userId;
+ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_dnus_pk;
+ALTER TABLE st_delayednotifusersetting DROP CONSTRAINT const_st_dnus_fk_userId;

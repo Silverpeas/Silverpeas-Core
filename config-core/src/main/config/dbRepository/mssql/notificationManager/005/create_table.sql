@@ -7,7 +7,7 @@ CREATE TABLE ST_NotifChannel (
 	subjectAvailable char (1) NOT NULL DEFAULT ('N')
 )
 ;
- 
+
 CREATE TABLE ST_NotifAddress (
 	id int NOT NULL ,
 	userId int NOT NULL ,
@@ -15,14 +15,14 @@ CREATE TABLE ST_NotifAddress (
 	notifChannelId int NOT NULL ,
 	address varchar (250) NOT NULL ,
 	usage varchar (20) NULL ,
-	priority int NOT NULL 
+	priority int NOT NULL
 )
 ;
 
 CREATE TABLE ST_NotifDefaultAddress (
 	id int NOT NULL ,
 	userId int NOT NULL ,
-	notifAddressId int NOT NULL 
+	notifAddressId int NOT NULL
 )
 ;
 
@@ -31,7 +31,7 @@ CREATE TABLE ST_NotifPreference (
 	notifAddressId int NOT NULL ,
 	componentInstanceId int NOT NULL ,
 	userId int NOT NULL ,
-	messageType int NOT NULL 
+	messageType int NOT NULL
 )
 ;
 
@@ -78,6 +78,6 @@ CREATE TABLE st_delayednotification (
    action					int NOT NULL ,
    notificationResourceId	bigint NOT NULL ,
    language					varchar(2) NOT NULL ,
-   creationDate				timestamp NOT NULL ,
+   creationDate				datetime NOT NULL ,
    message					varchar(2000) NULL
 );
