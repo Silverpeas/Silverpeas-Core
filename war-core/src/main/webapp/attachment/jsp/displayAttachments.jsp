@@ -311,20 +311,16 @@
 <div id="attachmentModalDialog" style="display: none"></div>
 <% if (spinfireViewerEnable) {%>
 <script type="text/javascript">
-  if (navigator.appName=='Microsoft Internet Explorer')
-  {
-    for (i=0; i<document.getElementsByName("switchView").length; i++)
+  if (navigator.appName=='Microsoft Internet Explorer') {
+    for (i=0; i<document.getElementsByName("switchView").length; i++) {
       document.getElementsByName("switchView")[i].style.display = '';
+    }
   }
-  function changeView3d(objectId)
-  {
-    if (document.getElementById(objectId).style.display == 'none')
-    {
+  function changeView3d(objectId) {
+    if (document.getElementById(objectId).style.display == 'none') {
       document.getElementById(objectId).style.display = '';
       eval("iconeView"+objectId).src = '<%=URLManager.getApplicationURL()%>/util/icons/visible3D.gif';
-    }
-    else
-    {
+    } else {
       document.getElementById(objectId).style.display = 'none';
       eval("iconeView"+objectId).src = '<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif';
     }
@@ -404,9 +400,10 @@
   
     function checkout(id, oldId, webdav, edit, download) {
       if (id.length > 0) {
+        pageMustBeReloadingAfterSorting = true;
         $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
         function(data) {
-          if(data == 'ok') {
+          if(data == 'ok') {           
             var oMenu = eval("oMenu"+oldId);
             oMenu.getItem(3).cfg.setProperty("disabled", false);
             oMenu.getItem(0).cfg.setProperty("disabled", true);
@@ -422,14 +419,13 @@
 				<% }%>
 				$('#worker'+oldId).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
           		$('#worker'+oldId).css({'visibility':'visible'});
-
-          		if (edit) {
-					var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav".concat(oldId));
-    				window.open(url,'_self');
-    			} else if (download) {
-    				var url = $('#url'+oldId).attr('href');
-    				window.open(url);
-    			}
+              if (edit) {
+                var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl="+eval("webDav".concat(oldId));
+                window.open(url,'_self');
+              } else if (download) {
+                var url = $('#url'+oldId).attr('href');
+                window.open(url);
+              }
         	} else {
         		alert("<%=attResources.getString("attachment.dialog.checkout.nok")%>");
           		window.location.href=window.location.href;
@@ -439,18 +435,15 @@
       }
     }
 
-    function checkoutAndDownload(id, oldId, webdav)
-    {
+    function checkoutAndDownload(id, oldId, webdav) {
       checkout(id, oldId, webdav, false, true);
     }
 
-    function checkoutAndEdit(id, oldId)
-    {
+    function checkoutAndEdit(id, oldId) {
       checkout(id, oldId, true, true, false);
     }
 
-    function checkin(id, oldId, webdav, forceRelease)
-    {
+    function checkin(id, oldId, webdav, forceRelease) {
       if (id.length > 0) {
         var webdavUpdate = 'false';
         if (webdav)
