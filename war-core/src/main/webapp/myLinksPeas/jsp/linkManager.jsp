@@ -28,14 +28,14 @@
 
 <%@ include file="check.jsp" %>
 
-<% 
+<%
 	// Retrieve parameters
 	LinkDetail 	link			= (LinkDetail) request.getAttribute("Link");
 	Boolean		isVisibleB		= (Boolean) request.getAttribute("IsVisible");
 
 	// Variable declaration
 	boolean 	isVisible		= isVisibleB.booleanValue();
-	
+
 	int 		linkId 			= 0;
 	String 		name 			= "";
 	String 		description 	= "";
@@ -43,7 +43,7 @@
 	boolean 	visible 		= false;
 	boolean 	popup			= false;
 	String		action 			= "CreateLink";
-	
+
 	// Retrieve data if update existing link
 	if (link != null)
 	{
@@ -60,7 +60,7 @@
 	// Get buttons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
     Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
-	
+
 %>
 
 <html>
@@ -69,12 +69,12 @@
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>		
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
-	
-function sendData() 
+
+function sendData()
 {
-	if (isCorrectForm()) 
+	if (isCorrectForm())
 	{
    		window.opener.document.linkForm.action = "<%=action%>";
    		window.opener.document.linkForm.LinkId.value = document.linkForm.LinkId.value;
@@ -86,24 +86,24 @@ function sendData()
    		if (document.linkForm.Popup.checked)
    			window.opener.document.linkForm.Popup.value = document.linkForm.Popup.value;
    		window.opener.document.linkForm.submit();
-  		window.close();		
+  		window.close();
 	}
 }
-		
-function isCorrectForm() 
+
+function isCorrectForm()
 {
    	var errorMsg = "";
    	var errorNb = 0;
 	var url = stripInitialWhitespace(document.linkForm.Url.value);
-						     	
+
    	if (url == "")
    	{
    		errorMsg+="  - '<%=resource.getString("myLinks.url")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
        	errorNb++;
    	}
-   	
-   	
-   	switch(errorNb) 
+
+
+   	switch(errorNb)
    	{
        	case 0 :
            	result = true;
@@ -118,11 +118,11 @@ function isCorrectForm()
            	window.alert(errorMsg);
            	result = false;
            	break;
-    } 
+    }
     return result;
 }
 </script>
-		
+
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.linkForm.Url.focus();">
 <%
@@ -130,9 +130,9 @@ function isCorrectForm()
 		browseBar.setComponentName(resource.getString("myLinks.links") + resource.getString("myLinks.createLink"));
 	else
 		browseBar.setComponentName(resource.getString("myLinks.links") + resource.getString("myLinks.updateLink"));
-		
+
 	Board board	= gef.getBoard();
-	
+
 	out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
@@ -146,12 +146,12 @@ function isCorrectForm()
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.nom")%> :</td>
-		<TD><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>" >
+		<TD><input type="text" name="Name" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" >
 			<input type="hidden" name="LinkId" value="<%=linkId%>"> </td>
 	</tr>
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-		<TD><input type="text" name="Description" size="60" maxlength="150" value="<%=description%>" ></TD>
+		<TD><input type="text" name="Description" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(description)%>" ></TD>
 	</tr>
 	<% if (isVisible) { %>
 			<tr>
@@ -162,7 +162,7 @@ function isCorrectForm()
 					{
 						visibleCheck = "checked";
 					}
-					
+
 				%>
 			    <td><input type="checkbox" name="Visible" value="true" <%=visibleCheck%>></td>
 			</tr>
@@ -185,7 +185,7 @@ function isCorrectForm()
   	</tr>
 </form>
 </table>
-<% 
+<%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
