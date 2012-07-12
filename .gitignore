@@ -8,6 +8,7 @@ target
 .classpath
 .project
 .sonar-ide.properties
+nbactions.xml
 nb-configuration.xml
 nbactions.xml
 /web-core/src/main/java/META-INF

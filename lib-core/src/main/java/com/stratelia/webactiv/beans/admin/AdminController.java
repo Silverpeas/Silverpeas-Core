@@ -350,6 +350,13 @@ public class AdminController implements java.io.Serializable {
   public void indexSpace(int spaceId) {
     getAdminService().createSpaceIndex(spaceId);
   }
+  
+  /** Move space in the given space with the given fatherId */
+  public void moveSpace(String spaceId, String fatherId) throws AdminException {
+    SilverTrace.info("admin", "AdminController.moveSpace",
+        "root.MSG_GEN_ENTER_METHOD", "moving "+spaceId+" in space "+fatherId);
+    getAdminService().moveSpace(spaceId, fatherId);
+  }
 
   // ----------------------------------------------
   // Component Instances related functions

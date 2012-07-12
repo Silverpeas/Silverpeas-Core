@@ -395,6 +395,15 @@ public class SpaceTable extends Table<SpaceRow> {
 
     update.setInt(16, row.id);
   }
+  
+  public void moveSpace(int spaceId, int fatherId) throws AdminPersistenceException {
+    int[] params = new int[2];
+    params[0] = fatherId;
+    params[1] = spaceId;
+    //callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, componentId, null, null);
+    updateRelation(MOVE_SPACE, params);
+  }
+  static final private String MOVE_SPACE = "update ST_SPACE set domainFatherId = ? where id = ?";
 
   /**
    * Delete the space and all his component instances.

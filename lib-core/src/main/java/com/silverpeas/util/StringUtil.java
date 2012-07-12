@@ -45,7 +45,7 @@ public class StringUtil extends StringUtils {
   private static final char[] PUNCTUATION =
       new char[]{'&', '\"', '\'', '{', '(', '[', '-', '|', '`',
     '_', '\\', '^', '@', ')', ']', '=', '+', '}', '?', ',', '.', ';', '/', ':', '!', '§',
-    '%', '*', '$', '£', '€', '©', '²'};
+    '%', '*', '$', '£', '€', '©', '²', '°', '¤'};
   private static final String PATTERN_START = "{";
   private static final String PATTERN_END = "}";
   private static final String TRUNCATED_TEXT_SUFFIX = "...";
