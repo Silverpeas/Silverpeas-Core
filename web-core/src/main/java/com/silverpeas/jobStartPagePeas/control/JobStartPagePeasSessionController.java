@@ -106,6 +106,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public static final int SCOPE_BACKOFFICE = 0;
   public static final int SCOPE_FRONTOFFICE = 1;
   private int scope = SCOPE_BACKOFFICE;
+  
+  public static final int MAINTENANCE_OFF = 0;
+  public static final int MAINTENANCE_PLATFORM = 1;
+  public static final int MAINTENANCE_ONEPARENT = 2;
+  public static final int MAINTENANCE_THISSPACE = 3;
 
   private static final Properties templateConfiguration = new Properties();
 
@@ -353,19 +358,17 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   // Get spaces "manageable" by the current user (ie spaces in maintenance or current space)
   public SpaceInst[] getUserManageableSpacesIds() {
     List<SpaceInst> vManageableSpaces = new ArrayList<SpaceInst>();
-    SpaceInst[] aManageableSpaces = null;
     String[] sids = getUserManageableSpaceIds();
     SpaceInst currentSpace = getSpaceInstById();
     String currentSpaceId = (currentSpace == null) ? "-1" : currentSpace.getId();
 
     for (String sid : sids) {
-      if ((isSpaceInMaintenance(sid.substring(2)))
-          || (sid.equals(currentSpaceId))) {
+      if (isSpaceInMaintenance(sid.substring(2)) || sid.equals(currentSpaceId)) {
         vManageableSpaces.add(adminController.getSpaceInstById(sid));
       }
     }
 
-    aManageableSpaces = vManageableSpaces.toArray(new SpaceInst[vManageableSpaces.size()]);
+    SpaceInst[] aManageableSpaces = vManageableSpaces.toArray(new SpaceInst[vManageableSpaces.size()]);
     Arrays.sort(aManageableSpaces);
     return aManageableSpaces;
   }
@@ -1339,18 +1342,36 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @throws RemoteException
    */
   public void copyComponent(String id) throws RemoteException {
+    copyOrCutComponent(id, false);
+  }
+  
+  public void cutComponent(String id) throws RemoteException {
+    copyOrCutComponent(id, true);
+  }
+  
+  private void copyOrCutComponent(String id, boolean cut) throws RemoteException {
     ComponentInst componentInst = getComponentInst(id);
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
+    compoSelect.setCutted(cut);
     SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyComponent()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
         + getClipboardCount());
     addClipboardSelection(compoSelect);
   }
-
+  
   public void copySpace(String id) throws RemoteException {
+    copyOrCutSpace(id, false);
+  }
+  
+  public void cutSpace(String id) throws RemoteException {
+    copyOrCutSpace(id, true);
+  }
+  
+  private void copyOrCutSpace(String id, boolean cut) throws RemoteException {
     SpaceInst space = getSpaceInstById(id);
     SpaceSelection spaceSelect = new SpaceSelection(space);
-    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copySpace()",
+    spaceSelect.setCutted(cut);
+    SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.copyOrCutSpace()",
         "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + "' count="
         + getClipboardCount());
     addClipboardSelection(spaceSelect);
@@ -1373,10 +1394,21 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
             ComponentInst compo = (ComponentInst) clipObject.getTransferData(
                 ComponentSelection.ComponentDetailFlavor);
-            pasteComponent(compo.getId());
+            if (clipObject.isCutted()) {
+              moveComponent(compo.getId());
+            } else {
+              pasteComponent(compo.getId());
+            }
           } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
             SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
-            pasteSpace(space.getId());
+            if (clipObject.isCutted()) {
+              moveSpace(space.getId());
+            } else {
+              pasteSpace(space.getId());
+            }
+          }
+          if (clipObject.isCutted()) {
+            m_NavBarMgr.resetAllCache();
           }
         }
       }
@@ -1406,7 +1438,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "componentId = " + componentId + " in space " + getManagedSpaceId(), e);
     }
-
+  }
+  
+  private void moveComponent(String componentId) throws AdminException {
+    adminController.moveComponentInst(getManagedSpaceId(), componentId, null, null);
   }
 
   private void pasteSpace(String spaceId) throws JobStartPagePeasException {
@@ -1426,6 +1461,31 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "spaceId = " + spaceId + " in space " + getManagedSpaceId(), e);
     }
+  }
+  
+  private void moveSpace(String spaceId) throws AdminException {
+    moveSpace(spaceId, getManagedSpaceId());
+  }
+  
+  public void moveSpace(String spaceId, String targetSpaceId) throws AdminException {
+    adminController.moveSpace(spaceId, targetSpaceId);
+  }
+  
+  public int getCurrentSpaceMaintenanceState() {
+    if (isAppInMaintenance()) {
+      return JobStartPagePeasSessionController.MAINTENANCE_PLATFORM;
+    }
+    if (isSpaceInMaintenance(getManagedSpaceId())) {
+      return JobStartPagePeasSessionController.MAINTENANCE_THISSPACE;
+    }
+    // check if a parent is is maintenance
+    List<SpaceInst> spaces = getOrganizationController().getSpacePath(getManagedSpaceId());
+    for (SpaceInst space : spaces) {
+      if (isSpaceInMaintenance(space.getId())) {
+        return JobStartPagePeasSessionController.MAINTENANCE_ONEPARENT;
+      }
+    }
+    return JobStartPagePeasSessionController.MAINTENANCE_OFF;
   }
 
   public void setScope(int scope) {

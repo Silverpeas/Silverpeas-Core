@@ -303,9 +303,7 @@ public class NotificationManager extends AbstractNotification
    */
   public ArrayList<Properties> getNotifUsages() {
     ArrayList<Properties> ar = new ArrayList<Properties>();
-    Properties p = null;
-
-    p = new Properties();
+    Properties p = new Properties();
     p.setProperty("id", NotificationParameters.USAGE_PRO);
     p.setProperty("name", m_Multilang.getString(NotificationParameters.USAGE_PRO));
     ar.add(p);
