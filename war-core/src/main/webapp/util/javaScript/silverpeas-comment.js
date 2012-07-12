@@ -82,7 +82,8 @@
     url: 'http://localhost/comments',
     author: {
       id: null,
-      avatar: ''
+      avatar: '',
+      anonymous: true
     },
     update: {
       activated: function( comment ) {
@@ -248,7 +249,7 @@
     }
     var actionsPane = $("<div>").addClass("action").appendTo(commentBox);
     $("<img>").attr("src", comment.author.avatar).appendTo($("<div>").addClass("avatar").appendTo(commentBox));
-    if (settings.author && settings.author.id == comment.author.id)
+    if (settings.author && ((settings.author.id == comment.author.id) || settings.author.anonymous))
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").text(comment.author.fullName).appendTo(commentBox));
     else
       $("<span>").addClass("date").text(" - " + comment.creationDate).appendTo($("<p>").addClass("author").append($('<span>').text(comment.author.fullName).userZoom(comment.author)).appendTo(commentBox));
