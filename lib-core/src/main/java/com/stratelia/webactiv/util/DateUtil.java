@@ -330,7 +330,15 @@ public class DateUtil {
     return date2SQLDate(new Date());
   }
 
+  /**
+   * @param date the date to transform
+   * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
+   * null
+   */
   public static String date2SQLDate(Date date) {
+    if (date == null) {
+      return null;
+    }
     return DATE_FORMATTER.format(date);
   }
 

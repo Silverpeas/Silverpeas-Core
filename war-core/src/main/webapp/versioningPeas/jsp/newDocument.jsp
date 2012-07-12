@@ -127,6 +127,10 @@
           </td>
         </tr>
         <tr>
+          <td class="txtlibform"><%=messages.getString("comments")%> :</td>
+          <td align="left" valign="baseline"><textarea name="comments" rows="3" cols="70"></textarea></td>
+        </tr>
+        <tr>
           <td colspan="2">(<img alt="<%=requiredFieldLabel%>"  border="0" src="<%=mandatoryField%>" width="5" height="5">: <%=requiredFieldLabel%>)</td>
         </tr>
       </table>

@@ -79,6 +79,14 @@ function uriOfPdC( resource ) {
   return uri;
 }
 
+/**
+ * Splits the specified URI in two parts: the first one is the URI authority plus the URI path and
+ * the last one is the URI query.
+ */
+function splitUri( uri ) {
+  return uri.match(/[a-zA-Z0-9:=\/.\-_!\*\~\(\)'&;,\+\$#%@]+/gi);
+}
+
 /**************************************************************************************************/
 
 /**
@@ -248,7 +256,7 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
   if (confirmationMsg != null && confirmationMsg.length > 0)
     confirmed = window.confirm( confirmationMsg );
   if (confirmed) {
-    var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
+    var uri_parts = splitUri(uri);
     var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
     $.ajax({
       url: uri_position,
@@ -319,7 +327,7 @@ function postPosition( uri, position, onSuccess, onError ) {
  * }
  */
 function updatePosition( uri, position, onSuccess, onError ) {
-  var uri_parts = uri.match(/[a-zA-Z0-9:=\/.]+/gi);
+  var uri_parts = splitUri(uri);
   var uri_position = uri_parts[0] + '/' + position.id + '?' + uri_parts[1];
   $.ajax({
     url: uri_position,
