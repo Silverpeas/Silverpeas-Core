@@ -50,9 +50,15 @@
   <st_space id="5" domainfatherid="4" name="4.1 (Inheritance blocked)" firstpagetype="0" isinheritanceblocked="1"/>
   <st_space id="6" domainfatherid="4" name="4.2 (Inheritance enabled)" firstpagetype="0" isinheritanceblocked="0"/>
   
+  <st_space id="100" domainfatherid="[NULL]" name="Space 100" firstpagetype="0" isinheritanceblocked="0"/>
+  <st_space id="110" domainfatherid="100" name="Space 110" firstpagetype="0" isinheritanceblocked="0"/>
+  
   <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia" isinheritanceblocked="0"/>
   <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach" isinheritanceblocked="0"/>
   <st_componentinstance id="3" spaceid="3" name="Documents" componentname="kmelia" isinheritanceblocked="0"/>
+  
+   <st_componentinstance id="200" spaceid="100" name="Documents In root Space" componentname="kmelia" isinheritanceblocked="0"/>
+   <st_componentinstance id="210" spaceid="110" name="Documents in sub space" componentname="kmelia" isinheritanceblocked="0"/>
   
   <!-- Administrateur is publisher and user on space 1 -->
   <st_spaceuserrole id="1" spaceid="1" rolename="publisher" isinherited="0"/>

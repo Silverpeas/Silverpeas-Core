@@ -44,12 +44,11 @@ public class SpacesManagersTest extends AbstractTestDao {
 
   @Test
   public void testAddRemoveSpaceManager() {
-    AdminController ac = getAdminController();
-    
+    AdminController ac = getAdminController();    
     //add profile
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
-    profile.setName("Manager");
+    profile.setName(SpaceProfileInst.SPACE_MANAGER);
     profile.addUser("2");
     String profileId = ac.addSpaceProfileInst(profile, "1");
     assertEquals("4", profileId);

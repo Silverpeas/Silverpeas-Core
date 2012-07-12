@@ -36,6 +36,7 @@ import java.util.Set;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class SpaceDAO {
@@ -115,11 +116,10 @@ public class SpaceDAO {
     return new ArrayList<String>(manageableSpaceIds);
   }
 
-  static final private String queryGetManageableSpaceIdsByUser = "select st_spaceuserrole.spaceid"
-      + " from st_spaceuserrole_user_rel, st_spaceuserrole "
-      + " where st_spaceuserrole_user_rel.spaceuserroleid=st_spaceuserrole.id"
-      + " and st_spaceuserrole.rolename='Manager'"
-      + " and st_spaceuserrole_user_rel.userid=?";
+  static final private String queryGetManageableSpaceIdsByUser = "SELECT st_spaceuserrole.spaceid "
+      + "FROM st_spaceuserrole_user_rel, st_spaceuserrole WHERE "
+      + "st_spaceuserrole_user_rel.spaceuserroleid = st_spaceuserrole.id AND st_spaceuserrole.rolename='" 
+      + SpaceProfileInst.SPACE_MANAGER + "' AND st_spaceuserrole_user_rel.userid=?";
 
   private static List<String> getManageableSpaceIdsByUser(Connection con, String userId)
       throws SQLException {
@@ -149,17 +149,13 @@ public class SpaceDAO {
     ResultSet rs = null;
 
     try {
-      String query = "select st_spaceuserrole.spaceid"
-          + " from st_spaceuserrole_group_rel, st_spaceuserrole "
-          + " where st_spaceuserrole_group_rel.spaceuserroleid=st_spaceuserrole.id"
-          + " and st_spaceuserrole.rolename='Manager'"
-          + " and st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
-
+      String query = "SELECT st_spaceuserrole.spaceid FROM st_spaceuserrole_group_rel, "
+          + "st_spaceuserrole WHERE st_spaceuserrole_group_rel.spaceuserroleid = st_spaceuserrole.id"
+          + " AND st_spaceuserrole.rolename='"+ SpaceProfileInst.SPACE_MANAGER 
+          + "' AND st_spaceuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
       List<String> manageableSpaceIds = new ArrayList<String>();
       stmt = con.createStatement();
-
       rs = stmt.executeQuery(query);
-
       while (rs.next()) {
         manageableSpaceIds.add(Integer.toString(rs.getInt(1)));
       }
@@ -174,7 +170,7 @@ public class SpaceDAO {
     StringBuilder str = new StringBuilder();
     for (int i = 0; i < ids.size(); i++) {
       if (i != 0) {
-        str.append(",");
+        str.append(',');
       }
       str.append(ids.get(i));
     }
