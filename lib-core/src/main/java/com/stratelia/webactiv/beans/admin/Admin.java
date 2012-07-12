@@ -5833,7 +5833,7 @@ public final class Admin {
         // Commit the transaction
         domainDriverManager.commit();
         domainDriverManager.commit(sDomainId);
-        
+
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
         SynchroReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"
@@ -5968,7 +5968,7 @@ public final class Admin {
           "domainId : '" + domainId + "'\nReport:" + sReport, e);
     }
   }
-  
+
   /**
    * @param silverpeasUDs existing users after synchronization
    * @return a Map <specificId, userId>

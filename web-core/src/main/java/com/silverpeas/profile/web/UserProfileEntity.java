@@ -29,6 +29,7 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
@@ -96,6 +97,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   private String language = "";
   @XmlElement(defaultValue="false")
   private boolean connected = false;
+  @XmlElement(defaultValue="false")
+  private boolean anonymous = false;
 
   private UserProfileEntity(UserDetail user) {
     this.user = user;
@@ -105,13 +108,20 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     } else {
       this.language = DisplayI18NHelper.getDefaultLanguage();
     }
-    this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
-            getName();
+    try {
+      this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
+              getName();
+    } catch (Exception e) {
+      // Potential errors during getting domain should not break service  
+      SilverTrace.warn("util", "UserProfileEntity.constructor", "root.EX_IGNORED", e);
+    }
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();
     this.webPage = getUserProfileWebPageURI();
     this.tchatPage = getTchatWebPageURI();
+    this.anonymous = user.isAnonymous();
+    
   }
 
   @Override
@@ -267,6 +277,11 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   public String getDomainName() {
     return this.domainName;
+  }
+  
+  @Override
+  public boolean isAnonymous() {
+    return this.anonymous;
   }
 
   public UserProfileEntity withAsUri(URI userUri) {
