@@ -443,4 +443,10 @@ public class PdcBmMock implements PdcBm {
   public String getTreeId(String axisId) throws PdcException {
     return axisId;
   }
+
+  @Override
+  public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
+      throws PdcException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

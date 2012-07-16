@@ -120,8 +120,9 @@
     </menu>
     <menu ref="reports" />   
     <menu name="How to contribute" inherit="none">
-      <item name="Contribution" href="collaboration.html" collapse="true"/>
-      <item name="Code Quality" href="quality.html" collapse="true"/>
+      <item name="Contribution" href="dev/collaboration.html" collapse="true"/>
+      <item name="Code Quality" href="dev/quality.html" collapse="true"/>
+      <item name="Testing the LDAP code" href="dev/ldap_testing.html" collapse="true"/>
     </menu>
     <menu name="Licensing" inherit="none">
       <item name="License" href="legal/licensing_gnu_affero.html" collapse="true"/>

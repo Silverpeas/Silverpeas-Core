@@ -24,6 +24,6 @@ CREATE TABLE st_delayednotification (
    action					int NOT NULL ,
    notificationResourceId	bigint NOT NULL ,
    language					varchar(2) NOT NULL ,
-   creationDate				timestamp NOT NULL ,
+   creationDate				datetime NOT NULL ,
    message					varchar(2000) NULL
 );

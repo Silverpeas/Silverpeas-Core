@@ -67,6 +67,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.silverpeas.myLinks.model.LinkDetail"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
