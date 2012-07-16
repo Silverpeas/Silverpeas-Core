@@ -79,7 +79,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.10</version>
+  <version>5.10.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
