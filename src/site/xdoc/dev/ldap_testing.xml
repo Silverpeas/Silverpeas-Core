@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2012 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <properties>
+    <title>Testing your LDAP code with OpenDJ</title>
+    <author>Emmanuel Hugonnet</author>
+    <author>Miguel Moquillon</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Testing your LDAP code with OpenDJ">
+      <p>A French version of this document is available on our 
+        <a href="http://blog.silverpeas.org/index.php?post/2012/07/13/Tester-son-code-LDAP-avec-OpenDJ">blog</a>
+      </p>
+      <p>In the age of TDD and unit testing, you have to be able to test your code easily and fast.
+        <br/>
+        If testing with SQL databases is well documented, this is not the case for LDAP directories. Hopefully,
+        with the current modern libre LDAP Java servers, this feature is becoming available.
+        <br/>
+        ApacheDS offers a JUnit runner, but we meet with problems trying to use it. Thus we decided to use
+        OpenDJ which can be easily embedded and which can use an in-memory backend so performance should be acceptable for tests.
+        <br/>
+        Nevertheless, even if OpenDJ uses an in-memory backend, its configuration is managed with files. That's why you will have to add those files to your test environment.
+      </p>
+      <p>With JUnit, we have two ways to manage external resources:
+        <ul>
+          <li>use a specific JUnit runner that will manage the reference to the embedded server (this is the choice of ApacheDS)</li>
+          <li>use a JUnit rule that will start and stop the embedded server. This is our choice, using a 
+            <em>ClassRule</em>, a rule that is applied to a static variable of the test class. This feature is available since JUnit 4.10.
+          </li>
+        </ul>
+      </p>
+      <p>In order to simplify the configuration of the OpenDJ server we have defined an annotation, <a href="https://github.com/ehsavoie/embedded-ldap/blob/master/src/main/java/org/silverpeas/ldap/CreateLdapServer.java"><strong>CreateLdapServer</strong></a>, to pass some parameters to our instance:
+      <ul>
+        <li>a ldif file containing the data to be inserted into the directory</li>
+        <li>the path (relative or absolute) to the directory containing the minimum configuration of OpenDJ</li>
+        <li>the in-memory backend id where the test data will be stored</li>
+        <li>the Distinguished Name for the in-memory backend</li>
+      </ul></p>
+      <p>Now, we only need to write our rule class that implements <em>org.junit.rules.TestRule</em>.<br/>
+      So let's write the required method:
+      </p>
+      <p>
+        <code>
+          <pre>   
+@Override
+public Statement apply(Statement stmnt, Description d) {
+  CreateLdapServer annotation = d.getAnnotation(CreateLdapServer.class);
+  if (annotation != null) {
+    return statement(stmnt, annotation.serverHome(), annotation.ldifConfig(), annotation.
+        ldifFile(), annotation.backendID(), annotation.baseDN());
+  }
+  return stmnt;
+}            
+          </pre>
+        </code>
+      </p>
+      <p>The first line is looking for our <code>CreateLdapServer</code> annotation, and if one is found then the execution statement for the test is wrapped so that we can start the LDAP server when the class is loaded and stop it after all the tests in the test class have run. This is what you can see in the following code:
+      </p>
+      <p>
+        <code>
+          <pre>
+private Statement statement(final Statement stmnt, final String serverHome,
+  final String ldifConfigFile, final String ldifFile, final String backendId,
+  final String dn) {
+  return new Statement() {
+    @Override
+    public void evaluate() throws Throwable {
+      before();
+      try {
+        stmnt.evaluate();
+      } finally {
+        after();
+      }
+    }
+    private void after() {
+      stopLdapServer();
+    }
+    private void before() {
+      try {
+        startLdapServer(serverHome, ldifConfigFile);
+        loadLdif(ldifFile, backendId, DN.decode(dn));
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        throw new RuntimeException("Could'nt start LDAP Server", ex);
+      }
+    }
+  };
+}            
+          </pre>
+        </code>
+      </p>
+      <p>You can see that we create an instance of <code>org.junit.Statement</code> wrapping the test statement with two methods: 
+        <code>before()</code> called before the test execution and <code>after()</code> when all the test has run, whatever its result is. 
+        These two methods are quite simple: 
+        <ul>
+          <li>
+            <code>before()</code> starts the LDAP server and load the ldif file into it,
+          </li>
+          <li>
+            <code>after()</code> stops the LDAP server.
+          </li>
+        </ul>
+      </p>
+      <p>Since all the data are stored in an in-memory backed we don't need to clean them before stoping the server. Look into 
+        <a href="https://github.com/ehsavoie/embedded-ldap/blob/master/src/main/java/org/silverpeas/ldap/OpenDJRule.java">the code</a> if you want to know exactly how we start the server and create the in-memory backend.
+      </p>
+      <p>
+        If you want to use all of this in your test, this is how you should proceed. <br />
+        First, annotate your test code with the <em>CreateServer</em> annotation:</p>
+      <p>
+        <code>
+          <pre> 
+@CreateLdapServer(ldifConfig="opendj/config/config.ldif", serverHome="opendj", ldifFile="silverpeas-ldap.ldif")
+public class LDAPDriverTest {
+...
+       </pre>
+        </code>
+      </p>
+      <p>Then declare our rule:</p>
+      <p>
+        <code>
+          <pre> 
+@ClassRule
+public static OpenDJRule ldapRule = new OpenDJRule();
+      </pre>
+        </code>
+      </p>
+      <p>Now you are almmost ready to test your code. Add the OpenDJ required librairies to your test classpth. In the case of an Apache Maven project
+        you will have to define the following dependencies:
+      </p>
+      <p>
+        <code>
+          <pre>
+...
+    <dependency>
+      <groupId>org.forgerock.opendj</groupId>
+      <artifactId>opendj-server</artifactId>
+     <version>2.4.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sleepycat</groupId>
+      <artifactId>je</artifactId>
+      <version>1.4.7</version>
+      <scope>test</scope>
+    </dependency>
+...            
+          </pre>
+        </code>
+      </p>
+      <p>All you need now are some configuration files: 
+      <ul>
+        <li>the ldif file (<strong>silverpeas-ldap.ldif</strong>) that we have declared and should be in <em>src/test/resources</em>.</li>
+        <li>the directory <strong>opendj</strong> which contains the minimum confiuration to run OpenDJ and should also be in<em>src/test/resources</em>.</li>
+      </ul>
+      </p>
+      <p>
+      <strong>Be careful not to filter the content of the opendi directory with Apache Maven.</strong>
+      <br />The source code with a sample is available on Github : 
+      <a hreflang="en" href="https://github.com/ehsavoie/embedded-ldap">https://github.com/ehsavoie/embedded-ldap</a>
+      <br />
+      <br />Many thanks to Ludovic Poitou for his kind help on how to configure and use OpenDJ.
+      </p>
+    </section>
+  </body>
+</document>

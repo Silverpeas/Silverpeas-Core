@@ -83,8 +83,10 @@ public final class WAAnalyzer extends Analyzer {
     result = new ElisionFilter(result);
     // remove accents
     result = new ISOLatin1AccentFilter(result);
-    // ignoring singular/plural, male/female and conjugated forms
-    result = new SnowballFilter(result, stemmer);  
+    if (snowballUsed) {
+      // ignoring singular/plural, male/female and conjugated forms
+      result = new SnowballFilter(result, stemmer);
+    }
     return result;
   }
 
@@ -103,6 +105,7 @@ public final class WAAnalyzer extends Analyzer {
     this.language = language; 
     stopWords = getStopWords();
     stemmer = getStemmer();
+    snowballUsed = settings.getBoolean("snowball.active", false);
   }
 
   /**
@@ -142,6 +145,7 @@ public final class WAAnalyzer extends Analyzer {
    */
   private String[] stopWords = null;
   private String stemmer = null;
+  private boolean snowballUsed = false;
   private String language = null;
   
 }
