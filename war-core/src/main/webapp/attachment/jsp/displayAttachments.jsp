@@ -245,7 +245,7 @@
                       "</div>");
             } else {
               out.println(
-                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getId() + "\" style=\"visibility:hidden\"> </div>");
+                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getOldSilverpeasId() + "\" style=\"visibility:hidden\"> </div>");
             }
           }
 
