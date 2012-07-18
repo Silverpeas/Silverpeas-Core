@@ -54,6 +54,40 @@
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
 
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
+<script>
+<c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
+<c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
+<view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
+<view:componentParam var="useFileSharingParam" componentId="${param.ComponentId}" parameter="useFileSharing" />
+<c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' == profile }" />
+<c:choose>
+  <c:when test="${contextualMenuEnabled}">
+    <c:set var="iconStyle" scope="page"value="${'style=\"cursor:move\"'}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="iconStyle" scope="page" value="${''}" />>
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.AttachmentPosition != null}">
+    <c:set var="attachmentPosition" scope="page"value="${param.AttachmentPosition}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="attachmentPosition" scope="page" value="${'right'}" />>
+  </c:otherwise>
+</c:choose>
+<c:set var="fromAlias" value="${view:booleanValue(param.Alias)}" />
+<c:set var="useXMLForm" value="${view:isDefined(xmlForm)}" />
+<c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
+<!-- 
+useFileSharing = <c:out value="${useFileSharing}" /> 
+useXMLForm = <c:out value="${useXMLForm}" /> 
+fromAlias = <c:out value="${fromAlias}" /> 
+attachmentPosition = <c:out value="${attachmentPosition}" /> 
+iconStyle = <c:out value="${iconStyle}" /> 
+indexIt = <c:out value="${indexIt}" /> 
+-->
+</script>
 
 <%
       //initialisation des variables
@@ -146,8 +180,8 @@
           out.println("<div class=\"attachments bgDegradeGris\">");
           out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
         } else {
-     		 out.println("<div class=\"attachments bgDegradeGris\">");
-         	 out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
+          out.println("<div class=\"attachments bgDegradeGris\">");
+         	out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
         }
 
 
@@ -412,11 +446,10 @@
               oMenu.getItem(2).cfg.setProperty("disabled", true);
             }
 		        //disable delete
-				<% if (useXMLForm) {%>
-					oMenu.getItem(2,1).cfg.setProperty("disabled", true);
-				<% } else {%>
-				    oMenu.getItem(1,1).cfg.setProperty("disabled", true);
-				<% }%>
+				  <c:choose>
+            <c:when test="${useXMLForm}">oMenu.getItem(2,1).cfg.setProperty("disabled", true);</c:when>
+            <c:otherwise>oMenu.getItem(1,1).cfg.setProperty("disabled", true);</c:otherwise>
+          </c:choose>
 				$('#worker'+oldId).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
           		$('#worker'+oldId).css({'visibility':'visible'});
               if (edit) {
@@ -477,14 +510,11 @@
       oMenu.getItem(0).cfg.setProperty("disabled", false);
       oMenu.getItem(1).cfg.setProperty("disabled", false);
       oMenu.getItem(2).cfg.setProperty("disabled", false);
-
       //enable delete
-  <% if (useXMLForm) {%>
-      oMenu.getItem(2,1).cfg.setProperty("disabled", false);
-  <% } else {%>
-      oMenu.getItem(1,1).cfg.setProperty("disabled", false);
-  <% }%>
-	
+  <c:choose>
+    <c:when test="${useXMLForm}">oMenu.getItem(2,1).cfg.setProperty("disabled", false);</c:when>
+    <c:otherwise>oMenu.getItem(1,1).cfg.setProperty("disabled", false);</c:otherwise>
+  </c:choose>     
       $('#worker'+id).html("");
       $('#worker'+id).css({'visibility':'hidden'});
     }
@@ -749,3 +779,13 @@
         <div id="dialog-attachment-delete" style="display:none">
           <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
         </div>        
+<!-- 
+userProfile = <c:out value="${userProfile}" /> - <%=profile%>
+contextualMenuEnabled = <c:out value="${contextualMenuEnabled}" /> - <%=contextualMenuEnabled%>
+useFileSharing = <c:out value="${useFileSharing}" /> - <%=useFileSharing%>
+useXMLForm = <c:out value="${useXMLForm}" />  - <%=useXMLForm%>
+fromAlias = <c:out value="${fromAlias}" /> - <%=fromAlias%>
+attachmentPosition = <c:out value="${attachmentPosition}" /> - <%=attachmentPosition%>
+iconStyle = <c:out value="${iconStyle}" escapeXml="false" /> - <%=iconStyle%>
+indexIt = <c:out value="${indexIt}" /> - <%=indexIt%>
+-->
