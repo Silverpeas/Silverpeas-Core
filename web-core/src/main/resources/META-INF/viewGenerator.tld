@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
@@ -520,7 +520,7 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>clé de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -541,7 +541,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>clé de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1316,7 +1316,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-       <description>The name of the scoped variable to create.</description>
+      <description>The name of the scoped variable to create.</description>
       <name>var</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
@@ -1366,9 +1366,7 @@
 
   <tag>
     <description>
-          <![CDATA[
-            Establishes a scoped variable that implements the <code>java.util.Map</code> interface whose keys and values are the names and values of a named class' class constants.
-          ]]>
+      Establishes a scoped variable that contains a java.util.Map of a named class constants.
     </description>
     <name>constantsMap</name>
     <tag-class>org.silverpeas.jstl.constant.ConstantsMapTag</tag-class>
@@ -1400,8 +1398,7 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>
-  
+  </function>  
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
