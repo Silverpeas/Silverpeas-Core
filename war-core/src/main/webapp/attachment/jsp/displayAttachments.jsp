@@ -39,9 +39,7 @@
 <%@ page import="com.silverpeas.util.FileUtil" %>
 <%@ include file="checkAttachment.jsp"%>
 
-<% request.setAttribute("attachmentBundle", new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.multilang.attachment", language).getResourceBundle());%>
-<view:setBundle bundle="${requestScope.attachmentBundle}" />
+<view:setBundle basename="com.stratelia.webactiv.util.attachment.multilang.attachment" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <view:includePlugin name="qtip"/>
@@ -55,295 +53,243 @@
 
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 <script>
+<view:settings var="spinfireViewerEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
+<view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
+<view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
+<c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
+<view:settings var="onlineEditingEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
+<view:settings var="dAndDropEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
+<c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
+<c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
+
 <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
 <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
 <view:componentParam var="xmlForm" componentId="${param.ComponentId}" parameter="XmlFormForFiles" />
 <view:componentParam var="useFileSharingParam" componentId="${param.ComponentId}" parameter="useFileSharing" />
-<c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' == profile }" />
+<c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' eq userProfile }" />
 <c:choose>
   <c:when test="${contextualMenuEnabled}">
     <c:set var="iconStyle" scope="page"value="${'style=\"cursor:move\"'}" />
   </c:when>
   <c:otherwise>
-    <c:set var="iconStyle" scope="page" value="${''}" />>
+    <c:set var="iconStyle" scope="page" value="${''}" />
   </c:otherwise>
 </c:choose>
 <c:choose>
   <c:when test="${param.AttachmentPosition != null}">
-    <c:set var="attachmentPosition" scope="page"value="${param.AttachmentPosition}" />
+    <c:set var="attachmentPosition" scope="page" value="${param.AttachmentPosition}" />
   </c:when>
   <c:otherwise>
-    <c:set var="attachmentPosition" scope="page" value="${'right'}" />>
+    <c:set var="attachmentPosition" scope="page" value="${'right'}" />
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${'right' eq attachmentPosition}">
+    <c:set var="isAttachmentPositionRight" scope="page" value="${true}" />
+    <c:set var="isAttachmentPositionBottom" value="${false}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="isAttachmentPositionRight" scope="page" value="${false}" />
+    <c:choose>
+      <c:when test="${'bottom' eq attachmentPosition}">
+        <c:set var="isAttachmentPositionBottom" value="${true}" />
+      </c:when>
+      <c:otherwise>
+        <c:set var="isAttachmentPositionBottom" scope="page" value="${false}" />
+      </c:otherwise>
+    </c:choose>
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.ShowTitle != null}">
+    <c:set var="showTitle" scope="page"value="${view:booleanValue(param.ShowTitle)}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="showTitle" scope="page" value="${true}" />
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.ShowFileSize != null}">
+    <c:set var="showFileSize" scope="page"value="${view:booleanValue(param.ShowFileSize)}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="showFileSize" scope="page" value="${true}" />
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.ShowDownloadEstimation != null}">
+    <c:set var="showDownloadEstimation" scope="page"value="${view:booleanValue(param.ShowDownloadEstimation)}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="showDownloadEstimation" scope="page" value="${true}" />
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.ShowInfo != null}">
+    <c:set var="showInfo" scope="page"value="${view:booleanValue(param.ShowInfo)}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="showInfo" scope="page" value="${true}" />
+  </c:otherwise>
+</c:choose>
+<c:choose>
+  <c:when test="${param.ShowIcon != null}">
+    <c:set var="showIcon" scope="page"value="${view:booleanValue(param.ShowIcon)}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="showIcon" scope="page" value="${true}" />
   </c:otherwise>
 </c:choose>
 <c:set var="fromAlias" value="${view:booleanValue(param.Alias)}" />
 <c:set var="useXMLForm" value="${view:isDefined(xmlForm)}" />
 <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-<!-- 
-useFileSharing = <c:out value="${useFileSharing}" /> 
-useXMLForm = <c:out value="${useXMLForm}" /> 
-fromAlias = <c:out value="${fromAlias}" /> 
-attachmentPosition = <c:out value="${attachmentPosition}" /> 
-iconStyle = <c:out value="${iconStyle}" /> 
-indexIt = <c:out value="${indexIt}" /> 
--->
+<c:set var="showMenuNotif" value="${view:booleanValue(param.ShowMenuNotif)}" />
+<c:set var="displayUniversalLinks"><%=URLManager.displayUniversalLinks()%></c:set>
+
+<c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
+<c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
+<c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
+<c:set var="Silverpeas_Attachment_Profile" value="${userProfile}" scope="session" />
+<c:set var="Silverpeas_Attachment_IndexIt" value="${indexIt}" />
+<c:choose>
+  <c:when test="${! view:isDefined(param.Language)}">
+    <c:set var="contentLanguage" value="${null}" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="contentLanguage" value="${param.Language}" />
+  </c:otherwise>
+</c:choose>
+<c:set var="componentId" value="${param.ComponentId}" />
 </script>
 
 <%
-      //initialisation des variables
-      String id = request.getParameter("Id");
-      String componentId = request.getParameter("ComponentId");
-      String context = request.getParameter("Context");
-      boolean fromAlias = StringUtil.getBooleanValue(request.getParameter("Alias"));
-      String profile = request.getParameter("Profile");
-      String sIndexIt = request.getParameter("IndexIt");
-      String callbackURL = request.getParameter("CallbackUrl");
-      String xmlForm = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(
-          componentId, "XmlFormForFiles");
-
-      boolean useXMLForm = StringUtil.isDefined(xmlForm);
-      boolean useFileSharing = (isFileSharingEnable(m_MainSessionCtrl, componentId) && "admin".
-          equalsIgnoreCase(profile));
-      boolean contextualMenuEnabled = ("admin".equalsIgnoreCase(profile) || "publisher".
-          equalsIgnoreCase(profile) || "writer".equalsIgnoreCase(profile));
-      String iconStyle = "";
-      if (contextualMenuEnabled) {
-        iconStyle = "style=\"cursor:move\"";
-      }
-
-      boolean webdavEditingEnable = m_MainSessionCtrl.isWebDAVEditingEnabled() && attSettings.
-          getBoolean("OnlineEditingEnable", false);
-      boolean dragAndDropEnable = m_MainSessionCtrl.isDragNDropEnabled() && attSettings.getBoolean(
-          "DragAndDropEnable", false);
-
-      boolean displayUniversalLinks = URLManager.displayUniversalLinks();
-
-      String attachmentPosition = "right";
-      boolean showTitle = true;
-      boolean showFileSize = true;
-      boolean showDownloadEstimation = true;
-      boolean showInfo = true;
-      boolean showIcon = true;
-      boolean showMenuNotif = StringUtil.getBooleanValue(request.getParameter("ShowMenuNotif"));
-
-      if (request.getParameter("AttachmentPosition") != null) {
-        attachmentPosition = request.getParameter("AttachmentPosition");
-      }
-      if (request.getParameter("ShowTitle") != null) {
-        showTitle = Boolean.parseBoolean(request.getParameter("ShowTitle"));
-      }
-      if (request.getParameter("ShowFileSize") != null) {
-        showFileSize = Boolean.parseBoolean(request.getParameter("ShowFileSize"));
-      }
-      if (request.getParameter("ShowDownloadEstimation") != null) {
-        showDownloadEstimation =
-            Boolean.parseBoolean(request.getParameter("ShowDownloadEstimation"));
-      }
-      if (request.getParameter("ShowInfo") != null) {
-        showInfo = Boolean.parseBoolean(request.getParameter("ShowInfo"));
-      }
-      if (request.getParameter("ShowIcon") != null) {
-        showIcon = Boolean.parseBoolean(request.getParameter("ShowIcon"));
-      }
-
-      String contentLanguage = request.getParameter("Language");
-      if (!StringUtil.isDefined(contentLanguage)) {
-        contentLanguage = null;
-      }
-
-      boolean spinfireViewerEnable = attSettings.getBoolean("SpinfireViewerEnable", false);
-
-      String sRequestURL = request.getRequestURL().toString();
-      String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
-      session.setAttribute("Silverpeas_Attachment_ObjectId", id);
-      session.setAttribute("Silverpeas_Attachment_ComponentId", componentId);
-      session.setAttribute("Silverpeas_Attachment_Context", context);
-      session.setAttribute("Silverpeas_Attachment_Profile", profile);
-
-      boolean indexIt = StringUtil.getBooleanValue(sIndexIt);
-      session.setAttribute("Silverpeas_Attachment_IndexIt", Boolean.valueOf(indexIt));
-
-      ForeignPK foreignKey = new ForeignPK(id, componentId);
-
-      Collection<SimpleDocument> attachments =
-      AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
-              foreignKey, contentLanguage);
-      Iterator itAttachments = attachments.iterator();
-
-      if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
-        
-
-        int nbAttachmentPerLine = 3;
-
-        if (attachmentPosition != null && "right".equals(attachmentPosition)) {
-          out.println("<div class=\"attachments bgDegradeGris\">");
-          out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
-        } else {
-          out.println("<div class=\"attachments bgDegradeGris\">");
-         	out.println("<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
-        }
-
-
-        int a = 1;
-  
-        out.println("<ul id=\"attachmentList\">");
-        while (itAttachments.hasNext()) {
-          String author = "";
-          SimpleDocument attachmentDetail = (SimpleDocument) itAttachments.next();
-          String title = attachmentDetail.getTitle();
-          if (!StringUtil.isDefined(title) || !showTitle) {
-            title = attachmentDetail.getFilename();
-          }
-          String info = attachmentDetail.getDescription();
-          if (StringUtil.isDefined(attachmentDetail.getCreatedBy())) {
-            author = "<br/><i>" + attachmentDetail.getCreatedBy() + "</i>";
-          }
-
-          if ("bottom".equals(attachmentPosition) && a == 1) {
-          } else if ("right".equals(attachmentPosition)) {
-            out.println(
-                "<li id=\"attachment_" + attachmentDetail.getOldSilverpeasId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
-          }
-          
-          if (contextualMenuEnabled) {
-            com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
-                useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
-                URLManager.getServerURL(request), showMenuNotif, useContextualMenu, out);
-          }
-          
-          out.print("<span class=\"lineMain\">");
-		  
-		  if (contextualMenuEnabled && !useContextualMenu) {
-          	out.println("<img id=\"edit_"+attachmentDetail.getOldSilverpeasId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
-          }
-		  
-          if (showIcon) {
-            out.println("<img id=\"img_" + attachmentDetail.getOldSilverpeasId() + "\" src=\"" + attachmentDetail.getDisplayIcon() + "\" class=\"icon\"/>");
-          }
-
-          String url = m_Context +  attachmentDetail.getAttachmentURL();
-          if (fromAlias) {
-            url = attachmentDetail.getAliasURL();
-          }
-
-          out.println("<a id=\"url" + attachmentDetail.getOldSilverpeasId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
-			
-          
-
-          out.print("</span>");
-          out.println("<span class=\"lineSize\">");
-          if (displayUniversalLinks) {
-            String link = URLManager.getSimpleURL(URLManager.URL_FILE, attachmentDetail.getId());
-            String linkIcon = m_Context + "/util/icons/link.gif";
-            out.print(
-                " <a href=\"" + link + "\"><img src=\"" + linkIcon + "\" border=\"0\" alt=\"" + attResources.
-                getString("CopyLink") + "\" title=\"" + attResources.getString("CopyLink") + "\"></a>");
-          }
-          if (showFileSize) {
-            out.print(attachmentDetail.getSize());
-          }
-          if (showFileSize && showDownloadEstimation) {
-            out.print(" / ");
-          }
-          if (showDownloadEstimation) {
-            out.print( FileRepositoryManager.getFileDownloadTime(attachmentDetail.getSize()));
-          }
-          out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreated()));
-          out.println("</span>");
-          if (StringUtil.isDefined(attachmentDetail.getTitle()) && showTitle) {
-            out.println("<span class=\"fileName\">");
-            out.println(attachmentDetail.getFilename());
-            out.print("</span>");
-          }
-          if (StringUtil.isDefined(info) && showInfo) {
-            out.println("<span class=\"description\">");
-            out.println(EncodeHelper.javaStringToHtmlParagraphe(info));
-            out.print("</span>");
-          }
-
-          if (StringUtil.isDefined(attachmentDetail.getXmlFormId())) {
-            String xmlURL = m_Context + "/RformTemplate/jsp/View?width=400&ObjectId=" + attachmentDetail.
-                getId() + "&ObjectLanguage=" + contentLanguage + "&ComponentId=" + componentId + "&ObjectType=Attachment&XMLFormName=" + URLEncoder.encode(attachmentDetail.getXmlFormId(), "UTF-8");
+  List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+              new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")), (String) pageContext.getAttribute("contentLanguage"));
+  pageContext.setAttribute("attachments", attachments);
 %>
-<br/><a rel="<%=xmlURL%>" href="#" title="<%=title%>"><%=attResources.getString("attachment.xmlForm.View")%></a>
-<%
-          }
-          
-          if (contextualMenuEnabled) {
-           	if (attachmentDetail.isReadOnly()) {
-              out.println("<div class=\"workerInfo\" id=\"worker" + attachmentDetail.getOldSilverpeasId() + "\" style=\"visibility:visible\"> " + attResources.
-                  getString("readOnly") + " " + m_MainSessionCtrl.getOrganizationController().
-                  getUserDetail(attachmentDetail.getEditedBy()).getDisplayedName() + " " + attResources.
-                  getString("at") + " " + attResources.getOutputDate(attachmentDetail.getReservation()) +
-                      "</div>");
-            } else {
-              out.println(
-                  "<div class=\"workerInfo\"  id=\"worker" + attachmentDetail.getOldSilverpeasId() + "\" style=\"visibility:hidden\"> </div>");
-            }
-          }
-
-            if (FileUtil.isSpinfireDocument(attachmentDetail.getFilename()) && spinfireViewerEnable) {
-			%>		
-					
-					<div id="switchView" name="switchView" style="display: none">
-					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getId()%>)"><img name="iconeView<%=attachmentDetail.getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
-					</div>
-					<div id="<%=attachmentDetail.getId()%>" style="display: none">
-						  <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102"
-						          width="300" height="200" id="XV" >
-								    <param name="ModelName" value="<%=url%>">
-								    <param name="BorderWidth" value="1">
-								    <param name="ReferenceFrame" value="1">
-								    <param name="ViewportActiveBorder" value="FALSE">
-								    <param name="DisplayMessages" value="TRUE">
-								    <param name="DisplayInfo" value="TRUE">
-								    <param name="SpinX" value="0">
-								    <param name="SpinY" value="0">
-								    <param name="SpinZ" value="0">
-								    <param name="AnimateTransitions" value="0">
-								    <param name="ZoomFit" value="1">
+<c:if test="${!empty pageScope.attachments  && view:isDefined(userProfile) && ('user' != userProfile)}">
+  <div class="attachments bgDegradeGris">
+    <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
+    <ul id="attachmentList">
+      <c:forEach items="${pageScope.attachments}" var="attachment" >
+        <c:if test="${isAttachmentPositionRight}">
+          <li id='attachment_<c:out value="${attachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
+        </c:if>
+        <c:if test="${contextualMenuEnabled}">
+          <%com.silverpeas.attachment.MenuHelper.displayActions((SimpleDocument)pageContext.getAttribute("attachment"), (Boolean)pageContext.getAttribute("useXMLForm"),
+                (Boolean)pageContext.getAttribute("useFileSharing"), (Boolean)pageContext.getAttribute("webdavEditingEnable"), userId, (String)pageContext.getAttribute("contentLanguage"), attResources,
+                URLManager.getServerURL(request), (Boolean)pageContext.getAttribute("showMenuNotif"), (Boolean)pageContext.getAttribute("useContextualMenu"), out); %>              
+        </c:if>
+        <span class="lineMain">
+          <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
+            <img id='edit_<c:out value="${attachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
+          </c:if>
+          <c:if test="${showIcon}">
+            <img id='img_<c:out value="${attachment.oldSilverpeasId}"/>' src='<c:out value="${attachment.displayIcon}" />' class="icon" />
+          </c:if>
+          <c:choose>
+            <c:when test="${fromAlias}">
+              <c:set var="attachmentUrl" value="${attachment.aliasURL}" />
+            </c:when>
+            <c:otherwise>
+              <c:url var="attachmentUrl" value="${attachment.attachmentURL}" />
+            </c:otherwise>
+          </c:choose>
+            <!-- <c:out value="${attachment.filename}" /> - <c:out value="${! view:isDefined(attachment.title) || ! showTitle}" /> -->
+          <c:choose>
+            <c:when test="${! view:isDefined(attachment.title) || ! showTitle}">
+              <c:set var="title" value="${attachment.filename}" />
+            </c:when>
+            <c:otherwise>
+              <c:set var="title" value="${attachment.title}" />
+            </c:otherwise>
+          </c:choose>
+          <a id='url_<c:out value="${attachment.oldSilverpeasId}"/>' href='<c:out value="${attachmentUrl}" escapeXml="false"/>' target="_blank"><c:out value="${title}" /></a>
+        </span>
+        <span class="lineSize">
+          <c:if test="${displayUniversalLinks}">
+            <a href='<c:out value="${attachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>" /></a>
+          </c:if>
+          <c:if test="${showFileSize}">
+            <c:out value="${view:humanReadableSize(attachment.size)}" />
+          </c:if>
+          <c:if test="${showFileSize && showDownloadEstimation}"> / </c:if>
+          <c:if test="${showDownloadEstimation}">
+            <c:out value="${view:estimateDownload(attachment.size)}" />
+          </c:if> - <view:formatDate value="${attachment.created}" />
+        </span>
+        <c:if test="${view:isDefined(attachment.title) && showTitle}">
+          <span class="fileName"><c:out value="${attachment.filename}" /></span>
+        </c:if>
+        <c:if test="${view:isDefined(attachment.description) && showInfo}">
+          <span class="description"><view:encodeHtml string="${attachment.description}" /></span>
+        </c:if>
+        <c:if test="${view:isDefined(attachment.xmlFormId)}"> 
+          <br/><a rel='<c:url value="/RformTemplate/jsp/View">
+            <c:param name="width" value="400"/>
+            <c:param name="ObjectId" value="${attachment.id}"/>            
+            <c:param name="ObjectLanguage" value="${contentLanguage}"/>
+            <c:param name="ComponentId" value="${componentId}"/>
+            <c:param name="ObjectType" value="${'Attachment'}"/>
+            <c:param name="XMLFormName" value="${attachment.xmlFormId}"/>
+                  </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
+        </c:if>  
+          <c:if test="${contextualMenuEnabled}">
+            <c:choose>
+              <c:when test="${attachment.readOnly}">
+                <div class='workerInfo'  id='worker<c:out value="${attachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${attachment.editedBy}" /> <fmt:message key="at" /> <view:formatDate value="${attachment.reservation}" /></div>
+              </c:when>
+              <c:otherwise>
+                <div class='workerInfo'  id='worker<c:out value="${attachment.oldSilverpeasId}" />' style="visibility:hidden"> </div>
+              </c:otherwise>
+            </c:choose>
+          </c:if>	
+					<c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(attachment.filename)}">
+            <div id="switchView" name="switchView" style="display: none">
+              <a href="#" onClick="changeView3d('<c:out value="${attachment.id}" />')"><img name="iconeView<c:out value="${attachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
+            </div>
+            <div id="<c:out value="${attachment.id}" />" style="display: none">
+						  <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
+                <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">
+                <param name="BorderWidth" value="1">
+                <param name="ReferenceFrame" value="1">
+                <param name="ViewportActiveBorder" value="FALSE">
+                <param name="DisplayMessages" value="TRUE">
+                <param name="DisplayInfo" value="TRUE">
+                <param name="SpinX" value="0">
+                <param name="SpinY" value="0">
+                <param name="SpinZ" value="0">
+                <param name="AnimateTransitions" value="0">
+                <param name="ZoomFit" value="1">
 						  </object>
-					</div>
-					<br/>
-					<%
-		}
-
-        if ("bottom".equals(attachmentPosition) && a < nbAttachmentPerLine) {
-        } else if ("right".equals(attachmentPosition)) {
-            out.println("</li>");
-          }
-
-        author = "";
-        if (a == 3) {
-          a = 1;
-        } else {
-          a++;
-        }
-      }
-      out.println("</ul>");
-
-%>
-<% if (contextualMenuEnabled && dragAndDropEnable) {
-      ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
-      String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
-%>
+            </div>
+            <br/>
+          </c:if>
+          <c:if test="${isAttachmentPositionRight}"></li></c:if>
+        </c:forEach>
+      </ul>         
+</c:if>
+    <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
+      <view:settings var="maximumFileSize" settings="com.stratelia.webactiv.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
+      <c:url var="dropUrl" value="/DragAndDrop/drop">
+        <c:param name="UserId" value="${mainSessionController.userId}" />
+        <c:param name="ComponentId" value="${componentId}" />
+        <c:param name="PubId" value="${param.Id}" />
+        <c:param name="IndexIt" value="${indexIt}" />
+        <c:param name="Context" value="${param.Context}"/>
+      </c:url>
 
 	<div class="dragNdrop">
-    	<a href="javascript:showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/DragAndDrop/drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&PubId=<%=id%>&IndexIt=<%=indexIt%>&Context=<%=context%>','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<%=attResources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_Context%>','<%=attResources.getString("GML.DragNDropExpand")%>','<%=attResources.getString("GML.DragNDropCollapse")%>')" id="dNdActionLabel"><%=attResources.getString("GML.DragNDropExpand")%></a>
+    <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=m_Context%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
     	<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
 	</div>
-
-  <% }%>
-  <% if (contextualMenuEnabled && !dragAndDropEnable) {%>
-		<div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><%=attResources.getString("GML.add")%>...</a></div>
-    <% }%>
-    <%
-            out.println("</div><!--/ATTACHMENTS -->");
-          }
-    %>
+</c:if>
+    <c:if test="${contextualMenuEnabled && ! dragAndDropEnable}">
+      <div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><fmt:message key="GML.add" />...</a></div>
+    </c:if>
+    </div><!--/ATTACHMENTS -->
 <div id="attachmentModalDialog" style="display: none"></div>
-<% if (spinfireViewerEnable) {%>
+<c:if test="${spinfireViewerEnable}">
 <script type="text/javascript">
   if (navigator.appName=='Microsoft Internet Explorer') {
     for (i=0; i<document.getElementsByName("switchView").length; i++) {
@@ -353,14 +299,14 @@ indexIt = <c:out value="${indexIt}" />
   function changeView3d(objectId) {
     if (document.getElementById(objectId).style.display == 'none') {
       document.getElementById(objectId).style.display = '';
-      eval("iconeView"+objectId).src = '<%=URLManager.getApplicationURL()%>/util/icons/visible3D.gif';
+      eval("iconeView"+objectId).src = '<c:url value="/util/icons/visible3D.gif" />';
     } else {
       document.getElementById(objectId).style.display = 'none';
-      eval("iconeView"+objectId).src = '<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif';
+      eval("iconeView"+objectId).src = '<c:url value="/util/icons/masque3D.gif" />';
     }
   }
 </script>
-<% }%>
+</c:if>
 
 <script type="text/javascript">
   String.prototype.format = function () {
@@ -377,11 +323,11 @@ indexIt = <c:out value="${indexIt}" />
       {
         content: {
           // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-          text: '<img class="throbber" src="<%=m_Context%>/util/icons/inProgress.gif" alt="Loading..." />',
+          text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
           url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
           title: {
-            text: '<%=attResources.getString("attachment.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-            button: '<%=attResources.getString("GML.close")%>' // Show a close link in the title
+            text: '<fmt:message key="attachment.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+            button: '<fmt:message key="GML.close" />' // Show a close link in the title
           }
         },
         position: {
@@ -428,14 +374,14 @@ indexIt = <c:out value="${indexIt}" />
     });
   });
 
-  <% if (contextualMenuEnabled) {%>
+<c:if test="${contextualMenuEnabled}" >
 
   	var pageMustBeReloadingAfterSorting = false;
   
     function checkout(id, oldId, webdav, edit, download) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
-        $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkout'},
+        $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<c:out value="${contentLanguage}" />',Action:'Checkout'},
         function(data) {
           if(data == 'ok') {           
             var oMenu = eval("oMenu"+oldId);
@@ -481,14 +427,14 @@ indexIt = <c:out value="${indexIt}" />
         var webdavUpdate = 'false';
         if (webdav)
         {
-          if(confirm('<%=attResources.getString("confirm.checkin.message")%>')) {
+          if(confirm('<fmt:message key="confirm.checkin.message" />')) {
             webdavUpdate='true';
           }
         }
         if(forceRelease == 'true'){
           closeMessage();
         }
-        $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<%=contentLanguage%>',Action:'Checkin',update_attachment:webdavUpdate,force_release:forceRelease},
+        $.get('<c:url value="/Attachment" />', {Id:id,FileLanguage:'<c:out value="${contentLanguage}" />',Action:'Checkin',update_attachment:webdavUpdate,force_release:forceRelease},
         function(data) {
           data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
           if (data == "locked") {
@@ -570,11 +516,10 @@ indexIt = <c:out value="${indexIt}" />
     }
 
     function reloadIncludingPage() {
-  <% if (!StringUtil.isDefined(callbackURL)) {%>
-      document.location.reload();
-  <% } else {%>
-      document.location.href = "<%=m_sAbsolute + m_Context + callbackURL%>";
-  <% }%>
+  <c:choose>
+    <c:when test="${! view:isDefined(param.CallbackUrl)}">document.location.reload();</c:when>
+    <c:otherwise>document.location.href = "<c:url value="${param.CallbackUrl}" />";</c:otherwise>
+  </c:choose>
     }
 
   function updateAttachment(attachmentId, lang) {
@@ -582,12 +527,12 @@ indexIt = <c:out value="${indexIt}" />
     $( "#dialog-attachment-update" ).data('attachmentId', attachmentId).dialog( "open" );
   }
 
-  <% if (useXMLForm) {%>
+  <c:if test="${useXMLForm}">
     function EditXmlForm(id, lang) {
-      var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="ObjectId" value="${param.Id}"/><c:param name="IndexIt"><%=indexIt%></c:param><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&ObjectType=Attachment&XMLFormName=<%=URLEncoder.encode(xmlForm, "UTF-8")%>&ReloadOpener=true&ObjectLanguage='+lang;
+      var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="ObjectId" value="${param.Id}"/><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage='+lang;
       SP_openWindow(url, "test", "600", "400","scrollbars=yes, resizable, alwaysRaised");
     }
-  <% }%>
+  </c:if>
 
     function closeMessage() {
     	$("#attachmentModalDialog").dialog("close");
@@ -725,7 +670,7 @@ indexIt = <c:out value="${indexIt}" />
       var url = '<c:url value="/RfileSharing/jsp/NewTicket"><c:param name="componentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&objectId=' + id;
       SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
     }
-  <% }%>
+</c:if>
     
       function displayAttachment(attachment) {
         $('#fileName').text(attachment.fileName);
@@ -760,6 +705,7 @@ indexIt = <c:out value="${indexIt}" />
           }
         });
       }
+
 </script>
         <div id="dialog-attachment-update" style="display:none">
             <form name="update-attachment-form" id="update-attachment-form" action="<c:url value="/attachment/jsp/updateFile.jsp" />" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
@@ -779,13 +725,3 @@ indexIt = <c:out value="${indexIt}" />
         <div id="dialog-attachment-delete" style="display:none">
           <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
         </div>        
-<!-- 
-userProfile = <c:out value="${userProfile}" /> - <%=profile%>
-contextualMenuEnabled = <c:out value="${contextualMenuEnabled}" /> - <%=contextualMenuEnabled%>
-useFileSharing = <c:out value="${useFileSharing}" /> - <%=useFileSharing%>
-useXMLForm = <c:out value="${useXMLForm}" />  - <%=useXMLForm%>
-fromAlias = <c:out value="${fromAlias}" /> - <%=fromAlias%>
-attachmentPosition = <c:out value="${attachmentPosition}" /> - <%=attachmentPosition%>
-iconStyle = <c:out value="${iconStyle}" escapeXml="false" /> - <%=iconStyle%>
-indexIt = <c:out value="${indexIt}" /> - <%=indexIt%>
--->

@@ -235,10 +235,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jasig.cas</groupId>
       <artifactId>cas-client-core</artifactId>
     </dependency>

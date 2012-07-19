@@ -127,6 +127,7 @@ private boolean isFileSharingEnable(MainSessionController msc, String componentI
 	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, attSettings, language);
 	
 	boolean useContextualMenu = attResources.getSetting("ui.useContextualMenu", false);
+  pageContext.setAttribute("useContextualMenu",useContextualMenu);
 	
 	// Pixels
 	String noColorPix       = m_Context + "/util/icons/colorPix/1px.gif";

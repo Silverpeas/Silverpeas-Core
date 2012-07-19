@@ -492,6 +492,10 @@ public class SimpleDocument {
     return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
         getLanguage());
   }
+  
+  public String getUniversalURL() {
+    return URLManager.getSimpleURL(URLManager.URL_FILE, getId());
+  }
 
   public String getOnlineURL() {
     String onlineUrl = FileServerUtils.getOnlineURL(pk.getComponentName(), getFilename(), "",
