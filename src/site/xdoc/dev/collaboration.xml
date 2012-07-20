@@ -41,7 +41,7 @@
     <section name="Git">
       <subsection name="What is git?">
         <p>
-          <img src="images/logos/logo_git.png" alt="git logo" style="height:30px;padding-right:10px;float:left;position:relative;" />
+          <img src="../images/logos/logo_git.png" alt="git logo" style="height:30px;padding-right:10px;float:left;position:relative;" />
           <a href="http://git-scm.com/">Git</a> is a Distributed Version Control System (DVCS).
       The main difference with VCS is its distributed form, which means that
       there is not a single repository centralizing all the code history.
@@ -58,8 +58,8 @@
           <li>to get others' modifications pull or fetch them from a remote repository.</li>
         </ul>
         <p>
-          <a href="images/git_everthing_is_local.png">
-            <img src="images/git_everthing_is_local.png" alt="git workflow" style="height:404px;padding-left:100px;" />
+          <a href="../images/git_everthing_is_local.png">
+            <img src="../images/git_everthing_is_local.png" alt="git workflow" style="height:404px;padding-left:100px;" />
           </a>
         </p>
         <p>For more information how to use Git, please visit the
@@ -81,7 +81,7 @@
       </subsection>
       <subsection name="Github">
         <p>
-          <img src="images/logos/logo_github.jpg" alt="github logo" style="height:40px;padding-right:10px;float:left;position:relative;" />
+          <img src="../images/logos/logo_github.jpg" alt="github logo" style="height:40px;padding-right:10px;float:left;position:relative;" />
           Silverpeas's code is hosted on public Git repositories on GitHub, so that everybody can participate and contribute to the Silverpeas project.
           <br/>
           The Github features enhance the capabilities of a collaborative and distributed work.
