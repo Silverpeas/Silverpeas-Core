@@ -271,14 +271,15 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
         out.println("function chooseDynamicValues"
                 + fieldNameFunction + "(){");
-        out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
-        out.println("oEditor.Focus();");
+        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
+        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
+        out.println(" focusManager.focus();");
         out.println("index = document.getElementById(\"dynamicValues_" + fieldName
                 + "\").selectedIndex;");
         out.println("var str = document.getElementById(\"dynamicValues_" + fieldName
                 + "\").options[index].value;");
         out.println("if (index != 0 && str != null){");
-        out.println("oEditor.InsertHtml('(%'+str+'%)');");
+        out.println("oEditor.insertHtml('(%'+str+'%)');");
         out.println("} }");
       }
 
@@ -304,10 +305,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("}}");
 
       out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
-      out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
-      out.println("oEditor.Focus();");
+      out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
+      out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
+      out.println(" focusManager.focus();");
       out.println(
-              "oEditor.InsertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
+              "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
       out.println("}");
 
       // Gallery files exists; javascript functions
@@ -315,9 +317,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         GalleryHelper.getJavaScript(fieldNameFunction, fieldName, contentLanguage, out);
 
         out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
-        out.println(" var oEditor = FCKeditorAPI.GetInstance('" + fieldName + "');");
-        out.println("oEditor.Focus();");
-        out.println("oEditor.InsertHtml('<img src=\"'+url+'\" border=\"0\" alt=\"\"/>');");
+        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
+        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
+        out.println(" focusManager.focus();");
+        out.println("oEditor.insertHtml('<img src=\"'+url+'\" border=\"0\" alt=\"\"/>');");
         out.println("}");
       }
 
