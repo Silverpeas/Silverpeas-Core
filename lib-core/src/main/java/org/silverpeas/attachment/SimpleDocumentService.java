@@ -226,7 +226,7 @@ public class SimpleDocumentService implements AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
+   * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
    * otherwhise.
    * @return the stored document.
    */
@@ -241,7 +241,7 @@ public class SimpleDocumentService implements AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
+   * @param indexIt <code>true</code> if the document is to be indexed,  <code>false</code>
    * otherwhise.
    * @param invokeCallback <code>true</code> if the callback methods of the components must be
    * called, <code>false</code> for ignoring thoose callbacks.
@@ -1308,14 +1308,15 @@ public class SimpleDocumentService implements AttachmentService {
    * @param attachmentId
    * @param userId
    * @param upload : indicates if the file has been uploaded throught a form.
+   * @param update : update the content with the file from the webdav repository.
    * @param force if the user is an Admin he can force the release.
    * @param language the language for the attachment.
    * @return false if the file is locked - true if the checkin succeeded.
    * @throws AttachmentException
    */
   @Override
-  public boolean unlock(String attachmentId, String userId, boolean upload,
-      boolean update, boolean force, String language) {
+  public boolean unlock(String attachmentId, String userId, boolean upload, boolean update,
+      boolean force, String language) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -1353,6 +1354,7 @@ public class SimpleDocumentService implements AttachmentService {
       document.release();
       session.save();
       updateAttachment(document, false, invokeCallback);
+      repository.unlock(session, document, ! update && ! upload );
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
           "attachment.CHECKIN_FAILED", e);
@@ -1383,6 +1385,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (document.isReadOnly()) {
         return document.getEditedBy().equals(userId);
       }
+      repository.lock(session, document);
       document.edit(userId);
       if (document.isOpenOfficeCompatible()) {
         webdavRepository.createAttachmentNode(session, document);
@@ -1401,8 +1404,6 @@ public class SimpleDocumentService implements AttachmentService {
       boolean invokeCallback) throws RepositoryException {
     SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
         document.getLanguage());
-
-    String language = document.getLanguage();
     repository.updateDocument(session, document);
     if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
       // le fichier est renommé

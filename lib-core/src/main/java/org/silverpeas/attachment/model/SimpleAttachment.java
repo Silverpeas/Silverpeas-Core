@@ -23,9 +23,9 @@
  */
 package org.silverpeas.attachment.model;
 
-import com.silverpeas.util.i18n.I18NHelper;
-
 import java.util.Date;
+
+import com.silverpeas.util.i18n.I18NHelper;
 
 /**
  *

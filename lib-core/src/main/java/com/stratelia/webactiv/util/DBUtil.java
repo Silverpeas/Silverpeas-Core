@@ -40,6 +40,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.silverpeas.util.StringUtil;
+
 public class DBUtil {
 
   private static DBUtil instance;
@@ -302,6 +304,9 @@ public class DBUtil {
 
   public static int getMaxFromTable(Connection con, String tableName, String idName)
       throws SQLException {
+    if(!StringUtil.isDefined(tableName) || ! StringUtil.isDefined(idName)) {
+      return 1;
+    }
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

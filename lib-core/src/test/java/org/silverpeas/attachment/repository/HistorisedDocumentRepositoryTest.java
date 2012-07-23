@@ -23,17 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -44,12 +33,14 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.commons.cnd.ParseException;
@@ -59,16 +50,31 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.Charsets;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -81,7 +87,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class DocumentRepositoryTest {
+public class HistorisedDocumentRepositoryTest {
 
   private static final String instanceId = "kmelia73";
   private static EmbeddedDatabase dataSource;
@@ -97,7 +103,7 @@ public class DocumentRepositoryTest {
     return this.repository;
   }
 
-  public DocumentRepositoryTest() {
+  public HistorisedDocumentRepositoryTest() {
   }
 
   @Before
@@ -168,6 +174,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of createDocument method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testCreateDocument() throws Exception {
@@ -177,13 +184,14 @@ public class DocumentRepositoryTest {
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
-      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      String foreignId = "node78";
+      HistorisedDocument document = new HistorisedDocument(emptyId, foreignId, 0, true, attachment);
       SimpleDocumentPK result = instance.createDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
+      session.save();
       SimpleDocument doc = instance.findDocumentById(session, expResult, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
@@ -196,6 +204,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of deleteDocument method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testDeleteDocument() throws Exception {
@@ -205,9 +214,9 @@ public class DocumentRepositoryTest {
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = instance.createDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -227,6 +236,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of findDocumentById method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testFindDocumentById() throws Exception {
@@ -236,9 +246,9 @@ public class DocumentRepositoryTest {
       String creatorId = "0";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = instance.createDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -255,6 +265,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of findLast method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testFindLast() throws Exception {
@@ -263,8 +274,8 @@ public class DocumentRepositoryTest {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       SimpleDocumentPK result = instance.createDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -273,7 +284,7 @@ public class DocumentRepositoryTest {
       emptyId = new SimpleDocumentPK("-1", instanceId);
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       attachment = createFrenchSimpleAttachment();
-      foreignId = "node18";
+      foreignId = "node78";
       document = new SimpleDocument(emptyId, foreignId, 5, false, attachment);
       result = instance.createDocument(session, document, content);
       expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -289,6 +300,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of updateDocument method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testUpdateDocument() throws Exception {
@@ -297,8 +309,8 @@ public class DocumentRepositoryTest {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       SimpleDocumentPK result = instance.createDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
@@ -320,6 +332,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of listDocumentsByForeignId method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testListDocumentsByForeignId() throws Exception {
@@ -328,8 +341,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       instance.createDocument(session, docNode18_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -337,7 +350,7 @@ public class DocumentRepositoryTest {
       SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       instance.createDocument(session, docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       foreignId = "node25";
       SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       instance.createDocument(session, docNode25_1, content);
@@ -346,7 +359,7 @@ public class DocumentRepositoryTest {
       SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       instance.createDocument(session, docNode25_2, content);
       session.save();
-      List<SimpleDocument> docs = instance.listDocumentsByForeignId(session, instanceId, "node18",
+      List<SimpleDocument> docs = instance.listDocumentsByForeignId(session, instanceId, "node78",
           "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
@@ -358,6 +371,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of selectDocumentsByForeignId method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testSelectDocumentsByForeignId() throws Exception {
@@ -366,8 +380,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       instance.createDocument(session, docNode18_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -375,7 +389,7 @@ public class DocumentRepositoryTest {
       SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       instance.createDocument(session, docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       foreignId = "node25";
       SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       instance.createDocument(session, docNode25_1, content);
@@ -384,7 +398,7 @@ public class DocumentRepositoryTest {
       SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       instance.createDocument(session, docNode25_2, content);
       session.save();
-      NodeIterator nodes = instance.selectDocumentsByForeignId(session, instanceId, "node18");
+      NodeIterator nodes = instance.selectDocumentsByForeignId(session, instanceId, "node78");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docNode18_1.getId()));
@@ -397,6 +411,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of selectDocumentsByOwnerId method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testSelectDocumentsByOwnerId() throws Exception {
@@ -405,8 +420,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
@@ -418,7 +433,7 @@ public class DocumentRepositoryTest {
       instance.createDocument(session, docOwn10_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       instance.createDocument(session, docOwn25_1, content);
@@ -436,14 +451,15 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of addContent method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testAddContent() throws Exception {
     Session session = BasicDaoFactory.getSystemSession();
     try {
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK result = instance.createDocument(session, document, content);
@@ -464,14 +480,15 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of removeContent method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testRemoveContent() throws Exception {
     Session session = BasicDaoFactory.getSystemSession();
     try {
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK result = instance.createDocument(session, document, content);
@@ -491,7 +508,7 @@ public class DocumentRepositoryTest {
     }
   }
 
-  private SimpleAttachment createEnglishSimpleAttachment() {
+  private SimpleAttachment createEnglishVersionnedAttachment() {
     return new SimpleAttachment("test.pdf", "en", "My test document", "This is a test document",
         "This is a test".getBytes(Charsets.UTF_8).length, MimeTypes.PDF_MIME_TYPE, "0",
         RandomGenerator.getRandomCalendar().getTime(), "18");
@@ -522,6 +539,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of listDocumentsByOwner method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testListDocumentsByOwner() throws Exception {
@@ -530,8 +548,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
@@ -543,7 +561,7 @@ public class DocumentRepositoryTest {
       instance.createDocument(session, docOwn10_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       instance.createDocument(session, docOwn25_1, content);
@@ -564,6 +582,7 @@ public class DocumentRepositoryTest {
 
   /**
    * Test of listExpiringDocumentsByOwner method, of class DocumentRepository.
+   * @throws Exception 
    */
   @Test
   public void testListExpiringDocuments() throws Exception {
@@ -572,8 +591,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -588,7 +607,7 @@ public class DocumentRepositoryTest {
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       instance.createDocument(session, notExpiringDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument expiringDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       expiringDoc3.setExpiry(today.getTime());
@@ -620,8 +639,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -636,7 +655,7 @@ public class DocumentRepositoryTest {
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       instance.createDocument(session, notExpiringDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument expiringDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       expiringDoc3.setExpiry(today.getTime());
@@ -670,8 +689,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -686,7 +705,7 @@ public class DocumentRepositoryTest {
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       instance.createDocument(session, docToUnlock2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
@@ -718,8 +737,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -734,7 +753,7 @@ public class DocumentRepositoryTest {
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       instance.createDocument(session, docToUnlock2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
@@ -768,8 +787,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -784,7 +803,7 @@ public class DocumentRepositoryTest {
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       instance.createDocument(session, notWarningDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       warningDoc3.setAlert(today.getTime());
@@ -819,9 +838,9 @@ public class DocumentRepositoryTest {
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       instance.createDocument(session, document, content);
       foreignId = "kmelia36";
@@ -851,9 +870,9 @@ public class DocumentRepositoryTest {
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       instance.createDocument(session, document, content);
@@ -884,38 +903,38 @@ public class DocumentRepositoryTest {
   public void testFindDocumentByOldSilverpeasId() throws Exception {
     Session session = BasicDaoFactory.getSystemSession();
     try {
-      long oldSilverpeasId = 236L;
+      long oldSilverpeasId = 2048L;
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      emptyId.setOldSilverpeasId(236L);
+      emptyId.setOldSilverpeasId(2048L);
       String language = "en";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
-      String foreignId = "node18";
+      String foreignId = "node78";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       instance.createDocument(session, document, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      emptyId.setOldSilverpeasId(512L);
+      emptyId.setOldSilverpeasId(1024L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleDocument otherDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
+      SimpleDocument otherDocument = new HistorisedDocument(emptyId, foreignId, 0, false, attachment);
       instance.createDocument(session, otherDocument, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      emptyId.setOldSilverpeasId(236L);
+      emptyId.setOldSilverpeasId(2048L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleDocument versionedDocument = new SimpleDocument(emptyId, foreignId, 0, true, attachment);
+      SimpleDocument versionedDocument = new HistorisedDocument(emptyId, foreignId, 0, true, attachment);
       instance.createDocument(session, versionedDocument, content);
       session.save();
       SimpleDocument doc = instance.findDocumentByOldSilverpeasId(session, instanceId,
           oldSilverpeasId, false, language);
       assertThat(doc, is(notNullValue()));
-      assertThat(doc.getOldSilverpeasId(), is(236L));
+      assertThat(doc.getOldSilverpeasId(), is(2048L));
       assertThat(doc.getCreated(), is(creationDate));
       assertThat(doc, SimpleDocumentMatcher.matches(document));
       doc = instance.findDocumentByOldSilverpeasId(session, instanceId, oldSilverpeasId, true,
           language);
       assertThat(doc, is(notNullValue()));
-      assertThat(doc.getOldSilverpeasId(), is(236L));
+      assertThat(doc.getOldSilverpeasId(), is(2048L));
       assertThat(doc.getCreated(), is(creationDate));
       assertThat(doc, SimpleDocumentMatcher.matches(versionedDocument));
       checkEnglishSimpleDocument(doc);
@@ -934,8 +953,8 @@ public class DocumentRepositoryTest {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleAttachment attachment = createEnglishSimpleAttachment();
-      String foreignId = "node18";
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
@@ -950,7 +969,7 @@ public class DocumentRepositoryTest {
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       instance.createDocument(session, notWarningDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishSimpleAttachment();
+      attachment = createEnglishVersionnedAttachment();
       SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       warningDoc3.setAlert(today.getTime());

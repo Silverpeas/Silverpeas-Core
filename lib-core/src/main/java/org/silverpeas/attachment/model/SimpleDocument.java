@@ -357,10 +357,6 @@ public class SimpleDocument {
     return versioned;
   }
 
-  public void setVersioned(boolean versioned) {
-    this.versioned = versioned;
-  }
-
   public SimpleAttachment getFile() {
     return file;
   }

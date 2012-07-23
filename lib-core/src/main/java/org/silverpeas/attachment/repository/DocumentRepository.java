@@ -31,19 +31,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.ChildNode;
@@ -52,9 +46,20 @@ import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
+import javax.jcr.version.Version;
+
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 
@@ -65,7 +70,7 @@ import static com.silverpeas.jcrutil.JcrConstants.*;
 @Named("documentRepository")
 public class DocumentRepository {
 
-  SimpleDocumentConverter converter = new SimpleDocumentConverter();
+  DocumentConverter converter = new DocumentConverter();
 
   public void prepareComponentAttachments(String instanceId) throws
       RepositoryException {
@@ -85,13 +90,15 @@ public class DocumentRepository {
   }
 
   /**
+   * /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
    *
+   * @param session
    * @param document
    * @param content
-   * @param callBack
    * @return
+   * @throws RepositoryException
    */
   public SimpleDocumentPK createDocument(Session session, SimpleDocument document,
       InputStream content) throws RepositoryException {
@@ -101,7 +108,13 @@ public class DocumentRepository {
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
     Node documentNode = docsNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
+    if(document.isVersioned()) {
+      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
+    }
     converter.fillNode(document, content, documentNode);
+    if(document.isVersioned() && !documentNode.isCheckedOut()) {
+     checkinNode(session, document.getFullJcrPath(), document.getLanguage());
+    }
     document.setId(documentNode.getIdentifier());
     return document.getPk();
   }
@@ -158,15 +171,22 @@ public class DocumentRepository {
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
    *
+   * @param session
    * @param document
-   * @param content
-   * @param callBack
-   * @return
+   * @throws RepositoryException
    */
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
+    String path = document.getFullJcrPath();
+    boolean checkinRequired = document.isVersioned() && !isCheckout(session, path);
+    if (checkinRequired) {
+      checkoutNode(session, path);
+    }
     converter.fillNode(document, null, documentNode);
+    if (checkinRequired) {
+      checkinNode(session, path, document.getLanguage());
+    }
   }
 
   /**
@@ -174,7 +194,7 @@ public class DocumentRepository {
    * attribute who identifie the link by a foreign key.
    *
    * @param session
-   * @param document
+   * @param documentPk
    * @throws RepositoryException
    */
   public void deleteDocument(Session session, SimpleDocumentPK documentPk) throws
@@ -211,7 +231,9 @@ public class DocumentRepository {
   /**
    *
    * @param session
-   * @param documentPk
+   * @param instanceId
+   * @param oldSilverpeasId
+   * @param versioned
    * @param lang
    * @return
    * @throws RepositoryException
@@ -271,7 +293,6 @@ public class DocumentRepository {
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
-   * @throws RepositoryException
    */
   public List<SimpleDocument> listDocumentsByForeignId(Session session, String instanceId,
       String foreignId, String language) throws RepositoryException {
@@ -291,7 +312,6 @@ public class DocumentRepository {
    * @param owner the id of the user owning the document.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException
    * @throws RepositoryException
    */
   public List<SimpleDocument> listDocumentsByOwner(Session session, String instanceId,
@@ -338,7 +358,7 @@ public class DocumentRepository {
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException.
+   * @throws RepositoryException
    */
   public List<SimpleDocument> listExpiringDocuments(Session session, Date expiryDate,
       String language) throws RepositoryException {
@@ -358,7 +378,6 @@ public class DocumentRepository {
    * @param alertDate the date when the document reservation should send an alert.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException
    * @throws RepositoryException
    */
   public List<SimpleDocument> listDocumentsRequiringWarning(Session session, Date alertDate,
@@ -404,7 +423,7 @@ public class DocumentRepository {
    * @param expiryDate the date when the document reservation should expire.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
-   * @throws RepositoryException.
+   * @throws RepositoryException
    */
   public List<SimpleDocument> listDocumentsToUnlock(Session session, Date expiryDate,
       String language) throws RepositoryException {
@@ -513,10 +532,11 @@ public class DocumentRepository {
    * Get the content.
    *
    * @param session the current JCR session.
-   * @param documentPk the document which content is to be added.
-   * @param attachment the attachment metadata.
-   * @param content the attachment binary content.
+   * @param pk the document which content is to be added.
+   * @param lang the content language.
+   * @return the attachment binary content.
    * @throws RepositoryException
+   * @throws IOException
    */
   public InputStream getContent(Session session, SimpleDocumentPK pk, String lang) throws
       RepositoryException, IOException {
@@ -549,5 +569,76 @@ public class DocumentRepository {
     if (!componentNode.hasNodes()) {
       componentNode.remove();
     }
+  }
+
+  /**
+   * Lock a document if it is versionned to create a new work in progress version.
+   *
+   * @param session
+   * @param document
+   * @throws RepositoryException
+   */
+  public void lock(Session session, SimpleDocument document) throws RepositoryException {
+    if (document.isVersioned()) {
+      checkoutNode(session, document.getFullJcrPath());
+    }
+  }
+
+  /**
+   * Unlock a document if it is versionned to create a new version.
+   *
+   * @param session
+   * @param document
+   * @param restore 
+   * @throws RepositoryException
+   */
+  public void unlock(Session session, SimpleDocument document, boolean restore) throws
+      RepositoryException {
+    if (document.isVersioned() && session.getNodeByIdentifier(document.getId()).isCheckedOut()) {
+      if (restore) {
+        Version lastVersion = session.getWorkspace().getVersionManager().getVersionHistory(document.
+            getFullJcrPath()).getAllVersions().nextVersion();
+        session.getWorkspace().getVersionManager().checkin(document.getFullJcrPath());
+        session.getWorkspace().getVersionManager().restore(document.getFullJcrPath(), lastVersion,
+            true);
+      } else {
+        checkinNode(session, document.getFullJcrPath(), document.getLanguage());
+      }
+    }
+  }
+
+  /**
+   * Indicates if the current document is checked out.
+   *
+   * @param session
+   * @param path
+   * @return true if the current document is checked out - false otherwise.
+   * @throws RepositoryException
+   */
+  boolean isCheckout(Session session, String path) throws RepositoryException {
+    return session.getWorkspace().getVersionManager().isCheckedOut(path);
+  }
+
+  /**
+   * Check the document out.
+   *
+   * @param session
+   * @param path
+   * @throws RepositoryException
+   */
+  void checkoutNode(Session session, String path) throws RepositoryException {
+    session.getWorkspace().getVersionManager().checkout(path);
+  }
+
+  /**
+   * Check the document in.
+   *
+   * @param session
+   * @param path
+   * @throws RepositoryException
+   */
+  SimpleDocument checkinNode(Session session, String path, String lang) throws RepositoryException {
+    Version currentVersion = session.getWorkspace().getVersionManager().checkin(path);
+    return converter.convertNode(currentVersion, lang);
   }
 }

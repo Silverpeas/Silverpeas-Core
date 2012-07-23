@@ -27,3 +27,21 @@ CREATE TABLE sb_attachment_attachment
 	expiryDate		varchar (10)	NULL,
 	xmlForm			varchar(50)		NULL
 );
+
+CREATE TABLE sb_version_document 
+	(
+	documentId		INT		NOT NULL, 
+	documentName		VARCHAR (255)	NOT NULL,
+	documentDescription	VARCHAR (255),
+	documentStatus		INT		NOT NULL,
+	documentOwnerId		INT,
+	documentCheckoutDate	char (10),
+	documentInfo		VARCHAR (100),
+	foreignId		INT		NOT NULL,
+	instanceId		VARCHAR (50)	NOT NULL,
+	typeWorkList		INT		NOT NULL,
+	currentWorkListOrder	INT,
+	alertDate		VARCHAR (10)	NULL,
+	expiryDate		VARCHAR (10)	NULL,
+	documentOrderNum	INT NOT NULL DEFAULT (0)
+	);

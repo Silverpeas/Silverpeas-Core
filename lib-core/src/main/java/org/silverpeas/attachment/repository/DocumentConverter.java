@@ -23,15 +23,25 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.util.i18n.I18NHelper;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
+
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.jcr.AbstractJcrConverter;
+
+import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 
@@ -39,11 +49,41 @@ import static com.silverpeas.jcrutil.JcrConstants.*;
  *
  * @author ehugonnet
  */
-class SimpleDocumentConverter extends AbstractJcrConverter {
+class DocumentConverter extends AbstractJcrConverter {
 
   SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
 
+  /**
+   * Convert the document history in a list of SimpleDocument.
+   * @param session
+   * @param path
+   * @param lang
+   * @return
+   * @throws RepositoryException 
+   */
+  List<SimpleDocument> convertDocumentHistory(Session session, String path, String lang) throws
+      RepositoryException {
+    VersionHistory history = session.getWorkspace().getVersionManager().getVersionHistory(path);
+    VersionIterator versionsIterator = history.getAllVersions();
+    List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
+        getSize());
+    while (versionsIterator.hasNext()) {
+      Version version = versionsIterator.nextVersion();
+      documentHistory.add(fillDocument(version, lang));
+    }
+    return documentHistory;
+  }
+
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
+    if (isVersioned(node)) {
+      HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
+      document.setHistory(convertDocumentHistory(node.getSession(), document.getFullJcrPath(), lang));
+      return document;
+    }
+    return fillDocument(node, lang);
+  }
+
+  SimpleDocument fillDocument(Node node, String lang) throws RepositoryException {
     SimpleDocumentPK pk = new SimpleDocumentPK(node.getIdentifier(), getStringProperty(node,
         SLV_PROPERTY_INSTANCEID));
     long oldSilverpeasId = getLongProperty(node, SLV_PROPERTY_OLD_ID);
@@ -120,7 +160,7 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
     } else if (documentNode.hasNode(attachmentNodeName)) {
       Node attachmentNode = documentNode.getNode(attachmentNodeName);
       attachmentConverter.fillNode(document.getFile(), attachmentNode);
-    }
+    }    
   }
 
   public void addAttachment(Node documentNode, SimpleAttachment attachment, InputStream content)
@@ -141,5 +181,9 @@ class SimpleDocumentConverter extends AbstractJcrConverter {
       Node attachmentNode = documentNode.getNode(SimpleDocument.FILE_PREFIX + lang);
       attachmentNode.remove();
     }
+  }
+
+  boolean isVersioned(Node node) throws RepositoryException {
+    return getBooleanProperty(node, SLV_PROPERTY_VERSIONED);
   }
 }

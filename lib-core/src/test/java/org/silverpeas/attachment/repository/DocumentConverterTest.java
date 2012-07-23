@@ -23,15 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-import com.stratelia.webactiv.util.DBUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,6 +33,7 @@ import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jcr.Binary;
@@ -49,6 +41,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -59,15 +52,27 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+
+import com.stratelia.webactiv.util.DBUtil;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;
@@ -81,10 +86,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class SimpleDocumentConverterTest {
+public class DocumentConverterTest {
 
   private static final String instanceId = "kmelia74";
-  private static final SimpleDocumentConverter instance = new SimpleDocumentConverter();
+  private static final DocumentConverter instance = new DocumentConverter();
   private boolean registred = false;
   private static BetterRepositoryFactoryBean shutdown;
   @Inject
@@ -93,7 +98,7 @@ public class SimpleDocumentConverterTest {
   private Repository repository;
   private static EmbeddedDatabase dataSource;
 
-  public SimpleDocumentConverterTest() {
+  public DocumentConverterTest() {
   }
 
   public Repository getRepository() {

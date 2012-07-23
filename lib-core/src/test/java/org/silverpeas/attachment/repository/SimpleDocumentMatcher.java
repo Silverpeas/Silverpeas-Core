@@ -25,6 +25,7 @@ package org.silverpeas.attachment.repository;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+
 import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
