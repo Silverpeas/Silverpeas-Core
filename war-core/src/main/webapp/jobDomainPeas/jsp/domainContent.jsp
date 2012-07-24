@@ -24,26 +24,38 @@
 
 --%>
 
+<%@page import="org.silverpeas.quota.contant.QuotaLoad"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="check.jsp" %>
-<%
-	Board board = gef.getBoard(); 
 
-    Domain  domObject 			= (Domain)request.getAttribute("domainObject");
-    UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
-    boolean isDomainRW 			= ((Boolean)request.getAttribute("isDomainRW")).booleanValue();
-    boolean isDomainSync 		= ((Boolean)request.getAttribute("isDomainSync")).booleanValue();
-    boolean isUserRW 			= ((Boolean)request.getAttribute("isUserRW")).booleanValue();
-    boolean isGroupManager		= ((Boolean)request.getAttribute("isOnlyGroupManager")).booleanValue();
-    boolean isUserAddingAllowed = ((Boolean)request.getAttribute("isUserAddingAllowedForGroupManager")).booleanValue();
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<%
+	Board board = gef.getBoard();
+
+  Domain  domObject 			= (Domain)request.getAttribute("domainObject");
+  UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
+  boolean isDomainRW 			= ((Boolean)request.getAttribute("isDomainRW")).booleanValue();
+  boolean isDomainSync 		= ((Boolean)request.getAttribute("isDomainSync")).booleanValue();
+  boolean isUserRW 			= ((Boolean)request.getAttribute("isUserRW")).booleanValue();
+  boolean isGroupManager		= ((Boolean)request.getAttribute("isOnlyGroupManager")).booleanValue();
+  boolean isUserAddingAllowed = ((Boolean)request.getAttribute("isUserAddingAllowedForGroupManager")).booleanValue();
 
 	boolean isDomainSql 	= "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
-		
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
-	
-    // Domain operations
+
+  browseBar.setDomainName(resource.getString("JDP.jobDomain"));
+  browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
+
+  // Initializing users in domain quota
+  domObject.refreshUserDomainQuota();
+  boolean isUserDomainQuotaFull = domObject.getUserDomainQuota().exists()
+      && EnumSet.of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS).contains(domObject.getUserDomainQuota().getLoad());
+
+  // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
 	{
@@ -60,66 +72,66 @@
 		    }
 	    }
 	}
-    if (isDomainRW)
-    {        
-        if (!isGroupManager)
-        {
-        	operationPane.addLine();
-        	
-        	operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
-        	
-        	if (isUserRW)
-            {
-                // User operations
-                operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-                operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
-            }
-        }
-        else
-        {
-        	if (isUserRW && isUserAddingAllowed)
-        	{
-        		operationPane.addLine();
-        		
-                //User operations
-                operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-                operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
-            }
-        }
-    }
-    if (isDomainSync)
-    {        
-        if (!isGroupManager)
-        {
-        	operationPane.addLine();
-        	
-        	// Domain operations
-        	operationPane.addOperation(resource.getIcon("JDP.domainSynchro"),resource.getString("JDP.domainSynchro"),"displayDomainSynchro");
-        	
-        	//User operations
-            operationPane.addOperation(resource.getIcon("JDP.userImport"),resource.getString("JDP.userImport"),"displayUserImport");
+  if (isDomainRW)
+  {
+    if (!isGroupManager)
+    {
+    	operationPane.addLine();
 
-            // Group operations
-            operationPane.addOperation(resource.getIcon("JDP.groupImport"),resource.getString("JDP.groupImport"),"displayGroupImport");
-        }
-        else
-        {
-        	if (isUserAddingAllowed)
-        	{
-        		operationPane.addLine();
-        		
-        		//User operations
-                operationPane.addOperation(resource.getIcon("JDP.userImport"),resource.getString("JDP.userImport"),"displayUserImport");
-        	}
-        }
-    } else if(isDomainSql) {
-    	ResourceLocator propDomain = new ResourceLocator(domObject.getPropFileName(), "");
-    	boolean synchroUser = propDomain.getBoolean("ExternalSynchro", false);
-    	if(synchroUser) {
-    	    operationPane.addLine();
-    	    operationPane.addOperation(resource.getIcon("JDP.domainSqlSynchro"),resource.getString("JDP.domainSynchro"),"javascript:DomainSQLSynchro()");
-    	}
+    	operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
+
+      if (isUserRW && !isUserDomainQuotaFull)
+      {
+        // User operations
+        operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+        operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+      }
     }
+    else
+    {
+    	if (isUserRW && isUserAddingAllowed && !isUserDomainQuotaFull)
+    	{
+    		operationPane.addLine();
+
+        //User operations
+        operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+        operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+      }
+    }
+  }
+  if (isDomainSync)
+  {
+      if (!isGroupManager)
+      {
+      	operationPane.addLine();
+
+      	// Domain operations
+      	operationPane.addOperation(resource.getIcon("JDP.domainSynchro"),resource.getString("JDP.domainSynchro"),"displayDomainSynchro");
+
+      	//User operations
+          operationPane.addOperation(resource.getIcon("JDP.userImport"),resource.getString("JDP.userImport"),"displayUserImport");
+
+          // Group operations
+          operationPane.addOperation(resource.getIcon("JDP.groupImport"),resource.getString("JDP.groupImport"),"displayGroupImport");
+      }
+      else
+      {
+      	if (isUserAddingAllowed)
+      	{
+      		operationPane.addLine();
+
+      		//User operations
+              operationPane.addOperation(resource.getIcon("JDP.userImport"),resource.getString("JDP.userImport"),"displayUserImport");
+      	}
+      }
+  } else if(isDomainSql) {
+  	ResourceLocator propDomain = new ResourceLocator(domObject.getPropFileName(), "");
+  	boolean synchroUser = propDomain.getBoolean("ExternalSynchro", false);
+  	if(synchroUser) {
+  	    operationPane.addLine();
+  	    operationPane.addOperation(resource.getIcon("JDP.domainSqlSynchro"),resource.getString("JDP.domainSynchro"),"javascript:DomainSQLSynchro()");
+  	}
+  }
 %>
 
 <HTML>
@@ -144,7 +156,7 @@ function DomainSQLSynchro(){
 </script>
 </HEAD>
 <BODY>
-<% 
+<%
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
@@ -156,7 +168,7 @@ out.println(board.printBefore());
 	<tr valign="baseline">
 		<td><img src="<% if(isDomainSql) {
 							out.print(resource.getIcon("JDP.domainSqlIcone"));
-						 } else {	
+						 } else {
 						 	out.print(resource.getIcon("JDP.domainicone"));
 						 }
 					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"></td>
@@ -189,7 +201,28 @@ out.println(board.printBefore());
 		<td class="textePetitBold" nowrap><%=resource.getString("JDP.silverpeasServerURL") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
 	</tr>
-	<% } %>
+    <% if (domObject.getUserDomainQuota().exists()) { %>
+  <tr>
+    <td></td>
+    <td class="textePetitBold" valign="top" nowrap><%=resource.getString("JDP.userDomainQuotaMaxCount") %> :</td>
+    <td align=left valign="baseline" width="100%">
+      <%=domObject.getUserDomainQuota().getMaxCount()%>
+      <br/>
+      <%
+        if (isUserDomainQuotaFull) {
+          %>
+          <fmt:message key="JDP.userDomainQuotaFull" />
+          <%
+        } else {
+          %>
+          <fmt:message key="JDP.userDomainQuotaCurrentCount"><fmt:param value="${domainObject.userDomainQuota.count}" /></fmt:message>
+          <%
+        }
+      %>
+      </td>
+  </tr>
+  <% }
+  } %>
 </table>
 <%
 out.println(board.printAfter());
@@ -229,7 +262,7 @@ out.println(board.printAfter());
 	          arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
     	  }
       }
-  } 	
+  }
   out.println(arrayPane.print());
 %>
 <br>
@@ -258,12 +291,12 @@ out.println(board.printAfter());
           arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
           arrayLineUser.addArrayCellText(subUsers[i][2]);
         }
-  } 	
+  }
   out.println(arrayPaneUser.print());
 %>
 
 </center>
-<% 
+<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
