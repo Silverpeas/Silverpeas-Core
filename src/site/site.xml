@@ -88,6 +88,7 @@
       <item name="Changelog" href="https://www.silverpeas.org/redmine/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
       <item name="Release Notes" href="releasenotes.html" collapse="false"/>
       <item name="Installation" href="installation.html" collapse="false"/>
+      <item name="Native Packages" href="https://www.silverpeas.org/repo/index.html" collapse="false" />
       <item name="Screenshots" href="screenshots.html" collapse="true"/>
       <item name="FAQ" href="faq.html" collapse="true"/>
       <item name="Source Code" href="source-repository.html" collapse="true"/>

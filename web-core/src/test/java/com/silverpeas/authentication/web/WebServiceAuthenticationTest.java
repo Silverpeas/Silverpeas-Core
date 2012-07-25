@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.codec.binary.Base64;
 import static org.hamcrest.Matchers.*;
 import org.junit.Before;
+import org.silverpeas.util.Charsets;
 
 /**
  * Tests on the authentication process when accessing the WEB resources published as REST services.
@@ -70,7 +71,7 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
             get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
   }
-  
+
   @Test
   public void authenticate() throws UnsupportedEncodingException {
     UserFull user = getTestResources().getAUser();
@@ -82,15 +83,11 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
     String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
     assertThat(sessionKey, notNullValue());
   }
-  
+
   private String encodeCredentials(String login, String password) {
     String credentials = login + ":" + password;
-    String encodedCredentials = null;
-    try {
-      encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes("UTF-8")), "UTF-8");
-    } catch (UnsupportedEncodingException ex) {
-      Logger.getLogger(WebServiceAuthenticationTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    String encodedCredentials = new String(Base64.encodeBase64(credentials.getBytes(Charsets.UTF_8)),
+            Charsets.UTF_8);
     return encodedCredentials;
   }
 }
