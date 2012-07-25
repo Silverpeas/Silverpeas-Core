@@ -1,2 +1,15 @@
 # Declare files that will always have LF line endings on checkout.
 *.properties text eol=lf
+*.java text
+*.jsp text
+*.html text
+*.js text
+*.css text
+*.htm text
+*.inc text
+*.txt text
+*.xml text
+*.xsd text
+*.dtd text
+*.tld text
+*.sql text
