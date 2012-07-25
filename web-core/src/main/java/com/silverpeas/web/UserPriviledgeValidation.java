@@ -23,20 +23,26 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.codec.binary.Base64;
+
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -126,7 +132,7 @@ public class UserPriviledgeValidation {
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionId = request.getHeader(HTTP_SESSIONKEY);
     if (!isDefined(sessionId)) {
-      HttpSession httpSession = request.getSession();
+      HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
         sessionId = httpSession.getId();
       }
@@ -147,9 +153,9 @@ public class UserPriviledgeValidation {
   private UserDetail authenticateUser(final HttpServletRequest request) {
     String userCredentials = request.getHeader(HTTP_AUTHORIZATION);
     if (isDefined(userCredentials)) {
-      String decoded = new String(Base64.decodeBase64(userCredentials));
+      String decoded = new String(Base64.decodeBase64(userCredentials), Charsets.UTF_8);
       // the first ':' character is the separator according to the RFC 2617 in basic digest
-      int loginPasswordSeparatorIndex = decoded.indexOf(":");
+      int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
       AdminController adminController = new AdminController(null);
