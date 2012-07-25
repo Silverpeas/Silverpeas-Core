@@ -519,6 +519,9 @@ public class AttachmentServiceTest {
 
   /**
    * Test of reorderAttachments method, of class AttachmentService.
+   * @throws LoginException 
+   * @throws RepositoryException 
+   * @throws IOException 
    */
   @Test
   public void testReorderAttachments() throws LoginException, RepositoryException,

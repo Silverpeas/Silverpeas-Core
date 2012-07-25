@@ -47,6 +47,8 @@ import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -108,12 +110,9 @@ public class DocumentRepository {
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
     Node documentNode = docsNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
-    if(document.isVersioned()) {
-      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
-    }
     converter.fillNode(document, content, documentNode);
-    if(document.isVersioned() && !documentNode.isCheckedOut()) {
-     checkinNode(session, document.getFullJcrPath(), document.getLanguage());
+    if (document.isVersioned()) {
+      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
     }
     document.setId(documentNode.getIdentifier());
     return document.getPk();
@@ -136,6 +135,9 @@ public class DocumentRepository {
     targetDoc.setPK(pk);
     prepareComponentAttachments(session, destination.getInstanceId());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
+    if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
+      checkoutNode(originDocumentNode);
+    }
     session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
@@ -178,14 +180,13 @@ public class DocumentRepository {
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    String path = document.getFullJcrPath();
-    boolean checkinRequired = document.isVersioned() && !isCheckout(session, path);
+    boolean checkinRequired = document.isVersioned() && !documentNode.isCheckedOut();
     if (checkinRequired) {
-      checkoutNode(session, path);
+      checkoutNode(documentNode);
     }
     converter.fillNode(document, null, documentNode);
     if (checkinRequired) {
-      checkinNode(session, path, document.getLanguage());
+      checkinNode(documentNode, document.getLanguage());
     }
   }
 
@@ -200,12 +201,28 @@ public class DocumentRepository {
   public void deleteDocument(Session session, SimpleDocumentPK documentPk) throws
       RepositoryException {
     try {
-      Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-      if (componentNode != null) {
-        componentNode.remove();
-      }
+      Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      deleteDocumentNode(documentNode);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+    }
+  }
+
+  private void deleteDocumentNode(Node documentNode) throws RepositoryException {
+    if (documentNode != null) {
+      if (converter.isVersioned(documentNode)) {
+        VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
+            getVersionHistory(documentNode.getPath());
+        Version root = history.getRootVersion();
+        VersionIterator versions = history.getAllVersions();
+        while (versions.hasNext()) {
+          Version version = versions.nextVersion();
+          if (!version.equals(root)) {
+            history.removeVersion(versions.nextVersion().getName());
+          }
+        }
+      }
+      documentNode.remove();
     }
   }
 
@@ -524,8 +541,11 @@ public class DocumentRepository {
    */
   public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment,
       InputStream content) throws RepositoryException {
-    Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-    converter.addAttachment(componentNode, attachment, content);
+    Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+    if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
+      checkoutNode(documentNode);
+    }
+    converter.addAttachment(documentNode, attachment, content);
   }
 
   /**
@@ -563,11 +583,14 @@ public class DocumentRepository {
    */
   public void removeContent(Session session, SimpleDocumentPK documentPk, String language) throws
       RepositoryException {
-    Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-    converter.removeAttachment(componentNode, language);
-    componentNode = session.getNodeByIdentifier(documentPk.getId());
-    if (!componentNode.hasNodes()) {
-      componentNode.remove();
+    Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+    if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
+      checkoutNode(documentNode);
+    }
+    converter.removeAttachment(documentNode, language);
+    documentNode = session.getNodeByIdentifier(documentPk.getId());
+    if (!documentNode.hasNodes()) {
+      deleteDocumentNode(documentNode);
     }
   }
 
@@ -580,7 +603,8 @@ public class DocumentRepository {
    */
   public void lock(Session session, SimpleDocument document) throws RepositoryException {
     if (document.isVersioned()) {
-      checkoutNode(session, document.getFullJcrPath());
+      Node documentNode = session.getNodeByIdentifier(document.getId());
+      checkoutNode(documentNode);
     }
   }
 
@@ -589,12 +613,19 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
-   * @param restore 
+   * @param restore
    * @throws RepositoryException
    */
   public void unlock(Session session, SimpleDocument document, boolean restore) throws
       RepositoryException {
-    if (document.isVersioned() && session.getNodeByIdentifier(document.getId()).isCheckedOut()) {
+    Node documentNode;
+    try {
+      documentNode = session.getNodeByIdentifier(document.getId());
+    } catch (ItemNotFoundException ex) {
+      //Node may have been deleted after removing all its content.
+      return;
+    }
+    if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
         Version lastVersion = session.getWorkspace().getVersionManager().getVersionHistory(document.
             getFullJcrPath()).getAllVersions().nextVersion();
@@ -602,43 +633,31 @@ public class DocumentRepository {
         session.getWorkspace().getVersionManager().restore(document.getFullJcrPath(), lastVersion,
             true);
       } else {
-        checkinNode(session, document.getFullJcrPath(), document.getLanguage());
+        checkinNode(documentNode, document.getLanguage());
       }
     }
   }
 
   /**
-   * Indicates if the current document is checked out.
-   *
-   * @param session
-   * @param path
-   * @return true if the current document is checked out - false otherwise.
-   * @throws RepositoryException
-   */
-  boolean isCheckout(Session session, String path) throws RepositoryException {
-    return session.getWorkspace().getVersionManager().isCheckedOut(path);
-  }
-
-  /**
    * Check the document out.
    *
-   * @param session
-   * @param path
+   * @param node the node to checkout.
    * @throws RepositoryException
    */
-  void checkoutNode(Session session, String path) throws RepositoryException {
-    session.getWorkspace().getVersionManager().checkout(path);
+  void checkoutNode(Node node) throws RepositoryException {
+    node.getSession().getWorkspace().getVersionManager().checkout(node.getPath());
   }
 
   /**
    * Check the document in.
    *
-   * @param session
-   * @param path
+   * @param node the node to checkin.
+   * @return the document for this new version.
    * @throws RepositoryException
    */
-  SimpleDocument checkinNode(Session session, String path, String lang) throws RepositoryException {
-    Version currentVersion = session.getWorkspace().getVersionManager().checkin(path);
+  SimpleDocument checkinNode(Node node, String lang) throws RepositoryException {
+    Version currentVersion = node.getSession().getWorkspace().getVersionManager().checkin(node.
+        getPath());
     return converter.convertNode(currentVersion, lang);
   }
 }

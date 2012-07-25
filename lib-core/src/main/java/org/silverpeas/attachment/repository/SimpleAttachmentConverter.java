@@ -25,6 +25,7 @@ package org.silverpeas.attachment.repository;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.util.jcr.AbstractJcrConverter;
 

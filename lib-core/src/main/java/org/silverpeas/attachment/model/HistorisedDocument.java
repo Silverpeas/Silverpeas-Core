@@ -31,9 +31,13 @@ public class HistorisedDocument extends SimpleDocument {
 
   private List<SimpleDocument> history;
 
-  public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      SimpleAttachment file) {
+  public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, SimpleAttachment file) {
     super(pk, foreignId, order, true, file);
+  }
+
+  public HistorisedDocument(SimpleDocumentPK pk, String foreignId, int order, String owner,
+      SimpleAttachment file) {
+    super(pk, foreignId, order, true, owner, file);
   }
 
   public HistorisedDocument() {

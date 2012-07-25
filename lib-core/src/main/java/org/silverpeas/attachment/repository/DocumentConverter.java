@@ -30,10 +30,11 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
+
+import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -55,29 +56,45 @@ class DocumentConverter extends AbstractJcrConverter {
 
   /**
    * Convert the document history in a list of SimpleDocument.
+   *
    * @param session
    * @param path
    * @param lang
    * @return
-   * @throws RepositoryException 
+   * @throws RepositoryException
    */
-  List<SimpleDocument> convertDocumentHistory(Session session, String path, String lang) throws
+  List<SimpleDocument> convertDocumentHistory(Node node, String lang) throws
       RepositoryException {
-    VersionHistory history = session.getWorkspace().getVersionManager().getVersionHistory(path);
-    VersionIterator versionsIterator = history.getAllVersions();
-    List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
-        getSize());
-    while (versionsIterator.hasNext()) {
-      Version version = versionsIterator.nextVersion();
-      documentHistory.add(fillDocument(version, lang));
+    try {
+      VersionHistory history = node.getSession().getWorkspace().getVersionManager().
+          getVersionHistory(node.getPath());
+      Version root = history.getRootVersion();
+      String rootId = "";
+      if(root != null) {
+        rootId = root.getIdentifier();
+      }
+      VersionIterator versionsIterator = history.getAllVersions();
+      List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
+          getSize());
+      while (versionsIterator.hasNext()) {
+        Version version = versionsIterator.nextVersion();
+        if (!version.getIdentifier().equals(rootId)) {
+          documentHistory.add(fillDocument(version.getNodes().nextNode(), lang));
+        }
+      }
+      return documentHistory;
+    } catch (RepositoryException ex) {
+      if (ex.getCause() instanceof NoSuchItemStateException) {
+        return new ArrayList<SimpleDocument>(0);
+      }
+      throw ex;
     }
-    return documentHistory;
   }
 
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
     if (isVersioned(node)) {
       HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      document.setHistory(convertDocumentHistory(node.getSession(), document.getFullJcrPath(), lang));
+      document.setHistory(convertDocumentHistory(node, lang));
       return document;
     }
     return fillDocument(node, lang);
@@ -160,7 +177,7 @@ class DocumentConverter extends AbstractJcrConverter {
     } else if (documentNode.hasNode(attachmentNodeName)) {
       Node attachmentNode = documentNode.getNode(attachmentNodeName);
       attachmentConverter.fillNode(document.getFile(), attachmentNode);
-    }    
+    }
   }
 
   public void addAttachment(Node documentNode, SimpleAttachment attachment, InputStream content)
@@ -183,7 +200,7 @@ class DocumentConverter extends AbstractJcrConverter {
     }
   }
 
-  boolean isVersioned(Node node) throws RepositoryException {
+  public boolean isVersioned(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED);
   }
 }
