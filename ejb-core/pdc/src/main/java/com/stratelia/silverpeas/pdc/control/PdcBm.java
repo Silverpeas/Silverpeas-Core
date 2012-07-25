@@ -370,6 +370,9 @@ public interface PdcBm {
 
   public void deletePosition(int positionId, String sComponentId)
       throws PdcException;
+  
+  public void addPositions(List<ClassifyPosition> positions, int objectId, String instanceId)
+      throws PdcException;
 
   public void copyPositions(int fromObjectId, String fromInstanceId,
       int toObjectId, String toInstanceId) throws PdcException;

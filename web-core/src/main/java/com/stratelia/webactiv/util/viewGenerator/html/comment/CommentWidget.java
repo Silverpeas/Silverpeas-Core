@@ -239,8 +239,8 @@ public abstract class CommentWidget extends TagSupport {
     String script = "$('#commentaires').comment({" + "uri: '" + context + "/services/comments/"
             + getComponentId() + "/" + getResourceType() + "/" + getResourceId()
             + "', author: { avatar: '" + URLManager.getApplicationURL() + currentUser.getAvatar()
-            + "', id: '" + getUserId()
-            + "'}, update: { activated: function( comment ) {"
+            + "', id: '" + getUserId() + "', anonymous: "+currentUser.isAnonymous()+"}, "
+            + "update: { activated: function( comment ) {"
             + "if (" + canBeUpdated + "|| (comment.author.id === '" + getUserId() + "'))"
             + "return true; else return false;},icon: '" + getUpdateIconURL() + "'," + "altText: '"
             + settings.getString("GML.update") + "'},"

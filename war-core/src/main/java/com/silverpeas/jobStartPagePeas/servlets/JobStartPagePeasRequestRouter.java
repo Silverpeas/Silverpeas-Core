@@ -55,7 +55,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -268,10 +267,6 @@ public class JobStartPagePeasRequestRouter extends
       AdminException {
     String destination = null;
 
-    ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-    ResourceLocator resourcePeasCore = new ResourceLocator("license.license", "");
-    String licenseCoupercoller = resourcePeasCore.getString("coupercoller");
-
     if (function.equals("GoToComponent")) {
       String compoId = request.getParameter("ComponentId");
       jobStartPageSC.setManagedInstanceId(compoId);
@@ -393,125 +388,16 @@ public class JobStartPagePeasRequestRouter extends
     } else if (function.equals("PlaceComponentAfter")) {
       ComponentInst compoint1 = jobStartPageSC.getComponentInst(
           jobStartPageSC.getManagedInstanceId());
-      request.setAttribute("jobStartPageSC", jobStartPageSC);
       request.setAttribute("currentComponentName", compoint1.getLabel());
       request.setAttribute("brothers", jobStartPageSC.getBrotherComponents(false));
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
       request.setAttribute("currentSpace", spaceint1);
-      request.setAttribute("selectedSpace", spaceint1);
-      request.setAttribute("spaces", jobStartPageSC.getUserManageableSpacesIds());
-      Boolean validLicense = Boolean.valueOf(getLicense(licenseCoupercoller));
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasRequestRouter.PlaceComponentAfter()",
-          "root.MSG_GEN_PARAM_VALUE", "validLicense= " + validLicense);
-      request.setAttribute("validLicense", validLicense);
       destination = "/jobStartPagePeas/jsp/placeComponentAfter.jsp";
     } else if (function.equals("EffectivePlaceComponent")) {
-      SpaceInst currentSpace = jobStartPageSC.getSpaceInstById();
-      ComponentInst compoint1 = jobStartPageSC.getComponentInst(
-          jobStartPageSC.getManagedInstanceId());
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-          "root.MSG_GEN_PARAM_VALUE", "Managed spaceId= "
-          + jobStartPageSC.getManagedSpaceId());
-      SpaceInst destinationSpace = jobStartPageSC.getSpaceInstById(request.getParameter(
-          "DestinationSpace"));
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-          "root.MSG_GEN_PARAM_VALUE", "espace source: " + currentSpace.getId()
-          + " espace dest=" + destinationSpace.getId());
-      // Moving only if destination space and current space are different
-      if (!destinationSpace.getId().equals(currentSpace.getId())) {
-        SilverTrace.info("jobStartPagePeas",
-            "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-            "root.MSG_GEN_PARAM_VALUE", "espace source: "
-            + jobStartPageSC.isSpaceInMaintenance(currentSpace.getId().substring(2))
-            + " espace dest="
-            + jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId().substring(2)));
-        // Destination and source space in maintenance = OK
-        if ((jobStartPageSC.isSpaceInMaintenance(destinationSpace.getId().substring(2)) && jobStartPageSC
-            .
-            isSpaceInMaintenance(currentSpace.getId().substring(2)))
-            ||
-            jobStartPageSC.isAppInMaintenance()) {
-          // Moving component to space
-          SilverTrace.info("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-              "root.MSG_GEN_PARAM_VALUE", "component = " + compoint1.getId()
-              + " espace dest:" + destinationSpace.getId().substring(2)
-              + " componentBefore="
-              + request.getParameter("ComponentBefore"));
-          jobStartPageSC.setMoveComponentToSpace(compoint1, request
-              .getParameter("DestinationSpace").
-              substring(2), request.getParameter("ComponentBefore"));
-          SilverTrace.info("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-              "root.MSG_GEN_PARAM_VALUE", "Retour OK");
-          refreshNavBar(jobStartPageSC, request);
-          request.setAttribute("urlToReload", "StartPageInfo");
-          destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-        } else {
-          // Destination and source space NOT in maintenance
-          String spaceDest = request.getParameter("DestinationSpace");
-          SilverTrace.info("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "Spaces not in maintenance Espace destination= " + spaceDest);
-          SpaceInst selectedSpace = jobStartPageSC.getSpaceInstById(spaceDest);
-          request.setAttribute("error", resource.getString("JSPP.SpacesNotInMaintenance"));
-          request.setAttribute("currentComponentName", compoint1.getLabel());
-          request.setAttribute("currentSpace", currentSpace);
-          request.setAttribute("selectedSpace", selectedSpace);
-          request.setAttribute("spaces", jobStartPageSC.getUserManageableSpacesIds());
-          request.setAttribute("jobStartPageSC", jobStartPageSC);
-          Boolean validLicense = Boolean.valueOf(getLicense(licenseCoupercoller));
-          SilverTrace.info("jobStartPagePeas",
-              "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-              "root.MSG_GEN_PARAM_VALUE", "validLicense= " + validLicense);
-          request.setAttribute("validLicense", validLicense);
-          // Get all components of the selected space
-          request.setAttribute("brothers",
-              jobStartPageSC.getComponentsOfSpace(selectedSpace.getId()));
-          destination = "/jobStartPagePeas/jsp/placeComponentAfter.jsp";
-        }
-      } else {
-        jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
-        refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "GoToCurrentComponent");
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
-      }
-    } else if (function.equals("ChangeDestinationSpace")) {
-      // Get current component
-      ComponentInst compoint1 = jobStartPageSC.getComponentInst(
-          jobStartPageSC.getManagedInstanceId());
-      // Get selected space
-      String spaceDest = request.getParameter("DestinationSpace");
-      SpaceInst selectedSpace = jobStartPageSC.getSpaceInstById(spaceDest);
-      SpaceInst currentSpace = jobStartPageSC.getSpaceInstById();
-
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasRequestRouter.ChangeDestinationSpace()",
-          "root.MSG_GEN_PARAM_VALUE", "currentSpaceId=" + currentSpace.getId()
-          + "selectedSpaceId=" + selectedSpace.getId());
-      request.setAttribute("jobStartPageSC", jobStartPageSC);
-      request.setAttribute("currentComponentName", compoint1.getLabel());
-      request.setAttribute("currentSpace", currentSpace);
-      request.setAttribute("selectedSpace", selectedSpace);
-      request.setAttribute("spaces", jobStartPageSC.getUserManageableSpacesIds());
-      Boolean validLicense = Boolean.valueOf(getLicense(licenseCoupercoller));
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasRequestRouter.EffectivePlaceComponent()",
-          "root.MSG_GEN_PARAM_VALUE", "validLicense= " + validLicense);
-      request.setAttribute("validLicense", validLicense);
-      if (selectedSpace.getId().equals(currentSpace.getId())) {
-        // Get only brothers components of the current component
-        request.setAttribute("brothers", jobStartPageSC.getBrotherComponents(false));
-      } else {
-        // Get all components of the selected space
-        request
-            .setAttribute("brothers", jobStartPageSC.getComponentsOfSpace(selectedSpace.getId()));
-      }
-      destination = "/jobStartPagePeas/jsp/placeComponentAfter.jsp";
+      jobStartPageSC.setComponentPlace(request.getParameter("ComponentBefore"));
+      refreshNavBar(jobStartPageSC, request);
+      request.setAttribute("urlToReload", "GoToCurrentComponent");
+      destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("DeleteUsersGroupsProfileInstance")) {
       jobStartPageSC.deleteInstanceProfile();
       destination = getDestination("CurrentRoleInstance", jobStartPageSC,
@@ -556,6 +442,21 @@ public class JobStartPagePeasRequestRouter extends
       }
       destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
           + "Idle.jsp?message=REFRESHCLIPBOARD";
+    } else if ("Cut".equals(function)) {
+      String objectId = request.getParameter("Id");
+      String objectType = request.getParameter("Type");
+      try {
+        if ("Space".equals(objectType)) {
+          jobStartPageSC.cutSpace(objectId);
+        } else if ("Component".equals(objectType)) {
+          jobStartPageSC.cutComponent(objectId);
+        }
+      } catch (Exception e) {
+        throw new AdminException("JobStartPagePeasRequestRouter.getDestination()",
+            SilverpeasException.ERROR, "jobStartPagePeas.CANT_CUT_ITEM", e);
+      }
+      destination = URLManager.getURL(URLManager.CMP_CLIPBOARD, null, null)
+          + "Idle.jsp?message=REFRESHCLIPBOARD";
     } else if (function.startsWith("paste")) {
       try {
         jobStartPageSC.paste();
@@ -569,7 +470,7 @@ public class JobStartPagePeasRequestRouter extends
       if (StringUtil.isDefined(jobStartPageSC.getManagedSpaceId())) {
         destination = "/jobStartPagePeas/jsp/startPageInfo.jsp";
       } else {
-        destination = "/jobStartPagePeas/jsp/welcome.jsp";
+        destination = getDestination("welcome", jobStartPageSC, request);
       }
     } else if (function.equals("OpenComponent")) {
       // check if user can update it
@@ -629,8 +530,8 @@ public class JobStartPagePeasRequestRouter extends
       }
     } else if (function.equals("PlaceSpaceAfter")) {
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
-      request.setAttribute("currentSpaceName", spaceint1.getName());
-      request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(false));
+      request.setAttribute("CurrentSpace", spaceint1);
+      request.setAttribute("Brothers", jobStartPageSC.getBrotherSpaces(false));
       destination = "/jobStartPagePeas/jsp/placeSpaceAfter.jsp";
     } else if (function.equals("EffectivePlaceSpaceAfter")) {
       jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
@@ -1018,8 +919,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("isUserAdmin", Boolean.valueOf(jobStartPageSC.isUserAdmin()));
         request.setAttribute("globalMode", Boolean.valueOf(jobStartPageSC.isAppInMaintenance()));
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
-        request.setAttribute("IsBasketEnable", Boolean.valueOf(
-            JobStartPagePeasSettings.isBasketEnable));
+        request.setAttribute("IsBasketEnable", JobStartPagePeasSettings.isBasketEnable);
       } else if ("/jobStartPagePeas/jsp/startPageInfo.jsp".equals(destination)) {
         SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById(); // espace
         // courant
@@ -1028,8 +928,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("Description", spaceint1.getDescription());
         String spaceId = jobStartPageSC.getManagedSpaceId();
         request.setAttribute("currentSpaceId", spaceId);
-        Boolean mode = Boolean.valueOf(jobStartPageSC.isSpaceInMaintenance(spaceId));
-        request.setAttribute("mode", mode.toString());
+        request.setAttribute("MaintenanceState", jobStartPageSC.getCurrentSpaceMaintenanceState());
 
         setSpacesNameInRequest(spaceint1, jobStartPageSC, request);
 
@@ -1037,8 +936,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("NameProfile", jobStartPageSC.getSpaceProfileName(spaceint1));
         request.setAttribute("IsBackupEnable", jobStartPageSC.isBackupEnable());
 
-        request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-            JobStartPagePeasSettings.isInheritanceEnable));
+        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
 
         request.setAttribute("Space", spaceint1);
       } else if ("/jobStartPagePeas/jsp/componentInfo.jsp".equals(destination)) {
@@ -1130,27 +1028,6 @@ public class JobStartPagePeasRequestRouter extends
       }
     }
     return hiddenParameters;
-  }
-
-  private boolean getLicense(String code) {
-    boolean validSequence = true;
-    String serial = "100406181111";
-    try {
-      for (int i = 0; i < 6 && validSequence; i++) {
-        String groupe = code.substring(i * 6, i * 6 + 6);
-        int total = 0;
-        for (int j = 0; j < groupe.length(); j++) {
-          String valeur = groupe.substring(j, j + 1);
-          total += Integer.parseInt(valeur);
-        }
-        if (total != Integer.valueOf(serial.substring(i * 2, i * 2 + 2))) {
-          validSequence = false;
-        }
-      }
-    } catch (Exception e) {
-      validSequence = false;
-    }
-    return validSequence;
   }
 
   private void request2SpaceInst(SpaceInst spaceInst, HttpServletRequest request) {
@@ -1246,6 +1123,7 @@ public class JobStartPagePeasRequestRouter extends
           "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
       hiddenParam.getLabel().put(lang, resource.getString("JSPP.hiddenComponent"));
       hiddenParam.getHelp().put(lang, resource.getString("Help.hiddenComponent"));
+      hiddenParam.getWarning().put(lang, resource.getString("Warning.hiddenComponent"));
       hiddenParam.setOrder(-5);
       hiddenParam.setMandatory(false);
       hiddenParam.setUpdatable("always");
@@ -1263,6 +1141,7 @@ public class JobStartPagePeasRequestRouter extends
           "com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle", lang);
       publicParam.getLabel().put(lang, resource.getString("JSPP.publicComponent"));
       publicParam.getHelp().put(lang, resource.getString("Help.publicComponent"));
+      publicParam.getWarning().put(lang, resource.getString("Warning.publicComponent"));
       publicParam.setOrder(-6);
       publicParam.setMandatory(false);
       publicParam.setUpdatable("always");
@@ -1376,6 +1255,7 @@ public class JobStartPagePeasRequestRouter extends
     request.setAttribute("JobPeas", localizedComponent.getName());
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
+    request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());
     request.setAttribute("Scope", sessionController.getScope());
   }
 }

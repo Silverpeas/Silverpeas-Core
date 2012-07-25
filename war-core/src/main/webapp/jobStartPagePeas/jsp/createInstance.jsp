@@ -66,6 +66,9 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 			checked = "checked";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+"/>");
+    if (StringUtil.isDefined(parameter.getWarning())) {
+      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    }
 	}
 	else if (isSelect)
 	{
@@ -158,9 +161,11 @@ browseBar.setPath(resource.getString("JSPP.creationInstance"));
 out.println(gef.getLookStyleSheet());
 %>
 <view:includePlugin name="qtip"/>
+<view:includePlugin name="popup"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="javascript/component.js"></script>
+<script type="text/javascript" src="javascript/messages.js"></script>
 <script type="text/javascript">
 
 function B_ANNULER_ONCLICK() {
@@ -176,9 +181,9 @@ function B_VALIDER_ONCLICK() {
 			parameter = (LocalizedParameter) parameters.get(nI);
 			if (parameter.isCheckbox()) {
 			%>
-                if (document.infoInstance.<%=parameter.getName()%>.checked) 
+                if (document.infoInstance.<%=parameter.getName()%>.checked)
 		        	document.infoInstance.<%=parameter.getName()%>.value = "yes";
-                 else 
+                 else
                   document.infoInstance.<%=parameter.getName()%>.value = "no";
 		    <%
 			}

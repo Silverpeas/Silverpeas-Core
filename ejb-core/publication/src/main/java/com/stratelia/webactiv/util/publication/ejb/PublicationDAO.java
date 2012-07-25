@@ -44,7 +44,7 @@ import java.util.Map;
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.publication.socialNetwork.SocialInformationPublication;
+import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -642,6 +642,11 @@ public class PublicationDAO {
 
   private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
       PublicationPK pubPK) throws SQLException {
+    return resultSet2PublicationDetail(rs, pubPK, false);
+  }
+
+  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
+      PublicationPK pubPK, boolean getSort) throws SQLException {
     // SilverTrace.debug("publication",
     // "PublicationDAO.resultSet2PublicationDetail()",
     // "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
@@ -758,6 +763,10 @@ public class PublicationDAO {
               +
               pk + " : " + e.toString());
     }
+    int order = -1;
+    if (getSort) {
+      order = rs.getInt("pubOrder");
+    }
     pub = new PublicationDetail(pk, name, description, creationDate, beginDate,
         endDate, creatorId, importance, version, keywords, content, status,
         updateDate, updaterId, validateDate, validatorId,
@@ -771,6 +780,7 @@ public class PublicationDAO {
     pub.setCloneStatus(cloneStatus);
     pub.setLanguage(lang);
     pub.setDraftOutDate(draftOutDate);
+    pub.setExplicitRank(order);
     return pub;
   }
 
@@ -802,11 +812,7 @@ public class PublicationDAO {
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
     StringBuilder selectStatement = new StringBuilder(QueryStringFactory.getSelectByFatherPK(
-        pubPK.getTableName(), filterOnVisibilityPeriod));
-    if (userId != null) {
-      selectStatement.append(" AND (P.pubUpdaterId = ? OR P.pubCreatorId = ? )");
-    }
-    selectStatement.append(" ORDER BY F.pubOrder ASC");
+        pubPK.getTableName(), filterOnVisibilityPeriod, userId));
     if (sorting != null) {
       selectStatement.append(", ").append(sorting);
     }
@@ -821,6 +827,11 @@ public class PublicationDAO {
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
       int index = 3;
+      if (userId != null) {
+        prepStmt.setString(3, userId);
+        prepStmt.setString(4, userId);
+        index = 5;
+      }
       if (filterOnVisibilityPeriod) {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
@@ -830,29 +841,25 @@ public class PublicationDAO {
         hourNow = DateUtil.formatTime(now);
         SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
             "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, hourNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, hourNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, dateNow);
-        prepStmt.setString(13, hourNow);
-        prepStmt.setString(14, hourNow);
-        index = 15;
+        prepStmt.setString(index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, hourNow);
       }
-      if (userId != null) {
-        prepStmt.setString(index, userId);
-        prepStmt.setString(index + 1, userId);
-      }
+      
       rs = prepStmt.executeQuery();
       List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs, pubPK, true);
         list.add(pub);
       }
       return list;

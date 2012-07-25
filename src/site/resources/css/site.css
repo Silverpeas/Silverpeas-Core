@@ -29,14 +29,13 @@ body#topBarEnabled {
   margin:0;
   color:#404040;
   padding-left:0;
-  font-family:arial;
+  font-family: Arial, Helvetica, sans-serif;
   position:relative;
 }
 
 
 p {
 	color:#444;
-	font-family: Arial, Helvetica, sans-serif;
 	margin-bottom:8px;
 }
 
@@ -54,6 +53,7 @@ pre.prettyprint {
 	display: block;
 	margin-top: 10px;
 	padding: 10px 0 10px 20px;
+	margin-left: 70px;
 	
 }
 
@@ -275,7 +275,6 @@ ul.menu li a:hover {
 ul.menu  {
 	position:absolute;
 	list-style-type:none;
-	font-family: arial;
 	left: 222px; 
 	top: 0;
 	margin:0;
@@ -345,7 +344,6 @@ a.externalLink[href^="http"] {
     margin: 8px 0 4px 0;
 	list-style: disc outside none;
 	padding: 0.1px 0 2.2px 2em;
-	font-family: Arial, Helvetica, sans-serif;
 
 }
 
@@ -375,7 +373,6 @@ h2 {
     background: url("../images/puce-pate.gif") no-repeat scroll 0 4px transparent;
     border-bottom: 1px solid #CCCCCC;
     color: #aaa;
-    font-family: Arial,Helvetica,sans-serif;
     font-size: 24px;
     line-height: 36px;
     margin-bottom: 15px;
@@ -387,7 +384,6 @@ h2 {
 
 .span9, h3 {
 	color:#888;
-	font-family: Arial, Helvetica, sans-serif;
 	font-size:15px;
 }
 
@@ -421,8 +417,9 @@ tt {
 }
 
 #bodyColumn {
-	margin-right:20px;
-	margin-top:-29px;
+	margin-left: 260px;
+	width:auto;
+  margin-top: -29px;
 }
 
 .container-fluid > .content {
@@ -503,7 +500,6 @@ img.poweredBy {
 #home h5, #presentation h5 {
     background-color: transparent;
     color: #333333;
-    font-family: Arial,sans-serif;
     font-size: 19px;
     font-weight: 100;
     line-height: 24px;
@@ -518,7 +514,6 @@ img.poweredBy {
 }
 
 #home {
-    font-family: arial,sans-serif;
     font-size: 13px;
 	background: url("../images/header-bg-index.jpg") repeat-x scroll 0 0 transparent;
     min-height: 400px;

@@ -12,7 +12,7 @@ public class UserNameGenerator {
   
   public static span generate(UserDetail user, String currentUserId) {
     span userName = new span(user.getDisplayedName());
-    if (!user.getId().equals(currentUserId)) {
+    if (!user.getId().equals(currentUserId) && !UserDetail.isAnonymousUser(currentUserId)) {
       userName.setClass("userToZoom");
       userName.addAttribute("rel", user.getId());
     }

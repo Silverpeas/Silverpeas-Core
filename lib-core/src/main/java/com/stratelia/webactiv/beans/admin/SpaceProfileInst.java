@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpaceProfileInst implements Serializable {
+  
+  public static final String SPACE_MANAGER = "Manager";
 
   private static final long serialVersionUID = 1L;
   private String id;
@@ -172,6 +174,10 @@ public class SpaceProfileInst implements Serializable {
 
   public void setInherited(boolean isInherited) {
     this.isInherited = isInherited;
+  }
+  
+  public boolean isManager() {
+    return SPACE_MANAGER.equalsIgnoreCase(name);
   }
 
   @Override

@@ -60,7 +60,7 @@ public class UserServiceLegacy implements UserService {
   void init() {
       multilang =
         new ResourceLocator(
-        "com.silverpeas.socialnetwork.multilang.registration", DisplayI18NHelper
+        "com.silverpeas.social.multilang.registration", DisplayI18NHelper
         .getDefaultLanguage());
   }
 
