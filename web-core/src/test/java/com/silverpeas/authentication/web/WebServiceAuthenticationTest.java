@@ -83,6 +83,24 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
     String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
     assertThat(sessionKey, notNullValue());
   }
+  
+  @Test
+  public void accessWebResourcesInAnOpenedSession() throws UnsupportedEncodingException {
+    UserFull user = getTestResources().getAUser();
+    ClientResponse response = resource().path(WEB_RESOURCE_PATH).
+            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+            accept(MediaType.APPLICATION_JSON).
+            get(ClientResponse.class);
+    String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
+    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    
+    response = resource().path(WEB_RESOURCE_PATH).
+            header(HTTP_SESSIONKEY, sessionKey).
+            accept(MediaType.APPLICATION_JSON).
+            get(ClientResponse.class);
+    assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+  }
 
   private String encodeCredentials(String login, String password) {
     String credentials = login + ":" + password;
