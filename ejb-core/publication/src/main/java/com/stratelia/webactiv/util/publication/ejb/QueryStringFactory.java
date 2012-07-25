@@ -26,7 +26,7 @@ package com.stratelia.webactiv.util.publication.ejb;
 
 import com.silverpeas.util.StringUtil;
 
-public class QueryStringFactory extends Object {
+public class QueryStringFactory {
 
   /**
    * Hashtable which contains the specifics code encoded as key and their values are right code
@@ -64,7 +64,7 @@ public class QueryStringFactory extends Object {
         query.append("SELECT DISTINCT(P.pubId), P.infoId, P.pubName, P.pubDescription, ");
         query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
         query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-        query.append("	P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
+        query.append("P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
         query.append("P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, ");
         query
             .append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
@@ -101,7 +101,7 @@ public class QueryStringFactory extends Object {
         return selectByFatherPK;
       }
     }
-    
+
     String orderClause = " ORDER BY F.pubOrder ASC";
 
     StringBuilder query = new StringBuilder();
@@ -137,7 +137,7 @@ public class QueryStringFactory extends Object {
         return selectByFatherPKPeriodSensitive;
       }
     }
-    
+
     // adding order by clause
     selectByFatherPK += orderClause;
     if (StringUtil.isDefined(userId)) {
