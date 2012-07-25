@@ -23,9 +23,16 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getLoadRow;
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId;
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByFatherPK;
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByName;
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByNameAndNodeId;
+import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectNotInFatherPK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -41,8 +48,11 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 public class QueryStringFactoryTest extends AbstractTestDao {
 
-  private final String TABLE_NAME = "@#@TABLE_NAME@#@";
-  private final int NB_EXECUTIONS = 3;
+  private Connection dataBaseConnection = null;
+
+  private final String TABLE_NAME = "SB_Publication_Publi";
+  private final String USER_ID = "USER_ID";
+  private final int NB_EXECUTIONS = 5;
 
   public QueryStringFactoryTest() {
   }
@@ -56,11 +66,8 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByBeginDateDescAndStatusAndNotLinkedToFatherId() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query =
-          QueryStringFactory.getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(TABLE_NAME);
-
-      assertQueryStructure(query, "testGetSelectByBeginDateDescAndStatusAndNotLinkedToFatherId");
-      assertQueryExecution(query);
+      assertQuery(getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(TABLE_NAME),
+          "testGetSelectByBeginDateDescAndStatusAndNotLinkedToFatherId");
     }
   }
 
@@ -68,15 +75,12 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByFatherPK_1() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      String query = QueryStringFactory.getSelectByFatherPK(TABLE_NAME, false, null);
-
-      assertQueryStructure(query, "testGetSelectByFatherPK_false");
-      assertQueryExecution(query);
-
-      query = QueryStringFactory.getSelectByFatherPK(TABLE_NAME, true, null);
-
-      assertQueryStructure(query, "testGetSelectByFatherPK_true");
-      assertQueryExecution(query);
+      assertQuery(getSelectByFatherPK(TABLE_NAME, false, null), "testGetSelectByFatherPK_false");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, false, USER_ID),
+          "testGetSelectByFatherPK_false_userId");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, true, null), "testGetSelectByFatherPK_true");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, true, USER_ID),
+          "testGetSelectByFatherPK_true_userId");
     }
   }
 
@@ -84,15 +88,12 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByFatherPK_2() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      String query = QueryStringFactory.getSelectByFatherPK(TABLE_NAME, true, null);
-
-      assertQueryStructure(query, "testGetSelectByFatherPK_true");
-      assertQueryExecution(query);
-
-      query = QueryStringFactory.getSelectByFatherPK(TABLE_NAME, false, null);
-
-      assertQueryStructure(query, "testGetSelectByFatherPK_false");
-      assertQueryExecution(query);
+      assertQuery(getSelectByFatherPK(TABLE_NAME, true, null), "testGetSelectByFatherPK_true");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, true, USER_ID),
+          "testGetSelectByFatherPK_true_userId");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, false, null), "testGetSelectByFatherPK_false");
+      assertQuery(getSelectByFatherPK(TABLE_NAME, false, USER_ID),
+          "testGetSelectByFatherPK_false_userId");
     }
   }
 
@@ -100,11 +101,9 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByFatherPK_3() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query = QueryStringFactory.getSelectByFatherPK(TABLE_NAME);
-
-      assertThat(query, is(QueryStringFactory.getSelectByFatherPK(TABLE_NAME, true, null)));
-      assertQueryStructure(query, "testGetSelectByFatherPK_true");
-      assertQueryExecution(query);
+      final String query = getSelectByFatherPK(TABLE_NAME);
+      assertThat(query, is(getSelectByFatherPK(TABLE_NAME, true, null)));
+      assertQuery(query, "testGetSelectByFatherPK_true");
     }
   }
 
@@ -112,10 +111,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectNotInFatherPK() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query = QueryStringFactory.getSelectNotInFatherPK(TABLE_NAME);
-
-      assertQueryStructure(query, "testGetSelectNotInFatherPK");
-      assertQueryExecution(query);
+      assertQuery(getSelectNotInFatherPK(TABLE_NAME), "testGetSelectNotInFatherPK");
     }
   }
 
@@ -123,10 +119,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetLoadRow() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query = QueryStringFactory.getLoadRow(TABLE_NAME);
-
-      assertQueryStructure(query, "testGetLoadRow");
-      assertQueryExecution(query);
+      assertQuery(getLoadRow(TABLE_NAME), "testGetLoadRow");
     }
   }
 
@@ -134,10 +127,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByName() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query = QueryStringFactory.getSelectByName();
-
-      assertQueryStructure(query, "testGetSelectByName");
-      assertQueryExecution(query);
+      assertQuery(getSelectByName(), "testGetSelectByName");
     }
   }
 
@@ -145,11 +135,19 @@ public class QueryStringFactoryTest extends AbstractTestDao {
   public void testGetSelectByNameAndNodeId() throws Exception {
     for (int i = 0; i < NB_EXECUTIONS; i++) {
 
-      final String query = QueryStringFactory.getSelectByNameAndNodeId();
-
-      assertQueryStructure(query, "testGetSelectByNameAndNodeId");
-      assertQueryExecution(query);
+      assertQuery(getSelectByNameAndNodeId(), "testGetSelectByNameAndNodeId");
     }
+  }
+
+  /**
+   * Checking a query
+   * @param query
+   * @param fileNameContainingExpectedQueryStructureResult
+   */
+  private void assertQuery(final String query,
+      final String fileNameContainingExpectedQueryStructureResult) throws Exception {
+    assertQueryStructure(query, fileNameContainingExpectedQueryStructureResult);
+    assertQueryExecution(query);
   }
 
   /**
@@ -181,9 +179,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      prepStmt =
-          getConnection().getConnection().prepareStatement(
-              query.replaceAll(TABLE_NAME, "SB_Publication_Publi"));
+      prepStmt = getDataBaseConnection().prepareStatement(query);
       String lastQueryPart = "";
       int paramCount = 1;
       final String dummyString = "dummyString";
@@ -206,5 +202,12 @@ public class QueryStringFactoryTest extends AbstractTestDao {
     } finally {
       DBUtil.close(rs, prepStmt);
     }
+  }
+
+  private Connection getDataBaseConnection() throws Exception {
+    if (dataBaseConnection == null) {
+      dataBaseConnection = getConnection().getConnection();
+    }
+    return dataBaseConnection;
   }
 }
