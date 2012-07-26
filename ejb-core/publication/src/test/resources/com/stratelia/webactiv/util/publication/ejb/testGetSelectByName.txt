@@ -1,0 +1,1 @@
+SELECT * FROM sb_publication_publi WHERE pubName = ? AND instanceId = ?
