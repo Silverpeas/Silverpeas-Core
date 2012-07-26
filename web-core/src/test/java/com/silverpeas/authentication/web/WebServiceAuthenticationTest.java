@@ -85,7 +85,7 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
   }
   
   @Test
-  public void accessWebResourcesInAnOpenedSession() throws UnsupportedEncodingException {
+  public void accessWebResourcesInAnOpenedSession() {
     UserFull user = getTestResources().getAUser();
     ClientResponse response = resource().path(WEB_RESOURCE_PATH).
             header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
@@ -100,6 +100,38 @@ public class WebServiceAuthenticationTest extends RESTWebServiceTest<WebTestReso
             get(ClientResponse.class);
     assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
     assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+  }
+  
+  @Test
+  public void openASessionAndAccessWebResourcesOutOfTheOpenedSession() {
+    UserFull user = getTestResources().getAUser();
+    ClientResponse response = resource().path(WEB_RESOURCE_PATH).
+            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+            accept(MediaType.APPLICATION_JSON).
+            get(ClientResponse.class);
+    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    
+    response = resource().path(WEB_RESOURCE_PATH).
+            accept(MediaType.APPLICATION_JSON).
+            get(ClientResponse.class);
+    assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
+  }
+  
+  @Test
+  public void openASessionAndAccessWebResourcesInAnInexistingSession() {
+    UserFull user = getTestResources().getAUser();
+    ClientResponse response = resource().path(WEB_RESOURCE_PATH).
+            header(HTTP_AUTHORIZATION, encodeCredentials(user.getId(), user.getPassword())).
+            accept(MediaType.APPLICATION_JSON).
+            get(ClientResponse.class);
+    String sessionKey = response.getHeaders().getFirst(HTTP_SESSIONKEY);
+    assertThat(response.getEntity(String.class), is (WEB_RESOURCE_ID));
+    
+    response = resource().path(WEB_RESOURCE_PATH).
+            accept(MediaType.APPLICATION_JSON).
+            header(HTTP_SESSIONKEY, sessionKey + "3").
+            get(ClientResponse.class);
+    assertThat(response.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
   }
 
   private String encodeCredentials(String login, String password) {
