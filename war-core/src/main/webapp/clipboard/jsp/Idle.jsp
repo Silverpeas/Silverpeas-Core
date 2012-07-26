@@ -60,7 +60,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String connectedUsers = message.getString("connectedUsers");
     if ("yes".equals(homePageSettings.getString("displayConnectedUsers")))
     {
-        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail());
+        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
         if (nbConnectedUsers <= 1) {         
             connectedUsers = message.getString("connectedUser"); 
         }
