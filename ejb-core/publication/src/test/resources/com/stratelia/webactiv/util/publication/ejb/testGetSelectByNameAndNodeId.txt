@@ -1,0 +1,1 @@
+SELECT * FROM sb_publication_publi pub, sb_publication_publifather pubnode WHERE (pub.pubid = pubnode.pubid) AND pub.pubname = ? AND pub.instanceId = ? AND pubnode.nodeid = ?
