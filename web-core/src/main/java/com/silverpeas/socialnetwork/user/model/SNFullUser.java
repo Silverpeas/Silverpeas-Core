@@ -28,7 +28,7 @@
  */
 package com.silverpeas.socialnetwork.user.model;
 
-import com.stratelia.silverpeas.peasCore.SessionInfo;
+import com.silverpeas.session.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserFull;

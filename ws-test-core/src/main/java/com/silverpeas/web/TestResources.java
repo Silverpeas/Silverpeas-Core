@@ -28,6 +28,7 @@ import com.silverpeas.web.mock.*;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -197,6 +198,10 @@ public abstract class TestResources implements ApplicationContextAware {
     }
     when(mock.getUserDetail(user.getId())).thenReturn(user);
     when(mock.getDomain(user.getDomainId())).thenReturn(domain);
+    if (user instanceof UserFull) {
+      UserFull userFull = (UserFull) user;
+      when(mock.getUserFull(user.getId())).thenReturn(userFull);
+    }
     
     return user;
   }
