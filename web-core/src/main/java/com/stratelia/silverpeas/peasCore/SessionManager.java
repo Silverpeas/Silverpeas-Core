@@ -1,26 +1,23 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2011 Silverpeas
+ * 
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ * 
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ * 
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ * 
+* You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.silverpeas.peasCore;
 
 import com.silverpeas.scheduler.Job;
@@ -69,13 +66,14 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
-* Class declaration This object is a singleton used by AuthenticationService : when the user log
-* in, ComponentRequestRouter : when the user access a component. It provides functions to manage
-* the sessions, to write a log journal and getFactory informations about the logged users.
-*
+ * Class declaration This object is a singleton used by AuthenticationService : when the user log
+ * in, ComponentRequestRouter : when the user access a component. It provides functions to manage
+ * the sessions, to write a log journal and getFactory informations about the logged users.
+ * 
 * @author Nicolas Eysseric
-*/
+ */
 public class SessionManager implements SchedulerEventListener, SessionManagement {
+
   private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
   // Local constants
   private static final String SESSION_MANAGER_JOB_NAME = "SessionManagerScheduler";
@@ -96,30 +94,30 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   private SilverStatisticsManager myStatisticsManager = null;
 
   /**
-* Prevent the class from being instantiate (private)
-*/
+   * Prevent the class from being instantiate (private)
+   */
   private SessionManager() {
   }
 
   /**
-* Init attributes
-*/
+   * Init attributes
+   */
   private synchronized void initSessionManager() {
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
-      ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings" +
-          ".clipboardSettings", "");
+      ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings"
+          + ".clipboardSettings", "");
       maxRefreshInterval = (60 + Long.parseLong(rl.getString("IntervalInSec"))) * 1000;
 
       // init userSessionTimeout and scheduledSessionManagementTimeStamp
-      ResourceBundle resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore" +
-          ".SessionManager", new Locale("", ""));
+      ResourceBundle resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore"
+          + ".SessionManager", new Locale("", ""));
       String language = resources.getString("language");
       if (!StringUtil.isDefined(language)) {
         language = I18NHelper.defaultLanguage;
       }
-      messages = new ResourceLocator( "com.stratelia.silverpeas.peasCore.multilang" +
-          ".peasCoreBundle", language);
+      messages = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang"
+          + ".peasCoreBundle", language);
       scheduledSessionManagementTimeStamp = convertMinuteInMilliseconds(
           Long.parseLong(resources.getString("scheduledSessionManagementTimeStamp")));
       userSessionTimeout = convertMinuteInMilliseconds(
@@ -140,15 +138,16 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
           "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout)
           + " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
     } catch (Exception ex) {
-      SilverTrace.fatal("peasCore", "SessionManager.getInstance", "root.EX_CLASS_NOT_INITIALIZED", ex);
+      SilverTrace.fatal("peasCore", "SessionManager.getInstance", "root.EX_CLASS_NOT_INITIALIZED",
+          ex);
     }
   }
 
   /**
-* SessionManager is a singleton
-*
+   * SessionManager is a singleton
+   *   
 * @return the instance of SessionManager
-*/
+   */
   public static SessionManager getInstance() {
     synchronized (SessionManager.class) {
       if (myInstance == null) {
@@ -160,32 +159,32 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* Set the server last acessed time by the user. Used to verify if the session duration has
-* expired (because of timeout).
-*
+   * Set the server last acessed time by the user. Used to verify if the session duration has
+   * expired (because of timeout).
+   *   
 * @param session
-* @see ComponentRequestRouter and ClipboardRequestRouter
-*/
+   * @see ComponentRequestRouter and ClipboardRequestRouter
+   */
   public synchronized void setLastAccess(HttpSession session) {
     SessionInfo si = userDataSessions.get(session.getId());
     if (si != null) {
       si.updateLastAccess();
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.setLastAccess", "L'objet de session n'a pas " +
-          "ete retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
+      SilverTrace.debug("peasCore", "SessionManager.setLastAccess", "L'objet de session n'a pas "
+          + "ete retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
     }
     userNotificationSessions.remove(session.getId());
   }
 
   /**
-* This method creates a job that executes the "doSessionManagement" method. That job fires a
-* SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
-* timestamp (every time the job will execute) settings is given by minutes and logically must be
-* less than the session timeout.
-*
+   * This method creates a job that executes the "doSessionManagement" method. That job fires a
+   * SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
+   * timestamp (every time the job will execute) settings is given by minutes and logically must be
+   * less than the session timeout.
+   *   
 * @throws SchedulerException
-* @see Scheduler for more infos
-*/
+   * @see Scheduler for more infos
+   */
   public void initSchedulerTimeStamp() throws SchedulerException {
     int minute = (int) convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp);
     SilverTrace.debug("peasCore", "SessionManager.initSchedulerTimeStamp",
@@ -209,13 +208,13 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* This method stores the users's sessions, initialises time counters and log session's data. The
-* stored session may become invalid (if the user close the browser, this class is not notified).
-*
+   * This method stores the users's sessions, initialises time counters and log session's data. The
+   * stored session may become invalid (if the user close the browser, this class is not notified).
+   *   
 * @param session the session to store
-* @param request
-* @param controller
-*/
+   * @param request
+   * @param controller
+   */
   public synchronized void addSession(HttpSession session, HttpServletRequest request,
       MainSessionController controller) {
     String anIP = request.getRemoteHost();
@@ -233,11 +232,11 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* Remove a session and log session's data.
-*
+   * Remove a session and log session's data.
+   *   
 * @param session
-* @see LogoutServlet
-*/
+   * @see LogoutServlet
+   */
   public void removeSession(HttpSession session) {
     closeSession(session.getId());
   }
@@ -248,8 +247,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     if (si != null) {
       removeSession(si);
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.removeSession","L'objet de session n'a pas ete " +
-          "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
+      SilverTrace.debug("peasCore", "SessionManager.removeSession",
+          "L'objet de session n'a pas ete "
+          + "retrouve dans la variable userDataSessions !!! (sessionId = " + sessionId + ")");
     }
   }
 
@@ -283,10 +283,10 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-*
-* @param userId
-* @param sessionId
-*/
+   *
+   * @param userId
+   * @param sessionId
+   */
   private void removeInQueueMessages(String userId, String sessionId) {
     try {
       IdPK pk = new IdPK();
@@ -313,26 +313,26 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     if (si != null) {
       si.updateIsAlive();
     } else {
-      SilverTrace.debug("peasCore", "SessionManager.setIsAlived", "L'objet de session n'a pas ete" +
-          " retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
+      SilverTrace.debug("peasCore", "SessionManager.setIsAlived", "L'objet de session n'a pas ete"
+          + " retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
     }
   }
 
   /**
-* Gets all the connected users and the duration of their session.
-*
+   * Gets all the connected users and the duration of their session.
+   *   
 * @return
-*/
+   */
   public synchronized Collection<SessionInfo> getConnectedUsersList() {
     return userDataSessions.values();
   }
 
   /**
-* Gets all the connected users and the duration of their session.
-*
+   * Gets all the connected users and the duration of their session.
+   *   
 * @return Collection of SessionInfo
-* @author dlesimple
-*/
+   * @author dlesimple
+   */
   @Override
   public Collection<com.silverpeas.session.SessionInfo> getDistinctConnectedUsersList(
       UserDetail user) {
@@ -369,41 +369,40 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       }
     }
 
-
     return distinctConnectedUsersList.values();
   }
 
-
   /**
-* Do not use this method. Use getNbConnectedUsersList(UserDetail user) instead.
-*
-* @return 1
-* @deprecated
-*/
+   * Do not use this method. Use getNbConnectedUsersList(UserDetail user) instead.
+   *   
+   * @return 1
+   * @deprecated
+   */
   public int getNbConnectedUsersList() {
     return 1;
   }
 
   /**
-* Gets number of connected users
-*
-* @return nb of connected users
-* @author dlesimple
-*/
+   * Gets number of connected users
+   *   
+   * @param user 
+   * @return nb of connected users
+   * @author dlesimple
+   */
   @Override
   public int getNbConnectedUsersList(UserDetail user) {
     return getDistinctConnectedUsersList(user).size();
   }
 
   /**
-* This method is called every scheduledSessionManagementTimeStamp minute by the scheduler, it
-* notify the user when timeout has expired and then invalidates the session if the user has not
-* accessed the server. The maximum minutes duration of session before invalidation is
-* userSessionTimeout + scheduledSessionManagementTimeStamp.
-*
-* @param currentDate the date when the method is called by the scheduler
-* @see Scheduler for parameters, addSession, setLastAccess
-*/
+   * This method is called every scheduledSessionManagementTimeStamp minute by the scheduler, it
+   * notify the user when timeout has expired and then invalidates the session if the user has not
+   * accessed the server. The maximum minutes duration of session before invalidation is
+   * userSessionTimeout + scheduledSessionManagementTimeStamp.
+   *   
+   * @param currentDate the date when the method is called by the scheduler
+   * @see Scheduler for parameters, addSession, setLastAccess
+   */
   public synchronized void doSessionManagement(Date currentDate) {
     try {
       long currentTime = currentDate.getTime();
@@ -441,18 +440,17 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
         removeSession(expiredSession);
       }
     } catch (Exception ex) {
-      SilverTrace.error("peasCore", "SessionManager.doSessionManagement",
-          "root.EX_NO_MESSAGE", ex);
+      SilverTrace.error("peasCore", "SessionManager.doSessionManagement", "root.EX_NO_MESSAGE", ex);
     }
   }
 
   /**
-* This method notify a user's end session.
-*
-* @param userId :the user who's session is about to expire.
-* @param endOfSession the time of the end of session (in milliseconds).
-* @param sessionId the id of the session about to expire.
-*/
+   * This method notify a user's end session.
+   *   
+   * @param userId :the user who's session is about to expire.
+   * @param endOfSession the time of the end of session (in milliseconds).
+   * @param sessionId the id of the session about to expire.
+   */
   private void notifyEndOfSession(String userId, long endOfSession, String sessionId)
       throws NotificationManagerException {
     SilverTrace.debug("peasCore", "SessionManager.notifyEndOfSession", "userId=" + userId
@@ -474,9 +472,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* This method remove and invalidates all sessions. The unique instance of the SessionManager will
-* be destroyed.
-*/
+   * This method remove and invalidates all sessions. The unique instance of the SessionManager will
+   * be destroyed.
+   */
   public synchronized void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
     // Remove previous scheduled job
@@ -528,10 +526,10 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* Gets the job that performs the session management.
-*
+   * Gets the job that performs the session management.
+   *   
 * @return the job for managing the session.
-*/
+   */
   private Job manageSession() {
     return new Job(SESSION_MANAGER_JOB_NAME) {
       @Override
@@ -561,11 +559,11 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   }
 
   /**
-* This operation is not implemented. Call the addSession method instead.
-*
+   * This operation is not implemented. Call the addSession method instead.
+   *   
 * @param sessionInfo information about the session to open.
-* @return the session key.
-*/
+   * @return the session key.
+   */
   @Override
   public String openSession(com.silverpeas.session.SessionInfo sessionInfo) {
     throw new UnsupportedOperationException("Not supported yet.");
