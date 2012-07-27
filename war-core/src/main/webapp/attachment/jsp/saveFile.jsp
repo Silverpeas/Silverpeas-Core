@@ -113,11 +113,6 @@
         ad.setDescription(info);
           AttachmentServiceFactory.getAttachmentService().createAttachment(ad,
                   file.getInputStream()) ;
-        /*
-        I18NHelper.setI18NInfo(ad, items);
-
-        AttachmentController.createAttachment(ad, indexIt); */
-
         //Specific case: 3d file to convert by Actify Publisher
         if (actifyPublisherEnable) {
           String extensions = settings.getString("Actify3dFiles");

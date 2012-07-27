@@ -66,7 +66,7 @@ Iterator languages = attachment.getLanguages();
 						</table>
 					<% } else { %>
 						<br/>
-						<%=EncodeHelper.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
+            <%=EncodeHelper.convertHTMLEntities(attResources.getStringWithParam("attachment.suppressionConfirmation", attachmentName))%><br/>
 						<br/>
 					<% } %>
 					<%=buttonPane.print()%>

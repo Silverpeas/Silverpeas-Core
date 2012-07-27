@@ -39,6 +39,7 @@
 <%@ page import="java.beans.*"%>
 
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
+
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>

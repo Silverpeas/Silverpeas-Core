@@ -39,7 +39,6 @@ import static org.junit.Assert.assertThat;
 
 @ContextConfiguration(locations = {"classpath:/spring-jpa-datasource.xml",
   "classpath:/spring-domains.xml"})
-
 public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
 
   @Test

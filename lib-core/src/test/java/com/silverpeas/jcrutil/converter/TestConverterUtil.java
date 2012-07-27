@@ -71,7 +71,6 @@ public class TestConverterUtil {
     assertEquals("/theme 20%", ConverterUtil.convertFromJcrPath("/theme__20%25"));
     assertEquals("/theme:test", ConverterUtil.convertFromJcrPath("/theme%3Atest"));
   }
-
   @Test
   public void testParseDate() throws Exception {
     Calendar calend = Calendar.getInstance();
@@ -106,7 +105,7 @@ public class TestConverterUtil {
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
     assertEquals("1986/12/17", ConverterUtil.formatDate(calend.getTime()));
   }
-
+  
   @Test
   public void testFormatDateCalendar() {
     Calendar calend = Calendar.getInstance();

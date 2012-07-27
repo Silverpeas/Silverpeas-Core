@@ -40,7 +40,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import java.util.UUID;
 import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
 import static org.mockito.Matchers.anyString;
@@ -131,8 +130,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     for (String componentId : getExistingComponentInstances()) {
       setComponentAccessibilityToUser(componentId, theUser.getId());
     }
-    SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), theUser);
-    return getTestResources().getSessionManagerMock().openSession(session);
+    SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
+    return session.getSessionId();
   }
 
   /**

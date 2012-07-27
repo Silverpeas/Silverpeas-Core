@@ -24,15 +24,18 @@
 
 package com.silverpeas.attachment.web;
 
-import com.silverpeas.web.Exposable;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.silverpeas.attachment.model.SimpleDocument;
+
+import com.silverpeas.web.Exposable;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 
 /**
  * @author ehugonnet

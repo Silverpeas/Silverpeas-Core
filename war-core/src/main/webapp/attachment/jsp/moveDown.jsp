@@ -63,5 +63,4 @@
     } else {
         response.sendRedirect(URLManager.getApplicationURL()+ url + "?Id="+id);
     }
-   
 %>

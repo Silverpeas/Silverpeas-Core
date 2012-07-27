@@ -36,6 +36,7 @@
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+
 <%@ include file="checkAttachment.jsp"%>
 <%
       String sURI = request.getRequestURI();
@@ -106,6 +107,7 @@
                       foreignKey,
                       contentLanguage);
       Iterator<SimpleDocument> itAttachment = vectAttachment.iterator();
+
 
       Window window = gef.getWindow();
       Board board = gef.getBoard();
@@ -357,6 +359,7 @@
                   String zipIcone = URLManager.getApplicationURL()
                           + "/util/icons/fileType/gif.gif";
                   boolean isFirst = true;
+
                   while (itAttachment.hasNext()) {
                       SimpleDocument attachmentDetail = itAttachment.next();
                     String urlAttachment = request.getContextPath() + attachmentDetail.getAttachmentURL();
@@ -375,7 +378,7 @@
                               String ooUrl = URLManager.getServerURL(request);
                               pageContext.setAttribute("httpServerBase", URLManager.getFullApplicationURL(request));
                               pageContext.setAttribute("ooo_url", ooUrl + attachmentDetail.getWebdavUrl());
-                %>
+               %>
                 <c:url var="webdavUrl" value="${pageScope.httpServerBase}/attachment/jsp/launch.jsp">
                   <c:param name="documentUrl" value="${pageScope.ooo_url}" />
                 </c:url>

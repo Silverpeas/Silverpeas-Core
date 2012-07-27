@@ -51,6 +51,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileItem;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 
 /**
  * Class declaration
@@ -93,7 +94,7 @@ public class ImportDragAndDrop extends HttpServlet {
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
         HttpSession session =
-            SessionManager.getInstance().getSessionInfo(sessionId).getHttpSession();
+            ((HTTPSessionInfo)SessionManager.getInstance().getSessionInfo(sessionId)).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");

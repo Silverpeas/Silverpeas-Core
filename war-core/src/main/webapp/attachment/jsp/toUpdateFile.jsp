@@ -25,7 +25,6 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -51,8 +50,7 @@
 
       function update()
       {
-        if (attachmentMandatory && isWhitespace(document.updateForm.file_upload.value))
-        {
+        if (attachmentMandatory && isWhitespace(document.updateForm.file_upload.value)) {
           alert("<%=messages.getString("nomVide")%>");
         }
         else

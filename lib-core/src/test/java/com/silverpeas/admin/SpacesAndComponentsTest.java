@@ -733,7 +733,6 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     SpaceInst dest = admin.getSpaceInstById(destId);
     List<ComponentInst> components = dest.getAllComponentsInst();
     admin.moveComponentInst(destId, componentId, "",components.toArray(new ComponentInst[components.size()]));
-
     SpaceInst source = admin.getSpaceInstById(sourceId);
     assertEquals(0, source.getAllComponentsInst().size());
 

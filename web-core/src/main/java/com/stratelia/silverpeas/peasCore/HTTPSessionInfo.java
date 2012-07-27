@@ -26,25 +26,33 @@ package com.stratelia.silverpeas.peasCore;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.http.HttpSession;
 
-public class SessionInfo extends com.silverpeas.session.SessionInfo {
+/**
+ * Information on the HTTP session opened by a Silverpeas user to access the Silverpeas Web pages.
+ * 
+ * It wraps the HttpSession instance created by Silverpeas for a given user and it delegates all the
+ * session attribute setting to the wrapped HttpSession instance. So it can be used in a such context
+ * as an HTTP session itself.
+ * 
+ * The HTTPSessionInfo objects are mainly used for the users accessing Silverpeas with their WEB
+ * browser. It is not yet used in the management of sessions for REST-based web service clients.
+ */
+public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   private static final long millisPerHour = 60L * 60L * 1000L;
   private static final long millisPerMinute = 60000L;
-
-  private HttpSession httpSession = null;
-  private String userIPAdress = null;
-  private long lastAliveDate = 0L;
+  
+  private HttpSession httpSession;
+  private long lastAliveTimestamp;
 
   /**
    * Updates the isalive status of the session.
    */
   protected void updateIsAlive() {
-    lastAliveDate = System.currentTimeMillis();
+    lastAliveTimestamp = System.currentTimeMillis();
   }
 
   /**
@@ -52,15 +60,7 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @return the isalive date
    */
   public long getIsAliveDate() {
-    return lastAliveDate;
-  }
-
-  /**
-   * Gets the IP address of the host from which the user is connected and is accessing Silverpeas.
-   * @return the session client host address IP.
-   */
-  public String getUserHostIP() {
-    return userIPAdress;
+    return lastAliveTimestamp;
   }
 
   /**
@@ -69,16 +69,24 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @param IP the remote user host address IP.
    * @param ud the detail about the connected user.
    */
-  public SessionInfo(HttpSession session, String IP, UserDetail ud) {
+  public HTTPSessionInfo(HttpSession session, String IP, UserDetail ud) {
     super(session.getId(), ud);
     httpSession = session;
-    userIPAdress = IP;
-    lastAliveDate = System.currentTimeMillis();
+    lastAliveTimestamp = System.currentTimeMillis();
+    setIPAddress(IP);
+  }
+
+  @Override
+  public void onClosed() {
+    if (httpSession != null) {
+      cleanSession(httpSession);
+      httpSession.invalidate();
+    }
+    super.onClosed();
   }
 
   @SuppressWarnings("unchecked")
-  public void cleanSession() {
-    if (httpSession != null) {
+  private void cleanSession(final HttpSession httpSession) {
       try {
         Enumeration<String> spSessionAttNames = httpSession.getAttributeNames();
         List<String> spNames = new ArrayList<String>();
@@ -122,23 +130,6 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
         SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
             "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);
       }
-    }
-  }
-
-  public void terminateSession() {
-    if (httpSession != null) {
-      try {
-        httpSession.invalidate();
-        httpSession = null;
-      } catch (Exception e) {
-        SilverTrace.warn("peasCore", "SessionInfo.cleanSession()",
-            "root.MSG_GEN_PARAM_VALUE", "ERROR !!!", e);
-      }
-    }
-  }
-
-  public String getLog() {
-    return getUserDetail().getLogin() + " (" + getUserDetail().getDomainId() + ")";
   }
 
   /**
@@ -146,7 +137,7 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
    * @param duration in milliseconds
    * @return "xxHyymnzzs" where xx=hours, yy=minutes, zz=seconds
    */
-  public String formatDuration(long duration) {
+  private String formatDuration(long duration) {
     long hourDuration = duration / millisPerHour;
     long minuteDuration = (duration % millisPerHour) / millisPerMinute;
     long secondDuration = ((duration % millisPerHour) % millisPerMinute) / 1000;
@@ -169,10 +160,26 @@ public class SessionInfo extends com.silverpeas.session.SessionInfo {
   }
 
   /**
-   * Gets the HTTP session refered by this session information.
+   * Gets the HTTP session backed by this session information.
    * @return the backed HTTP session.
    */
   public HttpSession getHttpSession() {
-    return this.httpSession;
+    return httpSession;
   }
+
+  @Override
+  public <T> void setAttribute(String name, T value) {
+    httpSession.setAttribute(name, value);
+  }
+
+  @Override
+  public void unsetAttribute(String name) {
+    httpSession.removeAttribute(name);
+  }
+
+  @Override
+  public <T> T getAttribute(String name) {
+    return (T) httpSession.getAttribute(name);
+  }
+
 }

@@ -24,16 +24,14 @@
 
 package com.stratelia.webactiv.servlets;
 
+import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 public class LogoutServlet extends HttpServlet {
 
@@ -48,7 +46,7 @@ public class LogoutServlet extends HttpServlet {
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
     buffer.append(request.getServerPort()).append(request.getContextPath());
     // Notify session manager : invalidate unbinds any objects bound.
-    SessionManager.getInstance().closeHttpSession(session);
+    SessionManager.getInstance().closeSession(session.getId());
     ResourceLocator resource =
         new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
     String postLogoutPage = resource.getString("logout.page", "/Login.jsp?ErrorCode=4&logout=true");
@@ -59,7 +57,6 @@ public class LogoutServlet extends HttpServlet {
     buffer.append(postLogoutPage);
     // Route on login page
     response.sendRedirect(response.encodeRedirectURL(buffer.toString()));
-    return;
   }
 
   @Override

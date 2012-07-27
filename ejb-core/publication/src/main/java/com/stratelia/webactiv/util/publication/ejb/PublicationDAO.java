@@ -827,7 +827,7 @@ public class PublicationDAO {
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
       int index = 3;
-      if (userId != null) {
+      if (StringUtil.isDefined(userId)) {
         prepStmt.setString(3, userId);
         prepStmt.setString(4, userId);
         index = 5;
@@ -854,7 +854,7 @@ public class PublicationDAO {
         prepStmt.setString(++index, hourNow);
         prepStmt.setString(++index, hourNow);
       }
-      
+
       rs = prepStmt.executeQuery();
       List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;

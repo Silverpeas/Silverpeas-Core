@@ -100,7 +100,6 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
   @Test
   public void testIsActivate() {
     assertEquals(false, DynamicValueReplacement.isActivate());
-
   }
 
 }

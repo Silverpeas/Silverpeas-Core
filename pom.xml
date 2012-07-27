@@ -239,8 +239,8 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.9.2</installer_stable_version>
-    <installer_version>5.10-SNAPSHOT</installer_version>
+    <installer_stable_version>5.10</installer_stable_version>
+    <installer_version>5.11-SNAPSHOT</installer_version>
   </properties>
 
 </project>

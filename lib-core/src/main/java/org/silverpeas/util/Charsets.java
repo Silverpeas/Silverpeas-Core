@@ -24,6 +24,7 @@
 package org.silverpeas.util;
 
 import java.nio.charset.Charset;
+
 import org.apache.commons.lang3.CharEncoding;
 
 /**

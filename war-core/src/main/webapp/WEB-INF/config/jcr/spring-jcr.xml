@@ -71,8 +71,9 @@
 
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
 
-    <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
+  <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory"
           factory-method="getInstance" />
+
 
   <!--  Attachment -->
   <bean id="jcrAttachmentDao" class="com.stratelia.webactiv.util.attachment.model.jcr.impl.JcrAttachmentDaoImpl" />

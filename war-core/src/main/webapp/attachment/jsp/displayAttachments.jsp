@@ -14,7 +14,7 @@
     the FLOSS exception, and it is also available here:
     "http://www.silverpeas.org/legal/licensing"
 
-    This program is distributecheckd in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Affero General Public License for more details.
@@ -460,7 +460,7 @@
   <c:choose>
     <c:when test="${useXMLForm}">oMenu.getItem(2,1).cfg.setProperty("disabled", false);</c:when>
     <c:otherwise>oMenu.getItem(1,1).cfg.setProperty("disabled", false);</c:otherwise>
-  </c:choose>     
+  </c:choose>    
       $('#worker'+id).html("");
       $('#worker'+id).css({'visibility':'hidden'});
     }
@@ -498,7 +498,7 @@
             }
           }
         }
-      }
+      }	
 	
   $.get('<c:url value="/Attachment" />', { id:attachmentId,Action:'Delete',languagesToDelete:sLanguages},
       function(data){
@@ -724,4 +724,4 @@
         </div>
         <div id="dialog-attachment-delete" style="display:none">
           <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-        </div>        
+        </div>
