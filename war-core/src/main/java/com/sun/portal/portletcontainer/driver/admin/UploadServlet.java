@@ -63,9 +63,10 @@ public class UploadServlet extends HttpServlet {
 
   private long maxUploadSize;
 
-  private static Logger logger = Logger.getLogger(UploadServlet.class
-      .getPackage().getName(), "com.silverpeas.portlets.PCDLogMessages");
+  private static final Logger logger = Logger.getLogger(UploadServlet.class
+      .getPackage().getName(), "org.silverpeas.portlets.PCDLogMessages");
 
+  @Override
   public void init(ServletConfig config) throws ServletException {
     // TODO Auto-generated method stub
     super.init(config);
@@ -74,6 +75,7 @@ public class UploadServlet extends HttpServlet {
     context = config.getServletContext();
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
 
@@ -145,11 +147,9 @@ public class UploadServlet extends HttpServlet {
     String warFileName = fileNames[0];
     if (warFileName == null || !warFileName.endsWith(".war")) {
       session.setAttribute(AdminConstants.DEPLOYMENT_FAILED_ATTRIBUTE,
-          DesktopMessages
-          .getLocalizedString(AdminConstants.INVALID_PORTLET_APP));
+          DesktopMessages.getLocalizedString(AdminConstants.INVALID_PORTLET_APP));
     } else {
-      PortletAdminData portletAdminData = PortletAdminDataFactory
-          .getPortletAdminData(null);
+      PortletAdminData portletAdminData = PortletAdminDataFactory.getPortletAdminData(null);
       boolean success = false;
       StringBuffer messageBuffer = new StringBuffer();
       try {
@@ -161,8 +161,7 @@ public class UploadServlet extends HttpServlet {
             // ignored
           }
         }
-        success = portletAdminData
-            .deploy(warFileName, fileNames[1], null, true);
+        success = portletAdminData.deploy(warFileName, fileNames[1], null, true);
         messageBuffer.append(DesktopMessages
             .getLocalizedString(AdminConstants.DEPLOYMENT_SUCCEEDED));
       } catch (Exception ex) {
