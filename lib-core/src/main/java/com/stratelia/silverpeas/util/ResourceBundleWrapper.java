@@ -25,8 +25,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.ConfigurationControl;
 import com.silverpeas.util.FileUtil;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -35,21 +33,9 @@ public class ResourceBundleWrapper extends ResourceBundle {
 
   private ResourceBundle bundle;
   private ResourceBundle parentBundle;
-  private static final ClassLoader loader = java.security.AccessController.doPrivileged(
-    new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-      @Override
-        public ConfigurationClassLoader run() {
-            return new ConfigurationClassLoader(ResourceBundleWrapper.class.getClassLoader());
-        }
-    }
- );
-
-      
-  private static ResourceBundle.Control control = new ConfigurationControl();
 
   public ResourceBundleWrapper(String file, Locale locale, boolean hasParent) {
-    String realFileName = FileUtil.convertBundleName(file);
-    this.bundle = java.util.ResourceBundle.getBundle(realFileName, locale, loader, control);
+    this.bundle = FileUtil.loadBundle(file, locale);
     if (hasParent) {
       this.parentBundle = GeneralPropertiesManager.getGeneralMultilang(locale.getLanguage()).
           getResourceBundle();
@@ -57,8 +43,7 @@ public class ResourceBundleWrapper extends ResourceBundle {
   }
 
   public ResourceBundleWrapper(String file, Locale locale) {
-    this(file, locale, !GeneralPropertiesManager.GENERAL_PROPERTIES_FILE
-        .equalsIgnoreCase(file));
+    this(file, locale, !GeneralPropertiesManager.GENERAL_PROPERTIES_FILE.equalsIgnoreCase(file));
   }
 
   @Override
@@ -78,7 +63,6 @@ public class ResourceBundleWrapper extends ResourceBundle {
         result = this.parentBundle.getObject(key);
       } catch (MissingResourceException mrex) {
       }
-
     }
     return result;
   }

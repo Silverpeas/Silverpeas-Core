@@ -183,11 +183,21 @@ public class FileUtil implements MimeTypes {
    */
   public static ResourceBundle loadBundle(String bundleName, Locale locale) {
     String name = convertBundleName(bundleName);
+    ResourceBundle bundle;
     Locale loc = locale;
     if (loc == null) {
       loc = Locale.ROOT;
     }
-    return ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+    try {
+      bundle =  ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+      if(bundle == null) {
+        bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+      }
+    } catch(MissingResourceException mex) {
+      //Let's try with the real name
+      bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+    }
+    return bundle;
   }
 
   /**
