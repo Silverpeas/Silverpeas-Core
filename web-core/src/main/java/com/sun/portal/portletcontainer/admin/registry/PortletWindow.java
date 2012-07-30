@@ -23,21 +23,20 @@
  */
 package com.sun.portal.portletcontainer.admin.registry;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * PortletWindow represents the PortletWindow Element in portlet-window-registry.xml
  */
 public class PortletWindow extends AbstractPortletRegistryElement {
 
-  private static Logger logger = Logger.getLogger(
-      "com.sun.portal.portletcontainer.admin.registry",
-      "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin.registry",
+      "org.silverpeas.portlets.PALogMessages");
 
   public PortletWindow() {
   }

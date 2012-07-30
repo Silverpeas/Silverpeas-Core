@@ -1,64 +1,84 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2011 Silverpeas
+ * 
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ * 
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ * 
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ * 
+* You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.util;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-
-import javax.activation.MimetypesFileTypeMap;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
+import java.util.*;
 
 public class FileUtil implements MimeTypes {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.mime_types", "");
+      "org.silverpeas.util.attachment.mime_types", "");
   public static final String CONTEXT_TOKEN = ",";
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
+  private static final ClassLoader loader = java.security.AccessController.doPrivileged(
+      new java.security.PrivilegedAction<ConfigurationClassLoader>() {
+        @Override
+        public ConfigurationClassLoader run() {
+          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+        }
+      });
 
   /**
-* Extract the mime-type from the file name.
-* @param fileName the name of the file.
-* @return the mime-type as a String.
-*/
+   * Utility method for migration of Silverpeas configuration from : com.silverpeas,
+   * com.stratelia.silverpeas, com.stratelia.webactiv to org.silverpeas
+   *
+   * @param bundle the name of the bundle.
+   * @return the name of the migrated bundle.
+   */
+  public static String convertBundleName(String bundle) {
+    return bundle.replace("com.silverpeas", "org.silverpeas").replace(
+        "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
+        "org.silverpeas");
+  }
+
+  /**
+   * Utility method for migration of Silverpeas configuration from : com/silverpeas,
+   * com/stratelia/silverpeas, com/stratelia/webactiv to org/silverpeas
+   *
+   * @param resource the name of the resource.
+   * @return the name of the migrated resource.
+   */
+  public static String convertResourceName(String resource) {
+    return resource.replace("com/silverpeas", "org/silverpeas").replace(
+        "com/stratelia/silverpeas", "org/silverpeas").replace("com/stratelia/webactiv",
+        "org/silverpeas");
+  }
+
+  /**
+   * Extract the mime-type from the file name.
+   *
+   * @param fileName the name of the file.
+   * @return the mime-type as a String.
+   */
   public static String getMimeType(String fileName) {
     String mimeType = null;
     String fileExtension = FileRepositoryManager.getFileExtension(fileName).toLowerCase();
@@ -89,11 +109,12 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-* Create the array of strings this array represents the repertories where the files must be
-* stored.
-* @param context
-* @return
-*/
+   * Create the array of strings this array represents the repertories where the files must be
+   * stored.
+   *
+   * @param context
+   * @return
+   */
   public static String[] getAttachmentContext(String context) {
     if (!StringUtil.isDefined(context)) {
       return new String[]{BASE_CONTEXT};
@@ -108,21 +129,23 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-* Read the content of a file in a byte array.
-* @param file the file to be read.
-* @return the bytes array containing the content of the file.
-* @throws IOException
-*/
+   * Read the content of a file in a byte array.
+   *
+   * @param file the file to be read.
+   * @return the bytes array containing the content of the file.
+   * @throws IOException
+   */
   public static byte[] readFile(File file) throws IOException {
     return FileUtils.readFileToByteArray(file);
   }
 
   /**
-* Write a stream into a file.
-* @param file the file to be written.
-* @param data the data to be written.
-* @throws IOException
-*/
+   * Write a stream into a file.
+   *
+   * @param file the file to be written.
+   * @param data the data to be written.
+   * @throws IOException
+   */
   public static void writeFile(File file, InputStream data) throws IOException {
     FileOutputStream out = null;
     try {
@@ -136,61 +159,91 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-* Write a stream into a file.
-* @param file the file to be written.
-* @param data the data to be written.
-* @throws IOException
-*/
+   * Write a stream into a file.
+   *
+   * @param file the file to be written.
+   * @param data the data to be written.
+   * @throws IOException
+   */
   public static void writeFile(File file, Reader data) throws IOException {
-    FileWriter out = null;
+    FileWriter out = new FileWriter(file);
     try {
-      out = new FileWriter(file);
       IOUtils.copy(data, out);
     } finally {
-      if (out != null) {
-        out.close();
+      IOUtils.closeQuietly(out);
+    }
+  }
+
+  /**
+   * Loads a ResourceBundle from the Silverpeas configuration directory.
+   *
+   * @param bundleName the name of the bundle.
+   * @param locale the locale of the bundle.
+   * @return the corresponding ResourceBundle if it exists - null otherwise.
+   */
+  public static ResourceBundle loadBundle(String bundleName, Locale locale) {
+    String name = convertBundleName(bundleName);
+    ResourceBundle bundle;
+    Locale loc = locale;
+    if (loc == null) {
+      loc = Locale.ROOT;
+    }
+    try {
+      bundle =  ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+      if(bundle == null) {
+        bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+      }
+    } catch(MissingResourceException mex) {
+      //Let's try with the real name
+      bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+    }
+    return bundle;
+  }
+
+  /**
+   * Loads loads the resource into the specified properties.
+   *
+   * @param properties the properties to be loaded with the resource.
+   * @param resourceName the name of the resource.
+   * @throws IOException
+   */
+  public static void loadProperties(Properties properties, String resourceName) throws IOException {
+    if (StringUtil.isDefined(resourceName) && properties != null) {
+      String name = convertResourceName(resourceName);
+      InputStream in = loader.getResourceAsStream(name);
+      try {
+        properties.load(in);
+      }finally {
+        IOUtils.closeQuietly(in);
       }
     }
   }
 
   /**
-* Loads a ResourceBundle from the Silverpeas configuration directory.
-* @param name the name of the bundle.
-* @param locale the locale of the bundle.
-* @return the corresponding ResourceBundle if it exists - null otherwise.
-*/
-  public static ResourceBundle loadBundle(String name, Locale locale) {
-    Locale loc = locale;
-    if (loc == null) {
-      loc = Locale.ROOT;
-    }
-    ResourceBundle result = ResourceBundle.getBundle(name, loc,
-        new ConfigurationClassLoader(FileUtil.class.getClassLoader()), new ConfigurationControl());
-    return result;
-  }
-
-  /**
-* Indicates if the OS is from the Microsoft Windows familly
-* @return true if the OS is from the Microsoft Windows familly - false otherwise.
-*/
+   * Indicates if the OS is from the Microsoft Windows familly
+   *
+   * @return true if the OS is from the Microsoft Windows familly - false otherwise.
+   */
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
   }
 
   /**
-* Indicates if the current file is of type archive.
-* @param filename the name of the file.
-* @return true is the file s of type archive - false otherwise.
-*/
+   * Indicates if the current file is of type archive.
+   *
+   * @param filename the name of the file.
+   * @return true is the file s of type archive - false otherwise.
+   */
   public static boolean isArchive(String filename) {
     return ARCHIVE_MIME_TYPES.contains(getMimeType(filename));
   }
 
   /**
-* Indicates if the current file is of type archive.
-* @param filename the name of the file.
-* @return true is the file s of type archive - false otherwise.
-*/
+   * Indicates if the current file is of type archive.
+   *
+   * @param filename the name of the file.
+   * @return true is the file s of type archive - false otherwise.
+   */
   public static boolean isImage(String filename) {
     return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
   }

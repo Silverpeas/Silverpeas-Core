@@ -96,9 +96,8 @@ public class PortletRegistryGenerator implements PortletRegistryTags {
   private List portletWindowPreferenceElementList;
 
   // Create a logger for this class
-  private static Logger logger = Logger.getLogger(
-      "com.sun.portal.portletcontainer.admin",
-      "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
+      "org.silverpeas.portlets.PALogMessages");
 
   public PortletRegistryGenerator() {
     configProps = new Properties();
