@@ -89,14 +89,9 @@ public interface CommentDAO {
   int getCommentsCountByForeignKey(final String resourceType, final ForeignPK pk);
 
   /**
-<<<<<<< HEAD
-   * Among all the publications identified by the specified primary keys, gets the most commented
-   * ones.
-=======
    * Among all the publications identified by the resource type and the specified primary keys, gets
    * the most commented ones.
    * @param resourceType type of the commented publication.
->>>>>>> master
    * @param pks a list of primary keys refering some publications.
    * @return a list of information about the most commented publication (publication primary key,
    * number of comments, and so on).
