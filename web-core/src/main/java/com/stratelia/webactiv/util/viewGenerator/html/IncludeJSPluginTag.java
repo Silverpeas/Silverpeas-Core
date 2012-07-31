@@ -39,7 +39,7 @@ import org.apache.ecs.ElementContainer;
 public class IncludeJSPluginTag extends SimpleTagSupport {
 
   private static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";
-  
+
   private String plugin;
 
   public String getName() {
@@ -73,6 +73,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includePopup(xhtml);
     } else if (calendar.name().equals(getName())) {
       includeCalendar(xhtml);
+    } else if (preview.name().equals(getName())) {
+      includePreview(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }
