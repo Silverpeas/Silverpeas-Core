@@ -57,7 +57,7 @@
       <div id="background">
         <div class="cadre">
           <div id="header">
-            <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
+            <img src="<%=logo%>" class="logo" alt="logo"/>
             <p class="information"></p>
           </div>
           <div class="fnfinformation">
