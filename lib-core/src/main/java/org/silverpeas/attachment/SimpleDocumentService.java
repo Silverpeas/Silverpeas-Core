@@ -40,6 +40,7 @@ import org.apache.commons.lang3.CharEncoding;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.repository.DocumentRepository;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 
@@ -462,7 +463,7 @@ public class SimpleDocumentService implements AttachmentService {
       BasicDaoFactory.logout(session);
     }
   }
-  
+
   /**
    * Clone the attchments
    *
@@ -656,56 +657,52 @@ public class SimpleDocumentService implements AttachmentService {
   /**
    * Release a locked file.
    *
-   * @param attachmentId
-   * @param userId
-   * @param upload : indicates if the file has been uploaded throught a form.
-   * @param update : update the content with the file from the webdav repository.
-   * @param force if the user is an Admin he can force the release.
-   * @param language the language for the attachment.
-   * @return false if the file is locked - true if the checkin succeeded.
+   * @param context : the unlock parameters.
+   * @return false if the file is locked - true if the unlock succeeded.
    * @throws AttachmentException
    */
   @Override
-  public boolean unlock(String attachmentId, String userId, boolean upload, boolean update,
-      boolean force, String language) {
+  public boolean unlock(UnlockContext context) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
       SilverTrace.debug("attachment", "AttachmentController.checkinOfficeFile()",
-          "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + attachmentId);
+          "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + context.getAttachmentId());
 
       SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
-          attachmentId), language);
-      if (document.isOpenOfficeCompatible() && !force && webdavRepository.isNodeLocked(session,
+          context.getAttachmentId()), context.getLang());
+      if (document.isOpenOfficeCompatible() && !context.isForce() && webdavRepository.isNodeLocked(
+          session,
           document)) {
         SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
             "attachment.NODE_LOCKED");
         return false;
       }
-      if (!force && document.isReadOnly() && !document.getEditedBy().equals(userId)) {
+      if (!context.isForce() && document.isReadOnly() && !document.getEditedBy().equals(context.
+          getUserId())) {
         SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
             "attachment.INCORRECT_USER");
         return false;
       }
 
       boolean invokeCallback = false;
-      if (update || upload) {
+      if (context.isWebdav() || context.isUpload()) {
         String workerId = document.getEditedBy();
         document.setUpdated(new Date());
         document.setUpdatedBy(workerId);
         invokeCallback = true;
       }
-      if (document.isOpenOfficeCompatible() && !upload && update) {
+      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
         webdavRepository.updateAttachment(session, document);
         storeContent(session, document);
-      } else if (document.isOpenOfficeCompatible() && (upload || !update)) {
+      } else if (document.isOpenOfficeCompatible() && (context.isUpload() || !context.isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, document);
       }
       // Remove workerId from this attachment
       document.release();
       session.save();
       updateAttachment(document, false, invokeCallback);
-      repository.unlock(session, document, ! update && ! upload );
+      repository.unlock(session, document, context.isForce());
     } catch (Exception e) {
       SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
           "attachment.CHECKIN_FAILED", e);

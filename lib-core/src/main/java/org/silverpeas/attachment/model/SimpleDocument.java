@@ -389,8 +389,9 @@ public class SimpleDocument {
     return ATTACHMENT_PREFIX + getOldSilverpeasId();
   }
 
-   /**
+  /**
    * Full JCR path to the file node.
+   *
    * @return the full JCR path to the file node (starting with /).
    */
   public String getFullJcrContentPath() {
@@ -399,6 +400,7 @@ public class SimpleDocument {
 
   /**
    * Full JCR path to the document node.
+   *
    * @return the full JCR path to the document node (starting with /).
    */
   public String getFullJcrPath() {
@@ -443,12 +445,14 @@ public class SimpleDocument {
   /**
    * Path to the directory where the file is to be stored.
    *
+   * @param lang the language of the document.
    * @return the path to the directory where the file is to be stored.
    */
   public String getDirectoryPath(String lang) {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
     directory = directory.replace('/', separatorChar);
-    return directory + getId() + separatorChar + lang + separatorChar;
+    String versionDir = getMajorVersion() + "_" + getMinorVersion();
+    return directory + getId() + separatorChar + versionDir + separatorChar + lang + separatorChar;
   }
 
   @Override
@@ -488,7 +492,7 @@ public class SimpleDocument {
     return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
         getLanguage());
   }
-  
+
   public String getUniversalURL() {
     return URLManager.getSimpleURL(URLManager.URL_FILE, getId());
   }

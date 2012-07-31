@@ -41,6 +41,7 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.UnlockContext;
 
 /**
  *
@@ -215,8 +216,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public boolean unlock(String attachmentId, String userId, boolean upload, boolean update,
-      boolean force, String language) {
-    return unlock(attachmentId, userId, upload, update, force, language);
+  public boolean unlock(UnlockContext context) {
+    return realService.unlock(context);
   }
+
+  
 }

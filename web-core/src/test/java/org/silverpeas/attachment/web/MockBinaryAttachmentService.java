@@ -33,13 +33,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.IOUtils;
+
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
 
 import com.silverpeas.util.MimeTypes;
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
@@ -205,8 +208,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public boolean unlock(String attachmentId, String userId, boolean upload, boolean update,
-      boolean force, String language) {
+  public boolean unlock(UnlockContext context) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
   

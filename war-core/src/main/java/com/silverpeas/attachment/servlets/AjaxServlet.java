@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -36,6 +35,8 @@ import javax.servlet.http.HttpSession;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -106,13 +107,16 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private String checkin(HttpServletRequest req) {
-    String idAttachment = req.getParameter("Id");
-    String fileLanguage = req.getParameter("FileLanguage");
-    boolean update = Boolean.parseBoolean(req.getParameter("update_attachment"));
-    boolean force = Boolean.parseBoolean(req.getParameter("force_release"))
-        && getMainSessionController(req).getCurrentUserDetail().isAccessAdmin();
-    if (!AttachmentServiceFactory.getAttachmentService().unlock(idAttachment, getUserId(req),
-        false, update, force, fileLanguage)) {
+    UnlockContext context = new UnlockContext(req.getParameter("Id"), getUserId(req), req.
+        getParameter("FileLanguage"));
+    if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
+      context.addOption(UnlockOption.WEBDAV);
+    }
+    if (StringUtil.getBooleanValue(req.getParameter("force_release")) && getMainSessionController(
+        req).getCurrentUserDetail().isAccessAdmin()) {
+      context.addOption(UnlockOption.FORCE);
+    }
+    if (!AttachmentServiceFactory.getAttachmentService().unlock(context)) {
       return "locked";
     }
     return "ok";
@@ -170,11 +174,12 @@ public class AjaxServlet extends HttpServlet {
       String id = tokenizer.nextToken();
       SimpleDocumentPK pk;
       if (StringUtil.isLong(id)) {
-        pk =  new SimpleDocumentPK(null, componentId).setOldSilverpeasId(Long.valueOf(id));
+        pk = new SimpleDocumentPK(null, componentId).setOldSilverpeasId(Long.valueOf(id));
       } else {
-       pk = new SimpleDocumentPK(id, componentId);
+        pk = new SimpleDocumentPK(id, componentId);
       }
-      attachments.add(AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null));
+      attachments.
+          add(AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null));
     }
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(attachments);
     return "ok";

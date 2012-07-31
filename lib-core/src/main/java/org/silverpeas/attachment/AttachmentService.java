@@ -29,11 +29,13 @@ import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  *
@@ -67,12 +69,11 @@ public interface AttachmentService {
   void addContent(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
 
   /**
-   *  Writes the binary content into the specified File.
+   * Writes the binary content into the specified File.
    *
    * @param file the file where the content is to be written.
    * @param pk the id of the document.
    * @param lang the language of the content.
-   * @return a stream to the content.
    */
   void getBinaryContent(File file, SimpleDocumentPK pk, String lang);
 
@@ -101,8 +102,7 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
+   * @param indexIt true if the document is to be indexed - false otherwhise.
    * @return the stored document.
    * @throws AttachmentException
    */
@@ -114,8 +114,7 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
+   * @param indexIt true if the document is to be indexed - false otherwhise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, InputStream content, boolean indexIt);
@@ -125,10 +124,9 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
-   * @param invokeCallback <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring thoose callbacks.
+   * @param indexIt true if the document is to be indexed - false otherwise.
+   * @param invokeCallback true if the callback methods of the components must be called, false for
+   * ignoring thoose callbacks.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, InputStream content, boolean indexIt,
@@ -139,8 +137,6 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
    * @return the stored document.
    * @throws AttachmentException
    */
@@ -152,8 +148,7 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
+   * @param indexIt true if the document is to be indexed, false otherwhise.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt);
@@ -163,10 +158,9 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt<code>true</code> if the document is to be indexed,  <code>false</code>
-   * otherwhise.
-   * @param invokeCallback <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring thoose callbacks.
+   * @param indexIt true if the document is to be indexed, false otherwhise.
+   * @param invokeCallback true if the callback methods of the components must be called, false for
+   * ignoring thoose callbacks.
    * @return the stored document.
    */
   SimpleDocument createAttachment(SimpleDocument document, File content, boolean indexIt,
@@ -175,14 +169,12 @@ public interface AttachmentService {
   /**
    *
    * @param document
-   * @param lang
    */
   void createIndex(SimpleDocument document);
 
   /**
    *
    * @param document
-   * @param lang
    * @param startOfVisibilityPeriod
    * @param endOfVisibilityPeriod
    */
@@ -198,9 +190,9 @@ public interface AttachmentService {
   /**
    * Delete a given attachment.
    *
-   * @param attachmentDetail the attachmentDetail object to deleted.
-   * @param invokeCallback   <code>true</code> if the callback methods of the components must be
-   * called, <code>false</code> for ignoring thoose callbacks.
+   * @param document the document to deleted.
+   * @param invokeCallback true if the callback methods of the components must be called, false for
+   * ignoring thoose callbacks.
    * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    */
   void deleteAttachment(SimpleDocument document, boolean invokeCallback);
@@ -232,20 +224,21 @@ public interface AttachmentService {
   void reorderDocuments(List<SimpleDocument> documents) throws AttachmentException;
 
   /**
-   * to search all file attached
+   * Search the document.
    *
-   * @param primaryKey the primary key of object AttachmentDetail
+   * @param primaryKey the primary key of document.
+   * @param lang the lang of the document.
    * @return java.util.Vector: a collection of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
    */
   SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang);
 
   /**
-   * to search all file attached to an object who is identified by "PK"
+   * Search all file attached to a foreing object.
    *
-   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer
-   * object but this key must be transformed to AttachmentPK
-   * @return java.util.Vector: a collection of AttachmentDetail
+   * @param foreignKey : the primary key of foreign object.
+   * @param lang the lang for the documents.
+   * @return the list of attached documents.
    * @throws AttachmentRuntimeException when is impossible to search
    */
   List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang);
@@ -273,9 +266,9 @@ public interface AttachmentService {
   List<SimpleDocument> listDocumentsRequiringWarning(Date alertDate, String language);
 
   /**
-   * Search all the documents in an instance which are expiring at the specified date.
+   * Search all the documents in an instance which require an alert at the specified date.
    *
-   * @param expiryDate the date when the document reservation should expire.
+   * @param alertDate the date when the document reservation should alter.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
    */
@@ -289,8 +282,8 @@ public interface AttachmentService {
    * @return an ordered list of the documents.
    */
   List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language);
-  
-   /**
+
+  /**
    * Checkout a file to be updated by user
    *
    * @param attachmentId
@@ -300,18 +293,13 @@ public interface AttachmentService {
    * checked out.
    */
   public boolean lock(String attachmentId, String userId, String language);
-  
-    /**
+
+  /**
    * Release a locked file.
    *
-   * @param attachmentId
-   * @param userId
-   * @param upload : indicates if the file has been uploaded throught a form.
-   * @param force if the user is an Admin he can force the release.
-   * @param language the language for the attachment.
-   * @return false if the file is locked - true if the checkin succeeded.
+   * @param context : the unlock parameters.
+   * @return false if the file is locked - true if the unlock succeeded.
    * @throws AttachmentException
    */
-  public boolean unlock(String attachmentId, String userId, boolean upload,
-      boolean update, boolean force, String language);
+  public boolean unlock(UnlockContext context);
 }
