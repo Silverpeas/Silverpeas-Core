@@ -70,7 +70,7 @@ class DocumentConverter extends AbstractJcrConverter {
           getVersionHistory(node.getPath());
       Version root = history.getRootVersion();
       String rootId = "";
-      if(root != null) {
+      if (root != null) {
         rootId = root.getIdentifier();
       }
       VersionIterator versionsIterator = history.getAllVersions();
@@ -79,7 +79,7 @@ class DocumentConverter extends AbstractJcrConverter {
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
         if (!version.getIdentifier().equals(rootId)) {
-          documentHistory.add(fillDocument(version.getNodes().nextNode(), lang));
+          documentHistory.add(fillDocument(version.getFrozenNode(), lang));
         }
       }
       return documentHistory;
@@ -123,6 +123,8 @@ class DocumentConverter extends AbstractJcrConverter {
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_STATUS), file);
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
+    doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
+    doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
     return doc;
   }
 
@@ -146,6 +148,8 @@ class DocumentConverter extends AbstractJcrConverter {
     documentNode.setProperty(SLV_PROPERTY_VERSIONED, document.isVersioned());
     documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
     documentNode.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
+    documentNode.setProperty(SLV_PROPERTY_MAJOR, document.getMajorVersion());
+    documentNode.setProperty(SLV_PROPERTY_MINOR, document.getMinorVersion());
     addStringProperty(documentNode, SLV_PROPERTY_INSTANCEID, document.getInstanceId());
     addStringProperty(documentNode, SLV_PROPERTY_OWNER, document.getEditedBy());
     addStringProperty(documentNode, SLV_PROPERTY_STATUS, document.getStatus());
@@ -201,6 +205,22 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public boolean isVersioned(Node node) throws RepositoryException {
-    return getBooleanProperty(node, SLV_PROPERTY_VERSIONED);
+    return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
+        "jcr:frozenPrimaryType");
+  }
+
+  public String updateVersion(Node node, boolean isPublic) throws RepositoryException {
+    if (isVersioned(node) && node.isCheckedOut()) {
+      if (isPublic) {
+        int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR) + 1;
+        node.setProperty(SLV_PROPERTY_MAJOR, majorVersion);
+        node.setProperty(SLV_PROPERTY_MINOR, 0);
+      } else {
+        int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR) + 1;
+        node.setProperty(SLV_PROPERTY_MINOR, minorVersion);
+      }
+    }
+    return "Version " + getIntProperty(node, SLV_PROPERTY_MAJOR) + "." + getIntProperty(node,
+        SLV_PROPERTY_MINOR);
   }
 }

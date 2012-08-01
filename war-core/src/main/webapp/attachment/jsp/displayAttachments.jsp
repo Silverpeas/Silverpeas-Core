@@ -281,7 +281,7 @@
 
 	<div class="dragNdrop">
     <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=m_Context%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
-    	<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
+    	<div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
 	</div>
 </c:if>
     <c:if test="${contextualMenuEnabled && ! dragAndDropEnable}">

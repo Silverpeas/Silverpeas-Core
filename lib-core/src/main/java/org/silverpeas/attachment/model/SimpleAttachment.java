@@ -43,8 +43,6 @@ public class SimpleAttachment {
   private Date created;
   private String updatedBy;
   private Date updated;
-  private int minorVersion = 0;
-  private int majorVersion = 1;
   private String xmlFormId;
 
   public SimpleAttachment(String filename, String language, String title, String description,
@@ -56,7 +54,7 @@ public class SimpleAttachment {
     this.size = size;
     this.contentType = contentType;
     this.createdBy = createdBy;
-    this.created = created;
+    setCreated(created);
     this.xmlFormId = xmlFormId;
   }
 
@@ -80,7 +78,7 @@ public class SimpleAttachment {
   }
 
   public void setLanguage(String language) {
-    this.language =  I18NHelper.checkLanguage(language);
+    this.language = I18NHelper.checkLanguage(language);
   }
 
   public String getTitle() {
@@ -124,11 +122,18 @@ public class SimpleAttachment {
   }
 
   public Date getCreated() {
-    return created;
+    if (created == null) {
+      return null;
+    } 
+    return new Date(created.getTime());
   }
 
-  public void setCreated(Date created) {
-    this.created = created;
+  public final void setCreated(Date creationDate) {
+    if (creationDate == null) {
+      this.created = null;
+    } else {
+      this.created = new Date(creationDate.getTime());
+    }
   }
 
   public String getUpdatedBy() {
@@ -140,27 +145,18 @@ public class SimpleAttachment {
   }
 
   public Date getUpdated() {
-    return updated;
+    if (updated == null) {
+      return null;
+    } 
+    return new Date(updated.getTime());
   }
 
-  public void setUpdated(Date updated) {
-    this.updated = updated;
-  }
-
-  public int getMinorVersion() {
-    return minorVersion;
-  }
-
-  public void setMinorVersion(int minorVersion) {
-    this.minorVersion = minorVersion;
-  }
-
-  public int getMajorVersion() {
-    return majorVersion;
-  }
-
-  public void setMajorVersion(int majorVersion) {
-    this.majorVersion = majorVersion;
+  public final void setUpdated(Date updateDate) {
+    if (updateDate == null) {
+      this.updated = null;
+    } else {
+      this.updated = new Date(updateDate.getTime());
+    }
   }
 
   public String getXmlFormId() {
@@ -170,7 +166,7 @@ public class SimpleAttachment {
   public void setXmlFormId(String xmlFormId) {
     this.xmlFormId = xmlFormId;
   }
-  
+
   @Override
   public int hashCode() {
     int hash = 7;
@@ -184,8 +180,6 @@ public class SimpleAttachment {
     hash = 61 * hash + (this.created != null ? this.created.hashCode() : 0);
     hash = 61 * hash + (this.updatedBy != null ? this.updatedBy.hashCode() : 0);
     hash = 61 * hash + (this.updated != null ? this.updated.hashCode() : 0);
-    hash = 61 * hash + this.minorVersion;
-    hash = 61 * hash + this.majorVersion;
     hash = 61 * hash + (this.xmlFormId != null ? this.xmlFormId.hashCode() : 0);
     return hash;
   }
@@ -235,13 +229,6 @@ public class SimpleAttachment {
         equals(other.updated))) {
       return false;
     }
-    if (this.minorVersion != other.minorVersion) {
-      return false;
-    }
-    if (this.majorVersion != other.majorVersion) {
-      return false;
-    }
-
     if ((this.xmlFormId == null) ? (other.xmlFormId != null)
         : !this.xmlFormId.equals(other.xmlFormId)) {
       return false;
@@ -254,7 +241,6 @@ public class SimpleAttachment {
     return "SimpleAttachment{" + "filename=" + filename + ", language=" + language + ", title="
         + title + ", description=" + description + ", size=" + size + ", contentType=" + contentType
         + ", createdBy=" + createdBy + ", created=" + created + ", updatedBy=" + updatedBy
-        + ", updated=" + updated + ", minorVersion=" + minorVersion + ", majorVersion="
-        + majorVersion + ", xmlFormId=" + xmlFormId + '}';
+        + ", updated=" + updated + ", xmlFormId=" + xmlFormId + '}';
   }
 }

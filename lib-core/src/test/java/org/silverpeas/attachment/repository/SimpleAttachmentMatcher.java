@@ -25,6 +25,7 @@ package org.silverpeas.attachment.repository;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+
 import org.silverpeas.attachment.model.SimpleAttachment;
 
 /**
@@ -51,9 +52,9 @@ public class SimpleAttachmentMatcher extends BaseMatcher<SimpleAttachment> {
   }
 
   /**
-   * Creates a new matcher with the specified domain.
-   * @param domain the domain to match.
-   * @return a domain matcher.
+   * Creates a new matcher with the specified attachment.
+   * @param attachment the attachment to match.
+   * @return a attachment matcher.
    */
   public static SimpleAttachmentMatcher matches(final SimpleAttachment attachment) {
     return new SimpleAttachmentMatcher(attachment);

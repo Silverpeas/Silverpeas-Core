@@ -26,6 +26,8 @@ package com.silverpeas.sharing.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
@@ -40,6 +42,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -61,7 +64,6 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
@@ -126,13 +128,16 @@ public class SimpleFileAccessControlTest {
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());
     if (!registred) {
-      String cndFileName = SimpleFileAccessControlTest.class.getClassLoader().getResource(
-          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-      SilverpeasRegister.registerNodeTypes(cndFileName);
+      Reader reader = null;
+      try {
+        reader = new InputStreamReader(SimpleFileAccessControlTest.class.getClassLoader().
+            getResourceAsStream("silverpeas-jcr.txt"));
+        SilverpeasRegister.registerNodeTypes(reader);
+      } finally {
+        IOUtils.closeQuietly(reader);
+      }
       registred = true;
       DBUtil.getInstanceForTest(dataSource.getConnection());
-    } else {
-      System.out.println(" -> node types already registered!");
     }
     Session session = null;
     try {
@@ -208,7 +213,7 @@ public class SimpleFileAccessControlTest {
     String description = "Ceci est un document de test";
     String creatorId = "10";
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-    SimpleAttachment file =  new SimpleAttachment(fileName, language, title, description,
+    SimpleAttachment file = new SimpleAttachment(fileName, language, title, description,
         "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
         creatorId, creationDate, null);
     SimpleDocumentPK pk = new SimpleDocumentPK(null, instanceId);
@@ -219,6 +224,6 @@ public class SimpleFileAccessControlTest {
     attachment.setForeignId("12");
     return AttachmentServiceFactory.getAttachmentService().createAttachment(attachment,
         new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8)));
-    
+
   }
 }

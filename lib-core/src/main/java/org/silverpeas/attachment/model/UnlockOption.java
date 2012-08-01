@@ -28,20 +28,24 @@ package org.silverpeas.attachment.model;
  * @author ehugonnet
  */
 public enum UnlockOption {
-  PUBLIC_VERSION(1), PRIVATE_VERSION(2), WEBDAV(4), UPLOAD(8), FORCE(16);
+  PRIVATE_VERSION(1), WEBDAV(2), UPLOAD(4), FORCE(8);
   
-  private int filter;
+  private int mask;
   
   private UnlockOption(int filter) {
-    this.filter = filter;
+    this.mask = filter;
   }
   
   public boolean isSelected(int options) {
-    return (options & filter) == filter;
+    return (options & mask) == mask;
   }
   
   public int addOption(int value) {
-    return value | filter;
+    return value | mask;
+  }
+  
+  public int removeOption(int value) {
+    return value - (value & mask);
   }
 
 }

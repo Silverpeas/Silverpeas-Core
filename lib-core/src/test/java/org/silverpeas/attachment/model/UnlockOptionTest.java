@@ -24,8 +24,9 @@
 package org.silverpeas.attachment.model;
 
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -42,10 +43,10 @@ public class UnlockOptionTest {
   @Test
   public void testIsSelected() {
     assertThat(UnlockOption.FORCE.isSelected(0), is(false));
-    assertThat(UnlockOption.FORCE.isSelected(17), is(true));
-    assertThat(UnlockOption.PRIVATE_VERSION.isSelected(17), is(false));
-    assertThat(UnlockOption.PUBLIC_VERSION.isSelected(17), is(true));
-    assertThat(UnlockOption.UPLOAD.isSelected(17), is(false));
+    assertThat(UnlockOption.PRIVATE_VERSION.isSelected(0), is(false));
+    assertThat(UnlockOption.FORCE.isSelected(9), is(true));
+    assertThat(UnlockOption.PRIVATE_VERSION.isSelected(9), is(true));
+    assertThat(UnlockOption.UPLOAD.isSelected(9), is(false));
   }
 
   /**
@@ -55,10 +56,25 @@ public class UnlockOptionTest {
   public void testAddOption() {
     int value = 0;
     value = UnlockOption.FORCE.addOption(value);
-    assertThat(value, is(16));
+    assertThat(value, is(8));
     value = UnlockOption.FORCE.addOption(value);
-    assertThat(value, is(16));
-    value = UnlockOption.PUBLIC_VERSION.addOption(value);
-    assertThat(value, is(17));
+    assertThat(value, is(8));
+    value = UnlockOption.PRIVATE_VERSION.addOption(value);
+    assertThat(value, is(9));
+  }
+
+  /**
+   * Test of addOption method, of class UnlockOption.
+   */
+  @Test
+  public void testRemoveOption() {
+    int value = 0;
+    value = UnlockOption.FORCE.removeOption(value);
+    assertThat(value, is(0));
+    value = UnlockOption.FORCE.addOption(value);
+    value = UnlockOption.PRIVATE_VERSION.addOption(value);
+    assertThat(value, is(9));
+    value = UnlockOption.FORCE.removeOption(value);
+    assertThat(value, is(1));
   }
 }

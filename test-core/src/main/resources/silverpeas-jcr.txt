@@ -13,6 +13,7 @@
   - slv:foreignKey (STRING) 
   - slv:instanceId (STRING) MANDATORY
   - slv:versioned (BOOLEAN)  = 'false'
+  - slv:public (BOOLEAN) = 'true'
   - slv:oldSilverpeasId (LONG)  = '-1'
   - slv:order (LONG) = '0'
   - slv:expiryDate (DATE)
@@ -20,12 +21,12 @@
   - slv:reservationDate (DATE)
   - slv:status (STRING)
   - slv:clone (STRING)
+  - slv:major (LONG) = '0'
+  - slv:minor (LONG) = '0'
   + slv:simpleAttachment PRIMARY
 
 [slv:simpleAttachment] >  nt:folder, mix:language, mix:created, mix:lastModified, mix:title
   - slv:name (STRING) MANDATORY
-  - slv:major (LONG) = '0'
-  - slv:minor (LONG) = '0'
   - slv:creationDate (DATE) MANDATORY
   - slv:creator (STRING) MANDATORY
   - slv:xmlFormId (STRING)

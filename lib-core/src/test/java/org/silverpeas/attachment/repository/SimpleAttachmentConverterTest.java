@@ -118,7 +118,6 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       Calendar calend = Calendar.getInstance();
       calend.setTime(creationDate);
       node.setProperty(SLV_PROPERTY_CREATION_DATE, calend);
-      node.setProperty(SLV_PROPERTY_MAJOR, 1);
       node.setProperty(SLV_PROPERTY_XMLFORM_ID, formId);
       node.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
@@ -172,10 +171,6 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       assertThat(node.getProperty(JCR_DESCRIPTION).getString(), is(description));
       assertThat(node.hasProperty(SLV_PROPERTY_NAME), is(true));
       assertThat(node.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
-      assertThat(node.hasProperty(SLV_PROPERTY_MAJOR), is(true));
-      assertThat(node.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
-      assertThat(node.hasProperty(SLV_PROPERTY_MINOR), is(true));
-      assertThat(node.getProperty(SLV_PROPERTY_MINOR).getLong(), is(0L));
       assertThat(node.hasProperty(JCR_TITLE), is(true));
       assertThat(node.getProperty(JCR_TITLE).getString(), is(title));
       assertThat(node.hasProperty(JCR_LAST_MODIFIED), is(false));

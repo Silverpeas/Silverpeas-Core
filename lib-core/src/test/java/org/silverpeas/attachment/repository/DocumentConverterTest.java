@@ -207,6 +207,8 @@ public class DocumentConverterTest {
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
     expectedResult.getFile().setUpdated(updateDate);
     expectedResult.getFile().setUpdatedBy(updatedBy);
+    expectedResult.setMajorVersion(1);
+    expectedResult.setMinorVersion(2);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -220,6 +222,8 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
       documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
+      documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
+      documentNode.setProperty(SLV_PROPERTY_MINOR, 2);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.addNode(attachmentNodeName, SLV_SIMPLE_ATTACHMENT);
       attachNode.setProperty(SLV_PROPERTY_NAME, fileName);
@@ -230,7 +234,6 @@ public class DocumentConverterTest {
       Calendar calend = Calendar.getInstance();
       calend.setTime(creationDate);
       attachNode.setProperty(SLV_PROPERTY_CREATION_DATE, calend);
-      attachNode.setProperty(SLV_PROPERTY_MAJOR, 1);
       attachNode.setProperty(SLV_PROPERTY_XMLFORM_ID, formId);
       attachNode.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
@@ -293,7 +296,8 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_STATUS, status);
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
-      documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
+      documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);      
+      documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.addNode(attachmentNodeName, SLV_SIMPLE_ATTACHMENT);
       attachNode.setProperty(SLV_PROPERTY_NAME, fileName);
@@ -304,7 +308,6 @@ public class DocumentConverterTest {
       Calendar calend = Calendar.getInstance();
       calend.setTime(creationDate);
       attachNode.setProperty(SLV_PROPERTY_CREATION_DATE, calend);
-      attachNode.setProperty(SLV_PROPERTY_MAJOR, 1);
       attachNode.setProperty(SLV_PROPERTY_XMLFORM_ID, formId);
       attachNode.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
@@ -388,10 +391,10 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status,
-        new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
+    document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
@@ -414,7 +417,8 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
           is(expiry.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
-          is(reservation.getTimeInMillis()));
+          is(reservation.getTimeInMillis()));      
+      assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -424,7 +428,6 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(JCR_DESCRIPTION).getString(), is(description));
       assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
           is(creationDate.getTime()));
-      assertThat(attachNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(updatedBy));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
@@ -465,6 +468,7 @@ public class DocumentConverterTest {
         expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId));
+    document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
@@ -488,7 +492,8 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
           is(expiry.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
-          is(reservation.getTimeInMillis()));
+          is(reservation.getTimeInMillis()));      
+      assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -498,7 +503,6 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(JCR_DESCRIPTION).getString(), is(description));
       assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
           is(creationDate.getTime()));
-      assertThat(attachNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(updatedBy));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
@@ -582,7 +586,6 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(JCR_DESCRIPTION).getString(), is(description));
       assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
           is(creationDate.getTime()));
-      assertThat(attachNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED_BY), is(false));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED), is(false));

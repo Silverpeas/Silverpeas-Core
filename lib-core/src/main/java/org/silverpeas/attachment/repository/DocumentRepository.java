@@ -49,6 +49,7 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
 
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -180,13 +181,10 @@ public class DocumentRepository {
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    boolean checkinRequired = document.isVersioned() && !documentNode.isCheckedOut();
-    if (checkinRequired) {
-      checkoutNode(documentNode);
-    }
+    boolean checkinRequired = lock(session, document);
     converter.fillNode(document, null, documentNode);
     if (checkinRequired) {
-      checkinNode(documentNode, document.getLanguage());
+      checkinNode(documentNode, document.getLanguage(), true);
     }
   }
 
@@ -237,8 +235,8 @@ public class DocumentRepository {
   public SimpleDocument findDocumentById(Session session, SimpleDocumentPK documentPk, String lang)
       throws RepositoryException {
     try {
-      Node componentNode = session.getNodeByIdentifier(documentPk.getId());
-      return converter.convertNode(componentNode, lang);
+      Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      return converter.convertNode(documentNode, lang);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.findDocumentById()", "", infex);
     }
@@ -574,7 +572,7 @@ public class DocumentRepository {
   }
 
   /**
-   * Remove the content for he specified language.
+   * Remove the content for the specified language.
    *
    * @param session the current JCR session.
    * @param documentPk the document which content is to be removed.
@@ -599,13 +597,18 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
+   * @return true if node has be checked out - false otherwise.
    * @throws RepositoryException
    */
-  public void lock(Session session, SimpleDocument document) throws RepositoryException {
+  public boolean lock(Session session, SimpleDocument document) throws RepositoryException {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
-      checkoutNode(documentNode);
+      if (!documentNode.isCheckedOut()) {
+        checkoutNode(documentNode);
+        return true;
+      }
     }
+    return false;
   }
 
   /**
@@ -614,28 +617,29 @@ public class DocumentRepository {
    * @param session
    * @param document
    * @param restore
+   * @return
    * @throws RepositoryException
    */
-  public void unlock(Session session, SimpleDocument document, boolean restore) throws
-      RepositoryException {
+  public SimpleDocument unlock(Session session, SimpleDocument document, boolean restore)
+      throws RepositoryException {
     Node documentNode;
     try {
       documentNode = session.getNodeByIdentifier(document.getId());
     } catch (ItemNotFoundException ex) {
       //Node may have been deleted after removing all its content.
-      return;
+      return document;
     }
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
         Version lastVersion = session.getWorkspace().getVersionManager().getVersionHistory(document.
             getFullJcrPath()).getAllVersions().nextVersion();
-        session.getWorkspace().getVersionManager().checkin(document.getFullJcrPath());
         session.getWorkspace().getVersionManager().restore(document.getFullJcrPath(), lastVersion,
             true);
-      } else {
-        checkinNode(documentNode, document.getLanguage());
+        return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
       }
+      return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
+    return document;
   }
 
   /**
@@ -651,13 +655,19 @@ public class DocumentRepository {
   /**
    * Check the document in.
    *
-   * @param node the node to checkin.
+   * @param documentNode the node to checkin.
+   * @param isMajor true if the new version is a major one - false otherwise.
    * @return the document for this new version.
    * @throws RepositoryException
    */
-  SimpleDocument checkinNode(Node node, String lang) throws RepositoryException {
-    Version currentVersion = node.getSession().getWorkspace().getVersionManager().checkin(node.
-        getPath());
-    return converter.convertNode(currentVersion, lang);
+  SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws RepositoryException {
+    VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+    documentNode.isCheckedOut();
+    String versionLabel = converter.updateVersion(documentNode, isMajor);
+    documentNode.getSession().save();
+    Version lastVersion = versionManager.checkin(documentNode.getPath());
+    lastVersion.getContainingHistory().addVersionLabel(lastVersion.getName(), versionLabel, false);
+   SimpleDocument doc = converter.convertNode(documentNode, lang);
+   return doc;
   }
 }

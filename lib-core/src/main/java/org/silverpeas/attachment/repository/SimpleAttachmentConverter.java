@@ -46,8 +46,6 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
     attachment.setDescription(getStringProperty(node, JCR_DESCRIPTION));
     attachment.setFilename(getStringProperty(node, SLV_PROPERTY_NAME));
     attachment.setLanguage(getStringProperty(node, JCR_LANGUAGE));
-    attachment.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
-    attachment.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
     attachment.setSize(getContentSize(node));
     attachment.setTitle(getStringProperty(node, JCR_TITLE));
     attachment.setUpdated(getDateProperty(node, JCR_LAST_MODIFIED));
@@ -61,9 +59,7 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
     addStringProperty(node, SLV_PROPERTY_CREATOR, attachment.getCreatedBy());
     addStringProperty(node, JCR_DESCRIPTION, attachment.getDescription());
     addStringProperty(node, SLV_PROPERTY_NAME, attachment.getFilename());
-    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());
-    node.setProperty(SLV_PROPERTY_MAJOR, attachment.getMajorVersion());
-    node.setProperty(SLV_PROPERTY_MINOR, attachment.getMinorVersion());
+    addStringProperty(node, JCR_LANGUAGE, attachment.getLanguage());   
     addStringProperty(node, JCR_TITLE, attachment.getTitle());
     addDateProperty(node, JCR_LAST_MODIFIED, attachment.getUpdated());
     addStringProperty(node, JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy());

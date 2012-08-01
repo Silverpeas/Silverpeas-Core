@@ -29,6 +29,7 @@ import java.util.Date;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.DBUtil;
@@ -64,6 +65,9 @@ public class SimpleDocument {
   private Date expiry;
   private String status;
   private String cloneId;
+  private int minorVersion = 0;
+  private int majorVersion = 0;
+  private boolean publicDocument = true;
 
   /**
    * Get the value of cloneId
@@ -101,7 +105,7 @@ public class SimpleDocument {
     this.foreignId = foreignId;
     this.order = order;
     this.versioned = versioned;
-    this.reservation = reservation;
+    setReservation(reservation);
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.status = status;
@@ -129,7 +133,7 @@ public class SimpleDocument {
     this.order = order;
     this.versioned = versioned;
     this.editedBy = editedBy;
-    this.reservation = reservation;
+    setReservation(reservation);
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
     this.status = status;
@@ -216,15 +220,25 @@ public class SimpleDocument {
   }
 
   public Date getReservation() {
-    return reservation;
+    if(reservation == null) {
+      return null;
+    }
+    return new Date(reservation.getTime());
   }
 
-  public void setReservation(Date reservation) {
-    this.reservation = reservation;
+  public final void setReservation(Date reservationDate) {
+    if(reservationDate == null) {
+      this.reservation = null;
+    } else {
+      this.reservation = new Date(reservationDate.getTime());
+    }
   }
 
   public Date getAlert() {
-    return alert;
+    if(alert == null) {
+      return null;
+    }
+    return new Date(alert.getTime());
   }
 
   public void setAlert(Date alert) {
@@ -232,7 +246,10 @@ public class SimpleDocument {
   }
 
   public Date getExpiry() {
-    return expiry;
+    if(expiry == null) {
+      return null;
+    }
+    return new Date(expiry.getTime());
   }
 
   public void setExpiry(Date expiry) {
@@ -248,19 +265,19 @@ public class SimpleDocument {
   }
 
   public int getMinorVersion() {
-    return file.getMinorVersion();
+    return minorVersion;
   }
 
   public void setMinorVersion(int minorVersion) {
-    file.setMinorVersion(minorVersion);
+    this.minorVersion = minorVersion;
   }
 
   public int getMajorVersion() {
-    return file.getMajorVersion();
+    return majorVersion;
   }
 
   public void setMajorVersion(int majorVersion) {
-    file.setMajorVersion(majorVersion);
+    this.majorVersion = majorVersion;
   }
 
   public String getEditedBy() {
@@ -369,6 +386,14 @@ public class SimpleDocument {
     this.file = file;
   }
 
+  public boolean isPublic() {
+    return publicDocument;
+  }
+
+  public void setPublicDocument(boolean publicDocument) {
+    this.publicDocument = publicDocument;
+  }
+
   public void unlock() {
     this.editedBy = null;
     this.expiry = null;
@@ -460,13 +485,16 @@ public class SimpleDocument {
     return "SimpleDocument{" + "pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
         + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
         + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", cloneId=" + cloneId
-        + ", file=" + file + '}';
+        + ", file=" + file + ", minorVersion=" + minorVersion + ", majorVersion="
+        + majorVersion + '}';
   }
 
   @Override
   public int hashCode() {
     int hash = 3;
     hash = 31 * hash + (this.pk != null ? this.pk.hashCode() : 0);
+    hash = 31 * hash + this.minorVersion;
+    hash = 31 * hash + this.majorVersion;
     return hash;
   }
 
@@ -480,6 +508,12 @@ public class SimpleDocument {
     }
     final SimpleDocument other = (SimpleDocument) obj;
     if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
+      return false;
+    }
+    if (this.minorVersion != other.minorVersion) {
+      return false;
+    }
+    if (this.majorVersion != other.majorVersion) {
       return false;
     }
     return true;

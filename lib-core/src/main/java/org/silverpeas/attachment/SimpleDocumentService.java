@@ -442,7 +442,7 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      repository.lock(session, document);
+      boolean requireLock = repository.lock(session, document);
       repository.removeContent(session, document.getPk(), lang);
       FileUtils.deleteQuietly(new File(document.getDirectoryPath(lang)));
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
@@ -456,7 +456,9 @@ public class SimpleDocumentService implements AttachmentService {
       }
       deleteIndex(document, document.getLanguage());
       session.save();
-      repository.unlock(session, document, false);
+      if(requireLock) {
+        repository.unlock(session, document, false);
+      }
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {

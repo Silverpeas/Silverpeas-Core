@@ -45,9 +45,13 @@ public class UnlockContext {
   public void addOption(UnlockOption option) {
     options = option.addOption(options);
   }
+  
+  public void removeOption(UnlockOption option) {
+    options = option.removeOption(options);
+  }
 
   public boolean isPublicVersion() {
-    return PUBLIC_VERSION.isSelected(options) || !PRIVATE_VERSION.isSelected(options);
+    return !PRIVATE_VERSION.isSelected(options);
   }
 
   public boolean isForce() {
