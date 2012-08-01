@@ -171,7 +171,7 @@ public class HtmlExportGenerator {
     Map<String, HtmlExportPublicationGenerator> map = exportReport.getMapIndexHtmlPaths();
     if (map != null) {
       StringBuilder entete = new StringBuilder();
-      entete.append(pubIds.size());
+      entete.append(pubIds.size()).append(" ");
       if (pubIds.size() == 1) {
         entete.append(resourceLocator.getString("importExport.document"));
       } else {
@@ -247,11 +247,13 @@ public class HtmlExportGenerator {
     // Elements HTML
     sb.append("treeview.control.ondblclick = function ( ) { window.status = \"control\" ; }\n");
 
+    // select root by default
+    sb.append("goto_link(\"treeview\", 0, treeview.link_target, treeview.link_prefix + elements_treeview.attribute(0, \"Lien\") + treeview.link_suffix);\n");
+
     sb.append("</script>\n");
     sb.append("</div>");
     sb.append("<div id=\"frameContent\">");
-    sb
-        .append(
+    sb.append(
         "<iframe name=\"publis\" width=\"100%\" height=\"100%\" frameborder=\"0\" scrolling=\"auto\"/>");
     sb.append("</div>\n");
     sb.append(getEndOfPage());
@@ -273,7 +275,7 @@ public class HtmlExportGenerator {
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
         String componentName =
             orgaController.getComponentInstLight(node.getNodePK().getInstanceId()).
-            getLabel();
+                getLabel();
 
         // regarder si ce topic contient des publications
         if (topicIds.contains(nodeId)) {
@@ -317,7 +319,7 @@ public class HtmlExportGenerator {
             sb.append(topicToHTML(childrens, topicIds, rootId, true));
           }
         } else {
-          // on est pas sur le "rootId" donc on continue � le chercher dans
+          // on est pas sur le "rootId" donc on continue à le chercher dans
           // les enfants
           if (childrens != null) {
             sb.append(topicToHTML(childrens, topicIds, rootId, false));
@@ -330,7 +332,7 @@ public class HtmlExportGenerator {
           if (topicIds.contains(nodeId)) {
             sb.append(filledTreeElement(node.getName(), nodeId, "0"));
           } else {
-            sb.append(emptyTreeElement(node.getName(), "0", "0"));
+            sb.append(emptyTreeElement(node.getName(), nodeId, "0"));
           }
         } else {
           // on n'affiche pas ni la corbeille ni les declasses
