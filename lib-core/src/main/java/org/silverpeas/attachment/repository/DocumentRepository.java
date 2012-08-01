@@ -26,6 +26,7 @@ package org.silverpeas.attachment.repository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,6 +66,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
+import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
 /**
  *
@@ -113,7 +115,7 @@ public class DocumentRepository {
     Node documentNode = docsNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
     converter.fillNode(document, content, documentNode);
     if (document.isVersioned()) {
-      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
+      documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
     }
     document.setId(documentNode.getIdentifier());
     return document.getPk();
@@ -209,16 +211,7 @@ public class DocumentRepository {
   private void deleteDocumentNode(Node documentNode) throws RepositoryException {
     if (documentNode != null) {
       if (converter.isVersioned(documentNode)) {
-        VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
-            getVersionHistory(documentNode.getPath());
-        Version root = history.getRootVersion();
-        VersionIterator versions = history.getAllVersions();
-        while (versions.hasNext()) {
-          Version version = versions.nextVersion();
-          if (!version.equals(root)) {
-            history.removeVersion(versions.nextVersion().getName());
-          }
-        }
+        removeHistory(documentNode);
       }
       documentNode.remove();
     }
@@ -660,13 +653,66 @@ public class DocumentRepository {
    * @return the document for this new version.
    * @throws RepositoryException
    */
-  SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws RepositoryException {
+  SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws
+      RepositoryException {
     VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
     String versionLabel = converter.updateVersion(documentNode, isMajor);
     documentNode.getSession().save();
     Version lastVersion = versionManager.checkin(documentNode.getPath());
     lastVersion.getContainingHistory().addVersionLabel(lastVersion.getName(), versionLabel, false);
-   SimpleDocument doc = converter.convertNode(documentNode, lang);
-   return doc;
+    SimpleDocument doc = converter.convertNode(documentNode, lang);
+    return doc;
+  }
+
+  /**
+   * Add the version feature to an existing document. If the document has already the version
+   * feature, nothing is done.
+   *
+   * @param session
+   * @param documentPk
+   * @throws RepositoryException
+   */
+  public void setVersionnable(Session session, SimpleDocumentPK documentPk) throws
+      RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+    if (!converter.isVersioned(documentNode)) {
+      documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
+      documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
+    }
+  }
+
+  /**
+   * Remove the version feature to an existing document. If the document doesn't have already the
+   * version feature, nothing is done.
+   *
+   * @param session
+   * @param documentPk
+   * @throws RepositoryException
+   */
+  public void removeVersionnable(Session session, SimpleDocumentPK documentPk) throws
+      RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+    if (converter.isVersioned(documentNode)) {
+      removeHistory(documentNode);
+      VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
+          getVersionHistory(documentNode.getPath());
+      history.remove();
+      
+    documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
+    }
+    documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
+  }
+
+  void removeHistory(Node documentNode) throws RepositoryException {
+    VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
+        getVersionHistory(documentNode.getPath());
+    Version root = history.getRootVersion();
+    VersionIterator versions = history.getAllVersions();
+    while (versions.hasNext()) {
+      Version version = versions.nextVersion();
+      if (!version.equals(root)) {
+        history.removeVersion(versions.nextVersion().getName());
+      }
+    }
   }
 }

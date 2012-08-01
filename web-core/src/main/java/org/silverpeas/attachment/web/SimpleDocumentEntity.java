@@ -26,11 +26,14 @@ package org.silverpeas.attachment.web;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.web.Exposable;
+
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import javax.xml.bind.annotation.XmlElement;
-import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  *

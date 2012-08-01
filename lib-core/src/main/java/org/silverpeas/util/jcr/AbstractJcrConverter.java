@@ -52,6 +52,7 @@ import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
@@ -348,7 +349,9 @@ public abstract class AbstractJcrConverter {
   }
 
   /**
-   * Return the size of the file in the jcr:content node which is a child node of the specified node.
+   * Return the size of the file in the jcr:content node which is a child node of the specified
+   * node.
+   *
    * @param fileNode
    * @return the size of the content.
    * @throws RepositoryException
@@ -489,5 +492,24 @@ public abstract class AbstractJcrConverter {
       return parent.getNode(name);
     }
     return parent.addNode(name, NT_FOLDER);
+  }
+
+  /**
+   * Return true if the specified mixin type is explicitly assigned to the node. It does not include
+   * mixin types inherited through the addition of supertypes to the primary type hierarchy or
+   * through the addition of supertypes to the type hierarchy of any of the declared mixin types.
+   *
+   * @param node the node on which we are looking for the specified mixin.
+   * @param mixin the name of the mixin.
+   * @return rue if the specified mixin type is explicitly assigned to the node false otherwise.
+   * @throws RepositoryException
+   */
+  public boolean isMixinApplied(Node node, String mixin) throws RepositoryException {
+    for (NodeType type : node.getMixinNodeTypes()) {
+      if (type.isNodeType(mixin)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

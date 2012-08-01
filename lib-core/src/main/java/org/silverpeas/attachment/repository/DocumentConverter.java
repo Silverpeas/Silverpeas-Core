@@ -46,6 +46,8 @@ import org.silverpeas.util.jcr.AbstractJcrConverter;
 import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
+import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
+import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
 /**
  *
@@ -210,9 +212,9 @@ class DocumentConverter extends AbstractJcrConverter {
 
   public boolean isVersioned(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
-        JCR_FROZEN_PRIMARY_TYPE);
+        JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
   }
-
+  
   public String updateVersion(Node node, boolean isPublic) throws RepositoryException {
     int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR);
     int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR);
