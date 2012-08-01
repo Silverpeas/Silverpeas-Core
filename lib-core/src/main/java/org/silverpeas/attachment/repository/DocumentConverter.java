@@ -33,6 +33,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
 
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 
@@ -66,19 +67,24 @@ class DocumentConverter extends AbstractJcrConverter {
   List<SimpleDocument> convertDocumentHistory(Node node, String lang) throws
       RepositoryException {
     try {
-      VersionHistory history = node.getSession().getWorkspace().getVersionManager().
-          getVersionHistory(node.getPath());
+      VersionManager versionManager = node.getSession().getWorkspace().getVersionManager();
+      VersionHistory history = versionManager.getVersionHistory(node.getPath());
       Version root = history.getRootVersion();
       String rootId = "";
       if (root != null) {
         rootId = root.getIdentifier();
+      }
+      Version base = versionManager.getBaseVersion(node.getPath());
+      String baseId = "";
+      if (base != null) {
+        baseId = base.getIdentifier();
       }
       VersionIterator versionsIterator = history.getAllVersions();
       List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
           getSize());
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
-        if (!version.getIdentifier().equals(rootId)) {
+        if (!version.getIdentifier().equals(rootId) && !version.getIdentifier().equals(baseId)) {
           documentHistory.add(fillDocument(version.getFrozenNode(), lang));
         }
       }
@@ -148,8 +154,6 @@ class DocumentConverter extends AbstractJcrConverter {
     documentNode.setProperty(SLV_PROPERTY_VERSIONED, document.isVersioned());
     documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
     documentNode.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
-    documentNode.setProperty(SLV_PROPERTY_MAJOR, document.getMajorVersion());
-    documentNode.setProperty(SLV_PROPERTY_MINOR, document.getMinorVersion());
     addStringProperty(documentNode, SLV_PROPERTY_INSTANCEID, document.getInstanceId());
     addStringProperty(documentNode, SLV_PROPERTY_OWNER, document.getEditedBy());
     addStringProperty(documentNode, SLV_PROPERTY_STATUS, document.getStatus());
@@ -206,21 +210,25 @@ class DocumentConverter extends AbstractJcrConverter {
 
   public boolean isVersioned(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
-        "jcr:frozenPrimaryType");
+        JCR_FROZEN_PRIMARY_TYPE);
   }
 
   public String updateVersion(Node node, boolean isPublic) throws RepositoryException {
+    int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR);
+    int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR);
     if (isVersioned(node) && node.isCheckedOut()) {
       if (isPublic) {
-        int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR) + 1;
+        majorVersion = majorVersion + 1;
         node.setProperty(SLV_PROPERTY_MAJOR, majorVersion);
         node.setProperty(SLV_PROPERTY_MINOR, 0);
       } else {
-        int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR) + 1;
+        minorVersion = minorVersion + 1;
         node.setProperty(SLV_PROPERTY_MINOR, minorVersion);
+        if (!node.hasProperty(SLV_PROPERTY_MAJOR)) {
+          node.setProperty(SLV_PROPERTY_MAJOR, 0);
+        }
       }
     }
-    return "Version " + getIntProperty(node, SLV_PROPERTY_MAJOR) + "." + getIntProperty(node,
-        SLV_PROPERTY_MINOR);
+    return "Version " + majorVersion + "." + minorVersion;
   }
 }

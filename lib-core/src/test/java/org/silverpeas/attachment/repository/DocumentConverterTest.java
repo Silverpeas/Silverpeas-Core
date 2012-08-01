@@ -41,6 +41,7 @@ import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -417,8 +418,7 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
           is(expiry.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
-          is(reservation.getTimeInMillis()));      
-      assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
+          is(reservation.getTimeInMillis()));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -492,8 +492,7 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
           is(expiry.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
-          is(reservation.getTimeInMillis()));      
-      assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
+          is(reservation.getTimeInMillis()));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -526,6 +525,7 @@ public class DocumentConverterTest {
 
   /**
    * Test of addAttachment method, of class SimpleDocumentConverter.
+   * @throws Exception 
    */
   @Test
   public void testAddAttachment() throws Exception {
@@ -650,6 +650,84 @@ public class DocumentConverterTest {
       instance.removeAttachment(documentNode, language);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       assertThat(documentNode.hasNode(attachmentNodeName), is(false));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+  
+  
+  /**
+   * Test of fillNode method, of class SimpleDocumentConverter.
+   */
+  @Test
+  public void testUpdateDocumentVersion() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    long oldSilverpeasId = 100L;
+    String language = "en";
+    String fileName = "test.pdf";
+    String title = "My test document";
+    String status = "My Status";
+    String description = "This is a test document";
+    String formId = "18";
+    String updatedBy = "5";
+    String creatorId = "0";
+    String foreignId = "node36";
+    boolean versionned = true;
+    String owner = "25";
+    int order = 10;
+    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    Date updateDate = RandomGenerator.getRandomCalendar().getTime();
+
+    Calendar alert = RandomGenerator.getRandomCalendar();
+    Calendar expiry = RandomGenerator.getRandomCalendar();
+    Calendar reservation = RandomGenerator.getRandomCalendar();
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
+        foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
+        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
+        "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
+        formId));
+    document.setMajorVersion(1);
+    alert.setTime(document.getAlert());
+    expiry.setTime(document.getExpiry());
+    reservation.setTime(document.getReservation());
+    document.setOldSilverpeasId(oldSilverpeasId);
+    document.getFile().setUpdated(updateDate);
+    document.getFile().setUpdatedBy(updatedBy);
+    try {
+      Node documentNode = session.getRootNode().getNode(instanceId).addNode(
+          SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
+      documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
+      instance.fillNode(document, documentNode);
+      instance.updateVersion(documentNode, true);
+      assertThat(documentNode.getProperty(SLV_PROPERTY_FOREIGN_KEY).getString(), is(foreignId));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_VERSIONED).getBoolean(), is(versionned));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_ORDER).getLong(), is((long) order));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong(), is(oldSilverpeasId));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_INSTANCEID).getString(), is(instanceId));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_OWNER).getString(), is(owner));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_ALERT_DATE).getDate().getTimeInMillis(),
+          is(alert.getTimeInMillis()));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
+          is(expiry.getTimeInMillis()));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
+          is(reservation.getTimeInMillis()));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_MINOR).getLong(), is(0L));
+      String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
+      Node attachNode = documentNode.getNode(attachmentNodeName);
+      assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATOR).getString(), is(creatorId));
+      assertThat(attachNode.getProperty(JCR_LANGUAGE).getString(), is(language));
+      assertThat(attachNode.getProperty(JCR_TITLE).getString(), is(title));
+      assertThat(attachNode.getProperty(JCR_DESCRIPTION).getString(), is(description));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
+          is(creationDate.getTime()));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
+      assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(updatedBy));
+      assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
+          is(updateDate.getTime()));
+      assertThat(attachNode.hasNode(JCR_CONTENT), is(false));
     } finally {
       BasicDaoFactory.logout(session);
     }

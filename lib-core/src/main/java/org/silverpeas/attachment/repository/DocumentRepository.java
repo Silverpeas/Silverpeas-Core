@@ -662,7 +662,6 @@ public class DocumentRepository {
    */
   SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws RepositoryException {
     VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
-    documentNode.isCheckedOut();
     String versionLabel = converter.updateVersion(documentNode, isMajor);
     documentNode.getSession().save();
     Version lastVersion = versionManager.checkin(documentNode.getPath());

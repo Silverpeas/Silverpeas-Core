@@ -23,26 +23,31 @@
  */
 package org.silverpeas.attachment.repository;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.jcr.Binary;
+import javax.jcr.Node;
+import javax.jcr.Session;
+
+import org.dbunit.dataset.DefaultDataSet;
+import org.dbunit.dataset.IDataSet;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.util.MimeTypes;
+
 import com.stratelia.webactiv.util.DateUtil;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Date;
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.Session;
-import org.dbunit.dataset.DefaultDataSet;
-import org.dbunit.dataset.IDataSet;
-import org.junit.Before;
-import org.junit.Test;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.springframework.test.context.ContextConfiguration;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;
@@ -88,6 +93,7 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
 
   /**
    * Test of convertNode method, of class SimpleAttachmentConverter.
+   * @throws Exception 
    */
   @Test
   public void testConvertNode() throws Exception {

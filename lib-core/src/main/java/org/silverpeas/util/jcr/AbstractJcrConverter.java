@@ -348,10 +348,9 @@ public abstract class AbstractJcrConverter {
   }
 
   /**
-   *
+   * Return the size of the file in the jcr:content node which is a child node of the specified node.
    * @param fileNode
-   * @param content
-   * @param mimeType
+   * @return the size of the content.
    * @throws RepositoryException
    */
   public long getContentSize(Node fileNode) throws RepositoryException {

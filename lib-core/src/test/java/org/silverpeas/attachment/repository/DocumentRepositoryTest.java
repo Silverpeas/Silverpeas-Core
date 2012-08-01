@@ -109,7 +109,7 @@ public class DocumentRepositoryTest {
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
       Reader reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
-          getResourceAsStream("silverpeas-jcr.txt"));
+          getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
       try {
         SilverpeasRegister.registerNodeTypes(reader);
       } finally {
@@ -177,8 +177,7 @@ public class DocumentRepositoryTest {
     try {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String language = "en";
-      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
-          Charsets.UTF_8));
+      InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
       Date creationDate = attachment.getCreated();
       String foreignId = "node18";

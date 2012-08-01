@@ -109,7 +109,7 @@ public class HistorisedDocumentRepositoryTest {
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
       Reader reader = new InputStreamReader(HistorisedDocumentRepositoryTest.class.getClassLoader().
-          getResourceAsStream("silverpeas-jcr.txt"));
+          getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
       try {
         SilverpeasRegister.registerNodeTypes(reader);
       } finally {
@@ -314,6 +314,7 @@ public class HistorisedDocumentRepositoryTest {
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       String foreignId = "node78";
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      document.setPublicDocument(false);
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
@@ -324,13 +325,16 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(docCreated.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
       assertThat(docCreated.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
       assertThat(docCreated.getHistory(), is(notNullValue()));
-      assertThat(docCreated.getHistory(), hasSize(1));
-      assertThat(docCreated.getHistory().get(0).getOrder(), is(10));
+      assertThat(docCreated.getHistory(), hasSize(0));
+      assertThat(docCreated.getMajorVersion(), is(0));
+      assertThat(docCreated.getMinorVersion(), is(1));
       attachment = createFrenchVersionnedAttachment();
       document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(false);
       documentRepository.lock(session, document);
       documentRepository.updateDocument(session, document);
-      session.save();
+      session.save();      
+      documentRepository.unlock(session, document, false);
       HistorisedDocument doc = (HistorisedDocument) documentRepository.findDocumentById(session,
           result, "fr");
       assertThat(doc, is(notNullValue()));
@@ -340,6 +344,8 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getHistory(), is(notNullValue()));
       assertThat(doc.getHistory(), hasSize(1));
       assertThat(doc.getHistory().get(0).getOrder(), is(10));
+      assertThat(doc.getMajorVersion(), is(0));
+      assertThat(doc.getMinorVersion(), is(2));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -364,8 +370,8 @@ public class HistorisedDocumentRepositoryTest {
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocument docNode18_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);      
-      createVersionedDocument(session, docNode18_2, content);      
+      SimpleDocument docNode18_2 = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      createVersionedDocument(session, docNode18_2, content);
       docNode18_2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishVersionnedAttachment();
@@ -529,7 +535,7 @@ public class HistorisedDocumentRepositoryTest {
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK result = createVersionedDocument(session, document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
-      assertThat(result, is(expResult));      
+      assertThat(result, is(expResult));
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       documentRepository.lock(session, document);
@@ -613,7 +619,8 @@ public class HistorisedDocumentRepositoryTest {
       createVersionedDocument(session, docOwn25_2, content);
       docOwn25_2.setMajorVersion(1);
       session.save();
-      List<SimpleDocument> docs = documentRepository.listDocumentsByOwner(session, instanceId, owner, "fr");
+      List<SimpleDocument> docs = documentRepository.
+          listDocumentsByOwner(session, instanceId, owner, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, containsInAnyOrder(docOwn25_1, docOwn25_2));
@@ -638,7 +645,8 @@ public class HistorisedDocumentRepositoryTest {
       String owner = "10";
       Calendar today = Calendar.getInstance();
       DateUtil.setAtBeginOfDay(today);
-      SimpleDocument expiringDoc1 = new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
+      SimpleDocument expiringDoc1 =
+          new HistorisedDocument(emptyId, foreignId, 10, owner, attachment);
       expiringDoc1.setExpiry(today.getTime());
       createVersionedDocument(session, expiringDoc1, content);
       expiringDoc1.setMajorVersion(1);
@@ -755,7 +763,8 @@ public class HistorisedDocumentRepositoryTest {
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocument docToUnlock2 = new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
+      SimpleDocument docToUnlock2 =
+          new HistorisedDocument(emptyId, foreignId, 15, owner, attachment);
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       createVersionedDocument(session, docToUnlock2, content);
       docToUnlock2.setMajorVersion(1);
@@ -832,7 +841,7 @@ public class HistorisedDocumentRepositoryTest {
           attachment);
       Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
-      documentRepository.createDocument(session, docToLeaveLocked4, content);      
+      documentRepository.createDocument(session, docToLeaveLocked4, content);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsRequiringUnlocking(session, today.
           getTime());
@@ -1051,7 +1060,7 @@ public class HistorisedDocumentRepositoryTest {
       createVersionedDocument(session, notWarningDoc2, content);
       notWarningDoc2.setMajorVersion(1);
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      attachment = createEnglishVersionnedAttachment();      
+      attachment = createEnglishVersionnedAttachment();
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument warningDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
           attachment);
