@@ -23,13 +23,13 @@
  */
 package com.sun.portal.portletcontainer.admin.deployment;
 
+import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
-
-import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
 
 /**
  * Factory class to provide access to the WebAppDeployer implementation class. This is a singleton
@@ -45,7 +45,7 @@ public class WebAppDeployerFactory {
   private static final String DEFAULT_DEPLOYMENT_MANAGER_CLASS =
       "com.sun.portal.portletadmin.deployment.DefaultWebAppDeployer";
   private static Logger logger = Logger.getLogger(WebAppDeployerFactory.class
-      .getPackage().getName(), "com.silverpeas.portlets.PALogMessages");
+      .getPackage().getName(), "org.silverpeas.portlets.PALogMessages");
 
   /**
    * Reads the configuration file to intialize the manager with the appropriate WebAppDeployer

@@ -65,10 +65,9 @@ public class PortletWindowInvoker extends WindowInvoker {
 
   private static final Logger logger =
       Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
-      "com.silverpeas.portlets.PCDLogMessages");
+      "org.silverpeas.portlets.PCDLogMessages");
   private final static ResourceLocator messages =
-      new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle",
-      "");
+      new ResourceLocator("com.stratelia.silverpeas.portlet.multilang.portletBundle", "");
 
   @Override
   public void init(ServletContext servletContext, HttpServletRequest request,

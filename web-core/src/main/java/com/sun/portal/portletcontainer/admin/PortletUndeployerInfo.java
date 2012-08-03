@@ -23,18 +23,13 @@
  */
 package com.sun.portal.portletcontainer.admin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 
 /**
  * PortletUndeployerInfo has the list of the portlets that are undeployed.
@@ -45,9 +40,8 @@ public class PortletUndeployerInfo {
   private String undeployPortletFilename;
 
   // Create a logger for this class
-  private static Logger logger = Logger.getLogger(
-      "com.sun.portal.portletcontainer.admin",
-      "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
+      "org.silverpeas.portlets.PALogMessages");
 
   public PortletUndeployerInfo() throws PortletRegistryException {
     undeployPortletFilename = PortletRegistryHelper.getRegistryLocation()

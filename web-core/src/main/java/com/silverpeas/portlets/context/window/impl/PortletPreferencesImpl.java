@@ -83,7 +83,7 @@ public class PortletPreferencesImpl implements PortletPreferences, PreferencesVa
   // Create a logger for this class
   private static final Logger logger =
       Logger.getLogger("com.silverpeas.portlets.context.window.impl",
-      "com.silverpeas.portlets.PCCTXLogMessages");
+      "org.silverpeas.portlets.PCCTXLogMessages");
 
   public PortletPreferencesImpl(HttpServletRequest request,
       PortletRegistryContext portletRegistryContext,
