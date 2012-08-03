@@ -95,7 +95,7 @@ public abstract class WindowInvoker implements WindowInvokerConstants {
   // Debug logger
   // ---
   private final static Logger logger = ContainerLogger.getLogger(WindowInvoker.class,
-      "com.silverpeas.portlets.PCCTXLogMessages");
+      "org.silverpeas.portlets.PCCTXLogMessages");
 
   // ------------------------------------------------------------------
   //

@@ -57,7 +57,7 @@ import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 public class DriverUtil {
 
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
-      "com.silverpeas.portlets.PCDLogMessages");
+      "org.silverpeas.portlets.PCDLogMessages");
   private static int renderParameterPrefixLength =
       PortletContainerConstants.RENDER_PARAM_PREFIX.length();
   private static int scopedAttributesPrefixLength =

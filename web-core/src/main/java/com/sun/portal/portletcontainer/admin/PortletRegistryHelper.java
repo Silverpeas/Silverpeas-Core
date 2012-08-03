@@ -67,9 +67,8 @@ public class PortletRegistryHelper implements PortletRegistryTags {
   private static final String PORTLET_CONTAINER_DEFAULT_AUTODEPLOY_DIR_NAME = "autodeploy";
   private static final String PORTLET_CONTAINER_DEFAULT_CONFIG_DIR_NAME = "config";
   private static final String PORTLET_CONTAINER_HOME_TOKEN = "@portlet-container-home@";
-  private static Logger logger = Logger.getLogger(
-      "com.sun.portal.portletcontainer.admin",
-      "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
+      "org.silverpeas.portlets.PALogMessages");
   private static String CONFIG_FILE = "ContainerConfig.properties";
   private static Properties configProperties = null;
 
