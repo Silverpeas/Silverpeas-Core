@@ -110,7 +110,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <listener-class>com.sun.portal.portletcontainer.impl.PortletContainerContextListenerImpl</listener-class>
     </listener>
     <listener>
-        <listener-class>com.stratelia.webactiv.servlets.SilverListener</listener-class>
+        <listener-class>org.silverpeas.servlets.SilverListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
@@ -139,63 +139,63 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>CredentialsServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.CredentialsServlet</servlet-class>
+        <servlet-class>org.silverpeas.servlets.CredentialsServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.FileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.FileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>OnlineFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.OnlineFileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.OnlineFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TempFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.TempFileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.TempFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FileUploader</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.FileUploader</servlet-class>
+        <servlet-class>org.silverpeas.servlets.FileUploader</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RestOnlineFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.RestOnlineFileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.RestOnlineFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToPublication</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToPublication</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToPublication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToTopic</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToTopic</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToTopic</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToComponent</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToComponent</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToComponent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToSpace</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToSpace</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToSpace</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToFile</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToFile</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToDocument</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToDocument</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToDocument</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToVersion</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToVersion</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToVersion</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MainRequestRouter</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.MainRequestRouter</servlet-class>
+        <servlet-class>org.silverpeas.servlets.MainRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.LogoutServlet</servlet-class>
+        <servlet-class>org.silverpeas.servlets.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>POPUPRequestRouter</servlet-name>

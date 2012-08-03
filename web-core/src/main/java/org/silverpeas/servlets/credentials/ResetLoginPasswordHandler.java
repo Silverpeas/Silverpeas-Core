@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,32 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.web;
 
-import java.io.IOException;
-import java.io.OutputStream;
+package org.silverpeas.servlets.credentials;
 
-import org.silverpeas.servlets.OnlineFile;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
+import com.silverpeas.util.StringUtil;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- *
  * @author ehugonnet
  */
-public class OnlineAttachment extends OnlineFile {
-
-  private SimpleDocument document;
-
-  public OnlineAttachment(SimpleDocument document) {
-    super(document.getContentType(), document.getFilename(), document.getAttachmentPath(), document.
-        getInstanceId());
-    this.document = document;
-  }
+public class ResetLoginPasswordHandler extends FunctionHandler {
 
   @Override
-  public void write(OutputStream out) throws IOException {
-    AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, document.getPk(),
-        document.getLanguage());
+  public String doAction(HttpServletRequest request) {
+    String login = request.getParameter("login");
+    if (StringUtil.isDefined(login)) {
+      request.getSession().setAttribute("specialLogin", login);
+    }
+    String domainId = request.getParameter("domainId");
+    if (StringUtil.isDefined(domainId)) {
+      request.getSession().setAttribute("specialDomainId", domainId);
+    }
+    return getGeneral().getString("forgottenPasswordLoginUrl");
   }
 }

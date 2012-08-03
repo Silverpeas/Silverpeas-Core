@@ -248,7 +248,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       } else {
         request
             .setAttribute(
-            "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
+            "org.silverpeas.servlets.ComponentRequestRouter.requestURI",
             request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);

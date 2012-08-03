@@ -26,7 +26,6 @@ package org.silverpeas.attachment.repository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,7 +37,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.ChildNode;
@@ -112,7 +110,7 @@ public class DocumentRepository {
       document.setOrder(last.getOrder() + 1);
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
-    Node documentNode = docsNode.addNode(document.getNodeName(), SLV_SIMPLE_DOCUMENT);
+    Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
     converter.fillNode(document, content, documentNode);
     if (document.isVersioned()) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
@@ -162,6 +160,8 @@ public class DocumentRepository {
     prepareComponentAttachments(destination.getInstanceId());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
+    targetDoc.setNodeName(null);
+    targetDoc.computeNodeName();
     targetDoc.setPK(pk);
     targetDoc.setForeignId(destination.getId());
     session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
@@ -697,8 +697,8 @@ public class DocumentRepository {
       VersionHistory history = documentNode.getSession().getWorkspace().getVersionManager().
           getVersionHistory(documentNode.getPath());
       history.remove();
-      
-    documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
+
+      documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
     }
     documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
   }

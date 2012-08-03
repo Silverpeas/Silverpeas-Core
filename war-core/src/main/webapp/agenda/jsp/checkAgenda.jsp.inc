@@ -21,10 +21,10 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 
 <%!
-String m_context         	= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = URLManager.getApplicationURL();
 
 // Icones operationBar
 String agendaAddSrc         = m_context + "/util/icons/agenda_to_add.gif";

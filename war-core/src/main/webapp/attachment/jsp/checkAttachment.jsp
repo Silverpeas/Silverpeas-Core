@@ -41,7 +41,7 @@
 <%@ page import="java.util.*"%>
 <%@ page import="java.net.URLEncoder"%>
 
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="org.silverpeas.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="com.stratelia.webactiv.util.fileFolder.FileFolderManager"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>

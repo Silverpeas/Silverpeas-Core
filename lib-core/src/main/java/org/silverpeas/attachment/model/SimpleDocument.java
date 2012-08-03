@@ -55,6 +55,7 @@ public class SimpleDocument {
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
+  public final static String DOCUMENT_PREFIX = "simpledoc_";
   private SimpleDocumentPK pk;
   private String foreignId;
   private int order;
@@ -68,6 +69,7 @@ public class SimpleDocument {
   private int minorVersion = 0;
   private int majorVersion = 0;
   private boolean publicDocument = true;
+  private String nodeName;
 
   /**
    * Get the value of cloneId
@@ -220,14 +222,14 @@ public class SimpleDocument {
   }
 
   public Date getReservation() {
-    if(reservation == null) {
+    if (reservation == null) {
       return null;
     }
     return new Date(reservation.getTime());
   }
 
   public final void setReservation(Date reservationDate) {
-    if(reservationDate == null) {
+    if (reservationDate == null) {
       this.reservation = null;
     } else {
       this.reservation = new Date(reservationDate.getTime());
@@ -235,7 +237,7 @@ public class SimpleDocument {
   }
 
   public Date getAlert() {
-    if(alert == null) {
+    if (alert == null) {
       return null;
     }
     return new Date(alert.getTime());
@@ -246,7 +248,7 @@ public class SimpleDocument {
   }
 
   public Date getExpiry() {
-    if(expiry == null) {
+    if (expiry == null) {
       return null;
     }
     return new Date(expiry.getTime());
@@ -401,17 +403,25 @@ public class SimpleDocument {
   }
 
   public String getNodeName() {
+    return nodeName;
+  }
+
+  public void setNodeName(String nodeName) {
+    this.nodeName = nodeName;
+  }
+
+  public String computeNodeName() {
     if (getOldSilverpeasId() <= 0L) {
-      if (isVersioned()) {
-        setOldSilverpeasId(DBUtil.getNextId("sb_document_version", null));
-      } else {
-        setOldSilverpeasId(DBUtil.getNextId("sb_attachment_attachment", null));
-      }
+      setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
+      setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
+      return getNodeName();
     }
     if (isVersioned()) {
-      return VERSION_PREFIX + getOldSilverpeasId();
+      setNodeName(VERSION_PREFIX + getOldSilverpeasId());
+      return getNodeName();
     }
-    return ATTACHMENT_PREFIX + getOldSilverpeasId();
+    setNodeName(ATTACHMENT_PREFIX + getOldSilverpeasId());
+    return getNodeName();
   }
 
   /**

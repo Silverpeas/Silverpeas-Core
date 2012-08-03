@@ -195,7 +195,6 @@
               <c:url var="attachmentUrl" value="${attachment.attachmentURL}" />
             </c:otherwise>
           </c:choose>
-            <!-- <c:out value="${attachment.filename}" /> - <c:out value="${! view:isDefined(attachment.title) || ! showTitle}" /> -->
           <c:choose>
             <c:when test="${! view:isDefined(attachment.title) || ! showTitle}">
               <c:set var="title" value="${attachment.filename}" />

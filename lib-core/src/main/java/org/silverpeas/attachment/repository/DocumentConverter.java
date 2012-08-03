@@ -130,6 +130,7 @@ class DocumentConverter extends AbstractJcrConverter {
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_STATUS), file);
+    doc.setNodeName(node.getName());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
@@ -214,7 +215,7 @@ class DocumentConverter extends AbstractJcrConverter {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
   }
-  
+
   public String updateVersion(Node node, boolean isPublic) throws RepositoryException {
     int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR);
     int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR);

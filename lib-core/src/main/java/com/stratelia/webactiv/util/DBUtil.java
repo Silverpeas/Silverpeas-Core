@@ -1,46 +1,37 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import javax.ejb.EJBException;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import com.silverpeas.util.StringUtil;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DBUtil {
 
@@ -73,7 +64,6 @@ public class DBUtil {
   public static int getTextFieldLength() {
     return getInstance().textFieldLength;
   }
-
   private Connection connectionForTest;
 
   private DBUtil(Connection connectionForTest) {
@@ -94,7 +84,7 @@ public class DBUtil {
     synchronized (DBUtil.class) {
       if (connectionForTest != null) {
         instance = new DBUtil(connectionForTest);
-        
+
       }
     }
     return instance;
@@ -102,14 +92,13 @@ public class DBUtil {
 
   public static void clearTestInstance() {
     synchronized (DBUtil.class) {
-      if(instance != null) {
+      if (instance != null) {
         DBUtil.close(instance.connectionForTest);
       }
       instance = new DBUtil(null);
       dsStock.clear();
     }
   }
-
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
@@ -134,6 +123,7 @@ public class DBUtil {
 
   /**
    * fabrique une nouvelle connection
+   *
    * @param dbName le nom de la base de donnée
    * @return a new connection to the database.
    * @throws UtilException
@@ -173,6 +163,7 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
+   *
    * @param tableName the name of the table.
    * @param idName the name of the column.
    * @return a unique id.
@@ -218,6 +209,7 @@ public class DBUtil {
 
   /**
    * Return a new unique Id for a table.
+   *
    * @param connection the JDBC connection.
    * @param tableName the name of the table.
    * @param idName the name of the column.
@@ -230,7 +222,7 @@ public class DBUtil {
   }
 
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
-          throws SQLException {
+      throws SQLException {
     // tentative d'update
     SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
     try {
@@ -266,17 +258,17 @@ public class DBUtil {
     return max;
   }
 
-  private static int updateMaxFromTable(Connection con, String tablename) throws SQLException {
-    String tableName = tablename.toLowerCase();
+  private static int updateMaxFromTable(Connection con, String tableName) throws SQLException {
+    String table = tableName.toLowerCase();
     int max = 0;
     PreparedStatement prepStmt = null;
     int count = 0;
     try {
       prepStmt = con.prepareStatement("UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
-      prepStmt.setString(1, tableName);
+      prepStmt.setString(1, table);
       count = prepStmt.executeUpdate();
     } finally {
-      prepStmt.close();
+      close(prepStmt);
     }
 
     if (count == 1) {
@@ -285,26 +277,24 @@ public class DBUtil {
       try {
         // l'update c'est bien passe, on recupere la valeur
         selectStmt = con.prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?");
-        selectStmt.setString(1, tableName);
+        selectStmt.setString(1, table);
         rs = selectStmt.executeQuery();
         if (!rs.next()) {
           SilverTrace.error("util", "DBUtil.getNextId", "util.MSG_NO_RECORD_FOUND");
           throw new RuntimeException("Erreur Interne DBUtil.getNextId()");
-        } else {
-          max = rs.getInt(1);
         }
+        max = rs.getInt(1);
       } finally {
         close(rs, selectStmt);
       }
       return max;
-    } else {
-      throw new SQLException("Update impossible : Ligne non existante");
     }
+    throw new SQLException("Update impossible : Ligne non existante");
   }
 
   public static int getMaxFromTable(Connection con, String tableName, String idName)
       throws SQLException {
-    if(!StringUtil.isDefined(tableName) || ! StringUtil.isDefined(idName)) {
+    if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(idName)) {
       return 1;
     }
     PreparedStatement prepStmt = null;
@@ -318,37 +308,11 @@ public class DBUtil {
         maxFromTable = rs.getInt(1);
       }
       return maxFromTable + 1;
+    } catch (SQLException ex) {
+      return 1;
     } finally {
       close(rs, prepStmt);
     }
-  }
-
-  public static String convertToBD(String date) {
-    String jour = "";
-    String mois = "";
-    String annee = "";
-    try {
-      jour = date.substring(0, 2);
-      mois = date.substring(3, 5);
-      annee = date.substring(6);
-    } catch (Exception e) {
-      throw new EJBException("DBUtil.convertToBD " + e);
-    }
-    return (annee + '/' + mois + '/' + jour);
-  }
-
-  public static String convertToClient(String date) {
-    String jour = "";
-    String mois = "";
-    String annee = "";
-    try {
-      annee = date.substring(0, 4);
-      mois = date.substring(5, 7);
-      jour = date.substring(8);
-    } catch (Exception e) {
-      throw new EJBException("DBUtil.convertToClient " + e);
-    }
-    return (jour + '/' + mois + '/' + annee);
   }
 
   // Close JDBC ResultSet and Statement
