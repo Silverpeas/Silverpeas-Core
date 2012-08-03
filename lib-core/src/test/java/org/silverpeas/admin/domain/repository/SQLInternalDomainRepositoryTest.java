@@ -24,9 +24,6 @@
 
 package org.silverpeas.admin.domain.repository;
 
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -35,16 +32,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.sql.DataSource;
 
 import junit.framework.Assert;
-
-import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
@@ -64,6 +56,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author lbertin

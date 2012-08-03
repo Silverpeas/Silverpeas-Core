@@ -21,18 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * ResourceLocator.java
- * <p/>
- * Created on 19 octobre 2000, 09:54
- */
 package com.stratelia.webactiv.util;
-
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourceBundleWrapper;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -44,6 +33,12 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+
+import com.silverpeas.util.ConfigurationClassLoader;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourceBundleWrapper;
 
 public class ResourceLocator implements Serializable {
 
@@ -65,18 +60,18 @@ public class ResourceLocator implements Serializable {
   /**
    * Create a resource locator with the given property file (Ex: com.stratelia.webactiv.util.util)
    * Use the function getString to get the parameters from this instance
-   * @param sPropertyFile
-   * @param sLanguage
+   * @param propertyFile
+   * @param language
    */
-  public ResourceLocator(String sPropertyFile, String sLanguage) {
-    this(sPropertyFile, sLanguage, null);
+  public ResourceLocator(String propertyFile, String language) {
+    this(propertyFile, language, null);
   }
 
-  public ResourceLocator(String sPropertyFile, String sLanguage, ResourceLocator defaultResource) {
+  public ResourceLocator(String propertyFile, String language, ResourceLocator defaultResource) {
     this.defaultResource = defaultResource;
-    propertyFile = sPropertyFile;
-    if (StringUtil.isDefined(sLanguage)) {
-      propertyLocale = new Locale(sLanguage);
+    this.propertyFile = propertyFile;
+    if (StringUtil.isDefined(language)) {
+      propertyLocale = new Locale(language);
     } else {
       propertyLocale = Locale.getDefault();
     }
@@ -141,7 +136,7 @@ public class ResourceLocator implements Serializable {
       return bundle.getString(sAttribut);
     } catch (MissingResourceException msrex) {
       SilverTrace.warn("util", "ResourceLocator.getString", "util.MSG_NO_ATTR_VALUE",
-          "File : " + propertyFile + " | Attribut : " + sAttribut);
+          "File : " + propertyFile + " | Attribut : " + sAttribut, msrex);
       return null;
     }
   }

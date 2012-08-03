@@ -39,7 +39,7 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 public class AdminUtils {
 
   private static Logger logger = Logger.getLogger(AdminUtils.class.getPackage()
-      .getName(), "com.silverpeas.portlets.PCDLogMessages");
+      .getName(), "org.silverpeas.portlets.PCDLogMessages");
 
   protected static HttpSession getClearedSession(HttpServletRequest request) {
     HttpSession session = request.getSession(true);

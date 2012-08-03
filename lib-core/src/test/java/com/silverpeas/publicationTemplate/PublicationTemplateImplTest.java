@@ -21,23 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.silverpeas.publicationTemplate;
 
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.record.GenericRecordTemplate;
 import java.io.FileInputStream;
+
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.InputSource;
-import static com.silverpeas.publicationTemplate.Assertion.*;
-import static com.silverpeas.util.PathTestUtil.*;
+
+import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.record.GenericRecordTemplate;
+
+import static com.silverpeas.publicationTemplate.Assertion.assertEquals;
+import static com.silverpeas.util.PathTestUtil.SEPARATOR;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
 
 /**
  *

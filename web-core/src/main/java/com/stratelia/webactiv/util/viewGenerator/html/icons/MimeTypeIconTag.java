@@ -24,15 +24,13 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
-import com.silverpeas.util.ConfigurationClassLoader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import com.silverpeas.util.FileUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.io.IOException;
+import java.util.Properties;
 
 public class MimeTypeIconTag extends TagSupport {
 
@@ -41,10 +39,7 @@ public class MimeTypeIconTag extends TagSupport {
   private static final Properties STYLES = new Properties();
   static {
     try {
-      ClassLoader loader = new ConfigurationClassLoader(TagSupport.class.getClassLoader());
-      InputStream in = loader.getResourceAsStream(
-          "com/silverpeas/view/generator/mime_types_styles.properties");
-      STYLES.load(in);
+      FileUtil.loadProperties(STYLES, "org/silverpeas/view/generator/mime_types_styles.properties");
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

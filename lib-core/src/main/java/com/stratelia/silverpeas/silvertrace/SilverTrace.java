@@ -674,7 +674,7 @@ public class SilverTrace {
     Logger.getRootLogger().setAdditivity(true);
     Logger.getRootLogger().setLevel(Level.ERROR);
     ResourceBundle resources = FileUtil.loadBundle(
-        "com.stratelia.silverpeas.silvertrace.settings.silverTrace", Locale.ROOT);
+        "org.silverpeas.silvertrace.settings.silverTrace", Locale.ROOT);
     String pathFiles = resources.getString("pathSilverTrace");
     String languageMessage = resources.getString("language");
     errorDir = resources.getString("ErrorDir");

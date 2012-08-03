@@ -11,5 +11,5 @@
 *.xml text
 *.xsd text
 *.dtd text
-*.tld text
+*.tld text eol=lf
 *.sql text
