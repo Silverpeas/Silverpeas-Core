@@ -249,7 +249,6 @@ public class WAIndexSearcher {
     if (I18NHelper.isI18N && "*".equals(language)) {
       // search over all languages
       String[] fields = new String[I18NHelper.getNumberOfLanguages()];
-      String[] queries = new String[I18NHelper.getNumberOfLanguages()];
 
       int l = 0;
       Iterator<String> languages = I18NHelper.getLanguages();
@@ -261,11 +260,12 @@ public class WAIndexSearcher {
         } else {
           fields[l] = searchField + "_" + language;
         }
-        queries[l] = query.getQuery();
         l++;
       }
 
-      parsedQuery = MultiFieldQueryParser.parse(queries, fields, analyzer);
+      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(fields, analyzer);
+      mfqp.setDefaultOperator(defaultOperand);
+      parsedQuery = mfqp.parse(query.getQuery());
     } else {
       // search only specified language
       if (I18NHelper.isI18N && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
@@ -274,14 +274,14 @@ public class WAIndexSearcher {
 
       QueryParser queryParser = new QueryParser(searchField, analyzer);
       queryParser.setDefaultOperator(defaultOperand);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
               "defaultOperand = " + defaultOperand);
       parsedQuery = queryParser.parse(query.getQuery());
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
               "getOperator() = " + queryParser.getDefaultOperator());
     }
 
-    SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
             "parsedQuery = " + parsedQuery.toString());
     return parsedQuery;
   }
