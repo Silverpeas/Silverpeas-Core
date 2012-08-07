@@ -54,20 +54,13 @@ public class WAIndexSearcher {
 */
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
-  private QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
+  public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
   /**
 * indicates the number maximum of results returned by the search
 */
-  private int maxNumberResult = 0;
-
-  /**
-* The no parameters constructor retrieves all the needed data from the IndexEngine.properties
-* file.
-*/
-  public WAIndexSearcher() {
-    indexManager = new IndexManager();
-    primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
-    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
+  public static int maxNumberResult = 0;
+  
+  static {
     try {
       ResourceLocator resource = new ResourceLocator(
               "com.silverpeas.searchEngine.searchEngineSettings", "");
@@ -80,8 +73,20 @@ public class WAIndexSearcher {
 
       maxNumberResult = resource.getInteger("maxResults", 100);
     } catch (MissingResourceException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_FILE_NOT_FOUND", e);
     } catch (NumberFormatException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_INVALID_ARG", e);
     }
+  }
+
+  /**
+* The no parameters constructor retrieves all the needed data from the IndexEngine.properties
+* file.
+*/
+  public WAIndexSearcher() {
+    indexManager = new IndexManager();
+    primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
+    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
   }
 
   /**
