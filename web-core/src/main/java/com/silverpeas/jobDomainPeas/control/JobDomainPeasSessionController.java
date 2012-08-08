@@ -1742,16 +1742,20 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
 
       // Getting quota filled
-      domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      if (JobDomainSettings.userQuotaEnabled) {
+        domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      }
 
       domainId = DomainServiceFactory.getDomainService(DomainType.SQL).createDomain(domainToCreate);
       domainToCreate.setId(domainId);
 
-      // Registering "users in domain" quota
-      DomainServiceFactory.getUserDomainQuotaService().initialize(
-          UserDomainQuotaKey.from(domainToCreate),
-          domainToCreate.getUserDomainQuota().getMaxCount());
-
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Registering "users in domain" quota
+        DomainServiceFactory.getUserDomainQuotaService().initialize(
+            UserDomainQuotaKey.from(domainToCreate),
+            domainToCreate.getUserDomainQuota().getMaxCount());
+      }
+        
     } catch (QuotaException qe) {
       JobDomainPeasTrappedException trappedException =
           new JobDomainPeasTrappedException("JobDomainPeasSessionController.createSQLDomain()",
@@ -1860,8 +1864,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     try {
 
-      // Getting quota filled
-      theNewDomain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Getting quota filled
+        theNewDomain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      }
 
       idRet = m_AdminCtrl.updateDomain(theNewDomain);
       if ((idRet == null) || (idRet.length() <= 0)) {
@@ -1869,9 +1875,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
       }
 
-      // Registering "users in domain" quota
-      DomainServiceFactory.getUserDomainQuotaService().initialize(
-          UserDomainQuotaKey.from(theNewDomain), theNewDomain.getUserDomainQuota().getMaxCount());
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Registering "users in domain" quota
+        DomainServiceFactory.getUserDomainQuotaService().initialize(
+            UserDomainQuotaKey.from(theNewDomain), theNewDomain.getUserDomainQuota().getMaxCount());
+      }
 
     } catch (QuotaException qe) {
       trappedException =

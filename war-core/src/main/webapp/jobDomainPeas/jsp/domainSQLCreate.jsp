@@ -33,38 +33,38 @@
   Domain domObject = (Domain)request.getAttribute("domainObject");
   String action =(String)request.getAttribute("action");
 
-  browseBar.setDomainName(resource.getString("JDP.jobDomain"));
   if (action.equals("domainSQLCreate")) {
     browseBar.setComponentName(resource.getString("JDP.domainSQLAdd") + "...");
   } else {
    	browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(resource.getString("JDP.domainSQLUpdate") + "...");
   }
-
-  // Initializing users in domain quota
-  domObject.refreshUserDomainQuota();
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
-function SubmitWithVerif(verifParams)
-{
+<script type="text/javascript">
+function SubmitWithVerif() {
     var namefld = stripInitialWhitespace(document.domainForm.domainName.value);
     var urlfld = stripInitialWhitespace(document.domainForm.silverpeasServerURL.value);
-    var maxCount = stripInitialWhitespace(document.domainForm.userDomainQuotaMaxCount.value);
     var errorMsg = "";
 
-    if (verifParams) {
-       if (isWhitespace(namefld)) {
-          errorMsg = "<% out.print(resource.getString("JDP.name")); %>";
-       } else if (isWhitespace(urlfld)) {
-          errorMsg = "<% out.print(resource.getString("JDP.silverpeasServerURL")); %>";
-       } else if (isWhitespace(maxCount)) {
-          errorMsg = "<% out.print(resource.getString("JDP.userDomainQuotaMaxCount")); %>";
-       }
+    if (isWhitespace(namefld)) {
+       errorMsg = "<% out.print(resource.getString("JDP.name")); %>";
+    } else if (isWhitespace(urlfld)) {
+       errorMsg = "<% out.print(resource.getString("JDP.silverpeasServerURL")); %>";
+    } else {
+       <% if (JobDomainSettings.userQuotaEnabled) { %>
+	       var maxCount = stripInitialWhitespace(document.domainForm.userDomainQuotaMaxCount.value);
+	       if (isWhitespace(maxCount)) {
+	       	errorMsg = "<% out.print(resource.getString("JDP.userDomainQuotaMaxCount")); %>";
+	       }
+	   <% } %>
     }
+
     if (errorMsg == "") {
         document.domainForm.submit();
     } else {
@@ -75,80 +75,58 @@ function SubmitWithVerif(verifParams)
 }
 </script>
 </head>
-<body  marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body>
 
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
-<center>
-<form name="domainForm" action="<%=action%>" method="POST">
+<form name="domainForm" action="<%=action%>" method="post">
 <%
 out.println(board.printBefore());
 %>
-    <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+    <table cellpadding="5" cellspacing="0" width="100%">
                     <tr>
-                        <td valign="baseline" align=left  class="txtlibform">
-                            <%=resource.getString("GML.name")%> :
-                        </td>
-                        <td align=left valign="baseline">
-                            <input type="text" name="domainName" size="70" maxlength="99" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
+                        <td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
+                        <td>
+                            <input type="text" name="domainName" size="40" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getName())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
                         </td>
                     </tr>
                     <tr>
-                        <td valign="baseline" align=left  class="txtlibform">
-                            <%=resource.getString("GML.description")%> :
-                        </td>
-                        <td align=left valign="baseline">
-                            <input type="text" name="domainDescription" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>">
+                        <td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
+                        <td>
+                            <input type="text" name="domainDescription" size="40" maxlength="399" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%>"/>
                         </td>
                     </tr>
                     <tr>
-                        <td valign="baseline" align=left  class="txtlibform">
-                            <%=resource.getString("JDP.silverpeasServerURL")%> :
-                        </td>
-                        <td align=left valign="baseline">
-                            <input type="text" name="silverpeasServerURL" size="70" maxlength="399" VALUE="<%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
+                        <td class="txtlibform"><%=resource.getString("JDP.silverpeasServerURL")%> :</td>
+                        <td>
+                            <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.silverpeasServerURLEx")%>
                         </td>
                     </tr>
+                    <% if (JobDomainSettings.userQuotaEnabled) { %>
+	                    <tr>
+	                        <td class="txtlibform"><%=resource.getString("JDP.userDomainQuotaMaxCount")%> :</td>
+	                        <td>
+	                            <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="<%=domObject.getUserDomainQuota().getMaxCount()%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.userDomainQuotaMaxCountHelp")%>
+	                        </td>
+	                    </tr>
+                    <% } %>
                     <tr>
-                        <td valign="top" align=left  class="txtlibform">
-                        </td>
-                        <td align=left valign="top">
-                            <%=resource.getString("JDP.silverpeasServerURLEx")%>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td valign="baseline" align=left  class="txtlibform">
-                            <%=resource.getString("JDP.userDomainQuotaMaxCount")%> :
-                        </td>
-                        <td align=left valign="baseline">
-                            <input type="text" name="userDomainQuotaMaxCount" size="70" maxlength="399" VALUE="<%=domObject.getUserDomainQuota().getMaxCount()%>">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
-                  : <%=resource.getString("GML.requiredField")%>)
-              			</td>
+                        <td colspan="2"><img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
                     </tr>
     </table>
-
 <%
 out.println(board.printAfter());
 %>
 </form>
-<br/>
-		<%
-		  ButtonPane bouton = gef.getButtonPane();
-		  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-	      bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
-		  out.println(bouton.print());
-		%>
-</center>
 <%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-	%>
-
+  ButtonPane bouton = gef.getButtonPane();
+  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
+  out.println(bouton.print());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
+%>
 </body>
 </html>

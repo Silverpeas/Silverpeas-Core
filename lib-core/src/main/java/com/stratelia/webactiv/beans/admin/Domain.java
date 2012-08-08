@@ -25,9 +25,11 @@
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.quota.contant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
@@ -189,6 +191,20 @@ public class Domain implements Serializable {
    * @return the userDomainQuota
    */
   public Quota getUserDomainQuota() {
+    if (userDomainQuota == null) {
+      try {
+        if (StringUtil.isDefined(getId())) {
+          userDomainQuota =
+              DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
+        }
+        if (userDomainQuota == null) {
+          userDomainQuota = new Quota();
+        }
+      } catch (final QuotaException qe) {
+        throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
+            "root.EX_CANT_GET_QUOTA", qe);
+      }
+    }
     return userDomainQuota;
   }
 
@@ -196,9 +212,14 @@ public class Domain implements Serializable {
    * Sets the max count of users of the domain
    */
   public void setUserDomainQuotaMaxCount(final String userDomainQuotaMaxCount) throws QuotaException {
-    refreshUserDomainQuota();
     getUserDomainQuota().setMaxCount(userDomainQuotaMaxCount);
     getUserDomainQuota().validateBounds();
+  }
+  
+  public boolean isQuotaReached() {
+    return getUserDomainQuota().exists() &&
+        EnumSet.of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS)
+            .contains(getUserDomainQuota().getLoad());
   }
 
   @Override

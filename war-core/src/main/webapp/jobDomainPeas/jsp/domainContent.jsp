@@ -39,22 +39,19 @@
 
   Domain  domObject 			= (Domain)request.getAttribute("domainObject");
   UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
-  boolean isDomainRW 			= ((Boolean)request.getAttribute("isDomainRW")).booleanValue();
-  boolean isDomainSync 		= ((Boolean)request.getAttribute("isDomainSync")).booleanValue();
-  boolean isUserRW 			= ((Boolean)request.getAttribute("isUserRW")).booleanValue();
-  boolean isGroupManager		= ((Boolean)request.getAttribute("isOnlyGroupManager")).booleanValue();
-  boolean isUserAddingAllowed = ((Boolean)request.getAttribute("isUserAddingAllowedForGroupManager")).booleanValue();
+  boolean isDomainRW 			= (Boolean)request.getAttribute("isDomainRW");
+  boolean isDomainSync 		= (Boolean)request.getAttribute("isDomainSync");
+  boolean isUserRW 			= (Boolean)request.getAttribute("isUserRW");
+  boolean isGroupManager		= (Boolean)request.getAttribute("isOnlyGroupManager");
+  boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
 
 	boolean isDomainSql 	= "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
 
-  browseBar.setDomainName(resource.getString("JDP.jobDomain"));
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
   // Initializing users in domain quota
-  domObject.refreshUserDomainQuota();
-  boolean isUserDomainQuotaFull = domObject.getUserDomainQuota().exists()
-      && EnumSet.of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS).contains(domObject.getUserDomainQuota().getLoad());
-
+  boolean isUserDomainQuotaFull = JobDomainSettings.userQuotaEnabled && domObject.isQuotaReached();
+  
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
@@ -134,16 +131,13 @@
   }
 %>
 
-<HTML>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script language="JavaScript">
-function ConfirmAndSend(textToDisplay,targetURL)
-{
-    if (window.confirm(textToDisplay))
-    {
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
+<script type="text/javascript">
+function ConfirmAndSend(textToDisplay,targetURL) {
+    if (window.confirm(textToDisplay)) {
         window.location.href = targetURL;
     }
 }
@@ -152,60 +146,58 @@ function DomainSQLSynchro(){
 	top.IdleFrame.SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Integer.toString(SynchroReport.TRACE_LEVEL_DEBUG)%>', 'SynchroReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
 	window.location.href = "domainSQLSynchro";
 }
-
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
-%>
-<center>
-<%
 out.println(board.printBefore());
 %>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<table cellpadding="5" cellspacing="0" width="100%">
 	<tr valign="baseline">
 		<td><img src="<% if(isDomainSql) {
 							out.print(resource.getIcon("JDP.domainSqlIcone"));
 						 } else {
 						 	out.print(resource.getIcon("JDP.domainicone"));
 						 }
-					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.nom") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=getDomainLabel(domObject, resource)%></td>
+					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"/></td>
+		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.nom") %> :</td>
+		<td><%=getDomainLabel(domObject, resource)%></td>
 	</tr>
 	<tr>
 	    <td></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("GML.description") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%></td>
+		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
+		<td><%=EncodeHelper.javaStringToHtmlString(domObject.getDescription())%></td>
 	</tr>
 	<% if (!"-1".equals(domObject.getId())) { %>
-	<tr>
-	    <td></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("JDP.class") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("JDP.properties") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getPropFileName())%></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("JDP.serverAuthentification") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getAuthenticationServer())%></td>
-	</tr>
-	<tr>
-		<td></td>
-		<td class="textePetitBold" nowrap><%=resource.getString("JDP.silverpeasServerURL") %> :</td>
-		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
-	</tr>
-    <% if (domObject.getUserDomainQuota().exists()) { %>
+		<% if (!isDomainSql) {%>
+			<tr>
+			    <td></td>
+				<td class="txtlibform" nowrap="nowrap"><%=resource.getString("JDP.class") %> :</td>
+				<td><%=EncodeHelper.javaStringToHtmlString(domObject.getDriverClassName())%></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="txtlibform" nowrap="nowrap"><%=resource.getString("JDP.properties") %> :</td>
+				<td><%=EncodeHelper.javaStringToHtmlString(domObject.getPropFileName())%></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td class="txtlibform" nowrap="nowrap"><%=resource.getString("JDP.serverAuthentification") %> :</td>
+				<td><%=EncodeHelper.javaStringToHtmlString(domObject.getAuthenticationServer())%></td>
+			</tr>
+		<% } %>
+		<tr>
+			<td></td>
+			<td class="txtlibform" nowrap="nowrap"><%=resource.getString("JDP.silverpeasServerURL") %> :</td>
+			<td><%=EncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%></td>
+		</tr>
+    <% if (JobDomainSettings.userQuotaEnabled && domObject.getUserDomainQuota().exists()) { %>
   <tr>
     <td></td>
-    <td class="textePetitBold" valign="top" nowrap><%=resource.getString("JDP.userDomainQuotaMaxCount") %> :</td>
-    <td align=left valign="baseline" width="100%">
+    <td class="txtlibform" nowrap="nowrap"><%=resource.getString("JDP.userDomainQuotaMaxCount") %> :</td>
+    <td>
       <%=domObject.getUserDomainQuota().getMaxCount()%>
       <br/>
       <%
@@ -227,13 +219,13 @@ out.println(board.printBefore());
 <%
 out.println(board.printAfter());
 %>
-<br>
+<br/>
 <%
   ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
 
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-  //arrayPane.setTitle(resource.getString("JDP.groups"));
+  arrayPane.setTitle(resource.getString("JDP.groups"));
 
   arrayPane.addArrayColumn("&nbsp;");
   arrayPane.addArrayColumn(resource.getString("GML.name"));
@@ -265,22 +257,21 @@ out.println(board.printAfter());
   }
   out.println(arrayPane.print());
 %>
-<br>
+<br/>
 
 <%
   ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-  //arrayPaneUser.setTitle(resource.getString("GML.users"));
+  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
   arrayPaneUser.setSortable(false);
 
-  if (subUsers != null)
-  {
+  if (subUsers != null) {
       for(int i=0; i<subUsers.length; i++){
           //cr�ation des ligne de l'arrayPane
           ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
@@ -293,12 +284,8 @@ out.println(board.printAfter());
         }
   }
   out.println(arrayPaneUser.print());
-%>
-
-</center>
-<%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

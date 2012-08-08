@@ -40,8 +40,6 @@
         
     String thisGroupId = grObject.getId();
 
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     if (groupsPath != null)
         browseBar.setPath(groupsPath);
