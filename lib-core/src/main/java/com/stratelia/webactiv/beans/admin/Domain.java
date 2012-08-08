@@ -26,6 +26,15 @@ package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
 
+import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.quota.model.Quota;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
@@ -37,6 +46,11 @@ public class Domain implements Serializable {
   private String authenticationServer;
   private String theTimeStamp = "0";
   private String silverpeasServerURL = "";
+
+  /**
+   * This data is not used in equals and hashcode process as it is an extra information.
+   */
+  private Quota userDomainQuota;
 
   public Domain() {
   }
@@ -153,12 +167,65 @@ public class Domain implements Serializable {
     this.silverpeasServerURL = silverpeasServerURL;
   }
 
+  /**
+   * Updates quota data
+   */
+  public void refreshUserDomainQuota() {
+    try {
+      if (StringUtil.isDefined(getId())) {
+        userDomainQuota =
+            DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
+      }
+      if (userDomainQuota == null) {
+        userDomainQuota = new Quota();
+      }
+    } catch (final QuotaException qe) {
+      throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
+          "root.EX_CANT_GET_QUOTA", qe);
+    }
+  }
+
+  /**
+   * @return the userDomainQuota
+   */
+  public Quota getUserDomainQuota() {
+    return userDomainQuota;
+  }
+
+  /**
+   * Sets the max count of users of the domain
+   */
+  public void setUserDomainQuotaMaxCount(final String userDomainQuotaMaxCount) throws QuotaException {
+    refreshUserDomainQuota();
+    getUserDomainQuota().setMaxCount(userDomainQuotaMaxCount);
+    getUserDomainQuota().validateBounds();
+  }
+
   @Override
   public String toString() {
-    return "Domain{" + "id=" + id + ", name=" + name + ", description=" + description
-        + ", driverClassName=" + driverClassName + ", propFileName=" + propFileName
-        + ", authenticationServer=" + authenticationServer + ", theTimeStamp=" + theTimeStamp
-        + ", silverpeasServerURL=" + silverpeasServerURL + '}';
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Domain{id=");
+    sb.append(id);
+    sb.append(", name=");
+    sb.append(name);
+    sb.append(", description=");
+    sb.append(description);
+    sb.append(", driverClassName=");
+    sb.append(driverClassName);
+    sb.append(", propFileName=");
+    sb.append(propFileName);
+    sb.append(", authenticationServer=");
+    sb.append(authenticationServer);
+    sb.append(", theTimeStamp=");
+    sb.append(theTimeStamp);
+    sb.append(", silverpeasServerURL=");
+    sb.append(silverpeasServerURL);
+    if (userDomainQuota != null) {
+      sb.append(", usersInDomainQuotaMaxCount=");
+      sb.append(userDomainQuota.getMaxCount());
+    }
+    sb.append('}');
+    return sb.toString();
   }
 
   @Override

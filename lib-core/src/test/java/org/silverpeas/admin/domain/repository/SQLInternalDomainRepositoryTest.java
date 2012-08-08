@@ -35,6 +35,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import junit.framework.Assert;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -224,15 +225,6 @@ public class SQLInternalDomainRepositoryTest {
     } finally {
       writer.close();
     }
-  }
-
-  private void insertDomainTables() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        SQLInternalDomainRepositoryTest.class.getClassLoader().getResourceAsStream(
-            "org/silverpeas/admin/domain/repository/domain-dataset-TestCreation.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
   }
 
 }

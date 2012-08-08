@@ -38,7 +38,9 @@
 		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
 	<context:annotation-config/>
-	<context:component-scan base-package="org.silverpeas.admin.domain" />
+	<context:component-scan base-package="org.silverpeas.admin.domain">
+    	<context:exclude-filter type="regex" expression="org.silverpeas.admin.domain.quota.*"/>
+  	</context:component-scan>
 
 	<util:list id="entities">
 	</util:list>
