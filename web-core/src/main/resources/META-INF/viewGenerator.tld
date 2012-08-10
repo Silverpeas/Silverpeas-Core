@@ -763,10 +763,47 @@
     <body-content>JSP</body-content>
   </tag>
   <tag>
+    <description>Simple tag to create HTML to display operations of creation.</description>
+    <name>areaOfOperationOfCreation</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationsOfCreationAreaTag
+    </tag-class>
+    <body-content>JSP</body-content>
+  </tag>
+  <tag>
     <description>Simple tag to define an operation in an OperationPane.</description>
     <name>operation</name>
     <tag-class>
       com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The action for this operation.</description>
+      <name>action</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The icon for this operation.</description>
+      <name>icon</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Alternative text to the icon of this operation.</description>
+      <name>altText</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Simple tag to define an operation of creation in an OperationPane.</description>
+    <name>operationOfCreation</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationOfCreationTag
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>

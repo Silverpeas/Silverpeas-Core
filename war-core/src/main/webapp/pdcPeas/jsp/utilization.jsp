@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -45,15 +46,14 @@ Icon aspiIcon = null;
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 	// IE / Netscape compliant
 
@@ -97,23 +97,24 @@ Icon aspiIcon = null;
 	}
 
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body>
 	<form name="usedAxis" action="<%=pdcUtilizationContext%>UtilizationView" method="post">
-	<input type="hidden" name="Ids">
+	<input type="hidden" name="Ids"/>
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel);
 	browseBar.setPath(resource.getString("pdcPeas.paramUsedAxis"));
 
-	operationPane.addOperation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
+	operationPane.addOperationOfCreation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
 	if (axisList != null && axisList.size() != 0) // do not show this icone if no axes
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteParamAxis"),resource.getString("pdcPeas.deleteAxis"), "javascript:getSelectedItems()");
 
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
-<CENTER>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<center>
 <%
     ArrayPane arrayPane = gef.getArrayPane("PdcPeas", "", request, session);
 	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.type"));
@@ -172,15 +173,15 @@ Icon aspiIcon = null;
   <%=separator%>	
   <%
     ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
     out.println(buttonPane.print());
   %>
-</CENTER>
+</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </form>
 <form name="refresh" action="<%=pdcUtilizationContext%>Main" method="post"></form>
-</BODY>
-</HTML>
+</body>
+</html>

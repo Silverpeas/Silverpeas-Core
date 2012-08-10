@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 	Board board = gef.getBoard(); 
@@ -66,13 +67,13 @@
         {
         	operationPane.addLine();
         	
-        	operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
+        	operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
         	
         	if (isUserRW)
             {
                 // User operations
-                operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-                operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+                operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+                operationPane.addOperationOfCreation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
             }
         }
         else
@@ -82,8 +83,8 @@
         		operationPane.addLine();
         		
                 //User operations
-                operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-                operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+                operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+                operationPane.addOperationOfCreation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
             }
         }
     }
@@ -122,12 +123,11 @@
     }
 %>
 
-<HTML>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script language="JavaScript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
+<script type="text/javascript">
 function ConfirmAndSend(textToDisplay,targetURL)
 {
     if (window.confirm(textToDisplay))
@@ -142,8 +142,8 @@ function DomainSQLSynchro(){
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <% 
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -152,14 +152,14 @@ out.println(frame.printBefore());
 <%
 out.println(board.printBefore());
 %>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr valign="baseline">
 		<td><img src="<% if(isDomainSql) {
 							out.print(resource.getIcon("JDP.domainSqlIcone"));
 						 } else {	
 						 	out.print(resource.getIcon("JDP.domainicone"));
 						 }
-					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"></td>
+					%>" alt="<%=resource.getString("JDP.domaine")%>" title="<%=resource.getString("JDP.domaine")%>"/></td>
 		<td class="textePetitBold" nowrap><%=resource.getString("GML.nom") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=getDomainLabel(domObject, resource)%></td>
 	</tr>
@@ -194,13 +194,14 @@ out.println(board.printBefore());
 <%
 out.println(board.printAfter());
 %>
-<br>
+<br/>
+<view:areaOfOperationOfCreation/>
 <%
   ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
 
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-  //arrayPane.setTitle(resource.getString("JDP.groups"));
+  arrayPane.setTitle(resource.getString("JDP.groups"));
 
   arrayPane.addArrayColumn("&nbsp;");
   arrayPane.addArrayColumn(resource.getString("GML.name"));
@@ -232,14 +233,14 @@ out.println(board.printAfter());
   } 	
   out.println(arrayPane.print());
 %>
-<br>
+<br/>
 
 <%
   ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-  //arrayPaneUser.setTitle(resource.getString("GML.users"));
+  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
@@ -267,5 +268,5 @@ out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

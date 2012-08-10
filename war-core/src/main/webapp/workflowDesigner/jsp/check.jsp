@@ -159,7 +159,7 @@ ArrayCellRadio  cellRadio;
         throws UnsupportedEncodingException 
     {
         if ( operationPane != null )
-            operationPane.addOperation( resource.getIcon("workflowDesigner.add"),
+            operationPane.addOperationOfCreation( resource.getIcon("workflowDesigner.add"),
                                         resource.getString( strAddActionKey ),
                                         "AddItem?context=" + URLEncoder.encode( strContext, "UTF-8") );
     }

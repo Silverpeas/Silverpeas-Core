@@ -33,6 +33,8 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -46,6 +48,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public abstract class AbstractOperationPane implements OperationPane {
 
   private Vector<String> stack = null;
+  private List<String> creationItems = null;
   private ResourceLocator multilang;
 
   /**
@@ -54,6 +57,7 @@ public abstract class AbstractOperationPane implements OperationPane {
    */
   public AbstractOperationPane() {
     stack = new Vector<String>();
+    creationItems = new ArrayList<String>();
   }
 
   /**
@@ -72,6 +76,10 @@ public abstract class AbstractOperationPane implements OperationPane {
    */
   public Vector<String> getStack() {
     return this.stack;
+  }
+  
+  public List<String> getCreationItems() {
+    return creationItems;
   }
 
   /**
@@ -95,16 +103,19 @@ public abstract class AbstractOperationPane implements OperationPane {
   public ResourceLocator getMultilang() {
     return multilang;
   }
+  
+  public boolean highlightCreationItems() {
+    return GraphicElementFactory.getSettings().getBoolean("menu.actions.creation.highlight", true);
+  }
 
   /**
    * Method declaration
    * @param iconPath
-   * @param altText
+   * @param label
    * @param action
    * @see
    */
-  public abstract void addOperation(String iconPath, String altText,
-      String action);
+  public abstract void addOperation(String iconPath, String label, String action);
 
   /**
    * Method declaration
