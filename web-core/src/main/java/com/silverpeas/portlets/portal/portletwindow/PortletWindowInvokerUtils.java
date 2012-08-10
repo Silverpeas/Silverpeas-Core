@@ -39,7 +39,7 @@ import com.sun.portal.portletcontainer.invoker.InvokerException;
 public class PortletWindowInvokerUtils {
   private static final Logger logger = Logger.getLogger(
       "com.silverpeas.portlets.portal.portletwindow",
-      "com.silverpeas.portlets.PCDLogMessages");
+      "org.silverpeas.portlets.PCDLogMessages");
 
   /**
    * Returns the entityID. It is stored in the portlet registry during deployment time.

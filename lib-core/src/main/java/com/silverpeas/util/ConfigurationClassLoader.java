@@ -36,12 +36,15 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.io.File.separator;
+import static java.io.File.separatorChar;
+
 /**
  * @author ehugonnet
  */
 public class ConfigurationClassLoader extends ClassLoader {
 
-  private String baseDir = System.getenv("SILVERPEAS_HOME") + File.separatorChar;
+  private String baseDir = System.getenv("SILVERPEAS_HOME") + separatorChar;
 
   @Override
   public synchronized void clearAssertionStatus() {
@@ -156,16 +159,16 @@ public class ConfigurationClassLoader extends ClassLoader {
   }
 
   public ConfigurationClassLoader(ClassLoader parent) {
-    this(parent, System.getenv("SILVERPEAS_HOME") + File.separatorChar + "properties");
+    this(parent, System.getenv("SILVERPEAS_HOME") + separatorChar + "properties");
   }
 
   public ConfigurationClassLoader(ClassLoader parent, String directory) {
     super(parent);
     assert directory != null;
-    if (directory.endsWith(File.separator)) {
+    if (directory.endsWith(separator)) {
       this.baseDir = directory;
     } else {
-      this.baseDir = directory + File.separatorChar;
+      this.baseDir = directory + separatorChar;
     }
   }
 }

@@ -76,7 +76,7 @@ public class SPDesktopServlet extends HttpServlet {
   private static final long serialVersionUID = -3241648887903159985L;
   private ServletContext context;
   private static final Logger logger = Logger.getLogger("com.silverpeas.portlets.portal",
-      "com.silverpeas.portlets.PCDLogMessages");
+      "org.silverpeas.portlets.PCDLogMessages");
 
   /**
    * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.

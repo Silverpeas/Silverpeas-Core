@@ -53,7 +53,7 @@ public class PortletDeployerServlet extends HttpServlet {
   private static final long serialVersionUID = 7041695476364573175L;
 
   private static final Logger logger = Logger.getLogger(PortletDeployerServlet.class
-      .getPackage().getName(), "com.silverpeas.portlets.PCDLogMessages");
+      .getPackage().getName(), "org.silverpeas.portlets.PCDLogMessages");
   private static final String PORTLET_DRIVER_AUTODEPLOY_DIR = PortletRegistryHelper
       .getAutoDeployLocation();
 

@@ -80,10 +80,10 @@ public class MyContactProfilRequestRouter extends
     String userId = request.getParameter("userId");
     if (function.equalsIgnoreCase("Infos")) {
       request.setAttribute("View", function);
-      destination = "/socialnetwork/jsp/myContactProfil/myContactProfile.jsp";
+      destination = "/socialNetwork/jsp/myContactProfil/myContactProfile.jsp";
     } else if ("Main".equalsIgnoreCase(function)) {
       request.setAttribute("View", "Wall");
-      destination = "/socialnetwork/jsp/myContactProfil/myContactProfile.jsp";
+      destination = "/socialNetwork/jsp/myContactProfil/myContactProfile.jsp";
     }
 
     request.setAttribute("UserFull", sc.getUserFull(userId));
