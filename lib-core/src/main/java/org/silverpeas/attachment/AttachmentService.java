@@ -102,7 +102,6 @@ public interface AttachmentService {
    *
    * @param document the document to be created.
    * @param content the binary content of the document.
-   * @param indexIt true if the document is to be indexed - false otherwhise.
    * @return the stored document.
    * @throws AttachmentException
    */
@@ -302,4 +301,13 @@ public interface AttachmentService {
    * @throws AttachmentException
    */
   public boolean unlock(UnlockContext context);
+  
+  
+  /**
+   * Change the management of versions of the document. 
+   * If the document is currently with version management, then all history is removed and the document becomes a simple document with no more version management.
+   * If the document has no version management then a new public version is created and the document becomes a document with a version history management. F
+   * @param pk the id of the document.
+   */
+  public void changeVersionState(SimpleDocumentPK pk);
 }

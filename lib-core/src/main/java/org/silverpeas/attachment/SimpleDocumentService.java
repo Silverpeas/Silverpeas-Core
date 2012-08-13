@@ -774,4 +774,18 @@ public class SimpleDocumentService implements AttachmentService {
       createIndex(document);
     }
   }
+
+  @Override
+  public void changeVersionState(SimpleDocumentPK pk) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      repository.changeVersionState(session, pk);
+      session.save();
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
 }

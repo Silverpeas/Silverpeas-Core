@@ -211,5 +211,10 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public boolean unlock(UnlockContext context) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public void changeVersionState(SimpleDocumentPK pk) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
   
 }

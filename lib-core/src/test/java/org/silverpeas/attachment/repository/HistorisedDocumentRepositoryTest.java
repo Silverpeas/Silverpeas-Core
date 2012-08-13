@@ -225,6 +225,13 @@ public class HistorisedDocumentRepositoryTest {
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getOldSilverpeasId(), greaterThan(0L));
       assertThat(doc.getCreated(), is(creationDate));
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document);
+      documentRepository.updateDocument(session, document);
+      session.save();  
+      documentRepository.unlock(session, document, false);  
       documentRepository.deleteDocument(session, expResult);
       doc = documentRepository.findDocumentById(session, expResult, language);
       assertThat(doc, is(nullValue()));
@@ -1082,6 +1089,68 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, contains(warningDoc1, warningDoc3));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+  
+  /**
+   * Test of updateDocument method, of class DocumentRepository.
+   *
+   * @throws Exception
+   */
+  @Test
+  public void testChangeVersionStateOfVersionedDocument() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishVersionnedAttachment();
+      String foreignId = "node78";
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, attachment);
+      document.setPublicDocument(false);
+      SimpleDocumentPK result = createVersionedDocument(session, document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      HistorisedDocument docCreated = (HistorisedDocument) documentRepository.findDocumentById(
+          session, result, "fr");
+      assertThat(docCreated, is(notNullValue()));
+      assertThat(docCreated.getOrder(), is(10));
+      assertThat(docCreated.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(docCreated.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
+      assertThat(docCreated.getHistory(), is(notNullValue()));
+      assertThat(docCreated.getHistory(), hasSize(0));
+      assertThat(docCreated.getMajorVersion(), is(0));
+      assertThat(docCreated.getMinorVersion(), is(1));
+      attachment = createFrenchVersionnedAttachment();
+      document = new HistorisedDocument(emptyId, foreignId, 15, attachment);
+      document.setPublicDocument(false);
+      documentRepository.lock(session, document);
+      documentRepository.updateDocument(session, document);
+      session.save();      
+      documentRepository.unlock(session, document, false);
+      HistorisedDocument doc = (HistorisedDocument) documentRepository.findDocumentById(session,
+          result, "fr");
+      assertThat(doc, is(notNullValue()));
+      assertThat(doc.getOrder(), is(15));
+      assertThat(doc.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(doc.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
+      assertThat(doc.getHistory(), is(notNullValue()));
+      assertThat(doc.getHistory(), hasSize(1));
+      assertThat(doc.getHistory().get(0).getOrder(), is(10));
+      assertThat(doc.getMajorVersion(), is(0));
+      assertThat(doc.getMinorVersion(), is(2));
+      documentRepository.changeVersionState(session, result);
+      SimpleDocument simplifiedDocument = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(simplifiedDocument, is(notNullValue()));
+      assertThat(simplifiedDocument.getClass().getName(), is(SimpleDocument.class.getName()));
+      assertThat(simplifiedDocument.getOrder(), is(15));
+      assertThat(simplifiedDocument.getContentType(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(simplifiedDocument.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
+      assertThat(simplifiedDocument.getMajorVersion(), is(0));
+      assertThat(simplifiedDocument.getMinorVersion(), is(2));
+       assertThat(simplifiedDocument.isVersioned(), is(false));
     } finally {
       BasicDaoFactory.logout(session);
     }

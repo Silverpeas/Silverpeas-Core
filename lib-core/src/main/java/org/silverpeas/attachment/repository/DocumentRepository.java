@@ -208,6 +208,41 @@ public class DocumentRepository {
     }
   }
 
+  /**
+   * Change the management of versions of the document if the document is checkouted. If the
+   * document is currently with version management, then all history is removed and the document
+   * becomes a simple document with no more version management. If the document has no version
+   * management then a new public version is created and the document becomes a document with a
+   * version history management.
+   *
+   * @param session
+   * @param documentPk the id of the document.
+   * @throws RepositoryException
+   */
+  public void changeVersionState(Session session, SimpleDocumentPK documentPk) throws
+      RepositoryException {
+    try {
+      Node documentNode = session.getNodeByIdentifier(documentPk.getId());
+      if (!documentNode.isCheckedOut()) {
+        checkoutNode(documentNode);
+      }
+      if (converter.isVersioned(documentNode)) {
+        removeHistory(documentNode);
+        documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
+        documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
+      } else {
+        documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
+        documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
+        documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
+        documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
+        checkinNode(documentNode, I18NHelper.defaultLanguage, true);
+      }
+
+    } catch (ItemNotFoundException infex) {
+      SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
+    }
+  }
+
   private void deleteDocumentNode(Node documentNode) throws RepositoryException {
     if (documentNode != null) {
       if (converter.isVersioned(documentNode)) {
@@ -710,8 +745,8 @@ public class DocumentRepository {
     VersionIterator versions = history.getAllVersions();
     while (versions.hasNext()) {
       Version version = versions.nextVersion();
-      if (!version.equals(root)) {
-        history.removeVersion(versions.nextVersion().getName());
+      if (!version.isSame(root)) {
+        history.removeVersion(version.getName());
       }
     }
   }

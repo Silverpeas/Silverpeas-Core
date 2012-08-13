@@ -24,11 +24,6 @@
 
 package com.stratelia.silverpeas.versioning.util;
 
-import static com.stratelia.webactiv.SilverpeasRole.admin;
-import static com.stratelia.webactiv.SilverpeasRole.publisher;
-import static com.stratelia.webactiv.SilverpeasRole.user;
-import static com.stratelia.webactiv.SilverpeasRole.writer;
-
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,6 +34,7 @@ import java.util.List;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.versioning.VersioningIndexer;
+
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -68,6 +64,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class VersioningUtil {
 
@@ -162,20 +160,6 @@ public class VersioningUtil {
     version = getVersioningBm().getDocumentVersion(documentVersionPK);
 
     return version;
-  }
-
-  public HashMap<String, Reader> getAllUsersReader(Document document, String nameProfile)
-      throws RemoteException {
-    HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
-    List<Reader> no_readers = getAllNoReader(document);
-    for (Reader reader : no_readers) {
-      mapRead.put(String.valueOf(reader.getUserId()), reader);
-    }
-    List<Reader> readers = document.getReadList();
-    for (Reader reader : readers) {
-      mapRead.put(String.valueOf(reader.getUserId()), reader);
-    }
-    return mapRead;
   }
 
   public ArrayList<Reader> getAllNoReader(Document document) throws RemoteException {

@@ -220,5 +220,10 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
     return realService.unlock(context);
   }
 
+  @Override
+  public void changeVersionState(SimpleDocumentPK pk) {
+    realService.changeVersionState(pk);
+  }
+
   
 }
