@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -47,16 +48,15 @@ ArrayLine arrayLine = null;
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	// this method opens a pop-up which warns the user
 	function areYouSure(){
 		return confirm("<%=resource.getString("pdcPeas.confirmDeleteAxis")%>");
@@ -96,30 +96,34 @@ ArrayLine arrayLine = null;
 		SP_openWindow(fonction, windowName, '700', '600','scrollbars=yes, resizable, alwaysRaised');
 	}
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body>
 	<form name="viewAxis" action="Main" method="post">
-	<input type="hidden" name="Ids">
+	<input type="hidden" name="Ids"/>
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
     browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
     browseBar.setI18N("ChangeLanguage", displayLanguage);
 
-	if(isAdmin && creationAllowed.equals("1"))
-		operationPane.addOperation(resource.getIcon("pdcPeas.icoCreateAxis"),resource.getString("pdcPeas.createAxis"), "javascript:openSPWindow('NewAxis','newaxis')");
-	if (isAdmin && axisList != null && axisList.size() != 0) // do not show this icone if no axes
+	if(isAdmin && creationAllowed.equals("1")) {
+		operationPane.addOperationOfCreation(resource.getIcon("pdcPeas.icoCreateAxis"),resource.getString("pdcPeas.createAxis"), "javascript:openSPWindow('NewAxis','newaxis')");
+	}
+	if (isAdmin && axisList != null && axisList.size() != 0) {
+	  	// do not show this icone if no axes
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteAxis"),resource.getString("pdcPeas.deleteAxis"), "javascript:getSelectedItems()");
+	}
 
     out.println(window.printBefore());
-
+%>
+<view:areaOfOperationOfCreation/>
+<%
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("pdcPeas.primaryAxis"),"ChangeViewType?ViewType=P",viewType.equals("P"));
     tabbedPane.addTab(resource.getString("pdcPeas.secondaryAxis"),"ChangeViewType?ViewType=S",viewType.equals("S"));
 	out.println(tabbedPane.print());
-
-    out.println(frame.printBefore());
 %>
-<CENTER>
+<view:frame>
+<center>
     <%
     ArrayPane arrayPane = gef.getArrayPane("PdcPeas", "Main", request, session);
 	
@@ -147,8 +151,8 @@ ArrayLine arrayLine = null;
 			
             arrayLine = arrayPane.addArrayLine();
             
-			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" border=0 alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"></div>", "ViewAxis?Id="+axisId).setValignement("top");
-           	arrayLine.addArrayCellText("<a href=\"ViewAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"><span class=textePetitBold>"+EncodeHelper.javaStringToHtmlString(name)+"</span></a>").setValignement("top");
+			arrayLine.addArrayCellLink("<div align=center><img src=\""+resource.getIcon("pdcPeas.icoComponent")+"\" alt=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"/></div>", "ViewAxis?Id="+axisId).setValignement("top");
+           	arrayLine.addArrayCellText("<a href=\"ViewAxis?Id="+axisId+"\" title=\""+resource.getString("pdcPeas.viewAxis")+" : "+EncodeHelper.javaStringToHtmlString(name)+"\"><span class=\"textePetitBold\">"+EncodeHelper.javaStringToHtmlString(name)+"</span></a>").setValignement("top");
 
 			arrayLine.addArrayCellText("<span class=\"textePetitBold\">"+EncodeHelper.javaStringToHtmlParagraphe(description)+"</span>").setValignement("top");
 			
@@ -157,7 +161,7 @@ ArrayLine arrayLine = null;
 				IconPane iconPane = gef.getIconPane();
 	         	Icon updateIcon = iconPane.addIcon();
 	          	updateIcon.setProperties(resource.getIcon("pdcPeas.update"), resource.getString("pdcPeas.editAxis")+ " : "+EncodeHelper.javaStringToHtmlString(name) , "javascript:openSPWindow('EditAxis?Id="+axisId+"&Translation="+axisHeader.getLanguage()+"','editaxis')");
-	          	arrayLine.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"deleteAxis\" value=\""+axisId+"\">");
+	          	arrayLine.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"deleteAxis\" value=\""+axisId+"\"/>");
 			}
 			else if (manageableAxis != null && manageableAxis.contains(axisId))
 			{
@@ -175,12 +179,12 @@ ArrayLine arrayLine = null;
     out.println(arrayPane.print());
     %>
 
-</CENTER>
+</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </form>
 <form name="refresh" action="Main" method="post"></form>
-</BODY>
-</HTML>
+</body>
+</html>

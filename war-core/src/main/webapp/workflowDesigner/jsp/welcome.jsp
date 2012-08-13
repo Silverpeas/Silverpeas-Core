@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 Iterator  workflows = ((List) request.getAttribute("ProcessFileNames")).iterator();
@@ -34,11 +35,11 @@ String    strProcessFileName,
           strProcessFileNameURLEncoded,
           strProcessFileNameJSEncoded; 
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 </head>
 <body>
@@ -46,11 +47,11 @@ String    strProcessFileName,
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.list.workflow"));
 
-operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
+operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.add"),
         resource.getString("workflowDesigner.addWorkflow"),
         "AddWorkflow");
 
-operationPane.addOperation(resource.getIcon("workflowDesigner.import"),
+operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.import"),
         resource.getString("workflowDesigner.importWorkflow"),
         "ImportWorkflow");
 
@@ -91,22 +92,22 @@ while ( workflows.hasNext() )
 }
 
 out.println(window.printBefore());
-out.println(frame.printBefore());
-
-//help
-//
-out.println(boardHelp.printBefore());
-out.println("<table border=\"0\"><tr>");
-out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resource.getIcon("workflowDesigner.info")+"\"></td>");
-out.println("<td>"+resource.getString("workflowDesigner.help.toolName")+"</td>");
-out.println("</tr></table>");
-out.println(boardHelp.printAfter());
-out.println("<br/>");
-
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<!-- help -->
+<div class="inlineMessage">
+	<table border="0"><tr>
+		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+		<td><%=resource.getString("workflowDesigner.help.toolName") %></td>
+	</tr></table>
+</div>
+<br/>
+<%
 out.println(arrayPane.print());
-
-out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
 </body>

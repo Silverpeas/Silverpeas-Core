@@ -27,6 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
 <%
 String      strCurrentTab = "ViewStates",
@@ -35,23 +36,23 @@ States      states = (States)request.getAttribute( "States" );
 ArrayPane   arrayPane = gef.getArrayPane("stateList", strCurrentTab, request, session);
 State       state;
 %>
-<HTML>
-<HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
-function sendData() 
-{
+function sendData() {
     document.workflowHeaderForm.submit();
 }
 </script>
-</HEAD>
+</head>
 <body>
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.states") );
 
-operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
+operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.add"),
         resource.getString("workflowDesigner.add.state"),
         "AddState");
 
@@ -101,29 +102,24 @@ out.println(window.printBefore());
 
 %>
 <designer:processModelTabs currentTab="ViewStates"/>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<!-- help -->
+<div class="inlineMessage">
+	<table border="0"><tr>
+		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+		<td><%=resource.getString("workflowDesigner.help.states") %></td>
+	</tr></table>
+</div>
+<br/>
 <%
-out.println(frame.printBefore());
-
-//help
-//
-out.println(boardHelp.printBefore());
-out.println("<table border=\"0\"><tr>");
-out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resource.getIcon("workflowDesigner.info")+"\"></td>");
-out.println("<td>"+resource.getString("workflowDesigner.help.states")+"</td>");
-out.println("</tr></table>");
-out.println(boardHelp.printAfter());
-out.println("<br/>");
-
-out.println(board.printBefore());
-
-out.println( arrayPane.print() );
-out.println(board.printAfter());
+out.println(arrayPane.print());
 %>
-<form name="workflowHeaderForm" action="UpdateWorkflow" method="POST">
+<form name="workflowHeaderForm" action="UpdateWorkflow" method="post">
 <designer:buttonPane cancelAction="Main" />
 </form>
-<%    
-out.println(frame.printAfter());
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
 </body>

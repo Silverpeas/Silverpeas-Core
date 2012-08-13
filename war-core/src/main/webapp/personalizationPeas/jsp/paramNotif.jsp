@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPersonalization.jsp" %>
 
 <%
@@ -59,41 +60,39 @@
   }
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-</HEAD>
-
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5  onload="javascript:resizePopup(750,430);">
+</head>
+<body onload="javascript:resizePopup(750,430);">
 <%
     browseBar.setComponentName(resource.getString("PersonalizationTitleTab1"));
     browseBar.setPath(resource.getString("browseBar_Path3"));
 
 	OperationPane operationPane = window.getOperationPane();
-	operationPane.addOperation(addGuideline, resource.getString("operationPane_addguideline"), "paramNotif2.jsp");
+	operationPane.addOperationOfCreation(addGuideline, resource.getString("operationPane_addguideline"), "paramNotif2.jsp");
 	
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
+
+<view:frame>
+<view:areaOfOperationOfCreation/>
 
 <!-- Add commun code that display the Rules list -->
 <%@ include file="paramNotif_Commun.jsp.inc" %>
 
-<br>
+<br/>
 <%
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close()", false));
 	out.print(buttonPane.print());
 %>
-</form>
+</view:frame>
 <%
-out.println(frame.printAfter());
-out.println(window.printAfter());
+	out.println(window.printAfter());
 %>
-</CENTER>
-</BODY>
-</HTML>
+</body>
+</html>

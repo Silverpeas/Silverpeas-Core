@@ -25,44 +25,15 @@
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 
-public class OperationTag extends TagSupport {
+public class OperationOfCreationTag extends OperationTag {
   private static final long serialVersionUID = 1L;
-
-  private String icon;
-  private String altText;
-  private String action;
-
-  public void setIcon(String icon) {
-    this.icon = icon;
-  }
-
-  public void setAltText(String altText) {
-    this.altText = altText;
-  }
-
-  public void setAction(String action) {
-    this.action = action;
-  }
-
-  public String getIcon() {
-    return icon;
-  }
-
-  public String getAltText() {
-    return altText;
-  }
-
-  public String getAction() {
-    return action;
-  }
 
   @Override
   public int doEndTag() throws JspException {
     OperationPane pane =
         (OperationPane) pageContext.getAttribute(OperationPaneTag.OPERATION_PANE_PAGE_ATT);
-    pane.addOperation(icon, altText, action);
+    pane.addOperationOfCreation(getIcon(), getAltText(), getAction());
     return EVAL_PAGE;
   }
 }

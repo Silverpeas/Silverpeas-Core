@@ -24,45 +24,29 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
+import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-public class OperationTag extends TagSupport {
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
+public class OperationsOfCreationAreaTag extends TagSupport {
+
   private static final long serialVersionUID = 1L;
-
-  private String icon;
-  private String altText;
-  private String action;
-
-  public void setIcon(String icon) {
-    this.icon = icon;
-  }
-
-  public void setAltText(String altText) {
-    this.altText = altText;
-  }
-
-  public void setAction(String action) {
-    this.action = action;
-  }
-
-  public String getIcon() {
-    return icon;
-  }
-
-  public String getAltText() {
-    return altText;
-  }
-
-  public String getAction() {
-    return action;
-  }
+  public static final String CREATION_AREA_ID = "menubar-creation-actions";
+  private static final String CREATION_AREA = "<div id=\"menubar-creation-actions\"></div>";
 
   @Override
-  public int doEndTag() throws JspException {
-    OperationPane pane =
-        (OperationPane) pageContext.getAttribute(OperationPaneTag.OPERATION_PANE_PAGE_ATT);
-    pane.addOperation(icon, altText, action);
-    return EVAL_PAGE;
+  public int doStartTag() throws JspException {
+    try {
+      if (GraphicElementFactory.getSettings().getBoolean("menu.actions.creation.highlight", true)) {
+        pageContext.getOut().println(CREATION_AREA);
+      } else {
+        pageContext.getOut().println("");
+      }
+    } catch (IOException e) {
+      throw new JspException("OperationsOfCreationArea Tag", e);
+    }
+    return SKIP_BODY;
   }
 }
