@@ -42,9 +42,6 @@
     
     String     	thisUserId 		= userObject.getId();
     
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-    browseBar.setComponentName("nom du user");
-   
     if (domObject != null)
         browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 

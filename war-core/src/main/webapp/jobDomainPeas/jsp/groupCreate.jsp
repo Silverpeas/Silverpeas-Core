@@ -37,7 +37,6 @@
     String action =(String)request.getAttribute("action");
     String groupsPath = (String)request.getAttribute("groupsPath");
     
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(groupsPath);
 %>

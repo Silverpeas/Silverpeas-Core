@@ -48,6 +48,8 @@
 	  actionTitle = reinitPasswordBundle.getString("screen.title.reinitDone");
 	} else if ("NewPasswordError".equalsIgnoreCase(action)) {
 	  actionLabel = reinitPasswordBundle.getString("screen.reinitError");
+	} else if ("GeneralError".equalsIgnoreCase(action)) {
+	  actionLabel = reinitPasswordBundle.getString("screen.generalError");
 	}
 %>
 

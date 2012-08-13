@@ -186,7 +186,10 @@ public class PublicationsTypeManager {
       exportAttachments(attachmentIE, versioningIE, componentInst, publicationType,
           publicationDetail.getPK(), exportPublicationRelativePath, exportPublicationPath);
       exportPdc(pdc_impExp, pubId, gedIE, publicationType);
-      int nbThemes = getNbThemes(gedIE, publicationType);
+      int nbThemes = 1;
+      if (!gedIE.isKmax()) {
+        nbThemes = getNbThemes(gedIE, publicationType);
+      }
       if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
           exportPublicationRelativePath, exportPublicationPath, modelDetail, nbThemes)) {
         return null;

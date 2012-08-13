@@ -44,7 +44,7 @@
   out.println(gef.getLookStyleSheet());
 %>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
 <%
   if (displayOperations.booleanValue()) {
     operationPane.addOperation(resource.getIcon("JDP.domainAdd"), resource

@@ -41,7 +41,7 @@ public class ForgottenPasswordException extends SilverpeasException {
 
   @Override
   public String getModule() {
-    return "forgottenPassword";
+    return "authentication";
   }
 
 }
