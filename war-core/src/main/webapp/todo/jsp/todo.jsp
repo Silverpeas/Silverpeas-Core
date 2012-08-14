@@ -182,7 +182,7 @@ function jumpToComponent(componentId) {
 
 	OperationPane operationPane = window.getOperationPane();
 	 
-	operationPane.addOperationOfCreation(m_context + "/util/icons/task_add.gif", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
+	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
 
 	out.println(window.printBefore());
 %>

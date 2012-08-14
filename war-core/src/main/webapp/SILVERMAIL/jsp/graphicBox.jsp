@@ -52,7 +52,7 @@ String graphicPath        = GeneralPropertiesManager.getGeneralResourceLocator()
 String m_context          = graphicPath;
 
 // Icones operationBar
-String addNotif           = graphicPath + "/util/icons/newNotification.gif";
+String addNotif           = graphicPath + "/util/icons/create-action/send-notification.png";
 String deleteAllNotif     = graphicPath + "/util/icons/deleteAllNotif.gif";
 String paramNotif         = graphicPath + "/util/icons/confServer.gif";
 
