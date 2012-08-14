@@ -492,7 +492,7 @@ public class SimpleDocument {
 
   @Override
   public String toString() {
-    return "SimpleDocument{" + "pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
+    return "SimpleDocument{" + nodeName + " pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
         + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
         + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", cloneId=" + cloneId
         + ", file=" + file + ", minorVersion=" + minorVersion + ", majorVersion="
@@ -513,7 +513,7 @@ public class SimpleDocument {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (! (obj instanceof SimpleDocument)) {
       return false;
     }
     final SimpleDocument other = (SimpleDocument) obj;

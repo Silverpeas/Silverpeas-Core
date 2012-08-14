@@ -1,6 +1,5 @@
 /**
- * >>>>>>> master:lib-core/src/main/java/com/silverpeas/jcrutil/model/AbstractJcrDao.java Copyright
- * (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -56,5 +55,22 @@ public class HistorisedDocument extends SimpleDocument {
 
   public void setHistory(List<SimpleDocument> history) {
     this.history = history;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    return hash + super.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    return super.equals(obj);
   }
 }

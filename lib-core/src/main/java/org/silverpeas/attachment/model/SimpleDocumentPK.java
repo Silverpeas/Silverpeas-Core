@@ -23,14 +23,15 @@
  */
 package org.silverpeas.attachment.model;
 
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import java.io.Serializable;
 
 /**
  *
  * @author ehugonnet
  */
-public class SimpleDocumentPK extends WAPrimaryKey implements Serializable {
+public class SimpleDocumentPK extends WAPrimaryKey {
+  private static final long serialVersionUID = 5609285040251527744L;
 
   private long oldSilverpeasId = -1L;
 

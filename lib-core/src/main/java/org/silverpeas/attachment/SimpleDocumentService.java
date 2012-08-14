@@ -165,10 +165,11 @@ public class SimpleDocumentService implements AttachmentService {
   public void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey) {
     Session session = null;
     try {
+      session = BasicDaoFactory.getSystemSession();
       List<SimpleDocument> docs = repository.listDocumentsByForeignId(session, foreignKey.
-          getInstanceId(), foreignKey.getId(), null);
+          getInstanceId(), foreignKey.getId(), I18NHelper.defaultLanguage);
       for (SimpleDocument doc : docs) {
-        deleteIndex(doc, null);
+        deleteIndex(doc, I18NHelper.defaultLanguage);
       }
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
