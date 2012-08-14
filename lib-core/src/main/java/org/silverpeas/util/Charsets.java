@@ -62,4 +62,7 @@ public class Charsets {
    * UTF-16: UTF-16 byte order identified by an optional byte-order mark.
    */
   public static final Charset UTF_16 = Charset.forName(CharEncoding.UTF_16);
+
+  private Charsets() {
+  }
 }

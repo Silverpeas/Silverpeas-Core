@@ -32,15 +32,13 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@ page import="java.io.IOException" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
-<%@ page import="com.silverpeas.util.FileUtil" %>
 <%@ include file="checkAttachment.jsp"%>
 
-<view:setBundle basename="com.stratelia.webactiv.util.attachment.multilang.attachment" />
-<fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
+<view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
+<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
@@ -53,12 +51,12 @@
 
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 <script>
-<view:settings var="spinfireViewerEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
+<view:settings var="spinfireViewerEnable"  settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
 <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
 <c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
-<view:settings var="onlineEditingEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
-<view:settings var="dAndDropEnable" settings="com.stratelia.webactiv.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
+<view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
+<view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
 <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
 <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
 
@@ -69,7 +67,7 @@
 <c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' eq userProfile }" />
 <c:choose>
   <c:when test="${contextualMenuEnabled}">
-    <c:set var="iconStyle" scope="page"value="${'style=\"cursor:move\"'}" />
+    <c:set var="iconStyle" scope="page" value="${'style=\"cursor:move\"'}" />
   </c:when>
   <c:otherwise>
     <c:set var="iconStyle" scope="page" value="${''}" />
@@ -102,7 +100,7 @@
 </c:choose>
 <c:choose>
   <c:when test="${param.ShowTitle != null}">
-    <c:set var="showTitle" scope="page"value="${view:booleanValue(param.ShowTitle)}" />
+    <c:set var="showTitle" scope="page" value="${view:booleanValue(param.ShowTitle)}" />
   </c:when>
   <c:otherwise>
     <c:set var="showTitle" scope="page" value="${true}" />
@@ -110,7 +108,7 @@
 </c:choose>
 <c:choose>
   <c:when test="${param.ShowFileSize != null}">
-    <c:set var="showFileSize" scope="page"value="${view:booleanValue(param.ShowFileSize)}" />
+    <c:set var="showFileSize" scope="page" value="${view:booleanValue(param.ShowFileSize)}" />
   </c:when>
   <c:otherwise>
     <c:set var="showFileSize" scope="page" value="${true}" />
@@ -118,7 +116,7 @@
 </c:choose>
 <c:choose>
   <c:when test="${param.ShowDownloadEstimation != null}">
-    <c:set var="showDownloadEstimation" scope="page"value="${view:booleanValue(param.ShowDownloadEstimation)}" />
+    <c:set var="showDownloadEstimation" scope="page" value="${view:booleanValue(param.ShowDownloadEstimation)}" />
   </c:when>
   <c:otherwise>
     <c:set var="showDownloadEstimation" scope="page" value="${true}" />
@@ -126,7 +124,7 @@
 </c:choose>
 <c:choose>
   <c:when test="${param.ShowInfo != null}">
-    <c:set var="showInfo" scope="page"value="${view:booleanValue(param.ShowInfo)}" />
+    <c:set var="showInfo" scope="page" value="${view:booleanValue(param.ShowInfo)}" />
   </c:when>
   <c:otherwise>
     <c:set var="showInfo" scope="page" value="${true}" />
@@ -134,7 +132,7 @@
 </c:choose>
 <c:choose>
   <c:when test="${param.ShowIcon != null}">
-    <c:set var="showIcon" scope="page"value="${view:booleanValue(param.ShowIcon)}" />
+    <c:set var="showIcon" scope="page" value="${view:booleanValue(param.ShowIcon)}" />
   </c:when>
   <c:otherwise>
     <c:set var="showIcon" scope="page" value="${true}" />

@@ -60,4 +60,7 @@ public class ImageLoader {
       iis.close();
     }
   }
+
+  private ImageLoader() {
+  }
 }
