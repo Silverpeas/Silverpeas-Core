@@ -43,8 +43,7 @@ public class ConnectionPool {
   private static void init() {
     SilverTrace.debug("util", "ConnectionPool.getConnection",
         "No more free connection : we need to create a new one.");
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.webactiv.beans.admin.admin", "");
+    ResourceLocator resources = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
     pool = new BasicDataSource();
     pool.setPassword(resources.getString("WaProductionPswd"));
     pool.setUsername(resources.getString("WaProductionUser"));
@@ -77,5 +76,8 @@ public class ConnectionPool {
       }
     }
     return pool.getConnection();
+  }
+
+  private ConnectionPool() {
   }
 }
