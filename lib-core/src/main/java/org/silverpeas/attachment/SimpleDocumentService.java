@@ -318,6 +318,7 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
+      repository.fillNodeName(session, document);
       repository.deleteDocument(session, document.getPk());
       FileUtils.deleteQuietly(new File(document.getAttachmentPath()));
       for (String lang : I18NHelper.getAllSupportedLanguages()) {
@@ -380,7 +381,8 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocument oldAttachment = repository.findDocumentById(session, document.getPk(),
-          document.getLanguage());
+          document.getLanguage());      
+      repository.fillNodeName(session, document);
       repository.updateDocument(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         // le fichier est renommé
@@ -414,7 +416,8 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      repository.addContent(session, document.getPk(), document.getFile(), in);
+      repository.addContent(session, document.getPk(), document.getFile(), in);      
+      repository.fillNodeName(session, document);
       storeContent(session, document);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.updateNodeAttachment(session, document);
@@ -457,7 +460,7 @@ public class SimpleDocumentService implements AttachmentService {
       }
       deleteIndex(document, document.getLanguage());
       session.save();
-      if(requireLock) {
+      if (requireLock) {
         repository.unlock(session, document, false);
       }
     } catch (RepositoryException ex) {

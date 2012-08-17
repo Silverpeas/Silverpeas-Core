@@ -750,4 +750,11 @@ public class DocumentRepository {
       }
     }
   }
+  
+  public void fillNodeName(Session session, SimpleDocument document) throws RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(document.getId());
+    if (!StringUtil.isDefined(document.getNodeName())) {
+      document.setNodeName(documentNode.getName());
+    }
+  }
 }

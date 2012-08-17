@@ -108,8 +108,7 @@ public class DragAndDrop extends HttpServlet {
       res.getOutputStream().println("SUCCESS");
       return;
     }
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
+    ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
     try {
       req.setCharacterEncoding("UTF-8");
