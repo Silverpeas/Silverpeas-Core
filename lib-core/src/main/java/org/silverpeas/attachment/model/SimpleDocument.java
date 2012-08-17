@@ -530,7 +530,8 @@ public class SimpleDocument {
   }
 
   /**
-   * Retourne l'URL de l'attachment. Cette URL est construite a partir des autres informations
+   * Returns the attachment URL.
+   * @return the attachment URL.
    */
   public String getAttachmentURL() {
     return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
@@ -590,8 +591,9 @@ public class SimpleDocument {
   }
 
   /**
-   *
-   * @return @deprecated use getAttachmentURL instead.
+   * Returns the attachment URL.
+   * @return the attachment URL.
+   * @deprecated use getAttachmentURL instead.
    */
   @Deprecated
   public String getWebURL() {

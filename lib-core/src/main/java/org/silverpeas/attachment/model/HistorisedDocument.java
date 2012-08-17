@@ -56,6 +56,22 @@ public class HistorisedDocument extends SimpleDocument {
   public void setHistory(List<SimpleDocument> history) {
     this.history = history;
   }
+  
+  /**
+   * Returns the more recent public version of this document - null if none exists.
+   * @return the more recent public version of this document - null if none exists.
+   */
+  public SimpleDocument getLastPublicVersion() {
+    if(this.isPublic()) {
+      return this;
+    }
+    for(SimpleDocument document : history) {
+      if(document.isPublic()) {
+        return document;
+      }
+    }
+    return null;
+  }
 
   @Override
   public int hashCode() {
