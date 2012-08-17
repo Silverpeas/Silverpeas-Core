@@ -20,18 +20,21 @@
  */
 package com.stratelia.webactiv.util;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.MultilangMessage;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.pool.ConnectionPool;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.MultilangMessage;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.pool.ConnectionPool;
 
 public class DBUtil {
 
@@ -185,17 +188,13 @@ public class DBUtil {
       }
       privateConnection.setAutoCommit(false);
       return getNextId(privateConnection, tableName, idName);
-    } catch (Exception exe) {
-      SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", exe);
+    } catch (Exception ex) {
+      SilverTrace.debug("util", "DBUtil.getNextId", "impossible de recupérer le prochain id", ex);
       if (privateConnection != null) {
-        try {
-          privateConnection.rollback();
-        } catch (SQLException e) {
-          SilverTrace.error("util", "DBUtil.getNextId", "util.MSG_IMOSSIBLE_UNDO_TRANS", e);
-        }
+        rollback(privateConnection);
       }
       throw new UtilException("DBUtil.getNextId", new MultilangMessage(
-          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), exe);
+          "util.MSG_CANT_GET_A_NEW_UNIQUE_ID", tableName, idName).toString(), ex);
     } finally {
       try {
         if (privateConnection != null && !testingMode) {
@@ -244,29 +243,35 @@ public class DBUtil {
       createStmt.setInt(1, max);
       createStmt.setString(2, tableName.toLowerCase());
       createStmt.executeUpdate();
+      privateConnection.commit();
       return max;
     } catch (Exception e) {
       // impossible de creer, on est en concurence, on reessaye l'update.
       SilverTrace.debug("util", "DBUtil.getNextId",
           "impossible de creer, if faut reessayer l'update", e);
+      rollback(privateConnection);
     } finally {
       close(createStmt);
-      privateConnection.commit();
     }
     max = updateMaxFromTable(privateConnection, tableName);
     privateConnection.commit();
     return max;
   }
 
-  private static int updateMaxFromTable(Connection con, String tableName) throws SQLException {
-    String table = tableName.toLowerCase();
+  private static int updateMaxFromTable(Connection connection, String tableName) throws SQLException {
+    String table = tableName.toLowerCase(Locale.ROOT);
     int max = 0;
     PreparedStatement prepStmt = null;
     int count = 0;
     try {
-      prepStmt = con.prepareStatement("UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
+      prepStmt = connection.prepareStatement(
+          "UPDATE UniqueId SET maxId = maxId + 1 WHERE tableName = ?");
       prepStmt.setString(1, table);
       count = prepStmt.executeUpdate();
+      connection.commit();
+    } catch (SQLException sqlex) {
+      rollback(connection);
+      throw sqlex;
     } finally {
       close(prepStmt);
     }
@@ -276,7 +281,7 @@ public class DBUtil {
       ResultSet rs = null;
       try {
         // l'update c'est bien passe, on recupere la valeur
-        selectStmt = con.prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?");
+        selectStmt = connection.prepareStatement("SELECT maxId FROM UniqueId WHERE tableName = ?");
         selectStmt.setString(1, table);
         rs = selectStmt.executeQuery();
         if (!rs.next()) {
@@ -309,6 +314,7 @@ public class DBUtil {
       }
       return maxFromTable + 1;
     } catch (SQLException ex) {
+      rollback(con);
       return 1;
     } finally {
       close(rs, prepStmt);
