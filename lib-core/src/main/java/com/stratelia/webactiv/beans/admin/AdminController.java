@@ -43,10 +43,10 @@ It should be used only by a client that has the administrator rights
 public class AdminController implements java.io.Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
-  String m_UserId = null;
+  String currentUserId = null;
 
-  public AdminController(String sUserId) {
-    m_UserId = sUserId;
+  public AdminController(String currentUserId) {
+    this.currentUserId = currentUserId;
   }
 
   // Start the processes
@@ -214,7 +214,7 @@ public class AdminController implements java.io.Serializable {
     SilverTrace.info("admin", "AdminController.addSpaceInst",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return getAdminService().addSpaceInst(m_UserId, spaceInst);
+      return getAdminService().addSpaceInst(currentUserId, spaceInst);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.addSpaceInst", "admin.MSG_ERR_ADD_SPACE", e);
       return "";
@@ -226,7 +226,7 @@ public class AdminController implements java.io.Serializable {
     SilverTrace.info("admin", "AdminController.deleteSpaceInstById",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return getAdminService().deleteSpaceInstById(m_UserId, sSpaceInstId, definitive);
+      return getAdminService().deleteSpaceInstById(currentUserId, sSpaceInstId, definitive);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.deleteSpaceInstById", "admin.MSG_ERR_DELETE_SPACE", e);
       return "";
@@ -417,7 +417,7 @@ public class AdminController implements java.io.Serializable {
     SilverTrace.info("admin", "AdminController.addComponentInst",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return getAdminService().addComponentInst(m_UserId, componentInst);
+      return getAdminService().addComponentInst(currentUserId, componentInst);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.addComponentInst",
           "admin.MSG_ERR_ADD_COMPONENT", e);
@@ -446,7 +446,7 @@ public class AdminController implements java.io.Serializable {
     SilverTrace.info("admin", "AdminController.deleteComponentInst",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      return getAdminService().deleteComponentInst(m_UserId, sComponentId, definitive);
+      return getAdminService().deleteComponentInst(currentUserId, sComponentId, definitive);
     } catch (Exception e) {
       SilverTrace.error("admin", "AdminController.deleteComponentInst",
           "admin.MSG_ERR_DELETE_COMPONENT", e);

@@ -24,10 +24,11 @@
 
 package com.silverpeas.importExport.control;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import org.junit.Test;
+
 import static java.io.File.separatorChar;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *
