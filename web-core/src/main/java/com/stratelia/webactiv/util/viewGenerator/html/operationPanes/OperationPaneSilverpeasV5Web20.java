@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.operationPanes;
 
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 
 import java.util.Vector;
@@ -43,22 +44,29 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
   /**
    * Method declaration
    * @param iconPath
-   * @param altText
+   * @param label
    * @param action
    * @see
    */
-  public void addOperation(String iconPath, String altText, String action) {
-    Vector<String> stack = getStack();
+  public void addOperation(String iconPath, String label, String action) {
     StringBuilder operation = new StringBuilder();
 
-    if (!StringUtil.isDefined(altText))
-      altText = action;
+    if (!StringUtil.isDefined(label)) {
+      label = action;
+    }
 
     operation.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"")
-        .append(action).append("\">").append(altText).append("</a></li>");
+        "<li class=\"yuimenuitem\"><a title=\"\" class=\"yuimenuitemlabel\" href=\"")
+        .append(action).append("\">").append(label).append("</a></li>");
 
-    stack.add(operation.toString());
+    getStack().add(operation.toString());
+  }
+  
+  public void addOperationOfCreation(String icon, String label, String action) {
+    addOperation(icon, label, action);
+    getCreationItems().add(
+        "<a href=\"" + EncodeHelper.javaStringToJsString(action) + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon +
+            "\" alt=\"\"/>" + EncodeHelper.javaStringToJsString(label) + "</span></a>");
   }
 
   /**
@@ -132,6 +140,21 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
 
     result
         .append("YAHOO.util.Event.addListener(\"menutoggle\", \"mouseover\", oMenu.show, null, oMenu);");
+    
+    if (highlightCreationItems()) {
+      result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
+          .append("').length > 0) {");
+      if (getCreationItems().isEmpty()) {
+        result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
+          .append("').css({'display':'none'});");
+      } else {
+        for (String item : getCreationItems()) {
+          result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
+              .append("').append('").append(item).append("');");
+        }
+      }
+      result.append("}");
+    }
 
     result.append("});");
     result.append("</script>");

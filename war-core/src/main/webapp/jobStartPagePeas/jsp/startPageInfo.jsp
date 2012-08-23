@@ -95,12 +95,12 @@
 	        	}
 	        }
 			if (objectsSelectedInClipboard) {
-				operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onclick=clipboardPaste()");
+				operationPane.addOperationOfCreation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onclick=clipboardPaste()");
 			}
         }
 		operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', 750, 300)");
-        operationPane.addOperation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"ListComponent");
+        operationPane.addOperationOfCreation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', 750, 300)");
+        operationPane.addOperationOfCreation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"ListComponent");
     }
     
     tabbedPane.addTab(resource.getString("GML.description"), "#", true);
@@ -115,7 +115,7 @@
     }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -195,14 +195,15 @@ function recoverRights() {
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
 %>
+<view:frame>
 <% if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) { %>
 	<div class="inlineMessage">
 		<%=resource.getString("JSPP.maintenanceStatus."+maintenanceState)%>
 	</div>
 	<br clear="all"/>
 <% } %>
+<view:areaOfOperationOfCreation/>
 <view:board>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr>
@@ -261,8 +262,8 @@ out.println(frame.printBefore());
 	<% } %>
 </table>
 </view:board>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <view:progressMessage/>

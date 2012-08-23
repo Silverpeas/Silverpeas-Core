@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
 Collection 				subscribeThemes 	= (Collection) request.getAttribute("SubscribeThemeList");
@@ -36,25 +37,22 @@ OrganizationController 	organizationCtrl 	= sessionController.getOrganizationCon
 final String 			rootPath			= resource.getString("Path");
 
 boolean isReadOnly = false;
-if ( action != null && action.equals("showUserSubscriptions"))
-{
+if (action != null && action.equals("showUserSubscriptions")) {
     isReadOnly = true;
 }
 
 String language = resource.getLanguage();
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-function deleteSelectThemeConfirm()
-{
+<script type="text/javascript">
+function deleteSelectThemeConfirm() {
 	var boxItems = document.readForm.themeCheck;
-	if (boxItems != null)
-	{
+	if (boxItems != null) {
 		var nbBox = boxItems.length;
 		var sendIt = false;
         if ((nbBox == null) && (boxItems.checked == true)){
@@ -67,25 +65,21 @@ function deleteSelectThemeConfirm()
             }
         }
 
-		if (sendIt && areYouSure())
-		{
+		if (sendIt && areYouSure()) {
 	    	document.readForm.mode.value = 'delete';
 	    	document.readForm.submit();
 	  	}
 	}
 }
 
-function areYouSure()
-{
+function areYouSure() {
     return confirm("<%=resource.getString("confirmDeleteSubscription")%>");
 }
-
 </script>
 </head>
-
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<form name="readForm" action="DeleteTheme" method="POST">
-<input type="hidden" name="mode">
+<body>
+<form name="readForm" action="DeleteTheme" method="post">
+<input type="hidden" name="mode"/>
 
 <%
 	browseBar.setComponentName(rootPath);
@@ -94,8 +88,9 @@ function areYouSure()
 	tabbedPane.addTab(resource.getString("pdc"), "subscriptionList.jsp?userId="+userId, false);
 	tabbedPane.addTab(resource.getString("thematique"), "#", true);
 
-	if (!isReadOnly)
+	if (!isReadOnly) {
 		operationPane.addOperation(resource.getIcon("icoDelete") , resource.getString("DeleteSC"),"javascript:deleteSelectThemeConfirm()");
+	}
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
@@ -166,8 +161,8 @@ function areYouSure()
   %>
 
 </form>
-<form name="subscribeThemeForm" action="" Method="POST">
-	<input type="hidden" name="Id">
+<form name="subscribeThemeForm" action="" method="post">
+	<input type="hidden" name="Id"/>
 </form>
 </body>
 </html>

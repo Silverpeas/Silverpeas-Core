@@ -54,6 +54,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.*"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkAgenda.jsp.inc" %>
 
 <%
@@ -111,7 +112,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% if (StringUtil.isDefined(rssURL)) { %>
 	<link rel="alternate" type="application/rss+xml" title="<%=resources.getString("agenda.agenda")%> : <%=resources.getString("agenda.rssNext")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
-<% out.println(graphicFactory.getLookStyleSheet()); %>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
 <script type="text/javascript">
@@ -245,7 +246,7 @@ function viewCurrentAgenda()
 	OperationPane operationPane = window.getOperationPane();
 
 	if (!agenda.isOtherAgendaMode())
-		operationPane.addOperation(agendaAddSrc, agenda.getString("nouvelleNote"), "javascript:onClick=addJournal()");
+		operationPane.addOperationOfCreation(agendaAddSrc, agenda.getString("nouvelleNote"), "javascript:onClick=addJournal()");
 	if ("yes".equals(settings.getString("sharingModeAvailable")))
 	{
 		operationPane.addOperation(viewOtherAgenda, agenda.getString("viewOtherAgenda"), "javascript:onClick=viewOtherAgenda()");
@@ -264,12 +265,14 @@ function viewCurrentAgenda()
 	{
 		operationPane.addLine();
 		operationPane.addOperation(exportIcalSrc, resources.getString("agenda.ExportIcalCalendar"), "javascript:exportIcal();");						
-		operationPane.addOperation(importIcalSrc, resources.getString("agenda.ImportIcalCalendar"), "javascript:importIcal();");
+		operationPane.addOperationOfCreation(importIcalSrc, resources.getString("agenda.ImportIcalCalendar"), "javascript:importIcal();");
 		operationPane.addOperation(synchroIcalSrc, resources.getString("agenda.SynchroIcalCalendar"), "javascript:synchroIcal();");									
 	}
 				
 	out.println(window.printBefore());
-  
+%>
+	<view:areaOfOperationOfCreation/>
+<%
 		TabbedPane tabbedPane = graphicFactory.getTabbedPane();
 		tabbedPane.addTab(resources.getString("GML.day"), "javascript:onClick=viewByDay()", (agenda.getCurrentDisplayType() == AgendaHtmlView.BYDAY) );
 		tabbedPane.addTab(resources.getString("GML.week"), "javascript:onClick=viewByWeek()", (agenda.getCurrentDisplayType() == AgendaHtmlView.BYWEEK) );

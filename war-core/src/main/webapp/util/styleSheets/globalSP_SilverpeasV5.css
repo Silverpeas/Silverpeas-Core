@@ -5208,3 +5208,37 @@ input.search:focus {
 #myProfile #LinkedInLoginButton {
 	display: none;
 }
+
+/********************************/
+/** created action bar **/
+/*******************************/
+#menubar-creation-actions {
+	background-color:#fff4eb;
+	border-top:1px solid #f1790f;
+	border-bottom:1px solid #f1790f;
+	vertical-align:middle;
+	text-align:center;
+	height:auto;
+	margin:1em;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item {
+	padding:10px 30px;
+	color:#4c4c4c;
+	font-size:12px;
+	display:inline-block;
+	width:auto;
+	line-height:12px;
+	height:18px;
+	white-space:nowrap;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item:hover {
+	background-color:#F1790F;
+	color:#fff;
+}
+#menubar-creation-actions .menubar-creation-actions-item img {
+	vertical-align:middle;
+	margin:0;
+	border:0;
+}
