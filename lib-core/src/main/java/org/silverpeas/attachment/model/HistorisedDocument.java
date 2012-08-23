@@ -61,6 +61,7 @@ public class HistorisedDocument extends SimpleDocument {
    * Returns the more recent public version of this document - null if none exists.
    * @return the more recent public version of this document - null if none exists.
    */
+  @Override
   public SimpleDocument getLastPublicVersion() {
     if(this.isPublic()) {
       return this;

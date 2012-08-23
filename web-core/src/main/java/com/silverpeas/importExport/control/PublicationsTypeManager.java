@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -86,6 +82,7 @@ import static java.io.File.separator;
 
 /**
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
+ *
  * @author sdevolder
  */
 public class PublicationsTypeManager {
@@ -93,6 +90,7 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
    * spécifiées en paramètre. passé en paramètre au moteur d'importExport.
+   *
    * @param exportReport
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param listItemsToExport - liste des WAAttributeValuePair contenant les id des publications à
@@ -284,7 +282,7 @@ public class PublicationsTypeManager {
         attachments = attachmentIE.getAttachments(publicationPK,
             exportPublicationPath, exportPublicationRelativePath, null);
       }
-      if (attachments != null && attachments.size() > 0 && publicationType != null) {
+      if (attachments != null && ! attachments.isEmpty() && publicationType != null) {
         publicationType.setAttachmentsType(new AttachmentsType());
         publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
       }
@@ -362,6 +360,7 @@ public class PublicationsTypeManager {
 
   /**
    * Méthode créant l'arboresence des répertoires pour une publication exportée
+   *
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
@@ -498,6 +497,7 @@ public class PublicationsTypeManager {
 
   /**
    * Méthode créant l'arborescence des répertoires pour une publication exportée
+   *
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param positionPath - ensemble des noeuds sur laquelle la publication est classée
    * @param componentId - id du composant de la publication
@@ -561,6 +561,7 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param publicationsType - objet mappé par castor contenant toutes les informations de création
    * des publications de type unitaire
@@ -638,7 +639,6 @@ public class PublicationsTypeManager {
           if (pubType.getId() != -1) {
             pubDetailToCreate.getPK().setId(java.lang.Integer.toString(pubType.getId()));
           }
-
           // Vérifie les données nécessaires à la création de la publication
           checkPublication(pubDetailToCreate, userDetail);
 
@@ -672,26 +672,25 @@ public class PublicationsTypeManager {
                               null);
                           nodeDetail = coordinateIE.addPosition(position, String.valueOf(
                               coordinatePointType.getAxisId()), componentId);
-                          SilverTrace.debug("importExport",
-                              "PublicationsTypeManager.processImport",
-                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
-                              nodeDetail);
+                          SilverTrace.
+                              debug("importExport", "PublicationsTypeManager.processImport",
+                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
                         }
                         if (nodeDetail != null) {
                           if (first) {
-                            coordinatePointsPath.append(nodeDetail.getPath()).append(
-                                nodeDetail.getId());
+                            coordinatePointsPath.append(nodeDetail.getPath()).append(nodeDetail.
+                                getId());
                             first = false;
                           } else {
-                            coordinatePointsPath.append(",").
-                                append(nodeDetail.getPath()).append(nodeDetail.getId());
+                            coordinatePointsPath.append(",").append(nodeDetail.getPath()).
+                                append(nodeDetail.getId());
                           }
                         }
                       }
                     }
-                    SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " +
-                        coordinatePointsPath);
+                    SilverTrace.
+                        debug("importExport", "PublicationsTypeManager.processImport",
+                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
                     // Add coordinate (set of coordinatePoints)
                     int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
                         toString());
@@ -712,10 +711,8 @@ public class PublicationsTypeManager {
           }
 
           // Création ou modification de la publication
-          PublicationDetail pubDetail =
-              gedIE.createPublicationForUnitImport(unitReport, userDetail,
+          PublicationDetail pubDetail = gedIE.createPublicationForUnitImport(unitReport, userDetail,
               pubDetailToCreate, nodes);
-
           try {
             if (pubDetail != null) {
               if (isKmax(componentId)) {
@@ -732,15 +729,13 @@ public class PublicationsTypeManager {
                   }
                 }
               }
-
               // traitement des fichiers joints à la publi
               if (attachments != null) {
                 List<AttachmentDetail> copiedAttachments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   // Mode versioning
                   // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-                  copiedAttachments =
-                      attachmentIE.copyFiles(componentId, attachments, versioningIE.
+                  copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
                       getVersioningPath(componentId));
                   if (copiedAttachments.size() != attachments.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);

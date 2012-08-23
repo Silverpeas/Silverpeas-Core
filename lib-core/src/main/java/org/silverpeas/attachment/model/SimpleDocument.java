@@ -49,7 +49,7 @@ import static java.io.File.separatorChar;
 public class SimpleDocument {
 
   private final static ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.Attachment", "");
+      "org.silverpeas.util.attachment.Attachment", "");
   public static final String WEBDAV_FOLDER = "webdav";
   public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
@@ -492,7 +492,8 @@ public class SimpleDocument {
 
   @Override
   public String toString() {
-    return "SimpleDocument{" + nodeName + " pk=" + pk + ", foreignId=" + foreignId + ", order=" + order
+    return "SimpleDocument{" + nodeName + " pk=" + pk + ", foreignId=" + foreignId + ", order="
+        + order
         + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
         + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", cloneId=" + cloneId
         + ", file=" + file + ", minorVersion=" + minorVersion + ", majorVersion="
@@ -513,7 +514,7 @@ public class SimpleDocument {
     if (obj == null) {
       return false;
     }
-    if (! (obj instanceof SimpleDocument)) {
+    if (!(obj instanceof SimpleDocument)) {
       return false;
     }
     final SimpleDocument other = (SimpleDocument) obj;
@@ -531,6 +532,7 @@ public class SimpleDocument {
 
   /**
    * Returns the attachment URL.
+   *
    * @return the attachment URL.
    */
   public String getAttachmentURL() {
@@ -592,6 +594,7 @@ public class SimpleDocument {
 
   /**
    * Returns the attachment URL.
+   *
    * @return the attachment URL.
    * @deprecated use getAttachmentURL instead.
    */
@@ -599,5 +602,14 @@ public class SimpleDocument {
   public String getWebURL() {
     return FileServerUtils.getAttachmentURL(pk.getInstanceId(), getFilename(), pk.getId(),
         getLanguage());
+  }
+
+  /**
+   * Returns the more recent public version of this document - null if none exists.
+   *
+   * @return the more recent public version of this document - null if none exists.
+   */
+  public SimpleDocument getLastPublicVersion() {
+    return this;
   }
 }

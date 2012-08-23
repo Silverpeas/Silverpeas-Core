@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.util.MetaData;
@@ -46,6 +42,8 @@ import java.util.List;
 
 public class PublicationImportExport {
 
+  final static MetadataExtractor metadataExtractor = new MetadataExtractor();
+
   private PublicationImportExport() {
   }
 
@@ -53,41 +51,32 @@ public class PublicationImportExport {
    * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
    * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
    * dans le cas des fichiers MSoffice.
+   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
    * informations qui iront renseigner les méta-données de la publication à creer
+   * @param isPOIUsed
    * @return renvoie un objet PublicationDetail
    */
   public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail,
       File file, boolean isPOIUsed) {
-
-    // For reading the properties in an Office document
-    MetadataExtractor metadataExtractor = new MetadataExtractor();
-    String nomPub;
-    String description;
-    String motsClefs;
-    String content;
     String fileName = file.getName();
+    String nomPub = fileName;
+    String description = "";
+    String motsClefs = "";
+    String content = "";
+
     if (isPOIUsed) {
       try {
         MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
-        String poiKeywords = metaData.getKeywords();
         if (StringUtil.isDefined(metaData.getTitle())) {
           nomPub = metaData.getTitle();
-        } else {
-          nomPub = fileName;
         }
-
         if (StringUtil.isDefined(metaData.getSubject())) {
           description = metaData.getSubject();
-        } else {
-          description = "";
         }
-
         if (StringUtil.isDefined(metaData.getKeywords())) {
           motsClefs = metaData.getKeywords();
-        } else {
-          motsClefs = "";
         }
         content = "fichier(s) importé(s)";
       } catch (Exception ex) {
@@ -98,22 +87,16 @@ public class PublicationImportExport {
         motsClefs = nomPub;
         content = nomPub;
       }
-    } else {
-      nomPub = fileName;
-      description = "";
-      motsClefs = "";
-      content = "";
     }
-    PublicationDetail pubDetail =
-        new PublicationDetail("unknown", nomPub, description, new Date(), new Date(), null,
+    return new PublicationDetail("unknown", nomPub, description, new Date(), new Date(), null,
         userDetail.getId(), "5", null, motsClefs, content);
-    return pubDetail;
   }
 
   /**
-   * Add nodes (coordinatesId) to a publication
-   * @param pubPK , List of coordinateId
-   * @return nothing
+   * Add nodes (coordinatesId) to a publication.
+   *
+   * @param pubPK
+   * @param nodes List of coordinateId.
    */
   public static void addNodesToPublication(PublicationPK pubPK, List<Integer> nodes) {
     try {
@@ -133,9 +116,8 @@ public class PublicationImportExport {
    */
   private static PublicationBm getPublicationBm() {
     try {
-      PublicationBmHome publicationBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
+          JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       return publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
@@ -145,13 +127,14 @@ public class PublicationImportExport {
 
   /**
    * Get unbalanced publications
+   *
    * @param componentId
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
     try {
-      return new ArrayList<PublicationDetail>(
-          getPublicationBm().getOrphanPublications(new PublicationPK("useless", componentId)));
+      return new ArrayList<PublicationDetail>(getPublicationBm().
+          getOrphanPublications(new PublicationPK("useless", componentId)));
     } catch (Exception e) {
       throw new PublicationRuntimeException("CoordinateImportExport.getUnbalancedPublications()",
           SilverpeasRuntimeException.ERROR,

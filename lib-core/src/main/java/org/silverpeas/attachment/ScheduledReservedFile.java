@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -19,15 +18,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.stratelia.webactiv.util.attachment.control;
+package org.silverpeas.attachment;
 
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.scheduler.Scheduler;
@@ -35,9 +32,12 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.StringUtil;
 
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -49,9 +49,9 @@ public class ScheduledReservedFile implements SchedulerEventListener {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
   private ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.Attachment", "");
+      "org.silverpeas.util.attachment.Attachment", "");
   private ResourceLocator generalMessage = new ResourceLocator(
-      "com.stratelia.webactiv.multilang.generalMultilang", "");
+      "org.silverpeas.multilang.generalMultilang", "");
 
   public void initialize() {
     try {
@@ -68,15 +68,14 @@ public class ScheduledReservedFile implements SchedulerEventListener {
   }
 
   public void doScheduledReservedFile() throws AttachmentException {
-    SilverTrace.info("attachment",
-        "ScheduledReservedFile.doScheduledReservedFile()",
+    SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
         "root.MSG_GEN_ENTER_METHOD");
 
     try {
       ResourceLocator message = new ResourceLocator(
-          "com.stratelia.webactiv.util.attachment.multilang.attachment", "fr");
+          "org.silverpeas.util.attachment.multilang.attachment", "fr");
       ResourceLocator message_en = new ResourceLocator(
-          "com.stratelia.webactiv.util.attachment.multilang.attachment", "en");
+          "org.silverpea.util.attachment.multilang.attachment", "en");
 
       StringBuilder messageBody = new StringBuilder();
       StringBuilder messageBody_en = new StringBuilder();
@@ -87,8 +86,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       calendar.add(Calendar.DATE, 1);
       expiryDate = calendar.getTime();
 
-      SilverTrace.info("attachment",
-          "ScheduledReservedFile.doScheduledReservedFile()",
+      SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "expiryDate = " + expiryDate.toString());
 
       Collection<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
@@ -131,7 +129,6 @@ public class ScheduledReservedFile implements SchedulerEventListener {
         messageBody_en.append(message_en.getString("attachment.notifName")).append(" '").
             append(document.getFilename()).append("' ");
         SilverTrace.info("attachment", "ScheduledAlertUser.doScheduledAlertUser()",
-
             "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         createMessage(message, messageBody, message_en, messageBody_en, document, true, false);
         messageBody = new StringBuilder();
@@ -150,7 +147,7 @@ public class ScheduledReservedFile implements SchedulerEventListener {
           null);
       SilverTrace.info("attachment", "ScheduledReservedFile.doScheduledReservedFile()",
           "root.MSG_GEN_PARAM_VALUE", "Attachemnts = " + documents.size());
-     
+
 
       messageBody = new StringBuilder();
       messageBody_en = new StringBuilder();
@@ -185,54 +182,19 @@ public class ScheduledReservedFile implements SchedulerEventListener {
       boolean alert, boolean lib) throws AttachmentException {
     Calendar atDate = Calendar.getInstance();
     atDate.setTime(document.getExpiry());
-    int day = atDate.get(Calendar.DAY_OF_WEEK);
-    String jour = "GML.jour" + day;
-    int month = atDate.get(Calendar.MONTH);
-    String mois = "GML.mois" + month;
+    String jour = "GML.jour" + atDate.get(Calendar.DAY_OF_WEEK);
+    String mois = "GML.mois" + atDate.get(Calendar.MONTH);
     String date = generalMessage.getString(jour) + " " + atDate.get(Calendar.DATE) + " "
         + generalMessage.getString(mois) + " " + atDate.get(Calendar.YEAR);
-
     SilverTrace.info("attachment", "ScheduledReservedFile.createMessage()",
         "root.MSG_GEN_EXIT_METHOD");
     // french notifications
-    String subject;
-    String body;
-    if (lib) {
-      subject = message.getString("attachment.notifSubjectLib");
-      body = messageBody.append(" ").append(message.getString("attachment.notifUserLib")).append(
-          "\n\n").toString();
-    } else {
-      if (alert) {
-        subject = message.getString("attachment.notifSubjectAlert");
-        body = messageBody.append(" ").append(message.getString("attachment.notifUserAlert")).
-            append(" (").append(date).append(") ").append("\n\n").toString();
-      } else {
-        subject = message.getString("attachment.notifSubjectExpiry");
-        body = messageBody.append(" ").append(
-            message.getString("attachment.notifUserExpiry")).append("\n\n").toString();
-      }
-    }
+    String subject = createMessageSubject(message, alert, lib);
+    String body = createMessageBody(message, messageBody, date, alert, lib);
 
     // english notifications
-    String subject_en;
-    String body_en;
-    if (lib) {
-      subject_en = message_en.getString("attachment.notifSubjectLib");
-      body_en = messageBody.append(" ").append(message_en.getString("attachment.notifUserLib")).
-          append("\n\n").toString();
-    } else {
-      if (alert) {
-        subject_en = message_en.getString("attachment.notifSubjectAlert");
-        body_en = messageBody_en.append(" ").append(
-            message_en.getString("attachment.notifUserAlert")).append(" (").append(date).append(
-            ") ").append("\n\n").toString();
-      } else {
-        subject_en = message_en.getString("attachment.notifSubjectExpiry");
-        body_en = messageBody_en.append(" ").append(
-            message_en.getString("attachment.notifUserExpiry")).append("\n\n").toString();
-      }
-    }
-
+    String subject_en = createMessageSubject(message_en, alert, lib);
+    String body_en = createMessageBody(message_en, messageBody_en, date, alert, lib);
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         subject, body);
     notifMetaData.addLanguage("en", subject_en, body_en);
@@ -241,39 +203,65 @@ public class ScheduledReservedFile implements SchedulerEventListener {
         + document.getForeignId();
     notifMetaData.setLink(url);
     notifMetaData.setComponentId(document.getInstanceId());
-    // 2. envoie de la notification
-    try {
-      getAttachmentBm().notifyUser(notifMetaData, document.getEditedBy(), document.getInstanceId());
-    } catch (Exception e) {
-      throw new AttachmentException("ScheduledReservedfile.createMessage()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    notifyUser(notifMetaData, document.getEditedBy(), document.getInstanceId());
   }
 
-  private static AttachmentBm getAttachmentBm() {
-    AttachmentBm attachmentBm = null;
-    if (attachmentBm == null) {
-      attachmentBm = new AttachmentBmImpl();
+  private String createMessageBody(ResourceLocator message, StringBuilder body, String date,
+      boolean alert, boolean lib) {
+    if (lib) {
+      return body.append(" ").append(message.getString("attachment.notifUserLib")).append(
+          "\n\n").toString();
+    } else if (alert) {
+      return body.append(" ").append(message.getString("attachment.notifUserAlert")).
+          append(" (").append(date).append(") ").append("\n\n").toString();
     }
-    return attachmentBm;
+    return body.append(" ").append(message.getString("attachment.notifUserExpiry")).append(
+        "\n\n").toString();
+
+  }
+
+  private String createMessageSubject(ResourceLocator message, boolean alert, boolean lib) {
+    if (lib) {
+      return message.getString("attachment.notifSubjectLib");
+    } else if (alert) {
+      return message.getString("attachment.notifSubjectAlert");
+    }
+    return message.getString("attachment.notifSubjectExpiry");
+  }
+
+  public void notifyUser(NotificationMetaData notifMetaData, String senderId,
+      String componentId) throws AttachmentException {
+    SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()", "root.MSG_GEN_EXIT_METHOD");
+    try {
+      SilverTrace.info("attachment", "AttachmentBmImpl.notifyUser()", "root.MSG_GEN_EXIT_METHOD",
+          " senderId = " + senderId + " componentId = " + componentId);
+      if (!StringUtil.isDefined(notifMetaData.getSender())) {
+        notifMetaData.setSender(senderId);
+      }
+      NotificationSender notifSender = new NotificationSender(componentId);
+      notifSender.notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      throw new AttachmentException("AttachmentBmImpl.notifyUser()",
+          SilverpeasRuntimeException.ERROR, "attachment.MSG_ATTACHMENT_NOT_EXIST", e);
+    }
   }
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is executed");
+    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doScheduledReservedFile();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverTrace.error("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

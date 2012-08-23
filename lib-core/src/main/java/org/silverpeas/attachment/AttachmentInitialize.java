@@ -22,7 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.attachment.control;
+package org.silverpeas.attachment;
+
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -31,12 +32,10 @@ public class AttachmentInitialize implements IInitialize {
   public AttachmentInitialize() {
   }
 
+  @Override
   public boolean Initialize() {
     try {
-      AttachmentSchedulerImpl asi = new AttachmentSchedulerImpl();
-      asi.initialize();
-      ScheduledReservedFile rf = new ScheduledReservedFile();
-      rf.initialize();
+      new ScheduledReservedFile().initialize();
     } catch (Exception e) {
       SilverTrace.error("Attachment", "AttachmentInitialize.Initialize()", "", e);
     }

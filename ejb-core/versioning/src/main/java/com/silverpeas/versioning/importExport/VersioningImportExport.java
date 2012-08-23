@@ -1,49 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.versioning.importExport;
-
-import com.silverpeas.form.importExport.FormTemplateImportExport;
-import com.silverpeas.form.importExport.XMLModelContentType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.versioning.VersioningIndexer;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
-import com.stratelia.silverpeas.versioning.model.*;
-import com.stratelia.silverpeas.versioning.model.Reader;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.*;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.rmi.RemoteException;
@@ -51,12 +26,39 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+
+import com.silverpeas.form.importExport.FormTemplateImportExport;
+import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.versioning.VersioningIndexer;
+
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.model.*;
+import com.stratelia.silverpeas.versioning.model.Reader;
+import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
 /**
  * @author neysseri
  */
 public class VersioningImportExport {
 
-  private VersioningBm versioningBm = null;
   private VersioningIndexer indexer = new VersioningIndexer();
   private static int BUFFER_SIZE = 1024;
 
@@ -67,8 +69,8 @@ public class VersioningImportExport {
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, topicId);
   }
 
-  public int importDocuments(String objectId, String componentId,
-      List<AttachmentDetail> attachments, int userId, boolean indexIt) throws RemoteException {
+  public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
+      int userId, boolean indexIt) throws RemoteException {
     return importDocuments(objectId, componentId, attachments, userId,
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, null);
   }
@@ -76,8 +78,7 @@ public class VersioningImportExport {
   public int importDocuments(String objectId, String componentId,
       List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt)
       throws RemoteException {
-    return importDocuments(objectId, componentId, attachments, userId,
-        versionType, indexIt, null);
+    return importDocuments(objectId, componentId, attachments, userId, versionType, indexIt, null);
   }
 
   /**
@@ -85,12 +86,14 @@ public class VersioningImportExport {
    * @param componentId
    * @param attachments
    * @param userId
+   * @param versionType
+   * @param indexIt
+   * @param topicId
    * @return
    * @throws RemoteException
    */
-  public int importDocuments(String objectId, String componentId,
-      List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt,
-      String topicId) throws RemoteException {
+  public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
+      int userId, int versionType, boolean indexIt, String topicId) throws RemoteException {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
     int nbFilesProcessed = 0;
@@ -98,70 +101,24 @@ public class VersioningImportExport {
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object
-    List<Document> documents = getVersioningBm().getDocuments(pubPK);
-
-    DocumentVersion version = null;
-    Document document = null;
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(pubPK, null);
     for (AttachmentDetail attachment : attachments) {
-      version = new DocumentVersion(attachment);
-      version.setAuthorId(userId);
-      version.setInstanceId(componentId);
-      document = isDocumentExist(documents, attachment);
+      SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
-        // Un document portant le même nom existe déjà
-        // On ajoute une nouvelle version au document
-        DocumentVersion lastVersion = getVersioningBm().getLastDocumentVersion(document.getPk());
-        if (lastVersion != null) {
-          version.setMimeType(attachment.getType());
-          if (attachment.getType() == null) {
-            version.setMimeType("dummy");
-          }
-          version.setMajorNumber(lastVersion.getMajorNumber());
-          version.setMinorNumber(lastVersion.getMinorNumber());
-          version.setType(versionType);
-          version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-          version.setCreationDate(new Date());
-
-          if (!StringUtil.isDefined(attachment.getInfo())) {
-            version.setComments(attachment.getInfo());
-          }
-          version = getVersioningBm().addDocumentVersion(document, version);
-        }
+        // Un document portant le même nom existe déjà. On ajoute une nouvelle version au document
+        AttachmentServiceFactory.getAttachmentService().addContent(document, new File(attachment.
+            getPhysicalName()), indexIt, indexIt);
       } else {
-        // Il n'y a pas de document portant le même nom
-        // On crée un nouveau document
-        DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
-        document = new Document(docPK, pubPK, attachment.getLogicalName(), "",
-            Document.STATUS_CHECKOUTED, -1, new Date(), null, componentId, new ArrayList<Worker>(),
-            new ArrayList<Reader>(), 0, 0);
-        if (StringUtil.isDefined(attachment.getTitle())) {
-          document.setName(attachment.getTitle());
-        }
-        if (StringUtil.isDefined(attachment.getInfo())) {
-          document.setDescription(attachment.getInfo());
-        }
-        if (versionType == DocumentVersion.TYPE_PUBLIC_VERSION) {
-          version.setMajorNumber(1);
-          version.setMinorNumber(0);
-        } else {
-          version.setMajorNumber(0);
-          version.setMinorNumber(1);
-        }
-        version.setType(versionType);
-        version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-        version.setCreationDate(new Date());
-        version.setMimeType(attachment.getType());
-        if (attachment.getType() == null) {
-          version.setMimeType("dummy");
-        }
-        docPK = getVersioningBm().createDocument(document, version);
-        document.setPk(docPK);
-
-        VersioningUtil versioningUtil = new VersioningUtil(componentId, document,
-            String.valueOf(userId), topicId);
-        versioningUtil.setFileRights(document);
-        getVersioningBm().updateWorkList(document);
-        getVersioningBm().updateDocument(document);
+        HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null,
+            componentId), objectId, -1, new SimpleAttachment(attachment.getLogicalName(),
+            attachment.getLanguage(), attachment.getTitle(), attachment.getInfo(), attachment.
+            getSize(), attachment.getType(), "" + userId, attachment.getCreationDate(), attachment.
+            getXmlForm()));
+        version.setPublicDocument((versionType == DocumentVersion.TYPE_PUBLIC_VERSION));
+        version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+        AttachmentServiceFactory.getAttachmentService().createAttachment(document,
+            new File(attachment.getPhysicalName()), indexIt);
       }
 
       if (attachment.isRemoveAfterImport()) {
@@ -172,11 +129,7 @@ public class VersioningImportExport {
               "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachment.getOriginalPath());
         }
       }
-
       nbFilesProcessed++;
-      if (indexIt) {
-        indexer.createIndex(document, version);
-      }
     }
     return nbFilesProcessed;
   }
@@ -196,17 +149,15 @@ public class VersioningImportExport {
     String componentId = pk.getInstanceId();
     ForeignPK pubPK = new ForeignPK(pk.getId(), componentId);
     // get existing documents of object
-    List<Document> documents = getVersioningBm().getDocuments(pubPK);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(pubPK, null);
 
     // retrieve last public versions of each document
-    for (Document document : documents) {
-      DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(document.getPk());
-      if (version != null) {
-        AttachmentDetail attachment = getAttachmentDetail(document, version);
-        if (extensionFilter == null || attachment.getExtension().equalsIgnoreCase(extensionFilter)) {
-          attachments.add(copyAttachment(attachment, exportPath, relativeExportPath, componentId));
-          // attachments.add(attachment);
-        }
+    for (SimpleDocument document : documents) {
+      SimpleDocument lastVersion = document.getLastPublicVersion();
+      if (extensionFilter == null || FilenameUtils.isExtension(lastVersion.getFilename(),
+          extensionFilter)) {
+        attachments.add(copyAttachment(document, exportPath, relativeExportPath));
       }
     }
 
@@ -216,85 +167,46 @@ public class VersioningImportExport {
     return attachments;
   }
 
-  private AttachmentDetail copyAttachment(AttachmentDetail attachment,
-      String exportPath, String relativeExportPath, String componentId) {
-    AttachmentDetail attachmentCopy = attachment;
-    String fichierJoint = getVersioningPath(componentId) + File.separator + attachmentCopy.
-        getPhysicalName();
+  private AttachmentDetail copyAttachment(SimpleDocument document, String exportPath,
+      String relativeExportPath) {
+    AttachmentDetail attachmentCopy = getAttachmentDetail(document);
     String fichierJointExport = exportPath + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName());
-    try {
-      FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
-    } catch (IOException e) {
-      SilverTrace.warn("versioning", "VersioningImportExport.copyAttachment",
-          "root.EX_FILE_NOT_FOUND", e);
-    }
+    AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
+        document.getPk(), document.getLanguage());
+
     // Le nom physique correspond maintenant au fichier copié
-    attachmentCopy.setPhysicalName(relativeExportPath
-        + File.separator
+    attachmentCopy.setPhysicalName(relativeExportPath + File.separator
         + FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
-    attachmentCopy.setLogicalName(
-        FileServerUtils.replaceAccentChars(attachmentCopy.getLogicalName()));
+    attachmentCopy.setLogicalName(FileServerUtils.
+        replaceAccentChars(attachmentCopy.getLogicalName()));
     return attachmentCopy;
   }
 
-  public String getVersioningPath(String componentId) {
-    return indexer.createPath("useless", componentId);
-  }
-
-  private VersioningBm getVersioningBm() {
-    if (versioningBm == null) {
-      try {
-        VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class);
-        versioningBm = versioningBmHome.create();
-      } catch (Exception e) {
-        throw new VersioningRuntimeException(
-            "VersioningImportExport.getVersioningBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return versioningBm;
-  }
-
-  private Document isDocumentExist(List<Document> documents, AttachmentDetail attachment) {
+  private SimpleDocument isDocumentExist(List<SimpleDocument> documents, AttachmentDetail attachment) {
     String documentName = attachment.getTitle();
     if (!StringUtil.isDefined(documentName)) {
       documentName = attachment.getLogicalName();
     }
-    for (Document document : documents) {
-      if (documentName.equalsIgnoreCase(document.getName())) {
+    for (SimpleDocument document : documents) {
+      if (documentName.equalsIgnoreCase(document.getFilename())) {
         return document;
       }
     }
     return null;
   }
 
-  private AttachmentDetail getAttachmentDetail(Document document,
-      DocumentVersion version) {
+  public String getVersioningPath(String componentId) {
+    return indexer.createPath("useless", componentId);
+  }
+
+  private AttachmentDetail getAttachmentDetail(SimpleDocument version) {
     AttachmentPK pk = new AttachmentPK("useless", "useless", version.getPk().getInstanceId());
-    AttachmentDetail attachment =
-        new AttachmentDetail(pk, version.getPhysicalName(), version.
-        getLogicalName(), version.getComments(),
-        version.getMimeType(), version.getSize(), "Versioning", version.getCreationDate(),
-        document.
-        getForeignKey());
-    attachment.setTitle(document.getName());
-
-    String info = document.getDescription();
-    String versionComments = version.getComments();
-    if (!StringUtil.isDefined(info)) {
-      if (!StringUtil.isDefined(versionComments)) {
-        info += " " + versionComments;
-      }
-    } else {
-      if (!StringUtil.isDefined(versionComments)) {
-        info = versionComments;
-      }
-    }
-    attachment.setInfo(info);
-
+    AttachmentDetail attachment = new AttachmentDetail(pk, version.getAttachmentPath(), version.
+        getFilename(), version.getDescription(), version.getContentType(), version.getSize(),
+        "Versioning", version.getCreated(), new ForeignPK(version.getForeignId(), version.
+        getInstanceId()));
+    attachment.setTitle(version.getTitle());
     return attachment;
   }
 
@@ -307,170 +219,98 @@ public class VersioningImportExport {
     int userIdCallback = -1;
 
     // get existing documents of object
-    List<Document> existingDocuments = getVersioningBm().getDocuments(objectPK);
-
-    // DocumentVersion version = null;
-    XMLModelContentType xmlContent = null;
+    List<SimpleDocument> existingDocuments = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(objectPK, null);
     FormTemplateImportExport xmlIE = null;
     for (Document document : documents) {
-      Document existingDocument = null;
+      SimpleDocument existingDocument = null;
       if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
           && !"-1".equals(document.getPk().getId())) {
-        existingDocument = getVersioningBm().getDocument(document.getPk());
+        existingDocument = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
+            new SimpleDocumentPK("", document.getPk()), null);
       }
       if (existingDocument == null) {
         existingDocument = isDocumentExist(existingDocuments, document.getName());
         if (existingDocument != null) {
-          document.setPk(existingDocument.getPk());
+          document.getPk().setId("" + existingDocument.getPk().getOldSilverpeasId());
         }
       }
 
-      if (existingDocument != null) {
-        // Un document portant le même nom existe déjà
-        // On ajoute les nouvelles versions au document
-        List<DocumentVersion> versions = getVersioningBm().getDocumentVersions(existingDocument.
-            getPk());
-        if (versions != null && !versions.isEmpty()) {
-          DocumentVersion lastVersion = versions.get(0);
-          int majorNumber = lastVersion.getMajorNumber();
-          int minorNumber = lastVersion.getMinorNumber();
-          versions = document.getVersionsType().getListVersions();
-          for (DocumentVersion version : versions) {
-            version.setMajorNumber(majorNumber);
-            version.setMinorNumber(minorNumber);
-            version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-            if (version.getCreationDate() == null) {
-              version.setCreationDate(new Date());
-            }
-            if (version.getAuthorId() == -1) {
-              version.setAuthorId(userId);
-            }
-            xmlContent = version.getXMLModelContentType();
+      if (existingDocument != null && existingDocument.isVersioned()) {
+        List<DocumentVersion> versions = document.getVersionsType().getListVersions();
+        for (DocumentVersion version : versions) {
+          existingDocument = addVersion(version, existingDocument, userId, indexIt);
+          XMLModelContentType xmlContent = version.getXMLModelContentType();
+          // Store xml content
+          try {
             if (xmlContent != null) {
-              version.setXmlForm(xmlContent.getName());
-            }
-
-            getVersioningBm().addDocumentVersion(document, version);
-
-            if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-              launchCallback = true;
-              userIdCallback = version.getAuthorId();
-            }
-
-            // Store xml content
-            try {
-              if (xmlContent != null) {
-                if (xmlIE == null) {
-                  xmlIE = new FormTemplateImportExport();
-                }
-
-                ForeignPK pk = new ForeignPK(version.getPk().getId(),
-                    version.getPk().getInstanceId());
-                xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
-                    Integer.toString(version.getAuthorId()));
+              if (xmlIE == null) {
+                xmlIE = new FormTemplateImportExport();
               }
-            } catch (Exception e) {
-              SilverTrace.error("versioning",
-                  "VersioningImportExport.importDocuments()",
-                  "root.MSG_GEN_PARAM_VALUE", e);
+              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
+                  getInstanceId());
+              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
+                  Integer.toString(version.getAuthorId()));
             }
-
-            majorNumber = version.getMajorNumber();
-            minorNumber = version.getMinorNumber();
+          } catch (Exception e) {
+            SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
+                "root.MSG_GEN_PARAM_VALUE", e);
           }
         }
       } else {
         // Il n'y a pas de document portant le même nom
         // On crée un nouveau document
         List<DocumentVersion> versions = document.getVersionsType().getListVersions();
-        int majorNumber = 0;
-        int minorNumber = 0;
+
         for (int v = 0; v < versions.size(); v++) {
           DocumentVersion version = versions.get(v);
+          SimpleDocument simpleDocument = null;
           if (v == 0) {
+            if (version.getCreationDate() == null) {
+              version.setCreationDate(new Date());
+            }
+            if (version.getAuthorId() == -1) {
+              version.setAuthorId(userId);
+            }
             // Création du nouveau document
-            DocumentPK docPK = new DocumentPK(-1, "useless", objectPK.getInstanceId());
-            document = new Document(docPK, objectPK, document.getName(),
-                document.getDescription(), Document.STATUS_CHECKOUTED, -1, new Date(), null,
-                objectPK.getInstanceId(), new ArrayList<Worker>(), new ArrayList<Reader>(), 0, 0);
 
-            // et on y ajoute la première version
-            if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-              majorNumber = 1;
-              minorNumber = 0;
-            } else {
-              majorNumber = 0;
-              minorNumber = 1;
-            }
-            version.setMajorNumber(majorNumber);
-            version.setMinorNumber(minorNumber);
-
-            version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-            if (version.getCreationDate() == null) {
-              version.setCreationDate(new Date());
-            }
-            if (version.getAuthorId() == -1) {
-              version.setAuthorId(userId);
-            }
-
-            xmlContent = version.getXMLModelContentType();
+            XMLModelContentType xmlContent = version.getXMLModelContentType();
+            String xmlFormId = null;
             if (xmlContent != null) {
-              version.setXmlForm(xmlContent.getName());
+              xmlFormId = xmlContent.getName();
             }
+            simpleDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
+                getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
+                getLogicalName(), I18NHelper.defaultLanguage,
+                document.getName(), document.getDescription(), version.getSize(), version.
+                getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
 
-            docPK = getVersioningBm().createDocument(document, version);
-            document.setPk(docPK);
-
-            if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
+            simpleDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+            boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
+            if (isPublic) {
               launchCallback = true;
               userIdCallback = version.getAuthorId();
             }
-            VersioningUtil versioningUtil = new VersioningUtil(objectPK.getInstanceId(), document,
-                String.valueOf(userId), "0"); // TODO
-            versioningUtil.setFileRights(document);
-            getVersioningBm().updateWorkList(document);
-            getVersioningBm().updateDocument(document);
+            simpleDocument.setPublicDocument(isPublic);
+            AttachmentServiceFactory.getAttachmentService().createAttachment(simpleDocument,
+                new File(version.getDocumentPath()));
           } else {
-            // The document exists. Just add successive versions.
-            version.setMajorNumber(majorNumber);
-            version.setMinorNumber(minorNumber);
-            version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-            if (version.getCreationDate() == null) {
-              version.setCreationDate(new Date());
-            }
-            if (version.getAuthorId() == -1) {
-              version.setAuthorId(userId);
-            }
-
-            xmlContent = version.getXMLModelContentType();
-            if (xmlContent != null) {
-              version.setXmlForm(xmlContent.getName());
-            }
-            getVersioningBm().addDocumentVersion(document, version);
-            if (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-              launchCallback = true;
-              userIdCallback = version.getAuthorId();
-            }
-
-            majorNumber = version.getMajorNumber();
-            minorNumber = version.getMinorNumber();
+            simpleDocument = addVersion(version, simpleDocument, userId, indexIt);
           }
 
           // Store xml content
           try {
-            xmlContent = version.getXMLModelContentType();
+            XMLModelContentType xmlContent = version.getXMLModelContentType();
             if (xmlContent != null) {
               if (xmlIE == null) {
                 xmlIE = new FormTemplateImportExport();
               }
-              ForeignPK pk =
-                  new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
-              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
-                  Integer.toString(version.getAuthorId()));
+              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
+              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent, Integer.
+                  toString(version.getAuthorId()));
             }
           } catch (Exception e) {
-            SilverTrace.error("versioning",
-                "VersioningImportExport.importDocuments()",
+            SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
                 "root.MSG_GEN_PARAM_VALUE", e);
           }
 
@@ -490,9 +330,9 @@ public class VersioningImportExport {
     return nbFilesProcessed;
   }
 
-  private Document isDocumentExist(List<Document> documents, String name) {
-    for (Document document : documents) {
-      if (document.getName().equalsIgnoreCase(name)) {
+  private SimpleDocument isDocumentExist(List<SimpleDocument> documents, String name) {
+    for (SimpleDocument document : documents) {
+      if (document.getFilename().equalsIgnoreCase(name)) {
         return document;
       }
     }
@@ -509,7 +349,6 @@ public class VersioningImportExport {
           copiedAttachments.add(version);
         }
       }
-
     }
     return copiedAttachments;
   }
@@ -555,34 +394,37 @@ public class VersioningImportExport {
     version.setPk(pk);
   }
 
-  private long copyFileToDisk(String from, File to) throws AttachmentException {
-    FileInputStream fl_in = null;
-    FileOutputStream fl_out = null;
-
-    long size = 0;
+  private long copyFileToDisk(String from, File to) throws IOException {
+    OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
     try {
-      fl_in = new FileInputStream(from);
-    } catch (FileNotFoundException ex) {
-      throw new AttachmentException("AttachmentsType.copyFileToDisk()",
-          SilverpeasException.ERROR, "attachment.EX_FILE_TO_UPLOAD_NOTFOUND",
-          ex);
+      return FileUtils.copyFile(new File(from), out);
+    } finally {
+      IOUtils.closeQuietly(out);
     }
-    try {
-      fl_out = new FileOutputStream(to);
+  }
 
-      byte[] data = new byte[BUFFER_SIZE];
-      int bytes_readed = fl_in.read(data);
-      while (bytes_readed > 0) {
-        size += bytes_readed;
-        fl_out.write(data, 0, bytes_readed);
-        bytes_readed = fl_in.read(data);
-      }
-      fl_in.close();
-      fl_out.close();
-    } catch (Exception ex) {
-      throw new AttachmentException("AttachmentsType.copyFileToDisk()",
-          SilverpeasException.ERROR, "attachment.EX_FILE_COPY_ERROR", ex);
+  protected SimpleDocument addVersion(DocumentVersion version, SimpleDocument existingDocument,
+      int userId, boolean indexIt) {
+    boolean isPublic = (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION);
+    boolean launchCallback = (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION);
+    existingDocument.setPublicDocument(isPublic);
+    existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+    existingDocument.setUpdated(new Date());
+    existingDocument.setUpdatedBy("" + userId);
+    XMLModelContentType xmlContent = version.getXMLModelContentType();
+    if (xmlContent != null) {
+      existingDocument.setXmlFormId(xmlContent.getName());
     }
-    return size;
+    AttachmentServiceFactory.getAttachmentService().
+        lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
+    AttachmentServiceFactory.getAttachmentService().
+        updateAttachment(existingDocument, indexIt, launchCallback);
+    AttachmentServiceFactory.getAttachmentService().addContent(existingDocument,
+        new File(version.getDocumentPath()), indexIt, launchCallback);
+    AttachmentServiceFactory.getAttachmentService().
+        unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.
+        getLanguage()));
+    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(existingDocument.
+        getPk(), existingDocument.getLanguage());
   }
 }
