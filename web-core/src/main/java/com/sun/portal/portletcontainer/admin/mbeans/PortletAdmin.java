@@ -49,7 +49,7 @@ public class PortletAdmin implements PortletAdminMBean {
 
   // Create a logger for this class
   private static Logger logger = Logger.getLogger(PortletAdmin.class.getPackage().getName(),
-      "com.silverpeas.portlets.PALogMessages");
+      "org.silverpeas.portlets.PALogMessages");
 
   public PortletAdmin() {
   }

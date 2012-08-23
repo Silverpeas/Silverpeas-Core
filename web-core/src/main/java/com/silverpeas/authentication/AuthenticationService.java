@@ -237,6 +237,6 @@ public class AuthenticationService {
         session.removeAttribute(attributeName);
       }
     }
-    SessionManager.getInstance().removeSession(session);
+    SessionManager.getInstance().closeSession(session.getId());
   }
 }

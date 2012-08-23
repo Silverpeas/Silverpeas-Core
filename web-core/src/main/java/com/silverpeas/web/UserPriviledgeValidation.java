@@ -23,20 +23,27 @@
  */
 package com.silverpeas.web;
 
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.codec.binary.Base64;
+
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+
+import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -55,6 +62,8 @@ public class UserPriviledgeValidation {
   @Inject
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
+  @Inject
+  private OrganizationController organizationController;
   /**
    * The HTTP header paremeter in an incoming request that carries the user session key. This
    * parameter isn't mandatory as the session key can be found from an active HTTP session. If
@@ -87,16 +96,16 @@ public class UserPriviledgeValidation {
    * @return details on the user at the origin of the specified request.
    * @throws WebApplicationException exception if the validation failed.
    */
-  public UserDetail validateUserAuthentication(final HttpServletRequest request) throws
+  public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
           WebApplicationException {
-    UserDetail authenticatedUser;
+    SessionInfo userSession;
     String sessionId = getUserSessionKey(request);
     if (isDefined(sessionId)) {
-      authenticatedUser = validateUserSession(sessionId);
+      userSession = validateUserSession(sessionId);
     } else {
-      authenticatedUser = authenticateUser(request);
+      userSession = authenticateUser(request);
     }
-    return authenticatedUser;
+    return userSession;
   }
 
   /**
@@ -126,7 +135,7 @@ public class UserPriviledgeValidation {
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionId = request.getHeader(HTTP_SESSIONKEY);
     if (!isDefined(sessionId)) {
-      HttpSession httpSession = request.getSession();
+      HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
         sessionId = httpSession.getId();
       }
@@ -135,7 +144,18 @@ public class UserPriviledgeValidation {
   }
 
   /**
-   * Authenticates the user by using the specified credentials. Once the user well authenticated,
+   * Authenticates the user by using the credentials in the header Authorization of the specified
+   * HTTP request.
+   * 
+   * According to the HTTP specification, authentication credentials must be carried by the HTTP
+   * header Authorization. Its value must follow the RFC 2617 basic digest and it must be Base 64
+   * encoded.
+   * 
+   * In Silverpeas, the authentication process with web services asks for the unique identifier of
+   * the user as login instead of its true login text that can be not unique (it is unique only within
+   * a given Silverpeas domain).
+   * 
+   * Once the user well authenticated,
    * return details about him. If the authentication fails, then a WebApplicationException exception
    * is thrown with an HTTP status code UNAUTHORIZED (401). The implementation of this method is for
    * taking into account the Silverpeas security doesn't satisfy the JAAS way. Once JAAS supported
@@ -144,20 +164,20 @@ public class UserPriviledgeValidation {
    *
    * @return the detail about the authenticated user requested this web service.
    */
-  private UserDetail authenticateUser(final HttpServletRequest request) {
+  private SessionInfo authenticateUser(final HttpServletRequest request) {
     String userCredentials = request.getHeader(HTTP_AUTHORIZATION);
     if (isDefined(userCredentials)) {
-      String decoded = new String(Base64.decodeBase64(userCredentials));
+      String decoded = new String(Base64.decodeBase64(userCredentials), Charsets.UTF_8);
       // the first ':' character is the separator according to the RFC 2617 in basic digest
-      int loginPasswordSeparatorIndex = decoded.indexOf(":");
+      int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      AdminController adminController = new AdminController(null);
-      UserFull user = adminController.getUserFull(userId);
+      OrganizationController controller = getOrganizationController();
+      UserFull user = controller.getUserFull(userId);
       if (user == null || !user.getPassword().equals(password)) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
-      return user;
+      return sessionManagement.openSession(user);
     } else {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
@@ -176,14 +196,18 @@ public class UserPriviledgeValidation {
    * @param sessionKey the user session key.
    * @return the detail about the user requesting this web service.
    */
-  private UserDetail validateUserSession(String sessionKey) {
+  private SessionInfo validateUserSession(String sessionKey) {
     SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
     if (sessionInfo == null) {
       if (!UserDetail.isAnonymousUserExist()) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
-      return UserDetail.getAnonymousUser();
+      return new SessionInfo(null, UserDetail.getAnonymousUser());
     }
-    return sessionInfo.getUserDetail();
+    return sessionInfo;
+  }
+  
+  private OrganizationController getOrganizationController() {
+    return organizationController;
   }
 }

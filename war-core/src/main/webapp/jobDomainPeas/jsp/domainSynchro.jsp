@@ -32,7 +32,6 @@
 
     Domain domObject = (Domain)request.getAttribute("domainObject");
 
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(resource.getString("JDP.domainSynchro") + "...");
 %>

@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -47,10 +48,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
-    if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    if (clipboardSC != null){
+      clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    }
     LookHelper lookHelper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
 
     int nbConnectedUsers = 0;
@@ -77,14 +80,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <script type="text/javascript">
 var counter = 0;
 <%
-   if (clipboardSC != null)
-   {
-        out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
-   }
-   else
-   {
-        out.println("var interval = 5;");
-   }
+    if (clipboardSC != null) {
+      out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
+    } else {
+      out.println("var interval = 5;");
+    }
 %>
 
 // call Update function in 1 second after first load
@@ -96,15 +96,13 @@ ID = window.setTimeout ("DoIdle(" + interval + ");", interval * 1000);
 <% } %>
 //--------------------------------------------------------------------------------------DoIdle
 // Idle function
-function DoIdle()
-{
+function DoIdle() {
 	counter ++;
 	self.location.href = "../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE";
 }
 
 <% if (displayConnectedUsers) { %>
-function refreshTopBar()
-{
+function refreshTopBar() {
 	top.topFrame.setConnectedUsers(<%=nbConnectedUsers%>);
 }
 <% } %>
@@ -114,10 +112,11 @@ function refreshTopBar()
 function DoTask() {
 	<%
 	if (clipboardSC != null) {
-		String MessageError = clipboardSC.getMessageError();
-		if (MessageError != null)
-				out.println ("alert ('" + MessageError + "')");
-		out.println (clipboardSC.getHF_JavaScriptTask(request));
+	  String MessageError = clipboardSC.getMessageError();
+          if (MessageError != null){
+            out.println ("alert ('" + MessageError + "')");
+          }				
+	  out.println (clipboardSC.getHF_JavaScriptTask(request));
 	}
 	%>
 }
@@ -127,12 +126,11 @@ function OpenDiscussion(page,nom,largeur,hauteur,options) {
 	if (!top.scriptFrame.impopup || (top.scriptFrame.impopup.closed)) {
 		top.scriptFrame.impopup = SP_openWindow(page,nom,largeur, hauteur,options);
 	} else {
-		 top.scriptFrame.impopup.focus(); 
+		top.scriptFrame.impopup.focus(); 
 	}
 
 	 <%
 		String messageId = (String) request.getAttribute("MessageID");
-
 		if(messageId != null) {
 			com.stratelia.silverpeas.notificationserver.channel.popup.SilverMessageFactory.del(messageId);
 		}
@@ -148,27 +146,30 @@ function test () {
 </script>
 </head>
 <body onload="DoTask();"><pre>
-Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
+Frame cachee, Time = <%if (clipboardSC != null) {out.print (String.valueOf(clipboardSC.getCounter()));}%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
 		String sep = "";
 		while(values.hasMoreElements()) {
 			String name = (String)values.nextElement();
 			if (name != null) {
-		      String value = request.getParameter(name);
-            if(name.compareTo("submit") != 0) {
-				   if (value != null)
-					   out.print(sep + name + "=" + value);
-				   else
-					   out.print(sep + name + "=null");
-				   sep = "&";
-            }
-			}
+        String value = request.getParameter(name);
+        if(name.compareTo("submit") != 0) {
+          if (value != null) {
+            out.print(sep + name + "=" + value);
+          } else {
+            out.print(sep + name + "=null");
+          }
+          sep = "&";
+        }
       }
+    }
 	%>
 	<a href="javascript:onClick=test()">test...</a>
 	</pre>
-<%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
+<%if (clipboardSC != null) {
+  out.println (clipboardSC.getHF_HTMLForm(request));
+} %>
 <!-- SessionId pour securisation pages Web -->
 <form name="ctrl" action="">
 	<input type="hidden" name="sessionId" value="<%=session.getId()%>"/>

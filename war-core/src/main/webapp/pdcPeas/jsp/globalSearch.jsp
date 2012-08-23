@@ -24,6 +24,7 @@
 
 --%>
 
+
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -31,6 +32,9 @@
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
+<%@ page import="com.stratelia.webactiv.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -289,6 +293,7 @@ ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
+QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 %>
 
 
@@ -913,8 +918,8 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
 		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
 		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
 		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>

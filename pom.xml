@@ -30,7 +30,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>23</version>
+    <version>24-SNAPSHOT</version>
   </parent>
 
   <description>
@@ -239,7 +239,7 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.10</installer_stable_version>
+    <installer_stable_version>5.10.1</installer_stable_version>
     <installer_version>5.11-SNAPSHOT</installer_version>
   </properties>
 

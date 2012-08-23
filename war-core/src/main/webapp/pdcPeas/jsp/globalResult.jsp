@@ -33,6 +33,9 @@
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag"%>
+<%@ page import="com.stratelia.webactiv.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -160,6 +163,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
+QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
 String pageId = (String) request.getAttribute("ResultPageId");
@@ -644,8 +648,8 @@ function showExternalSearchError() {
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
         <fmt:message key="pdcPeas.helpCol2Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol2Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content2" /><br>
+        <%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
         <fmt:message key="pdcPeas.helpCol2Content3" /><br>
         <fmt:message key="pdcPeas.helpCol2Content4" /><br>
         <fmt:message key="pdcPeas.helpCol2Content5" /><br>

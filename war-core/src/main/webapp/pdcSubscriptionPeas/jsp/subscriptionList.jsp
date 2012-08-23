@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
 <%!
@@ -139,16 +140,14 @@
     }
 
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-    out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-
-<script>
+<script type="text/javascript">
 
 function areYouSure(){
     return confirm("<%=resource.getString("confirmDeleteSubscription")%>");
@@ -193,11 +192,10 @@ function deleteSubscription() {
 }
 
 </script>
-
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" class="txtlist">
-<form name="subscriptionList" action="<%=action%>" method="POST">
-<input type="hidden" name="mode">
+<body class="txtlist">
+<form name="subscriptionList" action="<%=action%>" method="post">
+<input type="hidden" name="mode"/>
 
  <%
     browseBar.setComponentName(path);
@@ -207,7 +205,7 @@ function deleteSubscription() {
 	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
 
       if (!isReadOnly) {
-          operationPane.addOperation(iconAdd , resource.getString("AddSC"),"javascript:newSubscription()");
+          operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),"javascript:newSubscription()");
           if (subscriptionList != null && subscriptionList.size() > 0) {
               operationPane.addOperation(iconDelete , resource.getString("DeleteSC"),"javascript:deleteSubscription()");
           }
@@ -215,8 +213,10 @@ function deleteSubscription() {
 
       out.println(window.printBefore());
       out.println(tabbedPane.print());
-      out.println(frame.printBefore());
-      
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
       ArrayPane arrayPane = gef.getArrayPane("tableau1", action + "?userId=" + userId, request, session);
 
       arrayPane.addArrayColumn(resource.getString("name"));
@@ -240,18 +240,19 @@ function deleteSubscription() {
 
 		  iconPane	= gef.getIconPane();
           updateIcon = iconPane.addIcon();
-          updateIcon.setProperties(iconEdit, resource.getString("EditSC") , "javascript:onClick=editSubscription('"+ps.getId()+"')");
+          updateIcon.setProperties(iconEdit, resource.getString("EditSC"), "javascript:onClick=editSubscription('"+ps.getId()+"')");
 
 		  if (!isReadOnly) {
-			  ligne.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\">");
+			  ligne.addArrayCellText(updateIcon.print()+"&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"pdcCheck\" value=\""+ps.getId()+"\"/>");
 		  }
 	  }
       
   out.println(arrayPane.print());
-  out.println(frame.printAfter());
+%>
+</view:frame>
+<%
   out.println(window.printAfter());
  %>
-
 </form>
 </body>
 </html>

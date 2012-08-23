@@ -56,7 +56,7 @@ public class JobDomainPeasAjaxServlet extends HttpServlet {
         (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
 
     String action = getAction(req);
-    String result = null;
+    String result = "";
 
     if ("CheckUser".equals(action)) {
       result = checkUser(req, sc);

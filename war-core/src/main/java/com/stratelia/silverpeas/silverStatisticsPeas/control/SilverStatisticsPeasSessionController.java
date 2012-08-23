@@ -24,22 +24,8 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.CreateException;
-
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import org.apache.commons.lang.StringUtils;
-import org.jCharts.axisChart.AxisChart;
-import org.jCharts.nonAxisChart.PieChart2D;
-
 import com.silverpeas.pdc.ejb.PdcBmHome;
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -48,38 +34,26 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.AxisHeader;
-import com.stratelia.silverpeas.pdc.model.PdcException;
-import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.SearchCriteria;
-import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.AccessPublicationVO;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.AxisStatsFilter;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisAccessVO;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossAxisStatsFilter;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.CrossStatisticVO;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticAxisVO;
-import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
+import com.stratelia.silverpeas.silverStatisticsPeas.vo.*;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.*;
+import javax.ejb.CreateException;
+import org.apache.commons.lang.StringUtils;
+import org.jCharts.axisChart.AxisChart;
+import org.jCharts.nonAxisChart.PieChart2D;
 
 /**
  * Class declaration

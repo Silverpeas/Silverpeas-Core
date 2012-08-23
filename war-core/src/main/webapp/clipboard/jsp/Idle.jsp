@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -46,22 +47,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
-    if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+      String m_context = URLManager.getApplicationURL();
+      MainSessionController m_MainSessionCtrl = (MainSessionController) session.
+          getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
+      if (clipboardSC != null) {
+        clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+      }
 
-    int nbConnectedUsers = 0;
-    String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-    ResourceLocator homePageSettings = new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
-    String connectedUsers = message.getString("connectedUsers");
-    if ("yes".equals(homePageSettings.getString("displayConnectedUsers")))
-    {
-        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
-        if (nbConnectedUsers <= 1)
-            connectedUsers = message.getString("connectedUser");
-    }
+      int nbConnectedUsers = 0;
+      String language = m_MainSessionCtrl.getFavoriteLanguage();
+      ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
+      ResourceLocator homePageSettings = new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
+      String connectedUsers = message.getString("connectedUsers");
+      if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) {
+        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.
+            getCurrentUserDetail()) - 1;
+        if (nbConnectedUsers <= 1) {
+          connectedUsers = message.getString("connectedUser");
+        }
+      }
 
 %>
 
@@ -71,13 +76,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <Script language="JavaScript">
 var counter = 0;
 <%
-   if (clipboardSC != null)
-   {
-        out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
-   }
-   else
-   {
-        out.println("var interval = 5;");
+   if (clipboardSC != null) {
+     out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
+   } else {
+     out.println("var interval = 5;");
    }
 %>
 
@@ -126,8 +128,9 @@ function DoTask() {
 	<%
 	if (clipboardSC != null) {
 		String MessageError = clipboardSC.getMessageError();
-		if (MessageError != null)
-				out.println ("alert ('" + MessageError + "')");
+		if (MessageError != null) {
+      out.println ("alert ('" + MessageError + "')");
+    }				
 		out.println (clipboardSC.getHF_JavaScriptTask(request));
 	}
 	%>
@@ -161,7 +164,7 @@ function test () {
 </HEAD>
 
 <body onLoad="DoTask();"><PRE>
-Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
+Frame cachee, Time = <% if (clipboardSC != null) {out.print (String.valueOf(clipboardSC.getCounter()));}%> <a href="../../Rclipboard/jsp/Idle.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
 		String sep = "";
@@ -181,7 +184,9 @@ Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipbo
 	%>
 	<a href="javascript:onClick=test()">test...</a>
 	</PRE>
-<%if (clipboardSC != null) out.println (clipboardSC.getHF_HTMLForm(request));%>
+<% if(clipboardSC != null) {
+  out.println (clipboardSC.getHF_HTMLForm(request));
+}%>
 
 <!-- SessionId pour securisation pages Web -->
 <form name="ctrl">

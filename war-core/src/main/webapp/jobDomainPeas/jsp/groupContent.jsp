@@ -26,10 +26,9 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-    Board board = gef.getBoard();
-
 	Domain  domObject 				= (Domain)request.getAttribute("domainObject");
     Group 	grObject 				= (Group)request.getAttribute("groupObject");
     String 	groupsPath 				= (String)request.getAttribute("groupsPath");
@@ -42,8 +41,6 @@
     boolean showTabs		= false;
     
     String thisGroupId = grObject.getId();
-    
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
 
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     if (groupsPath != null)
@@ -67,7 +64,7 @@
     		showTabs = true;
     		
 	        // Group operations
-	        operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
+	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
 	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
 	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
 	
@@ -80,7 +77,7 @@
     		if (grObject.getSuperGroupId() == null)
     		{
     			//Group operations
-    	        operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
+    	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
     	        
     			//User operations
     			operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
@@ -88,7 +85,7 @@
     		else
     		{
     			//Group operations
-    	        operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
+    	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
     	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
     	        
     	        if (!isGroupManagerDirectly)
@@ -110,10 +107,12 @@
         operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"),resource.getString("JDP.groupUnsynchro"),"groupUnSynchro?Idgroup="+thisGroupId);
     }
 %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<% out.println(gef.getLookStyleSheet()); %>
-<script language="JavaScript">
+<view:looknfeel/>
+<script type="text/javascript">
 function ConfirmAndSend(textToDisplay,targetURL)
 {
     if (window.confirm(textToDisplay))
@@ -126,29 +125,23 @@ function ConfirmAndSend(textToDisplay,targetURL)
 <body>
 <%
 out.println(window.printBefore());
-
-if (showTabs)
-{
+if (showTabs) {
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("GML.description"), "groupContent?Idgroup="+thisGroupId, true);
 	tabbedPane.addTab(resource.getString("JDP.roleManager"), "groupManagersView?Id="+thisGroupId, false);
 	out.println(tabbedPane.print());
 }
-
-out.println(frame.printBefore());
 %>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<view:frame>
+<view:board>
+<table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr valign="baseline">
 		<%
 			String icon = resource.getIcon("JDP.group");
 			if (grObject.isSynchronized())
 				icon = resource.getIcon("JDP.groupSynchronized");
 		%>
-		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>" align="absmiddle"></td>
+		<td><img src="<%=icon%>" alt="<%=resource.getString("GML.groupe") %>" title="<%=resource.getString("GML.groupe")%>" align="absmiddle"/></td>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
@@ -165,18 +158,15 @@ out.println(board.printBefore());
     </tr>
     <% } %>
 </table>
+</view:board>
+<view:areaOfOperationOfCreation/>
 <%
-out.println(board.printAfter());
-%>
-<br>	
-<%
-	if (!grObject.isSynchronized())
-	{
+	if (!grObject.isSynchronized()) {
 		ArrayPane arrayPane = gef.getArrayPane("groupe", "groupContent.jsp", request, session);
 		Group[] subGroups = (Group[])request.getAttribute("subGroups");
 	
 		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
-		//arrayPane.setTitle(resource.getString("JDP.groups"));
+		arrayPane.setTitle(resource.getString("JDP.groups"));
 
 		arrayPane.addArrayColumn("&nbsp;");
 		arrayPane.addArrayColumn(resource.getString("GML.nom"));
@@ -184,14 +174,12 @@ out.println(board.printAfter());
 		arrayPane.addArrayColumn(resource.getString("GML.description"));
 		arrayPane.setSortable(false);
 
-		if (subGroups != null)
-		{
+		if (subGroups != null) {
 			Group group = null;
 			for(int i=0; i<subGroups.length; i++){
 				//cr�ation des ligne de l'arrayPane
 				group = subGroups[i];
-		    	if (group != null)
-		    	{
+		    	if (group != null) {
 					ArrayLine arrayLine = arrayPane.addArrayLine();
 					IconPane iconPane1 = gef.getIconPane();
 					Icon groupIcon = iconPane1.addIcon();
@@ -209,21 +197,20 @@ out.println(board.printAfter());
 		out.println(arrayPane.print());
 	}
 
-	out.println("<BR/>");
+	out.println("<br/>");
 
   ArrayPane arrayPaneUser = gef.getArrayPane("users", "groupContent.jsp", request, session);
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
-//  arrayPaneUser.setTitle(resource.getString("GML.users"));
+  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
   arrayPaneUser.setSortable(false);
 
-  if (subUsers != null)
-  {
+  if (subUsers != null) {
       for(int i=0; i<subUsers.length; i++){
           //cr�ation des ligne de l'arrayPane
           ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
@@ -237,10 +224,7 @@ out.println(board.printAfter());
   } 	
   out.println(arrayPaneUser.print());
 %>
-</center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+</view:frame>
+<% out.println(window.printAfter()); %>
 </body>
 </html>

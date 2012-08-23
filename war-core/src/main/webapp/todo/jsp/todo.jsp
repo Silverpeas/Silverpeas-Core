@@ -26,32 +26,31 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkTodo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%
   String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  String action;
-
   ResourceLocator settings = todo.getSettings();
 
-  action = (String) request.getParameter("Action");
+  String action = (String) request.getParameter("Action");
   if (action == null) {
     action = "View";
   }
   else if (action.equals("SetPercent")) {
-    String todoId = (String) request.getParameter("ToDoId");
-    String percent = (String) request.getParameter("Percent");
+    String todoId = request.getParameter("ToDoId");
+    String percent = request.getParameter("Percent");
     todo.setToDoPercentCompleted(todoId, percent);
     action = "View";
   }
   else if (action.equals("CloseToDo")) {
-    String todoId = (String) request.getParameter("ToDoId");
+    String todoId = request.getParameter("ToDoId");
     todo.closeToDo(todoId);
     action = "View";
   }
   else if (action.equals("ReopenToDo")) {
-    String todoId = (String) request.getParameter("ToDoId");
+    String todoId = request.getParameter("ToDoId");
     todo.reopenToDo(todoId);
     action = "View";
   }
@@ -72,15 +71,13 @@
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 %>
-<HTML>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<TITLE>_________________/ Silverpeas - Corporate portal organizer \_________________/</TITLE>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
+<title></title>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<Script language="JavaScript">
+<script type="text/javascript">
 
 function viewToDo(todoId) {
   document.todoEditForm.ToDoId.value = todoId;
@@ -174,8 +171,8 @@ function jumpToComponent(componentId) {
 }
 
 </script>
-</HEAD>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+</head>
+<body>
 
 <%
 	Window window = graphicFactory.getWindow();
@@ -185,9 +182,12 @@ function jumpToComponent(componentId) {
 
 	OperationPane operationPane = window.getOperationPane();
 	 
-	operationPane.addOperation(m_context + "/util/icons/task_add.gif", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
+	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
 
 	out.println(window.printBefore());
+%>
+<view:areaOfOperationOfCreation/>
+<%
 
 	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
     tabbedPane.addTab(todo.getString("mesTaches"), "javascript:onClick=viewParticipantTodo()", (todo.getViewType() == ToDoSessionController.PARTICIPANT_TODO_VIEW) );
@@ -263,7 +263,7 @@ function jumpToComponent(componentId) {
               int countAttendees = 0;
               while (att.hasNext()) {
                 if (countAttendees > 0)
-                  text.append("<BR>");
+                  text.append("<br/>");
                 if (countAttendees > 2) {
                   text.append("...");
                   break;
@@ -304,25 +304,25 @@ function jumpToComponent(componentId) {
 					text = new StringBuffer();
 					if (todo.getViewType() == ToDoSessionController.PARTICIPANT_TODO_VIEW) {
 						for (int k=1; k<=10;k++) {
-							text.append("<a href=\"javascript:onClick=setPercent('").append(todoHeader.getId()).append("','");
-							text.append(String.valueOf(k*10)).append("')\" onMouseOut=\"percentCompletedSet('percentCompleted");
+							text.append("<a href=\"javascript:onclick=setPercent('").append(todoHeader.getId()).append("','");
+							text.append(String.valueOf(k*10)).append("')\" onmouseout=\"percentCompletedSet('percentCompleted");
 							text.append(String.valueOf(j)).append("_','").append(todoHeader.getPercentCompleted()/10);
-							text.append("')\" onMouseOver=\"percentCompletedSet('percentCompleted").append(String.valueOf(j)).append("_', '");
+							text.append("')\" onmouseover=\"percentCompletedSet('percentCompleted").append(String.valueOf(j)).append("_', '");
 							text.append(String.valueOf(k)).append("')\"><img width=\"5\" height=\"5\" name=\"percentCompleted");
 							text.append(String.valueOf(j)).append("_").append(String.valueOf(k)).append("\" border=\"0\" src=\"icons/");
 								if (k*10 > todoHeader.getPercentCompleted()) 
 									text.append("off.gif");
 								else
 									text.append("on.gif");
-								text.append("\" alt=\""+String.valueOf(k*10)+"%\" title=\""+String.valueOf(k*10)+"%\"></a>");
+								text.append("\" alt=\""+String.valueOf(k*10)+"%\" title=\""+String.valueOf(k*10)+"%\"/></a>");
 						}
 					} else
 						if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) {
-							text.append("<a href=\"javascript:onClick=closeToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/unlock.gif\" alt=\""+(todo.getString("cadenas_ouvert"))+"\" title=\""+(todo.getString("cadenas_ouvert"))+"\">" ).append("</a>");
+							text.append("<a href=\"javascript:onclick=closeToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/unlock.gif\" alt=\""+(todo.getString("cadenas_ouvert"))+"\" title=\""+(todo.getString("cadenas_ouvert"))+"\"/>" ).append("</a>");
 						}
 						else if (todoHeader.getDelegatorId().equals(todo.getUserId()))
 						{
-							text.append("<a href=\"javascript:onClick=reopenToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/lock.gif\" alt=\""+(todo.getString("cadenas_clos"))+"\" title=\""+(todo.getString("cadenas_clos"))+"\">" ).append("</a>");
+							text.append("<a href=\"javascript:onclick=reopenToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/lock.gif\" alt=\""+(todo.getString("cadenas_clos"))+"\" title=\""+(todo.getString("cadenas_clos"))+"\"/>" ).append("</a>");
 						} 
 						else text.append("&nbsp;");
 					j++;
@@ -336,20 +336,20 @@ function jumpToComponent(componentId) {
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="todoEditForm" ACTION="todoEdit.jsp" METHOD=POST >
-  <input type="hidden" name="ToDoId">
-  <input type="hidden" name="Action">
-</FORM>
+<form name="todoEditForm" action="todoEdit.jsp" method="post">
+  <input type="hidden" name="ToDoId"/>
+  <input type="hidden" name="Action"/>
+</form>
 
-<FORM NAME="todoForm" ACTION="todo.jsp" METHOD=POST >
-  <input type="hidden" name="ToDoId">
-  <input type="hidden" name="Percent">
-  <input type="hidden" name="Action">
-</FORM>
+<form name="todoForm" action="todo.jsp" method="post">
+  <input type="hidden" name="ToDoId"/>
+  <input type="hidden" name="Percent"/>
+  <input type="hidden" name="Action"/>
+</form>
 
-<FORM NAME="searchForm" ACTION="agenda.jsp" METHOD=POST >
-  <input type="hidden" name="query">
-</FORM>
+<form name="searchForm" action="agenda.jsp" method="post">
+  <input type="hidden" name="query"/>
+</form>
 
 </body>
 </html>

@@ -24,11 +24,6 @@
 
 package com.silverpeas.jobDomainPeas.control;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -48,12 +43,13 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.admin.domain.DomainService;
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.DomainType;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
+import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.jobDomainPeas.DomainNavigationStock;
 import com.silverpeas.jobDomainPeas.GroupNavigationStock;
@@ -71,7 +67,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.X509Factory;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -1716,8 +1711,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
       theNewDomain.setTheTimeStamp(domainTimeStamp);
 
-      DomainServiceFactory.getFactory().getDomainService(DomainType.EXTERNAL).createDomain(
-          theNewDomain);
+      DomainServiceFactory.getDomainService(DomainType.EXTERNAL).createDomain(theNewDomain);
       refresh();
     } catch (DomainCreationException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.createDomain()",
@@ -1734,7 +1728,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public String createSQLDomain(String domainName, String domainDescription,
-      String silverpeasServerURL) throws JobDomainPeasException, JobDomainPeasTrappedException {
+      String silverpeasServerURL, String usersInDomainQuotaMaxCount) throws JobDomainPeasException,
+      JobDomainPeasTrappedException {
 
     // build Domain object
     Domain domainToCreate = new Domain();
@@ -1745,18 +1740,37 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // launch domain creation process
     String domainId = null;
     try {
-      DomainService domainService =
-          DomainServiceFactory.getFactory().getDomainService(DomainType.SQL);
-      domainId = domainService.createDomain(domainToCreate);
+
+      // Getting quota filled
+      if (JobDomainSettings.userQuotaEnabled) {
+        domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      }
+
+      domainId = DomainServiceFactory.getDomainService(DomainType.SQL).createDomain(domainToCreate);
+      domainToCreate.setId(domainId);
+
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Registering "users in domain" quota
+        DomainServiceFactory.getUserDomainQuotaService().initialize(
+            UserDomainQuotaKey.from(domainToCreate),
+            domainToCreate.getUserDomainQuota().getMaxCount());
+      }
+        
+    } catch (QuotaException qe) {
+      JobDomainPeasTrappedException trappedException =
+          new JobDomainPeasTrappedException("JobDomainPeasSessionController.createSQLDomain()",
+              SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN",
+              getString("JDP.userDomainQuotaMaxCountError"), qe);
+      trappedException.setGoBackPage("displayDomainSQLCreate");
+      throw trappedException;
     } catch (DomainCreationException e) {
-      throw new JobDomainPeasException("JobDomainPeasSessionController.createDomain()",
+      throw new JobDomainPeasException("JobDomainPeasSessionController.createSQLDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
     } catch (DomainConflictException e) {
       JobDomainPeasTrappedException trappedException =
-          new JobDomainPeasTrappedException("JobDomainPeasSessionController.createDomain()",
-          SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
+          new JobDomainPeasTrappedException("JobDomainPeasSessionController.createSQLDomain()",
+              SilverpeasException.ERROR, "admin.MSG_ERR_ADD_DOMAIN", e);
       trappedException.setGoBackPage("displayDomainSQLCreate");
-
       throw trappedException;
     }
 
@@ -1814,7 +1828,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public String modifySQLDomain(String domainName, String domainDescription,
-      String silverpeasServerURL) throws JobDomainPeasException,
+      String silverpeasServerURL, String usersInDomainQuotaMaxCount) throws JobDomainPeasException,
       JobDomainPeasTrappedException {
     Domain theNewDomain = getTargetDomain();
 
@@ -1847,21 +1861,42 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewDomain.setName(domainName);
     theNewDomain.setDescription(domainDescription);
     theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
-    idRet = m_AdminCtrl.updateDomain(theNewDomain);
-    if ((idRet == null) || (idRet.length() <= 0)) {
-      throw new JobDomainPeasException(
-          "JobDomainPeasSessionController.modifySQLDomain()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+
+    try {
+
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Getting quota filled
+        theNewDomain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+      }
+
+      idRet = m_AdminCtrl.updateDomain(theNewDomain);
+      if ((idRet == null) || (idRet.length() <= 0)) {
+        throw new JobDomainPeasException("JobDomainPeasSessionController.modifySQLDomain()",
+            SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
+      }
+
+      if (JobDomainSettings.userQuotaEnabled) {
+        // Registering "users in domain" quota
+        DomainServiceFactory.getUserDomainQuotaService().initialize(
+            UserDomainQuotaKey.from(theNewDomain), theNewDomain.getUserDomainQuota().getMaxCount());
+      }
+
+    } catch (QuotaException qe) {
+      trappedException =
+          new JobDomainPeasTrappedException("JobDomainPeasSessionController.modifySQLDomain()",
+              SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN",
+              getString("JDP.userDomainQuotaMaxCountError"), qe);
+      trappedException.setGoBackPage("displayDomainSQLCreate");
+      throw trappedException;
     }
+
     refresh();
     return idRet;
   }
 
   public void deleteDomain() throws JobDomainPeasException {
     try {
-      DomainService domainService =
-          DomainServiceFactory.getFactory().getDomainService(DomainType.EXTERNAL);
-      domainService.deleteDomain(getTargetDomain());
+      DomainServiceFactory.getDomainService(DomainType.EXTERNAL).deleteDomain(getTargetDomain());
     } catch (DomainDeletionException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.deleteDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);
@@ -1869,11 +1904,10 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void deleteSQLDomain() throws JobDomainPeasException {
-
     try {
-      DomainService domainService =
-          DomainServiceFactory.getFactory().getDomainService(DomainType.SQL);
-      domainService.deleteDomain(getTargetDomain());
+      DomainServiceFactory.getDomainService(DomainType.SQL).deleteDomain(getTargetDomain());
+      DomainServiceFactory.getUserDomainQuotaService().remove(
+          UserDomainQuotaKey.from(getTargetDomain()));
     } catch (DomainDeletionException e) {
       throw new JobDomainPeasException("JobDomainPeasSessionController.deleteSQLDomain()",
           SilverpeasException.ERROR, "admin.MSG_ERR_DELETE_DOMAIN", e);

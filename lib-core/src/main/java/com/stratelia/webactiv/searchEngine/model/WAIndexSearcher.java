@@ -54,20 +54,13 @@ public class WAIndexSearcher {
 */
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
-  private QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
+  public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
   /**
 * indicates the number maximum of results returned by the search
 */
-  private int maxNumberResult = 0;
-
-  /**
-* The no parameters constructor retrieves all the needed data from the IndexEngine.properties
-* file.
-*/
-  public WAIndexSearcher() {
-    indexManager = new IndexManager();
-    primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
-    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
+  public static int maxNumberResult = 0;
+  
+  static {
     try {
       ResourceLocator resource = new ResourceLocator(
               "com.silverpeas.searchEngine.searchEngineSettings", "");
@@ -80,8 +73,20 @@ public class WAIndexSearcher {
 
       maxNumberResult = resource.getInteger("maxResults", 100);
     } catch (MissingResourceException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_FILE_NOT_FOUND", e);
     } catch (NumberFormatException e) {
+      SilverTrace.fatal("searchEngine", "WAIndexSearcher.init()", "root.EX_INVALID_ARG", e);
     }
+  }
+
+  /**
+* The no parameters constructor retrieves all the needed data from the IndexEngine.properties
+* file.
+*/
+  public WAIndexSearcher() {
+    indexManager = new IndexManager();
+    primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
+    secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
   }
 
   /**
@@ -249,7 +254,6 @@ public class WAIndexSearcher {
     if (I18NHelper.isI18N && "*".equals(language)) {
       // search over all languages
       String[] fields = new String[I18NHelper.getNumberOfLanguages()];
-      String[] queries = new String[I18NHelper.getNumberOfLanguages()];
 
       int l = 0;
       Iterator<String> languages = I18NHelper.getLanguages();
@@ -261,11 +265,12 @@ public class WAIndexSearcher {
         } else {
           fields[l] = searchField + "_" + language;
         }
-        queries[l] = query.getQuery();
         l++;
       }
 
-      parsedQuery = MultiFieldQueryParser.parse(queries, fields, analyzer);
+      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(fields, analyzer);
+      mfqp.setDefaultOperator(defaultOperand);
+      parsedQuery = mfqp.parse(query.getQuery());
     } else {
       // search only specified language
       if (I18NHelper.isI18N && !"*".equals(language) && !I18NHelper.isDefaultLanguage(language)) {
@@ -274,14 +279,14 @@ public class WAIndexSearcher {
 
       QueryParser queryParser = new QueryParser(searchField, analyzer);
       queryParser.setDefaultOperator(defaultOperand);
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
               "defaultOperand = " + defaultOperand);
       parsedQuery = queryParser.parse(query.getQuery());
-      SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
               "getOperator() = " + queryParser.getDefaultOperator());
     }
 
-    SilverTrace.info("searchEngine", "WAIndexSearcher.getHits", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("searchEngine", "WAIndexSearcher.getPlainTextQuery", "root.MSG_GEN_PARAM_VALUE",
             "parsedQuery = " + parsedQuery.toString());
     return parsedQuery;
   }

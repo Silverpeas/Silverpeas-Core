@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
  * @version 1.0
  */
 public interface OperationPane extends SimpleGraphicElement {
-
+  
   /**
    * Method declaration
    * @return
@@ -58,7 +58,9 @@ public interface OperationPane extends SimpleGraphicElement {
    * @param action
    * @see
    */
-  public void addOperation(String iconPath, String altText, String action);
+  public void addOperation(String iconPath, String label, String action);
+  
+  public void addOperationOfCreation(String iconPath, String label, String action);
 
   /**
    * Method declaration

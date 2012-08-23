@@ -42,7 +42,7 @@
     <property name="homeDir" value="file:///${basedir}/target/tmp/jackrabbit.temp" />
     <property name="configurationProperties">
       <list>
-        <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
+        <value>classpath:/org/silverpeas/attachment/Configuration.properties</value>
       </list>
     </property>
   </bean>
@@ -50,7 +50,7 @@
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>classpath:/com/silverpeas/attachment/Configuration.properties</value>
+        <value>classpath:/org/silverpeas/attachment/Configuration.properties</value>
         <value>classpath:jdbc.properties</value>
       </list>
     </property>
