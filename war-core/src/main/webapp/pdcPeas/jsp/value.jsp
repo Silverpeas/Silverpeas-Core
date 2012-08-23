@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkPdc.jsp"%>
 
 <%
@@ -48,15 +49,15 @@ int valueNbDoc 			= value.getNbObjects();
 String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage);
 
 %>
-<html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-   out.println(gef.getLookStyleSheet());
-%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 	var currentLanguage = "<%=value.getLanguage()%>";
 	
 	// this method opens a pop-up which warns the user
@@ -112,8 +113,8 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
 		document.getElementById('ValueDescription').innerHTML = eval('desc_'+lang);
 	}
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
     browseBar.setComponentName(resource.getString("pdcPeas.pdcDefinition"));
@@ -133,22 +134,25 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
 	{
     	operationPane.addOperation(resource.getIcon("pdcPeas.icoAddMotherValue"),resource.getString("pdcPeas.insertMotherValue"), "NewMotherValue");
 	}
-	operationPane.addOperation(resource.getIcon("pdcPeas.icoAddDaughterValue"),resource.getString("pdcPeas.createDaughterValue"), "NewDaughterValue");
+	operationPane.addOperationOfCreation(resource.getIcon("pdcPeas.icoAddDaughterValue"),resource.getString("pdcPeas.createDaughterValue"), "NewDaughterValue");
 	
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab("Valeur", "ViewValue", true);
 	tabbedPane.addTab("Gestionnaires", "ViewManager", false);
 	
     out.println(window.printBefore());
-    out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
 %>
-<CENTER>
+<view:areaOfOperationOfCreation/>
+<%    
+    out.println(tabbedPane.print());
+%>
+<view:frame>
+<view:board>
+<center>
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
   <% if (daughterName != null) { %>
 	<tr> 
-      <td colspan="2" align="center"><font size="2" color="#FF6600"><b><%=resource.getString("pdcPeas.deleteValueImpossibleBegin")%> <i><%=daughterName%></i> <%=resource.getString("pdcPeas.deleteValueImpossibleEnd")%></b></font></span></td>
+      <td colspan="2" align="center"><font size="2" color="#FF6600"><b><%=resource.getString("pdcPeas.deleteValueImpossibleBegin")%> <i><%=daughterName%></i> <%=resource.getString("pdcPeas.deleteValueImpossibleEnd")%></b></font></td>
     </tr>
   <% } %>
   <% if (completPath != null){ %>
@@ -170,17 +174,17 @@ String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage
     	<td width="100%"><%=valueNbDoc%></td>
     </tr>
   </table>
+</view:board>
 <%
-	out.println(board.printAfter());
     ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
     out.println("<br/><center>"+buttonPane.print()+"</center>");
-  %>
-</CENTER>
+%>
+</center>
+</view:frame>
 <%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form name="deleteForm" action="DeleteValue" method="post"></form>
-</BODY>
-</HTML>
+</body>
+</html>

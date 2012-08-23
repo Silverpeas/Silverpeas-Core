@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
 <%
   Collection links = (Collection) request.getAttribute("Links");
@@ -34,15 +35,12 @@
 %>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
-<html>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-<script language="javascript">
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
 
 var linkWindow = window;
 
@@ -70,71 +68,35 @@ function editLink(id)
     linkWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
 }
 
-
-function deleteSelectLinksConfirm() 
-{
-	/*var boxItems = document.readForm.linkCheck;
-    var selectItems = "";
-    if (boxItems != null)
-    {
-    	// au moins une checkbox exist
-        var nbBox = boxItems.length;
-        if ( (nbBox == null) && (boxItems.checked == true) )
-        {
-        	selectItems += boxItems.value;
-        } 
-        else
-        {
-            for (i=0;i<boxItems.length ;i++ )
-            {
-        		if (boxItems[i].checked == true)
-        		{
-                	selectItems += boxItems[i].value+",";
-                }
-        	}
-        	selectItems = selectItems.substring(0,selectItems.length-1);
-		}
-	}*/
-	//if ( (selectItems.length > 0) && (areYouSure()) ) 
-	if (areYouSure())
-	{
+function deleteSelectLinksConfirm() {
+	if (confirm("<%=resource.getString("myLinks.deleteSelection")%>")) {
     	document.readForm.mode.value = 'delete';
     	document.readForm.submit();
   	}
 }
-
-function areYouSure()
-{
-    return confirm("<%=resource.getString("myLinks.deleteSelection")%>");
-}
-
 </script>
-
 </head>
-
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5">
-
-<form name="readForm" action="DeleteLinks" method="POST">
-  <input type="hidden" name="mode"> 
+<body>
+<form name="readForm" action="DeleteLinks" method="post">
+  <input type="hidden" name="mode"/> 
 <%
    String bBar = resource.getString("myLinks.links");
    if (instanceId != null)
      bBar = resource.getString("myLinks.linksByComponent");
    browseBar.setComponentName(bBar);
 
-   operationPane.addOperation(resource.getIcon("myLinks.addLink"), resource.getString("myLinks.addLink"), "javaScript:addLink()");
+   operationPane.addOperationOfCreation(resource.getIcon("myLinks.addLink"), resource.getString("myLinks.addLink"), "javaScript:addLink()");
 
-   operationPane.addOperation(resource.getIcon("myLinks.deleteLinks"), resource
-       .getString("myLinks.deleteLinks"), "javaScript:deleteSelectLinksConfirm()");
+   operationPane.addOperation(resource.getIcon("myLinks.deleteLinks"), resource.getString("myLinks.deleteLinks"), "javaScript:deleteSelectLinksConfirm()");
 
    ButtonPane buttonPane = gef.getButtonPane();
-   Button returnButton =
-       (Button) gef.getFormButton(resource.getString("myLinks.retour"), url, false);
+   Button returnButton = gef.getFormButton(resource.getString("myLinks.retour"), url, false);
 
    out.println(window.printBefore());
-   out.println(frame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
    ArrayPane arrayPane = gef.getArrayPane("linkList", "ViewLinks", request, session);
    arrayPane.addArrayColumn(resource.getString("GML.nom"));
    arrayPane.addArrayColumn(resource.getString("GML.description"));
@@ -175,27 +137,29 @@ function areYouSure()
            .getString("myLinks.updateLink"), "javaScript:onClick=editLink('" + linkId + "')");
        line.addArrayCellText(updateIcon.print() +
            "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"linkCheck\" value=\"" +
-           link.getLinkId() + "\">");
+           link.getLinkId() + "\"/>");
      }
    }
 
    out.println(arrayPane.print());
    if (instanceId != null) {
      buttonPane.addButton(returnButton);
-     out.println("<BR><center>" + buttonPane.print() + "</center><BR>");
+     out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
    }
-   out.println(frame.printAfter());
-   out.println(window.printAfter());
- %>
+%>
+</view:frame>
+<%
+	out.println(window.printAfter());
+%>
 </form>
 
-<form name="linkForm" action="" Method="POST">
-  <input type="hidden" name="LinkId"> 
-  <input type="hidden" name="Name">
-  <input type="hidden" name="Description"> 
-  <input type="hidden" name="Url"> 
-  <input type="hidden" name="Visible"> 
-  <input type="hidden" name="Popup">
+<form name="linkForm" action="" method="post">
+  <input type="hidden" name="LinkId"/> 
+  <input type="hidden" name="Name"/>
+  <input type="hidden" name="Description"/> 
+  <input type="hidden" name="Url"/> 
+  <input type="hidden" name="Visible"/> 
+  <input type="hidden" name="Popup"/>
 </form>
 
 </body>

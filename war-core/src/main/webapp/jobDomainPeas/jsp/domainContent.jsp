@@ -71,19 +71,20 @@
 		    }
 	    }
 	}
+	
   if (isDomainRW)
   {
     if (!isGroupManager)
     {
     	operationPane.addLine();
 
-    	operationPane.addOperation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
+    	operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
 
-      if (isUserRW && !isUserDomainQuotaFull)
+      if (isUserRW && !isUserDomainQuotaFull && isUserAddingAllowed)
       {
         // User operations
-        operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-        operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+        operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+        operationPane.addOperationOfCreation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
       }
     }
     else
@@ -190,6 +191,7 @@ out.println(window.printBefore());
 	<div class="inlineMessage-nok"><fmt:message key="JDP.userDomainQuotaFull" /></div>
 <% } %>
 <br/>
+<view:areaOfOperationOfCreation/>
 <%
   ArrayPane arrayPane = gef.getArrayPane("groupe", "domainContent.jsp", request, session);
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);

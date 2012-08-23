@@ -28,17 +28,19 @@
 
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
-<HTML>
-<HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
-function sendData() 
-{
+function sendData() {
     document.workflowHeaderForm.submit();
 }
 </script>
-</HEAD>
+</head>
 <body>
 <%
 String          strColumnList,
@@ -51,7 +53,7 @@ Iterator        iterColumns = presentation.iterateColumns(),
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.presentationTab"));
 
-operationPane.addOperation(resource.getIcon("workflowDesigner.add"),
+operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.add"),
                            resource.getString("workflowDesigner.addColumns"),
                            "AddColumns");
 addContextualDesignation( operationPane, resource, "presentation/titles", "workflowDesigner.add.title", strCurrentTab );
@@ -106,38 +108,31 @@ while ( iterColumns.hasNext() )
 out.println(window.printBefore());
 %>
 <designer:processModelTabs currentTab="ViewPresentation"/>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<!-- help -->
+<div class="inlineMessage">
+	<table border="0"><tr>
+		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+		<td><%=resource.getString("workflowDesigner.help.presentation") %></td>
+	</tr></table>
+</div>
+<br/>
 <%
-out.println(frame.printBefore());
-
-//help
-//
-out.println(boardHelp.printBefore());
-out.println("<table border=\"0\"><tr>");
-out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resource.getIcon("workflowDesigner.info")+"\"></td>");
-out.println("<td>"+resource.getString("workflowDesigner.help.presentation")+"</td>");
-out.println("</tr></table>");
-out.println(boardHelp.printAfter());
-out.println("<br/>");
-
-out.println(board.printBefore());
 out.println( columnPane.print() );
 %>
-<br>
+<br/>
 <designer:contextualDesignationList
     designations="<%=presentation.getTitles()%>" 
     context="presentation/titles"
     parentScreen="<%=strCurrentTab%>"
     columnLabelKey="GML.title"
     paneTitleKey="workflowDesigner.list.title"/>
-<%
-out.println(board.printAfter());
-%>
-<form name="workflowHeaderForm" action="UpdateWorkflow" method="POST">
+<form name="workflowHeaderForm" action="UpdateWorkflow" method="post">
 <designer:buttonPane cancelAction="Main" />
 </form>
+</view:frame>
 <%    
-
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>

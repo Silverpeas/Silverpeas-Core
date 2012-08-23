@@ -26,47 +26,36 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp"%>
 <%
-  Boolean displayOperations = (Boolean) request.getAttribute("DisplayOperations");
+  boolean displayOperations = (Boolean) request.getAttribute("DisplayOperations");
   String content = (String) request.getAttribute("Content");
-
-  Board board = gef.getBoard();
 %>
 
-<%@page import="org.antlr.stringtemplate.*"%>
-<%@page import="org.antlr.stringtemplate.language.AngleBracketTemplateLexer"%>
-<%@page import="com.silverpeas.util.template.SilverpeasTemplate"%>
-<%@page import="com.silverpeas.util.template.SilverpeasTemplateFactory"%>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
+<body>
 <%
-  if (displayOperations.booleanValue()) {
-    operationPane.addOperation(resource.getIcon("JDP.domainAdd"), resource
-        .getString("JDP.domainAdd"), "displayDomainCreate");
-    operationPane.addOperation(resource.getIcon("JDP.domainSqlAdd"), resource
-        .getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
+  if (displayOperations) {
+    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
+    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
   }
 
   out.println(window.printBefore());
-  out.println(frame.printBefore());
 %>
-<center>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<view:board>
 <%
-  out.println(board.printBefore());
-
   out.println(content);
-
-  out.println(board.printAfter());
 %>
-</center>
+</view:board>
+</view:frame>
 <%
-  out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
 </body>
