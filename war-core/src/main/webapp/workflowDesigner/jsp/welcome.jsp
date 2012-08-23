@@ -47,7 +47,7 @@ String    strProcessFileName,
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.list.workflow"));
 
-operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.add"),
+operationPane.addOperationOfCreation(resource.getIcon("workflowDesigner.add.workflow"),
         resource.getString("workflowDesigner.addWorkflow"),
         "AddWorkflow");
 

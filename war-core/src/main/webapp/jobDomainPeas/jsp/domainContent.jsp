@@ -80,23 +80,21 @@
 
     	operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate");
 
-      if (isUserRW && !isUserDomainQuotaFull && isUserAddingAllowed)
-      {
-        // User operations
-        operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-        operationPane.addOperationOfCreation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
-      }
+      	if (isUserRW && !isUserDomainQuotaFull) {
+          // User operations
+          operationPane.addOperationOfCreation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+          operationPane.addOperationOfCreation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+        }
     }
     else
     {
-    	if (isUserRW && isUserAddingAllowed && !isUserDomainQuotaFull)
-    	{
-    		operationPane.addLine();
+    	if (isUserAddingAllowed && isUserRW && !isUserDomainQuotaFull) {
+    	  operationPane.addLine();
 
-        //User operations
-        operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
-        operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
-      }
+          //User operations
+          operationPane.addOperation(resource.getIcon("JDP.userCreate"),resource.getString("JDP.userCreate"),"displayUserCreate");
+          operationPane.addOperation(resource.getIcon("JDP.importCsv"),resource.getString("JDP.csvImport"),"displayUsersCsvImport");
+        }
     }
   }
   if (isDomainSync)
