@@ -51,7 +51,7 @@ public class Im4javaManager {
         try {
           final ConvertCmd cmd = new ConvertCmd();
           cmd.setSearchPath(entry.getValue());
-          cmd.run(new IMOperation());
+          cmd.run(new IMOperation().version());
           ProcessStarter.setGlobalSearchPath(entry.getValue());
         } catch (final Exception e) {
           // ImageMagick is not installed
