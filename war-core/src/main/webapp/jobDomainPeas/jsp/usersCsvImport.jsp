@@ -40,7 +40,6 @@
 
     Board board = gef.getBoard();
 
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath((String)request.getAttribute("groupsPath"));
 %>

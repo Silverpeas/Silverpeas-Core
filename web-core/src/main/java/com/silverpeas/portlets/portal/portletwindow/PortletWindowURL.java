@@ -24,24 +24,19 @@
 
 package com.silverpeas.portlets.portal.portletwindow;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.sun.portal.container.ChannelMode;
 import com.sun.portal.container.ChannelState;
 import com.sun.portal.container.ChannelURL;
 import com.sun.portal.container.ChannelURLType;
 import com.sun.portal.portletcontainer.common.PortletActions;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
+import org.apache.commons.lang3.CharEncoding;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * PortletWindowURL provides the concrete implementation of ChannelURL interface.
@@ -58,8 +53,7 @@ public class PortletWindowURL implements ChannelURL {
   private String cacheLevel;
   private String resourceID;
   private static Logger logger = Logger.getLogger("com.silverpeas.portlets.portal.portletwindow",
-      "com.silverpeas.portlets.PCDLogMessages");
-  private static final String ENC = "UTF-8";
+      "org.silverpeas.portlets.PCDLogMessages");
 
   public PortletWindowURL(String desktopURL) {
     this.desktopURL = desktopURL;
@@ -208,7 +202,7 @@ public class PortletWindowURL implements ChannelURL {
     if (this.resourceID != null) {
       try {
         keyValueMap.put(WindowInvokerConstants.RESOURCE_ID_KEY, URLEncoder.encode(this.resourceID,
-            ENC));
+            CharEncoding.UTF_8));
       } catch (UnsupportedEncodingException uee) {
         logger.log(Level.WARNING, "PSPCD_CSPPD0049", uee);
       }
@@ -233,12 +227,12 @@ public class PortletWindowURL implements ChannelURL {
         String[] values = mapEntry.getValue();
         try {
           if (isEncodingNeeded(key)) {
-            key = URLEncoder.encode(key, ENC);
+            key = URLEncoder.encode(key, CharEncoding.UTF_8);
           }
           for (int j = 0; j < values.length; j++) {
             buffer.append("&").append(key);
             if (isEncodingNeeded(values[j])) {
-              buffer.append("=").append(URLEncoder.encode(values[j], ENC));
+              buffer.append("=").append(URLEncoder.encode(values[j], CharEncoding.UTF_8));
             } else {
               buffer.append("=").append(values[j]);
             }
@@ -258,12 +252,12 @@ public class PortletWindowURL implements ChannelURL {
         List<String> values = mapEntry.getValue();
         try {
           if (isEncodingNeeded(key)) {
-            key = URLEncoder.encode(key, ENC);
+            key = URLEncoder.encode(key, CharEncoding.UTF_8);
           }
           for (String value : values) {
             buffer.append("&").append(key);
             if (isEncodingNeeded(value)) {
-              buffer.append("=").append(URLEncoder.encode(value, ENC));
+              buffer.append("=").append(URLEncoder.encode(value, CharEncoding.UTF_8));
             } else {
               buffer.append("=").append(value);
             }

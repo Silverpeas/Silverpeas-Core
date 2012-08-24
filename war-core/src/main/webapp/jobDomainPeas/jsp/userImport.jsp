@@ -39,7 +39,6 @@
 	List		users		= (List) request.getAttribute("Users");
 	int 		nbUsersPerPage = 15;
 	
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(groupsPath);
     

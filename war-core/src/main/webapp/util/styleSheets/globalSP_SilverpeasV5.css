@@ -245,6 +245,27 @@ Definition des class de style Silverpeas
   margin-top:10px;
 }
 
+.principal-content-title {
+	color: #333333;
+    font-size: 130%;
+    font-weight: bold;
+	margin:0 0 10px 0;
+	padding:0;
+}
+
+.tag-presentation {
+	float:right;
+	height:30px;
+	line-height:30px;
+	background:transparent url(../icons/bg-tag-part1.png) top left no-repeat;
+	padding-left:19px;
+}
+
+.tag-presentation .tag-presentation-content {
+	background:transparent url(../icons/bg-tag-part2.png) top right no-repeat;
+	padding:0 10px;
+}
+
 .clearAll {
   clear:both;
 }
@@ -4600,14 +4621,50 @@ li.application  .applicationName {
   color: #F1790F;
 }
 
+/********************************/
+/** BackEnd domain content **/
+/*******************************/
+#domainContent #principal-content-domainContent {
+	position:relative;
+	width:100%;
+}
 
+#domainContent #link-domain-content {
+	padding-bottom:12px;
+}
 
+#domainContent .principal-content-title.sql-domain {
+	background:transparent url(../icons/component/domainSmall.gif) 0 0 no-repeat;
+	padding-left:20px;
+}
+
+#domainContent #principal-content-domainContent .tag-presentation {
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+#domainContent #principal-content-domainContent .tag-presentation.limited-number-user span{
+	background:transparent url(../icons/limited-user.png) right 3px no-repeat;
+	padding-right:30px;
+	display:block;
+}
+
+#domainContent #description-domainContent {
+	border-left: 6px solid #E4E4E4;
+    color: #666666;
+    font-weight: bold;
+    padding: 8px;
+}
+
+#domainContent #number-user-group-domainContent {
+	color:#666;
+	font-size:12px;
+}
 
 /*************************************/
 /** BackEnd & FrontEnd User Panel   */
 /***********************************/
-
-
 .userPanel, .userPanel * {
   padding:0;
   margin:0;
@@ -5159,6 +5216,9 @@ input.search:focus {
 	display: none;
 }
 
+/*************/
+/** preview **/
+/*************/
 .preview-button {
   cursor: pointer;
   text-align: center;
@@ -5179,4 +5239,37 @@ input.search:focus {
 .preview-button-image {
   width: 13px;
   height: 13px;
+
+/********************************/
+/** created action bar **/
+/*******************************/
+#menubar-creation-actions {
+	background-color:#fff4eb;
+	border-top:1px solid #f1790f;
+	border-bottom:1px solid #f1790f;
+	vertical-align:middle;
+	text-align:center;
+	height:auto;
+	margin:1em;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item {
+	padding:10px 30px;
+	color:#4c4c4c;
+	font-size:12px;
+	display:inline-block;
+	width:auto;
+	line-height:12px;
+	height:18px;
+	white-space:nowrap;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item:hover {
+	background-color:#F1790F;
+	color:#fff;
+}
+#menubar-creation-actions .menubar-creation-actions-item img {
+	vertical-align:middle;
+	margin:0;
+	border:0;
 }

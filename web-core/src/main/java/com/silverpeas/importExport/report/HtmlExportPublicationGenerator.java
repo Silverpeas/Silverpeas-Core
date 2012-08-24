@@ -92,7 +92,7 @@ public class HtmlExportPublicationGenerator {
     }
     this.modelDetail = modelDetail;
     this.wysiwygText = wysiwygText;
-    this.urlPub = StringEscapeUtils.escapeHtml(urlPub);
+    this.urlPub = StringEscapeUtils.escapeHtml(urlPub).replaceAll("#", "%23");
   }
 
   /**
@@ -218,6 +218,8 @@ public class HtmlExportPublicationGenerator {
       RecordSet recordSet = template.getRecordSet();
       DataRecord dataRecord = recordSet.getRecord(publicationDetail.getPK().getId());
       PagesContext context = new PagesContext();
+      context.setComponentId(publicationDetail.getPK().getInstanceId());
+      context.setObjectId(publicationDetail.getPK().getId());
       String htmlResult = formView.toString(context, dataRecord);
       htmlResult = replaceImagesPathForExport(htmlResult);
       htmlResult = replaceFilesPathForExport(htmlResult);

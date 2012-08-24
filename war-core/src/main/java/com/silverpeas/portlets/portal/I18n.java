@@ -26,21 +26,22 @@ package com.silverpeas.portlets.portal;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.lang3.CharEncoding;
+
 /**
  * I18n class provides methods to decode the value based on the character sets.
  */
 
 public class I18n {
-  public static final String DEFAULT_CHARSET = "UTF-8";
-  public static final String ASCII_CHARSET = "ISO-8859-1";
+  public static final String DEFAULT_CHARSET = CharEncoding.UTF_8;
+  public static final String ASCII_CHARSET = CharEncoding.ISO_8859_1;
 
   public static String decodeCharset(String s, String charset) {
     if (s == null) {
       return null;
     }
-
     try {
-      byte buf[] = s.getBytes(ASCII_CHARSET);
+      byte buf[] = s.getBytes(CharEncoding.ISO_8859_1);
       return new String(buf, 0, buf.length, charset);
     } catch (UnsupportedEncodingException uee) {
       return s;
@@ -54,7 +55,7 @@ public class I18n {
 
     try {
       byte buf[] = s.getBytes(charset);
-      return new String(buf, 0, buf.length, ASCII_CHARSET);
+      return new String(buf, 0, buf.length, CharEncoding.ISO_8859_1);
     } catch (UnsupportedEncodingException uee) {
       return s;
     }

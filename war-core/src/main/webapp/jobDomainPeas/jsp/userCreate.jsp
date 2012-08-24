@@ -57,7 +57,6 @@
     
     String currentUserAccessLevel = currentUser.getAccessLevel();
 
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     browseBar.setPath(groupsPath);
 %>

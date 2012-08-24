@@ -487,11 +487,11 @@ public class JobDomainPeasRequestRouter extends
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
             String newDomainId =
-                jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(request.
-                getParameter("domainName")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                EncodeHelper
-                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")));
+                jobDomainSC.createSQLDomain(EncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainDescription")), EncodeHelper
+                    .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
+                    .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
@@ -509,10 +509,12 @@ public class JobDomainPeasRequestRouter extends
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
-            String modifiedDomainId = jobDomainSC.modifySQLDomain(EncodeHelper.
-                htmlStringToJavaString(request.getParameter("domainName")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                EncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")));
+            String modifiedDomainId =
+                jobDomainSC.modifySQLDomain(EncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainName")), EncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainDescription")), EncodeHelper
+                    .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
+                    .getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain="
                 + modifiedDomainId);
             destination = "goBack.jsp";

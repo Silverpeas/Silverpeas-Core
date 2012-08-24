@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
@@ -49,10 +50,41 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public class FileUtil implements MimeTypes {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.mime_types", "");
+      "org.silverpeas.util.attachment.mime_types", "");
   public static final String CONTEXT_TOKEN = ",";
   public static final String BASE_CONTEXT = "Attachment";
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
+  private static final ClassLoader loader = java.security.AccessController.doPrivileged(
+      new java.security.PrivilegedAction<ConfigurationClassLoader>() {
+        @Override
+        public ConfigurationClassLoader run() {
+          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+        }
+      });
+
+  /**
+   * Utility method for migration of Silverpeas configuration from : com.silverpeas,
+   * com.stratelia.silverpeas, com.stratelia.webactiv to org.silverpeas
+   * @param bundle the name of the bundle.
+   * @return the name of the migrated bundle.
+   */
+  public static String convertBundleName(final String bundle) {
+    return bundle.replace("com.silverpeas", "org.silverpeas").replace(
+        "com.stratelia.silverpeas", "org.silverpeas").replace("com.stratelia.webactiv",
+        "org.silverpeas");
+  }
+
+  /**
+   * Utility method for migration of Silverpeas configuration from : com/silverpeas,
+   * com/stratelia/silverpeas, com/stratelia/webactiv to org/silverpeas
+   * @param resource the name of the resource.
+   * @return the name of the migrated resource.
+   */
+  public static String convertResourceName(final String resource) {
+    return resource.replace("com/silverpeas", "org/silverpeas").replace(
+        "com/stratelia/silverpeas", "org/silverpeas").replace("com/stratelia/webactiv",
+        "org/silverpeas");
+  }
 
   /**
    * Extract the mime-type from the file name.
@@ -143,33 +175,55 @@ public class FileUtil implements MimeTypes {
    * @throws IOException
    */
   public static void writeFile(final File file, final Reader data) throws IOException {
-    FileWriter out = null;
+    FileWriter out = new FileWriter(file);
     try {
-      out = new FileWriter(file);
       IOUtils.copy(data, out);
     } finally {
-      if (out != null) {
-        out.close();
-      }
+      IOUtils.closeQuietly(out);
     }
   }
 
   /**
    * Loads a ResourceBundle from the Silverpeas configuration directory.
-   * @param name the name of the bundle.
+   * @param bundleName the name of the bundle.
    * @param locale the locale of the bundle.
    * @return the corresponding ResourceBundle if it exists - null otherwise.
    */
-  public static ResourceBundle loadBundle(final String name, final Locale locale) {
+  public static ResourceBundle loadBundle(final String bundleName, final Locale locale) {
+    String name = convertBundleName(bundleName);
+    ResourceBundle bundle;
     Locale loc = locale;
     if (loc == null) {
       loc = Locale.ROOT;
     }
-    final ResourceBundle result =
-        ResourceBundle.getBundle(name, loc,
-            new ConfigurationClassLoader(FileUtil.class.getClassLoader()),
-            new ConfigurationControl());
-    return result;
+    try {
+      bundle =  ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+      if(bundle == null) {
+        bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+      }
+    } catch(MissingResourceException mex) {
+      //Let's try with the real name
+      bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
+    }
+    return bundle;
+  }
+
+  /**
+   * Loads loads the resource into the specified properties.
+   * @param properties the properties to be loaded with the resource.
+   * @param resourceName the name of the resource.
+   * @throws IOException
+   */
+  public static void loadProperties(final Properties properties, final String resourceName) throws IOException {
+    if (StringUtil.isDefined(resourceName) && properties != null) {
+      String name = convertResourceName(resourceName);
+      InputStream in = loader.getResourceAsStream(name);
+      try {
+        properties.load(in);
+      }finally {
+        IOUtils.closeQuietly(in);
+      }
+    }
   }
 
   /**

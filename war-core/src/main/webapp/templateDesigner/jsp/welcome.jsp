@@ -26,12 +26,13 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 </head>
 <body>
 <%
@@ -40,7 +41,7 @@ Iterator templates = (Iterator) ((List)request.getAttribute("Templates")).iterat
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"));
 
-operationPane.addOperation(resource.getIcon("templateDesigner.newTemplate"), resource.getString("templateDesigner.newTemplate"), "NewTemplate");
+operationPane.addOperationOfCreation(resource.getIcon("templateDesigner.newTemplate"), resource.getString("templateDesigner.newTemplate"), "NewTemplate");
 
 ArrayPane arrayPane = gef.getArrayPane("templateList", "Main", request, session);
 arrayPane.setVisibleLineNumber(20);
@@ -68,11 +69,14 @@ while(templates.hasNext())
 }
 
 out.println(window.printBefore());
-out.println(frame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
 out.println(arrayPane.print());
-
-out.println(frame.printAfter());
+%>
+</view:frame>
+<%
 out.println(window.printAfter());
 %>
 </body>

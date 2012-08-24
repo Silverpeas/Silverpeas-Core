@@ -23,16 +23,16 @@
  */
 package com.sun.portal.portletcontainer.admin.deployment;
 
+import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
+import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
+import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.portal.portletcontainer.admin.PortletRegistryHelper;
-import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
-import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 
 /**
  * The class which implements the WebAppDeployer interface to provide the deployment and
@@ -41,7 +41,7 @@ import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 public class TomcatWebAppDeployer implements WebAppDeployer {
 
   private static Logger logger = Logger.getLogger(TomcatWebAppDeployer.class
-      .getPackage().getName(), "com.silverpeas.portlets.PALogMessages");
+      .getPackage().getName(), "org.silverpeas.portlets.PALogMessages");
   private static final String TOMCAT_WEBAPPS_DIR = "TOMCAT_WEBAPPS_DIR";
   private String autoDeployDirectory;
 

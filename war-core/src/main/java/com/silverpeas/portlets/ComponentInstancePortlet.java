@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets;
 
 import java.io.IOException;
@@ -39,6 +35,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ValidatorException;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
@@ -48,31 +45,30 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
-    MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session.
+        getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
     PortletPreferences pref = request.getPreferences();
     String instanceId = pref.getValue("instanceId", "");
 
     if (m_MainSessionCtrl.getOrganizationController().isComponentAvailable(
-        instanceId, m_MainSessionCtrl.getUserId()))
-      request.setAttribute("URL", URLManager.getURL(null, null, instanceId)
-          + "portlet");
-
+        instanceId, m_MainSessionCtrl.getUserId())) {
+      request.setAttribute("URL", URLManager.getURL(null, null, instanceId) + "portlet");
+    }
     include(request, response, "portlet.jsp");
   }
 
   @Override
-  public void doEdit(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  public void doEdit(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "edit.jsp");
   }
 
-  /** Include "help" JSP. */
+  /**
+   * Include "help" JSP.
+   */
   @Override
-  public void doHelp(RenderRequest request, RenderResponse response)
-      throws PortletException {
+  public void doHelp(RenderRequest request, RenderResponse response) throws PortletException {
     include(request, response, "help.jsp");
   }
 
@@ -100,8 +96,8 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  private void processEditCancelAction(ActionRequest request, ActionResponse response) throws
+      PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -109,8 +105,8 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
    * Process the "finished" action for the edit page. Set the "url" to the value specified in the
    * edit page.
    */
-  private void processEditFinishedAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  private void processEditFinishedAction(ActionRequest request, ActionResponse response) throws
+      PortletException {
     String instanceId = request.getParameter("instanceId");
 
     // Check if it is a number
@@ -137,7 +133,9 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
     }
   }
 
-  /** Include a page. */
+  /**
+   * Include a page.
+   */
   private void include(RenderRequest request, RenderResponse response,
       String pageName) throws PortletException {
     response.setContentType(request.getResponseContentType());

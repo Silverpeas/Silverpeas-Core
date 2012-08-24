@@ -41,9 +41,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
  */
 public class PortletRegistryCache {
 
-  private static Logger logger = Logger.getLogger(
-      "com.sun.portal.portletcontainer.admin",
-      "com.silverpeas.portlets.PALogMessages");
+  private static Logger logger = Logger.getLogger("com.sun.portal.portletcontainer.admin",
+      "org.silverpeas.portlets.PALogMessages");
 
   private static PortletAppRegistryContext portletAppRegistryContext;
   private static PortletWindowRegistryContext portletWindowRegistryContext;

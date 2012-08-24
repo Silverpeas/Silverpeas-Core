@@ -32,6 +32,8 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 <%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
@@ -40,14 +42,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.DateUtil"%>
 <%@ page import="java.util.Date"%>
 
-<HTML>
-<HEAD>
-<TITLE>___/ Silverpeas - Corporate Portal Organizer \________________________________________________________________________</TITLE>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=graphicPath%>/util/javaScript/animation.js"></script>
-<script>
+<script type="text/javascript">
 function readMessage(id){
 	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");
 }
@@ -69,13 +70,13 @@ function newMessage() {
 }
 
 </script>
-</HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+</head>
+<body>
 <%
   Window window = gef.getWindow();
 
   OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(addNotif, silvermailScc.getString("Notifier"), "javascript:newMessage()");
+  operationPane.addOperationOfCreation(addNotif, silvermailScc.getString("Notifier"), "javascript:newMessage()");
   operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllNotif"), "javascript:deleteAllMessages()");
 
   BrowseBar browseBar = window.getBrowseBar();
@@ -86,17 +87,14 @@ function newMessage() {
   TabbedPane tabbedPane = gef.getTabbedPane();
   tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", true);
   tabbedPane.addTab(silvermailScc.getString("SendedUserNotifications"), "SendedUserNotifications", false);
-  //tabbedPane.addTab(silvermailScc.getString("Notifier"), m_Context + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "Main.jsp", false);
   tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLManager.getURL(URLManager.CMP_PERSONALIZATION) + "personalization_Notification.jsp?Action=NotificationView", false);
-
   
   out.println(window.printBefore());
   out.println(tabbedPane.print());
-
-  //Instanciation du cadre avec le view generator
-  Frame frame = gef.getFrame();
-  out.println(frame.printBefore());
-
+%>
+<view:frame>
+<view:areaOfOperationOfCreation/>
+<%
   // Arraypane
   ArrayPane list = gef.getArrayPane( "silvermail", "Main.jsp", request,session );
   ArrayColumn col = list.addArrayColumn( silvermailScc.getString("date") );
@@ -121,22 +119,22 @@ function newMessage() {
 	hasBeenReadenOrNotEnd = "";
     SILVERMAILMessage message = (SILVERMAILMessage)messageIterator.next();
 	if (message.getReaden() == 0) {
-		hasBeenReadenOrNotBegin = "<B>";
-		hasBeenReadenOrNotEnd = "</B>";
+		hasBeenReadenOrNotBegin = "<b>";
+		hasBeenReadenOrNotEnd = "</b>";
 	}	
-    String link = "<A HREF =\"javascript:onClick=readMessage(" + message.getId() + ");\">";
+    String link = "<a href=\"javascript:onClick=readMessage(" + message.getId() + ");\">";
     ArrayLine line = list.addArrayLine();
 	Date date = message.getDate();
     ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
     cell.setCompareOn(date);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</A>" + hasBeenReadenOrNotEnd);
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + EncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
     if ( message.getUrl()!=null && message.getUrl().length()>0 )
-    	line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + EncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=_top><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"></A>" + hasBeenReadenOrNotEnd);
+    	line.addArrayCellText(hasBeenReadenOrNotBegin + "<a href =\"" + EncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=\"_top\"><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"/></a>" + hasBeenReadenOrNotEnd);
     else
 		line.addArrayCellText( "" );    
     
-    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSubject()) + "</A>" + hasBeenReadenOrNotEnd);
+    line.addArrayCellText(hasBeenReadenOrNotBegin + link + EncodeHelper.javaStringToHtmlString(message.getSubject()) + "</a>" + hasBeenReadenOrNotEnd);
 
     // Ajout des icones de modification et de suppression
     IconPane actions = gef.getIconPane();
@@ -147,8 +145,10 @@ function newMessage() {
   }
 
   out.println(list.print());
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
+ %>
+</view:frame>
+<%
+out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

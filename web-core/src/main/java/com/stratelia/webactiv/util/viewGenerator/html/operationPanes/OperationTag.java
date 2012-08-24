@@ -46,6 +46,18 @@ public class OperationTag extends TagSupport {
     this.action = action;
   }
 
+  public String getIcon() {
+    return icon;
+  }
+
+  public String getAltText() {
+    return altText;
+  }
+
+  public String getAction() {
+    return action;
+  }
+
   @Override
   public int doEndTag() throws JspException {
     OperationPane pane =
