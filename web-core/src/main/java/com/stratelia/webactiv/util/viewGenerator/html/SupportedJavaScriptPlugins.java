@@ -28,7 +28,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 * To use in conjunction with IncludeJSTag.
 */
 public enum SupportedJavaScriptPlugins {
-  
+
   /**
    * JQuery plugin to print out tooltips.
    */
@@ -77,5 +77,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Silverpeas plugin to open a modal dialog box based on the JQuery UI Dialog.
    */
-  popup;
+  popup,
+  /**
+   * Silverpeas plugin to open document preview dialog.
+   */
+  preview;
 }
