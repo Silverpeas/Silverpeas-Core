@@ -28,6 +28,7 @@
 
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="designer" uri="/WEB-INF/workflowEditor.tld" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
   String strProcessFileName = (String) request.getAttribute("ProcessFileName");
   String strComponentDescriptor = (String) request.getAttribute("componentDescriptor");
@@ -36,13 +37,14 @@
   ProcessModel processModel = (ProcessModel) request.getAttribute("ProcessModel");
   boolean fExistingProcess = !((Boolean) request.getAttribute("IsANewProcess")).booleanValue();
 %>
-<HTML>
-<HEAD>
-  <% out.println(gef.getLookStyleSheet()); %>
-  <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-  <script type="text/javascript"
-          src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
-  <script language="javascript">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<view:looknfeel/>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
+<script type="text/javascript">
 
     function sendData() {
       // If saving a process model that is referenced in component descriptor
@@ -101,8 +103,7 @@
       }
     }
   </script>
-
-</HEAD>
+</head>
 <body>
 <%
   browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
@@ -140,40 +141,30 @@
   out.println(window.printBefore());
 %>
 <designer:processModelTabs currentTab="ModifyWorkflow"/>
-<%
-  out.println(frame.printBefore());
-  out.println(board.printBefore());
-
-  //help
-  //
-  out.println(boardHelp.printBefore());
-  out.println("<table border=\"0\"><tr>");
-  out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resource.getIcon(
-      "workflowDesigner.info") + "\"></td>");
-  out.println("<td>" + resource.getString("workflowDesigner.help.workflowHeader") + "</td>");
-  out.println("</tr></table>");
-  out.println(boardHelp.printAfter());
-  out.println("<br/>");
-%>
-<form name="workflowHeaderForm" action="UpdateWorkflow" method="POST">
+<view:frame>
+<!-- help -->
+<div class="inlineMessage">
+	<table border="0"><tr>
+		<td valign="absmiddle"><img border="0" src="<%=resource.getIcon("workflowDesigner.info") %>"/></td>
+		<td><%=resource.getString("workflowDesigner.help.workflowHeader") %></td>
+	</tr></table>
+</div>
+<br clear="all"/>
+<form name="workflowHeaderForm" action="UpdateWorkflow" method="post">
   <%
     out.println(processPane.print());
-
-    //Labels
-    //
   %>
-  <br>
+  <!-- Labels -->
+  <br/>
   <designer:contextualDesignationList
       designations="<%=processModel.getLabels()%>"
       context="labels"
       parentScreen="<%=strCurrentTab%>"
       columnLabelKey="GML.label"
       paneTitleKey="workflowDesigner.list.label"/>
-  <%
-    // Descriptions
-//
-  %>
-  <br>
+
+  <!-- Descriptions -->
+  <br/>
   <designer:contextualDesignationList
       designations="<%=processModel.getDescriptions()%>"
       context="descriptions"
@@ -182,12 +173,9 @@
       paneTitleKey="workflowDesigner.list.description"/>
 
 </form>
-<%
-  out.println(board.printAfter());
-%>
 <designer:buttonPane cancelAction="Main"/>
+</view:frame>
 <%
-  out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
 </body>

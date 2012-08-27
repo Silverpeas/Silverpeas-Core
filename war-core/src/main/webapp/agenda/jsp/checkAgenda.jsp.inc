@@ -27,7 +27,7 @@
 String m_context = URLManager.getApplicationURL();
 
 // Icones operationBar
-String agendaAddSrc         = m_context + "/util/icons/agenda_to_add.gif";
+String agendaAddSrc         = m_context + "/util/icons/create-action/add-event.png";
 String agendaDelSrc         = m_context + "/util/icons/agenda_to_del.gif";
 String agendaChronoSrc      = m_context + "/util/icons/agenda_to_viewTime.gif";
 String agendaAssignmentSrc  = m_context + "/util/icons/agenda_assignment.gif";
@@ -35,7 +35,7 @@ String agendaCategorySrc    = m_context + "/util/icons/agenda_to_categorize.gif"
 String viewOtherAgenda				  = "icons/viewAgenda.gif";
 String viewCurrentAgenda		  = "icons/viewCurrentAgenda.gif";
 String importSettingsSrc	= "icons/importSettings.gif";
-String importIcalSrc	= "icons/importIcal.gif";
+String importIcalSrc	=  m_context + "/util/icons/create-action/import-ical.png";
 String exportIcalSrc	= "icons/exportIcal.gif";
 String synchroIcalSrc	= "icons/synchroIcal.gif";
 

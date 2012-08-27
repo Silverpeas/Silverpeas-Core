@@ -25,6 +25,7 @@
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -41,10 +42,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author BERTINL TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- */
 public class SilverStatisticsPeasDAOVolumeServices {
 
   /**
@@ -73,22 +70,28 @@ public class SilverStatisticsPeasDAOVolumeServices {
    */
   private static Collection[] getCollectionArrayFromResultset(ResultSet rs)
       throws SQLException {
-    List<String> dates = new ArrayList<String>();
+    List<String> apps = new ArrayList<String>();
     List<String> counts = new ArrayList<String>();
     long count = 0;
     Map<String, WAComponent> components = AdminReference.getAdminService().getAllComponents();
     String label = null;
     while (rs.next()) {
-      WAComponent compo = components.get(rs.getString(1));
+      String componentName = rs.getString(1);
+      WAComponent compo = components.get(componentName);
       if (compo != null) {
         String value = compo.getLabel().get(I18NHelper.defaultLanguage);
-        label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
-        dates.add(label);
+        if (StringUtil.isDefined(value)) {
+          label = (value.indexOf("-") == -1) ? value : value.substring(value.indexOf("-") + 1);
+        } else {
+          // this case occurs when xmlcomponent is not conform to xsd
+          label = componentName;
+        }
+        apps.add(label);
         count = rs.getLong(2);
         counts.add(Long.toString(count));
       }
     }
-    return new Collection[] { dates, counts };
+    return new Collection[] { apps, counts };
   }
 
   /**
@@ -105,18 +108,16 @@ public class SilverStatisticsPeasDAOVolumeServices {
         "selectQuery=" + selectQuery);
     Statement stmt = null;
     ResultSet rs = null;
-    Collection[] list = null;
     Connection myCon = null;
     try {
       myCon = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
       stmt = myCon.createStatement();
       rs = stmt.executeQuery(selectQuery);
-      list = getCollectionArrayFromResultset(rs);
+      return getCollectionArrayFromResultset(rs);
     } finally {
       DBUtil.close(rs, stmt);
       DBUtil.close(myCon);
     }
-    return list;
   }
 
   private SilverStatisticsPeasDAOVolumeServices() {
