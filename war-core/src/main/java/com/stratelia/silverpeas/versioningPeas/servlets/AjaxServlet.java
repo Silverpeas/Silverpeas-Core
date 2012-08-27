@@ -1,46 +1,41 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import com.silverpeas.util.StringUtil;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
 
 public class AjaxServlet extends HttpServlet {
@@ -57,7 +52,7 @@ public class AjaxServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     String action = getAction(req);
-    String result = null;
+    String result = "";
     VersioningSessionController versioningSC =
         (VersioningSessionController) req.getSession().getAttribute("Silverpeas_versioningPeas");
     if ("Delete".equals(action)) {
@@ -80,8 +75,7 @@ public class AjaxServlet extends HttpServlet {
   }
 
   private String getUserId(HttpServletRequest req) {
-    MainSessionController msc =
-        (MainSessionController) req.getSession().getAttribute(
+    MainSessionController msc = (MainSessionController) req.getSession().getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     return msc.getCurrentUserDetail().getId();
   }
@@ -89,20 +83,17 @@ public class AjaxServlet extends HttpServlet {
   private String checkout(HttpServletRequest req, VersioningSessionController versioningSC) {
     String documentId = req.getParameter("DocId");
     String userId = getUserId(req);
-
     try {
-      DocumentPK documentPK = new DocumentPK(Integer.parseInt(documentId),
-          versioningSC.getSpaceId(), versioningSC.getComponentId());
-      Document document = versioningSC.getDocument(documentPK);
-      if (document.getStatus() == Document.STATUS_CHECKOUTED) {
-        if (document.getOwnerId() == Integer.parseInt(userId)) {
+      SimpleDocumentPK documentPK = new SimpleDocumentPK(documentId, versioningSC.getComponentId());
+      SimpleDocument document = versioningSC.getDocument(documentPK);
+      if (document.isReadOnly()) {
+        if (userId.equals(document.getEditedBy())) {
           return "ok";
         }
         return "alreadyCheckouted";
       }
-      document.setStatus(Document.STATUS_CHECKOUTED);
-      document.setLastCheckOutDate(new Date());
-      versioningSC.checkDocumentOut(documentPK, Integer.parseInt(userId), new Date());
+      document.setStatus("" + Document.STATUS_CHECKOUTED);
+      versioningSC.checkDocumentOut(documentPK, userId);
       document = versioningSC.getDocument(documentPK);
       versioningSC.setEditingDocument(document);
       return "ok";
@@ -115,9 +106,8 @@ public class AjaxServlet extends HttpServlet {
   private String isLocked(HttpServletRequest req, VersioningSessionController versioningSC) {
     String docId = req.getParameter("DocId");
     try {
-      DocumentPK documentPK =
-          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
-      Document document = versioningSC.getEditingDocument();
+      SimpleDocumentPK documentPK = new SimpleDocumentPK(docId, versioningSC.getComponentId());
+      SimpleDocument document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
@@ -138,14 +128,13 @@ public class AjaxServlet extends HttpServlet {
     String docId = req.getParameter("DocId");
     boolean force = StringUtil.getBooleanValue(req.getParameter("force_release"));
     try {
-      DocumentPK documentPK =
-          new DocumentPK(Integer.parseInt(docId), versioningSC.getComponentId());
-      Document document = versioningSC.getEditingDocument();
+      SimpleDocumentPK documentPK = new SimpleDocumentPK(docId, versioningSC.getComponentId());
+      SimpleDocument document = versioningSC.getEditingDocument();
       if (document == null) {
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
       }
-      if (versioningSC.checkDocumentIn(documentPK, Integer.parseInt(getUserId(req)), force)) {
+      if (versioningSC.checkDocumentIn(documentPK, getUserId(req), force)) {
         document = versioningSC.getDocument(documentPK);
         versioningSC.setEditingDocument(document);
         return "ok";
@@ -159,14 +148,12 @@ public class AjaxServlet extends HttpServlet {
 
   private String deleteAttachment(HttpServletRequest req, VersioningSessionController versioningSC) {
     String id = req.getParameter("Id");
-
     try {
-      versioningSC.deleteDocument(new DocumentPK(Integer.parseInt(id), "useless", versioningSC
-          .getComponentId()));
+      versioningSC.deleteDocument(new SimpleDocumentPK(id, versioningSC.getComponentId()));
       return "ok";
     } catch (Exception e) {
-      SilverTrace.error("versioningPeas", "AjaxServlet.deleteAttachment",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace
+          .error("versioningPeas", "AjaxServlet.deleteAttachment", "root.MSG_GEN_PARAM_VALUE", e);
       return e.getMessage();
     }
   }
@@ -174,12 +161,12 @@ public class AjaxServlet extends HttpServlet {
   private String sort(HttpServletRequest req, VersioningSessionController versioningSC) {
     String orderedList = req.getParameter("orderedList");
     String componentId = req.getParameter("ComponentId");
-    StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<DocumentPK> pks = new ArrayList<DocumentPK>();
-    while (tokenizer.hasMoreTokens()) {
-      pks.add(new DocumentPK(Integer.parseInt(tokenizer.nextToken()), componentId));
+    String[] ids = StringUtil.split(orderedList, ',');
+    List<SimpleDocumentPK> pks = new ArrayList<SimpleDocumentPK>(ids.length);
+    for(String documentId : ids) {
+      pks.add(new SimpleDocumentPK(documentId, componentId));
     }
-    // Save document order
-    return versioningSC.sortDocuments(pks);
+    versioningSC.sortDocuments(pks);
+    return "ok";
   }
 }

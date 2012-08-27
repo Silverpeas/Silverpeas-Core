@@ -34,12 +34,22 @@ public class UnlockContext {
   private int options = 0;
   private String attachmentId;
   private String userId;
+  private String comment;
   private String lang;
+
 
   public UnlockContext(String attachmentId, String userId, String lang) {
     this.attachmentId = attachmentId;
     this.userId = userId;
     this.lang = lang;
+    this.comment = "";
+  }
+
+  public UnlockContext(String attachmentId, String userId, String lang, String comment) {
+    this.attachmentId = attachmentId;
+    this.userId = userId;
+    this.lang = lang;
+    this.comment = comment;
   }
 
   public void addOption(UnlockOption option) {
@@ -80,5 +90,9 @@ public class UnlockContext {
 
   public String getLang() {
     return lang;
+  }
+
+  public String getComment() {
+    return comment;
   }
 }

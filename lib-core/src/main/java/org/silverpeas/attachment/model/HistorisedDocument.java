@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,18 +57,32 @@ public class HistorisedDocument extends SimpleDocument {
   public void setHistory(List<SimpleDocument> history) {
     this.history = history;
   }
-  
+
+  public List<SimpleDocument> getPublicVersions() {
+    List<SimpleDocument> publicVersions = new ArrayList<SimpleDocument>(history.size() + 1);
+    if (this.isPublic()) {
+      publicVersions.add(this);
+    }
+    for (SimpleDocument document : history) {
+      if (document.isPublic()) {
+        publicVersions.add(document);
+      }
+    }
+    return publicVersions;
+  }
+
   /**
    * Returns the more recent public version of this document - null if none exists.
+   *
    * @return the more recent public version of this document - null if none exists.
    */
   @Override
   public SimpleDocument getLastPublicVersion() {
-    if(this.isPublic()) {
+    if (this.isPublic()) {
       return this;
     }
-    for(SimpleDocument document : history) {
-      if(document.isPublic()) {
+    for (SimpleDocument document : history) {
+      if (document.isPublic()) {
         return document;
       }
     }

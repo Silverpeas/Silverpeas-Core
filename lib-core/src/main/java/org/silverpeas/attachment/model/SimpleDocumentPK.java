@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.model;
 
+import com.silverpeas.util.StringUtil;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
@@ -31,8 +32,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author ehugonnet
  */
 public class SimpleDocumentPK extends WAPrimaryKey {
-  private static final long serialVersionUID = 5609285040251527744L;
 
+  private static final long serialVersionUID = 5609285040251527744L;
   private long oldSilverpeasId = -1L;
 
   public long getOldSilverpeasId() {
@@ -46,16 +47,25 @@ public class SimpleDocumentPK extends WAPrimaryKey {
 
   public SimpleDocumentPK(String id) {
     super(id);
+    if (StringUtil.isLong(id)) {
+      this.oldSilverpeasId = Long.parseLong(id);
+    }
   }
 
   public SimpleDocumentPK(String id, String componentId) {
     super(id, componentId);
+    if (StringUtil.isLong(id)) {
+      this.oldSilverpeasId = Long.parseLong(id);
+    }
   }
 
   public SimpleDocumentPK(String id, WAPrimaryKey pk) {
     super(id, pk);
+    if (StringUtil.isLong(id)) {
+      this.oldSilverpeasId = Long.parseLong(id);
+    }
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {

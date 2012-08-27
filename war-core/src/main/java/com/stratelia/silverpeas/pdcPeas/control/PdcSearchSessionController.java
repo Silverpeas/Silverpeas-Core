@@ -72,13 +72,16 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.PlainSearchResult;
 import org.silverpeas.search.SearchEngine;
 import org.silverpeas.search.SearchEngineFactory;
 
+import javax.print.SimpleDoc;
 import java.io.*;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -97,7 +100,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // in PDC
   private QueryParameters queryParameters = null; // Current parameters for
   // plain search
-  private VersioningUtil versioningUtil = new VersioningUtil();
   private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
@@ -1543,16 +1545,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String getVersioningUrl(String documentId, String componentId)
     throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
-      "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
-      + ", componentId = " + componentId);
-
-    DocumentVersion version = versioningUtil.getLastPublicVersion(new DocumentPK(
-      Integer.parseInt(documentId), "useless", componentId));
+      "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentById(new SimpleDocumentPK(documentId, componentId), null) ;
+    SimpleDocument version =  document.getLastPublicVersion();
 
     if (version != null) {
-      String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
-        version.getLogicalName(), documentId, version.getPk().getId());
-      return FileServerUtils.getApplicationContext() + urlVersioning;
+      String urlVersioning = version.getAttachmentURL();
+      return URLManager.getApplicationURL() + urlVersioning;
     }
     return null;
   }

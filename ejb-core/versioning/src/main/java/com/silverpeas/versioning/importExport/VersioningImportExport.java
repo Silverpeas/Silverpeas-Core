@@ -417,8 +417,6 @@ public class VersioningImportExport {
     }
     AttachmentServiceFactory.getAttachmentService().
         lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
-    AttachmentServiceFactory.getAttachmentService().
-        updateAttachment(existingDocument, indexIt, launchCallback);
     AttachmentServiceFactory.getAttachmentService().addContent(existingDocument,
         new File(version.getDocumentPath()), indexIt, launchCallback);
     AttachmentServiceFactory.getAttachmentService().
