@@ -43,6 +43,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.jcr.AbstractJcrConverter;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
@@ -134,6 +135,7 @@ class DocumentConverter extends AbstractJcrConverter {
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
+    doc.setPublicDocument(!doc.isVersioned() || doc.getMinorVersion() == 0) ;
     return doc;
   }
 
@@ -216,10 +218,11 @@ class DocumentConverter extends AbstractJcrConverter {
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
   }
 
-  public String updateVersion(Node node, boolean isPublic) throws RepositoryException {
+  public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {
     int majorVersion = getIntProperty(node, SLV_PROPERTY_MAJOR);
     int minorVersion = getIntProperty(node, SLV_PROPERTY_MINOR);
     if (isVersioned(node) && node.isCheckedOut()) {
+      releaseDocumentNode(node, lang);
       if (isPublic) {
         majorVersion = majorVersion + 1;
         node.setProperty(SLV_PROPERTY_MAJOR, majorVersion);
@@ -233,5 +236,22 @@ class DocumentConverter extends AbstractJcrConverter {
       }
     }
     return "Version " + majorVersion + "." + minorVersion;
+  }
+  
+  public void releaseDocumentNode(Node documentNode, String lang) throws RepositoryException {
+    String language = lang;
+    if(!StringUtil.isDefined(language)) {
+      language = I18NHelper.defaultLanguage;
+    }
+    String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
+    if (documentNode.hasNode(attachmentNodeName)) {
+      Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
+      addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, getStringProperty(documentNode,
+          SLV_PROPERTY_OWNER));
+          }
+    addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, null);
+    addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, null);
+    addDateProperty(documentNode, SLV_PROPERTY_RESERVATION_DATE, null);
+    addStringProperty(documentNode, SLV_PROPERTY_OWNER, null);
   }
 }

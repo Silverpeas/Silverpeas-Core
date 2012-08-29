@@ -108,7 +108,6 @@
         SimpleDocument ad = new SimpleDocument(atPK, id, 0, false, new SimpleAttachment(
                 logicalName, null, title, info, size, mimeType, m_MainSessionCtrl.getUserId(),
                 creationDate, null));
-        ad.setCreatedBy(m_MainSessionCtrl.getUserId());
         ad.setTitle(title);
         ad.setDescription(info);
           AttachmentServiceFactory.getAttachmentService().createAttachment(ad,

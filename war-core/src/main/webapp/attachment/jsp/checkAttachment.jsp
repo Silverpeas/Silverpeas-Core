@@ -118,8 +118,8 @@ private boolean isFileSharingEnable(MainSessionController msc, String componentI
 	MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 	String					userId				= m_MainSessionCtrl.getUserId();
 	String 					language 			= m_MainSessionCtrl.getFavoriteLanguage();
-	ResourceLocator 		messages 			= new ResourceLocator("com.stratelia.webactiv.util.attachment.multilang.attachment", language);
-	ResourceLocator 		attSettings 		= new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+	ResourceLocator 		messages 			= new ResourceLocator("org.silverpeas.util.attachment.multilang.attachment", language);
+	ResourceLocator 		attSettings 		= new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	

@@ -698,20 +698,17 @@ public class DocumentConverterTest {
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
       documentNode.addMixin(NodeType.MIX_SIMPLE_VERSIONABLE);
       instance.fillNode(document, documentNode);
-      instance.updateVersion(documentNode, true);
+      instance.updateVersion(documentNode, document.getLanguage(), true);
       assertThat(documentNode.getProperty(SLV_PROPERTY_FOREIGN_KEY).getString(), is(foreignId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_VERSIONED).getBoolean(), is(versionned));
       assertThat(documentNode.getProperty(SLV_PROPERTY_ORDER).getLong(), is((long) order));
       assertThat(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong(), is(oldSilverpeasId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_INSTANCEID).getString(), is(instanceId));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_OWNER).getString(), is(owner));
+      assertThat(documentNode.hasProperty(SLV_PROPERTY_OWNER), is(false));
       assertThat(documentNode.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_ALERT_DATE).getDate().getTimeInMillis(),
-          is(alert.getTimeInMillis()));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
-          is(expiry.getTimeInMillis()));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_RESERVATION_DATE).getDate().getTimeInMillis(),
-          is(reservation.getTimeInMillis()));
+      assertThat(documentNode.hasProperty(SLV_PROPERTY_ALERT_DATE), is(false));
+      assertThat(documentNode.hasProperty(SLV_PROPERTY_EXPIRY_DATE), is(false));
+      assertThat(documentNode.hasProperty(SLV_PROPERTY_RESERVATION_DATE), is(false));
       assertThat(documentNode.getProperty(SLV_PROPERTY_MAJOR).getLong(), is(1L));
       assertThat(documentNode.getProperty(SLV_PROPERTY_MINOR).getLong(), is(0L));
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
@@ -724,7 +721,7 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(SLV_PROPERTY_CREATION_DATE).getDate().getTimeInMillis(),
           is(creationDate.getTime()));
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
-      assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(updatedBy));
+      assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(owner));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
           is(updateDate.getTime()));
       assertThat(attachNode.hasNode(JCR_CONTENT), is(false));

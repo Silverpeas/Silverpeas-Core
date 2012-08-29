@@ -48,6 +48,8 @@ public class HistorisedDocument extends SimpleDocument {
         getReservation(), doc.getAlert(), doc.getExpiry(), doc.getStatus(), doc.getFile());
     setMajorVersion(doc.getMajorVersion());
     setMinorVersion(doc.getMinorVersion());
+    setPublicDocument(doc.isPublic());
+    setNodeName(doc.getNodeName());
   }
 
   public List<SimpleDocument> getHistory() {

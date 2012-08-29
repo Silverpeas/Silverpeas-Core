@@ -20,28 +20,25 @@
  */
 package com.silverpeas.attachment.servlets;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -111,6 +108,12 @@ public class AjaxServlet extends HttpServlet {
         getParameter("FileLanguage"));
     if (StringUtil.getBooleanValue(req.getParameter("update_attachment"))) {
       context.addOption(UnlockOption.WEBDAV);
+    }
+    SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
+        .searchAttachmentById(new SimpleDocumentPK(req.getParameter("Id")),
+        req.getParameter("FileLanguage"));
+    if (!doc.isPublic()) {
+      context.addOption(UnlockOption.PRIVATE_VERSION);
     }
     if (StringUtil.getBooleanValue(req.getParameter("force_release")) && getMainSessionController(
         req).getCurrentUserDetail().isAccessAdmin()) {

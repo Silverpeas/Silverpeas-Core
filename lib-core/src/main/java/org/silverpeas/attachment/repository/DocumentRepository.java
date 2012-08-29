@@ -26,6 +26,7 @@ package org.silverpeas.attachment.repository;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -137,7 +138,7 @@ public class DocumentRepository {
     prepareComponentAttachments(session, destination.getInstanceId());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
-      checkoutNode(originDocumentNode);
+      checkoutNode(originDocumentNode, document.getUpdatedBy());
     }
     session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
@@ -183,11 +184,19 @@ public class DocumentRepository {
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    boolean checkinRequired = lock(session, document);
+    String owner = document.getEditedBy();
+    if(!StringUtil.isDefined(owner)) {
+      owner = document.getUpdatedBy();
+    }
+    boolean checkinRequired = lock(session, document, owner);
+    if (checkinRequired && StringUtil.isDefined(document.getEditedBy())) {
+      document.setUpdatedBy(document.getEditedBy());
+    }
     converter.fillNode(document, null, documentNode);
     if (checkinRequired) {
-      checkinNode(documentNode, document.getLanguage(), true);
+      checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
+
   }
 
   /**
@@ -224,7 +233,7 @@ public class DocumentRepository {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       if (!documentNode.isCheckedOut()) {
-        checkoutNode(documentNode);
+        checkoutNode(documentNode, null);
       }
       if (converter.isVersioned(documentNode)) {
         removeHistory(documentNode);
@@ -569,7 +578,11 @@ public class DocumentRepository {
       InputStream content) throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
-      checkoutNode(documentNode);
+      String owner = attachment.getUpdatedBy();
+      if(!StringUtil.isDefined(owner)) {
+        owner = attachment.getCreatedBy();
+      }
+      checkoutNode(documentNode, owner);
     }
     converter.addAttachment(documentNode, attachment, content);
   }
@@ -611,7 +624,7 @@ public class DocumentRepository {
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
-      checkoutNode(documentNode);
+      checkoutNode(documentNode, null);
     }
     converter.removeAttachment(documentNode, language);
     documentNode = session.getNodeByIdentifier(documentPk.getId());
@@ -625,14 +638,15 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
+   * @param owner the user locking the node.
    * @return true if node has be checked out - false otherwise.
    * @throws RepositoryException
    */
-  public boolean lock(Session session, SimpleDocument document) throws RepositoryException {
+  public boolean lock(Session session, SimpleDocument document, String owner) throws RepositoryException {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
       if (!documentNode.isCheckedOut()) {
-        checkoutNode(documentNode);
+        checkoutNode(documentNode, owner);        
         return true;
       }
     }
@@ -667,6 +681,11 @@ public class DocumentRepository {
       }
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
+    if(!document.isVersioned()) {
+      converter.releaseDocumentNode(documentNode, document.getLanguage());
+      return converter.convertNode(documentNode, document.getLanguage());      
+    }
+    document.release();
     return document;
   }
 
@@ -674,10 +693,12 @@ public class DocumentRepository {
    * Check the document out.
    *
    * @param node the node to checkout.
+   * @param owner the user checkouting the node.
    * @throws RepositoryException
    */
-  void checkoutNode(Node node) throws RepositoryException {
+  void checkoutNode(Node node, String owner) throws RepositoryException {
     node.getSession().getWorkspace().getVersionManager().checkout(node.getPath());
+    converter.addStringProperty(node, SLV_PROPERTY_OWNER, owner);
   }
 
   /**
@@ -691,7 +712,7 @@ public class DocumentRepository {
   SimpleDocument checkinNode(Node documentNode, String lang, boolean isMajor) throws
       RepositoryException {
     VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
-    String versionLabel = converter.updateVersion(documentNode, isMajor);
+    String versionLabel = converter.updateVersion(documentNode, lang, isMajor);
     documentNode.getSession().save();
     Version lastVersion = versionManager.checkin(documentNode.getPath());
     lastVersion.getContainingHistory().addVersionLabel(lastVersion.getName(), versionLabel, false);
@@ -750,7 +771,7 @@ public class DocumentRepository {
       }
     }
   }
-  
+
   public void fillNodeName(Session session, SimpleDocument document) throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getId());
     if (!StringUtil.isDefined(document.getNodeName())) {
