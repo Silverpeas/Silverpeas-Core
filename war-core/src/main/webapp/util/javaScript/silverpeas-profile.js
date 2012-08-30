@@ -94,7 +94,7 @@ function UserProfile(user) {
    * - optionally the page size in users count (by default it is set at CountPerPage). The page size
    *   cannot be set without passing the page number.
    * - optionally a boolean to force the loading of the relationships (reload or not them).
-   * - the callback operation to call once the users loaded.
+   * - the callback operation to call once the users are loaded.
    */
   this.onRelationships = function() {
     var arg = 0, name = null, page = null, pagesize = CountPerPage, toload = false;
