@@ -45,7 +45,7 @@
   boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
   String[][] subUsers = (String[][])request.getAttribute("subUsers");
-  
+
   boolean isDomainSql = "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = "-1".equals(domObject.getId());
 
@@ -53,7 +53,7 @@
 
   // Initializing users in domain quota
   boolean isUserDomainQuotaFull = JobDomainSettings.userQuotaEnabled && domObject.isQuotaReached();
-  
+
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
@@ -71,7 +71,7 @@
 		    }
 	    }
 	}
-	
+
   if (isDomainRW)
   {
     if (!isGroupManager)
@@ -171,13 +171,13 @@ out.println(window.printBefore());
 		<h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
 		<% if (JobDomainSettings.userQuotaEnabled && domObject.getUserDomainQuota().exists()) { %>
 			<div class="tag-presentation limited-number-user">
-				<div class="tag-presentation-content"><span><%=resource.getStringWithParam("JDP.quota", Integer.toString(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
+				<div class="tag-presentation-content"><span><%=resource.getStringWithParam("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
 			</div>
 		<% } %>
 		<div id="number-user-group-domainContent">
 			<% if (!mixedDomain) { %>
 				<span id="number-user-domainContent"><%=subUsers.length %> <%=resource.getString("GML.user_s") %></span> -
-			<% } %> 
+			<% } %>
 			<span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
 		</div>
 		<% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
@@ -230,15 +230,15 @@ out.println(window.printBefore());
 <%
   if (!mixedDomain) {
 	  ArrayPane arrayPaneUser = gef.getArrayPane("users", "domainContent.jsp", request, session);
-	
+
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 	  arrayPaneUser.setTitle(resource.getString("GML.users"));
-	
+
 	  arrayPaneUser.addArrayColumn("&nbsp;");
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
 	  arrayPaneUser.setSortable(false);
-	
+
 	  if (subUsers != null) {
 	      for(int i=0; i<subUsers.length; i++){
 	          //cr�ation des ligne de l'arrayPane

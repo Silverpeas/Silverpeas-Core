@@ -33,6 +33,8 @@ String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
 Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
+long    defaultDataStorageQuota = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
+boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
 
 	browseBar.setSpaceId(spaceId);
 	browseBar.setClickable(false);
@@ -40,7 +42,6 @@ String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
 	else
 		browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
-
 %>
 
 <HTML>
@@ -72,20 +73,25 @@ function isCorrectForm() {
      	var errorNb = 0;
 
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
-		var desc = document.infoSpace.Description;
-
-        if (isWhitespace(name)) {
-			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-			errorNb++;
-		}
+    if (isWhitespace(name)) {
+      errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
+      errorNb++;
+    }
 
 		var textAreaLength = 400;
-		var s = desc.value;
-		if (! (s.length <= textAreaLength)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-           	errorNb++;
-		}
+		var s = document.infoSpace.Description.value;
+    if (! (s.length <= textAreaLength)) {
+      errorMsg += "  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
+      errorNb++;
+    }
 
+    <% if (isDataStorageQuotaActivated) { %>
+      var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
+      if (isWhitespace(dataStorageQuota)) {
+        errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
+        errorNb++;
+      }
+    <% } %>
 
      switch(errorNb)
      {
@@ -160,6 +166,12 @@ out.println(board.printBefore());
                     </SELECT>
 				</td>
 			</tr>
+      <% if (isDataStorageQuotaActivated) { %>
+        <tr>
+          <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
+          <td><input type="text" name="DataStorageQuota" size="60" maxlength="60" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
+        </tr>
+      <% } %>
 			<tr align=left>
 				<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
 			</tr>

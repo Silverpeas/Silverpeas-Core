@@ -37,9 +37,19 @@ public class TestQuotaKey implements QuotaKey {
     this.resourceId = resourceId;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.quota.QuotaKey#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return true;
+  }
+
   /**
    * @return the resourceId
    */
+  @Override
   public String getResourceId() {
     return resourceId;
   }

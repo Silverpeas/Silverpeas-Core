@@ -24,16 +24,23 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.quota.model.Quota;
+
 import com.google.common.base.Objects;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -99,6 +106,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
+
+  /**
+   * This data is not used in equals and hashcode process as it is an extra information.
+   */
+  private Quota dataStorageQuota = null;
+  private Object dataStorageQuotaSynch = new Object();
 
   /**
    * Constructor
@@ -595,6 +608,51 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public boolean isPersonalSpace() {
     return isPersonalSpace;
+  }
+
+  /**
+   * @return the dataStorageQuota
+   */
+  public Quota getDataStorageQuota() {
+    synchronized (dataStorageQuotaSynch) {
+      if (dataStorageQuota == null) {
+        loadDataStorageQuota();
+      }
+      return dataStorageQuota;
+    }
+  }
+
+  /**
+   * Sets the max count of data storage of the space
+   */
+  public void setDataStorageQuotaMaxCount(final long dataStorageQuotaMaxCount)
+      throws QuotaException {
+    synchronized (dataStorageQuotaSynch) {
+      loadDataStorageQuota();
+      dataStorageQuota.setMaxCount(dataStorageQuotaMaxCount);
+      dataStorageQuota.validateBounds();
+    }
+  }
+
+  public boolean isDataStorageQuotaReached() {
+    synchronized (dataStorageQuotaSynch) {
+      loadDataStorageQuota();
+      return dataStorageQuota.isReached();
+    }
+  }
+
+  /**
+   * Centralizes the data storage quota loading
+   */
+  private void loadDataStorageQuota() {
+    try {
+      dataStorageQuota =
+          SpaceServiceFactory.getDataStorageSpaceQuotaService().get(
+              DataStorageSpaceQuotaKey.from(this));
+    } catch (final QuotaException qe) {
+      throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
+          "root.EX_CANT_GET_DATA_STORAGE_QUOTA", qe);
+    }
   }
 
   @Override

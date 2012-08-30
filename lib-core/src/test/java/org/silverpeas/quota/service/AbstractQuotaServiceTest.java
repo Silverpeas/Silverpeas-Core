@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 import java.util.Date;
@@ -98,22 +97,23 @@ public class AbstractQuotaServiceTest {
   @Test
   public void testGet() throws QuotaException {
     Date date = new Date();
-    assertThat(quotaService.get(dummyKey), nullValue());
+    assertThat(quotaService.get(dummyKey), notNullValue());
+    assertThat(quotaService.get(dummyKey).exists(), is(false));
     final Quota quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());
-    assertThat(quota.getCount(), is(100));
+    assertThat(quota.getCount(), is(100L));
     assertThat(quota.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
     date = quota.getSaveDate();
     final Quota quotaNotChanged = quotaService.get(existingKey);
     assertThat(quotaNotChanged, notNullValue());
     assertThat(quotaNotChanged, not(sameInstance(quota)));
-    assertThat(quotaNotChanged.getCount(), is(100));
+    assertThat(quotaNotChanged.getCount(), is(100L));
     assertThat(quotaNotChanged.getSaveDate().getTime(), Matchers.equalTo(date.getTime()));
   }
 
   @Test
-  public void testInitializeNotValid() {
-    assertInitializeException(newKey, -1, 0);
+  public void testInitializeNotValid() throws Exception {
+    assertThat(quotaService.initialize(newKey, -1, 0).exists(), is(false));
     assertInitializeException(newKey, 0, -1);
     assertInitializeException(newKey, 2, 1);
   }
@@ -136,16 +136,16 @@ public class AbstractQuotaServiceTest {
       final Quota existingQuota = quotaService.get(existingKey);
       assertThat(existingQuota, notNullValue());
       assertThat(existingQuota.getId(), is(24L));
-      assertThat(existingQuota.getMaxCount(), is(500));
+      assertThat(existingQuota.getMaxCount(), is(500L));
       quotaService.initialize(existingKey, 690);
       final Quota quota = quotaService.get(existingKey);
       assertThat(quota, notNullValue());
       assertThat(quota.getId(), is(24L));
       assertThat(quota.getType(), is(existingKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(existingKey.getResourceId()));
-      assertThat(quota.getMinCount(), is(0));
-      assertThat(quota.getMaxCount(), is(690));
-      assertThat(quota.getCount(), is(100));
+      assertThat(quota.getMinCount(), is(0L));
+      assertThat(quota.getMaxCount(), is(690L));
+      assertThat(quota.getCount(), is(100L));
       assertThat(quota.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
     } catch (final QuotaException qe) {
       assertThat("No quota exception should have been thrown", false);
@@ -156,16 +156,17 @@ public class AbstractQuotaServiceTest {
   public void testInitializeMaxCount() {
     try {
       final Date date = new Date();
-      assertThat(quotaService.get(newKey), nullValue());
+      assertThat(quotaService.get(newKey), notNullValue());
+      assertThat(quotaService.get(newKey).exists(), is(false));
       quotaService.initialize(newKey, 260);
       final Quota quota = quotaService.get(newKey);
       assertThat(quota, notNullValue());
       assertThat(quota.getId(), is(25L));
       assertThat(quota.getType(), is(newKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(newKey.getResourceId()));
-      assertThat(quota.getMinCount(), is(0));
-      assertThat(quota.getMaxCount(), is(260));
-      assertThat(quota.getCount(), is(100));
+      assertThat(quota.getMinCount(), is(0L));
+      assertThat(quota.getMaxCount(), is(260L));
+      assertThat(quota.getCount(), is(100L));
       assertThat(quota.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
     } catch (final QuotaException qe) {
       assertThat("No quota exception should have been thrown", false);
@@ -176,16 +177,17 @@ public class AbstractQuotaServiceTest {
   public void testInitializeMinCountMaxCount() {
     try {
       final Date date = new Date();
-      assertThat(quotaService.get(newKey), nullValue());
+      assertThat(quotaService.get(newKey), notNullValue());
+      assertThat(quotaService.get(newKey).exists(), is(false));
       quotaService.initialize(newKey, 100, 380);
       final Quota quota = quotaService.get(newKey);
       assertThat(quota, notNullValue());
       assertThat(quota.getId(), is(25L));
       assertThat(quota.getType(), is(newKey.getQuotaType()));
       assertThat(quota.getResourceId(), is(newKey.getResourceId()));
-      assertThat(quota.getMinCount(), is(100));
-      assertThat(quota.getMaxCount(), is(380));
-      assertThat(quota.getCount(), is(100));
+      assertThat(quota.getMinCount(), is(100L));
+      assertThat(quota.getMaxCount(), is(380L));
+      assertThat(quota.getCount(), is(100L));
       assertThat(quota.getSaveDate().getTime(), greaterThanOrEqualTo(date.getTime()));
     } catch (final QuotaException qe) {
       assertThat("No quota exception should have been thrown", false);
@@ -195,7 +197,8 @@ public class AbstractQuotaServiceTest {
   @Test
   public void testVerify() throws QuotaException {
     Quota quota = quotaService.verify(newKey);
-    assertThat(quota, nullValue());
+    assertThat(quota, notNullValue());
+    assertThat(quota.exists(), is(false));
     quota = quotaService.verify(existingKey);
     assertThat(quota, notNullValue());
 
@@ -220,9 +223,11 @@ public class AbstractQuotaServiceTest {
 
   @Test
   public void testRemove() throws QuotaException {
-    final Quota quota = quotaService.get(existingKey);
+    Quota quota = quotaService.get(existingKey);
     assertThat(quota, notNullValue());
     quotaService.remove(existingKey);
-    assertThat(quotaService.get(existingKey), nullValue());
+    quota = quotaService.get(existingKey);
+    assertThat(quota, notNullValue());
+    assertThat(quota.exists(), is(false));
   }
 }

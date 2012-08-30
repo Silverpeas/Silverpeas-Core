@@ -50,6 +50,9 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
+  public static boolean DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
+  public static long DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
+  public static long DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -69,5 +72,16 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
+    DATA_STORAGE_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.storage.quota.activated", false);
+    DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT =
+        rs.getLong("space.storage.quota.default.maxCount", 0);
+    if (DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT < 0) {
+      DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT = 0;
+    }
+    DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT =
+        rs.getLong("user.space.storage.quota.default.maxCount", 0);
+    if (DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT < 0) {
+      DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT = 0;
+    }
   }
 }

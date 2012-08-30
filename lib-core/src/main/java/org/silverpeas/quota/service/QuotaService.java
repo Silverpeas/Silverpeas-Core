@@ -26,6 +26,7 @@ package org.silverpeas.quota.service;
 import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
+import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
 /**
  * @author Yohann Chastagnier
@@ -37,7 +38,7 @@ public interface QuotaService<T extends QuotaKey> {
    * @param key
    * @return
    */
-  int getCurrentCount(T key) throws QuotaException;
+  long getCurrentCount(T key) throws QuotaException;
 
   /**
    * Initializes the quota of the resource for the given quota key.
@@ -46,7 +47,7 @@ public interface QuotaService<T extends QuotaKey> {
    * @return
    * @throws QuotaException
    */
-  Quota initialize(T key, int maxCount) throws QuotaException;
+  Quota initialize(T key, long maxCount) throws QuotaException;
 
   /**
    * Initializes the quota of the resource for the given quota key.
@@ -56,7 +57,7 @@ public interface QuotaService<T extends QuotaKey> {
    * @return
    * @throws QuotaException
    */
-  Quota initialize(T key, int minCount, int maxCount) throws QuotaException;
+  Quota initialize(T key, long minCount, long maxCount) throws QuotaException;
 
   /**
    * Gets the quota of the resource from a given quota key.
@@ -75,6 +76,18 @@ public interface QuotaService<T extends QuotaKey> {
    * @throws QuotaException
    */
   Quota verify(T key) throws QuotaException;
+
+  /**
+   * Verifies if the quota is full or not enough from a given quota key and adding a counting
+   * offset.
+   * If full then a quota full exception is throwed.
+   * If not enough then a quota not enough exception is throwed.
+   * @param key
+   * @param countingOffset
+   * @return the quota used by the verify treatment
+   * @throws QuotaException
+   */
+  Quota verify(T key, AbstractQuotaCountingOffset countingOffset) throws QuotaException;
 
   /**
    * Removes quietly the quota of the resource from a given quota key.

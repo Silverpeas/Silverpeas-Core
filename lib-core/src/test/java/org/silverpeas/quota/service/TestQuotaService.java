@@ -39,7 +39,7 @@ public class TestQuotaService extends AbstractQuotaService<TestQuotaKey> impleme
    * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
    */
   @Override
-  public int getCurrentCount(final TestQuotaKey key) {
+  public long getCurrentCount(final TestQuotaKey key) {
     return count;
   }
 

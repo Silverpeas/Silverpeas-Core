@@ -33,6 +33,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
@@ -65,6 +68,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
@@ -554,7 +558,8 @@ public class JobStartPagePeasRequestRouter extends
             getParameter("Description"),
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
             request),
-            request.getParameter("SelectedLook"));
+            request.getParameter("SelectedLook"),
+            request.getParameter("DataStorageQuota"));
       }
 
       destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
@@ -1033,6 +1038,7 @@ public class JobStartPagePeasRequestRouter extends
   private void request2SpaceInst(SpaceInst spaceInst, HttpServletRequest request) {
     String name = request.getParameter("NameObject");
     String desc = request.getParameter("Description");
+    String dataStorageQuotaMaxCount = request.getParameter("DataStorageQuota");
     String pInheritance = request.getParameter("InheritanceBlocked");
     String look = request.getParameter("SelectedLook");
     if (desc == null) {
@@ -1048,6 +1054,17 @@ public class JobStartPagePeasRequestRouter extends
       spaceInst.setLook(look);
     }
     I18NHelper.setI18NInfo(spaceInst, request);
+
+    // Data storage quota
+    if (JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED) {
+      try {
+        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
+            Long.valueOf(dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
   }
 
   private void request2ComponentInst(ComponentInst componentInst,
