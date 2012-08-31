@@ -243,7 +243,15 @@
                       <c:param name="ObjectType" value="${'Attachment'}"/>
                       <c:param name="XMLFormName" value="${currentAttachment.xmlFormId}"/>
                     </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
-          </c:if>  
+          </c:if>
+          <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
+          <c:set var="shouldHideAllVersionsLink" scope="page" value="${view:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
+          <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.publicDocument) || !('user' eq userProfile  || empty currentAttachment.history))}" />
+          <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
+              <span class="linkAllVersions">
+                <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')" /><fmt:message key="allVersions" /></a>
+              </span>
+          </c:if>
           <c:if test="${contextualMenuEnabled}">
             <c:choose>
               <c:when test="${currentAttachment.readOnly}">
