@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.treeManager.model.TreeNode;
-import com.stratelia.webactiv.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;

@@ -44,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
 <%@ page import="com.silverpeas.util.clipboard.*"%>
-<%@ page import="com.stratelia.webactiv.util.indexEngine.model.*"%>
+<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 
 <%@ include file="checkClipboard.jsp.inc" %>
 
@@ -75,7 +75,7 @@ function ClipboardClose () {
 
 //--------------------------------------------------------------------------------------ClipboardDoPaste
 function ClipboardDoPaste () {
-  // Ferme la fenetre et envoie l'info � l'appelant
+  // Ferme la fenetre et envoie l'info a l'appelant
   // deprecated
   opener.top.ClipboardWindowClosed = true;
   document.pasteform.action = "../../Rclipboard/jsp/selectionpaste.jsp";

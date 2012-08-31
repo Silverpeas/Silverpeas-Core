@@ -24,12 +24,12 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import java.util.Map;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,
@@ -59,7 +59,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
   /**
    * list of XML form fields used to sort results
    */
-  private HashMap<String, String> sortableXMLFormFields = null;
+  private Map<String, String> sortableXMLFormFields = null;
 
   /* following attributes are exclusively used by taglibs */
   private String spaceId = "";
@@ -307,7 +307,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
    * gets the list of Sortable fields if the content is a form XML
    * @return the sortableXMLFormFields
    */
-  public HashMap<String, String> getSortableXMLFormFields() {
+  public Map<String, String> getSortableXMLFormFields() {
     return sortableXMLFormFields;
   }
 
@@ -315,7 +315,7 @@ public class GlobalSilverContent extends AbstractI18NBean implements java.io.Ser
    * Sets the Sortable fields if the content is a form XML
    * @param sortableXMLFormFields the sortableXMLFormFields to set
    */
-  public void setSortableXMLFormFields(HashMap<String, String> sortableXMLFormFields) {
+  public void setSortableXMLFormFields(Map<String, String> sortableXMLFormFields) {
     this.sortableXMLFormFields = sortableXMLFormFields;
   }
 

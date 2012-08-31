@@ -69,6 +69,7 @@ public class InstanciationException extends SilverpeasException {
   /**
    * getModule
    */
+  @Override
   public String getModule() {
     return "admin";
   }

@@ -23,7 +23,7 @@
    */
   package org.silverpeas.search;
 
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 
 import java.io.Serializable;
 import java.util.List;
