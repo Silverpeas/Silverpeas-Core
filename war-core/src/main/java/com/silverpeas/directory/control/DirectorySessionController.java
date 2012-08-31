@@ -59,12 +59,9 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.search.SearchEngine;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
 import org.silverpeas.search.SearchEngineFactory;
 
 /**

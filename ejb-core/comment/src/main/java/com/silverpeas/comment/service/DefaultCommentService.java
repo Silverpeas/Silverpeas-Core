@@ -34,9 +34,9 @@ import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import javax.inject.Inject;
 import javax.inject.Named;
 

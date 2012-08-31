@@ -38,31 +38,30 @@ public class GeneralPropertiesManager {
   public static final int DVIS_ALL = 0;
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
-  public static final String GENERAL_PROPERTIES_FILE =
-      "com.stratelia.webactiv.multilang.generalMultilang";
-  static final ResourceLocator s_GeneralProperties = new ResourceLocator(
-      "com.stratelia.webactiv.general", "");
-  static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
+  public static final String GENERAL_PROPERTIES_FILE = "org.silverpeas.multilang.generalMultilang";
+  static final ResourceLocator generalProperties = new ResourceLocator("org.silverpeas.general", "");
+  static int dvis = Integer.parseInt(generalProperties.getString("domainVisibility", "0"));
   static final Map<String, Collection<String>> listProperties = new HashMap<String, Collection<String>>();
 
+
   static public ResourceLocator getGeneralResourceLocator() {
-    return s_GeneralProperties;
+    return generalProperties;
   }
 
   static public int getInteger(String property, int defaultValue) {
-    return s_GeneralProperties.getInteger(property, defaultValue);
+    return generalProperties.getInteger(property, defaultValue);
   }
 
   static public String getString(String property, String defaultValue) {
-    return s_GeneralProperties.getString(property, defaultValue);
+    return generalProperties.getString(property, defaultValue);
   }
 
   static public String getString(String property) {
-    return s_GeneralProperties.getString(property);
+    return generalProperties.getString(property);
   }
 
   static public boolean getBoolean(String property, boolean defaultValue) {
-    return s_GeneralProperties.getBoolean(property, defaultValue);
+    return generalProperties.getBoolean(property, defaultValue);
   }
 
   static public Collection<String> getStringCollection(String property) {
@@ -74,7 +73,7 @@ public class GeneralPropertiesManager {
     if (propertyValues == null) {
       propertyValues = new LinkedHashSet<String>();
       listProperties.put(property, propertyValues);
-      final String stringValues = s_GeneralProperties.getString(property, null);
+      final String stringValues = generalProperties.getString(property, null);
       if (stringValues != null && !"".equals(stringValues.trim())) {
         for (String value : stringValues.split(regexValueSeparator)) {
           if (value != null && !"".equals(value.trim())) {

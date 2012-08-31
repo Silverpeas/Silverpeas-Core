@@ -44,7 +44,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 /**
  * A servlet ClipboardSessionControler acts as a proxy for a ClipboardBm EJB.

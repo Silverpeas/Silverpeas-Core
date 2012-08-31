@@ -38,7 +38,7 @@ import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
-import com.stratelia.webactiv.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
 
 public interface PdcBm {
 
