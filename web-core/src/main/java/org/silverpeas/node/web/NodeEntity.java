@@ -48,7 +48,7 @@ public class NodeEntity implements Exposable {
   private String data;
   @XmlElement(required = true)
   private NodeAttrEntity attr;
-  @XmlElements({@XmlElement})
+  @XmlElement
   private NodeEntity[] children;
   @XmlElement(defaultValue = "")
   private URI childrenURI;

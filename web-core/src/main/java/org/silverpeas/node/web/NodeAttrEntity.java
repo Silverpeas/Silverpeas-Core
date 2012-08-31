@@ -44,6 +44,18 @@ public class NodeAttrEntity {
   private String componentId;
   @XmlElement(defaultValue = "")
   private URI childrenURI;
+  @XmlElement(defaultValue = "")
+  private String rel;
+  @XmlElement(defaultValue = "")
+  private String nbItems;
+  @XmlElement(defaultValue = "")
+  private String status;
+  @XmlElement(defaultValue = "")
+  private String role;
+  @XmlElement(defaultValue = "")
+  private String creatorId;
+  @XmlElement(defaultValue = "")
+  private String description;
   
   /**
    * Creates a new node entity from the specified node.
@@ -62,6 +74,13 @@ public class NodeAttrEntity {
     this.setComponentId(node.getNodePK().getInstanceId());
     this.setId(node.getNodePK().getId());
     this.setUri(uri);
+    if (node.getNbObjects() != -1) {
+      this.setNbItems(String.valueOf(node.getNbObjects()));
+    }
+    this.setStatus(node.getStatus());
+    this.setRole(node.getUserRole());
+    this.setCreatorId(node.getCreatorId());
+    this.setDescription(node.getDescription());
   }
   
   private static URI getURI(String uri) {
@@ -103,5 +122,53 @@ public class NodeAttrEntity {
 
   public URI getChildrenURI() {
     return childrenURI;
+  }
+
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
+
+  public String getRel() {
+    return rel;
+  }
+
+  public void setNbItems(String nbItems) {
+    this.nbItems = nbItems;
+  }
+
+  public String getNbItems() {
+    return nbItems;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setCreatorId(String creatorId) {
+    this.creatorId = creatorId;
+  }
+
+  public String getCreatorId() {
+    return creatorId;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getDescription() {
+    return description;
   }
 }
