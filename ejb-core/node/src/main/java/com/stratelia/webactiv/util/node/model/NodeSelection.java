@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 public class NodeSelection extends ClipboardSelection implements Serializable {
 

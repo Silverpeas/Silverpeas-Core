@@ -28,7 +28,7 @@ import java.util.List;
 import java.sql.Connection;
 
 import com.stratelia.silverpeas.treeManager.model.*;
-import com.stratelia.webactiv.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
 
 public interface TreeBm {
 

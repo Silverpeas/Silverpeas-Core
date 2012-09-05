@@ -53,7 +53,7 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
 * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
@@ -368,13 +368,14 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
               TextField.TYPE);
     }
     return new ArrayList<String>();
-
   }
 
+  @Override
   public boolean isDisplayedMandatory() {
     return true;
   }
 
+  @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
     return 2;
   }

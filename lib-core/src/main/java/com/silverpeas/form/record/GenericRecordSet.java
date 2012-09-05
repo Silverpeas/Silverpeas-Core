@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -41,11 +43,12 @@ import com.silverpeas.form.displayers.VideoFieldDisplayer;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+
 
 /**
  * The GenericRecordSet manage DataRecord built on a RecordTemplate and saved by the

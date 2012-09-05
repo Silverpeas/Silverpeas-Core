@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import java.text.ParseException;
@@ -35,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -52,6 +49,7 @@ public class PdcSearchRequestRouterHelper {
 
   /**
    * Retrieve query data from current request and prepare result view.
+   *
    * @param pdcSC
    * @param request
    * @param setPdcInfo
@@ -71,16 +69,14 @@ public class PdcSearchRequestRouterHelper {
     return queryParameters;
   }
 
-  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(
-      PdcSearchSessionController pdcSC, HttpServletRequest request)
-      throws Exception {
+  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
+      HttpServletRequest request) throws Exception {
     String favoriteRequestId = request.getParameter("iCenterId");
     return saveFavoriteRequestAndSetPdcInfo(pdcSC, request, favoriteRequestId);
   }
 
-  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(
-      PdcSearchSessionController pdcSC, HttpServletRequest request,
-      String favoriteRequestId) throws Exception {
+  public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
+      HttpServletRequest request, String favoriteRequestId) throws Exception {
     // this parameter is for Back Button on result page
     String urlToRedirect = request.getParameter("urlToRedirect");
     request.setAttribute("urlToRedirect", urlToRedirect);
@@ -95,9 +91,8 @@ public class PdcSearchRequestRouterHelper {
     return queryParameters;
   }
 
-  public static QueryParameters saveFavoriteRequest(
-      PdcSearchSessionController pdcSC, InterestCenter favoriteRequest)
-      throws Exception {
+  public static QueryParameters saveFavoriteRequest(PdcSearchSessionController pdcSC,
+      InterestCenter favoriteRequest) throws Exception {
     String query = favoriteRequest.getQuery();
     String spaceId = favoriteRequest.getWorkSpaceID();
     String componentId = favoriteRequest.getPeasID();
@@ -131,21 +126,21 @@ public class PdcSearchRequestRouterHelper {
   /**
    * Build information for the home jsp for the advancedsearch plain text. We get user choices about
    * advanced search and store it in the PdcSearchSessionController
+   *
    * @param pdcSC: the pdcSessionController
    * @param request : the HttpServletRequest
    * @return a QueryParameters from session updated with data from request
    * @throws Exception
    */
-  public static QueryParameters saveUserChoices(
-      PdcSearchSessionController pdcSC, HttpServletRequest request)
-      throws Exception {
+  public static QueryParameters saveUserChoices(PdcSearchSessionController pdcSC,
+      HttpServletRequest request) throws Exception {
     String query = request.getParameter("query");
 
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     queryParameters.setKeywords(query);
 
     if (pdcSC.getSearchType() >= PdcSearchSessionController.SEARCH_ADVANCED) {
-      String lang = pdcSC.getLanguage(); 
+      String lang = pdcSC.getLanguage();
       queryParameters.setSpaceId(request.getParameter("spaces"));
       queryParameters.setInstanceId(request.getParameter("componentSearch"));
       queryParameters.setCreatorId(request.getParameter("authorSearch"));
@@ -186,7 +181,7 @@ public class PdcSearchRequestRouterHelper {
     pdcSC.setDataType(request.getParameter("dataType"));
     return queryParameters;
   }
-  
+
   private static Date getDateFromRequest(String name, String language, HttpServletRequest request) {
     String str = request.getParameter(name);
     if (!StringUtil.isDefined(str)) {
@@ -204,6 +199,7 @@ public class PdcSearchRequestRouterHelper {
   /**
    * Get user choices from the PdcSearchSessionController and put it in the HTTP request. Prepare
    * data that will be used in the result view.
+   *
    * @param request
    * @param pdcSC
    * @throws Exception
@@ -248,8 +244,9 @@ public class PdcSearchRequestRouterHelper {
   }
 
   /**
-   * Set attributes into the request in order to prepare data to be displayed. <br>
-   * Attributes are build by information which are inside the sessionController
+   * Set attributes into the request in order to prepare data to be displayed. <br> Attributes are
+   * build by information which are inside the sessionController
+   *
    * @param pdcSC the pdcSessionController
    * @param request HTTP servlet request
    * @param setSpacesAndComponents if false do nothing, else if add SpaceList and ComponentList
@@ -294,6 +291,7 @@ public class PdcSearchRequestRouterHelper {
   /**
    * put in the request the primary axis and eventually the secondary axis accroding to search
    * context
+   *
    * @param pdcSC
    * @param request
    * @throws Exception
@@ -358,6 +356,7 @@ public class PdcSearchRequestRouterHelper {
   /**
    * put in the request the primary axis and eventually the secondary axis accroding to search
    * context
+   *
    * @param pdcSC
    * @param request
    * @throws Exception
@@ -475,6 +474,7 @@ public class PdcSearchRequestRouterHelper {
 
   /**
    * Checks the list of result and marks a result as read
+   *
    * @param pdcSC PdcSearchSessionController object
    * @param request HttpRequest object
    */

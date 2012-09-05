@@ -21,14 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.control;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 
 /**
@@ -41,7 +39,7 @@ public class DefaultSortResults implements SortResults {
 
   /*
    * (non-Javadoc)
-   * @see com.stratelia.webactiv.searchEngine.model.SortResults#execute(java.util.List)
+   * @see org.silverpeas.search.searchEngine.model.SortResults#execute(java.util.List)
    */
   @Override
   public List<GlobalSilverResult> execute(List<GlobalSilverResult> results, String sortOrder,
