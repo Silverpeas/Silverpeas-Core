@@ -345,6 +345,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
           ft.setReadOnly(input.isReadonly());
         }
         ft.setMandatory(input.isMandatory());
+        ft.setTemplateName("form:"+name);
         if (input.getDisplayerName() != null
             && input.getDisplayerName().length() > 0) {
           ft.setDisplayerName(input.getDisplayerName());
@@ -384,7 +385,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
   // ~ Methods ////////////////////////////////////////////////////////////////
 
   /*
-	 * 
+	 *
 	 */
   public void setId(int id) {
     this.id = id;
