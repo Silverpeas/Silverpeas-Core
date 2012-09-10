@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 public class InfoDetail implements Serializable {
 

@@ -27,6 +27,7 @@ package com.silverpeas.util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.UnsupportedEncodingException;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
@@ -199,7 +200,7 @@ public class EncodeHelper {
     try {
       StringBuilder buffer = new StringBuilder(256);
       buffer.append("=?UTF-8?B?");
-      buffer.append(new String(Base64.encodeBase64(filename.getBytes("UTF-8"))));
+      buffer.append(new String(Base64.encodeBase64(filename.getBytes(CharEncoding.UTF_8))));
       buffer.append("?=");
       return buffer.toString();
     } catch (UnsupportedEncodingException ex) {

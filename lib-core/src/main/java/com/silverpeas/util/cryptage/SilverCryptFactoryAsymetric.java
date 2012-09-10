@@ -20,7 +20,6 @@
  */
 package com.silverpeas.util.cryptage;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,11 +30,15 @@ import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSEnvelopedDataGenerator;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.KeyTransRecipientInformation;
+import org.bouncycastle.cms.RecipientInfoGenerator;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
+import org.bouncycastle.operator.OutputEncryptor;
 
 import org.silverpeas.util.Charsets;
+
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SilverCryptFactoryAsymetric {
   // Singleton pour gèrer une seule Map de trousseaux de clés
@@ -55,8 +58,7 @@ public class SilverCryptFactoryAsymetric {
     return factory;
   }
 
-  public byte[] goCrypting(String stringUnCrypted, String fileName)
-      throws CryptageException {
+  public byte[] goCrypting(String stringUnCrypted, String fileName) throws CryptageException {
     try {
       // Chargement de la chaine à crypter
       byte[] buffer = stringToByteArray(stringUnCrypted);
@@ -66,24 +68,23 @@ public class SilverCryptFactoryAsymetric {
       // La variable cert correspond au certificat du destinataire
       // La clé publique de ce certificat servira à chiffrer la clé
       // symétrique
-      gen.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(this.getKeys(fileName).
-          getCert()).setProvider("BC"));
+      RecipientInfoGenerator generator = new JceKeyTransRecipientInfoGenerator(
+          getKeys(fileName).getCert()).setProvider("BC");
+      gen.addRecipientInfoGenerator(generator);
 
       // Choix de l'algorithme à clé symétrique pour chiffrer le document.
       // AES est un standard. Vous pouvez donc l'utiliser sans crainte.
       // Il faut savoir qu'en france la taille maximum autorisée est de 128
-      // bits pour les clés symétriques (ou clés secrètes)
-      CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(
-          buffer), new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").
-          build());
-
+      // bits pour les clés symétriques (ou clés secrètes)    
+      OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC)
+          .setProvider("BC").build();
+      CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(buffer), encryptor);
       byte[] pkcs7envelopedData = envData.getEncoded();
-
       return pkcs7envelopedData;
-
     } catch (CryptageException e) {
       throw e;
     } catch (Exception e) {
+
       throw new CryptageException("SilverCryptFactory.goCrypting", SilverpeasException.ERROR,
           "util.CRYPT_FAILED", e);
     }

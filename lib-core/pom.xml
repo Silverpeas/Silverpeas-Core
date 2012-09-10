@@ -98,6 +98,7 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk16</artifactId>
+      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>
@@ -228,16 +229,16 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-snowball</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
@@ -380,7 +381,7 @@
         <filtering>true</filtering>
         <excludes>
           <exclude>**/*.odp</exclude>
-          <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/index/**/*</exclude>
           <exclude>**/*.odt</exclude>
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
@@ -396,7 +397,7 @@
         <directory>src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
-          <include>index/kmelia*/**/*.*</include>
+          <include>**/index/**/*</include>
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
@@ -414,6 +415,23 @@
       <filter>src/test/filters/filters.properties</filter>
     </filters>
     <plugins>
+      <plugin>
+        <groupId>de.jflex</groupId>
+        <artifactId>maven-jflex-plugin</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <lexDefinitions>
+                <lexDefinition>src/main/jflex/SilverTokenizerImpl.jflex</lexDefinition>
+              </lexDefinitions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

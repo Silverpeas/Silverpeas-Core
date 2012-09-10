@@ -39,7 +39,7 @@ import javax.ejb.SessionContext;
 import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 
 /**
  * A SearchEngincommeeEJB search the web'activ index and give access to the retrieved index entries.
