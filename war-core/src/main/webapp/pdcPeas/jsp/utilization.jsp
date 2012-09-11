@@ -30,30 +30,30 @@
 
 <%
 // recuperation des parametres
-List axisList = (List) request.getAttribute("AxisList"); // a list of used axis
+List<UsedAxis> axisList = (List<UsedAxis>) request.getAttribute("AxisList"); // a list of used axis
+String componentId = (String) request.getAttribute("ComponentId");
 
 // initialisation of variables of main loop (show all axes)
-UsedAxis usedAxis = null;
 String usedAxisId = null;
 String usedAxisType = null;
 int usedAxisMandatory = -1;
 int usedAxisVariant = -1;
-Iterator it = axisList.iterator();
 ArrayLine arrayLine = null;
 IconPane iconPane1 = null;
 Icon aspiIcon = null;
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 	// IE / Netscape compliant
 
@@ -97,13 +97,12 @@ Icon aspiIcon = null;
 	}
 
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body>
 	<form name="usedAxis" action="<%=pdcUtilizationContext%>UtilizationView" method="post">
-	<input type="hidden" name="Ids">
+	<input type="hidden" name="Ids"/>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
+	browseBar.setComponentId(componentId);
 	browseBar.setPath(resource.getString("pdcPeas.paramUsedAxis"));
 
 	operationPane.addOperation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
@@ -112,9 +111,7 @@ Icon aspiIcon = null;
 
     out.println(window.printBefore());
     out.println(frame.printBefore());
-%>
-<CENTER>
-<%
+
     ArrayPane arrayPane = gef.getArrayPane("PdcPeas", "", request, session);
 	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.type"));
 	arrayColumn1.setSortable(false);
@@ -132,9 +129,7 @@ Icon aspiIcon = null;
     arrayColumn6.setSortable(false);
 
 	// main loop to show all axis
-
-	while (it.hasNext()){
-			usedAxis = (UsedAxis) it.next();
+	for (UsedAxis usedAxis : axisList) {
 			usedAxisId = usedAxis.getPK().getId();
 			usedAxisType = usedAxis._getAxisType();
 			usedAxisMandatory = usedAxis.getMandatory();
@@ -168,19 +163,15 @@ Icon aspiIcon = null;
 	}
 	
     out.println(arrayPane.print());
-  %>
-  <%=separator%>	
-  <%
+
     ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
-    out.println(buttonPane.print());
-  %>
-</CENTER>
-<%
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.close"), "javascript:window.close()", false));
+    out.println("<br/>"+buttonPane.print());
+
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </form>
 <form name="refresh" action="<%=pdcUtilizationContext%>Main" method="post"></form>
-</BODY>
-</HTML>
+</body>
+</html>
