@@ -81,12 +81,14 @@ public final class WAAnalyzer extends Analyzer {
     result = new StopFilter(result, stopWords);
     // remove [cdjlmnst-qu]' from token
     result = new ElisionFilter(result);
-    // remove accents
-    result = new ISOLatin1AccentFilter(result);
     if (snowballUsed) {
+      // Important! Strings given to Snowball filter must contains accents
+      // so accents must be removed after stemmer have done the job
       // ignoring singular/plural, male/female and conjugated forms
       result = new SnowballFilter(result, stemmer);
     }
+    // remove accents
+    result = new ISOLatin1AccentFilter(result);
     return result;
   }
 

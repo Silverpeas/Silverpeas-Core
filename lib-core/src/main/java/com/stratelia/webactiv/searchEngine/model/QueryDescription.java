@@ -24,15 +24,19 @@
 
 package com.stratelia.webactiv.searchEngine.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.indexEngine.model.CharReplacer;
 import com.stratelia.webactiv.util.indexEngine.model.ExternalComponent;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 import com.stratelia.webactiv.util.indexEngine.model.SpaceComponentPair;
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * A QueryDescription packs a query with the different spaces and components to be searched.
@@ -103,8 +107,6 @@ public final class QueryDescription implements Serializable {
    */
   public void setQuery(String query) {
 
-    CharReplacer charReplacer;
-
     this.query = (query == null) ? "" : query.toLowerCase();
 
     // string already in lower case, means "and" "And" "AND" will works.
@@ -114,10 +116,6 @@ public final class QueryDescription implements Serializable {
     if (this.query.indexOf("not ") == 0) {
       this.query = "NOT " + this.query.substring(4, this.query.length());
     }
-
-    // here substitute the special char sur as: é, è or ê to e
-    charReplacer = getCharReplacer();
-    this.query = charReplacer.replace(this.query);
 
     SilverTrace.info("searchEngine", "QueryDescription.setQuery()",
         "root.MSG_GEN_PARAM_VALUE", "Query String to Lucence= " + this.query);
@@ -299,40 +297,6 @@ public final class QueryDescription implements Serializable {
     }
 
     return source;
-  }
-
-  /**
-   * Function to get the substitute char for the current language. (Same function used for the
-   * Indexer) PHiL 29/01/2004
-   */
-
-  private CharReplacer getCharReplacer() {
-    CharReplacer replacer = new CharReplacer();
-    int replacementCount = 0;
-    // String language = new String(getRequestedLanguage());
-    try {
-      ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.util.indexEngine.SpecialChars", "");
-
-      Enumeration<String> replacements = resource.getKeys();
-
-      while (replacements.hasMoreElements()) {
-        String oldChars = replacements.nextElement();
-        String newChars = resource.getString(oldChars);
-
-        replacer.setReplacement(oldChars, newChars);
-        replacementCount++;
-      }
-    } catch (MissingResourceException e) {
-      SilverTrace.warn("indexEngine", "getCharReplacer",
-          "indexEngine.MSG_MISSING_SPECIALCHARS_DEFINITION");
-    }
-
-    if (replacementCount == 0) {
-      return null;
-    } else {
-      return replacer;
-    }
   }
 
   public boolean isPeriodDefined() {
