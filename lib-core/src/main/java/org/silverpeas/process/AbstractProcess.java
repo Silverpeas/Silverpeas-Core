@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.process;
+
+import org.silverpeas.process.management.ProcessErrorType;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.Session;
+
+/**
+ * The abstract root implementation of <code>SilverpeasProcess</code> interface where
+ * <code>process</code> and <code>getProcessType</code> methods are the only ones that is not
+ * implemented there.
+ * @author Yohann Chastagnier
+ */
+public abstract class AbstractProcess<C extends ProcessExecutionContext> implements
+    SilverpeasProcess<C> {
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.process.SilverpeasProcess#onSuccessful(org.silverpeas.process.management.
+   * ProcessExecutionContext, org.silverpeas.process.session.Session)
+   */
+  @Override
+  public void onSuccessful(final C processExecutionContext, final Session session) throws Exception {
+    // Nothing to do by default
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.process.SilverpeasProcess#onFailure(org.silverpeas.process.management.
+   * ProcessExecutionContext, org.silverpeas.process.session.Session,
+   * org.silverpeas.process.management.ProcessErrorType, java.lang.Exception)
+   */
+  @Override
+  public void onFailure(final C processExecutionContext, final Session session,
+      final ProcessErrorType errorType, final Exception exception) throws Exception {
+    if (!ProcessErrorType.OTHER_PROCESS_FAILED.equals(errorType)) {
+      throw exception;
+    }
+  }
+}

@@ -24,6 +24,32 @@
 
 package com.stratelia.webactiv.util.attachment.control;
 
+import java.io.File;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.process.management.AbstractDataAndFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.Session;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -47,22 +73,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import java.io.File;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 public class AttachmentController {
 
@@ -159,60 +169,72 @@ public class AttachmentController {
     updateAttachment(attachDetail, indexIt, true);
   }
 
-  public static void updateAttachment(AttachmentDetail attachDetail, boolean indexIt,
-      boolean invokeCallback) {
+  public static void updateAttachment(final AttachmentDetail attachDetail, final boolean indexIt,
+      final boolean invokeCallback) {
     try {
-      AttachmentDetail oldAttachment =
-          attachmentBm.getAttachmentByPrimaryKey(attachDetail.getPK());
-      if (I18NHelper.isI18N) {
-        if (attachDetail.isRemoveTranslation()) {
-          String languageToDelete = attachDetail.getLanguage();
-          // suppression du fichier de la traduction
-          AttachmentDetailI18N translation = (AttachmentDetailI18N) oldAttachment.getTranslation(
-              languageToDelete);
-          oldAttachment.setPhysicalName(translation.getPhysicalName());
-          deleteFileAndIndex(oldAttachment);
-        } else {
-          if (attachDetail.getPhysicalName() == null) {
-            // the file has not been modified
-            String languageToUpdate = attachDetail.getLanguage();
-            AttachmentDetailI18N translation =
-                (AttachmentDetailI18N) oldAttachment.getTranslation(languageToUpdate);
-            attachDetail.setPhysicalName(translation.getPhysicalName());
-            attachDetail.setLogicalName(translation.getLogicalName());
-            attachDetail.setType(translation.getType());
-            attachDetail.setSize(translation.getSize());
-          }
-        }
-      }
 
-      String language = attachDetail.getLanguage();
-      attachmentBm.updateAttachment(attachDetail);
-      if (attachDetail.isOpenOfficeCompatible() && attachDetail.isReadOnly()) {
-        // le fichier est renommé
-        if (oldAttachment.getLogicalName(language).equals(attachDetail.getLogicalName(language))) {
-          RepositoryHelper.getJcrAttachmentService().deleteAttachment(oldAttachment, language);
-          RepositoryHelper.getJcrAttachmentService().createAttachment(attachDetail, language);
-        } else {
-          RepositoryHelper.getJcrAttachmentService().updateNodeAttachment(attachDetail,
-              attachDetail.getLanguage());
-        }
-      }
-      String userId = attachDetail.getAuthor();
-      if ((userId != null) && (userId.length() > 0) && invokeCallback) {
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE,
-            Integer.parseInt(attachDetail.getAuthor()), attachDetail.getInstanceId(), attachDetail
-            .getForeignKey().getId());
-      }
-      if (indexIt) {
-        createIndex(attachDetail.getPK());
-      }
+      // File actions will be attached to the parent Silverpeas process if any
+      ProcessFactory.getProcessManagement().execute(
+          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
+
+            @Override
+            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
+                Session session, FileHandler fileHandler) throws Exception {
+
+              AttachmentDetail oldAttachment =
+                  attachmentBm.getAttachmentByPrimaryKey(attachDetail.getPK());
+              if (I18NHelper.isI18N) {
+                if (attachDetail.isRemoveTranslation()) {
+                  String languageToDelete = attachDetail.getLanguage();
+                  // suppression du fichier de la traduction
+                  AttachmentDetailI18N translation =
+                      (AttachmentDetailI18N) oldAttachment.getTranslation(languageToDelete);
+                  oldAttachment.setPhysicalName(translation.getPhysicalName());
+                  deleteFileAndIndex(oldAttachment, fileHandler);
+                } else {
+                  if (attachDetail.getPhysicalName() == null) {
+                    // the file has not been modified
+                    String languageToUpdate = attachDetail.getLanguage();
+                    AttachmentDetailI18N translation =
+                        (AttachmentDetailI18N) oldAttachment.getTranslation(languageToUpdate);
+                    attachDetail.setPhysicalName(translation.getPhysicalName());
+                    attachDetail.setLogicalName(translation.getLogicalName());
+                    attachDetail.setType(translation.getType());
+                    attachDetail.setSize(translation.getSize());
+                  }
+                }
+              }
+
+              String language = attachDetail.getLanguage();
+              attachmentBm.updateAttachment(attachDetail);
+              if (attachDetail.isOpenOfficeCompatible() && attachDetail.isReadOnly()) {
+                // le fichier est renommé
+                if (oldAttachment.getLogicalName(language).equals(
+                    attachDetail.getLogicalName(language))) {
+                  RepositoryHelper.getJcrAttachmentService().deleteAttachment(oldAttachment,
+                      language);
+                  RepositoryHelper.getJcrAttachmentService().createAttachment(attachDetail,
+                      language);
+                } else {
+                  RepositoryHelper.getJcrAttachmentService().updateNodeAttachment(attachDetail,
+                      attachDetail.getLanguage());
+                }
+              }
+              String userId = attachDetail.getAuthor();
+              if ((userId != null) && (userId.length() > 0) && invokeCallback) {
+                CallBackManager callBackManager = CallBackManager.get();
+                callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE,
+                    Integer.parseInt(attachDetail.getAuthor()), attachDetail.getInstanceId(),
+                    attachDetail.getForeignKey().getId());
+              }
+              if (indexIt) {
+                createIndex(attachDetail.getPK());
+              }
+            }
+          }, new ProcessExecutionContext(attachDetail.getPK().getInstanceId()));
     } catch (Exception e) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.updateAttachment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          e);
+      throw new AttachmentRuntimeException("AttachmentController.updateAttachment()",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED", e);
     }
   }
 
@@ -570,35 +592,46 @@ public class AttachmentController {
    * called, <code>false</code> for ignoring thoose callbacks.
    * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    */
-  public static void deleteAttachment(AttachmentDetail attachmentDetail,
-      boolean invokeCallback) {
+  public static void deleteAttachment(final AttachmentDetail attachmentDetail,
+      final boolean invokeCallback) {
 
     try {
-      attachmentBm.deleteAttachment(attachmentDetail.getPK());
 
-      if (!I18NHelper.isI18N) {
-        deleteFileAndIndex(attachmentDetail);
-      } else {
-        // delete all translation files
-        deleteTranslations(attachmentDetail);
-      }
+      // File actions will be attached to the parent Silverpeas process if any
+      ProcessFactory.getProcessManagement().execute(
+          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
 
-      if (attachmentDetail.isOpenOfficeCompatible()
-          && !attachmentDetail.isReadOnly()) {
-        RepositoryHelper.getJcrAttachmentService().deleteAttachment(
-            attachmentDetail, attachmentDetail.getLanguage());
-      }
+            @Override
+            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
+                Session session, FileHandler fileHandler) throws Exception {
 
-      if (invokeCallback) {
-        int authorId = -1;
-        if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
-          authorId = Integer.parseInt(attachmentDetail.getAuthor());
-        }
+              attachmentBm.deleteAttachment(attachmentDetail.getPK());
 
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
-            authorId, attachmentDetail.getPK().getInstanceId(), attachmentDetail);
-      }
+              if (!I18NHelper.isI18N) {
+                deleteFileAndIndex(attachmentDetail, fileHandler);
+              } else {
+                // delete all translation files
+                deleteTranslations(attachmentDetail, fileHandler);
+              }
+
+              if (attachmentDetail.isOpenOfficeCompatible() && !attachmentDetail.isReadOnly()) {
+                RepositoryHelper.getJcrAttachmentService().deleteAttachment(attachmentDetail,
+                    attachmentDetail.getLanguage());
+              }
+
+              if (invokeCallback) {
+                int authorId = -1;
+                if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
+                  authorId = Integer.parseInt(attachmentDetail.getAuthor());
+                }
+
+                CallBackManager callBackManager = CallBackManager.get();
+                callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE, authorId,
+                    attachmentDetail.getPK().getInstanceId(), attachmentDetail);
+              }
+
+            }
+          }, new ProcessExecutionContext(attachmentDetail.getPK().getInstanceId()));
 
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
@@ -629,7 +662,7 @@ public class AttachmentController {
     }
   }
 
-  private static void deleteTranslations(AttachmentDetail attachDetail) {
+  private static void deleteTranslations(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
     if (attachDetail.getTranslations() != null) {
       Iterator translations = attachDetail.getTranslations().values().iterator();
@@ -641,7 +674,7 @@ public class AttachmentController {
         if (translation != null) {
           attachDetail.setPhysicalName(translation.getPhysicalName());
           attachDetail.setLanguage(translation.getLanguage());
-          deleteFileAndIndex(attachDetail);
+          deleteFileAndIndex(attachDetail, fileHandler);
         }
       }
     }
@@ -665,24 +698,24 @@ public class AttachmentController {
   /**
    * to delete one file attached.
    * @param attachDetail : the attachmentDetail object to deleted
+   * @param fileHandler
    * @return void
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
-  public static void deleteFileAndIndex(AttachmentDetail attachDetail) {
+  public static void deleteFileAndIndex(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
     try {
       int attGroup = attachDetail.getAttachmentGroup();
 
       // Remove Linked file(s) on server
       if ((attGroup == AttachmentDetail.GROUP_FILE)) {
-        deleteFileOnServer(attachDetail);
+        deleteFileOnServer(attachDetail, fileHandler);
       } else if (attGroup == AttachmentDetail.GROUP_DIR) {
         deleteAttachment(searchAttachmentByPKAndContext(attachDetail.getForeignKey(),
             attachDetail.getContext()));
-        // deleteFolderOnServer(attachDetail);
       }
 
       // Remove Index
@@ -825,30 +858,26 @@ public class AttachmentController {
    * deleted
    * @author Jean-Claude Groccia
    * @version 1.0
+   * @param fileHandler
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    */
-  private static void deleteFileOnServer(AttachmentDetail attachDetail) {
+  private static void deleteFileOnServer(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
     // to create the context
-    String[] ctx = FileRepositoryManager.getAttachmentContext(attachDetail.getContext());
-    String filePath =
-        FileRepositoryManager.getAbsolutePath(attachDetail.getPK().getComponentName(), ctx)
-        + attachDetail.getPhysicalName();
-
+    List<String> ctx =
+        new ArrayList<String>(Arrays.asList(FileRepositoryManager.getAttachmentContext(attachDetail
+            .getContext())));
+    ctx.add(0, attachDetail.getPK().getComponentName());
+    ctx.add(attachDetail.getPhysicalName());
+    HandledFile file = null;
     try {
-      File d = new File(filePath);
-
-      if (d.exists()) {
-        FileFolderManager.deleteFile(filePath);
-      }
-
-      RepositoryHelper.getJcrAttachmentService().deleteAttachment(attachDetail,
-          null);
+      file = fileHandler.getHandledFile(FileBasePath.UPLOAD_PATH, ctx.toArray(new String[] {}));
+      file.delete();
+      RepositoryHelper.getJcrAttachmentService().deleteAttachment(attachDetail, null);
     } catch (Exception e) {
-      SilverTrace.warn(
-          "attachment",
+      SilverTrace.warn("attachment",
           "AttachmentController.deleteFileOnServer((AttachmentDetail attachDetail)",
-          "attachment_MSG_NOT_DELETE_FILE", "filePath=" + filePath, e);
+          "attachment_MSG_NOT_DELETE_FILE", "filePath=" + file.getRealPath(), e);
     }
   }
 
@@ -1377,7 +1406,7 @@ public class AttachmentController {
       AttachmentPK toForeignKey) throws AttachmentException {
     cloneAttachments(fromForeignKey, toForeignKey, "Images");
   }
-  
+
   public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey, String context) throws AttachmentException {
     HashMap<String, String> ids = new HashMap<String, String>();
@@ -1397,7 +1426,7 @@ public class AttachmentController {
     }
     return ids;
   }
-  
+
   public static void mergeAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
     mergeAttachments(fromForeignKey, toForeignKey, "Images");
@@ -1423,7 +1452,7 @@ public class AttachmentController {
         // le fichier existe toujours !
         // Merge du clone sur le fichier d'origine
         mergeAttachment(attachmentDetail, clone);
-        
+
         ids.put(clone.getPK().getId(), attachmentDetail.getPK().getId());
 
         // Suppression de la liste des clones

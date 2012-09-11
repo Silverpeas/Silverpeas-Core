@@ -32,6 +32,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.process.management.AbstractDataAndFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.Session;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -64,7 +71,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -253,40 +259,48 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName();
+  public List<String> update(final List<FileItem> items, final FileField field, final FieldTemplate template,
+      final PagesContext pageContext) throws FormException {
+    final List<String> result = new ArrayList<String>();
+    final String itemName = template.getFieldName();
     try {
-      String value = processUploadedFile(items, itemName, pageContext);
-      String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-      if (param != null) {
-        if (param.startsWith("remove_") && !pageContext.isCreation()) {
-          // Il faut supprimer le fichier
-          String attachmentId = param.substring("remove_".length());
-          deleteAttachment(attachmentId, pageContext);
-        } else if (value != null && StringUtil.isInteger(param)) {
-          // Y'avait-il un déjà un fichier ?
-          // Il faut remplacer le fichier donc supprimer l'ancien
-          deleteAttachment(param, pageContext);
-        } else if (value == null) {
-          // pas de nouveau fichier, ni de suppression
-          // le champ ne doit pas être mis à jour
-          return new ArrayList<String>();
-        }
-      }
-      if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES &&
-          !StringUtil.isDefined(value)) {
-        return new ArrayList<String>();
-      }
-      return update(value, field, template, pageContext);
+      ProcessFactory.getProcessManagement().execute(
+          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
+            @Override
+            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
+                Session session, FileHandler fileHandler) throws Exception {
+
+              String value = processUploadedFile(items, itemName, pageContext, fileHandler);
+              String param =
+                  FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
+              if (param != null) {
+                if (param.startsWith("remove_") && !pageContext.isCreation()) {
+                  // Il faut supprimer le fichier
+                  String attachmentId = param.substring("remove_".length());
+                  deleteAttachment(attachmentId, pageContext);
+                } else if (value != null && StringUtil.isInteger(param)) {
+                  // Y'avait-il un déjà un fichier ?
+                  // Il faut remplacer le fichier donc supprimer l'ancien
+                  deleteAttachment(param, pageContext);
+                } else if (value == null) {
+                  // pas de nouveau fichier, ni de suppression
+                  // le champ ne doit pas être mis à jour
+                }
+              }
+              if (pageContext.getUpdatePolicy() != PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES ||
+                  StringUtil.isDefined(value)) {
+                result.addAll(update(value, field, template, pageContext));
+              }
+            }
+          }, new ProcessExecutionContext(pageContext.getComponentId()));
     } catch (Exception e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
-    return new ArrayList<String>();
+    return result;
   }
 
   private String processUploadedFile(List<FileItem> items, String parameterName,
-      PagesContext pagesContext)
+      PagesContext pagesContext, FileHandler fileHandler)
       throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
@@ -297,8 +311,6 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       String logicalName = item.getName();
       String physicalName = null;
       String mimeType = null;
-      File dir = null;
-      long size = 0;
       VersioningUtil versioningUtil = new VersioningUtil();
       if (StringUtil.isDefined(logicalName)) {
         if (!FileUtil.isWindows()) {
@@ -326,17 +338,18 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         } else {
           path = AttachmentController.createPath(componentId, FileFieldDisplayer.CONTEXT_FORM_FILE);
         }
-        dir = new File(path + physicalName);
-        size = item.getSize();
-        item.write(dir);
+        final HandledFile file =
+            fileHandler.getHandledFile(FileBasePath.UPLOAD_PATH, new File(path), physicalName);
+        byte[] fileContent = item.get();
+        file.writeByteArrayToFile(fileContent);
 
         // l'ajout du fichier joint ne se fait que si la taille du fichier (size) est >0
         // sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non
         // accessible)
-        if (size > 0) {
+        if (fileContent.length > 0) {
           AttachmentDetail ad =
               createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-              size, FileFieldDisplayer.CONTEXT_FORM_FILE, userId);
+                  fileContent.length, FileFieldDisplayer.CONTEXT_FORM_FILE, userId);
 
           if (pagesContext.isVersioningUsed()) {
             // mode versioning
@@ -349,9 +362,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         } else {
           // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le
           // supprimer
-          if (dir != null) {
-            FileFolderManager.deleteFolder(dir.getPath());
-          }
+          file.delete();
         }
       }
     }
