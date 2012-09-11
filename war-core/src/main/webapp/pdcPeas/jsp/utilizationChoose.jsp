@@ -32,37 +32,35 @@
 
 // recuperation des parametres
 String 	viewType = (String) request.getAttribute("ViewType"); // type d'axes � visualiser P(rimaire) ou S(econdaire)
-List 	axisList = (List) request.getAttribute("AxisList"); // a list of axis header
+List<AxisHeader> 	axisList = (List<AxisHeader>) request.getAttribute("AxisList"); // a list of axis header
+String componentId = (String) request.getAttribute("ComponentId");
 
 // initialisation of variables of main loop (show all axes)
-AxisHeader axisHeader = null;
 String axisId = null;
-Iterator it = axisList.iterator();
 ArrayLine arrayLine = null;
 IconPane iconPane1 = null;
 Icon aspiIcon = null;
-
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function goBack(){
 	document.goBack.submit();
 }
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body>
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
+	browseBar.setComponentId(componentId);
 	browseBar.setExtraInformation(resource.getString("pdcPeas.paramChooseAxis"));
 
     out.println(window.printBefore());
@@ -73,9 +71,7 @@ function goBack(){
 	out.println(tabbedPane.print());
 
     out.println(frame.printBefore());
-%>
-<CENTER>
-    <%
+
     ArrayPane arrayPane = gef.getArrayPane("PdcPeas", pdcUtilizationContext+"ChangeViewType?ViewType="+viewType, request, session);    
 
     ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
@@ -85,8 +81,7 @@ function goBack(){
 	arrayColumn.setSortable(false);
 
 	// main loop to show all axis
-	while (it.hasNext()){
-			axisHeader = (AxisHeader) it.next();
+	for (AxisHeader axisHeader : axisList) {
 			axisId = axisHeader.getPK().getId();
 
             arrayLine = arrayPane.addArrayLine();
@@ -97,21 +92,15 @@ function goBack(){
 	}
 	
     out.println(arrayPane.print());
-    %>
-	<%=separator%>
-    <%
-    ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.back"), "javascript:goBack()", false));
-    out.println(buttonPane.print());
-    %>
 
-</CENTER>
-<%
+    ButtonPane buttonPane = gef.getButtonPane();
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.back"), "javascript:goBack()", false));
+    out.println("<br/>"+buttonPane.print());
+
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</form>
 <form name="goBack" action="<%=pdcUtilizationContext%>Main" method="post">
 </form>
-</BODY>
-</HTML>
+</body>
+</html>
