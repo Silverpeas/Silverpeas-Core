@@ -70,10 +70,18 @@
     {
         var errorMsg = "";
         var errorNb = 0;
+        
+        var actionName = document.actionForm.name.value;
+        var formName = document.actionForm.form.value;
 
-        if ( isWhitespace(document.actionForm.name.value) ) 
+        if ( isWhitespace(actionName) ) 
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+        }
+        
+        if (actionName.toLowerCase() == formName.toLowerCase()) {
+        	errorMsg+="  - <%=resource.getString("workflowDesigner.action.js.different")%>\n";
             errorNb++;
         }
          
