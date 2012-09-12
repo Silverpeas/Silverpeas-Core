@@ -1293,17 +1293,14 @@ public class WorkflowDesignerRequestRouter extends
         strRoleOriginal = null;
       }
 
-      if (WorkflowDesignerSessionController.FORM_TYPE_ACTION
-          .equals(strFormType)) {
-        form.setHTMLFileName(null);
+      form.setHTMLFileName(strHTMLFileName);
+      if (WorkflowDesignerSessionController.FORM_TYPE_ACTION.equals(strFormType)) {
+        // ignore role
         form.setRole(null);
-      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION
-          .equals(strFormType)) {
+      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION.equals(strFormType)) {
         form.setRole(strRole);
-        form.setHTMLFileName(null);
-      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRINT
-          .equals(strFormType)) {
-        form.setHTMLFileName(strHTMLFileName);
+      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRINT.equals(strFormType)) {
+        // ignore role
         form.setRole(null);
       }
 
