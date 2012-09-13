@@ -24,8 +24,7 @@
 
 package com.stratelia.silverpeas.pdcPeas.servlets;
 
-import com.silverpeas.util.MimeTypes;
-import com.stratelia.webactiv.searchEngine.model.SearchCompletion;
+import org.silverpeas.search.searchEngine.model.SearchCompletion;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import javax.servlet.ServletException;

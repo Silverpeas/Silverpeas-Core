@@ -74,8 +74,6 @@
             document.formForm.name.readOnly = false;
             document.formForm.role.options.selectedIndex = 0;
             document.formForm.role.disabled = true;
-            document.formForm.HTMLFileName.value = '';
-            document.formForm.HTMLFileName.readOnly = true;
         }
         else if ( document.formForm.type[1].checked )
         {
@@ -84,8 +82,6 @@
         	document.formForm.name.value = '<%=WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION%>';
             document.formForm.name.readOnly = true; 
         	document.formForm.role.disabled = false;
-            document.formForm.HTMLFileName.value = '';
-            document.formForm.HTMLFileName.readOnly = true;
         }
         else
         {
@@ -95,7 +91,6 @@
             document.formForm.name.readOnly = true; 
             document.formForm.role.options.selectedIndex = 0;
             document.formForm.role.disabled = true;
-        	document.formForm.HTMLFileName.readOnly = false;
         }
     }
 

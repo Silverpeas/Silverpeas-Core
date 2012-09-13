@@ -33,7 +33,7 @@ import java.io.Serializable;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 

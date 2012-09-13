@@ -33,9 +33,6 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
@@ -66,12 +63,6 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
           this.context.setCurrentComponentId(componentId);
         }
       }
-      OrganizationController orga = getOrganizationController();
-      ComponentInst componentInst = orga.getComponentInst(componentId);
-      this.context.setCurrentComponentLabel(componentInst.getLabel());
-      this.context.setCurrentSpaceId(componentInst.getDomainFatherId());
-      SpaceInst spaceInst = orga.getSpaceInstById(getSpaceId());
-      this.context.setCurrentSpaceName(spaceInst.getName());
     }
   }
 
