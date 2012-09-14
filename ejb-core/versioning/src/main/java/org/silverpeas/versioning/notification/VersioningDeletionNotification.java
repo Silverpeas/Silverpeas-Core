@@ -22,32 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notification;
+package org.silverpeas.versioning.notification;
+
+import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
 
 /**
- * This enumeration lists all the notification topics that are registered within the Silverpeas
- * Notification System and for which any beans in Silverpeas can subscribe.
+ * Notification about the deletion of an attachment in a given component instance.
  */
-public enum RegisteredTopics {
+public class VersioningDeletionNotification extends SilverpeasNotification {
 
-  /**
-   * This topic is for notifications about an action performed on a node. A node in Silverpeas is a
-   * way to categorize in a hierarchical way information.
-   */
-  NODE_TOPIC("node"), ADMIN_TOPIC("admin"), ATTACHMENT_TOPIC("attachment");
+  private static final long serialVersionUID = 3354035649186264026L;
 
-  public String getTopicName() {
-    return topicName;
+  protected VersioningDeletionNotification(final DocumentPK document) {
+    super(new NotificationSource().withComponentInstanceId(document.getInstanceId()), document);
   }
 
-  @Override
-  public String toString() {
-    return topicName;
-  }
-
-  private String topicName;
-
-  private RegisteredTopics(String topicName) {
-    this.topicName = topicName;
+  public DocumentPK getDocumentPK() {
+    return (DocumentPK) getObject();
   }
 }
