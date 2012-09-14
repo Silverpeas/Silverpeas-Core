@@ -34,6 +34,7 @@ import com.silverpeas.util.ExecutionAttempts;
 import static com.silverpeas.util.ExecutionAttempts.retry;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jms.MessageListener;
 import javax.jms.TopicSubscriber;
 
 /**
@@ -68,9 +69,9 @@ public class JMSSubscribingService implements MessageSubscribingService {
           if (!topicsSubscriber.isSubscribedTo(topicName)) {
             String id = topicsSubscriber.getId();
             String subscriptionId = id + "::" + topicName;
+            MessageListener listener = mapMessageListenerTo(subscriber).forTopic(topicName);
             TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName,
-                    subscriptionId);
-            jmsSubscriber.setMessageListener(mapMessageListenerTo(subscriber).forTopic(topicName));
+                    subscriptionId, listener);
             topicsSubscriber.addSubscription(jmsSubscriber);
             topicsSubscriber.save();
             subscriber.setId(id);
