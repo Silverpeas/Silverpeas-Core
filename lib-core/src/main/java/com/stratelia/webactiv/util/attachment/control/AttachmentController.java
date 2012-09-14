@@ -64,6 +64,8 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+
 public class AttachmentController {
 
   private static AttachmentBm attachmentBm = new AttachmentBmImpl();
@@ -590,14 +592,8 @@ public class AttachmentController {
       }
 
       if (invokeCallback) {
-        int authorId = -1;
-        if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
-          authorId = Integer.parseInt(attachmentDetail.getAuthor());
-        }
-
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,
-            authorId, attachmentDetail.getPK().getInstanceId(), attachmentDetail);
+        AttachmentNotificationService notificationService = AttachmentNotificationService.getService();
+        notificationService.notifyOnDeletionOf(attachmentDetail.getPK());
       }
 
     } catch (Exception fe) {
