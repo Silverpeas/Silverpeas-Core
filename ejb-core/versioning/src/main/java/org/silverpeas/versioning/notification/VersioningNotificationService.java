@@ -30,7 +30,7 @@ import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 import javax.inject.Inject;
 
 import com.silverpeas.notification.NotificationPublisher;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.Document;
 
 /**
  * A service to notify about the events which occurs on attachment. It provides an easy access to
@@ -55,7 +55,7 @@ public class VersioningNotificationService {
    * Notifies the registered beans a given node (with and its children) comes to be deleted.
    * @param nodes the nodes that are deleted.
    */
-  public void notifyOnDeletionOf(final DocumentPK document) {
+  public void notifyOnDeletionOf(final Document document) {
     VersioningDeletionNotification deletion = new VersioningDeletionNotification(document);
     publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC.getTopicName()));
   }

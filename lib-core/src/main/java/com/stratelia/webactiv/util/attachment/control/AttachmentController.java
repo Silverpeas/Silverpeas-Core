@@ -593,7 +593,7 @@ public class AttachmentController {
 
       if (invokeCallback) {
         AttachmentNotificationService notificationService = AttachmentNotificationService.getService();
-        notificationService.notifyOnDeletionOf(attachmentDetail.getPK());
+        notificationService.notifyOnDeletionOf(attachmentDetail);
       }
 
     } catch (Exception fe) {
