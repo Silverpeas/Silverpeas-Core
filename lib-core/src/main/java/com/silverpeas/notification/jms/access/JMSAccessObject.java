@@ -46,6 +46,7 @@ import javax.naming.NamingException;
 public final class JMSAccessObject {
 
   private TopicConnection topicConnection;
+  private TopicSession topicSession;
 
   /**
    * The prefix of the JNDI name under which JMS topic will be registered.
@@ -75,13 +76,12 @@ public final class JMSAccessObject {
    * @throws JMSException if an error occurs while subscribing to the specified topic.
    * @throws NamingException if no such topic exists with the specified name.
    */
-  public TopicSubscriber createTopicSubscriber(String topicName) throws JMSException,
-      NamingException {
+  public TopicSubscriber createTopicSubscriber(String topicName, String subscriberId) throws JMSException, NamingException {
     Topic topic = getExistingTopic(topicName);
     TopicSession session = getTopicSession();
-    SilverpeasTopicSubscriber topicSubscriber =
-        decorateTopicSubscriber(session.createSubscriber(topic));
+    SilverpeasTopicSubscriber topicSubscriber = decorateTopicSubscriber(session.createDurableSubscriber(topic, subscriberId));
     topicSubscriber.setSession(session);
+    topicSubscriber.setId(subscriberId);
     return topicSubscriber;
   }
 
@@ -92,8 +92,11 @@ public final class JMSAccessObject {
    * @throws JMSException if an error occurs while unsubscribing the subscription.
    */
   public void disposeTopicSubscriber(final TopicSubscriber subscriber) throws JMSException {
-    Session session = ((SilverpeasTopicSubscriber) subscriber).getSession();
+    SilverpeasTopicSubscriber silverpeasSubscriber = (SilverpeasTopicSubscriber) subscriber;
+    Session session = silverpeasSubscriber.getSession();
+    String id = silverpeasSubscriber.getId();
     subscriber.close();
+    session.unsubscribe(id);
     releaseSession(session);
   }
 
@@ -149,7 +152,10 @@ public final class JMSAccessObject {
    * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
   protected TopicSession getTopicSession() throws JMSException {
-    return topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+    if (topicSession == null) {
+      topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+    }
+    return topicSession;
   }
 
   /**
@@ -158,18 +164,22 @@ public final class JMSAccessObject {
    * @throws JMSException if an error occurs while released the JMS session.
    */
   protected void releaseSession(final Session session) throws JMSException {
-    session.close();
+    if (topicSession != session) {
+      session.close();
+    }
   }
 
   @PostConstruct
   protected void openConnection() throws NamingException, JMSException {
     TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.JMS_FACTORY);
     topicConnection = connectionFactory.createTopicConnection();
+    topicConnection.setClientID("Silverpeas");
     topicConnection.start();
   }
 
   @PreDestroy
   protected void closeConnection() throws JMSException {
+    topicSession.close();
     topicConnection.stop();
     topicConnection.close();
   }
