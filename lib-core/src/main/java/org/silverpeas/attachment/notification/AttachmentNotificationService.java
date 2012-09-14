@@ -30,7 +30,7 @@ import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 import javax.inject.Inject;
 
 import com.silverpeas.notification.NotificationPublisher;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * A service to notify about the events which occurs on attachment. It provides an easy access to
@@ -55,7 +55,7 @@ public class AttachmentNotificationService {
    * Notifies the registered beans a given node (with and its children) comes to be deleted.
    * @param nodes the nodes that are deleted.
    */
-  public void notifyOnDeletionOf(final AttachmentPK attachment) {
+  public void notifyOnDeletionOf(final AttachmentDetail attachment) {
     AttachmentDeletionNotification deletion = new AttachmentDeletionNotification(attachment);
     publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC.getTopicName()));
   }

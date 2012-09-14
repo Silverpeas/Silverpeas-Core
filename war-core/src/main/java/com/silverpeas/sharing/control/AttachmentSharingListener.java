@@ -38,8 +38,8 @@ import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SilverpeasNotification;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.silverpeas.versioning.model.Document;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  *
@@ -66,12 +66,16 @@ public class AttachmentSharingListener extends DefaultNotificationSubscriber {
     if (ATTACHMENT_TOPIC.getTopicName().equals(onTopic.getName())) {
       if (notification instanceof AttachmentDeletionNotification) {
         AttachmentDeletionNotification deletion = (AttachmentDeletionNotification) notification;
-        AttachmentPK attachment = deletion.getAttachmentPK();
-        service.deleteTicketsForSharedObject(Long.parseLong(attachment.getId()), Ticket.FILE_TYPE);
+        AttachmentDetail attachment = deletion.getAttachment();
+        if (attachment != null) {
+          service.deleteTicketsForSharedObject(Long.parseLong(attachment.getPK().getId()), Ticket.FILE_TYPE);
+        }
       } else if (notification instanceof VersioningDeletionNotification) {
         VersioningDeletionNotification deletion = (VersioningDeletionNotification) notification;
-        DocumentPK document = deletion.getDocumentPK();
-        service.deleteTicketsForSharedObject(Long.parseLong(document.getId()), Ticket.VERSION_TYPE);
+        Document document = deletion.getDocument();
+        if (document != null) {
+          service.deleteTicketsForSharedObject(Long.parseLong(document.getPk().getId()), Ticket.VERSION_TYPE);
+        }
       }
     }
   }
