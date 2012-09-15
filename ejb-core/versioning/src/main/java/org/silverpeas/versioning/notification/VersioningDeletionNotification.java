@@ -26,7 +26,7 @@ package org.silverpeas.versioning.notification;
 
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.silverpeas.versioning.model.Document;
 
 /**
  * Notification about the deletion of an attachment in a given component instance.
@@ -35,11 +35,11 @@ public class VersioningDeletionNotification extends SilverpeasNotification {
 
   private static final long serialVersionUID = 3354035649186264026L;
 
-  protected VersioningDeletionNotification(final DocumentPK document) {
+  protected VersioningDeletionNotification(final Document document) {
     super(new NotificationSource().withComponentInstanceId(document.getInstanceId()), document);
   }
 
-  public DocumentPK getDocumentPK() {
-    return (DocumentPK) getObject();
+  public Document getDocument() {
+    return (Document) getObject();
   }
 }

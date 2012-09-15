@@ -891,7 +891,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     initEJB();
     versioning_bm.deleteDocument(documentPK);
     VersioningNotificationService notificationService = VersioningNotificationService.getService();
-    notificationService.notifyOnDeletionOf(documentPK);
+    notificationService.notifyOnDeletionOf(doc);
   }
 
   /**
