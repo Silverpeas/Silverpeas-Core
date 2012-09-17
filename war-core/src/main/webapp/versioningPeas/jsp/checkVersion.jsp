@@ -160,7 +160,7 @@
     return users;
   }
 
-  public boolean isUserReader(Document document, int user_id, VersioningSessionController versioning_sc) throws RemoteException {
+  /*public boolean isUserReader(Document document, int user_id, VersioningSessionController versioning_sc) throws RemoteException {
     try {
       List readers = document.getReadList();
       List writers = versioning_sc.getAllNoReader(document);
@@ -184,9 +184,9 @@
     }
 
     return false;
-  }
+  }*/
 
-  public boolean isUserWriter(Document document, int user_id) {
+/*  public boolean isUserWriter(Document document, int user_id) {
     List writers = document.getWorkList();
     for (int i = 0; i < writers.size(); i++) {
       Worker user = (Worker) writers.get(i);
@@ -195,7 +195,7 @@
       }
     }
     return false;
-  }
+  }*/
 
   private boolean isFileSharingEnable(MainSessionController msc, String componentId) {
     String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");

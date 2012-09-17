@@ -34,7 +34,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%
-    ResourceLocator messages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
+    ResourceLocator messages = new ResourceLocator("org.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
     Document 	document 	= (Document) request.getAttribute("Document");
     List 		vVersions 	= (List) request.getAttribute("Versions");

@@ -339,6 +339,23 @@
 </c:if>
 
 <script type="text/javascript">
+  <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
+    <c:param name="ComponentId" value="${componentId}" />
+    <c:param name="fromAlias" value="${view:booleanValue(param.Alias)}"/>
+  </c:url>
+  var publicVersionsWindow = window;
+  function viewPublicVersions(docId) {
+      url = '<c:out value="${allVersionsUrl}" />&DocId=' + docId;
+      windowName = "publicVersionsWindow";
+      larg = "800";
+      haut = "475";
+      windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
+      if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {        
+        publicVersionsWindow.close();
+      }
+      publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+    }  
+
   <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
   <c:url var="publicURL" value="/VersioningDragAndDrop/jsp/Drop">
     <c:param name="UserId" value="${mainSessionController.userId}" />
