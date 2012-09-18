@@ -290,6 +290,9 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
     if (s == null) {
       s = (NodeI18NDetail) getNextTranslation();
     }
+    if (s == null) {
+      return getDescription();
+    }
     return s.getDescription();
   }
 

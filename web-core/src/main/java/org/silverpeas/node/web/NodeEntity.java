@@ -27,13 +27,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.silverpeas.util.i18n.Translation;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
@@ -41,60 +42,81 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 public class NodeEntity implements Exposable {
 
   private static final long serialVersionUID = -5740937039604775733L;
-  
+
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(required = true)
   private String data;
   @XmlElement(required = true)
   private NodeAttrEntity attr;
-  @XmlElements({@XmlElement})
+  @XmlElement
   private NodeEntity[] children;
   @XmlElement(defaultValue = "")
   private URI childrenURI;
-
+  @XmlElement
+  private NodeTranslationEntity[] translations;
   @XmlElement(required = true)
   private String state = "closed";
-  
+
   /**
    * Creates a new node entity from the specified node.
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
   public static NodeEntity fromNodeDetail(final NodeDetail node, URI uri) {
-    return new NodeEntity(node, uri);
+    return new NodeEntity(node, uri, null);
   }
-  
+
+  public static NodeEntity fromNodeDetail(final NodeDetail node, URI uri, String lang) {
+    return new NodeEntity(node, uri, lang);
+  }
+
   public static NodeEntity fromNodeDetail(final NodeDetail node, String uri) {
-    return fromNodeDetail(node, getURI(uri));
+    return fromNodeDetail(node, getURI(uri), null);
+  }
+
+  public static NodeEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
+    return fromNodeDetail(node, getURI(uri), lang);
   }
 
   @Override
   public URI getURI() {
     return uri;
   }
-  
+
   public void setURI(URI uri) {
     this.uri = uri;
   }
 
-  private NodeEntity(final NodeDetail node, URI uri) {
-    this.setData(node.getName());
+  private NodeEntity(final NodeDetail node, URI uri, String lang) {
+    this.setData(node.getName(lang));
     this.uri = uri;
-    this.setAttr(NodeAttrEntity.fromNodeDetail(node, uri));
+    this.setAttr(NodeAttrEntity.fromNodeDetail(node, uri, lang));
+
+    // set translations
+    Map<String, Translation> translations = node.getTranslations();
+    List<NodeTranslationEntity> translationEntities = new ArrayList<NodeTranslationEntity>();
+    for (Translation translation : translations.values()) {
+      NodeTranslationEntity translationEntity =
+          new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
+      translationEntities.add(translationEntity);
+    }
+    setTranslations(translationEntities.toArray(new NodeTranslationEntity[0]));
+
+    // set children data
     setChildrenURI(getChildrenURI(uri));
     if (node.getChildrenDetails() != null) {
       List<NodeEntity> entities = new ArrayList<NodeEntity>();
       for (NodeDetail child : node.getChildrenDetails()) {
         URI childURI = getChildURI(uri, child.getNodePK().getId());
-        NodeEntity childEntity = fromNodeDetail(child, childURI);
+        NodeEntity childEntity = fromNodeDetail(child, childURI, lang);
         childEntity.setChildrenURI(getChildrenURI(childURI));
         entities.add(childEntity);
       }
       children = entities.toArray(new NodeEntity[0]);
     }
   }
-  
+
   private URI getChildURI(URI parentURI, String childId) {
     try {
       return new URI(parentURI + "/" + childId);
@@ -103,7 +125,7 @@ public class NodeEntity implements Exposable {
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
-  
+
   private static URI getURI(String uri) {
     try {
       return new URI(uri);
@@ -144,7 +166,7 @@ public class NodeEntity implements Exposable {
   public String getState() {
     return state;
   }
-  
+
   public void setChildrenURI(URI childrenURI) {
     this.childrenURI = childrenURI;
     this.attr.setChildrenURI(childrenURI);
@@ -158,9 +180,17 @@ public class NodeEntity implements Exposable {
       throw new RuntimeException(ex.getMessage(), ex);
     }
   }
-  
+
   public URI getChildrenURI() {
     return childrenURI;
+  }
+
+  public void setTranslations(NodeTranslationEntity[] translations) {
+    this.translations = translations;
+  }
+
+  public NodeTranslationEntity[] getTranslations() {
+    return translations;
   }
 
 }

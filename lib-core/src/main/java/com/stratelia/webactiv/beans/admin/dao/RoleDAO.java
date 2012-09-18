@@ -160,6 +160,8 @@ public class RoleDAO {
     }
     if (StringUtil.isDefined(objectType)) {
       queryAllAvailableComponentIds += " and r.objectType = '" + objectType + "'";
+    } else {
+      queryAllAvailableComponentIds += " and r.objectType is null";
     }
     queryAllAvailableComponentIds += " and r.instanceId = " + instanceId
         + " and gr.groupId IN (" + list2String(groupIds) + ")";
@@ -236,6 +238,7 @@ public class RoleDAO {
       + " from st_userrole r, st_userrole_user_rel ur"
       + " where r.id=ur.userroleid"
       + " and r.instanceId = ? "
+      + " and r.objecttype is null "
       + " and ur.userId = ? ";
 
   private static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)

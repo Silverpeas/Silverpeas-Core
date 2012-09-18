@@ -716,7 +716,39 @@ td.milieuOngletOn {
 	border-color:#F1790F;
 }
 
+/* contextual menu jstree */
+div#vakata-contextmenu.jstree-default-context{
+	padding:6px 0;
+	background-color:#FFD5AF;
+	border:1px solid #F1790F;
+	border-radius:  8px 0 8px 8px;
+	-moz-border-radius: 8px 0 8px 8px;
+	-webkit-border-radius:  8px 0 8px 8px;
+	margin-top:-3px;
+    box-shadow:none;
+}
 
+div#vakata-contextmenu.jstree-default-context li ul {
+    background-color:#FFD5AF;
+    border: 1px solid #F1790F;
+    box-shadow:none;
+}
+div#vakata-contextmenu.jstree-default-context a {
+	font-weight:bold;
+}
+div#vakata-contextmenu.jstree-default-context a:hover, div#vakata-contextmenu.jstree-default-context .vakata-hover > a {
+    background: none repeat scroll 0 0 #F1790F;
+    border: 0;
+    border-radius:0;
+    color: #FFF;;
+    padding: 0;
+}
+
+div#vakata-contextmenu.jstree-default-context li.vakata-separator {
+    background: none;
+    border-top: 1px solid #F1790F;
+    margin: 0;
+}
 
 /* regroupement des styles mise en couleur*/
 #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
