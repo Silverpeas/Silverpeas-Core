@@ -40,11 +40,11 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import com.silverpeas.util.MimeTypes;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 
 /**
  *

@@ -29,8 +29,8 @@ import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.organization.*;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

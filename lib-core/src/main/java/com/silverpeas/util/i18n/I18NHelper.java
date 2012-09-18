@@ -1,53 +1,55 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
- * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
- * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
- * text describing the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.util.i18n;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 public class I18NHelper {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
   public final static Map<String, List<I18NLanguage>> allLanguages =
-      new LinkedHashMap<String, List<I18NLanguage>>();
+      new HashMap<String, List<I18NLanguage>>();
+
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
   public static String defaultLanguage = null;
   private final static List<String> allCodes = new ArrayList<String>();
+
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
   public static final String HTMLLink1 = "View";
@@ -252,7 +254,7 @@ public class I18NHelper {
     return getHTMLSelectObject(result, bean, selectedTranslation, userLanguage);
   }
 
-  static private String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
+   private static String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
       String selectedTranslation, String userLanguage) {
     String list = "";
     String currentTranslation = selectedTranslation;

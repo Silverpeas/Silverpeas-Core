@@ -24,7 +24,7 @@
 
 package com.silverpeas.util.clipboard;
 
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;

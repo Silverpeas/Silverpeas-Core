@@ -21,7 +21,7 @@
 package com.silverpeas.form;
 
 import au.id.jericho.lib.html.FormField;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;

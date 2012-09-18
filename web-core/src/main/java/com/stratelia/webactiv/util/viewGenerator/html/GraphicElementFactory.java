@@ -939,7 +939,8 @@ public class GraphicElementFactory {
     HttpSession session = request.getSession(true);
     mainSessionController =
         (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    componentMainPage = request.getRequestURI().endsWith("/Main");
+    componentMainPage =
+        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().endsWith("/jsp/Main");
   }
 
   public boolean isComponentMainPage() {

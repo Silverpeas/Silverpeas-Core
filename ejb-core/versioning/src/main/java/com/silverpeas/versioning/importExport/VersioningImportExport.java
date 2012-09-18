@@ -48,8 +48,6 @@ import com.silverpeas.versioning.VersioningIndexer;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.*;
-import com.stratelia.silverpeas.versioning.model.Reader;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;

@@ -66,9 +66,9 @@ import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.repository.DocumentRepository;
 import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
@@ -122,7 +122,7 @@ public class HistorisedAttachmentServiceTest {
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
       Reader reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
-          getResourceAsStream("silverpeas-jcr.txt"));
+          getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
       try {
         SilverpeasRegister.registerNodeTypes(reader);
       } finally {
@@ -186,8 +186,7 @@ public class HistorisedAttachmentServiceTest {
         session.logout();
       }
     }
-    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsoluteIndexPath(null,
-        instanceId)));
+    FileUtils.deleteQuietly(new File(IndexFileManager.getAbsoluteIndexPath(null, instanceId)));
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
   }
 

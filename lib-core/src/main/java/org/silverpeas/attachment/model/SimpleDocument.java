@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -46,8 +47,10 @@ import static java.io.File.separatorChar;
  *
  * @author ehugonnet
  */
-public class SimpleDocument {
+public class SimpleDocument implements Serializable {
 
+  private static final long serialVersionUID = 8778738762037114180L;
+  
   private final static ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   public static final String WEBDAV_FOLDER = "webdav";

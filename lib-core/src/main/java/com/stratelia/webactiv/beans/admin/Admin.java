@@ -42,8 +42,7 @@ import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +50,7 @@ import java.util.*;
 import javax.inject.Inject;
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**

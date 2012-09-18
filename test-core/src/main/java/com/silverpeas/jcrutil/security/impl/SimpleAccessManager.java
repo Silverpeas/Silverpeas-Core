@@ -1,7 +1,6 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-<<<<<<< HEAD:test-core/src/main/java/com/silverpeas/jcrutil/security/impl/SimpleAccessManager.java
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
@@ -85,5 +84,10 @@ public class SimpleAccessManager implements AccessManager {
   @Override
   public boolean canRead(Path path, ItemId itemid) throws RepositoryException {
     return true;
+  }
+
+  @Override
+  public void checkRepositoryPermission(int permissions) throws AccessDeniedException,
+      RepositoryException {
   }
 }

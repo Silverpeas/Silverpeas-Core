@@ -28,7 +28,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
  * A dummy record set.

@@ -62,7 +62,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

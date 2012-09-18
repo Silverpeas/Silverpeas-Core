@@ -92,5 +92,10 @@ public class SimpleAccessManager implements AccessManager {
     return true;
   }
 
+  @Override
+  public void checkRepositoryPermission(int permissions) throws AccessDeniedException,
+          RepositoryException {
+  }
+
 
 }

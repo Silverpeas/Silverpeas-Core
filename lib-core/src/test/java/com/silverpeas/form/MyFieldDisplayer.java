@@ -24,7 +24,7 @@
 
 package com.silverpeas.form;
 
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;

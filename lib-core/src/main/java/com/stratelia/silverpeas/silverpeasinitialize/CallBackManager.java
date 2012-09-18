@@ -181,17 +181,11 @@ public class CallBackManager {
       case ACTION_ATTACHMENT_UPDATE:
         sb.append("ACTION_ATTACHMENT_UPDATE");
         break;
-      case ACTION_ATTACHMENT_REMOVE:
-        sb.append("ACTION_ATTACHMENT_REMOVE");
-        break;
       case ACTION_VERSIONING_ADD:
         sb.append("ACTION_VERSIONING_ADD");
         break;
       case ACTION_VERSIONING_UPDATE:
         sb.append("ACTION_VERSIONING_UPDATE");
-        break;
-      case ACTION_VERSIONING_REMOVE:
-        sb.append("ACTION_VERSIONING_REMOVE");
         break;
       case ACTION_COMMENT_ADD:
         sb.append("ACTION_COMMENT_ADD");

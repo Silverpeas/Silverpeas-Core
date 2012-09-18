@@ -24,6 +24,8 @@
 
 --%>
 
+<%@page import="org.silverpeas.attachment.model.HistorisedDocument"%>
+<%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
@@ -36,8 +38,8 @@
 <%
     ResourceLocator messages = new ResourceLocator("org.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
-    Document 	document 	= (Document) request.getAttribute("Document");
-    List 		vVersions 	= (List) request.getAttribute("Versions");
+    SimpleDocument 	document 	= (SimpleDocument) request.getAttribute("Document");
+    List<SimpleDocument> 		vVersions 	= (List<SimpleDocument>) request.getAttribute("Versions");
     boolean		fromAlias	= StringUtil.getBooleanValue((String) request.getAttribute("Alias"));
 
     String componentId = document.getPk().getInstanceId();
@@ -70,27 +72,25 @@ arrayColumn_status.setSortable(false);
 
 ArrayLine arrayLine = null; // declare line object of the array
 
-browseBar.setExtraInformation(document.getName());
+browseBar.setExtraInformation(document.getFilename());
 
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
 boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
 
-DocumentVersion publicVersion = null;
 String url = null;
-for (int i=0;i<vVersions.size();i++) {
-	publicVersion = (DocumentVersion) vVersions.get(i);
+for (SimpleDocument publicVersion : vVersions) {
     arrayLine = arrayPane.addArrayLine(); // set a new line
 
-    url = versioningSC.getDocumentVersionURL(publicVersion.getLogicalName(),publicVersion.getDocumentPK().getId(), publicVersion.getPk().getId());
+    url = versioningSC.getDocumentVersionURL(publicVersion.getFilename(),publicVersion.getId(), publicVersion.getPk().getId());
 
     if (fromAlias) {
-		url = FileServerUtils.getAliasURL(componentId, publicVersion.getLogicalName(),publicVersion.getDocumentPK().getId(), publicVersion.getPk().getId());
+		url = FileServerUtils.getAliasURL(componentId, publicVersion.getFilename(),publicVersion.getId(), publicVersion.getPk().getId());
 	}
 
     String spinFire = "";
-    if (publicVersion.isSpinfireDocument() && spinfireViewerEnable)
+    /*if (publicVersion.isSpinfireDocument() && spinfireViewerEnable)
     {
 		spinFire = "<br><div id=\"switchView\" name=\"switchView\" style=\"display: none\">";
 		spinFire += "<a title=\"Viewer SpinFire 3D\"href=\"#\" onClick=\"changeView3d(" + publicVersion.getPk().getId() + ")\"><img name= \"iconeView\" border=0 src=\"/util/icons/masque.gif\"></a>";
@@ -101,24 +101,24 @@ for (int i=0;i<vVersions.size();i++) {
 		spinFire += "<PARAM NAME=\"ModelName\" VALUE=\"" + url + "\">";
 		spinFire += "</OBJECT>";
 		spinFire += "</div>";
-    }
+    }*/
     
-    String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getPk().getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
-    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getPhysicalName())+"\" border=\"0\"/></a>");
-	arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorNumber()+"."+publicVersion.getMinorNumber()+"</a>" + permalink + spinFire);
-    arrayLine.addArrayCellText(versioningSC.getUserNameByID(publicVersion.getAuthorId()));
+    String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
+    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getFilename())+"\" border=\"0\"/></a>");
+	arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
+    arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
 
-   	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreationDate()));
+   	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreated()));
    	cell.setNoWrap(true);
    	
    	String xtraData = "";
-  	if (StringUtil.isDefined(publicVersion.getXmlForm()))
+  	if (StringUtil.isDefined(publicVersion.getXmlFormId()))
   	{
-		String xmlURL = m_context+"/RformTemplate/jsp/View?ObjectId="+publicVersion.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(publicVersion.getXmlForm());
-		xtraData = "<a rel=\""+xmlURL+"\" href=\"#\" title=\""+document.getName()+" "+publicVersion.getMajorNumber()+"."+publicVersion.getMinorNumber()+"\"><img src=\""+m_context+"/util/icons/info.gif\" border=\"0\"></a> ";
+		String xmlURL = m_context+"/RformTemplate/jsp/View?ObjectId="+publicVersion.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(publicVersion.getXmlFormId());
+		xtraData = "<a rel=\""+xmlURL+"\" href=\"#\" title=\""+document.getFilename()+" "+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"\"><img src=\""+m_context+"/util/icons/info.gif\" border=\"0\"></a> ";
 	}
 
-    arrayLine.addArrayCellText(xtraData+publicVersion.getComments());
+    arrayLine.addArrayCellText(xtraData+publicVersion.getDescription());
 
 }
 

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.SilverpeasContent;
+
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.question.model.Question;

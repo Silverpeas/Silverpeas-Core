@@ -47,9 +47,9 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import java.io.File;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -63,6 +63,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
 
 public class AttachmentController {
 
@@ -568,7 +570,7 @@ public class AttachmentController {
         int authorId = -1;
         if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
           authorId = Integer.parseInt(attachmentDetail.getAuthor());
-        }
+      }
 
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE,

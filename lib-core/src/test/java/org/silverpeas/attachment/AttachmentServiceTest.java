@@ -67,6 +67,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.repository.DocumentRepository;
 import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
+import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
@@ -184,8 +185,7 @@ public class AttachmentServiceTest {
         session.logout();
       }
     }
-    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsoluteIndexPath(null,
-        instanceId)));
+    FileUtils.deleteQuietly(new File(IndexFileManager.getAbsoluteIndexPath(null, instanceId)));
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
   }
 

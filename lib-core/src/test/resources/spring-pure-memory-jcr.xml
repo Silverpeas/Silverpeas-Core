@@ -74,4 +74,7 @@
   <bean id="jcrAttachmentManager" class="org.mockito.Mockito" factory-method="mock"> 
     <constructor-arg value="com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService" />
   </bean> 
+  
+  <bean id="attachmentNotificationService" factory-method="getService" 
+        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />
 </beans>

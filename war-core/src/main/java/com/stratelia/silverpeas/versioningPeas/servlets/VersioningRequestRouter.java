@@ -21,22 +21,15 @@
 package com.stratelia.silverpeas.versioningPeas.servlets;
 
 import java.io.IOException;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
-import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.CharEncoding;
+
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -50,6 +43,15 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
+
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioningPeas.control.VersioningSessionController;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSessionController> {
 
@@ -75,8 +77,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
         "User=" + versioningSC.getUserId() + " Function=" + function);
     String rootDestination = "/versioningPeas/jsp/";
     ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.silverpeas.versioningPeas.multilang.versioning",
-        versioningSC.getLanguage());
+        "org.silverpeas.versioningPeas.multilang.versioning", versioningSC.getLanguage());
     try {
       String flag = versioningSC.getProfile();
 
@@ -94,7 +95,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
         versioningSC.updateDocument(document);
         versioningSC.setEditingDocument(document);
         destination = getDestination("ViewVersions", versioningSC, request);
-      } else if (function.equals("CloseWindow")) {
+      } else if ("CloseWindow".equals(function)) {
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.equals("AddNewVersion")) {
         // Display xmlForm if used

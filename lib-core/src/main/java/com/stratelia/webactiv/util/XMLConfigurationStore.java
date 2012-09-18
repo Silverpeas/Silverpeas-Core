@@ -18,28 +18,35 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*i
+ * XMLConfigurationStore.java
+ *
+ * Created on 17 novembre 2000, 13:44
+ */
 package com.stratelia.webactiv.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
@@ -47,7 +54,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -77,16 +83,11 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * XML document root
    */
   private org.w3c.dom.Node rootNode = null;
-  private Document xmlConfigDocument = null;
+  private Document xmlConfigDOMDoc = null;
   String configFileName = null;
 
   /**
    * Creates new XMLConfigurationStore
-   *
-   * @param configFileName
-   * @param configFileInputStream
-   * @param rootString
-   * @throws Exception
    */
   public XMLConfigurationStore(String configFileName, InputStream configFileInputStream,
       String rootString) throws Exception {
@@ -100,7 +101,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
   public XMLConfigurationStore() throws Exception {
     try {
       javax.xml.parsers.DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      xmlConfigDocument = dbf.newDocumentBuilder().newDocument();
+      xmlConfigDOMDoc = dbf.newDocumentBuilder().newDocument();
     } catch (javax.xml.parsers.ParserConfigurationException e) {
       throw new Exception(e.getMessage());
     }
@@ -110,10 +111,10 @@ public class XMLConfigurationStore implements ConfigurationStore {
     if (rootString == null) {
       return (null);
     }
-    Element el = xmlConfigDocument.getDocumentElement();
-    Node n = xmlConfigDocument.createElement(rootString);
+    Element el = xmlConfigDOMDoc.getDocumentElement();
+    Node n = xmlConfigDOMDoc.createElement(rootString);
     if (el == null) {
-      xmlConfigDocument.appendChild(n);
+      xmlConfigDOMDoc.appendChild(n);
     } else {
       el.appendChild(n);
     }
@@ -121,23 +122,28 @@ public class XMLConfigurationStore implements ConfigurationStore {
   }
 
   @Override
-  public void serialize() throws FileNotFoundException, TransformerException, IOException {
-    TransformerFactory transFactory = TransformerFactory.newInstance();
-    //transFactory.setAttribute("indent-number", 2);
-    Transformer idTransform = transFactory.newTransformer();
-    idTransform.setOutputProperty(OutputKeys.METHOD, "xml");
-    idTransform.setOutputProperty(OutputKeys.INDENT, "no");
-    idTransform.setOutputProperty(OutputKeys.ENCODING, CharEncoding.UTF_8);
-    Source input = new DOMSource(xmlConfigDocument);
-    Result output = new StreamResult(new File(configFileName));
-    idTransform.transform(input, output);
+  public void serialize() throws FileNotFoundException, IOException {
+    FileOutputStream out = new FileOutputStream(new File(configFileName));
+    StreamResult streamResult = new StreamResult(out);
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer serializer;
+    try {
+      serializer = tf.newTransformer();
+      serializer.setOutputProperty(OutputKeys.ENCODING, CharEncoding.UTF_8);
+      serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+      serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      DOMSource domSource = new DOMSource(xmlConfigDOMDoc);
+      serializer.transform(domSource, streamResult);
+    } catch (TransformerException ex) {
+      Logger.getLogger(XMLConfigurationStore.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      IOUtils.closeQuietly(out);
+    }
   }
 
   /**
    * This method sets the config file name. Useful when the configuration store has been created
    * empty, so that is has no associated file.
-   *
-   * @param configfilename
    */
   public void setConfigFileName(String configfilename) {
     configFileName = configfilename;
@@ -150,14 +156,14 @@ public class XMLConfigurationStore implements ConfigurationStore {
 
   private void doLoad(String rootString) throws Exception, SAXParseException,
       IOException {
-    if (xmlConfigDocument == null) {
+    if (xmlConfigDOMDoc == null) {
       throw new Exception(
           "E6000-0025:Cannot create XML document from the configuration file '"
           + configFileName + "'");
     }
     // m_XMLConfig.getDocumentElement().normalize();
-    xmlConfigDocument.normalize();
-    rootNode = findNode(xmlConfigDocument, rootString);
+    xmlConfigDOMDoc.normalize();
+    rootNode = findNode(xmlConfigDOMDoc, rootString);
     if (rootNode == null) {
       throw new Exception("E6000-0023:Invalid configuration file '"
           + configFileName + "': " + "Cannot find node '" + rootString + "j'");
@@ -171,15 +177,20 @@ public class XMLConfigurationStore implements ConfigurationStore {
       // if config file was found by the resource locator, it is an input
       // stream,
       // otherwise it is a file
-      DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      DocumentBuilder parser = dbf.newDocumentBuilder();
+      // javax.xml.parsers.DocumentBuilderFactory dbf =
+      // DocumentBuilderFactory.newInstance();
+      // javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
+      DOMParser parser = new DOMParser();
 
       if (configFileInputStream == null) {
-        SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream", "Parsing from file",
-            configFileName);
+        // FileInputStream is = new FileInputStream(new File(configFileName));
+        SilverTrace.debug("util", "ResourceLocator.locateResourceAsStream",
+            "Parsing from file", configFileName);
+
+        // m_XMLConfig = db.parse(is);
         try {
           String cname = "file:///" + configFileName.replace('\\', '/');
-          xmlConfigDocument = parser.parse(cname);
+          parser.parse(cname);
         } catch (SAXException se) {
           SilverTrace.error("util", "ResourceLocator.load",
               "root.EX_XML_PARSING_FAILED", se);
@@ -190,9 +201,12 @@ public class XMLConfigurationStore implements ConfigurationStore {
           throw ioe;
         }
       } else {
-        InputSource ins = new InputSource(configFileInputStream);
-        xmlConfigDocument =  parser.parse(ins);
+        org.xml.sax.InputSource ins = new org.xml.sax.InputSource(
+            configFileInputStream);
+        parser.parse(ins);
       }
+
+      xmlConfigDOMDoc = parser.getDocument();
       doLoad(rootString);
     } catch (IOException e) {
       throw new Exception("E6000-0020:Cannot open configuration file '"
@@ -212,14 +226,9 @@ public class XMLConfigurationStore implements ConfigurationStore {
   }
 
   /**
-   * 
    * This method returns the value of the node <strong>entry</strong>, starting from the node
    * <strong>n</strong>. It may consist of the concatenation of various text en entity reference
    * child nodes. <p> This method returns null if the node wasn't found
-   * @param n
-   * @param entry
-   * @param key
-   * @return 
    */
   public String getXMLParamValue(Node n, String entry, String key) {
     String res = null;
@@ -307,7 +316,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
    */
   public String[] getXMLParamValues(Node n, String entry, String key) {
     String res = null;
-    Vector vres = new Vector(10);
+    List<String> vres = new ArrayList<String>(10);
 
     // find the node, starting from the current node
     Node paramNodes[] = findNodes(n, entry);
@@ -354,20 +363,16 @@ public class XMLConfigurationStore implements ConfigurationStore {
         else if (psn instanceof Text) {
           String v;
           if ((v = psn.getNodeValue()) == null) {
-            return (null);
+            return null;
           }
           vres.add(v.trim());
         }
       }
     }
-    if (vres.size() != 0) {
-      String[] r = new String[vres.size()];
-      for (int i = 0; i < vres.size(); i++) {
-        r[i] = (String) (vres.get(i));
-      }
-      return (r);
+    if (!vres.isEmpty()) {
+      return vres.toArray(new String[vres.size()]);
     }
-    return (null);
+    return null;
   }
 
   public Node getXMLParamNode(String nodename) {
@@ -394,7 +399,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
    *
    * @param n the node where the attribute is stored
    * @param attributeName the name of the attribute. Case sensitive.
-   * @return
    */
   public String getAttributeValue(Node n, String attributeName) {
     if (n == null) {
@@ -427,18 +431,18 @@ public class XMLConfigurationStore implements ConfigurationStore {
     if (entry != null) {
       n.removeChild(entry);
     }
-    Node newElement = xmlConfigDocument.createElement(key);
-    Node newValue = xmlConfigDocument.createTextNode(value);
+    Node newElement = xmlConfigDOMDoc.createElement(key);
+    Node newValue = xmlConfigDOMDoc.createTextNode(value);
     newElement.appendChild(newValue);
     n.appendChild(newElement);
   }
 
   public Node createElement(String key) {
-    return (xmlConfigDocument.createElement(key));
+    return (xmlConfigDOMDoc.createElement(key));
   }
 
   public Node createTextNode(String value) {
-    return (xmlConfigDocument.createTextNode(value));
+    return (xmlConfigDOMDoc.createTextNode(value));
   }
 
   public void appendChild(Node parent, Node child) {
@@ -459,13 +463,13 @@ public class XMLConfigurationStore implements ConfigurationStore {
         paramNodeParent.removeChild(paramNode);
       }
     }
-    Element param = xmlConfigDocument.createElement("param");
-    Node name = xmlConfigDocument.createElement("param-name");
-    Node description = xmlConfigDocument.createElement("param-description");
-    Node nameValue = xmlConfigDocument.createTextNode(key);
+    Element param = xmlConfigDOMDoc.createElement("param");
+    Node name = xmlConfigDOMDoc.createElement("param-name");
+    Node description = xmlConfigDOMDoc.createElement("param-description");
+    Node nameValue = xmlConfigDOMDoc.createTextNode(key);
     for (String value : values) {
-      Node vValue = xmlConfigDocument.createTextNode(value);
-      Node v = xmlConfigDocument.createElement("param-value");
+      Node vValue = xmlConfigDOMDoc.createTextNode(value);
+      Node v = xmlConfigDOMDoc.createElement("param-value");
       param.appendChild(v);
       v.appendChild(vValue);
     }
@@ -473,7 +477,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
     param.appendChild(name);
     name.appendChild(nameValue);
     param.appendChild(description);
-    xmlConfigDocument.getDocumentElement().normalize();
+    xmlConfigDOMDoc.getDocumentElement().normalize();
   }
 
   /**
@@ -482,10 +486,12 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * element. See the description of standard XML resources for details <br> If the key os not
    * found, the defaultValue string is returned instead.
    */
+  @Override
   public String getProperty(String key, String defaultValue) {
     return (get(key, defaultValue));
   }
 
+  @Override
   public String getProperty(String key) {
     return (get(key, null));
   }
@@ -493,10 +499,12 @@ public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * This method is for compatibility with the ResourceLocator
    */
+  @Override
   public String getString(String key) {
     return (get(key, null));
   }
 
+  @Override
   public String get(String key, String defaultValue) {
     String thisFunction = "XMLConfigurationStore.get";
     if (rootNode.hasChildNodes()) {
@@ -552,10 +560,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * This method returns a long value for the given key. It throws an XMLConfigurationException with
    * the code KEY_NOT_FOUND if it cannot be found, or INVALID_VALUE if it cannot be converted to a
    * long value.
-   *
-   * @param key
-   * @return
-   * @throws XMLConfigurationException
    */
   public int getIntValue(String key) throws XMLConfigurationException {
     String sv = get(key, null);
@@ -574,9 +578,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
 
   /**
    * This method returns all values for a multi-valued key
-   *
-   * @param key
-   * @return
    */
   public String[] getValues(String key) {
     if (rootNode.hasChildNodes()) {
@@ -614,7 +615,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
   }
 
   public Node[] findNodes(String name) {
-    return (findNodes(xmlConfigDocument, name));
+    return (findNodes(xmlConfigDOMDoc, name));
   }
 
   /**
@@ -623,10 +624,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * <strong>node</strong> is null, the method returns null<br> If <strong>name</strong> is null or
    * empty, the method returns null<br> If no children of the node <strong>node</strong> match the
    * <strong>name</strong> string, the method returns null<br>
-   *
-   * @param node
-   * @param name
-   * @return
    */
   public Node[] findNodes(Node node, String name) {
     if (node == null) {
@@ -659,8 +656,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
 
   /**
    * Returns all first level names from the configuration file
-   *
-   * @return
    */
   @Override
   public String[] getAllNames() {
@@ -676,9 +671,9 @@ public class XMLConfigurationStore implements ConfigurationStore {
         Node n = list.item(i);
         String name = n.getNodeName();
         if (name.equalsIgnoreCase("param")) {
-          String V;
-          if ((V = getXMLParamValue(n, "param-name", null)) != null) {
-            v.add(V);
+          String value;
+          if ((value = getXMLParamValue(n, "param-name", null)) != null) {
+            v.add(value);
           }
         }
       }
@@ -687,39 +682,6 @@ public class XMLConfigurationStore implements ConfigurationStore {
       return v.toArray(new String[v.size()]);
     }
     return (null);
-  }
-
-  public static void main(String args[]) {
-    XMLConfigurationStore C = null;
-    if (args.length != 1) {
-      System.err.println("ERROR:Invalid args count:" + args.length);
-      System.err.println("ERROR:usage is XMLConfigurationStore filename");
-      System.exit(1);
-    }
-    String filename = args[0];
-    try {
-      System.err.println("Processing XML file '" + filename);
-      C = new XMLConfigurationStore(new File(filename), "testroot");
-    } catch (Exception e) {
-      System.err.println("Error while processing XML file '" + filename + "':"
-          + e.getMessage());
-      System.exit(2);
-    }
-    if (C == null) {
-      System.err.println("could not created configuration from file '"
-          + filename + "'");
-      System.exit(2);
-    }
-    String names[] = C.getAllNames();
-    if (names == null || names.length == 0) {
-      System.out
-          .println("no names found. Maybe the root element isn't named testroot?");
-      System.exit(0);
-    }
-    System.out.println("Names found:");
-    for (String name : names) {
-      System.out.println(name);
-    }
 
   }
 }

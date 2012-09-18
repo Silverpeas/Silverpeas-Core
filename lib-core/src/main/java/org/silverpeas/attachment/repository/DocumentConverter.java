@@ -225,6 +225,7 @@ class DocumentConverter extends AbstractJcrConverter {
       releaseDocumentNode(node, lang);
       if (isPublic) {
         majorVersion = majorVersion + 1;
+        minorVersion = 0;
         node.setProperty(SLV_PROPERTY_MAJOR, majorVersion);
         node.setProperty(SLV_PROPERTY_MINOR, 0);
       } else {

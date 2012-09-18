@@ -26,8 +26,8 @@ package com.stratelia.webactiv.util.node.control;
 
 import com.silverpeas.node.notification.NodeNotificationService;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.ejb.NodeDAO;
 import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
