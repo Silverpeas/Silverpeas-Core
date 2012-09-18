@@ -22,32 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.notification;
+package org.silverpeas.attachment.notification;
+
+import com.silverpeas.notification.NotificationSource;
+import com.silverpeas.notification.SilverpeasNotification;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
- * This enumeration lists all the notification topics that are registered within the Silverpeas
- * Notification System and for which any beans in Silverpeas can subscribe.
+ * Notification about the deletion of an attachment in a given component instance.
  */
-public enum RegisteredTopics {
+public class AttachmentDeletionNotification extends SilverpeasNotification {
 
-  /**
-   * This topic is for notifications about an action performed on a node. A node in Silverpeas is a
-   * way to categorize in a hierarchical way information.
-   */
-  NODE_TOPIC("node"), ADMIN_TOPIC("admin"), ATTACHMENT_TOPIC("attachment");
+  private static final long serialVersionUID = 3354035649186264026L;
 
-  public String getTopicName() {
-    return topicName;
+  protected AttachmentDeletionNotification(final AttachmentDetail attachment) {
+    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), attachment);
   }
 
-  @Override
-  public String toString() {
-    return topicName;
-  }
-
-  private String topicName;
-
-  private RegisteredTopics(String topicName) {
-    this.topicName = topicName;
+  public AttachmentDetail getAttachment() {
+    return (AttachmentDetail) getObject();
   }
 }

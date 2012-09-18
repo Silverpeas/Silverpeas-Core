@@ -161,18 +161,8 @@
     <input type="hidden" name="context" value="<%=EncodeHelper.javaStringToHtmlString(strContext)%>" />
 <%
     out.println( inputPane.print() );
-
-    // Labels
-    //
 %>
 </FORM>
-<br>
-<designer:contextualDesignationList
-    designations="<%=input.getLabels()%>" 
-    context="<%=strLabelContext%>"
-    parentScreen="<%=strCurrentScreen%>"
-    columnLabelKey="GML.label"
-    paneTitleKey="workflowDesigner.list.label"/>
 <%
 	out.println(board.printAfter());
 %>

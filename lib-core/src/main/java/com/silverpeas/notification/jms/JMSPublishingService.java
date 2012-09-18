@@ -24,13 +24,18 @@
 
 package com.silverpeas.notification.jms;
 
-import com.silverpeas.notification.jms.access.JMSAccessObject;
 import com.silverpeas.notification.NotificationPublisher;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.PublishingException;
 import com.silverpeas.notification.SilverpeasNotification;
+import com.silverpeas.notification.jms.access.JMSAccessObject;
+import com.silverpeas.util.ExecutionAttempts;
+import static com.silverpeas.util.ExecutionAttempts.retry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.TopicPublisher;
 
@@ -46,14 +51,30 @@ public class JMSPublishingService implements NotificationPublisher {
   private JMSAccessObject jmsService;
 
   @Override
-  public void publish(SilverpeasNotification notification, NotificationTopic onTopic) {
+  public void publish(final SilverpeasNotification notification, final NotificationTopic onTopic) {
     try {
-      String topicName = onTopic.getName();
-      TopicPublisher publisher = jmsService.createTopicPublisher(topicName);
-      ObjectMessage message = jmsService.createObjectMessageFor(publisher);
-      message.setObject(notification);
-      publisher.publish(message);
-      jmsService.disposeTopicPublisher(publisher);
+      retry(2, new ExecutionAttempts.Job() {
+
+        @Override
+        public void execute() throws Exception {
+          TopicPublisher publisher = null;
+          try {
+            String topicName = onTopic.getName();
+            publisher = jmsService.createTopicPublisher(topicName);
+            ObjectMessage message = jmsService.createObjectMessageFor(publisher);
+            message.setObject(notification);
+            publisher.publish(message);
+          } finally {
+            try {
+              if (publisher != null) {
+                jmsService.disposeTopicPublisher(publisher);
+              }
+            } catch (JMSException ex) {
+              Logger.getLogger(JMSPublishingService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
+        }
+      });
     } catch (Exception ex) {
       throw new PublishingException(ex);
     }
