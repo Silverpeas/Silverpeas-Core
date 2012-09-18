@@ -185,11 +185,23 @@
 			$(window).bind("resize", function(){
 				var top = splitter.offset().top;
 				var wh = $(window).height();
-				splitter.css("height", Math.max(wh-top-splitter._hadjust, splitter._hmin)+"px");
-				if ( !$.browser.msie ) splitter.trigger("resize");
+				
+				if ($.browser.mozilla ) {
+					splitter.css("height", Math.max(wh-top-splitter._hadjust-45, splitter._hmin-45)+"px");
+				}else if  ($.browser.msie&&$.browser.version==8.0) {
+					splitter.css("height", Math.max(wh-top-splitter._hadjust-45, splitter._hmin-45)+"px");
+				} else if  ($.browser.msie&&$.browser.version==7.0) {
+					splitter.css("height", Math.max(wh-top-splitter._hadjust-65, splitter._hmin-65)+"px");
+				} else  {splitter.css("height", Math.max(wh-top-splitter._hadjust, splitter._hmin)+"px");}
+
 			}).trigger("resize");
+			if (opts.resizeToWidth ) {
+					$(window).bind("resize", function(){
+						splitter.trigger("resize"); 
+				});}
 		}
-		else if ( opts.resizeToWidth && !$.browser.msie )
+		else if ( opts.resizeToWidth )
+		
 			$(window).bind("resize", function(){
 				splitter.trigger("resize"); 
 			});
