@@ -31,6 +31,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -45,6 +46,7 @@ import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -56,6 +58,8 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
+
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 
 @Service
 @RequestScoped
@@ -108,6 +112,7 @@ public class SimpleDocumentResource extends RESTWebService {
 
   /**
    * Delete the the specified document.
+   * @param lang the lang of the content to be deleted.
    */
   @DELETE
   @Path("content/{lang}")
@@ -119,6 +124,14 @@ public class SimpleDocumentResource extends RESTWebService {
 
   /**
    * Update the the specified document.
+   *
+   * @param uploadedInputStream
+   * @param fileDetail
+   * @param lang
+   * @param title
+   * @param description
+   * @param versionType
+   * @return
    */
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -127,8 +140,13 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("file_upload") InputStream uploadedInputStream,
       final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
-      final @FormDataParam("fileDescription") String description) {
+      final @FormDataParam("fileDescription") String description,
+      final @FormDataParam("versionType") String versionType) {
     SimpleDocument document = getSimpleDocument(lang);
+    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
+      document.setPublicDocument(Integer.parseInt(versionType)
+          == DocumentVersion.TYPE_PUBLIC_VERSION);
+    }
     document.setLanguage(lang);
     document.setTitle(title);
     document.setDescription(description);
@@ -145,6 +163,9 @@ public class SimpleDocumentResource extends RESTWebService {
         getLanguage()).build();
     return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
   }
+  
+  
+
 
   /**
    * Returns all the existing translation of a SimpleDocument.

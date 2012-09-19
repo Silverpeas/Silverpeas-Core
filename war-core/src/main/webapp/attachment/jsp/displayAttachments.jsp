@@ -533,13 +533,7 @@
     }
     
     function AddAttachment() {
-      <%
-      String winAddHeight = "240";
-      if (I18NHelper.isI18N) {
-        winAddHeight = "270";
-      }
-      %>
-      SP_openWindow('<c:url value="/attachment/jsp/addAttFiles.jsp" />', "test", "600", "<%=winAddHeight%>", "scrollbars=no, resizable, alwaysRaised");
+      $("#dialog-attachment-add").dialog("open");
     }
     
     function deleteAttachment(id) {
@@ -622,6 +616,16 @@
         $(this).dialog("close");
       }
     });
+    
+    $('#add-attachment-form').iframePostForm ({
+      json : true,
+      post : function () {
+      },
+      complete : function (response) {
+        reloadIncludingPage();
+        $(this).dialog("close");
+      }
+    });
 
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
@@ -649,6 +653,24 @@
         close: function() {
         }
       });
+      
+      $("#dialog-attachment-add").dialog({
+        autoOpen: false,
+        height: 350,
+        width: 600,
+        modal: true,
+        buttons: {
+          '<fmt:message key="GML.ok"/>': function() {
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+            $('#add-attachment-form').attr('action', submitUrl);
+            $('#add-attachment-form').submit();
+          }, '<fmt:message key="GML.cancel"/>': function() {
+              $(this).dialog("close");
+            }
+          },
+          close: function() {
+          }
+        });
       
       $("#dialog-attachment-update").dialog({
         autoOpen: false,
@@ -772,6 +794,11 @@
     <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
     <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
+    <c:if test="${view:booleanValue(isComponentVersioned)}">
+      <label for="versionType"><fmt:message key="typeOfVersion"/></label><br/>
+      <input value="0" type="radio" name="versionType"><fmt:message key="publicVersion"/>
+      <input value="1" type="radio"  name="versionType" checked><fmt:message key="privateVersion"/>
+    </c:if>
     <label for="fileTitle"><fmt:message key="Title"/></label><br/>
     <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
     <label for="fileDesc"><fmt:message key="GML.description" /></label><br/>
@@ -779,6 +806,26 @@
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
+<div id="dialog-attachment-add" style="display:none">
+  <form name="add-attachment-form" id="add-attachment-form" action="<c:url value="/attachment/jsp/saveFile.jsp" />" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+    <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
+    <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
+    <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
+    <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
+    <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
+    <c:if test="${view:booleanValue(isComponentVersioned)}">
+      <label for="versionType"><fmt:message key="typeOfVersion"/></label><br/>
+      <input value="0" type="radio" name="versionType"><fmt:message key="publicVersion"/>
+      <input value="1" type="radio"  name="versionType" checked><fmt:message key="privateVersion"/>
+    </c:if>
+    <label for="fileTitle"><fmt:message key="Title"/></label><br/>
+    <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
+    <label for="fileDesc"><fmt:message key="GML.description" /></label><br/>
+    <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
+    <input type="submit" value="Submit" style="display:none" />
+  </form>
+</div>  
+
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
 </div>

@@ -26,9 +26,9 @@
 
 <%@page import="org.silverpeas.attachment.model.HistorisedDocument"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
+<%@page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 <%@ include file="checkVersion.jsp" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
@@ -45,8 +45,7 @@
     String componentId = document.getPk().getInstanceId();
     String id = document.getPk().getId();
 %>
-
-<%@page import="com.stratelia.webactiv.util.FileServerUtils"%><html>
+<html>
 <head>
 <TITLE><%=messages.getString("popupTitle")%></TITLE>
 <%
@@ -72,7 +71,7 @@ arrayColumn_status.setSortable(false);
 
 ArrayLine arrayLine = null; // declare line object of the array
 
-browseBar.setExtraInformation(document.getFilename());
+browseBar.setExtraInformation(document.getTitle());
 
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -104,8 +103,8 @@ for (SimpleDocument publicVersion : vVersions) {
     }*/
     
     String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
-    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getFilename())+"\" border=\"0\"/></a>");
-	arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
+    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getTitle())+"\" border=\"0\"/></a>");
+    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
     arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
 
    	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreated()));
