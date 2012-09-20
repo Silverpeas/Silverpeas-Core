@@ -709,7 +709,7 @@
         $("#attachmentModalDialog").dialog({
           autoOpen: false,
           modal: true,
-          title: "<%=attResources.getString("attachment.dialog.delete")%>",
+          title: '<fmt:message key="attachment.dialog.delete" />',
           height: 'auto',
           width: 400
         });
@@ -795,13 +795,13 @@
     <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
     <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
     <c:if test="${view:booleanValue(isComponentVersioned)}">
-      <label for="versionType"><fmt:message key="typeOfVersion"/></label><br/>
-      <input value="0" type="radio" name="versionType"><fmt:message key="publicVersion"/>
-      <input value="1" type="radio"  name="versionType" checked><fmt:message key="privateVersion"/>
+      <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
+      <input value="0" type="radio" name="versionType" id="versionType"><fmt:message key="attachment.version_public.label"/>
+      <input value="1" type="radio" name="versionType" id="versionType" checked><fmt:message key="attachment.version_wip.label"/><br/>
     </c:if>
     <label for="fileTitle"><fmt:message key="Title"/></label><br/>
     <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
-    <label for="fileDesc"><fmt:message key="GML.description" /></label><br/>
+    <label for="fileDescription"><fmt:message key="GML.description" /></label><br/>
     <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
     <input type="submit" value="Submit" style="display:none" />
   </form>
@@ -810,18 +810,18 @@
   <form name="add-attachment-form" id="add-attachment-form" action="<c:url value="/attachment/jsp/saveFile.jsp" />" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
-    <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
+    <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
+    <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
+    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>
     <c:if test="${view:booleanValue(isComponentVersioned)}">
-      <label for="versionType"><fmt:message key="typeOfVersion"/></label><br/>
-      <input value="0" type="radio" name="versionType"><fmt:message key="publicVersion"/>
-      <input value="1" type="radio"  name="versionType" checked><fmt:message key="privateVersion"/>
+      <label for="typeVersion"><fmt:message key="attachment.version.label"/></label><br/>
+      <input value="0" type="radio" name="versionType" id="typeVersion"><fmt:message key="attachment.version_public.label"/>
+      <input value="1" type="radio" name="versionType" id="typeVersion" checked><fmt:message key="attachment.version_wip.label"/><br/>
     </c:if>
-    <label for="fileTitle"><fmt:message key="Title"/></label><br/>
-    <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
-    <label for="fileDesc"><fmt:message key="GML.description" /></label><br/>
-    <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
+    <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
+    <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
+    <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>
+    <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>  

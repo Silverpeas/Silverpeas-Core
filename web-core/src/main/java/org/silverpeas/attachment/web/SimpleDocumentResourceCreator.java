@@ -112,7 +112,6 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       boolean needCreation = true;
       boolean publicDocument = true;
       if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
-
         List<SimpleDocument> existingDocs = AttachmentServiceFactory.getAttachmentService().
             searchAttachmentsByExternalObject(new ForeignPK(foreignId, componentId), lang);
 

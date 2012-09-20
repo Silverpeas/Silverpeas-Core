@@ -64,7 +64,7 @@ public class GetLinkFileServlet extends HttpServlet {
       String fileName = null;
       long fileSize = 0;
       if (ticket instanceof SimpleFileTicket) {
-        SimpleDocumentPK pk = new SimpleDocumentPK(null);
+        SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
         pk.setOldSilverpeasId(ticket.getSharedObjectId());
         SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null);
         filePath = document.getAttachmentPath();
