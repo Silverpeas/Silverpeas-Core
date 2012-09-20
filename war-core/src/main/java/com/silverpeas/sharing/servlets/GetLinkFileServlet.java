@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -66,20 +67,22 @@ public class GetLinkFileServlet extends HttpServlet {
       if (ticket instanceof SimpleFileTicket) {
         SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
         pk.setOldSilverpeasId(ticket.getSharedObjectId());
-        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null);
+        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+            searchAttachmentById(pk, null);
         filePath = document.getAttachmentPath();
         fileType = document.getContentType();
         fileName = document.getFilename();
         fileSize = document.getSize();
       } else if (ticket instanceof VersionFileTicket) {
-        DocumentVersion version = new VersioningUtil().
-            getLastPublicVersion(new DocumentPK((int) ticket.getSharedObjectId(), ticket.
-            getComponentId()));
-        filePath = FileRepositoryManager.getAbsolutePath(ticket.getComponentId()) + File.separatorChar +
-            "Versioning" + File.separatorChar + version.getPhysicalName();
-        fileType = version.getMimeType();
-        fileName = version.getLogicalName();
-        fileSize = version.getSize();
+        SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
+        pk.setOldSilverpeasId(ticket.getSharedObjectId());
+        HistorisedDocument versionedDocument = (HistorisedDocument) AttachmentServiceFactory.
+            getAttachmentService().searchAttachmentById(pk, null);
+        SimpleDocument document = versionedDocument.getLastPublicVersion();
+        filePath = document.getAttachmentPath();
+        fileType = document.getContentType();
+        fileName = document.getFilename();
+        fileSize = document.getSize();
       }
       File realFile = new File(filePath);
       BufferedInputStream input = null;
