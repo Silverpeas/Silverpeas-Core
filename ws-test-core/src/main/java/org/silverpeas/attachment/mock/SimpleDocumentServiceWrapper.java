@@ -39,6 +39,7 @@ import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import com.silverpeas.util.Default;
+import com.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
@@ -189,7 +190,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content) throws AttachmentException {
+  public SimpleDocument createAttachment(SimpleDocument document, File content) throws
+      AttachmentException {
     return realService.createAttachment(document, content);
   }
 
@@ -224,5 +226,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
     realService.changeVersionState(pk);
   }
 
-  
+  @Override
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+      String lang) {
+    return realService.findExistingDocument(pk, fileName, foreign, lang);
+  }
 }

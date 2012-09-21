@@ -38,10 +38,10 @@ public class AttachmentDeletionNotification extends SilverpeasNotification {
   private static final long serialVersionUID = 3354035649186264026L;
 
   protected AttachmentDeletionNotification(final SimpleDocument attachment) {
-    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), attachment);
+    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), new AttachmentRef(attachment));
   }
 
-  public SimpleDocument getAttachment() {
-    return (SimpleDocument) getObject();
+  public AttachmentRef getAttachment() {
+    return (AttachmentRef) getObject();
   }
 }

@@ -78,16 +78,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <filter-name>PortletAppEngineFilter</filter-name>
         <filter-class>com.sun.portal.portletcontainer.appengine.PortletAppEngineFilter</filter-class>
     </filter>
-<filter>
-		<description>filter for transferring relative to absolute urls</description>
-		<filter-name>AbsoluteSendRedirectFilter</filter-name>
-		<filter-class>com.silverpeas.filters.AbsoluteSendRedirectFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>AbsoluteSendRedirectFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
+    <filter>
+        <description>filter for transferring relative to absolute urls</description>
+        <filter-name>AbsoluteSendRedirectFilter</filter-name>
+        <filter-class>com.silverpeas.filters.AbsoluteSendRedirectFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AbsoluteSendRedirectFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
@@ -251,11 +251,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>DragAndDrop</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.DragAndDrop</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.DragAndDrop</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ActifyToAttachment</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.ActifyToAttachment</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.ActifyToAttachment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PdcRequestRouter</servlet-name>
@@ -450,7 +450,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>AttachmentAjaxServlet</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.AjaxServlet</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.AjaxServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>VersioningAjaxServlet</servlet-name>
@@ -547,21 +547,21 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <servlet-name>NodesJSONServlet</servlet-name>
         <servlet-class>com.silverpeas.node.servlets.GetNodes</servlet-class>
     </servlet>
- <servlet>
-		<servlet-name>SocialNetworkLoginController</servlet-name>
-		<servlet-class>com.silverpeas.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>MailExistsServlet</servlet-name>
-		<servlet-class>com.silverpeas.admin.MailExistsServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>QaptchaServlet</servlet-name>
-		<servlet-class>com.silverpeas.admin.QaptchaServlet</servlet-class>
-	</servlet>
+    <servlet>
+        <servlet-name>SocialNetworkLoginController</servlet-name>
+        <servlet-class>com.silverpeas.socialnetwork.authentication.SocialNetworkLoginController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>MailExistsServlet</servlet-name>
+        <servlet-class>com.silverpeas.admin.MailExistsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>QaptchaServlet</servlet-name>
+        <servlet-class>com.silverpeas.admin.QaptchaServlet</servlet-class>
+    </servlet>
     <servlet>
         <servlet-name>LaunchWebdavEdition</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.LaunchWebdavEdition</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.LaunchWebdavEdition</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>REST Container</servlet-name>
@@ -964,18 +964,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <servlet-name>LaunchWebdavEdition</servlet-name>
         <url-pattern>/attachment/jsp/launch.jsp</url-pattern>
     </servlet-mapping>
-<servlet-mapping>
-		<servlet-name>SocialNetworkLoginController</servlet-name>
-		<url-pattern>/SocialNetworkLogin</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>MailExistsServlet</servlet-name>
-		<url-pattern>/MailExists</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>QaptchaServlet</servlet-name>
-		<url-pattern>/Qaptcha</url-pattern>
-	</servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SocialNetworkLoginController</servlet-name>
+        <url-pattern>/SocialNetworkLogin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MailExistsServlet</servlet-name>
+        <url-pattern>/MailExists</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>QaptchaServlet</servlet-name>
+        <url-pattern>/Qaptcha</url-pattern>
+    </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
         <location>/Error404.jsp</location>

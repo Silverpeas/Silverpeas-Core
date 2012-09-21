@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.attachment.servlets;
+package org.silverpeas.attachment.web;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -111,7 +112,7 @@ public class DragAndDrop extends HttpServlet {
     ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
     try {
-      req.setCharacterEncoding("UTF-8");
+      req.setCharacterEncoding(CharEncoding.UTF_8);
       String componentId = req.getParameter("ComponentId");
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId);
@@ -128,7 +129,7 @@ public class DragAndDrop extends HttpServlet {
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
             + item.getFieldName());
         SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", "item = "
-            + item.getName() + "; " + item.getString("UTF-8"));
+            + item.getName() + "; " + item.getString(CharEncoding.UTF_8));
 
         if (!item.isFormField()) {
           String fileName = item.getName();

@@ -26,7 +26,6 @@ package org.silverpeas.attachment.web;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -77,6 +76,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
 
   /**
    * Create the the specified document.
+   *
    * @param uploadedInputStream
    * @param fileDetail
    * @param language
@@ -85,7 +85,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
-   * @return 
+   * @return
    */
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -112,13 +112,11 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       boolean needCreation = true;
       boolean publicDocument = true;
       if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
-        List<SimpleDocument> existingDocs = AttachmentServiceFactory.getAttachmentService().
-            searchAttachmentsByExternalObject(new ForeignPK(foreignId, componentId), lang);
-
-        document = findExistingDocument(fileDetail.getFileName(), pk, lang, existingDocs);
+        document = AttachmentServiceFactory.getAttachmentService().findExistingDocument(pk,
+            fileDetail.getFileName(), new ForeignPK(foreignId, componentId), lang);
         publicDocument = Integer.parseInt(type) == DocumentVersion.TYPE_PUBLIC_VERSION;
         needCreation = document == null;
-        if (needCreation) {
+        if (document == null) {
           document = new HistorisedDocument(pk, foreignId, 0, userId,
               new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
               FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
@@ -153,19 +151,5 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
     }
     return null;
-  }
-
-  protected SimpleDocument findExistingDocument(String fileName, SimpleDocumentPK pk, String lang,
-      List<SimpleDocument> exisitingsDocuments) {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
-        pk, lang);
-    if (document == null) {
-      for (SimpleDocument doc : exisitingsDocuments) {
-        if (doc.getFilename().equalsIgnoreCase(fileName)) {
-          return doc;
-        }
-      }
-    }
-    return document;
   }
 }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment;
 
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -815,5 +814,20 @@ public class SimpleDocumentService implements AttachmentService {
     } finally {
       BasicDaoFactory.logout(session);
     }
+  }
+
+  @Override
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+      String lang) {
+    List<SimpleDocument> exisitingsDocuments = searchAttachmentsByExternalObject(foreign, lang);
+    SimpleDocument document = searchAttachmentById(pk, lang);
+    if (document == null) {
+      for (SimpleDocument doc : exisitingsDocuments) {
+        if (doc.getFilename().equalsIgnoreCase(fileName)) {
+          return doc;
+        }
+      }
+    }
+    return document;
   }
 }

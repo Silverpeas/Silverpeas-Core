@@ -42,6 +42,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -214,6 +215,12 @@ public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
   public void changeVersionState(SimpleDocumentPK pk) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+      String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
   

@@ -34,6 +34,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 
@@ -301,13 +302,26 @@ public interface AttachmentService {
    * @throws AttachmentException
    */
   public boolean unlock(UnlockContext context);
-  
-  
+
   /**
-   * Change the management of versions of the document. 
-   * If the document is currently with version management, then all history is removed and the document becomes a simple document with no more version management.
-   * If the document has no version management then a new public version is created and the document becomes a document with a version history management. F
+   * Change the management of versions of the document. If the document is currently with version
+   * management, then all history is removed and the document becomes a simple document with no more
+   * version management. If the document has no version management then a new public version is
+   * created and the document becomes a document with a version history management. F
+   *
    * @param pk the id of the document.
    */
   public void changeVersionState(SimpleDocumentPK pk);
+
+  /**
+   * Find documents with the same name attached to the specified foreign id.
+   *
+   * @param fileName the name of the file.
+   * @param pk thie id of the document.
+   * @param lang the language of the document.
+   * @param foreign the id of the container of the document.
+   * @return a document with the same filename - null if none is found.
+   */
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+      String lang);
 }

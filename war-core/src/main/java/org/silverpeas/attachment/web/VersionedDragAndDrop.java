@@ -53,20 +53,6 @@ public class VersionedDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = -4994428375938427492L;
 
-  protected SimpleDocument findExistingDocument(String fileName, SimpleDocumentPK pk, String lang,
-      List<SimpleDocument> exisitingsDocuments) {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
-        pk, lang);
-    if (document == null) {
-      for (SimpleDocument doc : exisitingsDocuments) {
-        if (doc.getFilename().equalsIgnoreCase(fileName)) {
-          return doc;
-        }
-      }
-    }
-    return document;
-  }
-
   private String getFileName(FileItem item) {
     String fileName = item.getName();
     if (fileName != null) {
@@ -108,8 +94,6 @@ public class VersionedDragAndDrop extends HttpServlet {
     String documentId = req.getParameter("DocumentId");
 
     String lang = I18NHelper.checkLanguage(req.getParameter("lang"));
-    List<SimpleDocument> existingDocs = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(new ForeignPK(foreignId, componentId), lang);
     List<FileItem> items = FileUploadUtil.parseRequest(req);
     for (FileItem item : items) {
       if (!item.isFormField()) {
@@ -126,7 +110,8 @@ public class VersionedDragAndDrop extends HttpServlet {
             documentPK.setId(documentId);
           }
         }
-        SimpleDocument document = findExistingDocument(fileName, documentPK, lang, existingDocs);
+        SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+            findExistingDocument(documentPK, fileName, new ForeignPK(foreignId, componentId), lang);
         boolean needCreation = document == null;
         if (needCreation) {
           document = new HistorisedDocument(documentPK, foreignId, 0, "" + userId,
