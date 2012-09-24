@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
+import org.silverpeas.attachment.model.SimpleDocument;
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
@@ -199,7 +200,7 @@ public class RepositoriesTypeManager {
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
-
+      SimpleDocument document;
       // Ajout de l'attachment
       AttachmentDetail attDetail = new AttachmentDetail();
       AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
@@ -240,13 +241,6 @@ public class RepositoriesTypeManager {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
         ImportReportManager.addNumberOfFilesNotImported(1);
       }
-
-      // Compute the classification on the PdC
-      // PdcClassification classification =
-      // pdcIE.getPredefinedClassification(String.valueOf(topicId),
-      // componentId);
-      // int silverObjectId = Integer.valueOf(pubDetailToCreate.getSilverObjectId());
-      // pdcIE.addPositions(silverObjectId, componentId, classification.getClassifyPositions());
     } catch (Exception ex) {
       massiveReport.setError(UnitReport.ERROR_ERROR);
       SilverTrace.error("importExport", "RepositoriesTypeManager.importFile()",

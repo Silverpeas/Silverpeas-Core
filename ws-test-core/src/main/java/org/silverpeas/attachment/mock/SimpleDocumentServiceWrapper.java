@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -38,6 +39,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import com.silverpeas.annotation.Service;
 import com.silverpeas.util.Default;
 import com.silverpeas.util.ForeignPK;
 
@@ -48,12 +50,14 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @author ehugonnet
  */
 @Default
+@Service
 @Named("simpleDocumentService")
 public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   private AttachmentService realService;
 
   public SimpleDocumentServiceWrapper() {
+    this.realService = Mockito.mock(AttachmentService.class);
   }
 
   public SimpleDocumentServiceWrapper(AttachmentService realService) {

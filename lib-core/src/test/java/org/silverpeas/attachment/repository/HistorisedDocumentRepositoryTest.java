@@ -350,7 +350,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
       assertThat(doc.getHistory(), is(notNullValue()));
       assertThat(doc.getHistory(), hasSize(1));
-      assertThat(doc.getHistory().get(0).getOrder(), is(10));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(2));
     } finally {
@@ -1187,7 +1187,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getSize(), is((long) ("This is a test".getBytes(Charsets.UTF_8).length)));
       assertThat(doc.getHistory(), is(notNullValue()));
       assertThat(doc.getHistory(), hasSize(1));
-      assertThat(doc.getHistory().get(0).getOrder(), is(10));
+      assertThat(doc.getHistory().get(0).getOrder(), is(0));
       assertThat(doc.getMajorVersion(), is(0));
       assertThat(doc.getMinorVersion(), is(2));
       documentRepository.changeVersionState(session, result);

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.wysiwyg.control;
 
 import java.io.BufferedWriter;
@@ -39,9 +35,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ejb.FinderException;
 import javax.naming.NamingException;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
@@ -50,7 +47,6 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -59,6 +55,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import com.silverpeas.util.ForeignPK;
 
 /**
  * @author neysseri
@@ -78,36 +76,27 @@ public class WysiwygController {
   /**
    * Method declaration turn over all the files attached according to the parameters id, spaceId,
    * componentId, context.
+   *
    * @param id type String: for example pubId.
    * @param spaceId type String: the id of space.
    * @param componentId type String: the id of component.
    * @param context type String: for example images
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
-   * @throws NamingException
-   * @throws SQLException
-   * @throws WysiwygException
    * @see AttachmentController
    */
   public static String[][] searchAllAttachments(String id, String spaceId, String componentId,
-      String context) /* throws /*WysiwygException, FinderException, NamingException, SQLException */{
-    AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
-
-    List<AttachmentDetail> vectAttachment =
-        AttachmentController.searchAttachmentByPKAndContext(foreignKey, context);
+      String context) {
+    List<SimpleDocument> vectAttachment = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(new ForeignPK(id, componentId), null);
     int nbImages = vectAttachment.size();
     String[][] imagesList = new String[nbImages][2];
 
     for (int i = 0; i < nbImages; i++) {
-      AttachmentDetail attD = vectAttachment.get(i);
-
-      String path =
-          FileServerUtils.getUrl(spaceId, componentId, attD.getLogicalName(), attD.
-          getPhysicalName(),
-          attD.getType(), "Attachment/" + context);
-
+      SimpleDocument attD = vectAttachment.get(i);
+      String path = attD.getAttachmentPath();
       imagesList[i][0] = path;
-      imagesList[i][1] = attD.getLogicalName();
+      imagesList[i][1] = attD.getFilename();
       SilverTrace.info("wysiwyg", "WysiwygController.searchAllAttachments()",
           "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);
     }
@@ -116,15 +105,14 @@ public class WysiwygController {
 
   /**
    * Method declaration Get images of the website
+   *
    * @param path type String: for example of the directory
    * @param componentId
    * @return imagesList a table of string[N] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
    * @throws WysiwygException
    */
-  public static String[][] getWebsiteImages(String path, String componentId)
-      throws WysiwygException {
-    /* chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep */
+  public static String[][] getWebsiteImages(String path, String componentId) throws WysiwygException {
     try {
       Collection<File> listImages = FileFolderManager.getAllImages(path);
       Iterator<File> i = listImages.iterator();
@@ -149,6 +137,7 @@ public class WysiwygController {
 
   /**
    * Method declaration Get html pages of the website
+   *
    * @param path type String: for example of the directory
    * @param componentId
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
@@ -182,6 +171,7 @@ public class WysiwygController {
   /**
    * Returns the node path : for example ....webSite17\\id\\rep1\\rep2\\rep3 returns
    * id\rep1\rep2\rep3
+   *
    * @param componentId the component id.
    * @param path the full path.
    * @return the path for the nodes.
@@ -199,6 +189,7 @@ public class WysiwygController {
   /**
    * Returns the node path without the id element : for example ....webSite17\\id\\rep1\\rep2\\rep3
    * returns rep1\rep2\rep3
+   *
    * @param componentId the component id.
    * @param path the full path.
    * @return the path for the nodes.
@@ -219,6 +210,7 @@ public class WysiwygController {
    * Method declaration Get the node of the path of the root Website. For example
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11\\ should return
    * c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3
+   *
    * @param currentPath the full path.
    * @param componentId the component id.
    * @return a String with the path of the node.
@@ -339,6 +331,7 @@ public class WysiwygController {
 
   /**
    * Method declaration built the name of the file to be attached.
+   *
    * @param objectId : for example the id of the publication.
    * @return fileName String : name of the file
    */
@@ -355,33 +348,38 @@ public class WysiwygController {
 
   /**
    * Method declaration built the name of the images to be attached.
+   *
    * @param objectId : for example the id of the publication.
    * @return fileName String : name of the file
    */
   public static String getImagesFileName(String objectId) {
-    String fileName = objectId + WYSIWYG_IMAGES;
-
-    return fileName;
+    return objectId + WYSIWYG_IMAGES;
   }
 
   public static void deleteFileAndAttachment(String componentId, String id) throws WysiwygException {
-    AttachmentPK foreignKey = new AttachmentPK(id, "useless", componentId);
-    AttachmentController.deleteAttachmentByCustomerPK(foreignKey);
+    ForeignPK foreignKey = new ForeignPK(id, componentId);
+    List<SimpleDocument> files = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(foreignKey, null);
+    for (SimpleDocument file : files) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(file);
+    }
   }
 
   public static void deleteFile(String componentId, String objectId, String language) {
-    AttachmentPK foreignKey = new AttachmentPK(objectId, "useless", componentId);
-    List<AttachmentDetail> files = AttachmentController.searchAttachmentByCustomerPK(foreignKey);
-    for (AttachmentDetail file : files) {
-      if (file != null
-          && file.getPhysicalName().equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
-        AttachmentController.deleteAttachment(file);
+    ForeignPK foreignKey = new ForeignPK(objectId, componentId);
+    List<SimpleDocument> files = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentsByExternalObject(foreignKey, null);
+    for (SimpleDocument file : files) {
+      if (file != null && file.getFilename().
+          equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(file);
       }
     }
   }
 
   /**
    * Method declaration creation of the file and its attachment.
+   *
    * @param textHtml String : contains the text published by the wysiwyg
    * @param fileName String : name of the file
    * @param spaceId String : the id of space.
@@ -424,7 +422,7 @@ public class WysiwygController {
 
       // create foreignKey with spaceId, componentId and id
       // use AttachmentPK to build the foreign key of customer object.
-      AttachmentPK foreignKey = new AttachmentPK(id, spaceId, componentId);
+      ForeignPK foreignKey = new ForeignPK(id, componentId);
 
       // create AttachmentDetail Object
       AttachmentDetail ad = new AttachmentDetail(atPK, fileName, fileName, null, "text/html", file.
@@ -443,6 +441,7 @@ public class WysiwygController {
 
   /**
    * Method declaration creation of the file and its attachment.
+   *
    * @param textHtml String : contains the text published by the wysiwyg
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
@@ -463,6 +462,7 @@ public class WysiwygController {
 
   /**
    * Index all elements attached to object identified by <id, componentId>
+   *
    * @param componentId for example, the id of the application.
    * @param id for example, the id of the publication.
    */
@@ -474,6 +474,7 @@ public class WysiwygController {
   /**
    * This method must be synchronized. Quick wysiwyg's saving can generate problems without
    * synchronization !!!
+   *
    * @param textHtml
    * @param fileName
    * @param spaceId
@@ -501,6 +502,7 @@ public class WysiwygController {
 
   /**
    * Method declaration remove and recreates the file attached
+   *
    * @param textHtml String : contains the text published by the wysiwyg
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
@@ -538,6 +540,7 @@ public class WysiwygController {
 
   /**
    * Method declaration remove the file attached
+   *
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
@@ -569,13 +572,14 @@ public class WysiwygController {
   /**
    * La méthode deleteWysiwygAttachments efface tous les attachments de la publication donc pour
    * éviter une éventuelle régression, je crée une nouvelle méthode
+   *
    * @param spaceId
    * @param componentId
    * @param objectId
    * @throws WysiwygException
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
-      String objectId) throws WysiwygException /* , FinderException, NamingException, SQLException */{
+      String objectId) throws WysiwygException /* , FinderException, NamingException, SQLException */ {
     try {
       // delete all the attachments
       AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
@@ -595,6 +599,7 @@ public class WysiwygController {
 
   /**
    * Method declaration return the contents of the file attached.
+   *
    * @param fileName String : name of the file
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
@@ -617,6 +622,7 @@ public class WysiwygController {
 
   /**
    * Method declaration return the contents of the file attached.
+   *
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
@@ -631,8 +637,7 @@ public class WysiwygController {
   }
 
   /**
-   * @deprecated
-   * @param spaceId
+   * @deprecated @param spaceId
    * @param componentId
    * @param objectId
    * @param language
@@ -646,6 +651,7 @@ public class WysiwygController {
 
   /**
    * Load wysiwyg content
+   *
    * @param componentId
    * @param objectId
    * @param language
@@ -678,6 +684,11 @@ public class WysiwygController {
 
   /**
    * Get all Silverpeas Files linked by wysiwyg content (bases on pattern "<a href='/silverpeas/
+   *
+   *
+   *
+
+   *
    * @param content
    * @return
    * @throws WysiwygException
@@ -710,6 +721,7 @@ public class WysiwygController {
 
   /**
    * Method declaration return the contents of the file.
+   *
    * @param fileName String : name of the file
    * @param path String : the path of the file
    * @return text : the contents of the file attached.
@@ -729,6 +741,7 @@ public class WysiwygController {
 
   /**
    * Method declaration
+   *
    * @param spaceId
    * @param componentId
    * @param objectId
@@ -779,6 +792,7 @@ public class WysiwygController {
   /**
    * Method declaration to search all file attached by primary key of customer object and context of
    * file attached
+   *
    * @param fileName String : name of the file
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
@@ -804,6 +818,7 @@ public class WysiwygController {
   /**
    * Method declaration to search all file attached by primary key of customer object and context of
    * file attached
+   *
    * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
    * @param context String : for example wysiwyg.
@@ -813,9 +828,9 @@ public class WysiwygController {
    */
   public static AttachmentDetail searchAttachmentDetail(String spaceId, String componentId,
       String context, String objectId) /*
-                                        * throws /* WysiwygException, FinderException,
-                                        * NamingException, SQLException
-                                        */{
+   * throws /* WysiwygException, FinderException,
+   * NamingException, SQLException
+   */ {
     String fileName = WysiwygController.getWysiwygFileName(objectId);
 
     return WysiwygController.searchAttachmentDetail(fileName, spaceId, componentId, context,
@@ -836,9 +851,11 @@ public class WysiwygController {
 
   /**
    * Creation or update of a file
+   *
    * @param cheminFichier the path to the directory containing the file.
    * @param nomFichier the name of the file.
-   * @param contenuFichier the content of the file. @ return
+   * @param contenuFichier the content of the file.
+   * @ return
    * @throws WysiwygException
    */
   protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier)
@@ -874,6 +891,7 @@ public class WysiwygController {
 
   /**
    * deleteFile : destruction of a file Param = path name of the file
+   *
    * @param directory
    * @param fileName
    * @throws WysiwygException
@@ -889,6 +907,7 @@ public class WysiwygController {
 
   /**
    * Method declaration
+   *
    * @param oldSpaceId
    * @param oldComponentId
    * @param oldObjectId
@@ -984,6 +1003,7 @@ public class WysiwygController {
 
   /**
    * Usefull to maintain forward compatibility (old URLs to images)
+   *
    * @param wysiwygContent
    * @param oldComponentId
    * @param oldObjectId
@@ -1128,6 +1148,7 @@ public class WysiwygController {
 
   /**
    * Gets the components dedicated to file storage
+   *
    * @param userId the user identifier is used to retrieve only the authorized components for the
    * user
    * @return a components list
@@ -1150,6 +1171,7 @@ public class WysiwygController {
 
   /**
    * Index given embedded linked files
+   *
    * @param indexEntry index entry to update
    * @param embeddedAttachmentIds embedded linked files ids
    */

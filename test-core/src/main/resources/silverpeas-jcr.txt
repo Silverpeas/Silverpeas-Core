@@ -15,7 +15,7 @@
   - slv:versioned (BOOLEAN)  = 'false'
   - slv:public (BOOLEAN) = 'true'
   - slv:oldSilverpeasId (LONG)  = '-1'
-  - slv:order (LONG) = '0'
+  - slv:order (LONG) = '0' IGNORE
   - slv:expiryDate (DATE)
   - slv:alertDate (DATE)
   - slv:reservationDate (DATE)

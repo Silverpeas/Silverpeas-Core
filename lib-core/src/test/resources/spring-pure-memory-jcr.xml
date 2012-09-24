@@ -76,5 +76,5 @@
   </bean> 
   
   <bean id="attachmentNotificationService" factory-method="getService" 
-        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />
+        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />  
 </beans>

@@ -184,7 +184,7 @@ public class DocumentRepository {
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
     String owner = document.getEditedBy();
-    if(!StringUtil.isDefined(owner)) {
+    if (!StringUtil.isDefined(owner)) {
       owner = document.getUpdatedBy();
     }
     boolean checkinRequired = lock(session, document, owner);
@@ -196,6 +196,20 @@ public class DocumentRepository {
       checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
 
+  }
+
+  /**
+   * Update the document order. This is a unique operation since the order propery is not
+   * versionable.
+   *
+   * @param session
+   * @param document
+   * @throws RepositoryException
+   */
+  public void updateDocumentOrder(Session session, SimpleDocument document) throws
+      RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
+    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
   }
 
   /**
@@ -578,7 +592,7 @@ public class DocumentRepository {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
       String owner = attachment.getUpdatedBy();
-      if(!StringUtil.isDefined(owner)) {
+      if (!StringUtil.isDefined(owner)) {
         owner = attachment.getCreatedBy();
       }
       checkoutNode(documentNode, owner);
@@ -641,11 +655,12 @@ public class DocumentRepository {
    * @return true if node has be checked out - false otherwise.
    * @throws RepositoryException
    */
-  public boolean lock(Session session, SimpleDocument document, String owner) throws RepositoryException {
+  public boolean lock(Session session, SimpleDocument document, String owner) throws
+      RepositoryException {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
       if (!documentNode.isCheckedOut()) {
-        checkoutNode(documentNode, owner);        
+        checkoutNode(documentNode, owner);
         return true;
       }
     }
@@ -680,9 +695,9 @@ public class DocumentRepository {
       }
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
-    if(!document.isVersioned()) {
+    if (!document.isVersioned()) {
       converter.releaseDocumentNode(documentNode, document.getLanguage());
-      return converter.convertNode(documentNode, document.getLanguage());      
+      return converter.convertNode(documentNode, document.getLanguage());
     }
     document.release();
     return document;

@@ -56,6 +56,7 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
+import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.jcrutil.BasicDaoFactory;
@@ -81,7 +82,7 @@ import static javax.jcr.Property.JCR_DATA;
  *
  * @author ehugonnet
  */
-@Named("simpleDocumentService")
+@Service
 public class SimpleDocumentService implements AttachmentService {
 
   @Inject
@@ -533,7 +534,7 @@ public class SimpleDocumentService implements AttachmentService {
       for (SimpleDocumentPK pk : pks) {
         SimpleDocument doc = repository.findDocumentById(session, pk, null);
         doc.setOrder(i);
-        repository.updateDocument(session, doc);
+        repository.updateDocumentOrder(session, doc);
         i = i + 5;
       }
       session.save();
