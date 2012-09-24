@@ -29,22 +29,22 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%@ page import="com.stratelia.webactiv.util.DateUtil" %>
-<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@ page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@ page import="org.silverpeas.viewer.ViewFactory"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="checkVersion.jsp" %>
 
 <view:includePlugin name="qtip"/>
-<script type="text/javascript"
-        src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript"
-        src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
+<script type="text/javascript" src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/animation/animation-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/menu/menu-min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/util/yui/menu/assets/menu.css"/>
-<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js"
-        type="text/javascript"></script>
+<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
 <%!
@@ -409,6 +409,9 @@
 													<%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
 												<% } %>
 												 - <%= resources.getOutputDate(document_version.getCreationDate())%>
+								  <% if (ViewFactory.getPreviewService().isPreviewable(new File(document_version.getDocumentPath()))) { %>
+            						<img onclick='javascript:preview(this, <%=document_version.getPk().getId()%>);' class="preview-file" src="<%=m_context%>/util/icons/preview.png" alt="<%=attMessages.getString("GML.preview") %>" title="<%=attMessages.getString("GML.preview") %>"/>
+            					  <% } %>
 												</span>
 				
 				  <% if (StringUtil.isDefined(document.getDescription()) && showInfo) { %>
@@ -814,4 +817,13 @@ function ShareAttachment(id) {
   SP_openWindow(url, "NewTicket", "700", "300", "scrollbars=no, resizable, alwaysRaised");
 }
 <% } %>
+
+function preview(target, attachmentId) {
+   $(target).preview("previewAttachment", {
+     componentInstanceId: "<%=componentId%>",
+     attachmentId: attachmentId,
+     versioned: true
+   });
+   return false;
+}
 </script>
