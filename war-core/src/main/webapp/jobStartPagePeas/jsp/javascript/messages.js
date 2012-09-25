@@ -54,17 +54,18 @@ messageTriggers = {
             }).prev().change(function(event) {
               if (event.target.type == "checkbox") {
                 if (event.target.checked) {
-                  event.target.checked = false;
                   event.stopPropagation();
+                  event.target.checked = false;
                   $('#warning-' + event.target.name).popup('confirmation', {
                     callback : function() {
                       event.target.checked = true;
                       return true;
                     }
                   });
+                  return false;
                 }
               }
-              return false;
+              return true;
             });
     $warnings.trigger('addConfirmationMessageEnds');
   }
