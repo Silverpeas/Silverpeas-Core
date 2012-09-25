@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA)
+/* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
 if (!Array.prototype.indexOf)
 {
   Array.prototype.indexOf = function(elt /*, from*/)
