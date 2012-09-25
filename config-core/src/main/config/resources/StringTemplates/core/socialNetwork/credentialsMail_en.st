@@ -6,6 +6,7 @@ Besides being able to connect from your favorite social network, you can also id
 <br/>
 <b> Username: </ b> $login$
 <b> Password: </ b> $password$
+<b> Domain: </b> $domain$
 </ div>
 
 To log on, click <a href="$url$">here</a>
