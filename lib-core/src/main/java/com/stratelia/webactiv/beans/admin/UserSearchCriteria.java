@@ -27,20 +27,59 @@ package com.stratelia.webactiv.beans.admin;
  * Criteria in searching of user details.
  */
 public interface UserSearchCriteria {
-  
+
+  /**
+   * The whatever value to be used as criterion value if you don't care of a given criterion.
+   */
   static final String[] ANY = null;
 
+  /**
+   * Appends a criteria conjonction.
+   * @return the criteria enriched with a conjonction. The conjonction will be applied with the last
+   * added criterion and the next one.
+   */
   UserSearchCriteria and();
 
+  /**
+   * The users must be part of the specified domain or must have the administration priviledges
+   * (the administrators are visible by anyone in the platform in order to be contacted).
+   * @param domainId the unique identifier of the domain.
+   * @return the criteria enriched with a criterion on the domain.
+   */
   UserSearchCriteria onDomainId(String domainId);
 
+  /**
+   * The users must be part of the specified user groups.
+   * @param groupIds the unique identifier of the groups.
+   * @return the criteria enriched with a criterion on the user groups.
+   */
   UserSearchCriteria onGroupIds(String... groupIds);
 
+  /**
+   * The users must have their firstname or their lastname matching the specified pattern on the
+   * name.
+   * @param name a pattern on user name.
+   * @return the criteria enriched with a criterion on the user name.
+   */
   UserSearchCriteria onName(String name);
-  
+
+  /**
+   * The user identifiers must match the specified ones.
+   * @param userIds the user identifiers.
+   * @return the criteria enriched with a criterion on the user identifiers.
+   */
   UserSearchCriteria onUserIds(String... userIds);
 
+  /**
+   * Appends a criteria disjonction.
+   * @return the criteria enriched with a disjonction. The disjonction will be applied with the last
+   * added criterion and the next one.
+   */
   UserSearchCriteria or();
-  
+
+  /**
+   * Is this criteria empty?
+   * @return true if this criteria has no criterion, false otherwise.
+   */
   boolean isEmpty();
 }
