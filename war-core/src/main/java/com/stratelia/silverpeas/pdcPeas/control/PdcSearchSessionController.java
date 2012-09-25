@@ -111,6 +111,7 @@ import org.silverpeas.search.SearchEngine;
 import com.stratelia.webactiv.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -560,8 +561,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if ("Component".equals(objectType)) {
       // check if component is allowed to current user
       return getOrganizationController().isComponentAvailable(mie.getObjectId(), getUserId());
-    } else if ("UserFull".equals(objectType)
-      && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
+    } else if (UserIndexation.OBJECT_TYPE.equals(objectType)
+        && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
       // visibility between domains is limited, check found user domain against current user domain
       String userId = mie.getObjectId();
       UserDetail userFound = getUserDetail(userId);
@@ -1157,7 +1158,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             + "');document.location.href='" + underLink + "';";
         } else if (componentId.startsWith("user@")) {
           titleLink = m_sContext + URLManager.getURL(resultType) + indexEntry.getPageAndParams();
-        } else if (resultType.equals("UserFull")) {
+        } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
           if (userDetail != null) {
             result.setThumbnailURL(userDetail.getAvatar());
