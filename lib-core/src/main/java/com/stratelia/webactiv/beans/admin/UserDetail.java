@@ -1,26 +1,23 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ *
+* You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -42,8 +39,8 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
-  private static final long serialVersionUID = -109886153681824159L;
 
+  private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   public static final String ADMIN_ACCESS = "A";
   public static final String USER_ACCESS = "U";
@@ -52,12 +49,11 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static final String KM_ACCESS = "K";
   public static final String DOMAIN_ACCESS = "D";
   private static final String AVATAR_PROPERTY =
-      GeneralPropertiesManager.getString("avatar.property", "login");
+          GeneralPropertiesManager.getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION =
-      GeneralPropertiesManager.getString("avatar.extension", "jpg");
+          GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final ResourceLocator generalSettings = new ResourceLocator(
-      "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-
+          "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -70,35 +66,38 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private String loginAnswer = "";
 
   /**
-* Gets the detail about the specified user.
-* @param userId the unique identifier of the user to get.
-* @return the detail about the user with the specified identifier or null if no such user exists.
-*/
+   * Gets the detail about the specified user.
+   *
+   * @param userId the unique identifier of the user to get.
+   * @return the detail about the user with the specified identifier or null if no such user exists.
+   */
   public static UserDetail getById(String userId) {
     return getOrganizationController().getUserDetail(userId);
   }
 
   /**
-* Gets the detail about all the users in Silverpeas, whatever their domain.
-* @return a list with all the users in Silverpeas.
-*/
+   * Gets the detail about all the users in Silverpeas, whatever their domain.
+   *
+   * @return a list with all the users in Silverpeas.
+   */
   public static List<UserDetail> getAll() {
     return Arrays.asList(getOrganizationController().getAllUsers());
   }
 
   /**
-* Gets the detail about all the users belonging in the specified domain.
-* @param domainId the unique identifier of the domain.
-* @return a list with all the users that defined in the specified domain or null if no such
-* domain exists.
-*/
+   * Gets the detail about all the users belonging in the specified domain.
+   *
+   * @param domainId the unique identifier of the domain.
+   * @return a list with all the users that defined in the specified domain or null if no such
+   * domain exists.
+   */
   public static List<UserDetail> getAllInDomain(String domainId) {
     return Arrays.asList(getOrganizationController().getAllUsersInDomain(domainId));
   }
 
   /**
-* Constructor
-*/
+   * Constructor
+   */
   public UserDetail() {
   }
 
@@ -116,95 +115,105 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* @return the login question String representation
-*/
+   * @return the login question String representation
+   */
   public String getLoginQuestion() {
     return loginQuestion;
   }
 
   /**
-* Set the login question
-* @param loginQuestion
-*/
+   * Set the login question
+   *
+   * @param loginQuestion
+   */
   public void setLoginQuestion(String loginQuestion) {
     this.loginQuestion = loginQuestion;
   }
 
   /**
-* @return the login answer
-*/
+   * @return the login answer
+   */
   public String getLoginAnswer() {
     return loginAnswer;
   }
 
   /**
-* Set the login answer
-* @param loginAnswer
-*/
+   * Set the login answer
+   *
+   * @param loginAnswer
+   */
   public void setLoginAnswer(String loginAnswer) {
     this.loginAnswer = loginAnswer;
   }
 
   /**
-* Get user id as stored in database
-* @return
-*/
+   * Get user id as stored in database
+   *
+   * @return
+   */
   public String getId() {
     return this.id;
   }
 
   /**
-* Set user identifier
-* @param id the user identifier to set
-*/
+   * Set user identifier
+   *
+   * @param id the user identifier to set
+   */
   public void setId(String id) {
     this.id = id;
   }
 
   /**
-* Get specific user id
-* @return
-*/
+   * Get specific user id
+   *
+   * @return
+   */
   public String getSpecificId() {
     return specificId;
   }
 
   /**
-* Set specific user id
-* @param specificId
-*/
+   * Set specific user id
+   *
+   * @param specificId
+   */
   public void setSpecificId(String specificId) {
     this.specificId = specificId;
   }
 
   /**
-* Get user's domain id
-* @return user's domain id
-*/
+   * Get user's domain id
+   *
+   * @return user's domain id
+   */
   public String getDomainId() {
     return domainId;
   }
 
   /**
-* Set user domain id
-* @param domainId
-*/
+   * Set user domain id
+   *
+   * @param domainId
+   */
   public void setDomainId(String domainId) {
     this.domainId = domainId;
   }
 
   /**
-* Get user's login
-* @return user's login
-*/
+   * Get user's login
+   *
+   * @return user's login
+   */
   public String getLogin() {
     return this.login;
   }
 
   /**
-* Set user login
-* @param login the login to set
-*/
+   * Set user login
+   *
+   * @param login the login to set
+   */
   public void setLogin(String login) {
     if (login != null) {
       this.login = login;
@@ -214,17 +223,19 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Get user's first name
-* @return user's first name
-*/
+   * Get user's first name
+   *
+   * @return user's first name
+   */
   public String getFirstName() {
     return firstName;
   }
 
   /**
-* Set user first name
-* @param firstName user first name
-*/
+   * Set user first name
+   *
+   * @param firstName user first name
+   */
   public void setFirstName(String firstName) {
     if (firstName != null) {
       this.firstName = firstName.trim();
@@ -234,17 +245,19 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Get user's last name
-* @return user's last name
-*/
+   * Get user's last name
+   *
+   * @return user's last name
+   */
   public String getLastName() {
     return lastName;
   }
 
   /**
-* Set user last name
-* @param sLastName user last name
-*/
+   * Set user last name
+   *
+   * @param sLastName user last name
+   */
   public void setLastName(String sLastName) {
     if (sLastName != null) {
       this.lastName = sLastName.trim();
@@ -254,9 +267,10 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Set user's email
-* @param seMail
-*/
+   * Set user's email
+   *
+   * @param seMail
+   */
   public void seteMail(String seMail) {
     if (seMail != null) {
       this.eMail = seMail;
@@ -266,25 +280,28 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Get user's email
-* @return
-*/
+   * Get user's email
+   *
+   * @return
+   */
   public String geteMail() {
     return this.eMail;
   }
 
   /**
-* Get user's access level
-* @return
-*/
+   * Get user's access level
+   *
+   * @return
+   */
   public String getAccessLevel() {
     return accessLevel;
   }
 
   /**
-* Set user access level
-* @param sAccessLevel
-*/
+   * Set user access level
+   *
+   * @param sAccessLevel
+   */
   public void setAccessLevel(String sAccessLevel) {
     if (sAccessLevel != null) {
       this.accessLevel = sAccessLevel.trim();
@@ -295,19 +312,20 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Is the specified user is restricted to access the resource in its own domain?
-* @return true if he's restricted in its own domain, false otherwise.
-*/
+   * Is the specified user is restricted to access the resource in its own domain?
+   *
+   * @return true if he's restricted in its own domain, false otherwise.
+   */
   public boolean isDomainRestricted() {
-    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE ||
-            (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH &&
-            ! "0".equals(getDomainId()))) && !isAccessAdmin();
+    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
+            || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH
+            && !"0".equals(getDomainId()))) && !isAccessAdmin();
   }
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!"0"
-        .equals(getDomainId()))));
+            && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!"0"
+            .equals(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -339,17 +357,19 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Is the user is the anonymous one?
-* @return true if he's the anonymous user.
-*/
+   * Is the user is the anonymous one?
+   *
+   * @return true if he's the anonymous user.
+   */
   public boolean isAnonymous() {
     return getId().equals(getAnonymousUserId());
   }
 
   /**
-* Gets the anonymous user or null if no such user exists.
-* @return the detail about the anonymous user or null if no such user exists.
-*/
+   * Gets the anonymous user or null if no such user exists.
+   *
+   * @return the detail about the anonymous user or null if no such user exists.
+   */
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
@@ -368,13 +388,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     if (other instanceof UserDetail) {
       UserDetail cmpUser = (UserDetail) other;
       return areStringEquals(id, cmpUser.getId())
-          && areStringEquals(specificId, cmpUser.getSpecificId())
-          && areStringEquals(domainId, cmpUser.getDomainId())
-          && areStringEquals(login, cmpUser.getLogin())
-          && areStringEquals(firstName, cmpUser.getFirstName())
-          && areStringEquals(lastName, cmpUser.getLastName())
-          && areStringEquals(eMail, cmpUser.geteMail())
-          && areStringEquals(accessLevel, cmpUser.getAccessLevel());
+              && areStringEquals(specificId, cmpUser.getSpecificId())
+              && areStringEquals(domainId, cmpUser.getDomainId())
+              && areStringEquals(login, cmpUser.getLogin())
+              && areStringEquals(firstName, cmpUser.getFirstName())
+              && areStringEquals(lastName, cmpUser.getLastName())
+              && areStringEquals(eMail, cmpUser.geteMail())
+              && areStringEquals(accessLevel, cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -394,29 +414,29 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Dump user values to the trace system
-*/
+   * Dump user values to the trace system
+   */
   public void traceUser() {
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Id : " + id);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : " +
-        specificId);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : " +
-        domainId);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : "
+            + specificId);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : "
+            + domainId);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Login : " + login);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : " +
-        firstName);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : " +
-        lastName);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : "
+            + firstName);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : "
+            + lastName);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "eMail : " + eMail);
-    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "AccessLevel : " +
-        accessLevel);
+    SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "AccessLevel : "
+            + accessLevel);
   }
 
   @Override
   public int compareTo(UserDetail o) {
     UserDetail other = o;
     return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.
-        getFirstName()).toLowerCase());
+            getFirstName()).toLowerCase());
   }
 
   public String getAvatar() {
@@ -440,7 +460,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public String getStatus() {
     String status =
-        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+            new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }
@@ -448,15 +468,17 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Gets the preferences of this user.
-* @return the user preferences.
-*/
+   * Gets the preferences of this user.
+   *
+   * @return the user preferences.
+   */
   public final UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
-  
+
   /**
    * Is this user connected to Silverpeas?
+   *
    * @return true if the user is currently connected to Silverpeas, false otherwise.
    */
   public boolean isConnected() {
@@ -466,31 +488,34 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-* Is the anonymous user exist in this running Silverpeas application?
-* @return true if the anonymous user exist, false otherwise.
-*/
+   * Is the anonymous user exist in this running Silverpeas application?
+   *
+   * @return true if the anonymous user exist, false otherwise.
+   */
   public static boolean isAnonymousUserExist() {
     return isDefined(getAnonymousUserId());
   }
 
   /**
-* Is the specified user is the anonymous one?
-* @param userId the identifier of the user.
-* @return true if the specified user is the anonymous one, false otherwise.
-*/
+   * Is the specified user is the anonymous one?
+   *
+   * @param userId the identifier of the user.
+   * @return true if the specified user is the anonymous one, false otherwise.
+   */
   public static boolean isAnonymousUser(String userId) {
     return isAnonymousUserExist() && getAnonymousUserId().equals(userId);
   }
-  
+
   public boolean isFullyDefined() {
-    return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin()) &&
-        StringUtil.isDefined(getLastName());
+    return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin())
+            && StringUtil.isDefined(getLastName());
   }
 
   /**
-* Gets the unique identifier of the anonymous user as set in the general look properties.
-* @return the anonymous user identifier.
-*/
+   * Gets the unique identifier of the anonymous user as set in the general look properties.
+   *
+   * @return the anonymous user identifier.
+   */
   protected static String getAnonymousUserId() {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }

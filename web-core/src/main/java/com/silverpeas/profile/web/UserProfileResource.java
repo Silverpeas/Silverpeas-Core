@@ -267,8 +267,8 @@ public class UserProfileResource extends RESTWebService {
     if (theUser == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    if (getUserDetail().isDomainRestricted() && !theUser.getDomainId().equals(getUserDetail().
-            getDomainId())) {
+    if (!theUser.isAccessAdmin() && getUserDetail().isDomainRestricted() &&
+            !theUser.getDomainId().equals(getUserDetail().getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
               + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
                 userId});
