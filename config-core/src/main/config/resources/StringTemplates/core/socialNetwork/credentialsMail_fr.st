@@ -7,6 +7,7 @@ de vous identifier avec les codes suivants : <br/>
 <br/>
 <b>Identifiant : </b>$login$
 <b>Mot de passe : </b>$password$
+<b>Domaine : </b>$domain$
 </div>
 
 Pour vous connecter, cliquez <a href="$url$">ici</a>
