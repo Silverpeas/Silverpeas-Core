@@ -29,12 +29,17 @@
 <%@page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ include file="checkVersion.jsp" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-
+<view:setBundle basename="org.silverpeas.versioningPeas.multilang.versioning" />
+<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <%
     ResourceLocator messages = new ResourceLocator("org.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
 
@@ -44,16 +49,19 @@
 
     String componentId = document.getPk().getInstanceId();
     String id = document.getPk().getId();
+    boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
 %>
 <html>
 <head>
-<TITLE><%=messages.getString("popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+  <title><fmt:message key="popupTitle" /></title>
+  <view:looknfeel />
 <view:includePlugin name="qtip"/>
 </head>
 <body>
+  <view:frame>
+    <view:window>
+      <view:browseBar extraInformations="${requestScope.Document.title}"/>
+   
 <%
 ArrayPane arrayPane = gef.getArrayPane("List", "ViewAllVersions?DocId="+id+"&Alias=null&ComponentId="+componentId, request,session);// declare an array
 
@@ -71,22 +79,15 @@ arrayColumn_status.setSortable(false);
 
 ArrayLine arrayLine = null; // declare line object of the array
 
-browseBar.setExtraInformation(document.getTitle());
 
-out.println(window.printBefore());
-out.println(frame.printBefore());
 
-boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
 
-String url = null;
 for (SimpleDocument publicVersion : vVersions) {
     arrayLine = arrayPane.addArrayLine(); // set a new line
-
-    url = versioningSC.getDocumentVersionURL(publicVersion.getFilename(),publicVersion.getId(), publicVersion.getPk().getId());
-
+    String url =  FileServerUtils.getUrl(publicVersion.getInstanceId(), publicVersion.getFilename()) + "&DocumentId=" + publicVersion.getId() + "&VersionId=" + publicVersion.getId();
     if (fromAlias) {
-		url = FileServerUtils.getAliasURL(componentId, publicVersion.getFilename(),publicVersion.getId(), publicVersion.getPk().getId());
-	}
+      url = publicVersion.getAliasURL();
+    }
 
     String spinFire = "";
     /*if (publicVersion.isSpinfireDocument() && spinfireViewerEnable)
@@ -103,7 +104,7 @@ for (SimpleDocument publicVersion : vVersions) {
     }*/
     
     String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId())+"\"><img src=\""+m_context+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
-    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getTitle())+"\" border=\"0\"/></a>");
+    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+versioningSC.getDocumentVersionIconPath(publicVersion.getFilename()) +"\" border=\"0\"/> " + publicVersion.getTitle() + "</a>");
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
     arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
 
@@ -116,15 +117,13 @@ for (SimpleDocument publicVersion : vVersions) {
 		String xmlURL = m_context+"/RformTemplate/jsp/View?ObjectId="+publicVersion.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(publicVersion.getXmlFormId());
 		xtraData = "<a rel=\""+xmlURL+"\" href=\"#\" title=\""+document.getFilename()+" "+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"\"><img src=\""+m_context+"/util/icons/info.gif\" border=\"0\"></a> ";
 	}
-
     arrayLine.addArrayCellText(xtraData+publicVersion.getDescription());
 
 }
 
-    out.println(arrayPane.print());
-	out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
+    out.println(arrayPane.print());%> 
+    </view:window>
+  </view:frame>
 </body>
 </html>
 <% if (spinfireViewerEnable) { %>
@@ -160,11 +159,11 @@ $(document).ready(function()
       {
          content: {
             // Set the text to an image HTML string with the correct src URL to the loading image you want to use
-            text: '<img class="throbber" src="<%=m_context%>/util/icons/inProgress.gif" alt="Loading..." />',
+            text: '<img class="throbber" src="<c:url value="/util/icons/inProgress.gif" />" alt="Loading..." />',
             url: $(this).attr('rel'), // Use the rel attribute of each element for the url to load
             title: {
-               text: '<%=messages.getString("versioning.xmlForm.ToolTip")%> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
-               button: '<%=resources.getString("GML.close")%>' // Show a close link in the title
+               text: '<fmt:message key="versioning.xmlForm.ToolTip"/> \"' + $(this).attr('title') + "\"", // Give the tooltip a title using each elements text
+               button: '<fmt:message key="GML.close" />' // Show a close link in the title
             }
          },
          position: {

@@ -130,7 +130,7 @@ public class OnlineFileServer extends HttpServlet {
   private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream output = res.getOutputStream();
     ResourceLocator resourceLocator = new ResourceLocator(
-        "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
     StringReader message = new StringReader(resourceLocator.getString("warning"));
     try {
       IOUtils.copy(message, output);

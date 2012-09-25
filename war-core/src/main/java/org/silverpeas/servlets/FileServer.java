@@ -20,26 +20,10 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.*;
-import java.util.zip.Deflater;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-
+import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -49,7 +33,19 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+
+import com.silverpeas.util.MimeTypes;
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
 /**
@@ -173,57 +169,37 @@ public class FileServer extends HttpServlet {
     String typeUpload = req.getParameter(TYPE_UPLOAD_PARAMETER);
     String zip = req.getParameter(ZIP_PARAMETER);
     String fileName = req.getParameter(FILE_NAME_PARAMETER);
-    String tempDirectory = FileRepositoryManager.getTemporaryPath("useless",
-        componentId);
+    String tempDirectory = FileRepositoryManager.getTemporaryPath("useless", componentId);
     File tempFile = null;
-
     String attachmentId = req.getParameter(ATTACHMENT_ID_PARAMETER);
     String language = req.getParameter(LANGUAGE_PARAMETER);
     long fileSize = 0;
+    if (!StringUtil.isDefined(attachmentId)) {
+      attachmentId = req.getParameter(VERSION_ID_PARAMETER);
+    }
+    SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
-      // Check first if attachment exists
-      SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
-          .searchAttachmentById(new SimpleDocumentPK(attachmentId, componentId), language);
+      attachment = AttachmentServiceFactory.getAttachmentService().
+          searchAttachmentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
         mimeType = attachment.getContentType();
         sourceFile = attachment.getFilename();
-        directory = FileRepositoryManager.getRelativePath(ArrayUtil.EMPTY_STRING_ARRAY);
+        directory = attachment.getAttachmentPath();
         fileSize = attachment.getSize();
       }
     }
-
-    String documentId = req.getParameter(DOCUMENT_ID_PARAMETER);
-    if (StringUtil.isDefined(documentId)) {
-      String versionId = req.getParameter(VERSION_ID_PARAMETER);
-      VersioningUtil versioning = new VersioningUtil();
-      DocumentVersionPK versionPK = new DocumentVersionPK(Integer.parseInt(versionId), "useless",
-          componentId);
-      DocumentVersion version = versioning.getDocumentVersion(versionPK);
-
-      if (version != null) {
-        mimeType = version.getMimeType();
-        sourceFile = version.getPhysicalName();
-        fileSize = version.getSize();
-
-        String[] path = new String[1];
-        path[0] = "Versioning";
-        directory = FileRepositoryManager.getRelativePath(path);
-      }
-    }
-
-    String filePath = null;
-
     HttpSession session = req.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if ((mainSessionCtrl == null)
-        || (!isUserAllowed(mainSessionCtrl, componentId))) {
+    if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
           + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
       res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.
           getGeneralResourceLocator().getString("sessionTimeout"));
     }
+
+    String filePath = null;
     if (typeUpload != null) {
       filePath = sourceFile;
     } else {
@@ -232,69 +208,60 @@ public class FileServer extends HttpServlet {
             "RepositoryTypeTemp"))) {
           filePath = FileRepositoryManager.getTemporaryPath("useless", componentId) + sourceFile;
         }
-      } else {
+      } else if(attachment != null) {
         // the file to download is not in a temporary directory
-        filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator
-            + sourceFile;
+        filePath = attachment.getAttachmentPath();
       }
     }
     res.setContentType(mimeType);
     SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE", " zip=" + zip);
     if (zip != null) {
-      res.setContentType("application/x-zip-compressed");
+      res.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
       tempFile = File.createTempFile("zipfile", ".zip", new File(tempDirectory));
-      SilverTrace.debug("peasUtil", "FileServer.doPost()",
-          "root.MSG_GEN_PARAM_VALUE", " filePath =" + filePath
-          + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
+      SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE", " filePath ="
+          + filePath + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
           + " fileName=" + fileName);
-      zipFile(filePath, tempFile.getCanonicalPath(), fileName);
+      ZipManager.compressFile(filePath, tempFile.getCanonicalPath());
       filePath = tempFile.getCanonicalPath();
     }
 
     // display the preview code generated by the production tools
     if (zip == null) {
       if (tempFile != null) {
-        displayHtmlCode(res, tempFile.getCanonicalPath());
+        downloadFile(res, tempFile.getCanonicalPath());
       } else {
         if (fileSize > 0) {
           res.setContentLength(new Long(fileSize).intValue());
         }
-        displayHtmlCode(res, filePath);
+        downloadFile(res, filePath);
       }
     }
 
     if (tempFile != null) {
-      SilverTrace.info("peasUtil", "FileServer.doPost()",
-          "root.MSG_GEN_ENTER_METHOD", " tempFile != null " + tempFile);
+      SilverTrace.info("peasUtil", "FileServer.doPost()", "root.MSG_GEN_ENTER_METHOD",
+          " tempFile != null " + tempFile);
       tempFile.delete();
     }
 
-    if ((archiveIt != null) && (archiveIt.length() > 0)
-        && (!archiveIt.equals("null"))) {
+    if (StringUtil.isDefined(archiveIt)) {
       String nodeId = req.getParameter(NODE_ID_PARAMETER);
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
-      ForeignPK pubPK = null;
-
+      ForeignPK pubPK = new ForeignPK(pubId, componentId);
       try {
         StatisticBmHome statisticBmHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
         StatisticBm statisticBm = statisticBmHome.create();
-
-        pubPK = new ForeignPK(pubId, componentId);
         statisticBm.addStat(userId, pubPK, 1, "Publication");
       } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "FileServer.doPost",
-            "peasUtil.CANNOT_WRITE_STATISTICS", "pubPK = " + pubPK
-            + " and nodeId = " + nodeId, e);
+        SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
+            "pubPK = " + pubPK + " and nodeId = " + nodeId, e);
       }
     }
   }
 
   // check if the user is allowed to access the required component
-  private boolean isUserAllowed(MainSessionController controller,
-      String componentId) {
+  private boolean isUserAllowed(MainSessionController controller, String componentId) {
     boolean isAllowed;
-
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
@@ -306,62 +273,9 @@ public class FileServer extends HttpServlet {
             componentId, controller.getUserId());
       }
     }
-
     return isAllowed;
   }
 
-  /**
-   * Methode declaration
-   *
-   * @param filePath
-   * @param zipFilePath
-   * @zip a given file
-   */
-  private void zipFile(String filePath, String zipFilePath, String fileName) {
-    int compressionLevel = Deflater.DEFAULT_COMPRESSION;
-    SilverTrace.debug("peasUtil", "FileServer.zipFile()",
-        "root.MSG_GEN_PARAM_VALUE", " fileName =" + fileName);
-
-    try {
-      // create and initialize a stream to write it
-      ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(
-          zipFilePath));
-
-      // zip.setComment("created by Mohammed Hguig - http://www.silverpeas.com");
-      zip.setMethod(ZipOutputStream.DEFLATED);
-      zip.setLevel(compressionLevel);
-
-      // read a file into memory
-      File file = new File(filePath);
-      FileInputStream in = new FileInputStream(file);
-      byte[] bytes = new byte[in.available()];
-
-      in.read(bytes);
-      in.close();
-
-      // create and initialize a zipentry for it
-      // ZipEntry entry = new ZipEntry(file.getName());
-      ZipEntry entry = new ZipEntry(fileName);
-
-      entry.setTime(file.lastModified());
-
-      // write the entry header, and the data, to the zip
-      zip.putNextEntry(entry);
-      zip.write(bytes);
-
-      // write the end-of-entry marker to the zip
-      zip.closeEntry();
-
-      // no more files, close the zip. This writes the zip
-      // directory, so don't forget it.
-      zip.close();
-    } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "FileServer", "peasUtil.MSG_ZIP_FILE_FAIL",
-          "file to zip = " + filePath, e);
-    }
-  }
-
-  // End Add By Mohammed Hguig
   /**
    * This method writes the result of the preview action.
    *
@@ -370,7 +284,7 @@ public class FileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void displayHtmlCode(HttpServletResponse res, String htmlFilePath)
+  private void downloadFile(HttpServletResponse res, String htmlFilePath)
       throws IOException {
     OutputStream out2 = res.getOutputStream();
     int read;

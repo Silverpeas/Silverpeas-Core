@@ -53,6 +53,7 @@ import com.stratelia.webactiv.util.ClientBrowserUtil;
 public class SimpleDocumentServer extends GoTo {
 
   private static final long serialVersionUID = 1L;
+  public static final String KMELIA_SECURITY_CLASS = "com.stratelia.webactiv.kmelia.KmeliaSecurity";
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
@@ -79,8 +80,7 @@ public class SimpleDocumentServer extends GoTo {
       boolean isAccessAuthorized = true;
       if (componentId.startsWith("kmelia")) {
         try {
-          ComponentSecurity security = (ComponentSecurity) Class.forName(
-              "com.stratelia.webactiv.kmelia.KmeliaSecurity").newInstance();
+          ComponentSecurity security = (ComponentSecurity) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
           isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
         } catch (Exception e) {
           SilverTrace.error("peasUtil", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
