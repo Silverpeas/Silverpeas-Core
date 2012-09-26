@@ -104,6 +104,10 @@ li {
   background-color:#ecffbf;
 }
 
+.dropdown-menu li > a:hover, .dropdown-menu li > a:focus, .dropdown-submenu:hover > a {
+    background-image: none;
+}
+
 .navbar .nav > li > a:hover {
   color:#ecffbf;
   background-color:#393939;
