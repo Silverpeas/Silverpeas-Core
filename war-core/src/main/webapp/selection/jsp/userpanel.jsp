@@ -229,11 +229,11 @@
                   $('#filter_groups').remove();
                   $('.groups_results_userPanel').remove();
                   $('.groups_selected_userPanel').remove();
-                  self.onAllUsers();
                 } else {
                   renderUserGroups(groups);
-                  renderUsersOfGroup(rootUserGroup);
                 }
+                self.onAllUsers();
+                highlightFilter($('#filter_users'));
               });
             });
           }
