@@ -23,11 +23,18 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import static com.silverpeas.web.UserPriviledgeValidation.*;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
@@ -46,6 +53,8 @@ public abstract class RESTWebService {
   private UriInfo uriInfo;
   @Context
   private HttpServletRequest httpRequest;
+  @Context
+  private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
 
   /**
@@ -70,7 +79,13 @@ public abstract class RESTWebService {
    */
   public void validateUserAuthentication(final UserPriviledgeValidation validation) throws
           WebApplicationException {
-    this.userDetail = validation.validateUserAuthentication(getHttpServletRequest());
+    HttpServletRequest request = getHttpServletRequest();
+    SessionInfo session = validation.validateUserAuthentication(request);
+    if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
+            && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
+      getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+    }
+    this.userDetail = session.getUserDetail();
   }
 
   /**
@@ -91,7 +106,7 @@ public abstract class RESTWebService {
           WebApplicationException {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
-  
+
   /**
    * Gets information about the URI with which this web service was invoked.
    *
@@ -108,6 +123,15 @@ public abstract class RESTWebService {
    */
   public HttpServletRequest getHttpServletRequest() {
     return httpRequest;
+  }
+
+  /**
+   * Gets the HTTP servlet response mapped with the execution context of this web service.
+   *
+   * @return the HTTP servlet response.
+   */
+  public HttpServletResponse getHttpServletResponse() {
+    return httpResponse;
   }
 
   /**

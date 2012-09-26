@@ -112,9 +112,10 @@ void displayParameter(LocalizedParameter parameter, ResourcesWrapper resource, J
 ComponentInst 	compoInst 			= (ComponentInst) request.getAttribute("ComponentInst");
 String 			m_JobPeas 			= (String) request.getAttribute("JobPeas");
 List 			parameters 			= (List) request.getAttribute("Parameters");
-List 		    m_Profiles 			= (List) request.getAttribute("Profiles");
+List<ProfileInst> m_Profiles 		= (List<ProfileInst>) request.getAttribute("Profiles");
 boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 int				scope				= ((Integer) request.getAttribute("Scope")).intValue();
+int	 			maintenanceState 	= (Integer) request.getAttribute("MaintenanceState");
 
 if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) {
   //use default breadcrumb
@@ -133,24 +134,25 @@ browseBar.setI18N(compoInst, resource.getLanguage());
 operationPane.addOperation(resource.getIcon("JSPP.instanceUpdate"),resource.getString("JSPP.ComponentPanelModifyTitle"),"javascript:onClick=updateInstance()");
 if (scope == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
 	operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
+	operationPane.addLine();
 	if (JobStartPagePeasSettings.useComponentsCopy) {
-		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("GML.copy"),"javascript:onClick=clipboardCopy()");
+		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.copy"),"javascript:onclick=clipboardCopy()");
+		if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) {
+			operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.cut"),"javascript:onclick=clipboardCut()");
+		}
+		operationPane.addLine();
 	}
 	operationPane.addOperation(resource.getIcon("JSPP.instanceDel"),resource.getString("JSPP.ComponentPanelDeleteTitle"),"javascript:onClick=deleteInstance()");
 }
 
 tabbedPane.addTab(resource.getString("GML.description"),"#",true);
-Iterator i = m_Profiles.iterator();
-ProfileInst theProfile = null;
-String profile = null;
-String prof = null;
 
-while (i.hasNext()) {
-	theProfile = (ProfileInst) i.next();
-	profile = theProfile.getLabel();
-	prof = resource.getString(profile.replace(' ', '_'));
-	if (prof.equals(""))
+for (ProfileInst theProfile : m_Profiles) {
+	String profile = theProfile.getLabel();
+	String prof = resource.getString(profile.replace(' ', '_'));
+	if (prof.equals("")) {
 		prof = profile;
+	}
 	
 	tabbedPane.addTab(prof,"RoleInstance?IdProfile="+theProfile.getId()+"&NameProfile="+theProfile.getName()+"&LabelProfile="+theProfile.getLabel(),false);
 }	
@@ -159,9 +161,7 @@ while (i.hasNext()) {
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel/>
 <view:includePlugin name="qtip"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -170,18 +170,13 @@ out.println(gef.getLookStyleSheet());
 <!--
 var currentLanguage = "<%=compoInst.getLanguage()%>";
 <%
-	String lang = "";
-	Iterator codes = compoInst.getTranslations().keySet().iterator();
-	while (codes.hasNext())
-	{
-		lang = (String) codes.next();
+	for (String lang : compoInst.getTranslations().keySet()) {
 		out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getLabel(lang))+"\";\n");
 		out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(compoInst.getDescription(lang))+"\";\n");
 	}
 %>
 
-function showTranslation(lang)
-{
+function showTranslation(lang) {
 	<%=I18NHelper.updateHTMLLinks(compoInst)%>
 	
 	document.getElementById("compoName").innerHTML = eval("name_"+lang);
@@ -190,8 +185,7 @@ function showTranslation(lang)
 	currentLanguage = lang;
 }
 
-function openPopup(action, larg, haut) 
-{
+function openPopup(action, larg, haut) {
 	url = action;
 	windowName = "actionWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
@@ -211,6 +205,10 @@ function updateInstance() {
 function clipboardCopy() {
     top.IdleFrame.location.href = 'copy?Object=Component&Id=<%=compoInst.getId()%>';
 }
+
+function clipboardCut() {
+    top.IdleFrame.location.href = 'Cut?Type=Component&Id=<%=compoInst.getId()%>';
+}
 -->
 </script>
 </head>
@@ -220,8 +218,14 @@ function clipboardCopy() {
 out.println(window.printBefore());
 out.println(tabbedPane.print());
 out.println(frame.printBefore());
-out.println(board.printBefore());
 %>
+<% if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) { %>
+	<div class="inlineMessage">
+		<%=resource.getString("JSPP.maintenanceStatus."+maintenanceState)%>
+	</div>
+	<br clear="all"/>
+<% } %>
+<view:board>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
 	<tr>
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.type") %> :</td>
@@ -322,8 +326,8 @@ out.println(board.printBefore());
 %>	
 	</tr>
 	</table>
+</view:board>
 <%
-out.println(board.printAfter());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

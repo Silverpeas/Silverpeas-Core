@@ -24,15 +24,18 @@
 
 package com.silverpeas.notification.jms;
 
-import com.silverpeas.notification.jms.access.JMSAccessObject;
-import javax.inject.Inject;
-import com.silverpeas.notification.NotificationTopic;
-import com.silverpeas.notification.NotificationSubscriber;
 import com.silverpeas.notification.MessageSubscribingService;
+import com.silverpeas.notification.NotificationSubscriber;
+import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SubscriptionException;
+import static com.silverpeas.notification.jms.SilverpeasMessageListener.mapMessageListenerTo;
+import com.silverpeas.notification.jms.access.JMSAccessObject;
+import com.silverpeas.util.ExecutionAttempts;
+import static com.silverpeas.util.ExecutionAttempts.retry;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jms.MessageListener;
 import javax.jms.TopicSubscriber;
-import static com.silverpeas.notification.jms.SilverpeasMessageListener.*;
 
 /**
  * Implementation of the subscribing service using the JMS API. This service is managed by the IoC
@@ -46,24 +49,35 @@ public class JMSSubscribingService implements MessageSubscribingService {
   private JMSAccessObject jmsService;
 
   @Override
-  public synchronized void subscribe(NotificationSubscriber subscriber, NotificationTopic onTopic) {
-
-    String topicName = onTopic.getName();
-    String subscriptionId = subscriber.getId();
-    ManagedTopicsSubscriber topicsSubscriber =
-        ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriptionId);
-    if (topicsSubscriber == null) {
+  public synchronized void subscribe(final NotificationSubscriber subscriber,
+          NotificationTopic onTopic) {
+    final String topicName = onTopic.getName();
+    final String subscriberId = subscriber.getId();
+    final ManagedTopicsSubscriber topicsSubscriber;
+    ManagedTopicsSubscriber existingTopicsSubscriber =
+            ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriberId);
+    if (existingTopicsSubscriber == null) {
       topicsSubscriber = ManagedTopicsSubscriber.getNewManagedTopicsSubscriber();
+    } else {
+      topicsSubscriber = existingTopicsSubscriber;
     }
     try {
-      if (!topicsSubscriber.isSubscribedTo(topicName)) {
-        subscriptionId = topicsSubscriber.getId();
-        TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName);
-        jmsSubscriber.setMessageListener(mapMessageListenerTo(subscriber).forTopic(topicName));
-        topicsSubscriber.addSubscription(jmsSubscriber);
-        topicsSubscriber.save();
-        subscriber.setId(subscriptionId);
-      }
+      retry(2, new ExecutionAttempts.Job() {
+
+        @Override
+        public void execute() throws Exception {
+          if (!topicsSubscriber.isSubscribedTo(topicName)) {
+            String id = topicsSubscriber.getId();
+            String subscriptionId = id + "::" + topicName;
+            MessageListener listener = mapMessageListenerTo(subscriber).forTopic(topicName);
+            TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName,
+                    subscriptionId, listener);
+            topicsSubscriber.addSubscription(jmsSubscriber);
+            topicsSubscriber.save();
+            subscriber.setId(id);
+          }
+        }
+      });
     } catch (Exception ex) {
       throw new SubscriptionException(ex);
     }
@@ -71,20 +85,26 @@ public class JMSSubscribingService implements MessageSubscribingService {
 
   @Override
   public synchronized void unsubscribe(NotificationSubscriber subscriber,
-      NotificationTopic fromTopic) {
+          final NotificationTopic fromTopic) {
+    final ManagedTopicsSubscriber topicsSubscriber =
+            ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
     try {
-      ManagedTopicsSubscriber topicsSubscriber =
-          ManagedTopicsSubscriber.getManagedTopicsSubscriberById(subscriber.getId());
-      if (topicsSubscriber != null) {
-        TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
-        if (jmsSubscriber != null) {
-          jmsService.disposeTopicSubscriber(jmsSubscriber);
-          topicsSubscriber.removeSubscription(jmsSubscriber);
-          if (topicsSubscriber.hasNoSusbscriptions()) {
-            topicsSubscriber.delete();
+      retry(2, new ExecutionAttempts.Job() {
+
+        @Override
+        public void execute() throws Exception {
+          if (topicsSubscriber != null) {
+            TopicSubscriber jmsSubscriber = topicsSubscriber.getSubscription(fromTopic.getName());
+            if (jmsSubscriber != null) {
+              jmsService.disposeTopicSubscriber(jmsSubscriber);
+              topicsSubscriber.removeSubscription(jmsSubscriber);
+              if (topicsSubscriber.hasNoSusbscriptions()) {
+                topicsSubscriber.delete();
+              }
+            }
           }
         }
-      }
+      });
     } catch (Exception ex) {
       throw new SubscriptionException(ex);
     }

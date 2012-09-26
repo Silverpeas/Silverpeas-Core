@@ -73,7 +73,7 @@ public class PortletWindowContextImpl implements PortletWindowContext {
   private static String AUTHLESS_USER_ID = "NONE";
   private static final String IS_WSRP_REQ = "is.wsrp.request";
   private static final Logger logger = ContainerLogger.getLogger(PortletWindowContextImpl.class,
-      "com.silverpeas.portlets.PCCTXLogMessages");
+      "org.silverpeas.portlets.PCCTXLogMessages");
   private static List<String> roles = Arrays.asList("role1", "role2", "role3",
       "role4", "role5", "role6",
       "role7", "role8", "role9");

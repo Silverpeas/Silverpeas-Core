@@ -34,11 +34,36 @@
       if (! $.popup.initialized) {
         $.i18n.properties({
           name: 'generalMultilang',
-          path: webContext + '/services/bundles/com/stratelia/webactiv/multilang/',
+          path: webContext + '/services/bundles/org/silverpeas/multilang/',
           language: '$$', /* by default the language of the user in the current session */
           mode: 'map'
         });
         $.popup.initialized = true;
+      }
+    },
+    showWaiting : function() {
+      var $waiting = $("#spWaiting");
+      if ($waiting.size() == 0) {
+        $waiting = $("<div>").attr('id', 'spWaiting').attr('style',
+            'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
+        $(document.body).append($waiting);
+        $waiting.popup("waiting");
+      } else {
+        $waiting.dialog("open");
+      }
+
+      // Little hack to prevent some unexpected errors when escape key is
+      // pressed during an ajax request
+      $waiting.dialog("widget").keydown(function(e) {
+         if(e.keyCode == 27) {
+           e.preventDefault();
+         }
+      });
+    },
+    hideWaiting : function() {
+      var $waiting = $("#spWaiting");
+      if ($waiting.size() > 0) {
+        $waiting.dialog("close");
       }
     }
   }
@@ -51,9 +76,10 @@
     /**
      * The modal validation dialog.
      * It accepts one parameter that is an object with two attributes:
-     * - the title of the dialog box,
-     * - the callback to invoke when the user clicks on the validation button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed.
+     * - title : the title of the dialog box,
+     * - callback : the callback to invoke when the user clicks on the validation button.
+     * The callback must returns a boolean indicating that all is ok and the dialog box
+     * can be closed.
      */
     validation : function( options ) {
 
@@ -74,8 +100,8 @@
      * The modal confirmation dialog.
      * A warning icon is automatically inserted into the title bar.
      * It accepts one parameter that is an object with two attributes:
-     * - the title of the dialog box (if it is empty a default title is used),
-     * - the callback to invoke when the user clicks on the yes button. The callback must
+     * - title : the title of the dialog box (if it is empty a default title is used),
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
      * returns a boolean indicating that all is ok and the dialog box can be closed.
      */
     confirmation : function( options ) {
@@ -106,6 +132,69 @@
 
       // Dialog
       return __openPopup($(this), settings);
+    },
+
+    /**
+     * The modal preview dialog.
+     * It accepts one parameter that is an object with three attributes:
+     * - title : the document title of the dialog box
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     */
+    preview : function( options ) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+      settings.title = $.i18n.prop('GML.preview.dialog.title');
+      if (options.title && options.title.length > 0) {
+        settings.title = settings.title + " "
+            + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonDisplayed : false,
+        width : 'auto'
+      }));
+
+      if (__isIE7()) {
+        // Width & Height
+        if (options.width) {
+          settings.width = options.width;
+        }
+        if (options.height) {
+          settings.height = eval(options.height) + 27;
+        }
+      }
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+
+    /**
+     * The modal waiting dialog.
+     */
+    waiting : function() {
+      var $container = $(this);
+
+      // Common settings
+      var settings = __extendCommonSettings({});
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        displayTitle : false,
+        closeOnEscape : false,
+        buttonDisplayed : false,
+        width : "32px",
+        height : 32
+      }));
+
+      // Waiting animation
+      var imageUrl = popupViewGeneratorIconPath + '/inProgress.gif';
+      $container.html($('<img>').attr('src', imageUrl).attr('width', '32').attr('height', '32'));
+
+      // Dialog
+      return __openPopup($container, settings);
     }
   };
 
@@ -133,7 +222,8 @@
   function __extendCommonSettings(options) {
     var settings = {
       title : '',
-      callback : null
+      callback : null,
+      keydown : null
     }
     if (options) {
       $.extend(settings, options);
@@ -146,14 +236,26 @@
    */
   function __buildInternalSettings(options) {
     var settings = {
+      displayTitle : true,
+      closeOnEscape : true,
+      buttonDisplayed : true,
       buttonTextYes : '',
       buttonTextNo : '',
-      isMaxWidth : false
+      isMaxWidth : false,
+      width : 570,
+      height : 'auto'
     }
     if (options) {
       $.extend(settings, options);
     }
     return settings;
+  }
+
+  /**
+   * Private function that checks if the browser is an IE7 one
+   */
+  function __isIE7() {
+    return (navigator.appVersion.indexOf("MSIE 7.") != -1);
   }
 
   /**
@@ -166,35 +268,58 @@
       return $this;
 
     return $this.each(function() {
-      $(this).dialog({
+      var $_this = $(this);
+      $_this.dialog({
+        closeOnEscape : options.closeOnEscape,
         title : options.title,
         autoOpen : false,
         modal : true,
         resizable : false,
-        buttons : [ {
+        height : options.height
+      });
+
+      // Removing the title if requested
+      if (!options.displayTitle) {
+        $_this.dialog('widget').find(".ui-dialog-titlebar").hide();
+      }
+
+      // Buttons
+      if (options.buttonDisplayed) {
+        $_this.dialog("option", "buttons", [ {
           text : options.buttonTextYes,
           click : function() {
             var isok = true;
             if (options.callback) {
               isok = options.callback();
             }
-            if (isok)
-              $(this).dialog("close");
+            if (isok) {
+              $_this.dialog("close");
+            }
           }
         }, {
           text : options.buttonTextNo,
           click : function() {
-            $(this).dialog("close");
+            $_this.dialog("close");
           }
-        } ],
-        height : 'auto'
-      });
+        } ]);
+      }
+
+      // Width
       var widthOption = "width";
       if (options.isMaxWidth) {
         widthOption = "maxWidth";
       }
-      $(this).dialog("option", widthOption, 570);
-      $(this).dialog('open');
+      $_this.dialog("option", widthOption, options.width);
+
+      // keydown
+      if (options.keydown) {
+        $_this.dialog("widget").keydown(function(e) {
+          options.keydown(e);
+        });
+      }
+
+      // Dialog opening
+      $_this.dialog('open');
     })
   }
 

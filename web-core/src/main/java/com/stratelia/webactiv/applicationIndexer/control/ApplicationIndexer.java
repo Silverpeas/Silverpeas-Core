@@ -207,14 +207,10 @@ public class ApplicationIndexer extends AbstractIndexer {
     if ("pollingStation".equalsIgnoreCase(packageName)) {
       return "survey";
     }
-    if ("webPages".equalsIgnoreCase(packageName)) {
-      return "webpages";
-    }
-    if ("resourcesManager".equalsIgnoreCase(packageName)) {
-      return "resourcesmanager";
-    }
-    if ("mydb".equalsIgnoreCase(packageName)) {
-      return "mydb";
+    if ("webPages".equalsIgnoreCase(packageName) ||
+        "resourcesManager".equalsIgnoreCase(packageName) || "mydb".equalsIgnoreCase(packageName) ||
+        "formsOnline".equalsIgnoreCase(packageName)) {
+      return packageName.toLowerCase();
     }
     return packageName;
   }

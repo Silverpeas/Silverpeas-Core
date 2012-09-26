@@ -70,11 +70,12 @@ public interface SessionManagement {
   boolean isUserConnected(UserDetail user);
 
   /**
-   * Opens a new session for a user with the specified information.
-   * @param sessionInfo the information about the session to open.
-   * @return the key of the opened session.
+   * Opens a new session for the specified user.
+   * @param user the user for which a session with Silverpeas has to be opened.
+   * @return a SessionInfo instance representing the current opened session with information about
+   * that session.
    */
-  String openSession(final SessionInfo sessionInfo);
+  SessionInfo openSession(final UserDetail user);
 
   /**
    * Closes the specified user session.

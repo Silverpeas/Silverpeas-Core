@@ -37,6 +37,9 @@ import java.util.TreeMap;
 
 import javax.ejb.RemoveException;
 
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.versioning.notification.VersioningNotificationService;
+
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -887,9 +890,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     initEJB();
     versioning_bm.deleteDocument(documentPK);
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, doc.getOwnerId(), doc.
-        getForeignKey().getInstanceId(), doc);
+    VersioningNotificationService notificationService = VersioningNotificationService.getService();
+    notificationService.notifyOnDeletionOf(doc);
   }
 
   /**

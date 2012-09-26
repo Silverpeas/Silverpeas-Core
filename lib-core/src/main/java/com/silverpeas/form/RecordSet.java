@@ -24,7 +24,7 @@
 
 package com.silverpeas.form;
 
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
  * A RecordSet manages a set of DataRecord built on a same RecordTemplate.

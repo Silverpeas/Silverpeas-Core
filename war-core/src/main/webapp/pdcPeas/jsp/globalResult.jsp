@@ -33,6 +33,9 @@
 <%@ page import="com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.result.HtmlSearchResultTag"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+
 <%@ include file="checkAdvancedSearch.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -160,6 +163,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
+QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
 String pageId = (String) request.getAttribute("ResultPageId");
@@ -488,8 +492,8 @@ function showExternalSearchError() {
 		}
 	}
 	if (expertSearchVisible) {
-	  	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
-		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
+	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", false);
+	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", false);
 	} else {
 	  	tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", false);
 	}
@@ -524,7 +528,7 @@ function showExternalSearchError() {
           <td align="left" id="globalResultParamDisplayOptions"><select name="nbRes" size="1" onchange="javascript:changeResDisplay()">
             <%
 				if (choiceNbResToDisplay != null) {
-				  	String selected = "";
+				String selected = "";
 		  			for (String choice : choiceNbResToDisplay) {
 						selected = "";
 						if(choice.equals(nbResToDisplay.toString())) {
@@ -578,17 +582,22 @@ function showExternalSearchError() {
   
 <%
 	if (results != null) {
-		Pagination	pagination			= gef.getPagination(nbTotalResults, nbResToDisplay.intValue(), indexOfFirstResult);
+		Pagination	pagination = gef.getPagination(nbTotalResults, nbResToDisplay.intValue(), indexOfFirstResult);
 
-		List		resultsOnThisPage	= results;
+		List resultsOnThisPage = results;
 
 		out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
 		displayItemsListHeader(keywords, pagination, resource, out);
+        if(request.getAttribute("parseException") != null) {
+		  out.println("<tr valign=\"middle\">");
+		  out.println("<td align=\"center\">" + resource.getString("pdcPeas.NoResult") + ": " + resource.getString((String) request.getAttribute("parseException")) + "</td>");
+		  out.println("</tr>");
+		}
 		out.println("<tr><td>");
 	if(spellingWords!= null && !spellingWords.isEmpty() && StringUtil.isDefined(spellingWords.get(0))){
 %>
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" id="globalResultListDidYouMean">
-			<tr>
+			<tr >
 				<td>
 					<span class="spellText" >
 						 &nbsp;&nbsp; <% out.println(resource.getString("pdcpeas.didYouMean"));%>
@@ -611,10 +620,10 @@ function showExternalSearchError() {
   </c:if>
 <%
 		out.println("</td></tr>");
-		out.println("<tr><td>&nbsp;</td></tr>");
+		out.println("<tr class=\"intfdcolor4\"><td>&nbsp;</td></tr>");
 
 		if (nbTotalResults > resultsOnThisPage.size()) {
-			out.println("<tr valign=\"middle\">");
+			out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
 			out.println("<td align=\"center\">");
 			out.println(pagination.printIndex("doPagination"));
 			out.println("</td>");
@@ -628,6 +637,11 @@ function showExternalSearchError() {
       <tr valign="middle">
         <td align="center"><%=resource.getString("pdcPeas.NoResult")%></td>
       </tr>
+      <% if(request.getAttribute("parseException") != null) {%>
+      <tr valign="middle">
+        <td align="center"><%=resource.getString("pdcPeas.NoResult")%>: <%=resource.getString((String) request.getAttribute("parseException"))%></td>
+      </tr>
+      <%}%>
     </table>
 <%
 	}
@@ -644,8 +658,8 @@ function showExternalSearchError() {
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
         <fmt:message key="pdcPeas.helpCol2Header" /><br><br>
-        <fmt:message key="pdcPeas.helpCol2Content1" /><br>
-        <fmt:message key="pdcPeas.helpCol2Content2" /><br>
+        <%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
         <fmt:message key="pdcPeas.helpCol2Content3" /><br>
         <fmt:message key="pdcPeas.helpCol2Content4" /><br>
         <fmt:message key="pdcPeas.helpCol2Content5" /><br>
@@ -679,10 +693,10 @@ function showExternalSearchError() {
       	displayFacet(authorFacet, resource, out);
       	for (Facet facet : fieldFacets) {
       	  	displayFacet(facet, resource, out);
-      	}
+	  	        }
       	displayFacet(datatypeFacet, resource, out);
       	displayFacet(componentFacet, resource, out);
-      	%>
+	  	        %>
       	<%--
       	  <div id="searchGroupTitle"><span class="file">Type de fichier</span></div>
    		  <div id="searchGroupValues">

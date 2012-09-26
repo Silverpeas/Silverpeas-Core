@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.beans.admin.indexation;
 
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 /**
  * A builder of queries on users that are indexed with the Silverpeas indexation engine.

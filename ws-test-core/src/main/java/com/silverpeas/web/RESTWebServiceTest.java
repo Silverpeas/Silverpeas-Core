@@ -52,6 +52,12 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
+import javax.ws.rs.core.MultivaluedMap;
+import org.junit.Before;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.request.RequestContextListener;
 
 /**
 * The base class for testing REST web services in Silverpeas.
@@ -137,8 +143,8 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     for (String componentId : getExistingComponentInstances()) {
       setComponentAccessibilityToUser(componentId, theUser.getId());
     }
-    SessionInfo session = new SessionInfo(UUID.randomUUID().toString(), theUser);
-    return getTestResources().getSessionManagerMock().openSession(session);
+    SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
+    return session.getSessionId();
   }
 
   /**

@@ -1,40 +1,40 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.model;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class QueryParameters implements java.io.Serializable {
   // class version identifier
+
   private static final long serialVersionUID = -5191736720955151540L;
   private String keywords = null;
   private String spaceId = null;
@@ -44,10 +44,8 @@ public class QueryParameters implements java.io.Serializable {
   private Date beforedate = null;
   private Date afterupdatedate = null;
   private Date beforeupdatedate = null;
-
-  private Hashtable<String, String> xmlQuery = null;
+  private Map<String, String> xmlQuery = null;
   private String xmlTitle = null;
-
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
 
@@ -166,13 +164,13 @@ public class QueryParameters implements java.io.Serializable {
 
   public void addXmlSubQuery(String field, String query) {
     if (xmlQuery == null) {
-      xmlQuery = new Hashtable<String, String>();
+      xmlQuery = new HashMap<String, String>();
     }
 
     xmlQuery.put(field, query);
   }
 
-  public Hashtable<String, String> getXmlQuery() {
+  public Map<String, String> getXmlQuery() {
     return xmlQuery;
   }
 
@@ -180,14 +178,13 @@ public class QueryParameters implements java.io.Serializable {
     xmlQuery = null;
   }
 
-  public QueryDescription getQueryDescription(String searchingUser,
-      String searchingLanguage) throws ParseException {
+  public QueryDescription getQueryDescription(String searchingUser, String searchingLanguage) throws
+      ParseException {
     QueryDescription query = new QueryDescription(getKeywords());
-
     query.setSearchingUser(searchingUser);
     query.setRequestedLanguage(searchingLanguage);
 
-    if (getCreatorId() != null && !getCreatorId().equals("")) {
+    if (StringUtil.isDefined(getCreatorId())) {
       query.setRequestedAuthor(getCreatorId());
     } else {
       query.setRequestedAuthor(null);
@@ -245,7 +242,7 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public boolean isDefined() {
-    return StringUtil.isDefined(keywords) || afterdate != null ||
-        beforedate != null || StringUtil.isDefined(creatorId);
+    return StringUtil.isDefined(keywords) || afterdate != null || beforedate != null || StringUtil
+        .isDefined(creatorId);
   }
 }

@@ -24,16 +24,15 @@
 
 package com.silverpeas.directory.model;
 
-import java.util.Collection;
-
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.SessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import java.util.Collection;
 
 /**
  * A user as a member of something (silverpeas?).

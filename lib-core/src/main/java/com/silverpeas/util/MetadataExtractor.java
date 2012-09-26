@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
@@ -86,7 +87,8 @@ public class MetadataExtractor {
     }
     parser.setParsers(parsers);
     Tika tika = new Tika(configuration);
-    tika.parse(inputStream, metadata);
+    Reader reader = tika.parse(inputStream, metadata);
+    reader.close();
     return new MetaData(metadata);
   }
 

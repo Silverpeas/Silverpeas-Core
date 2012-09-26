@@ -27,6 +27,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.arrayPanes;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
@@ -41,6 +42,7 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   private List<SimpleGraphicElement> cells = null;
   private ArrayPane pane;
   private String css = null;
+  private String id = null;
 
   private List<ArrayLine> sublines = null;
 
@@ -269,7 +271,11 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
   public String print() {
     String result = "";
 
-    result += "<tr>";
+    if (StringUtil.isDefined(getId())) {
+      result += "<tr id=\""+getId()+"\">";
+    } else {
+      result += "<tr>";
+    }
     for (SimpleGraphicElement element : cells) {
       result += element.print();
     }
@@ -342,6 +348,14 @@ public class ArrayLine implements SimpleGraphicElement, Comparable {
     } else {
       return sort;
     }
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
   }
 
 }

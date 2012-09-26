@@ -108,16 +108,13 @@ function recoverRights() {
 </c:if>
 <view:window>
 <view:frame>
+<c:if test="${globalMode}">
+	<div class="inlineMessage"><fmt:message key="JSPP.maintenanceTout" /></div>
+	<br clear="all"/>
+</c:if>
 <view:board>
 <div id="spaces-welcome-message">
-<c:choose>
-  <c:when test="${globalMode}">
-    <font color="#ff0000"><fmt:message key="JSPP.maintenanceTout" /></font>
-  </c:when>
-  <c:otherwise>
-    <c:out value="${content}" escapeXml="false" />
-  </c:otherwise>
-</c:choose>
+<c:out value="${content}" escapeXml="false" />
 </div>
 </view:board>
 </view:frame>

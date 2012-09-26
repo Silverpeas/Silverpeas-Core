@@ -23,13 +23,9 @@
  */
 package com.sun.portal.portletcontainer.invoker.util;
 
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.portal.container.ContainerLogger;
+import com.sun.portal.portletcontainer.invoker.ResponseProperties;
+import org.w3c.dom.Element;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -41,11 +37,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Element;
-
-import com.sun.portal.container.ContainerLogger;
-import com.sun.portal.portletcontainer.invoker.ResponseProperties;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * InvokerUtil has utility methods needed by the Window Invoker
@@ -56,7 +54,7 @@ public class InvokerUtil {
 
   // Create a logger for this class
   private static Logger logger = ContainerLogger.getLogger(InvokerUtil.class,
-      "com.silverpeas.portlets.PCCTXLogMessages");
+      "org.silverpeas.portlets.PCCTXLogMessages");
 
   /**
    * Sets the response properties like cookies and headers in the HttpServletResponse and sets the

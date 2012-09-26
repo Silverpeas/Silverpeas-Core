@@ -35,10 +35,21 @@ public class ArrayLineTag extends TagSupport {
 
   private static final long serialVersionUID = -5323133574049569236L;
   public static final String ARRAY_LINE_PAGE_ATT = "pageContextArrayLine";
+  
+  private String id = null;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   @Override
   public int doStartTag() throws JspException {
     ArrayLine arrayLine = getArrayPane().addArrayLine();
+    arrayLine.setId(getId());
     pageContext.setAttribute(ARRAY_LINE_PAGE_ATT, arrayLine);
     return EVAL_BODY_INCLUDE;
   }

@@ -33,8 +33,6 @@
     Domain domObject = (Domain)request.getAttribute("domainObject");
     String action =(String)request.getAttribute("action");
 
-    browseBar.setDomainName(resource.getString("JDP.jobDomain"));
-
     if (action.equals("domainCreate"))
     {
         browseBar.setComponentName(resource.getString("JDP.domainAdd") + "...");

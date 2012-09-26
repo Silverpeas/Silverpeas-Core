@@ -113,12 +113,19 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   public void getAnExistingBundleInFrench() {
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+
+    messages = getAt(aOrgResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
 
   @Test
   public void getAnExistingBundleByItsNameAndExtension() {
     String messages = getAt(aResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
             getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
+
+    messages = getAt(aOrgResourceURI() + ".properties", MediaType.TEXT_PLAIN_TYPE,
+        getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=ceci est un texte"), is(true));
   }
 
@@ -128,11 +135,17 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
     p.getUserSettings(user.getId()).setLanguage("en");
     String messages = getAt(aResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
+
+    messages = getAt(aOrgResourceURI(), MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
   }
 
   @Test
   public void getAnExistingBundleExplicitlyInEnglish() {
     String messages = getAt(aResourceURI() + "_en", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
+    assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
+
+    messages = getAt(aOrgResourceURI() + "_en", MediaType.TEXT_PLAIN_TYPE, getWebEntityClass());
     assertThat(messages.contains("ceci.est.un.text=this one is a text"), is(true));
   }
 
@@ -157,6 +170,10 @@ public class BundleResourceTest extends ResourceGettingTest<BundleTestResources>
   @Override
   public String aResourceURI() {
     return "bundles/com/silverpeas/bundle/web/multilang/mytranslations";
+  }
+
+  public String aOrgResourceURI() {
+    return "bundles/org/silverpeas/bundle/web/multilang/mytranslations";
   }
 
   @Override

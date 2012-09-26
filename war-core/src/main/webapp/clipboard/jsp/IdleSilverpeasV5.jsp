@@ -38,7 +38,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.indexEngine.model.*"%>
+<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.SessionManager"%>
@@ -148,7 +148,7 @@ function test () {
 </script>
 </head>
 <body onload="DoTask();"><pre>
-Frame cach�e, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
+Frame cachee, Time = <%if (clipboardSC != null) out.print (String.valueOf(clipboardSC.getCounter()));%> <a href="../../Rclipboard/jsp/IdleSilverpeasV5.jsp?message=IDLE">idle...</a>
 <%
 		Enumeration values = request.getParameterNames();
 		String sep = "";

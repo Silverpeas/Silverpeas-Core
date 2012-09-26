@@ -24,6 +24,18 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.admin.domain.DomainServiceFactory;
+import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.cryptage.UnixMD5Crypt;
@@ -39,13 +51,6 @@ import com.stratelia.webactiv.organization.AdminPersistenceException;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class SQLDriver extends AbstractDomainDriver {
 
@@ -154,11 +159,14 @@ public class SQLDriver extends AbstractDomainDriver {
   public String createUser(UserDetail ud) throws Exception {
     try {
       this.openConnection();
+      DomainServiceFactory.getUserDomainQuotaService().verify(UserDomainQuotaKey.from(ud));
       int userId = localUserMgr.createUser(openedConnection, ud);
       localUserMgr.updateUserPassword(openedConnection, userId, "");
       localUserMgr.updateUserPasswordValid(openedConnection, userId,
           false);
       return idAsString(userId);
+    } catch (QuotaException qe) {
+      throw qe;
     } catch (Exception e) {
       throw new AdminException("SQLDriver.createUser", SilverpeasException.ERROR,
           "admin.EX_ERR_ADD_USER", ud.getFirstName() + " " + ud.getLastName(), e);

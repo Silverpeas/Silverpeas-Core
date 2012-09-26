@@ -82,7 +82,6 @@ public class SilverpeasAccessManager implements AccessManager {
     if (!isGranted(id, permissions)) {
       throw new AccessDeniedException();
     }
-    return;
   }
 
   @Override
@@ -389,5 +388,10 @@ public class SilverpeasAccessManager implements AccessManager {
       canAccessPath = isGranted(path, Permission.READ);
     }
     return canAccessPath && isGranted(itemid, Permission.READ);
+  }
+
+  @Override
+  public void checkRepositoryPermission(int permissions) throws AccessDeniedException,
+          RepositoryException {
   }
 }

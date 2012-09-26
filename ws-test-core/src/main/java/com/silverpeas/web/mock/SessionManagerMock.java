@@ -57,10 +57,11 @@ public class SessionManagerMock implements SessionManagement {
   }
 
   @Override
-  public String openSession(SessionInfo sessionInfo) {
+  public SessionInfo openSession(UserDetail user) {
     String key = UUID.randomUUID().toString();
-    sessions.put(key, sessionInfo);
-    return key;
+    SessionInfo session = new SessionInfo(key, user);
+    sessions.put(key, session);
+    return session;
   }
 
   @Override

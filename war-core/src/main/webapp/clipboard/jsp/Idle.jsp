@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
 <%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.indexEngine.model.*"%>
+<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.SessionManager"%>
@@ -49,19 +49,21 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
-    if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    if (clipboardSC != null) {
+      clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
+    }
 
     int nbConnectedUsers = 0;
     String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-    ResourceLocator homePageSettings = new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
+    ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+    ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
     String connectedUsers = message.getString("connectedUsers");
-    if ("yes".equals(homePageSettings.getString("displayConnectedUsers")))
-    {
-        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList() - 1;
-        if (nbConnectedUsers <= 1)
-            connectedUsers = message.getString("connectedUser");
-    }
+    if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) {
+        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
+        if (nbConnectedUsers <= 1) {
+          connectedUsers = message.getString("connectedUser");
+        }
+      }
 
 %>
 
@@ -71,12 +73,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <Script language="JavaScript">
 var counter = 0;
 <%
-   if (clipboardSC != null)
-   {
+   if (clipboardSC != null) {
         out.println("var interval = " + clipboardSC.getIntervalInSec() + ";");
    }
-   else
-   {
+      else {
         out.println("var interval = 5;");
    }
 %>

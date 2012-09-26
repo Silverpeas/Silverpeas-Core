@@ -92,7 +92,12 @@ public class UserNameTag extends SimpleTagSupport {
   public void doTag() throws JspException, IOException {
     if (isDefined(userId)) {
       span userName = UserNameGenerator.generate(userId, getCurrentUserIdInSession());
-      ElementContainer container = includeUserZoom(new ElementContainer());
+      ElementContainer container = null;
+      if (isZoom()) {
+        container = includeUserZoom(new ElementContainer());
+      } else {
+        container = new ElementContainer();
+      }
       container.addElement(userName);
       container.output(getOut());
     }
@@ -101,7 +106,10 @@ public class UserNameTag extends SimpleTagSupport {
   protected String getCurrentUserIdInSession() {
     MainSessionController session = (MainSessionController) getJspContext().getAttribute(
             MAIN_SESSION_CONTROLLER_ATT, PageContext.SESSION_SCOPE);
-    return session.getUserId();
+    if (session != null) {
+      return session.getUserId();
+    }
+    return null;
   }
   
   protected JspWriter getOut() {

@@ -24,13 +24,18 @@
 
 --%>
 
+
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="java.util.List"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -262,7 +267,7 @@ if (updateBeforeDate == null) {
 String itemType = (String) request.getAttribute("ItemType");
 
 // Retrieve data search space
-Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
+List<String[]> searchDomains			= (List<String[]>) request.getAttribute("searchDomains");
 String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
 currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
 
@@ -289,6 +294,7 @@ ButtonPane buttonPane = gef.getButtonPane();
 Button searchButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:onClick=sendQuery()", false);
 
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
+QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 %>
 
 
@@ -614,8 +620,8 @@ if (!isPDCSubscription) {
 		}
 	}
 	if (expertSearchVisible) {
-	  	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
-		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
+	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
+	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
 	} else {
 	  	tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", searchType==1);
 	}
@@ -913,8 +919,8 @@ if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
 		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
 		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
 		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
 		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>

@@ -25,12 +25,12 @@ package com.stratelia.webactiv.beans.admin.indexation;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.ParseException;
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.searchEngine.model.WAIndexSearcher;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.search.searchEngine.model.WAIndexSearcher;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +45,7 @@ public class UserIndexation {
 
   private WAIndexSearcher searcher = new WAIndexSearcher();
   static final String COMPONENT_ID = "users";
-  static final String OBJECT_TYPE = "FullUser";
+  public static final String OBJECT_TYPE = "UserFull";
 
   /**
    * Indexes the specified user. If no user exist with the specified unique identifier, nothing is

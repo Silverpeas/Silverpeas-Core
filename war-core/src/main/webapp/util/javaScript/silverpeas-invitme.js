@@ -81,61 +81,63 @@
   }
   
   function prepareInvitationPopup() {
-    $('<div>', {
-      'id': 'invitationDialog'
-    }).append($('<form>').append($('<table>').append($('<tr>').
-      append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
-      append($('<td>').append($('<textarea>', {
-        'name': 'textMessage', 
-        'id': 'invitation-message', 
-        'cols': '60', 
-        'rows': '8'
-      })))))).appendTo($(document.body));
+    if ($("#invitationDialog").length == 0) {
+      $('<div>', {
+        'id': 'invitationDialog'
+      }).append($('<form>').append($('<table>').append($('<tr>').
+        append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+        append($('<td>').append($('<textarea>', {
+          'name': 'textMessage',
+          'id': 'invitation-message',
+          'cols': '60',
+          'rows': '8'
+        })))))).appendTo($(document.body));
       
-    $("#invitationDialog").dialog({
-      autoOpen: false,
-      resizable: false,
-      modal: true,
-      height: "auto",
-      width: 550,
-      buttons: [
-      {
-        text: $.i18n.prop('GML.ok'),
-        click: function() {
-          var message = $("#invitation-message").val();
-          $.ajax({
-            url: webContext + '/InvitationJSON',
-            type: 'GET',
-            data: {
-              Action: 'SendInvitation',
-              Message: message,
-              TargetUserId: $.invitMe.userId
-            },
-            dataType: 'json',
-            cache: false,
-            success: function(data, status, jqXHR) {
-              closeInvitationPopup();
-              try {
-                $.invitMe.currentElement.hide('slow');
-              } catch (e) {
-              //do nothing
-              //As fragment is externalized, class invitation can be missing 
+      $("#invitationDialog").dialog({
+        autoOpen: false,
+        resizable: false,
+        modal: true,
+        height: "auto",
+        width: 550,
+        buttons: [
+        {
+          text: $.i18n.prop('GML.ok'),
+          click: function() {
+            var message = $("#invitation-message").val();
+            $.ajax({
+              url: webContext + '/InvitationJSON',
+              type: 'GET',
+              data: {
+                Action: 'SendInvitation',
+                Message: message,
+                TargetUserId: $.invitMe.userId
+              },
+              dataType: 'json',
+              cache: false,
+              success: function(data, status, jqXHR) {
+                closeInvitationPopup();
+                try {
+                  $.invitMe.currentElement.hide('slow');
+                } catch (e) {
+                //do nothing
+                //As fragment is externalized, class invitation can be missing
+                }
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
               }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-              alert(errorThrown);
-            }
-          });
+            });
+          }
+        },
+        {
+          text: $.i18n.prop('GML.cancel'),
+          click: function() {
+            closeInvitationPopup();
+          }
         }
-      },
-      {
-        text: $.i18n.prop('GML.cancel'),
-        click: function() {
-          closeInvitationPopup();
-        }
-      }
-      ]
-    });
+        ]
+      });
+    }
   }
 })( jQuery );
 

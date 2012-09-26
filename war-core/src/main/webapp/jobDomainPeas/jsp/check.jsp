@@ -89,6 +89,7 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
+browseBar.setDomainName(resource.getString("JDP.domains"));
 OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 %>

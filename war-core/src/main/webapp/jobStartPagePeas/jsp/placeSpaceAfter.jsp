@@ -27,23 +27,24 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
-    SpaceInst[] brothers = (SpaceInst[]) request.getAttribute("brothers");
-    String spaceId = (String) request.getAttribute("CurrentSpaceId");
-
-    browseBar.setSpaceId(spaceId);
+	SpaceInst[] brothers = (SpaceInst[]) request.getAttribute("Brothers");
+	SpaceInst currentSpace = (SpaceInst) request.getAttribute("CurrentSpace");
+	
+    browseBar.setSpaceId(currentSpace.getId());
     browseBar.setClickable(false);
     browseBar.setPath(resource.getString("JSPP.SpaceOrder"));
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-    out.println(gef.getLookStyleSheet());
-%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function B_ANNULER_ONCLICK() {
 	window.close();
 }
@@ -52,51 +53,37 @@ function B_VALIDER_ONCLICK() {
     document.spaceOrder.submit();
 }
 </script>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad="document.spaceOrder.SpaceBefore.focus();">
-<FORM NAME="spaceOrder" action = "EffectivePlaceSpaceAfter" METHOD="POST">
+</head>
+<body>
 <%
     out.println(window.printBefore());
     out.println(frame.printBefore());
 %>
-<center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
-	<tr> 
-		<td nowrap>
-			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<tr align=center> 
-					<td  class="intfdcolor4" valign="top" align=left>
-						<span class="txtlibform"><%=resource.getString("JSPP.SpacePlace")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="top" align=left>
-                        <SELECT name="SpaceBefore" id="SpaceBefore">
-                            <%
-                                for (int i = 0; i < brothers.length; i++)
-                                {
-                                    out.println("<OPTION value=\"" + brothers[i].getId() + "\">" + brothers[i].getName() + "</OPTION>");
-                                }
-                            %>
-                            <OPTION value="-1" selected><%=resource.getString("JSPP.PlaceLast")%></OPTION>
-                        </SELECT>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
-<br>
+<view:board>
+<form name="spaceOrder" action="EffectivePlaceSpaceAfter" method="post">
+	<table border="0" cellspacing="0" cellpadding="5">
+		<tr> 
+			<td class="txtlibform"><%=resource.getString("JSPP.SpacePlace")%> :</td>
+			<td>
+	            <select name="SpaceBefore" id="SpaceBefore">
+	                <% for (SpaceInst space : brothers) { %>
+	                        <option value="<%=space.getId() %>"><%=space.getName() %></option>
+	                <% } %>
+	                <option value="-1" selected="selected"><%=resource.getString("JSPP.PlaceLast")%></option>
+	            </select>
+			</td>
+		</tr>
+	</table>
+</form>
+</view:board>
+<br/>
 <%
-		  ButtonPane buttonPane = gef.getButtonPane();
-		  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-		  buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
-		  out.println(buttonPane.print());
-%>
-</center>
-<%
-
+		ButtonPane buttonPane = gef.getButtonPane();
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+		out.println(buttonPane.print());
 		out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-</FORM>
-</BODY>
-</HTML>
+</body>
+</html>

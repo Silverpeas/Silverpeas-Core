@@ -28,8 +28,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.indexEngine.model.DidYouMeanIndexer;
+import org.silverpeas.search.indexEngine.model.DidYouMeanIndexer;
 
 /**
  * Executes a partial or full reindexing of spelling indexes
@@ -63,7 +62,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
         "applicationIndexer.MSG_START_INDEXING_COMPONENT",
         "component = " + componentId);
     try {
-      String ComponentIndexPath = FileRepositoryManager.getAbsoluteIndexPath(null, componentId);
+      String ComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+          .getAbsoluteIndexPath(null, componentId);
       DidYouMeanIndexer.createSpellIndexForAllLanguage("content", ComponentIndexPath);
     } catch (Exception e) {
       SilverTrace.error(ApplicationDYMIndexer.class.toString(),
@@ -89,7 +89,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
         "applicationIndexer.MSG_START_INDEXING_PERSONAL_COMPONENT",
         "personalComponent = " + personalComponent);
     try {
-      File file = new File(FileRepositoryManager.getIndexUpLoadPath());
+      File file = new File(
+          org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath());
       FilenameFilter filter = null;
       if ("agenda".equalsIgnoreCase(personalComponent)) {
         filter = new FileFilterAgenda();
@@ -104,8 +105,9 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
       }
       String[] paths = file.list(filter);
       for (String personalComponentName : paths) {
-        String personalComponentIndexPath = FileRepositoryManager.getAbsoluteIndexPath(null,
-            personalComponentName);
+        String personalComponentIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+            .getAbsoluteIndexPath(null,
+                personalComponentName);
         DidYouMeanIndexer.createSpellIndex("content", personalComponentIndexPath);
       }
 
@@ -126,7 +128,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    */
   public void indexPdc() {
     setSilverTraceLevel();
-    String pdcIndexPath = FileRepositoryManager.getAbsoluteIndexPath(null, "pdc");
+    String pdcIndexPath = org.silverpeas.search.indexEngine.IndexFileManager
+        .getAbsoluteIndexPath(null, "pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
   }
 }

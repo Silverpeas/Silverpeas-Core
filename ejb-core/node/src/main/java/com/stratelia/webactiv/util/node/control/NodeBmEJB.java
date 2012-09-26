@@ -1,56 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.node.control;
 
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.Translation;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.node.ejb.Node;
-import com.stratelia.webactiv.util.node.ejb.NodeDAO;
-import com.stratelia.webactiv.util.node.ejb.NodeHome;
-import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -61,9 +30,41 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.Translation;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.node.ejb.Node;
+import com.stratelia.webactiv.util.node.ejb.NodeDAO;
+import com.stratelia.webactiv.util.node.ejb.NodeHome;
+import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
+
 /**
  * This is the NodeBM EJB-tier controller. A node is composed by some another nodes (children) and
  * have got one and only one father. It describes a tree. It is implemented as a session EJB.
+ *
  * @author Nicolas Eysseric
  */
 public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
@@ -74,18 +75,18 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   private String dbName = JNDINames.NODE_DATASOURCE;
   private static final ResourceLocator nodeSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.node.nodeSettings", "fr");
+      "org.silverpeas.util.node.nodeSettings", "fr");
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
   private NodeHome getNodeHome() {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.NODE_EJBHOME, NodeHome.class);
-
-    } catch (Exception re) {
+    } catch (UtilException re) {
       throw new NodeRuntimeException("NodeBmEJB.getNodeHome()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", re);
     }
@@ -93,59 +94,37 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pk
    * @return
    * @see
    */
   private Node findNode(NodePK pk) {
     NodeHome home = getNodeHome();
-
     try {
       Node newNodeInstance = home.findByPrimaryKey(pk);
-
       return newNodeInstance;
     } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.findNode()",
-          SilverpeasRuntimeException.ERROR, "node.NODE_UNFINDABLE", "nodeId = "
-          + pk.getId(), re);
+      throw new NodeRuntimeException("NodeBmEJB.findNode()", SilverpeasRuntimeException.ERROR,
+          "node.NODE_UNFINDABLE", "nodeId = " + pk.getId(), re);
     }
   }
 
-  private Node findNodeByNameAndFatherId(NodePK pk, String name,
-      int nodeFatherId) {
+  private Node findNodeByNameAndFatherId(NodePK pk, String name, int nodeFatherId) {
     NodeHome home = getNodeHome();
-
     try {
       Node newNodeInstance = home.findByNameAndFatherId(pk, name, nodeFatherId);
-
       return newNodeInstance;
     } catch (Exception re) {
-      throw new NodeRuntimeException(
-          "NodeBmEJB.findNodeByNameAndNodeFatherId()",
+      throw new NodeRuntimeException("NodeBmEJB.findNodeByNameAndNodeFatherId()",
           SilverpeasRuntimeException.ERROR, "node.NODE_UNFINDABLE", "nodeId = "
-          + pk.getId() + ",name=" + name + ",nodeFatherID=" + nodeFatherId,
-          re);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @see
-   */
-  private void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("node", "NodeBmEJB.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
+          + pk.getId() + ",name=" + name + ",nodeFatherID=" + nodeFatherId, re);
     }
   }
 
   /**
    * Get the attributes of a node and of its children
+   *
    * @return a NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -167,14 +146,11 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           new NodeI18NDetail(nodeDetail.getLanguage(), nodeDetail.getName(), nodeDetail.
           getDescription());
       nodeDetail.addTranslation((Translation) nodeI18NDetail);
-
-      List<Translation> translations = getTranslations(new Integer(pk.getId()).intValue());
-
+      List<Translation> translations = getTranslations(Integer.parseInt(pk.getId()));
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);
         nodeDetail.addTranslation(nodeI18NDetail);
       }
-
       return nodeDetail;
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.getDetail()",
@@ -185,25 +161,22 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
   }
 
   @Override
-  public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name,
-      int nodeFatherId) throws RemoteException {
+  public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) throws
+      RemoteException {
     Node node = findNodeByNameAndFatherId(pk, name, nodeFatherId);
-
     try {
       NodeDetail nodeDetail = node.getDetail(null);
-
       return nodeDetail;
     } catch (Exception re) {
-      throw new NodeRuntimeException(
-          "NodeBmEJB.getDetailByNameAndNodeFatherId()",
+      throw new NodeRuntimeException("NodeBmEJB.getDetailByNameAndNodeFatherId()",
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
-          "nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId="
-          + nodeFatherId, re);
+          "nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" + nodeFatherId, re);
     }
   }
 
   /**
    * Get Translations of the node
+   *
    * @param nodeId
    * @return List of translations
    */
@@ -213,28 +186,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       return NodeI18NDAO.getTranslations(con, nodeId);
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.getTranslations()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_TRANSLATIONS_FAILED",
-          re);
+          SilverpeasRuntimeException.ERROR, "node.GETTING_TRANSLATIONS_FAILED", re);
     } finally {
-      freeConnection(con);
-    }
-  }
-
-  /**
-   * Remove Translations of the node
-   * @param nodeId
-   * @return nothing
-   */
-  private void removeTranslations(int nodeId) throws RemoteException {
-    Connection con = DBUtil.makeConnection(dbName);
-    try {
-      NodeI18NDAO.removeTranslations(con, nodeId);
-    } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.removeTranslations()",
-          SilverpeasRuntimeException.ERROR, "node.REMOVE_TRANSLATIONS_FAILED",
-          re);
-    } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -247,7 +201,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       throw new NodeRuntimeException("NodeBmEJB.getTree()",
           SilverpeasRuntimeException.ERROR, "node.GETTING_TREE_FAILED", re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -301,51 +255,38 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         "pk = " + pk + ", status = " + status + ", level = " + level + ", sorting=" + sorting);
     Connection con = DBUtil.makeConnection(dbName);
     ArrayList<NodeDetail> result = null;
-
     try {
       List<NodeDetail> headers = NodeDAO.getAllHeaders(con, pk, sorting, level);
-
       NodeDetail root = NodeDAO.loadRow(con, pk);
       root.setChildrenDetails(new ArrayList<NodeDetail>());
-
       Map<String, NodeDetail> tree = new HashMap<String, NodeDetail>();
       tree.put(root.getNodePK().getId(), root);
-
-      Iterator<NodeDetail> it = headers.iterator();
-      NodeDetail header = null;
-      while (it.hasNext()) {
-        header = it.next();
+      for(NodeDetail header : headers) {
         header.setChildrenDetails(new ArrayList<NodeDetail>());
         tree.put(header.getNodePK().getId(), header);
       }
 
-      it = headers.iterator();
-      while (it.hasNext()) {
-        header = it.next();
+     for(NodeDetail header : headers) {
         NodeDetail father = tree.get(header.getFatherPK().getId());
         if (father != null) {
           father.getChildrenDetails().add(header);
         }
       }
-
       result = new ArrayList<NodeDetail>();
-
       if (level == 0) {
         root = tree.get(root.getNodePK().getId());
         result = (ArrayList<NodeDetail>) processNode(result, root);
       } else {
-        it = headers.iterator();
-        while (it.hasNext()) {
-          result.add(it.next());
+        for(NodeDetail header : headers) {
+          result.add(header);
         }
       }
-
       return result;
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.getSubTreeByStatus()",
           SilverpeasRuntimeException.ERROR, "node.GETTING_SUBTREE_FAILED", re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -377,14 +318,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     Connection con = DBUtil.makeConnection(dbName);
     try {
       List<NodeDetail> tree = getSubTree(nodePK);
-      NodeDetail node = null;
-      String newPath = null;
-
       for (int t = 0; t < tree.size(); t++) {
-        node = tree.get(t);
-
+        NodeDetail node = tree.get(t);
         deleteIndex(node.getNodePK());
-
         if (t == 0) {
           oldRootPath = node.getPath();
           node.setFatherPK(toNode);
@@ -394,32 +330,22 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             deltaLevel = node.getLevel() - root.getLevel();
           }
           deltaLevel++;
-
           node.setOrder(root.getChildrenNumber());
         }
-
         // remove node
         Node nodeEJB = findNode(node.getNodePK());
         nodeEJB.remove();
 
         // change data
-        newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
+        String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
         node.setPath(newPath);
         node.setLevel(node.getLevel() + deltaLevel);
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);
-
-        // re-create node with right pk
         Node newNode = getNodeHome().create(node);
         NodeDetail newND = newNode.getDetail();
-
         createIndex(newND, true);
-
-        // setDetail(node); //indispensable car utilisation d'un EJB Entity !
-        // NodeDAO.moveNode(con, node);
-
-        // createIndex(node);
       }
 
       NodeDAO.unvalidateTree(con, nodePK);
@@ -428,12 +354,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       throw new NodeRuntimeException("NodeBmEJB.moveNode()",
           SilverpeasRuntimeException.ERROR, "node.MOVING_SUBTREE_FAILED", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param pk
    * @return
    * @throws RemoteException
@@ -446,6 +373,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pk
    * @return
    * @throws RemoteException
@@ -483,7 +411,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
           "nodeId = " + pk.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -497,12 +425,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_HEADER_FAILED",
           "nodeId = " + pk.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get the attributes of THIS node
+   *
    * @return a NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -517,12 +446,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_HEADER_FAILED",
           "nodeId = " + pk.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Update the attributes of the node
+   *
    * @param nd the NodeDetail which contains updated data
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -595,12 +525,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.UPDATING_NODE_FAILED",
           "nodeId = " + nd.getNodePK().getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Remove a node and its descendants
+   *
    * @param pk the node PK to delete
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
@@ -611,14 +542,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     try {
       connection = DBUtil.makeConnection(dbName);
       NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
-
         @Override
         public void invoke(NodePK pk) throws Exception {
-                    // remove wysiwyg attached to node
+          // remove wysiwyg attached to node
           WysiwygController.deleteWysiwygAttachments(null, pk.getInstanceId(),
               "Node_" + pk.getId());
-          }
-                });
+        }
+      });
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.removeNode()",
           SilverpeasRuntimeException.ERROR, "node.DELETING_NODE_FAILED",
@@ -630,6 +560,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Get the path of this node from this node to root
+   *
    * @param pk The PK of the node
    * @return a NodeDetail Collection (only header)
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -643,6 +574,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Get the header of each child of the node
+   *
    * @return a NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -657,25 +589,26 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_SONS_FAILED",
           "nodeId = " + pk.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get the header of each child of the node this method is to be used on frequently asked nodes
    * (next to the root), because all ejb will be instanciated
+   *
    * @return a NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
   @Override
-  public Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk)
-      throws RemoteException {
+  public Collection<NodeDetail> getFrequentlyAskedChildrenDetails(NodePK pk) throws RemoteException {
     return getChildrenDetails(pk);
   }
 
   /**
    * Method declaration
+   *
    * @param pk
    * @param level
    * @return
@@ -689,16 +622,16 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       return NodeDAO.getHeadersByLevel(con, pk, level);
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.getHeadersByLevel()",
-          SilverpeasRuntimeException.ERROR,
-          "node.GETTING_NODES_BY_LEVEL_FAILED", "nodeId = " + pk.getId()
-          + ", level = " + level, re);
+          SilverpeasRuntimeException.ERROR, "node.GETTING_NODES_BY_LEVEL_FAILED",
+          "nodeId = " + pk.getId() + ", level = " + level, re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Method declaration
+   *
    * @param nodePK
    * @return
    * @throws RemoteException
@@ -713,12 +646,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       throw new NodeRuntimeException("NodeBmEJB.getAllNodes()",
           SilverpeasRuntimeException.ERROR, "node.GETTING_ALL_NODES_FAILED", re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get the children number of this node
+   *
    * @return a int
    * @since 1.0
    */
@@ -732,7 +666,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "node.GETTING_NUMBER_OF_SONS_FAILED", "nodeId = " + pk.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -759,6 +693,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Create a new Node object
+   *
    * @param nd the NodeDetail which contains data
    * @param fatherDetail the PK of the user who have create this node
    * @return the NodePK of the new Node
@@ -792,6 +727,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * On node creation, check if another node have got the same name with same father
+   *
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -808,12 +744,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "node.KNOWING_IF_SAME_NAME_SAME_LEVEL_ON_CREATION_FAILED", re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * On node update, check if another node have got the same name with same father
+   *
    * @param nd A NodeDetail contains new node data to compare
    * @return true if there is already a node with same name with same father false else
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
@@ -829,12 +766,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR,
           "node.KNOWING_IF_SAME_NAME_SAME_LEVEL_ON_UPDATE_FAILED", re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get children node PKs of a node
+   *
    * @param nodePK A NodePK
    * @return A collection of NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -850,12 +788,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_PK_OF_SONS_FAILED",
           "nodeId = " + nodePK.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get descendant node PKs of a node
+   *
    * @param nodePK A NodePK
    * @return A collection of NodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -872,13 +811,14 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           "node.GETTING_PK_OF_DESCENDANTS_FAILED",
           "nodeId = " + nodePK.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
 
   }
 
   /**
    * Get descendant node details of a node
+   *
    * @param nodePK A NodePK
    * @return A List of NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -895,12 +835,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           "node.GETTING_DETAIL_OF_DESCENDANTS_FAILED", "nodeId = "
           + nodePK.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get descendant node details of a node
+   *
    * @param node A NodeDetail
    * @return A List of NodeDetail
    * @since 4.07
@@ -916,12 +857,13 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           "node.GETTING_DETAIL_OF_DESCENDANTS_FAILED", "nodeId = "
           + node.getNodePK().getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get the path from root to a node
+   *
    * @param nodePK A NodePK
    * @return A collection of NodeDetail
    * @see com.stratelia.webactiv.util.node.model.NodePK
@@ -940,7 +882,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_PATH_FAILED",
           "nodeId = " + nodePK.getId(), re);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -984,7 +926,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       throw new NodeRuntimeException("NodeBmEJB.sortNodes()", SilverpeasRuntimeException.ERROR,
           "node.SORTING_NODES_FAILED", e);
     } finally {
-      freeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -1084,6 +1026,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public NodeBmEJB() {
@@ -1091,6 +1034,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @throws CreateException
    * @see
    */
@@ -1099,6 +1043,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @see
    */
   @Override
@@ -1107,6 +1052,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @see
    */
   @Override
@@ -1115,6 +1061,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @see
    */
   @Override
@@ -1123,6 +1070,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param sc
    * @see
    */

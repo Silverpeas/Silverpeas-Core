@@ -123,9 +123,8 @@ public class Instanciateur {
     WAComponent waComponent = getWAComponent(componentName);
     if (waComponent == null) {
       // load dynamically new component descriptor (not loaded on startup)
-      String fullPath = null;
       try {
-        fullPath = getDescriptorFullPath(componentName);
+        String fullPath = getDescriptorFullPath(componentName);
         waComponent = loadComponent(fullPath);
       } catch (IOException e) {
         throw new InstanciationException("Instanciateur.instantiateComponentName",
@@ -163,9 +162,8 @@ public class Instanciateur {
   }
 
   public void unInstantiateComponentName(String componentName) throws InstanciationException {
-    String fullPath = null;
     try {
-      fullPath = getDescriptorFullPath(componentName);
+      String fullPath = getDescriptorFullPath(componentName);
       unInstantiateComponent(loadComponent(fullPath));
     } catch (IOException e) {
       throw new InstanciationException("Instanciateur.unInstantiateComponentName",

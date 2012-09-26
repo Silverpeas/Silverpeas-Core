@@ -27,7 +27,7 @@ package com.stratelia.silverpeas.pdc.control;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import com.stratelia.webactiv.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;

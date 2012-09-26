@@ -32,17 +32,16 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
+<%@ page import="com.stratelia.webactiv.searchEngine.model.WAIndexSearcher"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -57,16 +56,20 @@ Window 		window 		= gef.getWindow();
 BrowseBar 	browseBar 	= window.getBrowseBar();
 Frame 		frame 		= gef.getFrame();
 Board		board		= gef.getBoard();
+
+QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
+
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-</HEAD>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+</head>
+<body>
 <%
   	browseBar.setDomainName(resource.getString("pdcPeas.SearchEngine"));
   	browseBar.setComponentName(resource.getString("pdcPeas.AideContent"));
@@ -76,27 +79,27 @@ out.println(gef.getLookStyleSheet());
 	out.println(board.printBefore());
 %>
 		<table border="0" width="100%"><tr><td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol1Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol1Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol1Content3")%><br>
+		<%=resource.getString("pdcPeas.helpCol1Header")%><br/><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content1")%><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content2")%><br/>
+		<%=resource.getString("pdcPeas.helpCol1Content3")%><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol2Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol2Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content4")%><br>
-		<%=resource.getString("pdcPeas.helpCol2Content5")%><br>
+		<%=resource.getString("pdcPeas.helpCol2Header")%><br/><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content1", resource.getString("pdcPeas.help.operand."+defaultOperand.toString()))%><br/>
+		<%=resource.getStringWithParam("pdcPeas.helpCol2Content2", defaultOperand.toString())%><br/>
+		<%=resource.getString("pdcPeas.helpCol2Content3")%><br/>
+		<%=resource.getString("pdcPeas.helpCol2Content4")%><br/>
+		<%=resource.getString("pdcPeas.helpCol2Content5")%><br/>
 		</td>
 		<td>&nbsp;</td>
 		<td valign="top" width="30%">
-		<%=resource.getString("pdcPeas.helpCol3Header")%><br><br>
-		<%=resource.getString("pdcPeas.helpCol3Content1")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content2")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content3")%><br>
-		<%=resource.getString("pdcPeas.helpCol3Content4")%><br>
+		<%=resource.getString("pdcPeas.helpCol3Header")%><br/><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content1")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content2")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content3")%><br/>
+		<%=resource.getString("pdcPeas.helpCol3Content4")%><br/>
 		</td>
 		</tr></table>
 <%
@@ -104,5 +107,5 @@ out.println(gef.getLookStyleSheet());
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

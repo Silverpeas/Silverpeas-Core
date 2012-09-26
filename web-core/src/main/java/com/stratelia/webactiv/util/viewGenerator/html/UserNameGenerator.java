@@ -2,6 +2,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import org.apache.ecs.xhtml.span;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class UserNameGenerator {
@@ -12,9 +13,11 @@ public class UserNameGenerator {
   
   public static span generate(UserDetail user, String currentUserId) {
     span userName = new span(user.getDisplayedName());
-    if (!user.getId().equals(currentUserId)) {
-      userName.setClass("userToZoom");
-      userName.addAttribute("rel", user.getId());
+    if (StringUtil.isDefined(currentUserId)) {
+      if (!user.getId().equals(currentUserId) && !UserDetail.isAnonymousUser(currentUserId)) {
+        userName.setClass("userToZoom");
+        userName.addAttribute("rel", user.getId());
+      }
     }
     return userName;
   }

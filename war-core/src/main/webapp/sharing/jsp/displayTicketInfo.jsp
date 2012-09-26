@@ -66,7 +66,7 @@
   <body id="fileSharingTicket">
       <div class="tableBoard">
 
-        <strong><c:out value="${ticket.resource.name}"/></strong> <fmt:message key="sharing.shareFile"/><br/><br/>
+        <strong><view:username userId="${ticket.creatorId}" zoom="false"/></strong> <fmt:message key="sharing.shareFile"/><br/><br/>
 
         <img alt="image" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
 
