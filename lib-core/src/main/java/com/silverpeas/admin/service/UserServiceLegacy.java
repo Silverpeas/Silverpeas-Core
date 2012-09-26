@@ -168,13 +168,17 @@ public class UserServiceLegacy implements UserService {
           "credentialsMail");
 
       // Retrieve login page URL
-      ResourceLocator generalLook = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-      String loginPage= generalLook.getString("loginPage");
-      loginPage = (StringUtil.isDefined(loginPage)) ? loginPage : "defaultLogin.jsp";
+      ResourceLocator generalLook =
+          new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+      String loginPage = generalLook.getString("loginPage", "defaultLogin.jsp");
       StringBuffer url = new StringBuffer();
-      if ( ! loginPage.startsWith("http") ) {
-        url.append(silverpeasServerURL).append("/").append(URLManager.getApplicationURL());
-        if ( !loginPage.startsWith("/") ) {
+      if (!loginPage.startsWith("http")) {
+        url.append(silverpeasServerURL);
+        if (!URLManager.getApplicationURL().startsWith("/")) {
+          url.append("/");
+        }
+        url.append(URLManager.getApplicationURL());
+        if (!loginPage.startsWith("/")) {
           url.append("/");
         }
       }
@@ -187,8 +191,11 @@ public class UserServiceLegacy implements UserService {
       template.setAttribute("fullName", user.getDisplayedName());
       template.setAttribute("login", user.getLogin());
       template.setAttribute("password", password);
-      template.setAttribute("domain", svpDomain.getName());
-      template.setAttribute("url", url.toString() );
+      if (admin.getAllDomains().length > 1) {
+        // do not display domain info if it is unique
+        template.setAttribute("domain", svpDomain);
+      }
+      template.setAttribute("url", url.toString());
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
       notifMetaData.setSender("0");
