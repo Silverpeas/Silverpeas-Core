@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.search.indexEngine.model;
 
@@ -37,6 +34,7 @@ import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.fr.ElisionFilter;
+import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.util.Version;
 
@@ -56,6 +54,7 @@ public final class WAAnalyzer extends Analyzer {
 
   /**
    * Returns the analyzer to be used with texts of the given language. The analyzers are cached.
+   *
    * @param language
    * @return
    */
@@ -72,6 +71,7 @@ public final class WAAnalyzer extends Analyzer {
 
   /**
    * Returns a tokens stream built on top of the given reader.
+   *
    * @param reader
    * @return
    */
@@ -82,6 +82,13 @@ public final class WAAnalyzer extends Analyzer {
     result = new StopFilter(Version.LUCENE_36, result, stopWords); // remove some unexplicit terms
     // according to the language
     result = new ElisionFilter(Version.LUCENE_36, result); // remove [cdjlmnst-qu]' from token
+    if (snowballUsed) {
+      // Important! Strings given to Snowball filter must contains accents
+      // so accents must be removed after stemmer have done the job
+      // ignoring singular/plural, male/female and conjugated forms
+      result = new SnowballFilter(result, stemmer);
+    }
+    // remove accents
     result = new ASCIIFoldingFilter(result);
     return result;
   }
@@ -94,8 +101,15 @@ public final class WAAnalyzer extends Analyzer {
   /**
    * The constructor is private : use @link #getAnalyzer().
    */
-  private WAAnalyzer(String language) {
+  private WAAnalyzer(String lang) {
+    if (!StringUtil.isDefined(lang) || lang.length() != 2) {
+      language = settings.getString("analyzer.language.default", "fr");
+    } else {
+      language = lang;
+    }
     getStopWords(language);
+    stemmer = getStemmer();
+    snowballUsed = settings.getBoolean("snowball.active", false);
   }
 
   /**
@@ -108,11 +122,9 @@ public final class WAAnalyzer extends Analyzer {
       if (!StringUtil.isDefined(currentLanguage)) {
         currentLanguage = I18NHelper.defaultLanguage;
       }
-      ResourceLocator resource = new ResourceLocator(
-          "org.silverpeas.search.indexEngine.StopWords", currentLanguage);
-
+      ResourceLocator resource = new ResourceLocator("org.silverpeas.search.indexEngine.StopWords",
+          currentLanguage);
       Enumeration<String> stopWord = resource.getKeys();
-
       while (stopWord.hasMoreElements()) {
         stopWords.add(stopWord.nextElement());
       }
@@ -120,22 +132,20 @@ public final class WAAnalyzer extends Analyzer {
       SilverTrace.warn("indexEngine", "WAAnalyzer", "indexEngine.MSG_MISSING_STOPWORDS_DEFINITION");
     }
   }
-  
+
   private String getStemmer() {
-    return settings.getString("snowball.stemmer."+language, "French");
+    return settings.getString("snowball.stemmer." + language, "French");
   }
-  
+
   public String getLanguage() {
     return language;
   }
-
   static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
   static private final ResourceLocator settings = new ResourceLocator(
       "org.silverpeas.util.indexEngine.IndexEngine", "");
   /**
    * The words which are usually not useful for searching.
    */
-
   private String stemmer = null;
   private boolean snowballUsed = false;
   private String language = null;

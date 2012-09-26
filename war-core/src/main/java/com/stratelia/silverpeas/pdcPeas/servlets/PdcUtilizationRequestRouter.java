@@ -107,8 +107,7 @@ public class PdcUtilizationRequestRouter extends
 
           // assign attributes into the request
           request.setAttribute("AxisList", pdcSC.getUsedAxisList()); // set a sorted list
-
-          setBrowseContextInRequest(pdcSC, request);
+          request.setAttribute("ComponentId", pdcSC.getComponentId());
 
           // create the new destination
           destination = "/pdcPeas/jsp/utilization.jsp";
@@ -122,8 +121,6 @@ public class PdcUtilizationRequestRouter extends
 
         pdcSC.setCurrentView(type);
 
-        setBrowseContextInRequest(pdcSC, request);
-
         // create the new destination
         destination = getDestination("UtilizationViewAxis", pdcSC, request);
 
@@ -136,8 +133,7 @@ public class PdcUtilizationRequestRouter extends
 
         request.setAttribute("AxisList", pdcSC.getAxis());
         request.setAttribute("ViewType", pdcSC.getCurrentView());
-
-        setBrowseContextInRequest(pdcSC, request);
+        request.setAttribute("ComponentId", pdcSC.getComponentId());
 
         destination = "/pdcPeas/jsp/utilizationChoose.jsp";
 
@@ -165,8 +161,7 @@ public class PdcUtilizationRequestRouter extends
         request.setAttribute("AxisDetail", axis);
         request.setAttribute("IsMandatory", isMandatory);
         request.setAttribute("IsVariant", isVariant);
-
-        setBrowseContextInRequest(pdcSC, request);
+        request.setAttribute("ComponentId", pdcSC.getComponentId());
 
         destination = "/pdcPeas/jsp/utilizationAdd.jsp";
 
@@ -215,8 +210,7 @@ public class PdcUtilizationRequestRouter extends
 
             request.setAttribute("IsMandatory", isMandatory);
             request.setAttribute("IsVariant", isVariant);
-
-            setBrowseContextInRequest(pdcSC, request);
+            request.setAttribute("ComponentId", pdcSC.getComponentId());
 
             destination = "/pdcPeas/jsp/utilizationAdd.jsp";
             break;
@@ -237,8 +231,7 @@ public class PdcUtilizationRequestRouter extends
 
         request.setAttribute("AxisDetail", axis);
         request.setAttribute("UsedAxis", usedAxis);
-
-        setBrowseContextInRequest(pdcSC, request);
+        request.setAttribute("ComponentId", pdcSC.getComponentId());
 
         destination = "/pdcPeas/jsp/utilizationEdit.jsp";
 
@@ -270,14 +263,14 @@ public class PdcUtilizationRequestRouter extends
             request.setAttribute("UsedAxis", usedAxis);
             request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
             request.setAttribute("ErrorState", "1");
-            setBrowseContextInRequest(pdcSC, request);
+            request.setAttribute("ComponentId", pdcSC.getComponentId());
             destination = "/pdcPeas/jsp/utilizationEdit.jsp";
             break;
           case 2:
             request.setAttribute("UsedAxis", usedAxis);
             request.setAttribute("AxisDetail", pdcSC.getCurrentAxis());
             request.setAttribute("ModificationNotAllowed", "1");
-            setBrowseContextInRequest(pdcSC, request);
+            request.setAttribute("ComponentId", pdcSC.getComponentId());
             destination = "/pdcPeas/jsp/utilizationEdit.jsp";
             break;
           default:
@@ -312,12 +305,6 @@ public class PdcUtilizationRequestRouter extends
     }
 
     return destination;
-  }
-
-  private void setBrowseContextInRequest(PdcUtilizationSessionController pdcSC,
-      HttpServletRequest request) {
-    request.setAttribute("browseContext", new String[] {
-        pdcSC.getSpaceLabel(), pdcSC.getComponentLabel() });
   }
 
   /**

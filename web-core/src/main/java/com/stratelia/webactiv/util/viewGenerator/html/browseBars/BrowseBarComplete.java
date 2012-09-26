@@ -205,13 +205,15 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     StringBuilder script = new StringBuilder();
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");
+    String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
     if(look != null && StringUtil.isDefined(look.getMainFrame())) {
-      script.append(" top.location = \"").append(context).append(look.getMainFrame()).append(
-      "RedirectToSpaceId=\"+spaceId;");
-    }else {
-      script.append(" top.location = \"").append(context).append(
-            "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
+      mainFrame = look.getMainFrame();
+      if (!mainFrame.startsWith("/")) {
+        mainFrame = "/admin/jsp/" + mainFrame;
+      }
     }
+    script.append(" top.location = \"").append(context).append(mainFrame)
+        .append("?RedirectToSpaceId=\"+spaceId;");
     script.append("}");
     script.append("</script>");
     return script.toString();

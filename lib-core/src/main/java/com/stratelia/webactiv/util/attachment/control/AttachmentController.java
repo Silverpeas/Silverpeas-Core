@@ -74,6 +74,8 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+
 public class AttachmentController {
 
   private static AttachmentBm attachmentBm = new AttachmentBmImpl();

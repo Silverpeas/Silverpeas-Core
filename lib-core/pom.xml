@@ -234,11 +234,6 @@
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-snowball</artifactId>
-    </dependency>-->
     <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
@@ -342,28 +337,21 @@
     <dependency>
       <artifactId>xmlbeans</artifactId>
       <groupId>org.apache.xmlbeans</groupId>
-      <type>jar</type>      
+      <type>jar</type>
       <classifier>jdk6</classifier>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-linkedin</artifactId>
-      <version>1.0.0.RC1</version>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.social</groupId>
       <artifactId>spring-social-facebook</artifactId>
-      <version>1.0.1.RELEASE</version>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
-      <version>3.1.0.RELEASE</version>
     </dependency>
-
     <dependency>
       <groupId>org.forgerock.opendj</groupId>
       <artifactId>opendj-server</artifactId>
@@ -371,6 +359,11 @@
     <dependency>
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.im4java</groupId>
+      <artifactId>im4java</artifactId>
     </dependency>
   </dependencies>
 

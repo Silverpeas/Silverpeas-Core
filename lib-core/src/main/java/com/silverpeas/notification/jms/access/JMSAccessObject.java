@@ -24,37 +24,35 @@
 
 package com.silverpeas.notification.jms.access;
 
+import static com.silverpeas.notification.jms.access.SilverpeasTopicPublisher.decorateTopicPublisher;
+import static com.silverpeas.notification.jms.access.SilverpeasTopicSubscriber.decorateTopicSubscriber;
 import com.stratelia.webactiv.util.JNDINames;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Named;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import javax.jms.*;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import static com.silverpeas.notification.jms.access.SilverpeasTopicSubscriber.*;
-import static com.silverpeas.notification.jms.access.SilverpeasTopicPublisher.*;
 
 /**
  * An object providing an access to the services of a JMS system and managing the life-cycle of the
- * connections and of the sessions. This object is managed by the IoC container so that it can be
- * injected as dependency into the JMS implementation of the Notification API. This object acts as a
- * facade to the underlying JMS system and provides operations to access the JMS objects. It manages
- * the life-cycle of connections and sessions with the JMS system and wraps some technical details
- * from the JMS consumer/producer operations.
+ * connections and of the sessions.
+ *
+ * This object is managed by the IoC container so that it can be injected as dependency into the JMS
+ * implementation of the Notification API.
+ *
+ * This object acts as a facade to the underlying JMS system and provides operations to access the
+ * JMS objects. It manages the life-cycle of connections and sessions with the JMS system and wraps
+ * some technical details from the JMS consumer/producer operations.
  */
 @Named
 public final class JMSAccessObject {
 
   private TopicConnection topicConnection;
-
+  private TopicSession topicSession;
+  private ExceptionListener exceptionListener = new ConnectionExceptionListener();
   /**
    * The prefix of the JNDI name under which JMS topic will be registered.
    */
@@ -63,6 +61,7 @@ public final class JMSAccessObject {
   /**
    * Gets the topic corresponding to the specified name. The topic should exist, otherwise an
    * exception is thrown.
+   *
    * @param name the topic name.
    * @return the Topic instance matching the name.
    * @throws NamingException if no such topic exists with the specified name.
@@ -72,35 +71,48 @@ public final class JMSAccessObject {
   }
 
   /**
-   * Creates a subscription to the specified topic and returns the subscriber resulting of the
-   * subscription. The method allocates the required resources for the subscriber receive incoming
-   * messages. Once created, the subscriber can be used to set a message listener or to perform
-   * additional settings. To unsubscribe from the topic, just call the disposeTopicSubscriber method
-   * with the subscriber as parameter.
+   * Creates a subscription to the specified topic with the specified listener for receiving the
+   * messages published in the topic. The subscription will be uniquely identified by the specified
+   * identifier.
+   *
+   * A subscription in JMS is represented by a TopicSubscriber instance.
+   *
+   * To unsubscribe from the topic, just call the
+   * <code>disposeTopicSubscriber</code> method with the TopicSubscriber instance as parameter.
+   *
    * @param topicName the name of topic.
+   * @param subscriberId the unique identifier of the subscription.
+   * @param listener the listener that will receive the messages published in the topic.
    * @return a TopicSubscriber instance resulting of the topic subscription. For each topic
    * subscription matchs a specific and single TopicSubscriber instance.
    * @throws JMSException if an error occurs while subscribing to the specified topic.
    * @throws NamingException if no such topic exists with the specified name.
    */
-  public TopicSubscriber createTopicSubscriber(String topicName) throws JMSException,
-      NamingException {
+  public TopicSubscriber createTopicSubscriber(String topicName, String subscriberId,
+          final MessageListener listener) throws JMSException, NamingException {
     Topic topic = getExistingTopic(topicName);
     TopicSession session = getTopicSession();
-    SilverpeasTopicSubscriber topicSubscriber =
-        decorateTopicSubscriber(session.createSubscriber(topic));
+    SilverpeasTopicSubscriber topicSubscriber = decorateTopicSubscriber(session.
+            createDurableSubscriber(topic, subscriberId));
+    topicSubscriber.setMessageListener(listener);
     topicSubscriber.setSession(session);
+    topicSubscriber.setId(subscriberId);
     return topicSubscriber;
   }
 
   /**
-   * Disposes the subscription to a topic backed by the specified subscriber. It frees all the
-   * resources used by the subscriber.
+   * Disposes the subscription to a topic represented by the specified TopicSubscriver instance. It
+   * frees all the resources used by the subscriber in JMS.
+   *
    * @param subscriber the subscriber matching the subscription to a given topic.
    * @throws JMSException if an error occurs while unsubscribing the subscription.
    */
   public void disposeTopicSubscriber(final TopicSubscriber subscriber) throws JMSException {
-    Session session = ((SilverpeasTopicSubscriber) subscriber).getSession();
+    SilverpeasTopicSubscriber silverpeasSubscriber = (SilverpeasTopicSubscriber) subscriber;
+    Session session = silverpeasSubscriber.getSession();
+    String id = silverpeasSubscriber.getId();
+    subscriber.close();
+    session.unsubscribe(id);
     releaseSession(session);
   }
 
@@ -110,6 +122,7 @@ public final class JMSAccessObject {
    * messafges, call the disposeTopicPublisher method to frees the publisher. For each created
    * publisher, one entry to the topic is opened, so that is recommended to frees it after message
    * publishings.
+   *
    * @param topicName the name of the topic.
    * @return a TopicSubscriber instance.
    * @throws NamingException if no such topic exists with the specified name.
@@ -127,17 +140,20 @@ public final class JMSAccessObject {
   /**
    * Disposes the specified publisher. It cannot then be anymore used. The method frees the
    * resources allocated to the publisher and the entry to the topic is closed.
+   *
    * @param publisher the publisher to dispose.
    * @throws JMSException if an error occurs while disposing the publisher.
    */
   public void disposeTopicPublisher(final TopicPublisher publisher) throws JMSException {
     Session session = ((SilverpeasTopicPublisher) publisher).getSession();
+    publisher.close();
     releaseSession(session);
   }
 
   /**
    * Creates a message ready to be sent by the specified publisher. The message is created within
    * the session to which the specified publisher stands.
+   *
    * @param publisher the publisher from which the session with the JMS system can be retreived.
    * @return an ObjectMessage instance.
    * @throws JMSException if an error occurs while creating a JMS message.
@@ -151,32 +167,62 @@ public final class JMSAccessObject {
   /**
    * Gets a JMS session for pub/sub operations. Once the pub/sub operations ends to be done, the
    * session should be released with the releaseSession() method.
+   *
    * @return a TopicSession instance.
    * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
   protected TopicSession getTopicSession() throws JMSException {
-    return topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+    return topicSession;
   }
 
   /**
    * Releases an opened sessions. The way the session is released depends on the life-cycle policy.
+   *
    * @param session the session to release.
    * @throws JMSException if an error occurs while released the JMS session.
    */
   protected void releaseSession(final Session session) throws JMSException {
-    session.close();
+    if (topicSession != session) {
+      session.close();
+    }
   }
 
   @PostConstruct
   protected void openConnection() throws NamingException, JMSException {
-    TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.JMS_FACTORY);
+    TopicConnectionFactory connectionFactory = InitialContext.doLookup(JNDINames.NOTIF_API_JMS);
     topicConnection = connectionFactory.createTopicConnection();
+    topicConnection.setClientID("Silverpeas");
+    topicConnection.setExceptionListener(exceptionListener);
     topicConnection.start();
+    topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
   }
 
   @PreDestroy
   protected void closeConnection() throws JMSException {
-    topicConnection.stop();
-    topicConnection.close();
+    try {
+      topicSession.close();
+      topicConnection.stop();
+      topicConnection.close();
+    } finally {
+      topicSession = null;
+    }
+  }
+
+  public class ConnectionExceptionListener implements ExceptionListener {
+
+    @Override
+    public void onException(JMSException jmse) {
+      try {
+        closeConnection();
+      } catch (Exception ex) {
+        Logger.getLogger(JMSAccessObject.class.getName()).log(Level.SEVERE, ex.getMessage());
+      } finally {
+        try {
+          openConnection();
+        } catch (Exception ex) {
+          Logger.getLogger(JMSAccessObject.class.getName()).log(Level.SEVERE, ex.getMessage());
+        }
+      }
+    }
   }
 }

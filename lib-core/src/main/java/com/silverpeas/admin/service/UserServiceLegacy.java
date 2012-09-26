@@ -55,7 +55,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class UserServiceLegacy implements UserService {
 
   ResourceLocator multilang = null;
-  
+
   @PostConstruct
   void init() {
       multilang =
@@ -167,11 +167,35 @@ public class UserServiceLegacy implements UserService {
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
           "credentialsMail");
 
+      // Retrieve login page URL
+      ResourceLocator generalLook =
+          new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+      String loginPage = generalLook.getString("loginPage", "defaultLogin.jsp");
+      StringBuffer url = new StringBuffer();
+      if (!loginPage.startsWith("http")) {
+        url.append(silverpeasServerURL);
+        if (!URLManager.getApplicationURL().startsWith("/")) {
+          url.append("/");
+        }
+        url.append(URLManager.getApplicationURL());
+        if (!loginPage.startsWith("/")) {
+          url.append("/");
+        }
+      }
+      url.append(loginPage).append("?DomainId=").append(user.getDomainId());
+
+      Admin admin = AdminReference.getAdminService();
+      Domain svpDomain = admin.getDomain(user.getDomainId());
+
       SilverpeasTemplate template = getNewTemplate();
       template.setAttribute("fullName", user.getDisplayedName());
       template.setAttribute("login", user.getLogin());
       template.setAttribute("password", password);
-      template.setAttribute("url", silverpeasServerURL + "/" + URLManager.getApplicationURL());
+      if (admin.getAllDomains().length > 1) {
+        // do not display domain info if it is unique
+        template.setAttribute("domain", svpDomain);
+      }
+      template.setAttribute("url", url.toString());
       templates.put(DisplayI18NHelper.getDefaultLanguage(), template);
       notifMetaData.addLanguage(DisplayI18NHelper.getDefaultLanguage(), subject, "");
       notifMetaData.setSender("0");

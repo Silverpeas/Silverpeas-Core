@@ -153,7 +153,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   public void display(PrintWriter out, Field field, FieldTemplate template,
-      PagesContext pagesContext, String webContext) throws FormException {
+      PagesContext pageContext, String webContext) throws FormException {
     SilverTrace.info("form", "FileFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
         "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
         ", fieldType = " + field.getTypeName());
@@ -168,10 +168,10 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     }
 
     String attachmentId = field.getValue();
-    String componentId = pagesContext.getComponentId();
+    String componentId = pageContext.getComponentId();
 
     AttachmentDetail attachment = null;
-    if (attachmentId != null && attachmentId.length() > 0) {
+    if (StringUtil.isDefined(attachmentId)) {
       attachment =
           AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId, componentId));
     } else {
@@ -180,10 +180,18 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
     if (template.isReadOnly() && !template.isHidden()) {
       if (attachment != null) {
-        html = "<img alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\" width=\"20\">&nbsp;";
+        html = "<img alt=\"\" src=\"" + attachment.getAttachmentIcon() + "\"/>&nbsp;";
         html +=
-            "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
+            "<a href=\"" + webContext + attachment.getAttachmentURL(pageContext.getContentLanguage()) + "\" target=\"_blank\">" +
             attachment.getLogicalName() + "</a>";
+        if (ViewFactory.getPreviewService().isPreviewable(new File(attachment.getAttachmentPath(pageContext.getContentLanguage())))) {
+          html +=
+              "<img onclick=\"javascript:previewFormFile(this, " + attachment.getPK().getId() +
+                  ");\" class=\"preview-file\" src=\"" + webContext +
+                  "/util/icons/preview.png\" alt=\"" +
+                  Util.getString("GML.preview", pageContext.getLanguage()) + "\" title=\"" +
+                  Util.getString("GML.preview", pageContext.getLanguage()) + "\"/>";
+        }
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
       html +=
@@ -194,19 +202,19 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
       if (attachment != null) {
         String deleteImg = Util.getIcon("delete");
-        String deleteLab = Util.getString("removeFile", pagesContext.getLanguage());
+        String deleteLab = Util.getString("removeFile", pageContext.getLanguage());
 
         html += "&nbsp;<span id=\"div" + fieldName + "\">";
         html +=
             "<img alt=\"\" align=\"top\" src=\"" + attachment.getAttachmentIcon() +
-            "\" width=\"20\"/>&nbsp;";
+            "\"/>&nbsp;";
         html +=
             "<a href=\"" + webContext + attachment.getAttachmentURL() + "\" target=\"_blank\">" +
             attachment.getLogicalName() + "</a>";
 
         html +=
             "&nbsp;<a href=\"#\" onclick=\"javascript:" + "document.getElementById('div" +
-            fieldName + "').style.display='none';" + "document." + pagesContext.getFormName() +
+            fieldName + "').style.display='none';" + "document." + pageContext.getFormName() +
             "." + fieldName + FileField.PARAM_NAME_SUFFIX + ".value='remove_" + attachmentId +
             "';" + "\">";
         html +=
@@ -215,11 +223,28 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html += "</span>";
       }
 
-      if (template.isMandatory() && pagesContext.useMandatory()) {
+      if (template.isMandatory() && pageContext.useMandatory()) {
         html += Util.getMandatorySnippet();
       }
     }
+    
+    html += displayPreviewJavascript(pageContext);
+    
     out.println(html);
+  }
+  
+  private String displayPreviewJavascript(PagesContext context) {
+    StringBuilder sb = new StringBuilder(50);
+    sb.append("<script type=\"text/javascript\">\n");
+    sb.append("function previewFormFile(target, attachmentId) {\n");
+    sb.append("$(target).preview(\"previewAttachment\", {\n");
+    sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
+    sb.append("attachmentId: attachmentId\n");
+    sb.append("});\n");
+    sb.append("return false;");
+    sb.append("}\n");
+    sb.append("</script>\n");
+    return sb.toString();
   }
 
   @Override
