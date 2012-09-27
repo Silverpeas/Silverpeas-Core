@@ -25,11 +25,10 @@ package org.silverpeas.process;
 
 import org.silverpeas.process.management.ProcessErrorType;
 import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
 
 /**
  * The abstract root implementation of <code>SilverpeasProcess</code> interface where
- * <code>process</code> and <code>getProcessType</code> methods are the only ones that is not
+ * <code>process</code> and <code>getProcessType</code> methods are the only ones that are not
  * implemented there.
  * @author Yohann Chastagnier
  */
@@ -38,23 +37,21 @@ public abstract class AbstractProcess<C extends ProcessExecutionContext> impleme
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.SilverpeasProcess#onSuccessful(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
+   * @see org.silverpeas.process.SilverpeasProcess#onSuccessful()
    */
   @Override
-  public void onSuccessful(final C processExecutionContext, final Session session) throws Exception {
+  public void onSuccessful() throws Exception {
     // Nothing to do by default
   }
 
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.SilverpeasProcess#onFailure(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session,
-   * org.silverpeas.process.management.ProcessErrorType, java.lang.Exception)
+   * ProcessErrorType, java.lang.Exception)
    */
   @Override
-  public void onFailure(final C processExecutionContext, final Session session,
-      final ProcessErrorType errorType, final Exception exception) throws Exception {
+  public void onFailure(final ProcessErrorType errorType, final Exception exception)
+      throws Exception {
     if (!ProcessErrorType.OTHER_PROCESS_FAILED.equals(errorType)) {
       throw exception;
     }

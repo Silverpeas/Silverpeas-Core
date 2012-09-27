@@ -38,8 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
-import org.silverpeas.process.session.Session;
-import org.silverpeas.process.session.SimpleSession;
+import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.process.session.DefaultProcessSession;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
@@ -54,7 +54,7 @@ public class AbstractFileHandlerTest {
   private static final File otherFile = new File(
       new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
 
-  private Session currentSession;
+  private ProcessSession currentSession;
   private FileHandlerTest fileHandler;
   private String componentInstanceId;
   private File realPath;
@@ -69,7 +69,7 @@ public class AbstractFileHandlerTest {
     realPath = getFile(realRootPath, componentInstanceId);
     realPath.mkdirs();
     sessionPath =
-        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getIoNodeName(),
+        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName(),
             componentInstanceId);
     sessionPath.mkdirs();
     touch(otherFile);
@@ -171,7 +171,7 @@ public class AbstractFileHandlerTest {
   public void testTranslateToSessionPath() {
     File test = fileHandler.translateToSessionPath(BASE_PATH_TEST, realRootPath);
     File expected =
-        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getIoNodeName());
+        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
     assertFileNames(test, expected);
 
     test = fileHandler.translateToSessionPath(BASE_PATH_TEST, getFile(realPath, "file"));
@@ -233,7 +233,7 @@ public class AbstractFileHandlerTest {
   public void testGetSessionPath() {
     final File test = fileHandler.getSessionPath(BASE_PATH_TEST);
     final File expected =
-        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getIoNodeName());
+        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
     assertFileNames(test, expected);
   }
 
@@ -252,34 +252,34 @@ public class AbstractFileHandlerTest {
     final File file1 = getFile(sessionRootPath, currentSession.getId(), "handledFile1");
     writeStringToFile(file1, "handledFile1");
 
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(12L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(0L));
 
     final File notHandledFile = getFile(realPath, "file1");
     writeStringToFile(notHandledFile, "real1");
 
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(12L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(0L));
 
     final File file2 = getFile(sessionPath, "handledFile2");
     writeStringToFile(file2, "handledFile22");
 
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(25L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(13L));
 
     final File file2real = getFile(realPath, "handledFile2");
     fileHandler.getMarkedToDelete(BASE_PATH_TEST).add(file2real);
 
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(25L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(13L));
 
     writeStringToFile(file2real, "real22");
 
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(19L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(7L));
 
     fileHandler.getMarkedToDelete(BASE_PATH_TEST).clear();
 
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
-    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(25L));
+    assertThat(fileHandler.sizeOfSessionWorkingPath(), is(13L));
   }
 
   @Test
@@ -310,8 +310,9 @@ public class AbstractFileHandlerTest {
 
   @Test
   public void testCheckinSessionWorkingPath_2() throws Exception {
-    File tmpFile = getFile(fileHandler.getSessionTemporaryPath(), "tempFile.file");
-    writeStringToFile(tmpFile, "This is a session temporary file. It is not taken in account in checkin operations.");
+    final File tmpFile = getFile(fileHandler.getSessionTemporaryPath(), "tempFile.file");
+    writeStringToFile(tmpFile,
+        "This is a session temporary file. It is not taken in account in checkin operations.");
     assertThat(otherFile.exists(), is(true));
     assertThat(sessionPath.exists(), is(true));
     assertThat(sessionRootPath.exists(), is(true));
@@ -381,12 +382,12 @@ public class AbstractFileHandlerTest {
     assertThat(test, is(expected));
   }
 
-  private Session createSessionTest() {
-    return SimpleSession.create();
+  private ProcessSession createSessionTest() {
+    return DefaultProcessSession.create();
   }
 
   private class FileHandlerTest extends AbstractFileHandler {
-    protected FileHandlerTest(final Session session) {
+    protected FileHandlerTest(final ProcessSession session) {
       super(session);
     }
 

@@ -23,42 +23,10 @@
  */
 package org.silverpeas.process.check;
 
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
-
 /**
- * Interface which has to be implemented by all verification classes that have to be used during an
- * execution of a chained Silverpeas processes.
+ * This enumeration represents several types of transversal verifications.
  * @author Yohann Chastagnier
  */
-public interface Check {
-
-  /**
-   * Gets the type of the check
-   * @return
-   */
-  CheckType getType();
-
-  /**
-   * This method have to be annoted by @PostConstruct.
-   * Just after Silverpeas server start, this method is called.
-   * The content of this method consists to register the class instance into IOChecker.register().
-   */
-  void register();
-
-  /**
-   * This method have to be annoted by @PreDestroy.
-   * Just before Silverpeas server stop, this method is called.
-   * The content of this method consists to unregister the class instance from
-   * IOChecker.unregister().
-   */
-  void unregister();
-
-  /**
-   * Contains the treatment of the verification.
-   * @param processExecutionProcess
-   * @param session
-   * @throws Exception
-   */
-  void check(ProcessExecutionContext processExecutionProcess, Session session) throws Exception;
+public enum ProcessCheckType {
+  DATA, FILESYSTEM
 }

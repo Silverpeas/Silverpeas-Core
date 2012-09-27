@@ -24,6 +24,7 @@
 package org.silverpeas.process.management;
 
 /**
+ * Internal process management tool.
  * @author Yohann Chastagnier
  */
 public class ProcessMonitoring {

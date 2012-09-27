@@ -36,11 +36,11 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * This is an handler that permits to perform transactional file manipulations. It has to be used
- * exclusively in Classes that implements <code>SilverpeasProcess</code>.
+ * exclusively in classes that implements <code>SilverpeasProcess</code>.
  * In a standard use, <code>getHandledFile</code> method has to be called to obtain a
  * <code>HandledFile</code> instance (@see {@link HandledFile}).
  * @author Yohann Chastagnier
@@ -51,7 +51,7 @@ public class FileHandler extends AbstractFileHandler {
    * Default constructor
    * @param session
    */
-  protected FileHandler(final Session session) {
+  protected FileHandler(final ProcessSession session) {
     super(session);
   }
 

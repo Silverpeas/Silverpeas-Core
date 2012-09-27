@@ -23,47 +23,44 @@
  */
 package org.silverpeas.process.management;
 
-import org.silverpeas.process.check.AbstractCheck;
-import org.silverpeas.process.check.CheckType;
+import org.silverpeas.process.check.AbstractProcessCheck;
+import org.silverpeas.process.check.ProcessCheckType;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.Session;
 
 /**
- * Abstract extension of <code>AbstractCheck</code> oriented on data verifications.
+ * Abstract extension of <code>AbstractProcessCheck</code> oriented on file system verifications.
  * @author Yohann Chastagnier
- * @see AbstractCheck
+ * @see AbstractProcessCheck
  */
-public abstract class AbstractFileCheck extends AbstractCheck {
+public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
 
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.check.Check#getType()
    */
   @Override
-  public CheckType getType() {
-    return CheckType.FILESYSTEM;
+  public ProcessCheckType getType() {
+    return ProcessCheckType.FILESYSTEM;
   }
 
   /*
    * (non-Javadoc)
    * @see
    * org.silverpeas.process.check.Check#check(org.silverpeas.process.management.ProcessExecutionContext
-   * , org.silverpeas.process.session.Session)
+   * )
    */
   @Override
-  public final void check(final ProcessExecutionContext processExecutionProcess,
-      final Session session) throws Exception {
-    checkFiles(processExecutionProcess, session, processExecutionProcess.getFileHandler());
+  public final void check(final ProcessExecutionContext processExecutionProcess) throws Exception {
+    checkFiles(processExecutionProcess, processExecutionProcess.getFileHandler());
   }
 
   /**
    * Contains the treatment of the verification. The file handler (@see {@link FileHandler})
    * associated to the current execution of chained Silverpeas processes is passed.
    * @param processExecutionProcess
-   * @param session
    * @param fileHandler
    * @throws Exception
    */
   abstract public void checkFiles(ProcessExecutionContext processExecutionProcess,
-      final Session session, final FileHandler fileHandler) throws Exception;
+      final FileHandler fileHandler) throws Exception;
 }

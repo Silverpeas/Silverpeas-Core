@@ -24,7 +24,7 @@
 package org.silverpeas.process.io;
 
 /**
- * This enumeration represents level of actions realized on a file system.
+ * This enumeration represents IO access level of actions realized on a file system.
  * @author Yohann Chastagnier
  */
 public enum IOAccess {

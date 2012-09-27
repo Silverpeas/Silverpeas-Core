@@ -29,9 +29,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * This is an Silverpeas process execution context container.
- * At least, current user information and component instance id which is the
- * <code>ProcessManagement</code> caller have to be set.
- * This classe should be extended when additional contextual data have to be accessible into
+ * At least, current user informations and component instance id from which
+ * <code>ProcessManagement</code> execution call is done.
+ * This class should be extended when additional contextual data have to be accessible into
  * processes.
  * @author Yohann Chastagnier
  */
@@ -90,7 +90,7 @@ public class ProcessExecutionContext {
   /**
    * @return the requiredNewFileTransaction
    */
-  public boolean isRequiresNewFileTransaction() {
+  public boolean requiresNewFileTransaction() {
     return requiresNewFileTransaction;
   }
 

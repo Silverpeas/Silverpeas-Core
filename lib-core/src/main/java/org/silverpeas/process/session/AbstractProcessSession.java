@@ -31,7 +31,7 @@ import java.util.Map;
  * All methods of the interface are implemented.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractSession implements Session {
+public abstract class AbstractProcessSession implements ProcessSession {
 
   private final String id;
   private final Map<String, Object> attributes = new HashMap<String, Object>();
@@ -42,7 +42,7 @@ public abstract class AbstractSession implements Session {
    * @param userDetail
    * @param componentInstanceId
    */
-  protected AbstractSession() {
+  protected AbstractProcessSession() {
     id = buildSessionId();
   }
 
@@ -65,7 +65,8 @@ public abstract class AbstractSession implements Session {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.io.session.IOSession#setAttribute(java.lang.String, java.lang.Object)
+   * @see org.silverpeas.process.session.ProcessSession#setAttribute(java.lang.String,
+   * java.lang.Object)
    */
   @Override
   public void setAttribute(final String name, final Object value) {
@@ -74,7 +75,7 @@ public abstract class AbstractSession implements Session {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.io.session.IOSession#getAttribute(java.lang.String)
+   * @see org.silverpeas.process.session.ProcessSession#getAttribute(java.lang.String)
    */
   @Override
   public Object getAttribute(final String name) {
@@ -83,7 +84,8 @@ public abstract class AbstractSession implements Session {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.io.session.IOSession#getAttribute(java.lang.String, java.lang.Class)
+   * @see org.silverpeas.process.session.ProcessSession#getAttribute(java.lang.String,
+   * java.lang.Class)
    */
   @Override
   public <C> C getAttribute(final String name, final Class<C> expectedReturnedClass) {

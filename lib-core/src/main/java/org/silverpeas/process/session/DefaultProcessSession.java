@@ -21,39 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.process.check;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.silverpeas.process.ProcessFactory;
+package org.silverpeas.process.session;
 
 /**
- * The abstract root implementation of <code>Check</code> interface.
- * Methods <code>register</code> and <code>unregister</code> are implemented at this level, and be
- * sure <code>@Named</code> class annotation is well mentionned in the final implementation in the aim to be
- * taken in charge by <code>Checker</code> services (@see {@link Checker}).
+ * Simple <code>Session</code> class which doesn't modify the abstract implementation.
  * @author Yohann Chastagnier
  */
-public abstract class AbstractCheck implements Check {
+public class DefaultProcessSession extends AbstractProcessSession {
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.check.Check#register()
+  /**
+   * Instanciate an IO context from given user and component instance ID
+   * @param user
+   * @param componentInstanceId
+   * @return
    */
-  @Override
-  @PostConstruct
-  public void register() {
-    ProcessFactory.getChecker().register(this);
+  public static DefaultProcessSession create() {
+    return new DefaultProcessSession();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.process.check.Check#unregister()
+  /**
+   * Default constructor
+   * @param userId
+   * @param userDetail
+   * @param componentInstanceId
    */
-  @Override
-  @PreDestroy
-  public void unregister() {
-    ProcessFactory.getChecker().unregister(this);
+  protected DefaultProcessSession() {
+    super();
   }
 }

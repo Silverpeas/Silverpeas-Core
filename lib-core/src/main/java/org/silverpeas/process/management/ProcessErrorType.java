@@ -24,8 +24,10 @@
 package org.silverpeas.process.management;
 
 /**
+ * This enumeration represents different process error origines during an execution of chained
+ * processes.
  * @author Yohann Chastagnier
  */
 public enum ProcessErrorType {
-  DURING_MAIN_PROCESSING, DURING_CHECKS_PROCESSING, DURING_ON_SUCESSFULL_PROCESSING, OTHER_PROCESS_FAILED
+  DURING_MAIN_PROCESSING, DURING_CHECKS_PROCESSING, OTHER_PROCESS_FAILED
 }

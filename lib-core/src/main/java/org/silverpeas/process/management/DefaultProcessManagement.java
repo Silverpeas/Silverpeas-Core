@@ -25,11 +25,10 @@ package org.silverpeas.process.management;
 
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.SilverpeasProcess;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.check.ProcessCheck;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
 
 import com.silverpeas.annotation.Service;
@@ -43,8 +42,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 @Service
 public class DefaultProcessManagement implements ProcessManagement {
 
-  private final Map<Long, LinkedList<InternalContext<?>>> parentFileTransactions =
-      new ConcurrentHashMap<Long, LinkedList<InternalContext<?>>>();
+  private final ThreadLocal<LinkedList<InternalContext<?>>> parentFileTransactions =
+      new ThreadLocal<LinkedList<InternalContext<?>>>();
 
   /*
    * (non-Javadoc)
@@ -66,34 +65,29 @@ public class DefaultProcessManagement implements ProcessManagement {
    */
   @Override
   public <C extends ProcessExecutionContext> void execute(final ProcessList<C> processes,
-      final C processExecutionProcess) throws Exception {
+      final C processExecutionContext) throws Exception {
     if (processes.isNotEmpty()) {
 
       // Context
       InternalContext<C> context = null;
-      final Long threadId = Thread.currentThread().getId();
-      LinkedList<InternalContext<?>> internalParentContexts = parentFileTransactions.get(threadId);
+      LinkedList<InternalContext<?>> internalParentContexts = parentFileTransactions.get();
       try {
 
         // Required or New file transaction ?
-        if (internalParentContexts != null &&
-            !processExecutionProcess.isRequiresNewFileTransaction()) {
-          // Attaching session of the last registred transaction to the current transaction
+        if (internalParentContexts != null && !processExecutionContext.requiresNewFileTransaction()) {
+          // Attaching internal context to parents
           context =
-              new InternalContext<C>(processExecutionProcess, internalParentContexts.peekLast()
-                  .getSession());
-          // Attaching FileHandler of last registred transaction to the current transaction
-          processExecutionProcess.setFileHandler(internalParentContexts.peekLast()
-              .getProcessExecutionContext().getFileHandler());
+              new InternalContext<C>(internalParentContexts.peekLast().getLast(),
+                  processExecutionContext);
         } else {
           // Prepare the context saving : new transaction case
           if (internalParentContexts == null) {
             internalParentContexts = new LinkedList<InternalContext<?>>();
-            parentFileTransactions.put(threadId, internalParentContexts);
+            parentFileTransactions.set(internalParentContexts);
           }
           // Initializing the new context
-          context = new InternalContext<C>(processExecutionProcess);
-          processExecutionProcess.setFileHandler(new FileHandler(context.getSession()));
+          context = new InternalContext<C>(processExecutionContext);
+          processExecutionContext.setFileHandler(new FileHandler(context.getSession()));
           // Saving the context
           internalParentContexts.add(context);
         }
@@ -106,7 +100,7 @@ public class DefaultProcessManagement implements ProcessManagement {
 
         // Processing files
         for (final SilverpeasProcess<C> process : processes.getList()) {
-          if (context.isProcessInError()) {
+          if (context.isFileTransactionInError()) {
             break;
           }
           context.update(process);
@@ -114,27 +108,36 @@ public class DefaultProcessManagement implements ProcessManagement {
           processing(process, context);
         }
 
-        // Checks
-        if (context.isOpeningFileTransaction()) {
+        // Next treatment on transaction opener
+        if (context.isOpeningFileTransaction() && !context.isFileTransactionInError()) {
+
+          // Checks
           checks(context);
-        }
 
-        // Processing on successful
-        for (final SilverpeasProcess<C> process : processes.getList()) {
-          if (context.isProcessInError()) {
-            break;
+          // Are checks OK ?
+          if (!context.isFileTransactionInError()) {
+            try {
+
+              // Processing 'on successful'
+              InternalContext<? extends ProcessExecutionContext> curContext = context.getLast();
+              while (curContext != null) {
+                for (final SilverpeasProcess<?> process : curContext.getOnSuccessfulProcesses()) {
+                  onSuccessful(process, curContext);
+                }
+                curContext = curContext.getPrevious();
+              }
+            } finally {
+
+              // Commits
+              commit(context);
+            }
           }
-          onSuccessful(process, context);
         }
-
-        // Commits
-        commit(context);
-
       } finally {
         if (context != null && context.isOpeningFileTransaction()) {
           internalParentContexts.pollLast();
           if (CollectionUtil.isEmpty(internalParentContexts)) {
-            parentFileTransactions.remove(threadId);
+            parentFileTransactions.remove();
           }
         }
       }
@@ -149,18 +152,16 @@ public class DefaultProcessManagement implements ProcessManagement {
    */
   private <C extends ProcessExecutionContext> void processing(final SilverpeasProcess<C> process,
       final InternalContext<C> context) throws Exception {
-    if (!context.isProcessInError()) {
-      try {
-        process.process(context.getProcessExecutionContext(), context.getSession());
+    try {
+      process.process(context.getProcessExecutionContext(), context.getSession());
 
-        // LOG
-        SilverTrace.debug("Process", "processManagement.processFiles()",
-            "processManagement.MAIN_PROCESSING_DONE",
-            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
+      // LOG
+      SilverTrace.debug("Process", "processManagement.processFiles()",
+          "processManagement.MAIN_PROCESSING_DONE",
+          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
 
-      } catch (final Exception exception) {
-        handleError(context, ProcessErrorType.DURING_MAIN_PROCESSING, exception);
-      }
+    } catch (final Exception exception) {
+      handleError(context, ProcessErrorType.DURING_MAIN_PROCESSING, exception, process);
     }
   }
 
@@ -168,21 +169,21 @@ public class DefaultProcessManagement implements ProcessManagement {
    * Checks processing
    * @param context
    */
-  private <C extends ProcessExecutionContext> void checks(final InternalContext<C> context)
-      throws Exception {
-    if (!context.isProcessInError()) {
-      synchronized (ProcessMonitoring.SYNCHRONIZE) {
-        try {
-          ProcessFactory.getChecker().checks(context.getProcessExecutionContext(),
-              context.getSession(), context.getCheckTypesToProcess());
-
-          // LOG
-          SilverTrace.debug("Process", "IOChecker.check()", "ioChecker.CHECKS_DONE",
-              new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
-
-        } catch (final Exception exception) {
-          handleError(context, ProcessErrorType.DURING_CHECKS_PROCESSING, exception);
+  private void checks(final InternalContext<?> context) throws Exception {
+    synchronized (ProcessMonitoring.SYNCHRONIZE) {
+      try {
+        for (final ProcessCheck check : ProcessCheckRegistration.getChecks()) {
+          if (context.getCheckTypesToProcess().contains(check.getType())) {
+            check.check(context.getProcessExecutionContext());
+          }
         }
+
+        // LOG
+        SilverTrace.debug("Process", "ProcessManagement.checks()", "checks.CHECKS_DONE",
+            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
+
+      } catch (final Exception exception) {
+        handleError(context, ProcessErrorType.DURING_CHECKS_PROCESSING, exception, null);
       }
     }
   }
@@ -192,103 +193,113 @@ public class DefaultProcessManagement implements ProcessManagement {
    * @param process
    * @param context
    */
-  private <C extends ProcessExecutionContext> void onSuccessful(final SilverpeasProcess<C> process,
-      final InternalContext<C> context) throws Exception {
-    if (!context.isProcessInError()) {
-      try {
-        process.onSuccessful(context.getProcessExecutionContext(), context.getSession());
+  private void onSuccessful(final SilverpeasProcess<?> process, final InternalContext<?> context)
+      throws Exception {
+    try {
+      process.onSuccessful();
 
-        // LOG
-        SilverTrace.debug("Process", "processManagement.onSuccessful()",
-            "processManagement.ON_SUCCESSFUL_DONE",
-            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
+      // LOG
+      SilverTrace.debug("Process", "processManagement.onSuccessful()",
+          "processManagement.ON_SUCCESSFUL_DONE",
+          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
 
-      } catch (final Exception exception) {
-        handleError(context, ProcessErrorType.DURING_ON_SUCESSFULL_PROCESSING, exception);
-      }
+    } catch (final Throwable throwable) {
+
+      // LOG
+      SilverTrace.error("Process", "processManagement.onSuccessful()",
+          "processManagement.ON_SUCCESSFUL_ERROR",
+          new StringBuilder("SessionId = ").append(context.getSession().getId()).toString(),
+          throwable);
     }
   }
 
   /**
-   * IO error handling
+   * ERROR HANDLER
    * @param context
    * @param errorType
    * @param exception
    * @throws Exception
    */
-  private <C extends ProcessExecutionContext> void handleError(final InternalContext<C> context,
-      final ProcessErrorType errorType, final Exception exception) throws Exception {
-    context.setProcessInError();
-    try {
+  private void handleError(final InternalContext<?> context, ProcessErrorType errorType,
+      Exception exception, SilverpeasProcess<?> fromProcess) throws Exception {
+    if (!context.isFileTransactionInError()) {
+      context.setFileTransactionInError(errorType, exception, fromProcess);
+    }
+    if (context.isOpeningFileTransaction()) {
+      try {
 
-      // Error
-      SilverTrace.error(
-          "Process",
-          "processManagement.onFailure()",
-          "processManagement.EX_IO_PROCESS_FAILURE",
-          new StringBuilder("SessionId = ").append(context.getSession().getId())
-              .append(", ioErrorType = ").append(errorType.name())
-              .append(", exceptionClassName = ").append(exception.getClass().getName()).toString(),
-          exception);
+        errorType = context.getErrorType();
+        exception = context.getException();
+        fromProcess = context.getProcessInError();
 
-      // Treatment
-      ProcessErrorType firstErrorType = null;
-      Exception continueException = null;
-      for (final SilverpeasProcess<C> processStarted : context.getProcessesStarted()) {
-        try {
-          processStarted.onFailure(context.getProcessExecutionContext(), context.getSession(),
-              (firstErrorType == null || ProcessErrorType.DURING_CHECKS_PROCESSING
-                  .equals(errorType)) ? errorType : ProcessErrorType.OTHER_PROCESS_FAILED,
-              exception);
-        } catch (final Exception e) {
-          if (continueException == null) {
-            continueException = e;
+        // Error
+        SilverTrace.error(
+            "Process",
+            "processManagement.onFailure()",
+            "processManagement.EX_PROCESS_FAILURE",
+            new StringBuilder("SessionId = ").append(context.getSession().getId())
+                .append(", ioErrorType = ").append(errorType.name())
+                .append(", exceptionClassName = ").append(exception.getClass().getName())
+                .toString(), exception);
+
+        // Treatment
+        Exception continueException = null;
+        InternalContext<? extends ProcessExecutionContext> curContext = context.getLast();
+        while (curContext != null) {
+          for (final SilverpeasProcess<?> processStarted : curContext.getOnFailureProcesses()) {
+            try {
+              processStarted
+                  .onFailure(
+                      (ProcessErrorType.DURING_CHECKS_PROCESSING.equals(errorType) || processStarted == fromProcess)
+                          ? errorType : ProcessErrorType.OTHER_PROCESS_FAILED, exception);
+            } catch (final Exception e) {
+              if (continueException == null) {
+                continueException = e;
+              }
+            }
           }
-        } finally {
-          if (firstErrorType == null) {
-            firstErrorType = errorType;
-          }
+          curContext = curContext.getPrevious();
         }
-      }
 
-      if (continueException != null) {
-        throw continueException;
-      }
+        if (continueException != null) {
+          throw continueException;
+        }
 
-    } finally {
-      rollback(context);
+      } finally {
+        rollback(context);
+      }
+    } else {
+      throw exception;
     }
   }
 
   /**
+   * COMMIT
    * @param context
-   * @param fileHandler
+   * @throws Exception
    */
-  private <C extends ProcessExecutionContext> void commit(final InternalContext<C> context)
-      throws Exception {
-    if (context.isOpeningFileTransaction() && !context.isProcessInError()) {
-      synchronized (ProcessMonitoring.SYNCHRONIZE) {
-        try {
-          ((FileHandler) context.getProcessExecutionContext().getFileHandler())
-              .checkinSessionWorkingPath();
+  private void commit(final InternalContext<?> context) throws Exception {
+    synchronized (ProcessMonitoring.SYNCHRONIZE) {
+      try {
+        ((FileHandler) context.getProcessExecutionContext().getFileHandler())
+            .checkinSessionWorkingPath();
 
-          // LOG
-          SilverTrace.debug("Process", "processManagement.commit()",
-              "processManagement.COMMIT_FILES_DONE",
-              new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
+        // LOG
+        SilverTrace.debug("Process", "processManagement.commit()",
+            "processManagement.COMMIT_FILES_DONE",
+            new StringBuilder("SessionId = ").append(context.getSession().getId()).toString());
 
-        } finally {
-          clearSession(context);
-        }
+      } finally {
+        clearSession(context);
       }
     }
   }
 
   /**
+   * ROLLBACK
    * @param context
-   * @param fileHandler
    */
-  private <C extends ProcessExecutionContext> void rollback(final InternalContext<C> context) {
+  private void rollback(final InternalContext<?> context) {
     if (context.isOpeningFileTransaction()) {
       synchronized (ProcessMonitoring.SYNCHRONIZE) {
         try {
@@ -309,7 +320,7 @@ public class DefaultProcessManagement implements ProcessManagement {
    * Clearing session
    * @param context
    */
-  private <C extends ProcessExecutionContext> void clearSession(final InternalContext<C> context) {
+  private void clearSession(final InternalContext<?> context) {
     if (context.isOpeningFileTransaction()) {
       ((FileHandler) context.getProcessExecutionContext().getFileHandler())
           .deleteSessionWorkingPath();
@@ -325,7 +336,7 @@ public class DefaultProcessManagement implements ProcessManagement {
    * @author Yohann Chastagnier
    */
   private final class FileHandler extends org.silverpeas.process.io.file.FileHandler {
-    protected FileHandler(final Session session) {
+    protected FileHandler(final ProcessSession session) {
       super(session);
     }
 

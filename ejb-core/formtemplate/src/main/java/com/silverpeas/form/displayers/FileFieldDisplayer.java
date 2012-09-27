@@ -36,9 +36,10 @@ import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.process.management.AbstractDataAndFileProcess;
+import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.viewer.ViewFactory;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -227,12 +228,12 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html += Util.getMandatorySnippet();
       }
     }
-    
+
     html += displayPreviewJavascript(pageContext);
-    
+
     out.println(html);
   }
-  
+
   private String displayPreviewJavascript(PagesContext context) {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">\n");
@@ -289,11 +290,12 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     final List<String> result = new ArrayList<String>();
     final String itemName = template.getFieldName();
     try {
+      // TODO - MODIFYING THIS PROCESSES EXECUTION AFTER NEW ATTACHMENT HANDLING INTEGRATION
       ProcessFactory.getProcessManagement().execute(
-          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
+          new AbstractFileProcess<ProcessExecutionContext>() {
             @Override
-            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
-                Session session, FileHandler fileHandler) throws Exception {
+            public void processFiles(ProcessExecutionContext processExecutionProcess,
+                ProcessSession session, FileHandler fileHandler) throws Exception {
 
               String value = processUploadedFile(items, itemName, pageContext, fileHandler);
               String param =

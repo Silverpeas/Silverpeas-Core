@@ -39,13 +39,14 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.process.management.AbstractDataAndFileProcess;
+import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -73,8 +74,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
 
 public class AttachmentController {
 
@@ -176,12 +175,13 @@ public class AttachmentController {
     try {
 
       // File actions will be attached to the parent Silverpeas process if any
+      // TODO - MODIFYING THIS PROCESSES EXECUTION AFTER NEW ATTACHMENT HANDLING INTEGRATION
       ProcessFactory.getProcessManagement().execute(
-          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
+          new AbstractFileProcess<ProcessExecutionContext>() {
 
             @Override
-            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
-                Session session, FileHandler fileHandler) throws Exception {
+            public void processFiles(ProcessExecutionContext processExecutionProcess,
+                ProcessSession session, FileHandler fileHandler) throws Exception {
 
               AttachmentDetail oldAttachment =
                   attachmentBm.getAttachmentByPrimaryKey(attachDetail.getPK());
@@ -600,12 +600,13 @@ public class AttachmentController {
     try {
 
       // File actions will be attached to the parent Silverpeas process if any
+      // TODO - MODIFYING THIS PROCESSES EXECUTION AFTER NEW ATTACHMENT HANDLING INTEGRATION
       ProcessFactory.getProcessManagement().execute(
-          new AbstractDataAndFileProcess<ProcessExecutionContext>() {
+          new AbstractFileProcess<ProcessExecutionContext>() {
 
             @Override
-            public void processDataAndFiles(ProcessExecutionContext processExecutionProcess,
-                Session session, FileHandler fileHandler) throws Exception {
+            public void processFiles(ProcessExecutionContext processExecutionProcess,
+                ProcessSession session, FileHandler fileHandler) throws Exception {
 
               attachmentBm.deleteAttachment(attachmentDetail.getPK());
 
@@ -620,18 +621,15 @@ public class AttachmentController {
                 RepositoryHelper.getJcrAttachmentService().deleteAttachment(attachmentDetail,
                     attachmentDetail.getLanguage());
               }
+            }
 
+            @Override
+            public void onSuccessful() throws Exception {
+              super.onSuccessful();
               if (invokeCallback) {
-                int authorId = -1;
-                if (StringUtil.isDefined(attachmentDetail.getAuthor())) {
-                  authorId = Integer.parseInt(attachmentDetail.getAuthor());
-                }
-
-                CallBackManager callBackManager = CallBackManager.get();
-                callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_REMOVE, authorId,
-                    attachmentDetail.getPK().getInstanceId(), attachmentDetail);
+                AttachmentNotificationService notificationService = AttachmentNotificationService.getService();
+                notificationService.notifyOnDeletionOf(attachmentDetail);
               }
-
             }
           }, new ProcessExecutionContext(attachmentDetail.getPK().getInstanceId()));
 
@@ -667,7 +665,7 @@ public class AttachmentController {
   private static void deleteTranslations(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
     if (attachDetail.getTranslations() != null) {
-      Iterator translations = attachDetail.getTranslations().values().iterator();
+      Iterator<Translation> translations = attachDetail.getTranslations().values().iterator();
       AttachmentDetailI18N translation = null;
 
       while (translations.hasNext()) {
@@ -1127,7 +1125,7 @@ public class AttachmentController {
         ids.put(attToCopy.getPK().getId(), copy.getPK().getId());
 
         // Copy translations
-        Iterator translations = attToCopy.getTranslations().values().iterator();
+        Iterator<Translation> translations = attToCopy.getTranslations().values().iterator();
         AttachmentDetailI18N translation = (AttachmentDetailI18N) translations.next(); // skip
         // default
         // attachment.

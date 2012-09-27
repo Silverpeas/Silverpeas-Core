@@ -21,33 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
-
-import javax.inject.Inject;
+package org.silverpeas.process.session;
 
 /**
+ * This interface defines methods which any implementation of <code>Session</code> have to expose to
+ * callers.
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
+public interface ProcessSession {
 
-  @Inject
-  private PreviewService previewService;
+  String getId();
 
-  private static ViewFactory instance = new ViewFactory();
+  void setAttribute(String name, Object value);
 
-  /**
-   * Instance accessor (singleton)
-   * @return
-   */
-  private static ViewFactory getInstance() {
-    return instance;
-  }
+  Object getAttribute(String name);
 
-  /**
-   * Viewer services accessor
-   * @return
-   */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
-  }
+  <C> C getAttribute(String name, Class<C> expectedReturnedClass);
 }

@@ -27,6 +27,7 @@ import static com.stratelia.webactiv.util.GeneralPropertiesManager.getString;
 import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.apache.commons.io.FileUtils.getFile;
 import static org.apache.commons.io.FileUtils.readFileToString;
+import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
@@ -43,10 +44,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.check.Check;
+import org.silverpeas.process.check.ProcessCheck;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.util.ProcessList;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -65,6 +66,8 @@ public class ProcessManagementTest {
   private static final File sessionRootPath = new File(getString("tempPath"));
   private static final File testResultFile = getFile(new File(BASE_PATH_TEST.getPath()),
       componentInstanceId, "testResult");
+  private static final File testSuccessfulFile = getFile(new File(BASE_PATH_TEST.getPath()),
+      componentInstanceId, "testSuccessful");
   private static final File testSecondFile = getFile(new File(BASE_PATH_TEST.getPath()),
       componentInstanceId, "testSecondResult");
   private static String testSecondResultContent = "File check in has not been done.";
@@ -82,18 +85,63 @@ public class ProcessManagementTest {
 
   @Test
   public void testFilesProcessingException() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test2 = new AbstractFileProcessTest("A_A") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+      }
+    };
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void processFiles(final ProcessExecutionContextTest context, final Session session,
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
           final FileHandler fileHandler) throws Exception {
         super.processFiles(context, session, fileHandler);
 
         // Session attach
-        executeTest(new AbstractFileProcessTest() {
+        executeTest(test2);
+
+        throw new FileNotFoundException();
+      }
+    };
+    final AbstractFileProcessTest test3 = new AbstractFileProcessTest("B") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+      }
+    };
+
+    assertThat(testResultFile.exists(), is(false));
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    try {
+      executeTest(test, test3);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(testSuccessfulFile.exists(), is(false));
+    assertThat(readFileToString(testResultFile), is(" onFailure(A_A) onFailure(A)"));
+    assertThat(test.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
+    assertThat(test.getException(), instanceOf(FileNotFoundException.class));
+    assertThat(test2.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
+    assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+  }
+
+  @Test
+  public void testFilesProcessingException_2() throws Exception {
+    final AbstractFileProcessTest test2 = new AbstractFileProcessTest("A_A") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        executeTest(new AbstractFileProcessTest("A_A_A") {
           @Override
           public void processFiles(final ProcessExecutionContextTest context,
-              final Session session, final FileHandler fileHandler) throws Exception {
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
             super.processFiles(context, session, fileHandler);
           }
         });
@@ -101,29 +149,166 @@ public class ProcessManagementTest {
         throw new FileNotFoundException();
       }
     };
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
+
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        // Session attach
+        executeTest(test2);
+      }
+    };
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-    executeTest(test);
-    assertThat(testResultFile.exists(), is(false));
-    assertThat(test.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
+    try {
+      executeTest(test);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(testSuccessfulFile.exists(), is(false));
+    assertThat(readFileToString(testResultFile),
+        is(" onFailure(A_A_A) onFailure(A_A) onFailure(A)"));
+    assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
     assertThat(test.getException(), instanceOf(FileNotFoundException.class));
+    assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
+    assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+  }
+
+  @Test
+  public void testFilesProcessingException_3() throws Exception {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
+
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        executeTest(new AbstractFileProcessTest("A_A") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        }, new AbstractFileProcessTest("A_B") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        });
+      }
+    };
+    final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        executeTest(new AbstractFileProcessTest("B_A") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        }, new AbstractFileProcessTest("B_B") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        });
+        throw new FileNotFoundException();
+      }
+    };
+
+    assertThat(testResultFile.exists(), is(false));
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    try {
+      executeTest(test, test2);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(testSuccessfulFile.exists(), is(false));
+    assertThat(
+        readFileToString(testResultFile),
+        is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure(A)"));
+    assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
+    assertThat(test.getException(), instanceOf(FileNotFoundException.class));
+    assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_MAIN_PROCESSING));
+    assertThat(test2.getException(), instanceOf(FileNotFoundException.class));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
   }
 
   @Test
   public void testChecksProcessingException() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
+
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        executeTest(new AbstractFileProcessTest("A_A") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        }, new AbstractFileProcessTest("A_B") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        });
+      }
     };
-    final Check check = new CheckFileTest();
+    final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        executeTest(new AbstractFileProcessTest("B_A") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        }, new AbstractFileProcessTest("B_B") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        });
+      }
+    };
+    final ProcessCheck check = new CheckFileTest();
     check.register();
     try {
       assertThat(testResultFile.exists(), is(false));
       assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-      executeTest(test);
-      assertThat(testResultFile.exists(), is(false));
+      try {
+        executeTest(test, test2);
+      } catch (final Exception e) {
+        // Nothing to do
+      }
+      assertThat(testResultFile.exists(), is(true));
+      assertThat(testSuccessfulFile.exists(), is(false));
+      assertThat(
+          readFileToString(testResultFile),
+          is(" onFailure(B_B) onFailure(B_A) onFailure(A_B) onFailure(A_A) onFailure(B) onFailure(A)"));
       assertThat(test.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
       assertThat(test.getException(), instanceOf(IOException.class));
+      assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_CHECKS_PROCESSING));
+      assertThat(test2.getException(), instanceOf(IOException.class));
       assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
     } finally {
       check.unregister();
@@ -132,63 +317,76 @@ public class ProcessManagementTest {
 
   @Test
   public void testSuccessfulProcessingException() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
 
       @Override
-      public void onSuccessful(final ProcessExecutionContextTest context, final Session session)
-          throws Exception {
-        super.onSuccessful(context, session);
+      public void onSuccessful() throws Exception {
+        super.onSuccessful();
         throw new IllegalArgumentException();
       }
     };
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-    executeTest(test);
-    assertThat(testResultFile.exists(), is(false));
-    assertThat(test.getErrorType(), is(ProcessErrorType.DURING_ON_SUCESSFULL_PROCESSING));
-    assertThat(test.getException(), instanceOf(IllegalArgumentException.class));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    try {
+      executeTest(test);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(readFileToString(testResultFile), is(" processFiles(A)"));
+    assertThat(testSuccessfulFile.exists(), is(true));
+    assertThat(readFileToString(testSuccessfulFile), is(" onSuccessful(A)"));
+    assertThat(test.getErrorType(), nullValue());
+    assertThat(test.getException(), nullValue());
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+        "File check in has been done.(A)"));
   }
 
   @Test
   public void testSuccessfulMultiProcessingException() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
     };
-    final AbstractFileProcessTest test2 = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test2 = new AbstractFileProcessTest("B") {
 
       @Override
-      public void onSuccessful(final ProcessExecutionContextTest context, final Session session)
-          throws Exception {
-        super.onSuccessful(context, session);
+      public void onSuccessful() throws Exception {
         throw new IllegalArgumentException();
       }
     };
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-    executeTest(test, test2);
-    assertThat(testResultFile.exists(), is(false));
-    assertThat(test.getErrorType(), is(ProcessErrorType.OTHER_PROCESS_FAILED));
-    assertThat(test.getException(), instanceOf(IllegalArgumentException.class));
-    assertThat(test2.getErrorType(), is(ProcessErrorType.DURING_ON_SUCESSFULL_PROCESSING));
-    assertThat(test2.getException(), instanceOf(IllegalArgumentException.class));
-    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    try {
+      executeTest(test, test2);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(readFileToString(testResultFile), is(" processFiles(A) processFiles(B)"));
+    assertThat(testSuccessfulFile.exists(), is(true));
+    assertThat(readFileToString(testSuccessfulFile), is(" onSuccessful(A)"));
+    assertThat(test.getErrorType(), nullValue());
+    assertThat(test.getException(), nullValue());
+    assertThat(test2.getErrorType(), nullValue());
+    assertThat(test2.getException(), nullValue());
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+        "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(B)"));
   }
 
   @Test
   public void testSuccessfulProcessing() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
       @Override
-      public void onSuccessful(final ProcessExecutionContextTest context, final Session session)
-          throws Exception {
-        super.onSuccessful(context, session);
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
 
         // Session attach
-        executeTest(new AbstractFileProcessTest() {
+        executeTest(new AbstractFileProcessTest("A_A") {
           @Override
           public void processFiles(final ProcessExecutionContextTest context,
-              final Session session, final FileHandler fileHandler) throws Exception {
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
             super.processFiles(context, session, fileHandler);
           }
         });
@@ -196,10 +394,10 @@ public class ProcessManagementTest {
         // Session attach : new Thread.
         // It is a unit test case but not a real case. Here, the aim is to test the internal
         // mechanism of transaction context managing.
-        executeTest(true, new AbstractFileProcessTest() {
+        executeTest(true, new AbstractFileProcessTest("A_B") {
           @Override
           public void processFiles(final ProcessExecutionContextTest context,
-              final Session session, final FileHandler fileHandler) throws Exception {
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
             super.processFiles(context, session, fileHandler);
           }
         });
@@ -210,32 +408,92 @@ public class ProcessManagementTest {
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-    executeTest(test);
+    try {
+      executeTest(test);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
     assertThat(testResultFile.exists(), is(true));
-    assertThat(readFileToString(testResultFile),
-        is(" processFiles onSuccessful processFiles onSuccessful"));
+    assertThat(readFileToString(testResultFile), is(" processFiles(A) processFiles(A_A)"));
+    assertThat(testSuccessfulFile.exists(), is(true));
+    assertThat(readFileToString(testSuccessfulFile),
+        is(" onSuccessful(A_B) onSuccessful(A_A) onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
-        "File check in has been done." + LINE_SEPARATOR + "File check in has been done."));
+        "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(A_A)"));
   }
 
   @Test
-  public void testSuccessfulMultiProcessing() throws Exception {
-    final AbstractFileProcessTest test = new AbstractFileProcessTest() {
+  public void testSuccessfulProcessing_2() throws Exception {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
+      @Override
+      public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
+          final FileHandler fileHandler) throws Exception {
+        super.processFiles(context, session, fileHandler);
+
+        // Session attach
+        executeTest(new AbstractFileProcessTest("A_A") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        }, new AbstractFileProcessTest("A_B") {
+          @Override
+          public void processFiles(final ProcessExecutionContextTest context,
+              final ProcessSession session, final FileHandler fileHandler) throws Exception {
+            super.processFiles(context, session, fileHandler);
+          }
+        });
+      }
     };
 
     assertThat(testResultFile.exists(), is(false));
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
-    executeTest(test, test, test);
+    try {
+      executeTest(test);
+    } catch (final Exception e) {
+      // Nothing to do
+    }
     assertThat(testResultFile.exists(), is(true));
     assertThat(readFileToString(testResultFile),
-        is(" processFiles processFiles processFiles onSuccessful onSuccessful onSuccessful"));
+        is(" processFiles(A) processFiles(A_A) processFiles(A_B)"));
+    assertThat(testSuccessfulFile.exists(), is(true));
+    assertThat(readFileToString(testSuccessfulFile),
+        is(" onSuccessful(A_A) onSuccessful(A_B) onSuccessful(A)"));
     assertThat(test.getErrorType(), nullValue());
     assertThat(test.getException(), nullValue());
     assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
-        "File check in has been done." + LINE_SEPARATOR + "File check in has been done." +
-        LINE_SEPARATOR + "File check in has been done."));
+        "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(A_A)" +
+        LINE_SEPARATOR + "File check in has been done.(A_B)"));
+  }
+
+  @Test
+  public void testSuccessfulMultiProcessing() throws Exception {
+    final AbstractFileProcessTest test = new AbstractFileProcessTest("A") {
+    };
+
+    assertThat(testResultFile.exists(), is(false));
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent));
+    try {
+      executeTest(test, new AbstractFileProcessTest("B") {
+      }, new AbstractFileProcessTest("C") {
+      });
+    } catch (final Exception e) {
+      // Nothing to do
+    }
+    assertThat(testResultFile.exists(), is(true));
+    assertThat(readFileToString(testResultFile),
+        is(" processFiles(A) processFiles(B) processFiles(C)"));
+    assertThat(testSuccessfulFile.exists(), is(true));
+    assertThat(readFileToString(testSuccessfulFile),
+        is(" onSuccessful(A) onSuccessful(B) onSuccessful(C)"));
+    assertThat(test.getErrorType(), nullValue());
+    assertThat(test.getException(), nullValue());
+    assertThat(readFileToString(testSecondFile), is(testSecondResultContent + LINE_SEPARATOR +
+        "File check in has been done.(A)" + LINE_SEPARATOR + "File check in has been done.(B)" +
+        LINE_SEPARATOR + "File check in has been done.(C)"));
   }
 
   /**
@@ -279,41 +537,45 @@ public class ProcessManagementTest {
    */
   private abstract class AbstractFileProcessTest extends
       AbstractFileProcess<ProcessExecutionContextTest> {
-    private FileHandler fileHandler = null;
+    private final String id;
     private ProcessErrorType errorType = null;
     private Exception exception = null;
+
+    public AbstractFileProcessTest(final String id) {
+      this.id = id;
+    }
 
     /*
      * (non-Javadoc)
      * @see
      * org.silverpeas.process.management.AbstractFileProcess#processFiles(org.silverpeas.process
-     * .management.ProcessExecutionContext, org.silverpeas.process.session.Session,
+     * .management.ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
      * org.silverpeas.process.io.file.FileHandler)
      */
     @Override
-    public void processFiles(final ProcessExecutionContextTest context, final Session session,
+    public void processFiles(final ProcessExecutionContextTest context, final ProcessSession session,
         final FileHandler fileHandler) throws Exception {
-      this.fileHandler = fileHandler;
-      fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile).writeStringToFile(" processFiles",
-          true);
+      fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile).writeStringToFile(
+          " processFiles" + "(" + id + ")", true);
       fileHandler.getHandledFile(BASE_PATH_TEST, testSecondFile).writeStringToFile(
-          LINE_SEPARATOR + "File check in has been done.", true);
+          LINE_SEPARATOR + "File check in has been done." + "(" + id + ")", true);
     }
 
     /*
      * (non-Javadoc)
      * @see org.silverpeas.process.AbstractProcess#onFailure(org.silverpeas.process.management.
-     * ProcessExecutionContext, org.silverpeas.process.session.Session,
+     * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession,
      * org.silverpeas.process.management.ProcessErrorType, java.lang.Exception)
      */
     @Override
-    public void onFailure(final ProcessExecutionContextTest context, final Session session,
-        final ProcessErrorType errorType, final Exception exception) throws Exception {
-      this.errorType = errorType;
-      this.exception = exception;
-      if (fileHandler != null) {
-        fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile).writeStringToFile(" onFailure",
-            true);
+    public void onFailure(final ProcessErrorType errorType, final Exception exception)
+        throws Exception {
+      try {
+        super.onFailure(errorType, exception);
+      } finally {
+        this.errorType = errorType;
+        this.exception = exception;
+        writeStringToFile(testResultFile, " onFailure" + "(" + id + ")", true);
       }
     }
 
@@ -334,25 +596,22 @@ public class ProcessManagementTest {
     /*
      * (non-Javadoc)
      * @see org.silverpeas.process.AbstractProcess#onSuccessful(org.silverpeas.process.management.
-     * ProcessExecutionContext, org.silverpeas.process.session.Session)
+     * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
      */
     @Override
-    public void onSuccessful(final ProcessExecutionContextTest context, final Session session)
-        throws Exception {
-      fileHandler.getHandledFile(BASE_PATH_TEST, testResultFile).writeStringToFile(" onSuccessful",
-          true);
-      super.onSuccessful(context, session);
+    public void onSuccessful() throws Exception {
+      writeStringToFile(testSuccessfulFile, " onSuccessful" + "(" + id + ")", true);
+      super.onSuccessful();
     }
   }
 
   /**
    * @author Yohann Chastagnier
    */
-  private class CheckFileTest extends AbstractFileCheck {
+  private class CheckFileTest extends AbstractFileProcessCheck {
 
     @Override
-    public void checkFiles(final ProcessExecutionContext context, final Session session,
-        final FileHandler fileHandler) throws Exception {
+    public void checkFiles(final ProcessExecutionContext context, final FileHandler fileHandler) throws Exception {
       throw new IOException();
     }
   }

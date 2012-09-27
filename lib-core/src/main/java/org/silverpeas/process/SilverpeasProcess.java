@@ -25,7 +25,7 @@ package org.silverpeas.process;
 
 import org.silverpeas.process.management.ProcessErrorType;
 import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * Interface which has to be implemented by each process (or task in other words) that has to be
@@ -35,7 +35,7 @@ import org.silverpeas.process.session.Session;
 public interface SilverpeasProcess<C extends ProcessExecutionContext> {
 
   /**
-   * Gets the session
+   * Gets the process type
    * @return
    */
   ProcessType getProcessType();
@@ -44,23 +44,20 @@ public interface SilverpeasProcess<C extends ProcessExecutionContext> {
    * Containing main treatment of the process.
    * @return
    */
-  void process(C context, Session session) throws Exception;
+  void process(C context, ProcessSession session) throws Exception;
 
   /**
    * Containing treatments which have to be done after a successful execution of process method and
    * after successful validations.
    */
-  public void onSuccessful(C context, Session session) throws Exception;
+  public void onSuccessful() throws Exception;
 
   /**
    * This method is called when exception is generated during a execution of Silverpeas Processes
    * chain and if the process method of the task have been executed.
-   * @param context
-   * @param session
    * @param errorType
    * @param exception
    * @throws Exception
    */
-  public void onFailure(C context, Session session, ProcessErrorType errorType, Exception exception)
-      throws Exception;
+  public void onFailure(ProcessErrorType errorType, Exception exception) throws Exception;
 }

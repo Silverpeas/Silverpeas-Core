@@ -28,20 +28,20 @@ import java.io.File;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
- * This enumeration represents all pathes that are handled by the transactional mechanism.
- * For each definition is associated the real handled path on the file system and the node path used
- * for internal mechanism file manipulations.
+ * This enumeration represents all root pathes that are handled by Silverpeas.
+ * For each definition is associated a real path on the file system and its assiocated node path.
+ * The node path is used by <code>FileHandler</code> in case it has to be managed by this one.
  * @author Yohann Chastagnier
  */
 public enum FileBasePath {
   UPLOAD_PATH(GeneralPropertiesManager.getString("uploadsPath"), "~uploads~");
 
   private String path;
-  private String ioNodeName;
+  private String handledNodeName;
 
-  private FileBasePath(final String path, final String ioNodeName) {
+  private FileBasePath(final String path, final String handledNodeName) {
     this.path = new File(path + "/").getPath();
-    this.ioNodeName = ioNodeName;
+    this.handledNodeName = handledNodeName;
   }
 
   /**
@@ -52,9 +52,9 @@ public enum FileBasePath {
   }
 
   /**
-   * @return the ioNodeName
+   * @return the handledNodeName
    */
-  public String getIoNodeName() {
-    return ioNodeName;
+  public String getHandledNodeName() {
+    return handledNodeName;
   }
 }

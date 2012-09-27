@@ -36,7 +36,7 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * @author Yohann Chastagnier
@@ -44,18 +44,18 @@ import org.silverpeas.process.session.Session;
 public abstract class AbstractHandledFileTest {
 
   protected static final FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  protected static final Session currentSession = createSessionTest();
+  protected static final ProcessSession currentSession = createSessionTest();
   protected static final String componentInstanceId = "componentInstanceId";
   protected static final File sessionRootPath = new File(getString("tempPath"));
   protected static final File realRootPath = new File(BASE_PATH_TEST.getPath());
   protected static final File otherFile = new File(
       new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
   protected static final File sessionHandledPath = FileUtils.getFile(sessionRootPath,
-      currentSession.getId(), BASE_PATH_TEST.getIoNodeName());
+      currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
   protected static final File realComponentPath = FileUtils.getFile(realRootPath,
       componentInstanceId);
   protected static final File sessionComponentPath = FileUtils.getFile(sessionRootPath,
-      currentSession.getId(), BASE_PATH_TEST.getIoNodeName(), componentInstanceId);
+      currentSession.getId(), BASE_PATH_TEST.getHandledNodeName(), componentInstanceId);
 
   protected FileHandler fileHandler;
 
@@ -176,8 +176,8 @@ public abstract class AbstractHandledFileTest {
     assertThat(test, is(expected));
   }
 
-  protected static Session createSessionTest() {
-    return new Session() {
+  protected static ProcessSession createSessionTest() {
+    return new ProcessSession() {
 
       @Override
       public void setAttribute(final String name, final Object value) {

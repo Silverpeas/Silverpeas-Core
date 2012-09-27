@@ -33,8 +33,8 @@ public interface ProcessManagement {
   /**
    * Executing several processes with a shared execution context
    * @param processes
-   * @param processExecutionProcess
+   * @param processExecutionContext
    */
   public abstract <C extends ProcessExecutionContext> void execute(ProcessList<C> processes,
-      C processExecutionProcess) throws Exception;
+      C processExecutionContext) throws Exception;
 }

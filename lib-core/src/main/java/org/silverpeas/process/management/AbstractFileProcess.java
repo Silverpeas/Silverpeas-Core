@@ -26,13 +26,12 @@ package org.silverpeas.process.management;
 import org.silverpeas.process.AbstractProcess;
 import org.silverpeas.process.ProcessType;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
- * Abstract extension of <code>AbstractComponentProcess</code> oriented in the data manipulations
- * and in file system manipulations.
+ * Abstract extension of <code>AbstractProcess</code> oriented in the file system manipulations.
  * @author Yohann Chastagnier
- * @see AbstractComponentProcess
+ * @see AbstractProcess
  */
 public abstract class AbstractFileProcess<C extends ProcessExecutionContext> extends
     AbstractProcess<C> {
@@ -49,10 +48,10 @@ public abstract class AbstractFileProcess<C extends ProcessExecutionContext> ext
   /*
    * (non-Javadoc)
    * @see org.silverpeas.process.SilverpeasProcess#process(org.silverpeas.process.management.
-   * ProcessExecutionContext, org.silverpeas.process.session.Session)
+   * ProcessExecutionContext, org.silverpeas.process.session.ProcessSession)
    */
   @Override
-  public final void process(final C processExecutionProcess, final Session session)
+  public final void process(final C processExecutionProcess, final ProcessSession session)
       throws Exception {
     processFiles(processExecutionProcess, session, processExecutionProcess.getFileHandler());
   }
@@ -64,6 +63,6 @@ public abstract class AbstractFileProcess<C extends ProcessExecutionContext> ext
    * @param fileHandler
    * @throws Exception
    */
-  abstract public void processFiles(final C processExecutionProcess, final Session session,
+  abstract public void processFiles(final C processExecutionProcess, final ProcessSession session,
       FileHandler fileHandler) throws Exception;
 }

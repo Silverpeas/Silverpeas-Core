@@ -21,20 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.process.session;
+package org.silverpeas.process.management;
+
+import org.silverpeas.process.check.AbstractProcessCheck;
+import org.silverpeas.process.check.ProcessCheckType;
 
 /**
- * This interface defines methods which any implementation of <code>Session</code> have to expose to
- * callers.
+ * Abstract extension of <code>AbstractProcessCheck</code> oriented on data verifications.
  * @author Yohann Chastagnier
+ * @see AbstractProcessCheck
  */
-public interface Session {
+public abstract class AbstractDataProcessCheck extends AbstractProcessCheck {
 
-  String getId();
-
-  void setAttribute(String name, Object value);
-
-  Object getAttribute(String name);
-
-  <C> C getAttribute(String name, Class<C> expectedReturnedClass);
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.process.check.Check#getType()
+   */
+  @Override
+  public ProcessCheckType getType() {
+    return ProcessCheckType.DATA;
+  }
 }

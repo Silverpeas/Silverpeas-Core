@@ -27,10 +27,10 @@ import org.silverpeas.process.AbstractProcess;
 import org.silverpeas.process.ProcessType;
 
 /**
- * Abstract extension of <code>AbstractComponentProcess</code> oriented in the data manipulations
+ * Abstract extension of <code>AbstractProcess</code> oriented in the data manipulations
  * such as database persistent operations.
  * @author Yohann Chastagnier
- * @see AbstractComponentProcess
+ * @see AbstractProcess
  */
 public abstract class AbstractDataProcess<C extends ProcessExecutionContext> extends
     AbstractProcess<C> {

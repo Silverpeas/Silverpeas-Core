@@ -25,9 +25,12 @@ package org.silverpeas.process.io.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,14 +38,14 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.management.ProcessManagement;
-import org.silverpeas.process.session.Session;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Bases of file handler functionnalities whose a lot of these are protected and only usable by
  * extended classes and by <code>ProcessManagement</code> services (@see {@link ProcessManagement}).
- * This class contains the transactionnal mechanism of file manipulations.
+ * This class contains the transactionnal mechanism of file system manipulations.
  * @author Yohann Chastagnier
  */
 public abstract class AbstractFileHandler {
@@ -53,7 +56,7 @@ public abstract class AbstractFileHandler {
   }
 
   private final File sessionRootPath = new File(GeneralPropertiesManager.getString("tempPath"));
-  private final Session session;
+  private final ProcessSession session;
   private final Map<FileBasePath, Set<File>> toDelete = new HashMap<FileBasePath, Set<File>>();
   private IOAccess ioAccess = IOAccess.READ_ONLY;
 
@@ -61,14 +64,14 @@ public abstract class AbstractFileHandler {
    * Default constructor
    * @param session
    */
-  protected AbstractFileHandler(final Session session) {
+  protected AbstractFileHandler(final ProcessSession session) {
     this.session = session;
   }
 
   /**
    * @return the session
    */
-  private Session getSession() {
+  private ProcessSession getSession() {
     return session;
   }
 
@@ -216,7 +219,7 @@ public abstract class AbstractFileHandler {
     if (!isHandledPath(basePath)) {
       throw new FileHandlerException("EX_GETTING_SESSION_PATH_IS_NOT_POSSIBLE");
     }
-    return FileUtils.getFile(sessionRootPath, getSession().getId(), basePath.getIoNodeName());
+    return FileUtils.getFile(sessionRootPath, getSession().getId(), basePath.getHandledNodeName());
   }
 
   /**
@@ -229,17 +232,44 @@ public abstract class AbstractFileHandler {
   }
 
   /**
-   * This method calculates the size of files contained in the session path and subtracts from the
-   * previous result the size of files marked to be deleted.
+   * This method calculates the size of files contained in the given relative root path from the
+   * session and subtracts from the previous result the size of files marked to be deleted.
    */
-  public long sizeOfSessionWorkingPath() {
-    File currentFile = FileUtils.getFile(sessionRootPath, getSession().getId());
-    long size = (currentFile.exists()) ? FileUtils.sizeOf(currentFile) : 0;
-    currentFile = FileUtils.getFile(getSessionTemporaryPath());
-    size -= (currentFile.exists()) ? FileUtils.sizeOf(currentFile) : 0;
+  public long sizeOfSessionWorkingPath(final String... relativeRootPath) {
+    long size = 0;
+    for (final FileBasePath basePath : handledBasePath) {
+      size += sizeOfSessionWorkingPath(basePath, relativeRootPath);
+    }
+    return size;
+  }
+
+  /**
+   * This method calculates the size of files contained in the given relative root path from the
+   * session and subtracts from the previous result the size of files marked to be deleted.
+   */
+  protected long sizeOfSessionWorkingPath(final FileBasePath basePath,
+      final String... relativeRootPath) {
+
+    // Computing root path from which the size has to be calculated
+    final List<String> rootPathParts = new ArrayList<String>();
+    rootPathParts.add(getSession().getId());
+    rootPathParts.add(basePath.getHandledNodeName());
+    if (relativeRootPath != null) {
+      rootPathParts.addAll(Arrays.asList(relativeRootPath));
+    }
+
+    // Root path (or file ?)
+    final File rootPath =
+        FileUtils.getFile(sessionRootPath, rootPathParts.toArray(new String[] {}));
+
+    // Size of not deleted files
+    long size = (rootPath.exists()) ? FileUtils.sizeOf(rootPath) : 0;
+
+    // Remove the size of deleted files from previous result
+    final String realRootPath = translateToRealPath(basePath, rootPath).getPath();
     for (final Map.Entry<FileBasePath, Set<File>> entry : toDelete.entrySet()) {
       for (final File fileToDelete : entry.getValue()) {
-        if (fileToDelete.exists()) {
+        if (fileToDelete.getPath().startsWith(realRootPath) && fileToDelete.exists()) {
           size -= FileUtils.sizeOf(fileToDelete);
         }
       }

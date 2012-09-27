@@ -21,31 +21,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.process.session;
+package org.silverpeas.process.management;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.silverpeas.process.check.ProcessCheck;
 
 /**
- * Simple <code>Session</code> class which doesn't modify the abstract implementation.
+ * Registering <code>ProcessCheck</code> instances. Registred <code>ProcessCheck</code> are used by
+ * <code>ProcessManagement</code>.
  * @author Yohann Chastagnier
+ * @see ProcessCheck
  */
-public class SimpleSession extends AbstractSession {
+public class ProcessCheckRegistration {
+
+  /** Check container */
+  private static final Collection<ProcessCheck> checks = new ArrayList<ProcessCheck>();
 
   /**
-   * Instanciate an IO context from given user and component instance ID
-   * @param user
-   * @param componentInstanceId
-   * @return
+   * Register a check
+   * @param check
    */
-  public static SimpleSession create() {
-    return new SimpleSession();
+  public static synchronized void register(final ProcessCheck check) {
+    checks.add(check);
   }
 
   /**
-   * Default constructor
-   * @param userId
-   * @param userDetail
-   * @param componentInstanceId
+   * Unregister a check
+   * @param check
    */
-  protected SimpleSession() {
-    super();
+  public static synchronized void unregister(final ProcessCheck check) {
+    checks.remove(check);
+  }
+
+  /**
+   * @return the checks
+   */
+  static Collection<ProcessCheck> getChecks() {
+    return checks;
   }
 }

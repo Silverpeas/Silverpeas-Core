@@ -24,14 +24,15 @@
 package org.silverpeas.process.management;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.silverpeas.process.SilverpeasProcess;
-import org.silverpeas.process.check.CheckType;
-import org.silverpeas.process.session.Session;
-import org.silverpeas.process.session.SimpleSession;
+import org.silverpeas.process.check.ProcessCheckType;
+import org.silverpeas.process.session.DefaultProcessSession;
+import org.silverpeas.process.session.ProcessSession;
 
 /**
  * Internal context of ProcessManagement.
@@ -40,12 +41,18 @@ import org.silverpeas.process.session.SimpleSession;
  */
 class InternalContext<C extends ProcessExecutionContext> {
 
-  private final boolean isOpeningFileTransaction;
+  private final InternalContext<? extends ProcessExecutionContext> previous;
+  private InternalContext<? extends ProcessExecutionContext> next;
+
   private final C processExecutionContext;
-  private Session session;
-  private boolean isProcessInError = false;
-  private final List<SilverpeasProcess<C>> processesStarted = new ArrayList<SilverpeasProcess<C>>();
-  private final Set<CheckType> checkTypesToProcess = new HashSet<CheckType>();
+  private ProcessSession session;
+  private final List<SilverpeasProcess<C>> startedProcesses = new ArrayList<SilverpeasProcess<C>>();
+  private final Set<ProcessCheckType> checkTypesToProcess = new HashSet<ProcessCheckType>();
+
+  private boolean isFileTransactionInError = false;
+  private SilverpeasProcess<?> processInError = null;
+  private ProcessErrorType errorType = null;
+  private Exception exception = null;
 
   /**
    * Default unique constructor
@@ -53,18 +60,25 @@ class InternalContext<C extends ProcessExecutionContext> {
    */
   protected InternalContext(final C processExecutionContext) {
     this.processExecutionContext = processExecutionContext;
-    session = SimpleSession.create();
-    this.isOpeningFileTransaction = true;
+    session = DefaultProcessSession.create();
+    previous = null;
   }
 
   /**
    * Default unique constructor
+   * @param previous
    * @param processExecutionContext
+   * @param session
    */
-  protected InternalContext(final C processExecutionContext, final Session session) {
+  protected InternalContext(final InternalContext<? extends ProcessExecutionContext> previous,
+      final C processExecutionContext) {
     this.processExecutionContext = processExecutionContext;
-    this.session = session;
-    this.isOpeningFileTransaction = false;
+    this.previous = previous;
+    this.previous.next = this;
+
+    // Get reference on existing shared data
+    this.session = previous.session;
+    processExecutionContext.setFileHandler(previous.getProcessExecutionContext().getFileHandler());
   }
 
   /**
@@ -77,29 +91,60 @@ class InternalContext<C extends ProcessExecutionContext> {
   /**
    * @return the session
    */
-  protected Session getSession() {
+  protected ProcessSession getSession() {
     return session;
   }
 
   /**
    * @param session the session to set
    */
-  public void setSession(final Session session) {
+  public void setSession(final ProcessSession session) {
     this.session = session;
   }
 
   /**
-   * @return the isProcessInError
+   * @param errorType
+   * @param exception
+   * @param processInError
    */
-  protected void setProcessInError() {
-    isProcessInError = true;
+  protected void setFileTransactionInError(final ProcessErrorType errorType,
+      final Exception exception, final SilverpeasProcess<?> processInError) {
+    InternalContext<?> context = this;
+    while (context != null) {
+      context.isFileTransactionInError = true;
+      context.processInError = processInError;
+      context.errorType = errorType;
+      context.exception = exception;
+      context = context.getPrevious();
+    }
   }
 
   /**
-   * @return the isProcessInError
+   * @return the isFileTransactionInError
    */
-  protected boolean isProcessInError() {
-    return isProcessInError;
+  protected boolean isFileTransactionInError() {
+    return isFileTransactionInError;
+  }
+
+  /**
+   * @return the processInError
+   */
+  protected SilverpeasProcess<?> getProcessInError() {
+    return processInError;
+  }
+
+  /**
+   * @return the errorType
+   */
+  protected ProcessErrorType getErrorType() {
+    return errorType;
+  }
+
+  /**
+   * @return the exception
+   */
+  protected Exception getException() {
+    return exception;
   }
 
   /**
@@ -107,28 +152,80 @@ class InternalContext<C extends ProcessExecutionContext> {
    * @param process
    */
   protected void update(final SilverpeasProcess<C> process) {
-    processesStarted.add(0, process);
-    checkTypesToProcess.addAll(process.getProcessType().getCheckTypesToProcess());
+    startedProcesses.add(process);
+    getFirst().checkTypesToProcess.addAll(process.getProcessType().getCheckTypesToProcess());
   }
 
   /**
    * @return the checkTypesToProcess
    */
-  protected Set<CheckType> getCheckTypesToProcess() {
+  protected Set<ProcessCheckType> getCheckTypesToProcess() {
     return checkTypesToProcess;
   }
 
   /**
-   * @return the processesStarted
+   * @return the startedProcesses
    */
-  protected List<SilverpeasProcess<C>> getProcessesStarted() {
-    return processesStarted;
+  protected List<SilverpeasProcess<C>> getOnSuccessfulProcesses() {
+    return startedProcesses;
+  }
+
+  /**
+   * @return the startedProcesses
+   */
+  protected List<SilverpeasProcess<C>> getOnFailureProcesses() {
+    Collections.reverse(startedProcesses);
+    return startedProcesses;
   }
 
   /**
    * @return the isOpeningFileTransaction
    */
   protected boolean isOpeningFileTransaction() {
-    return isOpeningFileTransaction;
+    return (previous == null);
+  }
+
+  /**
+   * @return the previous
+   */
+  protected InternalContext<? extends ProcessExecutionContext> getPrevious() {
+    return previous;
+  }
+
+  /**
+   * @return the next
+   */
+  protected InternalContext<? extends ProcessExecutionContext> getNext() {
+    return next;
+  }
+
+  /**
+   * @return the next
+   */
+  protected InternalContext<? extends ProcessExecutionContext> getFirst() {
+    InternalContext<?> parent = previous;
+    while (parent != null) {
+      if (parent.getPrevious() != null) {
+        parent = parent.getPrevious();
+      } else {
+        return parent;
+      }
+    }
+    return this;
+  }
+
+  /**
+   * @return the next
+   */
+  protected InternalContext<? extends ProcessExecutionContext> getLast() {
+    InternalContext<?> child = next;
+    while (child != null) {
+      if (child.getNext() != null) {
+        child = child.getNext();
+      } else {
+        return child;
+      }
+    }
+    return this;
   }
 }

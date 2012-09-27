@@ -26,7 +26,7 @@ package org.silverpeas.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.process.check.CheckType;
+import org.silverpeas.process.check.ProcessCheckType;
 
 /**
  * This enumeration represents different types of process. At each type of process is associated a
@@ -37,23 +37,20 @@ import org.silverpeas.process.check.CheckType;
 public enum ProcessType {
 
   /** the process is oriented on data manipulations (database transactions for example) */
-  DATA(CheckType.DATA),
+  DATA(ProcessCheckType.DATA),
 
   /** the process is oriented on file system manipulations (photo creations for example) */
-  FILESYSTEM(CheckType.FILESYSTEM),
+  FILESYSTEM(ProcessCheckType.FILESYSTEM);
 
-  /** the process is oriented on file system manipulations (photo creations for example) */
-  DATA_AND_FILESYSTEM(CheckType.DATA, CheckType.FILESYSTEM);
+  private final List<ProcessCheckType> checkTypesToProcess = new ArrayList<ProcessCheckType>();
 
-  private final List<CheckType> checkTypesToProcess = new ArrayList<CheckType>();
-
-  private ProcessType(final CheckType... checkTypes) {
-    for (final CheckType checkType : checkTypes) {
+  private ProcessType(final ProcessCheckType... checkTypes) {
+    for (final ProcessCheckType checkType : checkTypes) {
       checkTypesToProcess.add(checkType);
     }
   }
 
-  public List<CheckType> getCheckTypesToProcess() {
+  public List<ProcessCheckType> getCheckTypesToProcess() {
     return checkTypesToProcess;
   }
 }

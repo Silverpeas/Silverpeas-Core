@@ -25,19 +25,14 @@ package org.silverpeas.process;
 
 import javax.inject.Inject;
 
-import org.silverpeas.process.check.Checker;
 import org.silverpeas.process.management.ProcessManagement;
 
 /**
- * Process API factory which offers an access to the <code>Checker</code> services and to the
- * <code>ProcessManagement</code> services.
+ * Process API factory which offers an access to the <code>ProcessManagement</code> services.
  * @author Yohann Chastagnier
  */
 public class ProcessFactory {
-  private static ProcessFactory instance;
-
-  @Inject
-  private Checker checker;
+  private final static ProcessFactory instance = new ProcessFactory();
 
   @Inject
   private ProcessManagement processManagement;
@@ -47,22 +42,11 @@ public class ProcessFactory {
    * @return
    */
   private static ProcessFactory getInstance() {
-    if (ProcessFactory.instance == null) {
-      ProcessFactory.instance = new ProcessFactory();
-    }
-    return ProcessFactory.instance;
+    return instance;
   }
 
   /**
-   * IO checker access
-   * @return
-   */
-  public static Checker getChecker() {
-    return getInstance().checker;
-  }
-
-  /**
-   * IO process management access
+   * Silverpeas processes management services access
    * @return
    */
   public static ProcessManagement getProcessManagement() {

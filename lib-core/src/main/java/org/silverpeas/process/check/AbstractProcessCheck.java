@@ -21,24 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.process.management;
+package org.silverpeas.process.check;
 
-import org.silverpeas.process.check.AbstractCheck;
-import org.silverpeas.process.check.CheckType;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.silverpeas.process.management.ProcessCheckRegistration;
 
 /**
- * Abstract extension of <code>AbstractCheck</code> oriented on data verifications.
+ * The abstract root implementation of <code>Check</code> interface.
+ * Methods <code>register</code> and <code>unregister</code> are implemented at this level, and be
+ * sure <code>@Named</code> class annotation is well mentionned in the final implementation in the
+ * aim to be taken in charge by <code>ProcessCheckRegistration</code> (@see
+ * {@link ProcessCheckRegistration}).
  * @author Yohann Chastagnier
- * @see AbstractCheck
  */
-public abstract class AbstractDataCheck extends AbstractCheck {
+public abstract class AbstractProcessCheck implements ProcessCheck {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.process.check.Check#getType()
+   * @see org.silverpeas.process.check.Check#register()
    */
   @Override
-  public CheckType getType() {
-    return CheckType.DATA;
+  @PostConstruct
+  public void register() {
+    ProcessCheckRegistration.register(this);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.process.check.Check#unregister()
+   */
+  @Override
+  @PreDestroy
+  public void unregister() {
+    ProcessCheckRegistration.unregister(this);
   }
 }
