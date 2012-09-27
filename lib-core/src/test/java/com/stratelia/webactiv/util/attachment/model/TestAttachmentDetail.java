@@ -117,7 +117,7 @@ public class TestAttachmentDetail extends TestCase {
     attachment.setCreationDate(calend.getTime());
     attachment.setDescription("Attachment for tests");
     attachment.setLanguage("fr");
-    attachment.setLogicalName("frenchScrum.odp");
+    attachment.setLogicalName("frenchScrum[1].odp");
     attachment.setPhysicalName("abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
     attachment.setOrderNum(2);
     attachment.setSize(975048);
@@ -129,31 +129,31 @@ public class TestAttachmentDetail extends TestCase {
     assertTrue(attachment.isOpenOfficeCompatible("fr"));
     assertEquals("kmelia57", attachment.getInstanceId());
     assertEquals(
-        "/silverpeas/OnlineFileServer/frenchScrum.odp?ComponentId=kmelia57&Sour" +
+        "/silverpeas/OnlineFileServer/frenchScrum[1].odp?ComponentId=kmelia57&Sour" +
         "ceFile=abf562dee7d07e1b5af50a2d1b3d724ef5a88869&MimeType=application/vnd" +
         ".oasis.opendocument.presentation&Directory=Attachment"+ File.separatorChar + "tests"
         + File.separatorChar + "simpson" + File.separatorChar + "bart" + File.separatorChar,
         attachment.getOnlineURL());
     assertEquals(
         "/attached_file/componentId/kmelia57/attachmentId/100/lang/fr" +
-        "/name/frenchScrum.odp",
+        "/name/frenchScrum[1].odp",
         attachment.getWebURL());
     assertEquals(
-        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum 1 .odp",
         attachment.getJcrPath(null));
     assertEquals(
         "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
-        "/simpson/bart/100/frenchScrum.odp",
+        "/simpson/bart/100/frenchScrum 1 .odp",
         attachment.getWebdavUrl(null));
     assertEquals(
-        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum 1 .odp",
         attachment.getJcrPath("fr"));
     assertEquals(
-        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum.odp",
+        "attachments/kmelia57/Attachment/tests/simpson/bart/100/frenchScrum 1 .odp",
         attachment.getJcrPath("  "));
     assertEquals(
         "/silverpeas/repository/jackrabbit/attachments/kmelia57/Attachment/tests" +
-        "/simpson/bart/100/frenchScrum.odp",
+        "/simpson/bart/100/frenchScrum 1 .odp",
         attachment.getWebdavUrl("  "));
     assertEquals(
         UPLOAD_DIR + "abf562dee7d07e1b5af50a2d1b3d724ef5a88869",
