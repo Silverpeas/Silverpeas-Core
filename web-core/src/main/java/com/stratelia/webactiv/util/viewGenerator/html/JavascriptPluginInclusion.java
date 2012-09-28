@@ -162,6 +162,8 @@ public class JavascriptPluginInclusion {
     script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
             + SILVERPEAS_PREVIEW);
     xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + "silverpeas-view.js");
+    xhtml.addElement(popup);
     return xhtml;
   }
 

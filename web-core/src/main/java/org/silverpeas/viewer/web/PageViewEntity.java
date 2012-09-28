@@ -23,13 +23,11 @@
  */
 package org.silverpeas.viewer.web;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.silverpeas.viewer.Preview;
+import org.silverpeas.viewer.PageView;
 
 /**
  * The preview entity is a preview instance that is exposed in the web as
@@ -38,71 +36,26 @@ import org.silverpeas.viewer.Preview;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PreviewEntity extends AbstractPreviewEntity<PreviewEntity> {
-  private static final long serialVersionUID = 4270519541076741138L;
-
-  @XmlElement(defaultValue = "")
-  private String url;
-
-  @XmlElement(defaultValue = "")
-  private String originalFileName;
-
-  @XmlElement(defaultValue = "")
-  private String width;
-
-  @XmlElement(defaultValue = "")
-  private String height;
+public class PageViewEntity extends PreviewEntity {
+  private static final long serialVersionUID = 2468951380664354227L;
 
   /**
    * Creates a new Preview entity from the specified preview.
-   * @param request the current http request
-   * @param preview the preview to entitify.
+   * @param pageView the preview to entitify.
    * @return the entity representing the specified preview.
    */
-  public static PreviewEntity createFrom(final HttpServletRequest request, final Preview preview) {
-    return new PreviewEntity(request, preview);
+  public static PageViewEntity createFrom(final PageView pageView) {
+    return new PageViewEntity(pageView);
   }
 
   /**
    * Default constructorC
-   * @param request
-   * @param preview
+   * @param pageView
    */
-  protected PreviewEntity(final HttpServletRequest request, final Preview preview) {
-    url = preview.getURLAsString().replaceAll("[/]{2,}", "/");
-    originalFileName = preview.getOriginalFileName();
-    width = preview.getWidth();
-    height = preview.getHeight();
+  private PageViewEntity(final PageView pageView) {
+    super(null, pageView);
   }
 
-  protected PreviewEntity() {
-  }
-
-  /**
-   * @return the url
-   */
-  protected String getURL() {
-    return url;
-  }
-
-  /**
-   * @return the originalFileName
-   */
-  protected String getOriginalFileName() {
-    return originalFileName;
-  }
-
-  /**
-   * @return the width
-   */
-  protected String getWidth() {
-    return width;
-  }
-
-  /**
-   * @return the height
-   */
-  protected String getHeight() {
-    return height;
+  protected PageViewEntity() {
   }
 }

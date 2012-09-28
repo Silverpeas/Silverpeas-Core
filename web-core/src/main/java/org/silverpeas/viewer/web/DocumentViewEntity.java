@@ -23,13 +23,13 @@
  */
 package org.silverpeas.viewer.web;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.viewer.Preview;
 
 /**
  * The preview entity is a preview instance that is exposed in the web as
@@ -38,71 +38,60 @@ import org.silverpeas.viewer.Preview;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PreviewEntity extends AbstractPreviewEntity<PreviewEntity> {
+public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity> {
   private static final long serialVersionUID = 4270519541076741138L;
 
   @XmlElement(defaultValue = "")
-  private String url;
+  private int width = 0;
 
   @XmlElement(defaultValue = "")
-  private String originalFileName;
+  private int height = 0;
 
-  @XmlElement(defaultValue = "")
-  private String width;
-
-  @XmlElement(defaultValue = "")
-  private String height;
+  @XmlElement
+  private final List<PageViewEntity> pages = new ArrayList<PageViewEntity>();
 
   /**
    * Creates a new Preview entity from the specified preview.
-   * @param request the current http request
-   * @param preview the preview to entitify.
    * @return the entity representing the specified preview.
    */
-  public static PreviewEntity createFrom(final HttpServletRequest request, final Preview preview) {
-    return new PreviewEntity(request, preview);
+  public static DocumentViewEntity createFrom() {
+    return new DocumentViewEntity();
   }
 
   /**
-   * Default constructorC
-   * @param request
-   * @param preview
+   * Default constructor
    */
-  protected PreviewEntity(final HttpServletRequest request, final Preview preview) {
-    url = preview.getURLAsString().replaceAll("[/]{2,}", "/");
-    originalFileName = preview.getOriginalFileName();
-    width = preview.getWidth();
-    height = preview.getHeight();
-  }
-
-  protected PreviewEntity() {
+  protected DocumentViewEntity() {
   }
 
   /**
-   * @return the url
+   * Adding a page
+   * @param pageView
    */
-  protected String getURL() {
-    return url;
-  }
-
-  /**
-   * @return the originalFileName
-   */
-  protected String getOriginalFileName() {
-    return originalFileName;
+  protected void addPageView(final PageViewEntity pageView) {
+    width = Math.max(width, Integer.valueOf(pageView.getWidth()));
+    height = Math.max(height, Integer.valueOf(pageView.getHeight()));
+    pages.add(pageView);
   }
 
   /**
    * @return the width
    */
-  protected String getWidth() {
+  protected int getWidth() {
     return width;
   }
 
   /**
    * @return the height
    */
-  protected String getHeight() {
+  protected int getHeight() {
     return height;
+  }
+
+  /**
+   * @return the pages
+   */
+  protected List<PageViewEntity> getPages() {
+    return pages;
   }
 }

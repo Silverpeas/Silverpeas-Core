@@ -23,34 +23,14 @@
  */
 package org.silverpeas.viewer;
 
-import java.io.File;
-import java.util.List;
-
 /**
  * @author Yohann Chastagnier
  */
-public interface PreviewService {
+public interface PageView extends Preview {
 
   /**
-   * Verifying if it is possible to obtain an preview of the given file.
-   * @param file
+   * Gets the page number
    * @return
    */
-  boolean isPreviewable(File file);
-
-  /**
-   * Getting an Preview instance of the given file
-   * @param originalFileName
-   * @param physicalFile
-   * @return
-   */
-  Preview getPreview(String originalFileName, File physicalFile);
-
-  /**
-   * Getting pages view instances of the given file
-   * @param originalFileName
-   * @param physicalFile
-   * @return
-   */
-  List<PageView> getDocument(String originalFileName, File physicalFile);
+  int getIndex();
 }

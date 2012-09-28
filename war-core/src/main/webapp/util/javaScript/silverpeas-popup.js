@@ -172,6 +172,44 @@
     },
 
     /**
+     * The modal view dialog.
+     * It accepts one parameter that is an object with three attributes:
+     * - title : the document title of the dialog box
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     */
+    view : function( options ) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+      settings.title = "Visualisation";
+      if (options.title && options.title.length > 0) {
+        settings.title = settings.title + " "
+            + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonDisplayed : false,
+        width : options.width,
+        height : options.height
+      }));
+
+      if (__isIE7()) {
+        // Width & Height
+        if (options.width) {
+          settings.width = options.width;
+        }
+        if (options.height) {
+          settings.height = eval(options.height) + 27;
+        }
+      }
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+
+    /**
      * The modal waiting dialog.
      */
     waiting : function() {

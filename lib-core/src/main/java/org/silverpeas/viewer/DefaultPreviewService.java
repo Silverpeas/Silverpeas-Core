@@ -28,10 +28,15 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.im4java.core.ConvertCmd;
+import org.im4java.core.IMOperation;
 import org.silverpeas.image.ImageTool;
 import org.silverpeas.image.ImageToolDirective;
 import org.silverpeas.image.option.DimensionOption;
@@ -156,5 +161,107 @@ public class DefaultPreviewService implements PreviewService {
   protected File changeTmpFileExtension(final File file, final FileType fileType) {
     return new File(getFullPath(file.getPath()) + getBaseName(file.getPath()) + "." +
         fileType.getExtension());
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.PreviewService#getDocument(java.lang.String, java.io.File)
+   */
+  @Override
+  public List<PageView> getDocument(final String originalFileName, final File physicalFile) {
+
+    // Checking
+    if (!isPreviewable(physicalFile)) {
+      throw new PreviewException("IT IS NOT POSSIBLE GETTING DOCUMENT PREVIEW");
+    }
+
+    // Save file instance to an generic local variable
+    final List<File> resultFiles;
+
+    // If the document is an Open Office one
+    // 1 - converting it into PDF document
+    // 2 - converting the previous result into PNG image
+    if (FileUtil.isOpenOfficeCompatible(physicalFile.getName())) {
+      final File pdfFile = toPdfView(physicalFile, generateTmpFile(FileType.PDF));
+      resultFiles = toImageViews(pdfFile, changeTmpFileExtension(pdfFile, FileType.PNG));
+      FileUtils.deleteQuietly(pdfFile);
+    }
+
+    // If the document is a PDF (or plain text)
+    // 1 - convert it into PNG resized image.
+    else if (FileUtil.isPdf(originalFileName) ||
+        PLAIN_TEXT_MIME_TYPE.equals(FileUtil.getMimeType(physicalFile.getPath()))) {
+      resultFiles = toImageViews(physicalFile, generateTmpFile(FileType.PNG));
+    }
+
+    // If the document is an image
+    // 1 - convert it into JPG resized image.
+    else {
+      resultFiles = toImageViews(physicalFile, generateTmpFile(FileType.JPG));
+    }
+
+    // Returning the result
+    final List<PageView> resultPageViews = new ArrayList<PageView>();
+    for (final File file : resultFiles) {
+      resultPageViews.add(new TemporaryPageView(originalFileName, file));
+    }
+    return resultPageViews;
+  }
+
+  /**
+   * Convert into PDF
+   * @param source
+   * @return
+   */
+  private File toPdfView(final File source, final File destination) {
+    DocumentFormatConverterFactory.getFactory().getToPDFConverter()
+        .convert(source, destination, DocumentFormat.pdf);
+    return destination;
+  }
+
+  /**
+   * Convert into Image
+   * @param source
+   * @return
+   */
+  private List<File> toImageViews(final File source, final File destination) {
+
+    // Create the operation, add images and operators/options
+    final IMOperation op = new IMOperation();
+    op.density(196);
+    op.addImage(source.getPath());
+    op.resample(72);
+    op.trim();
+    op.p_repage();
+    op.bordercolor("white");
+    op.border(3);
+    op.addImage(destination.getPath());
+
+    // Executing command
+    try {
+      new ConvertCmd().run(op);
+    } catch (final Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    final List<File> result = new ArrayList<File>();
+    String fileExtension = "." + FilenameUtils.getExtension(destination.getName());
+    String baseFilePath =
+        destination.getParent() + File.separator + FilenameUtils.getBaseName(destination.getName());
+    File pageFile = new File(baseFilePath + fileExtension);
+    if (pageFile.exists()) {
+      result.add(pageFile);
+    } else {
+      int i = 0;
+      // String[] imageWidthHeight;
+      baseFilePath += "-";
+      pageFile = new File(baseFilePath + i + fileExtension);
+      while (pageFile.exists()) {
+        // imageWidthHeight = ImageUtil.getWidthAndHeight(pageFile);
+        result.add(pageFile);
+        pageFile = new File(baseFilePath + (++i) + fileExtension);
+      }
+    }
+    return result;
   }
 }

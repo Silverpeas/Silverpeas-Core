@@ -211,7 +211,14 @@
 
           if (ViewFactory.getPreviewService().isPreviewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
             %>
-            <img onclick='javascript:preview(this, <%=attachmentDetail.getPK().getId()%>);' class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<%=attResources.getString("GML.preview") %>" title="<%=attResources.getString("GML.preview") %>"/>
+            <img  onclick='javascript:preview(this, <%=attachmentDetail.getPK().getId()%>);'
+                  class="preview-file" src='<c:url value="/util/icons/preview.png"/>'
+                  alt="<%=attResources.getString("GML.preview") %>"
+                  title="<%=attResources.getString("GML.preview") %>"/>
+            <img  onclick='javascript:view(this, <%=attachmentDetail.getPK().getId()%>);'
+                  class="view-file" src='<c:url value="/util/icons/duplicate.gif"/>'
+                  alt="<%=attResources.getString("GML.preview") %>"
+                  title="<%=attResources.getString("GML.preview") %>"/>
             <%
           }
           out.println("</span>");
@@ -667,6 +674,14 @@
 
   function preview(target, attachmentId) {
     $(target).preview("previewAttachment", {
+      componentInstanceId: "<%=componentId%>",
+      attachmentId: attachmentId
+    });
+    return false;
+  }
+
+  function view(target, attachmentId) {
+    $(target).view("viewAttachment", {
       componentInstanceId: "<%=componentId%>",
       attachmentId: attachmentId
     });

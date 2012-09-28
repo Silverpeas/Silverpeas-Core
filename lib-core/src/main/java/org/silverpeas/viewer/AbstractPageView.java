@@ -24,33 +24,18 @@
 package org.silverpeas.viewer;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface PreviewService {
+public abstract class AbstractPageView extends AbstractPreview implements PageView {
 
   /**
-   * Verifying if it is possible to obtain an preview of the given file.
-   * @param file
-   * @return
-   */
-  boolean isPreviewable(File file);
-
-  /**
-   * Getting an Preview instance of the given file
+   * Default constructor
    * @param originalFileName
    * @param physicalFile
-   * @return
    */
-  Preview getPreview(String originalFileName, File physicalFile);
-
-  /**
-   * Getting pages view instances of the given file
-   * @param originalFileName
-   * @param physicalFile
-   * @return
-   */
-  List<PageView> getDocument(String originalFileName, File physicalFile);
+  protected AbstractPageView(final String originalFileName, final File physicalFile) {
+    super(originalFileName, physicalFile);
+  }
 }

@@ -21,61 +21,50 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web.mock;
-
-import static org.mockito.Mockito.mock;
+package org.silverpeas.viewer;
 
 import java.io.File;
-import java.util.List;
 
-import javax.inject.Named;
+import org.apache.commons.io.FilenameUtils;
 
-import org.silverpeas.viewer.PageView;
-import org.silverpeas.viewer.Preview;
-import org.silverpeas.viewer.PreviewService;
-
-import com.silverpeas.util.Default;
+import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-@Named("previewService")
-@Default
-public class PreviewServiceMockWrapper implements PreviewService {
+public class TemporaryPageView extends AbstractPageView {
 
-  private final PreviewService mock;
+  private final int index;
 
-  public PreviewServiceMockWrapper() {
-    mock = mock(PreviewService.class);
-  }
-
-  public PreviewService getMock() {
-    return mock;
+  /**
+   * Default constructor
+   * @param physicalFile
+   */
+  public TemporaryPageView(final String originalFilename, final File physicalFile) {
+    super(originalFilename, physicalFile);
+    final String[] parts = FilenameUtils.getBaseName(physicalFile.getName()).split("-");
+    if (parts.length == 1) {
+      index = 0;
+    } else {
+      index = Integer.valueOf(parts[parts.length - 1]);
+    }
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#isItPossibleGettingPreview(java.io.File)
+   * @see org.silverpeas.viewer.Preview#getURLAsString()
    */
   @Override
-  public boolean isPreviewable(final File file) {
-    return mock.isPreviewable(file);
+  public String getURLAsString() {
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#getPreview(java.io.File)
+   * @see org.silverpeas.viewer.PageView#index()
    */
   @Override
-  public Preview getPreview(final String originalFileName, final File physicalFile) {
-    return mock.getPreview(originalFileName, physicalFile);
-  }
-
-  /* (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#getDocument(java.lang.String, java.io.File)
-   */
-  @Override
-  public List<PageView> getDocument(String originalFileName, File physicalFile) {
-    return mock.getDocument(originalFileName, physicalFile);
+  public int getIndex() {
+    return index;
   }
 }
