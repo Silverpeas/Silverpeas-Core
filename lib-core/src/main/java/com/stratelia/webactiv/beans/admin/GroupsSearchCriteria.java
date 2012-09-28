@@ -225,11 +225,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   public String getCriterionOnDomainId() {
      String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-     if (domainIds != null && domainIds.length == 2) {
-       return domainIds[1];
-     } else {
-       return null;
+     if (domainIds != null) {
+       if (domainIds.length == 2) {
+         return domainIds[1];
+       } else if (!domainIds[0].equals(Domain.MIXED_DOMAIN_ID)) {
+         return domainIds[0];
+       }
      }
+     return null;
   }
 
   /**
