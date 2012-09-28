@@ -6574,32 +6574,6 @@ public final class Admin {
       }
     }
 
-//    if (searchCriteria.isCriterionOnRoleIdsSet()) {
-//      userIds = new ArrayList<String>();
-//      DomainDriverManager domainDriverManager = DomainDriverManagerFactory.
-//              getCurrentDomainDriverManager();
-//      for (String roleId : searchCriteria.getCriterionOnRoleIds()) {
-//        ProfileInst profile = profileManager.getProfileInst(domainDriverManager, roleId, null);
-//        // users playing the role
-//        userIds.addAll(profile.getAllUsers());
-//
-//        // users of the groups (and recursively of their subgroups) playing the role
-//        List<String> groupIds = profile.getAllGroups();
-//        List<String> allGroupIds = new ArrayList<String>();
-//        for (String aGroupId : groupIds) {
-//          allGroupIds.add(aGroupId);
-//          allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
-//        }
-//        userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
-//      }
-//    } else if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-//      String instanceId = searchCriteria.getCriterionOnComponentInstanceId();
-//      ComponentInst component = getComponentInst(instanceId);
-//      if (component != null && !component.isPublic()) {
-//        userIds = getUserIdsForComponent(instanceId);
-//      }
-//    }
-
     if (searchCriteria.isCriterionOnUserIdsSet()) {
       if (userIds == null) {
         userIds = Arrays.asList(searchCriteria.getCriterionOnUserIds());

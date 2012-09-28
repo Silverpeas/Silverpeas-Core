@@ -27,11 +27,11 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -69,25 +69,15 @@ public class UserGroupProfileResource extends RESTWebService {
    *
    * @param name a pattern on the name of the root groups to retrieve. If null, all the root groups
    * are fetched.
+   * @param domain the unique identifier of the domain the groups has to be related.
    * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name) {
-//    Set<String> groupIds = new HashSet<String>();
-    String domainId = null;
-//    if (getUserDetail().isDomainRestricted()) {
-//      domainId = getUserDetail().getDomainId();
-//      String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
-//              name, "-1"));
-//      groupIds.addAll(Arrays.asList(ids));
-//    }
-//    String[] ids = getOrganizationController().searchGroupsIds(true, null, null, aFilteringModel(
-//            name, domainId));
-//    groupIds.addAll(Arrays.asList(ids));
-//    Group[] allGroups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.
-//            size()]));
+  public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name,
+          @QueryParam("domain") String domain) {
     GroupsSearchCriteria criteria;
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null:domain);
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
@@ -115,6 +105,7 @@ public class UserGroupProfileResource extends RESTWebService {
    * groups.
    * @param name the pattern on the name the groups name must match. Null if all groups for the
    * specified application have to be fetched.
+   * @param domain the unique identifier of the domain the groups has to be related.
    * @return the JSON representation of the array with the parent groups having access the
    * application instance.
    */
@@ -124,23 +115,10 @@ public class UserGroupProfileResource extends RESTWebService {
   public UserGroupProfileEntity[] getGroupsInApplication(
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
-          @QueryParam("name") String name) {
-      String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
-//    String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
-//    String domainId = null;
-//    Set<String> groupIds = new HashSet<String>();
-//    if (getUserDetail().isDomainRestricted()) {
-//      domainId = getUserDetail().getDomainId();
-//      String[] ids = getOrganizationController().searchGroupsIds(false, null, roleIds,
-//              aFilteringModel(name, "-1"));
-//      groupIds.addAll(Arrays.asList(ids));
-//    }
-//    String[] ids = getOrganizationController().searchGroupsIds(false, null, roleIds,
-//            aFilteringModel(name, domainId));
-//    groupIds.addAll(Arrays.asList(ids));
-//    Group[] groups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.
-//            size()]));
-    String domainId = null;
+          @QueryParam("name") String name,
+          @QueryParam("domain") String domain) {
+    String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null:domain);
     GroupsSearchCriteria criteria;
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
@@ -195,25 +173,9 @@ public class UserGroupProfileResource extends RESTWebService {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-//    Set<String> subgroupIds = new HashSet<String>();
-    String domainId = null;
-//    if (getUserDetail().isDomainRestricted()) {
-//      domainId = getUserDetail().getDomainId();
-//      Group model = aFilteringModel(name, "-1");
-//      model.setSuperGroupId(groupId);
-//      String[] ids = getOrganizationController().searchGroupsIds(false, null, null, model);
-//      subgroupIds.addAll(Arrays.asList(ids));
-//    }
-//
-//    Group model = aFilteringModel(name, domainId);
-//    model.setSuperGroupId(groupId);
-//    String[] ids = getOrganizationController().searchGroupsIds(false, null, null, model);
-//    subgroupIds.addAll(Arrays.asList(ids));
-//    Group[] subgroups = getOrganizationController().getGroups(subgroupIds.toArray(new String[subgroupIds.
-//            size()]));
     GroupsSearchCriteria criteria;
     if (getUserDetail().isDomainRestricted()) {
-      domainId = getUserDetail().getDomainId();
+      String domainId = getUserDetail().getDomainId();
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
               withSuperGroupId(groupId).
               withDomainId(domainId).
@@ -222,7 +184,6 @@ public class UserGroupProfileResource extends RESTWebService {
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
               withSuperGroupId(groupId).
-              withDomainId(domainId).
               withName(name).build();
     }
     Group[] subgroups = getOrganizationController().searchGroups(criteria);
@@ -261,32 +222,4 @@ public class UserGroupProfileResource extends RESTWebService {
   private UserGroupProfileEntity asWebEntity(Group group, URI groupUri) {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
   }
-
-//  private Group aFilteringModel(String name, String domainId) {
-//    Group model = new Group();
-//    if (isDefined(domainId)) {
-//      model.setDomainId(domainId);
-//    }
-//    if (isDefined(name)) {
-//      String filterByName = name.replaceAll("\\*", "%");
-//      model.setName(filterByName);
-//    }
-//    return model;
-//  }
-
-//  private Group[] getGroups() {
-//    Set<String> groupIds = new HashSet<String>();
-//    if (getUserDetail().isDomainRestricted()) {
-//      domainId = getUserDetail().getDomainId();
-//      String[] ids = getOrganizationController().searchGroupsIds(false, null, roleIds,
-//              aFilteringModel(name, "-1"));
-//      groupIds.addAll(Arrays.asList(ids));
-//    }
-//    String[] ids = getOrganizationController().searchGroupsIds(false, null, roleIds,
-//            aFilteringModel(name, domainId));
-//    groupIds.addAll(Arrays.asList(ids));
-//    Group[] groups = getOrganizationController().getGroups(groupIds.toArray(new String[groupIds.
-//            size()]));
-//    return groups;
-//  }
 }

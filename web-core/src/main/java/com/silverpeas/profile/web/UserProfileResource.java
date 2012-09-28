@@ -29,6 +29,7 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
@@ -104,6 +105,7 @@ public class UserProfileResource extends RESTWebService {
    * this parameter is computed the part of users to sent back: those between ((page number - 1) *
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
+   * @param domain the unique identifier of the domain the groups has to be related.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -111,8 +113,9 @@ public class UserProfileResource extends RESTWebService {
   public Response getUsers(
           @QueryParam("group") String groupId,
           @QueryParam("name") String name,
-          @QueryParam("page") String page) {
-    String domainId = null;
+          @QueryParam("page") String page,
+          @QueryParam("domain") String domain) {
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null:domain);
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
@@ -180,8 +183,6 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-//    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-//            : null);
     String[] rolesIds = (isDefined(roles) ? roles.split(","):null);
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
@@ -221,16 +222,17 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("application") String instanceId,
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
-          @QueryParam("page") String page) {
+          @QueryParam("page") String page,
+          @QueryParam("domain") String domain) {
+    String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null:domain);
     UserDetail theUser = getUserDetailMatching(userId);
-//    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-//            : null);
     String[] rolesIds = (isDefined(roles) ? roles.split(","):null);
     String[] contactIds = getContactIds(theUser.getId());
     UserDetail[] contacts;
     if (contactIds.length > 0) {
       UserDetailsSearchCriteria criteria = aSearchCriteria().
               withComponentInstanceId(instanceId).
+              withDomainId(domainId).
               withRoles(rolesIds).
               withUserIds(contactIds).
               withName(name).
