@@ -28,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
+
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,8 +69,13 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(SearchCriteria criteria) {
+  public UserDetail[] searchUsers(UserDetailsSearchCriteria criteria) {
     return mock.searchUsers(criteria);
+  }
+
+  @Override
+  public Group[] searchGroups(GroupsSearchCriteria criteria) {
+    return mock.searchGroups(criteria);
   }
 
   @Override

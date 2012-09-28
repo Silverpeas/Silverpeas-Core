@@ -23,22 +23,25 @@
  */
 package com.silverpeas.profile.web;
 
+import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.SearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
- * A builder of search criteria on user details or on user groups.
+ * A builder of search criteria on user groups.
  */
-public class SearchCriteriaBuilder {
+public class UserGroupsSearchCriteriaBuilder {
 
-  private SearchCriteria searchCriteria;
+  private GroupsSearchCriteria searchCriteria;
+  private String domainId = null;
+  private boolean withMixedDomain = false;
 
-  public static SearchCriteriaBuilder aSearchCriteria() {
-    return new SearchCriteriaBuilder();
+  public static UserGroupsSearchCriteriaBuilder aSearchCriteria() {
+    return new UserGroupsSearchCriteriaBuilder();
   }
 
-  public SearchCriteriaBuilder withName(String name) {
+  public UserGroupsSearchCriteriaBuilder withName(String name) {
     if (isDefined(name)) {
       String filterByName = name.replaceAll("\\*", "%");
       searchCriteria.onName(filterByName);
@@ -46,52 +49,70 @@ public class SearchCriteriaBuilder {
     return this;
   }
   
-  public SearchCriteriaBuilder withComponentInstanceId(String instanceId) {
+  public UserGroupsSearchCriteriaBuilder withComponentInstanceId(String instanceId) {
     if (isDefined(instanceId)) {
       searchCriteria.onComponentInstanceId(instanceId);
     }
     return this;
   }
   
-  public SearchCriteriaBuilder withRoles(String[] roleIds) {
+  public UserGroupsSearchCriteriaBuilder withRoles(String[] roleIds) {
     if (roleIds != null && roleIds.length > 0) {
       searchCriteria.onRoleIds(roleIds);
     }
     return this;
   }
   
-  public SearchCriteriaBuilder withGroupId(String groupId) {
+  public UserGroupsSearchCriteriaBuilder withGroupId(String groupId) {
     if(isDefined(groupId)) {
-      String group = groupId;
-      if (groupId.equals(UserProfileResource.QUERY_ALL_GROUP)) {
-        group = SearchCriteria.ANY_GROUP;
+      if (groupId.equals(UserProfileResource.QUERY_ALL_GROUPS)) {
+        searchCriteria.onGroupIds(UserDetailsSearchCriteria.ANY_GROUPS);
+      } else {
+        searchCriteria.onGroupIds(groupId);
       }
-      searchCriteria.onGroupId(group);
     }
     return this;
   }
-  
-  public SearchCriteriaBuilder withDomainId(String domainId, final UserDetail user) {
-    if (user.isDomainRestricted()) {
-      searchCriteria.onDomainId(user.getDomainId());
-    } else if (isDefined(domainId) && Integer.valueOf(domainId) > 0) {
-      searchCriteria.onDomainId(domainId);
+
+  public UserGroupsSearchCriteriaBuilder withSuperGroupId(String groupId) {
+    if (isDefined(groupId)) {
+      searchCriteria.onSuperGroupId(groupId);
     }
     return this;
   }
+
+  public UserGroupsSearchCriteriaBuilder withRootGroupSet() {
+    searchCriteria.onAsRootGroup();
+    return this;
+  }
   
-  public SearchCriteriaBuilder withUserIds(String[] userIds) {
+  public UserGroupsSearchCriteriaBuilder withDomainId(String domainId) {
+    this.domainId = domainId;
+    return this;
+  }
+
+  public UserGroupsSearchCriteriaBuilder withMixedDomainId() {
+    this.withMixedDomain = true;
+    return this;
+  }
+  
+  public UserGroupsSearchCriteriaBuilder withUserIds(String[] userIds) {
     if (userIds != null && userIds.length > 0) {
       searchCriteria.onUserIds(userIds);
     }
     return this;
   }
   
-  public SearchCriteria build() {
+  public GroupsSearchCriteria build() {
+    if (withMixedDomain) {
+      searchCriteria.onMixedDomainOrOnDomainId(domainId);
+    } else if (isDefined(domainId)) {
+      searchCriteria.onDomainId(domainId);
+    }
     return searchCriteria;
   }
 
-  private SearchCriteriaBuilder() {
-    searchCriteria = new SearchCriteria();
+  private UserGroupsSearchCriteriaBuilder() {
+    searchCriteria = new GroupsSearchCriteria();
   }
 }

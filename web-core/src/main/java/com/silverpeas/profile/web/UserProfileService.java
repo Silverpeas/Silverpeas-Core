@@ -61,7 +61,8 @@ class UserProfileService {
     if (theGroup == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } else {
-      if (user.isDomainRestricted() && !user.getDomainId().equals(theGroup.getDomainId())) {
+      if (user.isDomainRestricted() && (theGroup.getDomainId() != null
+              && !user.getDomainId().equals(theGroup.getDomainId()))) {
         Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
                 + "authorized to access the group with id {1}", new Object[]{user.getId(),
                   groupId});

@@ -30,12 +30,12 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
-import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 import java.util.*;
+
+import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 /**
@@ -470,13 +470,13 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
   
-   /**
+  /**
    * Searches the users that match the specified criteria.
    * @param criteria the criteria in searching of user details.
    * @return an array of user details matching the criteria or an empty array of no ones are found.
    * @throws AdminException if an error occurs while getting the user details.
    */
-  public UserDetail[] searchUsers(final SearchCriteria criteria) {
+  public UserDetail[] searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
       return getAdminService().searchUsers(criteria);
     } catch(AdminException ex) {
@@ -529,6 +529,22 @@ public class OrganizationController implements java.io.Serializable {
           "admin.EX_ERR_GET_USER_DETAILS", e);
       return null;
     }
+  }
+
+  /**
+   * Searches the groups that match the specified criteria.
+   * @param criteria the criteria in searching of user groups.
+   * @return an array of user groups matching the criteria or an empty array of no ones are found.
+   * @throws AdminException if an error occurs while getting the user groups.
+   */
+  public Group[] searchGroups(final GroupsSearchCriteria criteria) {
+    try {
+      return getAdminService().searchGroups(criteria);
+    } catch(AdminException ex) {
+      SilverTrace.error("admin", "OrganizationController.getGroupsMatchingCriteria",
+          "admin.EX_ERR_GET_USER_DETAILS", "criteria: '" + criteria.toString(), ex);
+    }
+    return null;
   }
 
   /**
@@ -924,7 +940,7 @@ public class OrganizationController implements java.io.Serializable {
   }
 
   public boolean isToolAvailable(String toolId) {
-    boolean isToolAvailable = false;
+    boolean isToolAvailable;
     try {
       isToolAvailable =
           GeneralPropertiesManager.getStringCollection("availableToolIds").contains(toolId);

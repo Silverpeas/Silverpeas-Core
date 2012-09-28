@@ -24,16 +24,14 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.annotation.Authenticated;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.SearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserSearchCriteriaFactory;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -45,8 +43,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -73,12 +73,11 @@ public class UserProfileResource extends RESTWebService {
    * Specific identifier of a user group meaning all the user groups in Silverpeas. In that case,
    * only the users part of a user group will be fetched.
    */
-  public static final String QUERY_ALL_GROUP = "all";
+  public static final String QUERY_ALL_GROUPS = "all";
   @Inject
   private UserProfileService profileService;
   @Inject
   private RelationShipService relationShipService;
-  private UserSearchCriteriaFactory criteriaFactory = UserSearchCriteriaFactory.getFactory();
 
   /**
    * Creates a new instance of UserProfileResource
@@ -114,11 +113,14 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
     String domainId = null;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+    }
+    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
             withGroupId(groupId).
             withName(name).
             build();
@@ -178,14 +180,18 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("roles") String roles,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+//    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+//            : null);
+    String[] rolesIds = (isDefined(roles) ? roles.split(","):null);
     String domainId = null;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
+    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
       domainId = group.getDomainId();
     }
-    SearchCriteria criteria = aSearchCriteria().withDomainId(domainId, getUserDetail()).
+    if (getUserDetail().isDomainRestricted()) {
+      domainId = getUserDetail().getDomainId();
+    }
+    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
             withComponentInstanceId(instanceId).
             withRoles(rolesIds).
             withGroupId(groupId).
@@ -217,12 +223,13 @@ public class UserProfileResource extends RESTWebService {
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
     UserDetail theUser = getUserDetailMatching(userId);
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+//    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+//            : null);
+    String[] rolesIds = (isDefined(roles) ? roles.split(","):null);
     String[] contactIds = getContactIds(theUser.getId());
     UserDetail[] contacts;
     if (contactIds.length > 0) {
-      SearchCriteria criteria = aSearchCriteria().withDomainId(null, getUserDetail()).
+      UserDetailsSearchCriteria criteria = aSearchCriteria().
               withComponentInstanceId(instanceId).
               withRoles(rolesIds).
               withUserIds(contactIds).
