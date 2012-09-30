@@ -188,9 +188,10 @@ public class LDAPDriver extends AbstractDomainDriver {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       if (driverSettings.getTimeStampVar().length() > 0) {
-        usersReturned = userTranslator.getAllUsers(ld, "(&("
+        usersReturned = userTranslator.getAllUsers(ld, "(|(&("
             + driverSettings.getTimeStampVar() + ">=" + fromTimeStamp + ")("
-            + driverSettings.getTimeStampVar() + "<=" + toTimeStamp + "))");
+            + driverSettings.getTimeStampVar() + "<=" + toTimeStamp + "))"
+            + "(!("+driverSettings.getTimeStampVar()+"=*)))");
       } else {
         usersReturned = userTranslator.getAllUsers(ld, "");
       }
