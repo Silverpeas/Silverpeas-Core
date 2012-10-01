@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -85,10 +84,13 @@ class DocumentConverter extends AbstractJcrConverter {
       VersionIterator versionsIterator = history.getAllVersions();
       List<SimpleDocument> documentHistory = new ArrayList<SimpleDocument>((int) versionsIterator.
           getSize());
+
       while (versionsIterator.hasNext()) {
         Version version = versionsIterator.nextVersion();
         if (!version.getIdentifier().equals(rootId) && !version.getIdentifier().equals(baseId)) {
-          documentHistory.add(fillDocument(version.getFrozenNode(), lang));
+          SimpleDocument versionDocument = fillDocument(version.getFrozenNode(), lang);
+          versionDocument.setNodeName(node.getName());
+          documentHistory.add(versionDocument);
         }
       }
       return documentHistory;
@@ -103,7 +105,8 @@ class DocumentConverter extends AbstractJcrConverter {
   public SimpleDocument convertNode(Node node, String lang) throws RepositoryException {
     if (isVersioned(node)) {
       HistorisedDocument document = new HistorisedDocument(fillDocument(node, lang));
-      document.setHistory(convertDocumentHistory(node, lang));
+      List<SimpleDocument> history = convertDocumentHistory(node, lang);
+      document.setHistory(history);
       return document;
     }
     return fillDocument(node, lang);
@@ -131,11 +134,19 @@ class DocumentConverter extends AbstractJcrConverter {
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
         getStringProperty(node, SLV_PROPERTY_STATUS), file);
-    doc.setNodeName(node.getName());
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
-    doc.setPublicDocument(!doc.isVersioned() || doc.getMinorVersion() == 0) ;
+    String nodeName = node.getName();
+    if("jcr:frozenNode".equals(nodeName)) {
+      nodeName = doc.computeNodeName();
+      doc.setNodeName(nodeName);
+      if(!node.getSession().nodeExists(doc.getFullJcrPath())) {
+        nodeName = SimpleDocument.VERSION_PREFIX + doc.getOldSilverpeasId();
+      }
+    }
+    doc.setNodeName(nodeName);   
+    doc.setPublicDocument(!doc.isVersioned() || doc.getMinorVersion() == 0);
     return doc;
   }
 
@@ -179,27 +190,10 @@ class DocumentConverter extends AbstractJcrConverter {
     return attachmentNode;
   }
 
-  void fillNode(SimpleDocument document, InputStream content, Node documentNode) throws
-      RepositoryException {
-    setDocumentNodeProperties(document, documentNode);
-    String attachmentNodeName = document.getFile().getNodeName();
-    if (content != null) {
-      Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
-      attachmentConverter.fillNode(document.getFile(), attachmentNode);
-      attachmentConverter.setContent(attachmentNode, content, document.getContentType());
-    } else if (documentNode.hasNode(attachmentNodeName)) {
-      Node attachmentNode = documentNode.getNode(attachmentNodeName);
-      attachmentConverter.fillNode(document.getFile(), attachmentNode);
-    }
-  }
-
-  public void addAttachment(Node documentNode, SimpleAttachment attachment, InputStream content)
+  public void addAttachment(Node documentNode, SimpleAttachment attachment)
       throws RepositoryException {
-    if (content != null) {
-      Node attachmentNode = getAttachmentNode(attachment.getNodeName(), documentNode);
-      attachmentConverter.fillNode(attachment, attachmentNode);
-      attachmentConverter.setContent(attachmentNode, content, attachment.getContentType());
-    }
+    Node attachmentNode = getAttachmentNode(attachment.getNodeName(), documentNode);
+    attachmentConverter.fillNode(attachment, attachmentNode);
   }
 
   public void removeAttachment(Node documentNode, String language) throws RepositoryException {
@@ -238,10 +232,10 @@ class DocumentConverter extends AbstractJcrConverter {
     }
     return "Version " + majorVersion + "." + minorVersion;
   }
-  
+
   public void releaseDocumentNode(Node documentNode, String lang) throws RepositoryException {
     String language = lang;
-    if(!StringUtil.isDefined(language)) {
+    if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
     }
     String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
@@ -249,7 +243,7 @@ class DocumentConverter extends AbstractJcrConverter {
       Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
       addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, getStringProperty(documentNode,
           SLV_PROPERTY_OWNER));
-          }
+    }
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, null);
     addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, null);
     addDateProperty(documentNode, SLV_PROPERTY_RESERVATION_DATE, null);

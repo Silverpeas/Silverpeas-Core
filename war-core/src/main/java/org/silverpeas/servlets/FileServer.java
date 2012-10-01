@@ -20,17 +20,19 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.util.ArrayUtil;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringReader;
+
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.*;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -43,9 +45,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.*;
 
+import org.apache.tika.io.IOUtils;
 import com.silverpeas.util.MimeTypes;
+
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
 /**
@@ -208,7 +217,7 @@ public class FileServer extends HttpServlet {
             "RepositoryTypeTemp"))) {
           filePath = FileRepositoryManager.getTemporaryPath("useless", componentId) + sourceFile;
         }
-      } else if(attachment != null) {
+      } else if (attachment != null) {
         // the file to download is not in a temporary directory
         filePath = attachment.getAttachmentPath();
       }
@@ -287,23 +296,14 @@ public class FileServer extends HttpServlet {
   private void downloadFile(HttpServletResponse res, String htmlFilePath)
       throws IOException {
     OutputStream out2 = res.getOutputStream();
-    int read;
     BufferedInputStream input = null; // for the html document generated
     SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()",
         "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
     try {
       input = new BufferedInputStream(new FileInputStream(htmlFilePath));
-      read = input.read();
+      IOUtils.copy(input, out2);
       SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()",
-          "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream read " + read);
-      if (read == -1) {
-        displayWarningHtmlCode(res);
-      } else {
-        while (read != -1) {
-          out2.write(read); // writes bytes into the response
-          read = input.read();
-        }
-      }
+          "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream was ok ");
     } catch (Exception e) {
       SilverTrace.warn("peasUtil", "FileServer.doPost",
           "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
@@ -311,49 +311,24 @@ public class FileServer extends HttpServlet {
     } finally {
       SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()", "",
           " finally ");
-      // we must close the in and out streams
-      try {
-        if (input != null) {
-          input.close();
-        }
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "FileServer.displayHtmlCode",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      IOUtils.closeQuietly(input);
+      IOUtils.closeQuietly(out2);
     }
   }
 
-  private void displayWarningHtmlCode(HttpServletResponse res)
-      throws IOException {
-    StringReader sr = null;
+  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream out2 = res.getOutputStream();
-    int read;
     ResourceLocator resourceLocator = new ResourceLocator(
-        "com.stratelia.webactiv.util.peasUtil.multiLang.fileServerBundle", "");
-
-    sr = new StringReader(resourceLocator.getString("warning"));
+        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
+    StringReader sr = new StringReader(resourceLocator.getString("warning"));
     try {
-      read = sr.read();
-      while (read != -1) {
-        SilverTrace.info("peasUtil", "FilServer.displayHtmlCode()",
-            "root.MSG_GEN_ENTER_METHOD", " StringReader read " + read);
-        out2.write(read); // writes bytes into the response
-        read = sr.read();
-      }
+      IOUtils.copy(sr, out2);
     } catch (Exception e) {
       SilverTrace.warn("peasUtil", "FileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");
     } finally {
-      try {
-        if (sr != null) {
-          sr.close();
-        }
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "FileServer.displayHtmlCode",
-            "root.EX_CANT_READ_FILE", "close failed");
-      }
+      IOUtils.closeQuietly(sr);
+      IOUtils.closeQuietly(out2);
     }
   }
 }

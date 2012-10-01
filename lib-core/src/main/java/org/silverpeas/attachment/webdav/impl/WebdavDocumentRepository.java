@@ -20,6 +20,10 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Calendar;
 
 import javax.inject.Named;
@@ -29,22 +33,22 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 
-import com.silverpeas.jcrutil.JcrConstants;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
-import static javax.jcr.Property.*;
 
 @Named("webdavRepository")
 public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override
   public void createAttachmentNode(Session session, SimpleDocument attachment) throws
-      RepositoryException {
+      RepositoryException, IOException {
     Node rootNode = session.getRootNode();
     Node attachmentFolder = addFolder(rootNode, SimpleDocument.WEBDAV_FOLDER);
     attachmentFolder = addFolder(attachmentFolder, SimpleDocument.ATTACHMENTS_FOLDER);
@@ -63,7 +67,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override
   public void updateNodeAttachment(Session session, SimpleDocument attachment) throws
-      RepositoryException {
+      RepositoryException, IOException {
     Node rootNode = session.getRootNode();
     try {
       Node fileNode = rootNode.getNode(attachment.getWebdavJcrPath());
@@ -98,13 +102,20 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   @Override
   public void updateAttachment(Session session, SimpleDocument attachment) throws
-      RepositoryException {
+      RepositoryException, IOException {
     Node rootNode = session.getRootNode();
     Node webdavFileNode = rootNode.getNode(attachment.getWebdavJcrPath());
-    Node attachmentNode = session.getNode(attachment.getFullJcrContentPath());
     Binary webdavBinary = webdavFileNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
-    attachmentNode.getNode(JCR_CONTENT).setProperty(JCR_DATA, webdavBinary);
-    webdavBinary.dispose();
+    InputStream in = webdavBinary.getStream();
+    OutputStream out = null;
+    try {
+      out = FileUtils.openOutputStream(new File(attachment.getAttachmentPath()));
+      IOUtils.copy(in, out);
+    } finally {
+      IOUtils.closeQuietly(out);
+      IOUtils.closeQuietly(in);
+      webdavBinary.dispose();
+    }
   }
 
   /**
@@ -119,7 +130,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
     try {
       return parent.getNode(name);
     } catch (PathNotFoundException pnfex) {
-      return parent.addNode(name, JcrConstants.NT_FOLDER);
+      return parent.addNode(name, NT_FOLDER);
     }
   }
 
@@ -130,8 +141,10 @@ public class WebdavDocumentRepository implements WebdavRepository {
    * @param attachment the attachment for the file.
    * @return the created node.
    * @throws RepositoryException
+   * @throws IOException
    */
-  protected Node addFile(Node folder, SimpleDocument attachment) throws RepositoryException {
+  protected Node addFile(Node folder, SimpleDocument attachment) throws RepositoryException,
+      IOException {
     String escapedName = StringUtil.escapeQuote(attachment.getFilename());
     if (folder.hasNode(escapedName)) {
       folder.getNode(escapedName).remove();
@@ -150,10 +163,15 @@ public class WebdavDocumentRepository implements WebdavRepository {
 
   }
 
-  protected void setContent(Node fileNode, SimpleDocument attachment) throws RepositoryException {
-    Node attachmentNode = fileNode.getSession().getNode(attachment.getFullJcrContentPath());
-    Binary attachmentBinary = attachmentNode.getNode(JCR_CONTENT).getProperty(JCR_DATA).getBinary();
-    fileNode.getNode(JCR_CONTENT).setProperty(JCR_DATA, attachmentBinary);
-    attachmentBinary.dispose();
+  protected void setContent(Node fileNode, SimpleDocument attachment) throws RepositoryException,
+      IOException {
+
+    InputStream in = FileUtils.openInputStream(new File(attachment.getAttachmentPath()));
+    try {
+      Binary attachmentBinary = fileNode.getSession().getValueFactory().createBinary(in);
+      fileNode.getNode(JCR_CONTENT).setProperty(JCR_DATA, attachmentBinary);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 }

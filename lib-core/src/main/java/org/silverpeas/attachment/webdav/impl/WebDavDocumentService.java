@@ -20,6 +20,7 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
+import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
@@ -49,6 +50,11 @@ public class WebDavDocumentService implements WebdavService {
       session = BasicDaoFactory.getSystemSession();
       webdavAttachmentDao.createAttachmentNode(session, attachment);
       session.save();
+    } catch (IOException ex) {
+      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
+          "attachment.jcr.create.exception", ex);
+      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
@@ -69,6 +75,11 @@ public class WebDavDocumentService implements WebdavService {
       webdavAttachmentDao.updateAttachment(session, attachment);
       session.save();
     } catch (RepositoryException ex) {
+      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
+          "attachment.jcr.create.exception", ex);
+      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+          SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
+    } catch (IOException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
       throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
@@ -107,6 +118,11 @@ public class WebDavDocumentService implements WebdavService {
       webdavAttachmentDao.updateNodeAttachment(session, attachment);
       session.save();
     } catch (RepositoryException ex) {
+      SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
+          "attachment.jcr.create.exception", ex);
+      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+          SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
+    } catch (IOException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
       throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",

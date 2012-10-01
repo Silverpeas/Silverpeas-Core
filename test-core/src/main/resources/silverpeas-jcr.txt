@@ -30,7 +30,8 @@
   - slv:creationDate (DATE) MANDATORY
   - slv:creator (STRING) MANDATORY
   - slv:xmlFormId (STRING)
-  + jcr:content PRIMARY
+  - slv:size (LONG) = '0' MANDATORY
+  - jcr:mimeType (STRING) MANDATORY
 
 /* XML Forms data */
 [slv:xmlFormData] >  nt:unstructured

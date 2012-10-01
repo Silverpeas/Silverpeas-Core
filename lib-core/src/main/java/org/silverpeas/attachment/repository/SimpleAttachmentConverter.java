@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.repository;
 
+import java.math.BigDecimal;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -40,13 +41,13 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
 
   public SimpleAttachment convertNode(Node node) throws RepositoryException {
     SimpleAttachment attachment = new SimpleAttachment();
-    attachment.setContentType(getContentMimeType(node));
+    attachment.setContentType(getStringProperty(node, JCR_MIMETYPE));
     attachment.setCreated(getDateProperty(node, SLV_PROPERTY_CREATION_DATE));
     attachment.setCreatedBy(getStringProperty(node, SLV_PROPERTY_CREATOR));
     attachment.setDescription(getStringProperty(node, JCR_DESCRIPTION));
     attachment.setFilename(getStringProperty(node, SLV_PROPERTY_NAME));
     attachment.setLanguage(getStringProperty(node, JCR_LANGUAGE));
-    attachment.setSize(getContentSize(node));
+    attachment.setSize(getLongProperty(node, SLV_PROPERTY_SIZE));
     attachment.setTitle(getStringProperty(node, JCR_TITLE));
     attachment.setUpdated(getDateProperty(node, JCR_LAST_MODIFIED));
     attachment.setUpdatedBy(getStringProperty(node, JCR_LAST_MODIFIED_BY));
@@ -64,5 +65,7 @@ public class SimpleAttachmentConverter extends AbstractJcrConverter {
     addDateProperty(node, JCR_LAST_MODIFIED, attachment.getUpdated());
     addStringProperty(node, JCR_LAST_MODIFIED_BY, attachment.getUpdatedBy());
     addStringProperty(node, SLV_PROPERTY_XMLFORM_ID, attachment.getXmlFormId());
+    addStringProperty(node, JCR_MIMETYPE, attachment.getContentType());
+    node.setProperty(SLV_PROPERTY_SIZE, attachment.getSize());
   }
 }

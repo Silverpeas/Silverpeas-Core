@@ -41,6 +41,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jcr.LoginException;
+import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -110,6 +111,7 @@ public class HistorisedAttachmentServiceTest {
   private AttachmentService instance = new SimpleDocumentService();
   private SimpleDocumentPK existingFrDoc;
   private SimpleDocumentPK existingEnDoc;
+  private DocumentRepository documentRepository = new DocumentRepository();
 
   public Repository getRepository() {
     return this.repository;
@@ -144,10 +146,16 @@ public class HistorisedAttachmentServiceTest {
             "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
             MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
         InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-        existingFrDoc = new DocumentRepository().createDocument(session, document, content);
+        existingFrDoc = documentRepository.createDocument(session, document);
+        document = documentRepository.findDocumentById(session, emptyId, document.getLanguage());
+        documentRepository.storeContent(session, document, content);
+        content.close();
         document.setPK(existingFrDoc);
-        content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-        FileUtils.copyInputStreamToFile(content, new File(document.getAttachmentPath()));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        content = documentRepository.getContent(session, existingFrDoc, "fr");
+        IOUtils.copy(content, out);
+        content.close();
+        assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
 
         emptyId = new SimpleDocumentPK("-1", instanceId);
         foreignId = "node19";
@@ -156,10 +164,15 @@ public class HistorisedAttachmentServiceTest {
             "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
             MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-        existingEnDoc = new DocumentRepository().createDocument(session, document, content);
+        existingEnDoc = documentRepository.createDocument(session, document);
+        documentRepository.storeContent(session, document, content);
         document.setPK(existingEnDoc);
-        content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-        FileUtils.copyInputStreamToFile(content, new File(document.getAttachmentPath()));
+        content.close();
+        out = new ByteArrayOutputStream();
+        content = documentRepository.getContent(session, existingEnDoc, "en");
+        IOUtils.copy(content, out);
+        content.close();
+        assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
       }
       session.save();
     } finally {
@@ -177,8 +190,11 @@ public class HistorisedAttachmentServiceTest {
     Session session = null;
     try {
       session = getRepository().login(new SilverpeasSystemCredentials());
-      if (session.getRootNode().hasNode(instanceId)) {
-        session.getRootNode().getNode(instanceId).remove();
+      if (session.getRootNode().hasNodes()) {
+        NodeIterator iter = session.getRootNode().getNodes(instanceId);
+        while (iter.hasNext()) {
+          iter.nextNode().remove();
+        }
       }
       session.save();
     } finally {
@@ -312,7 +328,7 @@ public class HistorisedAttachmentServiceTest {
     assertThat(out, is(notNullValue()));
     byte[] content = out.toByteArray();
     assertThat(content, is(notNullValue()));
-    assertThat(content.length, is("This is a test".getBytes(Charsets.UTF_8).length));
+    assertThat(content.length, is(14));
     assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
     out = new ByteArrayOutputStream();
     lang = "fr";
@@ -320,7 +336,8 @@ public class HistorisedAttachmentServiceTest {
     assertThat(out, is(notNullValue()));
     content = out.toByteArray();
     assertThat(content, is(notNullValue()));
-    assertThat(content.length, is(0));
+    assertThat(content.length, is(14));
+    assertThat(new String(content, Charsets.UTF_8), is("This is a test"));
   }
 
   /**
@@ -372,7 +389,7 @@ public class HistorisedAttachmentServiceTest {
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, 
+    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
         MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
@@ -390,7 +407,7 @@ public class HistorisedAttachmentServiceTest {
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, 
+    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
         MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
@@ -428,7 +445,7 @@ public class HistorisedAttachmentServiceTest {
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, 
+    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
         creationDate, "5"));
@@ -447,7 +464,7 @@ public class HistorisedAttachmentServiceTest {
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, 
+    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
         creationDate, "5"));
@@ -465,7 +482,7 @@ public class HistorisedAttachmentServiceTest {
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
     String foreignId = "node18";
-    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10, 
+    SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
         new SimpleAttachment("test.odp", "fr", "Mon document de test",
         "Ceci est un document de test", file.length(), MimeTypes.MIME_TYPE_OO_PRESENTATION, "10",
         creationDate, "5"));
@@ -543,21 +560,19 @@ public class HistorisedAttachmentServiceTest {
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocumentPK id = new DocumentRepository().createDocument(session, document1, content);
+      SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document1.getAttachmentPath()));
+      documentRepository.storeContent(session, document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5, 
+      SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document2, content);
+      id = new DocumentRepository().createDocument(session, document2);
       document2.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document2.getAttachmentPath()));
+      documentRepository.storeContent(session, document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
@@ -565,10 +580,9 @@ public class HistorisedAttachmentServiceTest {
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document3, content);
+      id = new DocumentRepository().createDocument(session, document3);
       document3.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document3.getAttachmentPath()));
+      documentRepository.storeContent(session, document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -577,10 +591,10 @@ public class HistorisedAttachmentServiceTest {
           "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document4, content);
+      id = new DocumentRepository().createDocument(session, document4);
       document4.setPK(id);
-      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document4.getAttachmentPath()));
+      documentRepository.storeContent(session, document4, content);
+
       session.save();
       List<SimpleDocument> result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
@@ -640,49 +654,46 @@ public class HistorisedAttachmentServiceTest {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();
-      SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 10, 
+      SimpleDocument document1 = new HistorisedDocument(emptyId, foreignId, 10,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocumentPK id = new DocumentRepository().createDocument(session, document1, content);
+      SimpleDocumentPK id = new DocumentRepository().createDocument(session, document1);
       document1.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document1.getAttachmentPath()));
+      documentRepository.storeContent(session, document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5, 
+      SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document2, content);
+      id = new DocumentRepository().createDocument(session, document2);
       document2.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document2.getAttachmentPath()));
+      documentRepository.storeContent(session, document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
-      SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100, 
+      SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document3, content);
+      id = new DocumentRepository().createDocument(session, document3);
       document3.setPK(id);
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document3.getAttachmentPath()));
+      documentRepository.storeContent(session, document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
-      SimpleDocument document4 = new HistorisedDocument(emptyId, foreignId, 0, 
+      SimpleDocument document4 = new HistorisedDocument(emptyId, foreignId, 0,
           new SimpleAttachment("test.docx", "en", "My test document 4",
           "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      id = new DocumentRepository().createDocument(session, document4, content);
+      id = new DocumentRepository().createDocument(session, document4);
       document4.setPK(id);
-      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      FileUtils.copyInputStreamToFile(content, new File(document4.getAttachmentPath()));
+      documentRepository.storeContent(session, document4, content);
+
       session.save();
       List<SimpleDocument> result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
@@ -706,7 +717,7 @@ public class HistorisedAttachmentServiceTest {
     checkFrenchSimpleDocument(result);
     Date alertDate = RandomGenerator.getRandomCalendar().getTime();
     result.setAlert(alertDate);
-    result.setContentType(MimeTypes.BZ2_ARCHIVE_MIME_TYPE);//shouldn't change
+    result.setContentType(MimeTypes.BZ2_ARCHIVE_MIME_TYPE);
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     result.setUpdated(creationDate);
     String creatorId = "150";
@@ -728,7 +739,7 @@ public class HistorisedAttachmentServiceTest {
     result = instance.searchAttachmentById(existingFrDoc, null);
     assertThat(result, is(notNullValue()));
     assertThat(result.getAlert(), is(DateUtil.getBeginOfDay(alertDate)));
-    assertThat(result.getContentType(), is(MimeTypes.MIME_TYPE_OO_PRESENTATION));
+    assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));
   }
 
   /**
@@ -747,9 +758,9 @@ public class HistorisedAttachmentServiceTest {
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
         MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
-    warningDoc1.setAlert(today.getTime());
     warningDoc1 = instance.createAttachment(warningDoc1, content);
-    instance.lock(warningDoc1.getId(), owner, warningDoc1.getLanguage());    
+    instance.lock(warningDoc1.getId(), owner, warningDoc1.getLanguage());
+    warningDoc1.setAlert(today.getTime());
     instance.updateAttachment(warningDoc1, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument notWarningDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
@@ -757,18 +768,20 @@ public class HistorisedAttachmentServiceTest {
         "Ceci est un document de test",
         "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
         "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    notWarningDoc2 = instance.createAttachment(notWarningDoc2, content);
+    instance.lock(notWarningDoc2.getId(), owner, notWarningDoc2.getLanguage());
     notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
-    instance.createAttachment(notWarningDoc2, content);
-    instance.lock(notWarningDoc2.getId(), owner, notWarningDoc2.getLanguage());    
     instance.updateAttachment(notWarningDoc2, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument warningDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
         MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+    warningDoc3 = instance.createAttachment(warningDoc3, content);
+    instance.lock(warningDoc3.getId(), owner, warningDoc3.getLanguage());
     warningDoc3.setAlert(today.getTime());
-    instance.createAttachment(warningDoc3, content);
-    instance.lock(warningDoc3.getId(), owner, warningDoc3.getLanguage());    
     instance.updateAttachment(warningDoc3, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument notWarningDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
@@ -777,9 +790,10 @@ public class HistorisedAttachmentServiceTest {
         "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
         "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
     Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    notWarningDoc4 = instance.createAttachment(notWarningDoc4, content);
+    instance.lock(notWarningDoc4.getId(), owner, notWarningDoc4.getLanguage());
     notWarningDoc4.setAlert(beforeDate.getTime());
-    instance.createAttachment(notWarningDoc4, content);
-    instance.lock(notWarningDoc4.getId(), owner, notWarningDoc4.getLanguage());    
     instance.updateAttachment(notWarningDoc4, false, false);
     List<SimpleDocument> docs = instance.listDocumentsRequiringWarning(today.getTime(), null);
     assertThat(docs, is(notNullValue()));
@@ -805,9 +819,9 @@ public class HistorisedAttachmentServiceTest {
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
         MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    expiringDoc1 = instance.createAttachment(expiringDoc1, content);
     expiringDoc1.setExpiry(today.getTime());
-    instance.createAttachment(expiringDoc1, content);
-    instance.lock(expiringDoc1.getId(), owner, expiringDoc1.getLanguage());    
+    instance.lock(expiringDoc1.getId(), owner, expiringDoc1.getLanguage());
     instance.updateAttachment(expiringDoc1, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument notExpiringDoc2 = new HistorisedDocument(emptyId, foreignId, 15, owner,
@@ -815,18 +829,18 @@ public class HistorisedAttachmentServiceTest {
         "Ceci est un document de test",
         "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
         "10", RandomGenerator.getRandomCalendar().getTime(), "5"));
+    notExpiringDoc2 = instance.createAttachment(notExpiringDoc2, content);
+    instance.lock(notExpiringDoc2.getId(), owner, notExpiringDoc2.getLanguage());
     notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
-    instance.createAttachment(notExpiringDoc2, content);
-    instance.lock(notExpiringDoc2.getId(), owner, notExpiringDoc2.getLanguage());    
     instance.updateAttachment(notExpiringDoc2, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument expiringDoc3 = new HistorisedDocument(emptyId, foreignId, 20, owner,
         new SimpleAttachment("test.pdf", "en", "My test document",
         "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
         MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    expiringDoc3 = instance.createAttachment(expiringDoc3, content);
+    instance.lock(expiringDoc3.getId(), owner, expiringDoc3.getLanguage());
     expiringDoc3.setExpiry(today.getTime());
-    instance.createAttachment(expiringDoc3, content);
-    instance.lock(expiringDoc3.getId(), owner, expiringDoc3.getLanguage());    
     instance.updateAttachment(expiringDoc3, false, false);
     emptyId = new SimpleDocumentPK("-1", instanceId);
     SimpleDocument notExpiringDoc4 = new HistorisedDocument(emptyId, foreignId, 25, owner,
@@ -835,9 +849,9 @@ public class HistorisedAttachmentServiceTest {
         MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
         "5"));
     Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
+    notExpiringDoc4 = instance.createAttachment(notExpiringDoc4, content);
+    instance.lock(notExpiringDoc4.getId(), owner, notExpiringDoc4.getLanguage());
     notExpiringDoc4.setExpiry(beforeDate.getTime());
-    instance.createAttachment(notExpiringDoc4, content);
-    instance.lock(notExpiringDoc4.getId(), owner, notExpiringDoc4.getLanguage());    
     instance.updateAttachment(notExpiringDoc4, false, false);
     List<SimpleDocument> docs = instance.listExpiringDocuments(today.getTime(), "fr");
     assertThat(docs, is(notNullValue()));

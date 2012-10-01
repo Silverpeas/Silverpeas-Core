@@ -50,7 +50,6 @@ import static java.io.File.separatorChar;
 public class SimpleDocument implements Serializable {
 
   private static final long serialVersionUID = 8778738762037114180L;
-  
   private final static ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   public static final String WEBDAV_FOLDER = "webdav";
@@ -104,8 +103,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      Date reservation, Date alert, Date expiry, String status,
-      SimpleAttachment file) {
+      Date reservation, Date alert, Date expiry, String status, SimpleAttachment file) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -414,16 +412,13 @@ public class SimpleDocument implements Serializable {
   }
 
   public String computeNodeName() {
-    if (getOldSilverpeasId() <= 0L) {
-      setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
+    if (!StringUtil.isDefined(nodeName)) {
+      if(getOldSilverpeasId() <= 0L) {
+        setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
+      }
       setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
       return getNodeName();
     }
-    if (isVersioned()) {
-      setNodeName(VERSION_PREFIX + getOldSilverpeasId());
-      return getNodeName();
-    }
-    setNodeName(ATTACHMENT_PREFIX + getOldSilverpeasId());
     return getNodeName();
   }
 
@@ -490,17 +485,17 @@ public class SimpleDocument implements Serializable {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
     directory = directory.replace('/', separatorChar);
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
-    return directory + getId() + separatorChar + versionDir + separatorChar + lang + separatorChar;
+    return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
+        + separatorChar;
   }
 
   @Override
   public String toString() {
     return "SimpleDocument{" + nodeName + " pk=" + pk + ", foreignId=" + foreignId + ", order="
-        + order
-        + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation=" + reservation
-        + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status + ", cloneId=" + cloneId
-        + ", file=" + file + ", minorVersion=" + minorVersion + ", majorVersion="
-        + majorVersion + '}';
+        + order + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation="
+        + reservation + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status
+        + ", cloneId=" + cloneId + ", file=" + file + ", minorVersion=" + minorVersion
+        + ", majorVersion=" + majorVersion + '}';
   }
 
   @Override

@@ -33,15 +33,18 @@ public interface WebdavRepository {
    *
    * @param session the JCR session.
    * @param attachment the attachment.
+   * @throws RepositoryException
+   * @throws IOException  
    */
   public void createAttachmentNode(Session session, SimpleDocument attachment)
-      throws RepositoryException;
+      throws RepositoryException, IOException;
 
   /**
    * Delete the node associated to the specified attachment.
    *
    * @param session the JCR session.
    * @param attachment the attachment.
+   * @throws RepositoryException  
    */
   public void deleteAttachmentNode(Session session, SimpleDocument attachment)
       throws RepositoryException;
@@ -56,7 +59,7 @@ public interface WebdavRepository {
    * @throws IOException
    */
   public void updateAttachment(Session session, SimpleDocument attachment) throws
-      RepositoryException;
+      RepositoryException, IOException;
 
   /**
    * Update the node using the AttachmentDetail
@@ -68,7 +71,7 @@ public interface WebdavRepository {
    * @throws IOException
    */
   public void updateNodeAttachment(Session session, SimpleDocument attachment)
-      throws RepositoryException;
+      throws RepositoryException, IOException;
 
   /**
    * Indicate if the node for the specified attachment is currently locked (for example by Office in

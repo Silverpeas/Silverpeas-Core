@@ -64,8 +64,6 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
 
   private static final String instanceId = "kmelia73";
   private static final SimpleAttachmentConverter instance = new SimpleAttachmentConverter();
-  
-  
 
   public SimpleAttachmentConverterTest() {
   }
@@ -93,7 +91,8 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
 
   /**
    * Test of convertNode method, of class SimpleAttachmentConverter.
-   * @throws Exception 
+   *
+   * @throws Exception
    */
   @Test
   public void testConvertNode() throws Exception {
@@ -128,13 +127,8 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       node.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
       node.setProperty(JCR_LAST_MODIFIED, calend);
-      Node contentNode = node.addNode(JCR_CONTENT, NT_RESOURCE);
-      InputStream in = new ByteArrayInputStream("my test content".getBytes("UTF-8"));
-      Binary binaryContent = session.getValueFactory().createBinary(in);
-      contentNode.setProperty(JCR_DATA, binaryContent);
-      binaryContent.dispose();
-      contentNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
-      contentNode.setProperty(JCR_ENCODING, "UTF-8");
+      node.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
+      node.setProperty(SLV_PROPERTY_SIZE, 15L);
       session.save();
       SimpleAttachment result = instance.convertNode(node);
       assertThat(result, is(notNullValue()));
@@ -156,7 +150,7 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
     String description = "Ceci est un document de test";
     Date creationDate = RandomGenerator.getRandomCalendar().getTime();
     SimpleAttachment attachment = new SimpleAttachment(fileName, language, title,
-        description, 0L, MimeTypes.PDF_MIME_TYPE, "0", creationDate, null);
+        description, 12L, MimeTypes.PDF_MIME_TYPE, "0", creationDate, null);
     String nodeName = attachment.getNodeName();
     Session session = BasicDaoFactory.getSystemSession();
     try {
@@ -182,6 +176,11 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       assertThat(node.hasProperty(JCR_LAST_MODIFIED), is(false));
       assertThat(node.hasProperty(JCR_LAST_MODIFIED_BY), is(false));
       assertThat(node.hasProperty(SLV_PROPERTY_XMLFORM_ID), is(false));
+
+      assertThat(node.hasProperty(JCR_MIMETYPE), is(true));
+      assertThat(node.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(node.hasProperty(SLV_PROPERTY_SIZE), is(true));
+      assertThat(node.getProperty(SLV_PROPERTY_SIZE).getLong(), is(12L));
     } finally {
       BasicDaoFactory.logout(session);
     }

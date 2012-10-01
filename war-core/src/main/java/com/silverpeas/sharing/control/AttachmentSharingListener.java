@@ -69,7 +69,7 @@ public class AttachmentSharingListener extends DefaultNotificationSubscriber {
         AttachmentDeletionNotification deletion = (AttachmentDeletionNotification) notification;
         AttachmentRef attachment = deletion.getAttachment();
         if (attachment != null) {
-          service.deleteTicketsForSharedObject(Long.parseLong(attachment.getId()), Ticket.FILE_TYPE);
+          service.deleteTicketsForSharedObject(attachment.getOldSilverpeasId(), Ticket.FILE_TYPE);
         }
       } else if (notification instanceof VersioningDeletionNotification) {
         VersioningDeletionNotification deletion = (VersioningDeletionNotification) notification;

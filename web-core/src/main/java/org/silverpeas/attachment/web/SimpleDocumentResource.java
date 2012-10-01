@@ -20,6 +20,9 @@
  */
 package org.silverpeas.attachment.web;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +34,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,9 +46,9 @@ import javax.ws.rs.core.StreamingOutput;
 
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -112,6 +114,7 @@ public class SimpleDocumentResource extends RESTWebService {
 
   /**
    * Delete the the specified document.
+   *
    * @param lang the lang of the content to be deleted.
    */
   @DELETE
@@ -141,31 +144,35 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
       final @FormDataParam("fileDescription") String description,
-      final @FormDataParam("versionType") String versionType) {
+      final @FormDataParam("versionType") String versionType) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
     if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
-      document.setPublicDocument(Integer.parseInt(versionType)
-          == DocumentVersion.TYPE_PUBLIC_VERSION);
+      document.setPublicDocument(Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION);
     }
+    document.setUpdatedBy(getUserDetail().getId());
     document.setLanguage(lang);
     document.setTitle(title);
-    document.setDescription(description);
-    AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+    document.setDescription(description);    
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
         getFileName())) {
       document.setFilename(fileDetail.getFileName());
       document.setContentType(FileUtil.getMimeType(fileDetail.getFileName()));
-      AttachmentServiceFactory.getAttachmentService().addContent(document, uploadedInputStream,
-          true, true);
+      document.setSize(fileDetail.getSize());
+      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
+      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+      document.setSize(tempFile.length());
+      InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
+      AttachmentServiceFactory.getAttachmentService().addContent(document, content, true, true);
+      content.close();
+      FileUtils.deleteQuietly(tempFile);
+    } else {
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
     }
     document = getSimpleDocument(lang);
     URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
         getLanguage()).build();
     return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
   }
-  
-  
-
 
   /**
    * Returns all the existing translation of a SimpleDocument.

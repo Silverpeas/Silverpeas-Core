@@ -23,11 +23,8 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.SQLException;
@@ -36,7 +33,6 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
-import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -201,8 +197,7 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument expectedResult = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status,
-        new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), status,  new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
@@ -210,6 +205,7 @@ public class DocumentConverterTest {
     expectedResult.getFile().setUpdatedBy(updatedBy);
     expectedResult.setMajorVersion(1);
     expectedResult.setMinorVersion(2);
+    expectedResult.setNodeName("attach_" + oldSilverpeasId);
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
@@ -239,13 +235,8 @@ public class DocumentConverterTest {
       attachNode.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
       attachNode.setProperty(JCR_LAST_MODIFIED, calend);
-      Node contentNode = attachNode.addNode(JCR_CONTENT, NT_RESOURCE);
-      InputStream in = new ByteArrayInputStream("my test content".getBytes("UTF-8"));
-      Binary binaryContent = session.getValueFactory().createBinary(in);
-      contentNode.setProperty(JCR_DATA, binaryContent);
-      binaryContent.dispose();
-      contentNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
-      contentNode.setProperty(JCR_ENCODING, "UTF-8");
+      attachNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
+      attachNode.setProperty(SLV_PROPERTY_SIZE, "my test content".getBytes("UTF-8").length);
       SimpleDocument result = instance.convertNode(documentNode, language);
       expectedResult.setId(result.getId());
       assertThat(result, SimpleDocumentMatcher.matches(expectedResult));
@@ -279,8 +270,7 @@ public class DocumentConverterTest {
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleAttachment expectedResult =
-        new SimpleAttachment(fileName, language, title, description,
+    SimpleAttachment expectedResult = new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId);
     expectedResult.setUpdated(updateDate);
@@ -297,7 +287,7 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_STATUS, status);
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
-      documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);      
+      documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
       documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.addNode(attachmentNodeName, SLV_SIMPLE_ATTACHMENT);
@@ -313,13 +303,8 @@ public class DocumentConverterTest {
       attachNode.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
       attachNode.setProperty(JCR_LAST_MODIFIED, calend);
-      Node contentNode = attachNode.addNode(JCR_CONTENT, NT_RESOURCE);
-      InputStream in = new ByteArrayInputStream("my test content".getBytes("UTF-8"));
-      Binary binaryContent = session.getValueFactory().createBinary(in);
-      contentNode.setProperty(JCR_DATA, binaryContent);
-      binaryContent.dispose();
-      contentNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
-      contentNode.setProperty(JCR_ENCODING, "UTF-8");
+      attachNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);      
+      attachNode.setProperty(SLV_PROPERTY_SIZE, "my test content".getBytes("UTF-8").length);
       SimpleAttachment result = instance.getAttachment(documentNode, language);
       assertThat(result, SimpleAttachmentMatcher.matches(expectedResult));
     } finally {
@@ -392,7 +377,8 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), status,
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
     document.setMajorVersion(1);
@@ -478,8 +464,7 @@ public class DocumentConverterTest {
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
-      instance.fillNode(document, new ByteArrayInputStream("my test content".getBytes(
-          CharEncoding.UTF_8)), documentNode);
+      instance.fillNode(document, documentNode);
       assertThat(documentNode.getProperty(SLV_PROPERTY_FOREIGN_KEY).getString(), is(foreignId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_VERSIONED).getBoolean(), is(versionned));
       assertThat(documentNode.getProperty(SLV_PROPERTY_ORDER).getLong(), is((long) order));
@@ -506,18 +491,8 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED_BY).getString(), is(updatedBy));
       assertThat(attachNode.getProperty(JCR_LAST_MODIFIED).getDate().getTimeInMillis(),
           is(updateDate.getTime()));
-      assertThat(attachNode.hasNode(JCR_CONTENT), is(true));
-      Node contentNode = attachNode.getNode(JCR_CONTENT);
-      assertThat(contentNode, is(notNullValue()));
-      Binary binaryContent = contentNode.getProperty(JCR_DATA).getBinary();
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      InputStream in = binaryContent.getStream();
-      IOUtils.copy(in, buffer);
-      in.close();
-      binaryContent.dispose();
-      assertThat(new String(buffer.toByteArray(), CharEncoding.UTF_8), is("my test content"));
-      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.PDF_MIME_TYPE));
-      assertThat(contentNode.getProperty(JCR_ENCODING).getString(), is(CharEncoding.UTF_8));
+      assertThat(attachNode.getProperty(JCR_MIMETYPE).getString(), is(MimeTypes.PDF_MIME_TYPE));
+      assertThat(attachNode.getProperty(SLV_PROPERTY_SIZE).getLong(), is(15L));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -525,7 +500,8 @@ public class DocumentConverterTest {
 
   /**
    * Test of addAttachment method, of class SimpleDocumentConverter.
-   * @throws Exception 
+   *
+   * @throws Exception
    */
   @Test
   public void testAddAttachment() throws Exception {
@@ -563,8 +539,7 @@ public class DocumentConverterTest {
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
-      instance.fillNode(document, new ByteArrayInputStream("my test content".getBytes(
-          CharEncoding.UTF_8)), documentNode);
+      instance.fillNode(document, documentNode);
       fileName = "essai.odp";
       title = "Mon titre";
       description = "Ceci est un document de test";
@@ -572,11 +547,9 @@ public class DocumentConverterTest {
       formId = "38";
       creationDate = new Date();
       attachment =
-          new SimpleAttachment(fileName, language, title, description,
-          "Contenu de test".getBytes(CharEncoding.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
-          creatorId, creationDate, formId);
-      instance.addAttachment(documentNode, attachment, new ByteArrayInputStream("Contenu de test".
-          getBytes(CharEncoding.UTF_8)));
+          new SimpleAttachment(fileName, language, title, description, 18,
+          MimeTypes.MIME_TYPE_OO_PRESENTATION, creatorId, creationDate, formId);
+      instance.addAttachment(documentNode, attachment);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       Node attachNode = documentNode.getNode(attachmentNodeName);
       assertThat(attachNode.getProperty(SLV_PROPERTY_NAME).getString(), is(fileName));
@@ -589,19 +562,9 @@ public class DocumentConverterTest {
       assertThat(attachNode.getProperty(SLV_PROPERTY_XMLFORM_ID).getString(), is(formId));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED_BY), is(false));
       assertThat(attachNode.hasProperty(JCR_LAST_MODIFIED), is(false));
-      assertThat(attachNode.hasNode(JCR_CONTENT), is(true));
-      Node contentNode = attachNode.getNode(JCR_CONTENT);
-      assertThat(contentNode, is(notNullValue()));
-      Binary binaryContent = contentNode.getProperty(JCR_DATA).getBinary();
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      InputStream in = binaryContent.getStream();
-      IOUtils.copy(in, buffer);
-      in.close();
-      binaryContent.dispose();
-      assertThat(new String(buffer.toByteArray(), CharEncoding.UTF_8), is("Contenu de test"));
-      assertThat(contentNode.getProperty(JCR_MIMETYPE).getString(), is(
+      assertThat(attachNode.getProperty(SLV_PROPERTY_SIZE).getLong(), is(18L));
+      assertThat(attachNode.getProperty(JCR_MIMETYPE).getString(), is(
           MimeTypes.MIME_TYPE_OO_PRESENTATION));
-      assertThat(contentNode.getProperty(JCR_ENCODING).getString(), is(CharEncoding.UTF_8));
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -645,8 +608,7 @@ public class DocumentConverterTest {
     try {
       Node documentNode = session.getRootNode().getNode(instanceId).addNode(
           SimpleDocument.ATTACHMENT_PREFIX + oldSilverpeasId, SLV_SIMPLE_DOCUMENT);
-      instance.fillNode(document, new ByteArrayInputStream("my test content".getBytes(
-          CharEncoding.UTF_8)), documentNode);
+      instance.fillNode(document, documentNode);
       instance.removeAttachment(documentNode, language);
       String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
       assertThat(documentNode.hasNode(attachmentNodeName), is(false));
@@ -654,8 +616,7 @@ public class DocumentConverterTest {
       BasicDaoFactory.logout(session);
     }
   }
-  
-  
+
   /**
    * Test of fillNode method, of class SimpleDocumentConverter.
    */
@@ -683,7 +644,8 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), status,
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
     document.setMajorVersion(1);

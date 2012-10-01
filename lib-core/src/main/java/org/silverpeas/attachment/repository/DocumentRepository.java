@@ -23,7 +23,8 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,12 +51,14 @@ import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
 
+import org.apache.commons.io.FileUtils;
+
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
@@ -103,19 +106,20 @@ public class DocumentRepository {
    * @return
    * @throws RepositoryException
    */
-  public SimpleDocumentPK createDocument(Session session, SimpleDocument document,
-      InputStream content) throws RepositoryException {
+  public SimpleDocumentPK createDocument(Session session, SimpleDocument document) throws
+      RepositoryException {
     SimpleDocument last = findLast(session, document.getInstanceId(), document.getForeignId());
     if (last != null && document.getOrder() <= 0) {
       document.setOrder(last.getOrder() + 1);
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
-    converter.fillNode(document, content, documentNode);
+    converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
     }
     document.setId(documentNode.getIdentifier());
+    document.setOldSilverpeasId(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong());
     return document.getPk();
   }
 
@@ -159,11 +163,17 @@ public class DocumentRepository {
       WAPrimaryKey destination) throws RepositoryException {
     prepareComponentAttachments(destination.getInstanceId());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
-    SimpleDocument targetDoc = findDocumentById(session, document.getPk(), document.getLanguage());
+    SimpleDocument targetDoc;
+    if(document.isVersioned()) {
+      targetDoc = new HistorisedDocument();
+    } else {
+      targetDoc = new SimpleDocument();
+    }    
     targetDoc.setNodeName(null);
-    targetDoc.computeNodeName();
     targetDoc.setPK(pk);
     targetDoc.setForeignId(destination.getId());
+    targetDoc.computeNodeName();
+    prepareComponentAttachments(destination.getInstanceId());
     session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
@@ -181,7 +191,7 @@ public class DocumentRepository {
    * @throws RepositoryException
    */
   public void updateDocument(Session session, SimpleDocument document) throws
-      RepositoryException {
+      RepositoryException, IOException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
     String owner = document.getEditedBy();
     if (!StringUtil.isDefined(owner)) {
@@ -191,11 +201,11 @@ public class DocumentRepository {
     if (checkinRequired && StringUtil.isDefined(document.getEditedBy())) {
       document.setUpdatedBy(document.getEditedBy());
     }
-    converter.fillNode(document, null, documentNode);
+    converter.fillNode(document, documentNode);
     if (checkinRequired) {
       checkinNode(documentNode, document.getLanguage(), document.isPublic());
+      duplicateContent(session, document, findDocumentById(session, document.getPk(), null));
     }
-
   }
 
   /**
@@ -587,8 +597,8 @@ public class DocumentRepository {
    * @param content the attachment binary content.
    * @throws RepositoryException
    */
-  public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment,
-      InputStream content) throws RepositoryException {
+  public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment)
+      throws RepositoryException {
     Node documentNode = session.getNodeByIdentifier(documentPk.getId());
     if (converter.isVersioned(documentNode) && !documentNode.isCheckedOut()) {
       String owner = attachment.getUpdatedBy();
@@ -597,7 +607,7 @@ public class DocumentRepository {
       }
       checkoutNode(documentNode, owner);
     }
-    converter.addAttachment(documentNode, attachment, content);
+    converter.addAttachment(documentNode, attachment);
   }
 
   /**
@@ -617,12 +627,8 @@ public class DocumentRepository {
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
     }
-    String fileNodeName = SimpleDocument.FILE_PREFIX + language;
-    if (docNode.hasNode(fileNodeName)) {
-      Node fileNode = docNode.getNode(fileNodeName);
-      return new BinaryInputStream(fileNode.getPath());
-    }
-    return new ByteArrayInputStream(ArrayUtil.EMPTY_BYTE_ARRAY);
+    SimpleDocument document =  converter.fillDocument(docNode, language);
+    return new BufferedInputStream(FileUtils.openInputStream(new File(document.getAttachmentPath())));
   }
 
   /**
@@ -693,9 +699,11 @@ public class DocumentRepository {
             true);
         return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
       }
+      converter.fillNode(document, documentNode);
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
     }
     if (!document.isVersioned()) {
+      converter.fillNode(document, documentNode);
       converter.releaseDocumentNode(documentNode, document.getLanguage());
       return converter.convertNode(documentNode, document.getLanguage());
     }
@@ -790,6 +798,24 @@ public class DocumentRepository {
     Node documentNode = session.getNodeByIdentifier(document.getId());
     if (!StringUtil.isDefined(document.getNodeName())) {
       document.setNodeName(documentNode.getName());
+    }
+  }
+
+  public long storeContent(Session session, SimpleDocument document, InputStream in) throws
+      RepositoryException, IOException {
+    File file = new File(document.getAttachmentPath());
+    SilverTrace.debug("attachment", "DocumentRepository", "Storing file for document in "
+        + document.getAttachmentPath());
+    FileUtils.copyInputStreamToFile(in, file);
+    return file.length();
+  }
+
+  private void duplicateContent(Session session, SimpleDocument origin, SimpleDocument document)
+      throws IOException, RepositoryException {
+    File target = new File(document.getAttachmentPath());
+    File source = new File(origin.getAttachmentPath());
+    if (!target.exists() && source.exists()) {
+      FileUtils.copyFile(source, target);
     }
   }
 }

@@ -202,7 +202,6 @@ public interface JcrConstants extends Property {
   /**
    * Root node for XPath Queries
    */
-  String JCR_ROOT = "jcr:root";
   String SLV_PROPERTY_NAME = "slv:name";
   String SLV_PROPERTY_DESCRIPTION = "slv:description";
   String SLV_PROPERTY_CREATION_DATE = "slv:creationDate";
