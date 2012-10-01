@@ -28,13 +28,15 @@ package com.stratelia.silverpeas.peasCore.servlets;
  * and open the template in the editor.
  */
 
+import javax.servlet.http.HttpServletRequest;
+
+import junit.framework.TestCase;
+import org.springframework.mock.web.MockHttpServletRequest;
+
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import javax.servlet.http.HttpServletRequest;
-import junit.framework.TestCase;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 /**
  *

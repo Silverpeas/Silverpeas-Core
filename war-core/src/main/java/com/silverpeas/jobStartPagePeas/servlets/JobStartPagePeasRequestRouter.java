@@ -630,7 +630,7 @@ public class JobStartPagePeasRequestRouter extends
       String role = request.getParameter("Role");
 
       if (!StringUtil.isDefined(role)) {
-        role = "Manager";
+        role = SpaceProfileInst.SPACE_MANAGER;
       }
 
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
@@ -661,8 +661,7 @@ public class JobStartPagePeasRequestRouter extends
       if (inheritedProfile != null) {
         request.setAttribute("InheritedProfile", inheritedProfile);
         request.setAttribute("listInheritedGroups", jobStartPageSC.groupIds2groups(inheritedProfile
-            .
-            getAllGroups()));
+            .getAllGroups()));
         request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
             getAllUsers()));
       }
@@ -712,8 +711,8 @@ public class JobStartPagePeasRequestRouter extends
         // (manager)
         spaceProfileInst = listSpaceProfileInst.get(i);
         name = spaceProfileInst.getLabel();
-        if (name.equals("")) {
-          name = jobStartPageSC.getMultilang().getString("Manager");
+        if (name.isEmpty()) {
+          name = jobStartPageSC.getMultilang().getString(SpaceProfileInst.SPACE_MANAGER);
         }
         desc = spaceProfileInst.getDescription();
       }

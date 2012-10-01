@@ -42,10 +42,10 @@
 	
   <st_group_user_rel groupId="1" userId="1"/>
 	
-  <st_space id="1" domainfatherid="[NULL]" name="Space 1" firstpagetype="0"/>
-  <st_space id="2" domainfatherid="1" name="Space 1-1" firstpagetype="0" />
-  <st_space id="3" domainfatherid="2" name="Space 1-1-1" firstpagetype="0" />
-  <st_space id="4" domainfatherid="1" name="Space 1-2" firstpagetype="0" />
+  <st_space id="1" domainfatherid="[NULL]" name="Space 1" description="Root Space" firstpagetype="0"/>
+  <st_space id="2" domainfatherid="1" name="Space 1-1" description="Child Space 1"  firstpagetype="0" />
+  <st_space id="3" domainfatherid="2" name="Space 1-1-1" description="Grand Child Space 1" firstpagetype="0" />
+  <st_space id="4" domainfatherid="1" name="Space 1-2" description="Child Space 2" firstpagetype="0" />
 	
   <st_componentinstance id="1" spaceid="1" name="GED" componentname="kmelia"/>
   <st_componentinstance id="2" spaceid="2" name="Dates clés" componentname="almanach"/>
