@@ -113,6 +113,7 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -559,7 +560,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if ("Component".equals(objectType)) {
       // check if component is allowed to current user
       return getOrganizationController().isComponentAvailable(mie.getObjectId(), getUserId());
-    } else if ("UserFull".equals(objectType)
+    } else if (UserIndexation.OBJECT_TYPE.equals(objectType)
         && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
       // visibility between domains is limited, check found user domain against current user domain
       String userId = mie.getObjectId();
@@ -1160,7 +1161,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if (componentId.startsWith("user@")) {
           titleLink = URLManager.getApplicationURL() + URLManager.getURL(resultType) + indexEntry
               .getPageAndParams();
-        } else if (resultType.equals("UserFull")) {
+        } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
           if (userDetail != null) {
             result.setThumbnailURL(userDetail.getAvatar());

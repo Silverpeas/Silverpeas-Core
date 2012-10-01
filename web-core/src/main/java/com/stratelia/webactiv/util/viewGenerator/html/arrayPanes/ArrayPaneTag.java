@@ -49,6 +49,8 @@ public class ArrayPaneTag extends TagSupport {
 
   private boolean export = false;
   private String exportDataURL = null;
+  
+  private boolean sortableLines = false;
 
   public String getRoutingAddress() {
     return routingAddress;
@@ -78,6 +80,7 @@ public class ArrayPaneTag extends TagSupport {
     if (export) {
       arrayPane.setExportDataURL(exportDataURL);
     }
+    arrayPane.setSortableLines(sortableLines);
     pageContext.setAttribute(ARRAY_PANE_PAGE_ATT, arrayPane);
     return EVAL_BODY_INCLUDE;
   }
@@ -121,5 +124,9 @@ public class ArrayPaneTag extends TagSupport {
 
   public void setExportDataURL(String exportDataURL) {
     this.exportDataURL = exportDataURL;
+  }
+  
+  public void setSortableLines(boolean sortable) {
+    this.sortableLines = sortable;
   }
 }

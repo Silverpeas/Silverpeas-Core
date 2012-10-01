@@ -23,55 +23,50 @@
  */
 
 (function ($) {
-	var dlg;
-    var Defaults = function () {};
-    $.extend(Defaults.prototype, {
-        msg1: "useless",
-		msg2: "useless too..."
-    });
-    
-    $.progressMessage = function (options, callback) {
-        // Pass the options and a callback to execute if affirmative user
-        // response.
-        var opts = new Defaults();
-        $.extend(opts, options);
+  var dlg ;
+  var Defaults = function () {};
+  $.extend(Defaults.prototype, {
+    msg1: "useless",
+    msg2: "useless too..."
+  });
 
-        dlg = $("#gef-progressMessage")
-		         .dialog({
-                    autoOpen: false,
-                    modal: true,
-                    draggable: false,
-            		resizable: false,
-            		height: 'auto',
-            		width: 300,
-					title: $("#gef-progressMessage #gef-progress-message1").text(),
-                    close: function () {
-                        // Clean up
-                        dlg.dialog('destroy').remove();
-                    },
-                    open: function(event, ui) { 
-        				$(".ui-dialog-titlebar-close").hide();
-        				//$(".ui-dialog-titlebar").hide();
-					}
-            });
-        
-        // Set options, open, and bind callback
-		//$("#modalDialog #message1").html(opts.msg1);
-		//$("#modalDialog #message2").html(opts.msg2);
-        dlg.dialog('open');
-    }
-    
-    $.closeProgressMessage = function (options, callback) {
-        // Pass the options and a callback to execute if affirmative user
-        // response.
-        var opts = new Defaults();
-        $.extend(opts, options);
-       
-        dlg.dialog('close');
-    }
-    
-    $.progressMessage.defaults = function (options) {
-        $.extend(Defaults.prototype, options);
-    }
-    
+  $.progressMessage = function (options, callback) {
+    // Pass the options and a callback to execute if affirmative user response.
+    var opts = new Defaults();
+    $.extend(opts, options);
+
+    dlg = $("#gef-progressMessage")
+          .dialog({
+            autoOpen: false,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            height: 'auto',
+            width: 300,
+            title: $("#gef-progressMessage #gef-progress-message1").text(),
+            close: function () {
+              // Clean up
+              dlg.dialog('destroy').remove();
+            },
+            open: function(event, ui) {
+              $(".ui-dialog-titlebar-close").hide();
+            }
+          });
+
+      // Set options, open, and bind callback
+      dlg.dialog('open');
+  }
+
+  $.closeProgressMessage = function (options, callback) {
+    // Pass the options and a callback to execute if affirmative user response.
+    var opts = new Defaults();
+    $.extend(opts, options);
+
+    dlg.dialog('close');
+  }
+
+  $.progressMessage.defaults = function (options) {
+    $.extend(Defaults.prototype, options);
+  }
+
 })(jQuery);

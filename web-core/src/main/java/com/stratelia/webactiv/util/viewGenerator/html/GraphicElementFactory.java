@@ -96,8 +96,8 @@ public class GraphicElementFactory {
       "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
-  private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(
-      "IconsPath");
+  private final static String iconsPath = (URLManager.getApplicationURL() + settings
+      .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
   private String currentLookName = null;
   private String externalStylesheet = null;

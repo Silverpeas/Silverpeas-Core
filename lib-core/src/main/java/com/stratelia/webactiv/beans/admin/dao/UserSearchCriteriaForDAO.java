@@ -28,18 +28,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * An implementation of the search criteria for user details stored in a SQL data source and used
- * by the DAOs.
+ * An implementation of the search criteria for user details stored in a SQL data source and used by
+ * the DAOs.
  */
 public class UserSearchCriteriaForDAO implements UserSearchCriteria {
-  
+
   private StringBuilder query = new StringBuilder();
   private Set<String> tables = new HashSet<String>();
 
   public static UserSearchCriteriaForDAO newCriteria() {
     return new UserSearchCriteriaForDAO();
   }
-  
+
   @Override
   public UserSearchCriteriaForDAO and() {
     if (query.length() > 0) {
@@ -47,7 +47,7 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
     }
     return this;
   }
-  
+
   @Override
   public UserSearchCriteriaForDAO or() {
     if (query.length() > 0) {
@@ -66,55 +66,58 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
             append("'))");
     return this;
   }
-  
+
   @Override
-  public UserSearchCriteriaForDAO onGroupIds(String ... groupIds) {
+  public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
     tables.add("st_user");
     tables.add("st_group_user_rel");
     query.append("(st_group_user_rel.userid = st_user.id");
     if (groupIds != ANY) {
       StringBuilder[] sqlLists = asSQLList(groupIds);
       query.append(" and (st_group_user_rel.groupId in ").
-            append(sqlLists[0]);
-      for(int i = 1; i < sqlLists.length; i++) {
+              append(sqlLists[0]);
+      for (int i = 1; i < sqlLists.length; i++) {
         query.append(" or st_group_user_rel.groupId in ").
-            append(sqlLists[i]);
+                append(sqlLists[i]);
       }
       query.append(")");
     }
     query.append(")");
     return this;
   }
-  
+
   @Override
   public UserSearchCriteriaForDAO onDomainId(String domainId) {
+    // all users that are part of the specified domain or that have administration priviledges
+    // (the administrators should be visible by anyone in order to be contacted)
     tables.add("st_user");
-    query.append("(st_user.domainId = ").append(Integer.valueOf(domainId)).append(")");
+    query.append("(st_user.domainId = ").append(Integer.valueOf(domainId)).
+            append(" or st_user.accessLevel = 'A')");
     return this;
   }
-  
+
   @Override
   public UserSearchCriteria onUserIds(String... userIds) {
     tables.add("st_user");
     StringBuilder[] sqlLists = asSQLList(userIds);
     query.append("(st_user.id in ").append(sqlLists[0]);
-    for(int i = 0; i < sqlLists.length; i++) {
+    for (int i = 0; i < sqlLists.length; i++) {
       query.append(" or st_user.id in ").append(sqlLists[i]);
     }
     query.append(")");
     return this;
   }
-  
+
   @Override
   public String toString() {
     return query.toString();
   }
-  
+
   @Override
   public boolean isEmpty() {
     return query.length() == 0;
   }
-  
+
   public String impliedTables() {
     StringBuilder tablesUsedInCriteria = new StringBuilder();
     for (String aTable : tables) {
@@ -122,15 +125,14 @@ public class UserSearchCriteriaForDAO implements UserSearchCriteria {
     }
     return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
   }
-  
+
   private UserSearchCriteriaForDAO() {
-    
   }
-  
+
   // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
   // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
-  private StringBuilder[] asSQLList(String ... items) {
-    StringBuilder[] lists = new StringBuilder[(int)Math.ceil(items.length / 1000) + 1];
+  private StringBuilder[] asSQLList(String... items) {
+    StringBuilder[] lists = new StringBuilder[(int) Math.ceil(items.length / 1000) + 1];
     int count = 0;
     int i = 0;
     lists[i] = new StringBuilder("(");

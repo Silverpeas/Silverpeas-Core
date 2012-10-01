@@ -1,6 +1,5 @@
 /*
- <<<<<<< HEAD:lib-core/src/main/java/com/stratelia/webactiv/util/indexEngine/parser/tika/TikaParser.java
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -22,12 +21,12 @@
  */
 package org.silverpeas.search.indexEngine.parser.tika;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Map;
-
 import org.apache.tika.Tika;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.mime.MediaType;
@@ -36,10 +35,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.microsoft.OfficeParser;
 import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
 import org.apache.tika.parser.odf.OpenDocumentParser;
-
 import org.silverpeas.search.indexEngine.parser.Parser;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  *
@@ -49,7 +45,7 @@ public class TikaParser implements Parser {
 
   private final Tika tika = initTika();
 
-  private final Tika initTika() {
+  private Tika initTika() {
     TikaConfig configuration = TikaConfig.getDefaultConfig();
     ParseContext context = new ParseContext();
     CompositeParser parser = ((CompositeParser) configuration.getParser());

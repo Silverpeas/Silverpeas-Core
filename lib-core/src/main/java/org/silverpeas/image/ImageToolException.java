@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
@@ -21,35 +21,39 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.image;
 
-package com.silverpeas.filters;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-import java.io.IOException;
+/**
+ * @author Yohann Chastagnier
+ */
+public class ImageToolException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = -1010169458973310498L;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-public class AbsoluteSendRedirectFilter implements Filter {
-
-  @Override
-  public void init(FilterConfig filterConfig)
-      throws ServletException {
+  /**
+   * Default constructor
+   * @param e
+   */
+  public ImageToolException(final Exception e) {
+    super("ImageTool", SilverpeasException.ERROR, e.getMessage(), e);
   }
 
-  @Override
-  public void destroy() {
+  /**
+   * Default constructor
+   * @param e
+   */
+  public ImageToolException(final String message) {
+    super("ImageTool", SilverpeasException.ERROR, message);
   }
 
+  /*
+   * (non-Javadoc)
+   * @see com.stratelia.webactiv.util.exception.SilverpeasRuntimeException#getModule()
+   */
   @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    chain.doFilter(request, new SendRedirectOverloadedResponse((HttpServletRequest) request,
-        (HttpServletResponse) response));
+  public String getModule() {
+    return "image";
   }
 }
