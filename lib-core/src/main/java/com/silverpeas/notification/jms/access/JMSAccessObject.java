@@ -38,13 +38,6 @@ import javax.naming.NamingException;
 
 /**
  * An object providing an access to the services of a JMS system and managing the life-cycle of the
-<<<<<<< HEAD
- * connections and of the sessions. This object is managed by the IoC container so that it can be
- * injected as dependency into the JMS implementation of the Notification API. This object acts as a
- * facade to the underlying JMS system and provides operations to access the JMS objects. It manages
- * the life-cycle of connections and sessions with the JMS system and wraps some technical details
- * from the JMS consumer/producer operations.
-=======
  * connections and of the sessions.
  *
  * This object is managed by the IoC container so that it can be injected as dependency into the JMS
@@ -53,7 +46,6 @@ import javax.naming.NamingException;
  * This object acts as a facade to the underlying JMS system and provides operations to access the
  * JMS objects. It manages the life-cycle of connections and sessions with the JMS system and wraps
  * some technical details from the JMS consumer/producer operations.
->>>>>>> /bad-path/
  */
 @Named
 public final class JMSAccessObject {
@@ -69,10 +61,7 @@ public final class JMSAccessObject {
   /**
    * Gets the topic corresponding to the specified name. The topic should exist, otherwise an
    * exception is thrown.
-<<<<<<< HEAD
-=======
    *
->>>>>>> /bad-path/
    * @param name the topic name.
    * @return the Topic instance matching the name.
    * @throws NamingException if no such topic exists with the specified name.
@@ -82,15 +71,6 @@ public final class JMSAccessObject {
   }
 
   /**
-<<<<<<< HEAD
-   * Creates a subscription to the specified topic and returns the subscriber resulting of the
-   * subscription. The method allocates the required resources for the subscriber receive incoming
-   * messages. Once created, the subscriber can be used to set a message listener or to perform
-   * additional settings. To unsubscribe from the topic, just call the disposeTopicSubscriber method
-   * with the subscriber as parameter.
-<<<<<<< HEAD
-=======
-=======
    * Creates a subscription to the specified topic with the specified listener for receiving the
    * messages published in the topic. The subscription will be uniquely identified by the specified
    * identifier.
@@ -99,9 +79,7 @@ public final class JMSAccessObject {
    *
    * To unsubscribe from the topic, just call the
    * <code>disposeTopicSubscriber</code> method with the TopicSubscriber instance as parameter.
->>>>>>> /bad-path/
    *
->>>>>>> /bad-path/
    * @param topicName the name of topic.
    * @param subscriberId the unique identifier of the subscription.
    * @param listener the listener that will receive the messages published in the topic.
@@ -144,10 +122,7 @@ public final class JMSAccessObject {
    * messafges, call the disposeTopicPublisher method to frees the publisher. For each created
    * publisher, one entry to the topic is opened, so that is recommended to frees it after message
    * publishings.
-<<<<<<< HEAD
-=======
    *
->>>>>>> /bad-path/
    * @param topicName the name of the topic.
    * @return a TopicSubscriber instance.
    * @throws NamingException if no such topic exists with the specified name.
@@ -165,10 +140,7 @@ public final class JMSAccessObject {
   /**
    * Disposes the specified publisher. It cannot then be anymore used. The method frees the
    * resources allocated to the publisher and the entry to the topic is closed.
-<<<<<<< HEAD
-=======
    *
->>>>>>> /bad-path/
    * @param publisher the publisher to dispose.
    * @throws JMSException if an error occurs while disposing the publisher.
    */
