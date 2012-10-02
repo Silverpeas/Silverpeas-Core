@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -27,16 +26,18 @@
 package com.silverpeas.importExport.control;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
@@ -45,14 +46,13 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -75,8 +75,8 @@ public class RepositoriesTypeManager {
    * unitaires et nécéssaire au rapport détaillé
    * @throws ImportExportException
    */
-  public void processImport(UserDetail userDetail,
-      RepositoriesType repositoriesType, boolean isPOIUsed) {
+  public void processImport(UserDetail userDetail, RepositoriesType repositoriesType,
+      boolean isPOIUsed) {
 
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
@@ -123,8 +123,8 @@ public class RepositoriesTypeManager {
           while (itListcontenuPath.hasNext()) {
             File file = itListcontenuPath.next();
             if (file.isFile()) {
-              importFile(file, topicId, massiveReport, gedIE, attachmentIE,
-                  versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
+              importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
+                  isDraftUsed);
             } else if (file.isDirectory()) {
               switch (rep_Type.getMassiveTypeInt()) {
                 case RepositoryType.NO_RECURSIVE:
@@ -160,9 +160,8 @@ public class RepositoriesTypeManager {
   }
 
   private PublicationDetail importFile(File file, int topicId, MassiveReport massiveReport,
-      GEDImportExport gedIE, AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, PdcImportExport pdcIE,
-      boolean isPOIUsed, boolean isVersioningUsed, boolean isDraftUsed) {
+      GEDImportExport gedIE, PdcImportExport pdcIE, boolean isPOIUsed, boolean isVersioningUsed,
+      boolean isDraftUsed) {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
 
@@ -184,15 +183,13 @@ public class RepositoriesTypeManager {
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate instanciated");
 
-      if ((isDraftUsed && pdcIE.isClassifyingMandatory(componentId))
-          || isDraftUsed) {
+      if ((isDraftUsed && pdcIE.isClassifyingMandatory(componentId)) || isDraftUsed) {
         pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
-          + pubDetailToCreate.getStatus());
+          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
 
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
@@ -200,43 +197,31 @@ public class RepositoriesTypeManager {
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
-      SimpleDocument document;
-      // Ajout de l'attachment
-      AttachmentDetail attDetail = new AttachmentDetail();
-      AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
-      attDetail.setPhysicalName(file.getPath());
-      attDetail.setAuthor(userDetail.getId());
-      attDetail.setPK(pk);
+
 
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "attDetail instanciated");
-
+      SimpleDocument document;
+      SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       if (isVersioningUsed) {
-        // Mode versioning
-        // copie du fichier sur le serveur et enrichissement du AttachmentDetail
-        attachmentIE.copyFile(componentId, attDetail, versioningIE.getVersioningPath(componentId));
-        if (attDetail.getSize() != 0) {
-          List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
-          attachments.add(attDetail);
-          versioningIE.importDocuments(pubDetailToCreate.getPK().getId(), componentId, attachments,
-              Integer.parseInt(userDetail.getId()), pubDetailToCreate.isIndexable(),
-              String.valueOf(topicId));
-        }
+        document = new HistorisedDocument();
       } else {
-        InputStream input = null;
-        try {
-          input = new FileInputStream(attDetail.getAttachmentPath(null));
-          attachmentIE.importAttachment(pubDetailToCreate.getPK().getId(), componentId, attDetail,
-              input, pubDetailToCreate.isIndexable());
-        } finally {
-          IOUtils.closeQuietly(input);
-        }
+        document = new SimpleDocument();
       }
-
-      // Traitement des statistiques
-      if (attDetail.getSize() > 0) {
+      document.setPK(pk);
+      document.setFile(new SimpleAttachment());
+      document.setFilename(file.getName());
+      document.setSize(file.length());
+      document.getFile().setCreatedBy(userDetail.getId());  
+      document.setCreated(new Date());
+      document.setForeignId(pubDetailToCreate.getPK().getId());
+      document.setTitle(file.getName());
+      document.setContentType(FileUtil.getMimeType(file.getName()));
+      if (document.getSize() > 0L) {
+        AttachmentServiceFactory.getAttachmentService().createAttachment(document, file,
+            pubDetailToCreate.isIndexable());
         ImportReportManager.addNumberOfFilesProcessed(1);
-        ImportReportManager.addImportedFileSize(attDetail.getSize(), componentId);
+        ImportReportManager.addImportedFileSize(document.getSize(), componentId);
       } else {
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
         ImportReportManager.addNumberOfFilesNotImported(1);
@@ -246,7 +231,6 @@ public class RepositoriesTypeManager {
       SilverTrace.error("importExport", "RepositoriesTypeManager.importFile()",
           "root.EX_NO_MESSAGE", ex);
     }
-
     return pubDetailToCreate;
   }
 
@@ -272,8 +256,8 @@ public class RepositoriesTypeManager {
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        importFile(file, topicId, massiveReport, gedIE, attachmentIE,
-            versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
+        importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
+            isDraftUsed);
       } else if (file.isDirectory()) {
         // traitement récursif spécifique
         processImportRecursiveNoReplicate(massiveReport, userDetail, file,
@@ -308,9 +292,8 @@ public class RepositoriesTypeManager {
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication =
-            importFile(file, topicId, massiveReport, gedIE, attachmentIE,
-            versioningIE, pdcIE, isPOIUsed, isVersioningUsed, isDraftUsed);
+        PublicationDetail publication = importFile(file, topicId, massiveReport, gedIE, pdcIE,
+            isPOIUsed, isVersioningUsed, isDraftUsed);
         if (publication != null) {
           publications.add(publication);
         }

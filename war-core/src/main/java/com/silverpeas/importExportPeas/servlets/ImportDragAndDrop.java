@@ -115,8 +115,7 @@ public class ImportDragAndDrop extends HttpServlet {
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath =
-              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = FileUploadUtil.getFileName(item);
           if (StringUtil.isDefined(parentPath)) {
             if (parentPath.endsWith(":\\")) { // special case for file on root of disk
