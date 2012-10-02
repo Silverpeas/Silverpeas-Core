@@ -100,4 +100,22 @@ public interface MimeTypes {
   public static final Set<String> ARCHIVE_MIME_TYPES = new HashSet<String>(Arrays.asList(
     new String[]{BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
       TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE, JAVA_ARCHIVE_MIME_TYPE}));
+  // Extension of pdf document file
+  public static final String PDF_DOCUMENT_EXTENSION = "pdf";
+  // Extension of bmp image file
+  public static final String BMP_IMAGE_EXTENSION = "bmp";
+  // Extension of gif image file
+  public static final String GIF_IMAGE_EXTENSION = "gif";
+  // Extension of jpg image file
+  public static final String JPG_IMAGE_EXTENSION = "jpg";
+  // Extension of pcd image file
+  public static final String PCD_IMAGE_EXTENSION = "pcd";
+  // Extension of png image file
+  public static final String PNG_IMAGE_EXTENSION = "png";
+  // Extension of psd document/image file
+  public static final String PSD_IMAGE_EXTENSION = "psd";
+  // Extension of tga image file
+  public static final String TGA_IMAGE_EXTENSION = "tga";
+  // Extension of tif image file
+  public static final String TIF_IMAGE_EXTENSION = "tif";
 }
