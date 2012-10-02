@@ -49,6 +49,13 @@ public class SequenceField extends TextField {
       + " and f.fieldName = ?"
       + " and t.externalId = ?";
 
+  private static final String GLOBAL_VALUES_QUERY = "select distinct(f.fieldValue)"
+      + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
+      + " where t.templateId = r.templateId"
+      + " and r.recordId = f.recordId"
+      + " and f.fieldName = ?"
+      + " and t.externalId like ?";
+
   private static final int NUMBER_ERROR = -1;
 
   private String value = "";
@@ -95,11 +102,12 @@ public class SequenceField extends TextField {
    * @param startValue The field's start value.
    * @param reuseAvailableValues Indicates whether previous values used by objects which were
    * removed can be used again.
+   * @param global Indicates whether all values of same form is gathered between instances
    * @return The next sequence value to use.
    */
   public String getNextValue(String fieldName, String templateName, String componentId,
-      int minLength, int startValue, boolean reuseAvailableValues) {
-    List<Integer> values = getValues(fieldName, templateName, componentId);
+      int minLength, int startValue, boolean reuseAvailableValues, boolean global) {
+    List<Integer> values = getValues(fieldName, templateName, componentId, global);
     int newValue = 0;
     if (values.isEmpty()) {
       newValue = startValue;
@@ -120,9 +128,10 @@ public class SequenceField extends TextField {
    * @param fieldName The field's name.
    * @param templateName The template's name.
    * @param componentId The id of the component containing the field.
+   * @param global Indicates whether all values of same form is gathered between instances
    * @return The list of values from the sequence which are already used.
    */
-  private List<Integer> getValues(String fieldName, String templateName, String componentId) {
+  private List<Integer> getValues(String fieldName, String templateName, String componentId, boolean global) {
     List<Integer> values = new ArrayList<Integer>();
     Connection connection = null;
     PreparedStatement statement = null;
@@ -130,13 +139,25 @@ public class SequenceField extends TextField {
     try {
       connection = DBUtil.makeConnection(JNDINames.FORMTEMPLATE_DATASOURCE);
 
-      statement = connection.prepareStatement(VALUES_QUERY);
+      // if global, all values of same form is gathered between instances
+      if (global) {
+        statement = connection.prepareStatement(GLOBAL_VALUES_QUERY);
+      }
+      else {
+        statement = connection.prepareStatement(VALUES_QUERY);
+      }
+
       statement.setString(1, fieldName);
-      statement.setString(2, componentId + ":" + templateName);
+      if (global) {
+        statement.setString(2, "%:"+templateName);
+      }
+      else {
+        statement.setString(2, componentId + ":" + templateName);
+      }
 
       SilverTrace.debug("form", "SequenceField.getValues", "root.MSG_GEN_PARAM_VALUE",
           "fieldName = " + fieldName + ", componentId = " + componentId + ", templateName = "
-          + templateName);
+          + templateName + " ,global="+global);
 
       rs = statement.executeQuery();
       while (rs.next()) {
