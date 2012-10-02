@@ -133,6 +133,17 @@ public class PreviewServiceTest {
   }
 
   @Test
+  public void testJpegFile() throws Exception {
+    // The uppercase letter of the following file extension is not a mistake
+    final Preview preview = previewService.getPreview("file.jpEg", getDocumentNamed("file.jpEg"));
+    assertThat(preview, notNullValue());
+    assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
+    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
+    assertThat(previewSize[0], is("1000"));
+    assertThat(previewSize[1], is("750"));
+  }
+
+  @Test
   public void testPdfFile() throws Exception {
     final Preview preview = previewService.getPreview("file.pdf", getDocumentNamed("file.pdf"));
     assertThat(preview, notNullValue());
