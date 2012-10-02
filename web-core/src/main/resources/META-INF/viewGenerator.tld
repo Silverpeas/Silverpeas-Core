@@ -871,6 +871,13 @@
       <rtexprvalue>false</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Defines if lines can be explicitly sorted</description>
+      <name>sortableLines</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a column header for an ArrayPane</description>
@@ -894,6 +901,12 @@
     <name>arrayLine</name>
     <tag-class>com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLineTag</tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+      <description>The String to identified this line</description>
+      <name>id</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a new cell in the current line of the ArrayPane.</description>
@@ -1525,6 +1538,14 @@
     <function-class>com.silverpeas.util.FileUtil</function-class>
     <function-signature>
       java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file os previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.viewer.ViewFactory</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
     </function-signature>
   </function>
 </taglib>

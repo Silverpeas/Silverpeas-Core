@@ -1501,7 +1501,7 @@ td.browsebar a:hover {
 
 /****************************************/
 /****** Look V5 - ViewGenerator *********/
-/****************************************/ 
+/****************************************/
 /* objet window */
 .cellBrowseBar {
   border-bottom-width: 1px;
@@ -1765,7 +1765,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   float: left;
   padding: 2px 3px;
   margin-right: 0.5em;
-  font-size:95%;    
+  font-size:95%;
   line-height: 1.6em;
 }
 
@@ -1880,7 +1880,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 /*- [ admin ] --------------------------- */
-#admin-treeview  img{ 
+#admin-treeview  img{
   border:none;
 }
 
@@ -2724,7 +2724,7 @@ caption {
 
 #directory .info ul {
   margin:10px 10px 0 104px;
-  color:#909090; 
+  color:#909090;
   font-size:11px;
 }
 
@@ -3482,8 +3482,8 @@ caption {
   font-size:11px;
   padding:5px 0 14px;
 }
-.sousNavBulle p, .content-container-filter { 
-  margin:0; 
+.sousNavBulle p, .content-container-filter {
+  margin:0;
   padding:0 5px 0;
 }
 
@@ -3851,14 +3851,23 @@ ul#attachmentList li.attachmentListItem .lineMain {
 
 ul#attachmentList li.attachmentListItem .lineSize img {
   float:left;
-  margin-right:10px
+  margin-right:10px;
+}
+
+img.preview-file {
+  cursor:pointer;
+  margin:0 0 0 4px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
+  float:inherit;
 }
 
 ul#attachmentList li.attachmentListItem .lineMain .icon {
   float:left;
   width: 16px;
   height: 16px;
-  margin-right:10px
+  margin-right:10px;
 }
 
 ul#attachmentList li.attachmentListItem .moreActions {
@@ -3964,7 +3973,7 @@ ul#attachmentList li.attachmentListItem .linkAllVersions a {
   webkit-border-radius:10px;
   padding:10px;
   position:relative;
-  margin:70px 2em 0;    
+  margin:70px 2em 0;
 }
 
 .commentaires #edition-box {
@@ -4004,7 +4013,7 @@ html>/**/body .commentaires .oneComment{
 
 .commentaires #edition-box .title , .commentaires .oneComment p.author{
   font-size: 8pt;
-  color: #111111;    
+  color: #111111;
   height: 20px;
   margin:0;
   position:absolute;
@@ -4022,7 +4031,7 @@ html>/**/body .commentaires .oneComment{
   font-size:11px;
 }
 
-.commentaires .oneComment .text {      
+.commentaires .oneComment .text {
   color: #888888;
   font-family: Arial;
   font-size: 13px;
@@ -4296,7 +4305,7 @@ html:not([lang*=""]) .add_position:hover {
   line-height: 20px;
   float:left;
 }
-.classification .legende { 
+.classification .legende {
   margin:10px 0 0;
   float:left;
   line-height:18px
@@ -4348,12 +4357,12 @@ html:not([lang*=""]) .add_position:hover {
 }
 
 #classification-modification span.header {
-  display:block;  
+  display:block;
   background:transparent url("/silverpeas/util/icons/mini_publi.gif") 4px 5px no-repeat ;
   background-color:#F0F0F0;
   border:1px solid #CDCDCD;
   border-left:0;
-  border-right:0;	
+  border-right:0;
   line-height:100%;
   padding:8px 0 6px 26px;
   margin:10px 12px 0;
@@ -4457,7 +4466,7 @@ li.applicationsType a.linkSee.select {
 }
 
 ul.applicationList {
-  position:absolute; 
+  position:absolute;
   top:0;
   left:0;
   background-color:#FFF;
@@ -4691,20 +4700,20 @@ li.application  .applicationName {
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   color:#FFF;
 }
-.userPanel .users_results_userPanel, 
+.userPanel .users_results_userPanel,
 .userPanel .groups_results_userPanel,
-.userPanel .users_selected_userPanel, 
+.userPanel .users_selected_userPanel,
 .userPanel .groups_selected_userPanel  {
   margin:8px 3% 16px;
   clear:both;
   position:relative;
 }
 
-.userPanel .users_selected_userPanel, 
+.userPanel .users_selected_userPanel,
 .userPanel .groups_selected_userPanel  {
   margin:2px 3% 16px 3%;
 }
-.userPanel .users_results_userPanel, 
+.userPanel .users_results_userPanel,
 .userPanel .users_selected_userPanel  {
   margin:2px 3% 0 3%;
 }
@@ -4740,7 +4749,7 @@ li.application  .applicationName {
 }
 
 
-#filter_userPanel .listing_filter ul .filter{	    
+#filter_userPanel .listing_filter ul .filter{
 	background-image: url("../icons/puce-group.png");
     background-position: 26px 11px;
     padding: 6px 0 1px 43px;
@@ -4762,8 +4771,8 @@ li.application  .applicationName {
   color:#444;
 }
 
-#filter_userPanel .filter:hover, 
-#filter_userPanel .filter:focus , 
+#filter_userPanel .filter:hover,
+#filter_userPanel .filter:focus ,
 #filter_userPanel .filter.select,
 #filter_userPanel .filter:hover a,
 #filter_userPanel .filter:focus a{
@@ -5077,7 +5086,7 @@ input.search:focus {
 
 .userzoom-tooltip-interaction-accessNotification {
 	left:33%;
-	
+
 }
 .userzoom-tooltip-interaction-accessProfil 	span,
 .userzoom-tooltip-interaction-accessTchat 	span,
@@ -5121,13 +5130,13 @@ input.search:focus {
 	right:30px;
 }
 
-.above.right .userzoom-tooltip-arrow , 
-.below.right .userzoom-tooltip-arrow 
+.above.right .userzoom-tooltip-arrow ,
+.below.right .userzoom-tooltip-arrow
 {
 	right:30px;
 }
 .above.left .userzoom-tooltip-arrow ,
-.below.left .userzoom-tooltip-arrow 
+.below.left .userzoom-tooltip-arrow
 {
 	left:30px;
 }
@@ -5207,6 +5216,31 @@ input.search:focus {
 #myProfile #LinkedInPublishButton,
 #myProfile #LinkedInLoginButton {
 	display: none;
+}
+
+/*************/
+/** preview **/
+/*************/
+.preview-button {
+  cursor: pointer;
+  text-align: center;
+  margin: 5px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #666666;
+  background-color: #efefef;
+  opacity:0.4;
+}
+
+.preview-button:hover {
+  border: 1px solid #9BD94A;
+  background-color: #9BD94A;
+  opacity: 1;
+}
+
+.preview-button-image {
+  width: 13px;
+  height: 13px;
 }
 
 /********************************/

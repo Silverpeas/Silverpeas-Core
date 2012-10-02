@@ -28,7 +28,7 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 * To use in conjunction with IncludeJSTag.
 */
 public enum SupportedJavaScriptPlugins {
-  
+
   /**
    * JQuery plugin to print out tooltips.
    */
@@ -82,5 +82,9 @@ public enum SupportedJavaScriptPlugins {
    * JQuery plugin that post a form to an IFrame and allow for a callback with the iframe content.
    * @see http://www.jainaewen.com/files/javascript/jquery/iframe-post-form.html#api
    */
-  iframepost;
+  iframepost,
+   /**
+    * Silverpeas plugin to open document preview dialog.
+   */
+  preview;
 }

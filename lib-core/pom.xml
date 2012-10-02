@@ -341,7 +341,7 @@
     <dependency>
       <artifactId>xmlbeans</artifactId>
       <groupId>org.apache.xmlbeans</groupId>
-      <type>jar</type>      
+      <type>jar</type>
       <classifier>jdk6</classifier>
     </dependency>
     <dependency>
@@ -363,6 +363,11 @@
     <dependency>
       <groupId>com.sleepycat</groupId>
       <artifactId>je</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.im4java</groupId>
+      <artifactId>im4java</artifactId>
     </dependency>
   </dependencies>
 

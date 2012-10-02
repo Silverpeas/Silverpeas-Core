@@ -178,7 +178,7 @@
         // selection panel
         function loadPreselectionOfUsers() {
           if (preselectedUsers && preselectedUsers.length > 0) {
-            for(var i in preselectedUsers) {
+            for(var i = 0; i < preselectedUsers.length; i++) {
               new UserProfile({id: preselectedUsers[i]}).load(userSelection.add);
             }
           }
@@ -191,7 +191,7 @@
         // selection panel
         function loadPreselectionOfGroups() {
           if (preselectedUserGroups && preselectedUserGroups.length > 0) {
-            for(var i in preselectedUserGroups) {
+            for(var i = 0; i < preselectedUserGroups.length; i++) {
               new UserGroup({id: preselectedUserGroups[i]}).load(groupSelection.add);
             }
           }
@@ -229,11 +229,11 @@
                   $('#filter_groups').remove();
                   $('.groups_results_userPanel').remove();
                   $('.groups_selected_userPanel').remove();
-                  self.onAllUsers();
                 } else {
                   renderUserGroups(groups);
-                  renderUsersOfGroup(rootUserGroup);
                 }
+                self.onAllUsers();
+                highlightFilter($('#filter_users'));
               });
             });
           }

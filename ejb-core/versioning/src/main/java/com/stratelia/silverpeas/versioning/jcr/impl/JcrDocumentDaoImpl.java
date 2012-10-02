@@ -43,8 +43,8 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
 import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.versioning.jcr.JcrDocumentDao;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 
@@ -196,7 +196,7 @@ public class JcrDocumentDaoImpl implements JcrDocumentDao {
    */
   protected Node addFile(Node folder, DocumentVersion document)
       throws RepositoryException, IOException {
-    String escapedName = StringUtil.escapeQuote(document.getLogicalName());
+    String escapedName = ConverterUtil.escapeIllegalJcrChars(document.getLogicalName());
     if (folder.hasNode(escapedName)) {
       folder.getNode(escapedName).remove();
     }

@@ -572,7 +572,6 @@ public final class Admin {
   public SpaceInst getSpaceInstById(String spaceId) throws AdminException {
     try {
       SpaceInst spaceInst = getSpaceInstById(spaceId, false);
-
       if (spaceInst == null) {
         return null;
       }

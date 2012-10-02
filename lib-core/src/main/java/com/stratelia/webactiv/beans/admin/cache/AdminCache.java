@@ -146,11 +146,10 @@ public class AdminCache {
   }
 
   public SpaceInst getSpaceInst(String spaceId) {
-    if (m_bUseCache && m_bUseSpaceInstCache) {
+    if (m_bUseCache && m_bUseSpaceInstCache && StringUtil.isDefined(spaceId)) {
       return m_hSpaceInstCache.get(spaceId);
-    } else {
-      return null;
     }
+    return null;
   }
 
   protected void removeUserInSpaceInst(String userId) {

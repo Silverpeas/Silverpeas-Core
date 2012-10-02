@@ -42,6 +42,8 @@
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <c:choose>
   <c:when test="${view:booleanValue(isComponentVersioned)}">
 <script type="text/javascript" src='<c:url value="/versioningPeas/jsp/javaScript/dragAndDrop.js" />' ></script>   
@@ -55,7 +57,6 @@
 <script type="text/javascript" src='<c:url value="/util/yui/container/container_core-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/animation/animation-min.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
-
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
   <view:settings var="spinfireViewerEnable"  settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
@@ -171,7 +172,7 @@
       searchAttachmentsByExternalObject(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
         (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
-%>
+            %>
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
     <ul id="attachmentList">
@@ -227,6 +228,9 @@
             <c:if test="${showDownloadEstimation}">
               <c:out value="${view:estimateDownload(currentAttachment.size)}" />
             </c:if> - <view:formatDate value="${currentAttachment.created}" />
+            <c:if test="${view:isPreviewable(currentAttachment.attachmentPath)}">
+            <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
+            </c:if>
           </span>
           <c:if test="${view:isDefined(currentAttachment.title) && showTitle}">
             <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
@@ -462,7 +466,7 @@
               <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", true);</c:when>
               <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", true);</c:otherwise>
             </c:choose>
-            $('#worker' + oldId).html("<%=attResources.getString("readOnly")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
+            $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $('#worker' + oldId).css({'visibility':'visible'});
             if (edit) {
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
@@ -472,7 +476,7 @@
               window.open(url);
             }
           } else {
-            alert("<%=attResources.getString("attachment.dialog.checkout.nok")%>");
+            alert('<fmt:message key="attachment.dialog.checkout.nok"/>');
             window.location.href = window.location.href;
           }
         }, 'text');
@@ -531,7 +535,7 @@
     function notifyAttachment(attachmentId) {
       alertUsersAttachment(attachmentId); //dans publication.jsp
     }
-    
+
     function AddAttachment() {
       $("#dialog-attachment-add").dialog("open");
     }
@@ -784,6 +788,14 @@
         });
       }
     });
+  }
+
+  function preview(target, attachmentId) {
+    $(target).preview("previewAttachment", {
+      componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
+      attachmentId: attachmentId
+    });
+    return false;
   }
 </script>
 <div id="dialog-attachment-update" style="display:none">

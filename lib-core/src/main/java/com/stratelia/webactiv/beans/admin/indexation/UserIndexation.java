@@ -45,7 +45,7 @@ public class UserIndexation {
 
   private WAIndexSearcher searcher = new WAIndexSearcher();
   static final String COMPONENT_ID = "users";
-  static final String OBJECT_TYPE = "FullUser";
+  public static final String OBJECT_TYPE = "UserFull";
 
   /**
    * Indexes the specified user. If no user exist with the specified unique identifier, nothing is

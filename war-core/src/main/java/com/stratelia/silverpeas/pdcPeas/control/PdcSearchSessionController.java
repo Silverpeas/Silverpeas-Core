@@ -62,7 +62,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.silverpeas.thesaurus.model.Jargon;
-import com.silverpeas.util.*;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
 
@@ -75,10 +74,8 @@ import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.pdc.control.Pdc;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.*;
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.pdcPeas.model.QueryParameters;
-import com.stratelia.silverpeas.pdcPeas.vo.*;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -90,6 +87,7 @@ import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -104,6 +102,7 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -113,6 +112,28 @@ import org.silverpeas.search.SearchEngineFactory;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
+
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.pdc.model.Axis;
+import com.stratelia.silverpeas.pdc.model.AxisHeader;
+import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchAxis;
+import com.stratelia.silverpeas.pdc.model.SearchContext;
+import com.stratelia.silverpeas.pdc.model.SearchCriteria;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.pdcPeas.vo.ExternalSPConfigVO;
+import com.stratelia.silverpeas.pdcPeas.vo.Facet;
+import com.stratelia.silverpeas.pdcPeas.vo.FacetEntryVO;
+import com.stratelia.silverpeas.pdcPeas.vo.ResultFilterVO;
+import com.stratelia.silverpeas.pdcPeas.vo.ResultGroupFilter;
+import com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO;
+import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -179,13 +200,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public static final String ALL_DATA_TYPE = "0";
   private String dataType = ALL_DATA_TYPE;
   private List<SearchTypeConfigurationVO> dataSearchTypes = null;
-  
   // forms fields facets from current results
   private Map<String, Facet> fieldFacets = null;
-  
   // facets entry selected by the user
   private ResultFilterVO selectedFacetEntries = null;
-  
   private boolean platformUsesPDC = false;
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
@@ -547,7 +565,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } else if ("Component".equals(objectType)) {
       // check if component is allowed to current user
       return getOrganizationController().isComponentAvailable(mie.getObjectId(), getUserId());
-    } else if ("UserFull".equals(objectType)
+    } else if (UserIndexation.OBJECT_TYPE.equals(objectType)
         && GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL) {
       // visibility between domains is limited, check found user domain against current user domain
       String userId = mie.getObjectId();
@@ -667,9 +685,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (StringUtil.isDefined(type)) {
       SearchTypeConfigurationVO searchType = getSearchType(instanceId, type);
       if (searchType != null) {
-        FacetEntryVO facetEntry = new FacetEntryVO(searchType.getName(), String.valueOf(searchType.getConfigId()));
+        FacetEntryVO facetEntry = new FacetEntryVO(searchType.getName(), String.valueOf(searchType.
+            getConfigId()));
         if (getSelectedFacetEntries() != null) {
-          if (String.valueOf(searchType.getConfigId()).equals(getSelectedFacetEntries().getDatatype())) {
+          if (String.valueOf(searchType.getConfigId()).equals(getSelectedFacetEntries().
+              getDatatype())) {
             facetEntry.setSelected(true);
           }
         }
@@ -1146,7 +1166,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if (componentId.startsWith("user@")) {
           titleLink = URLManager.getApplicationURL() + URLManager.getURL(resultType) + indexEntry
               .getPageAndParams();
-        } else if (resultType.equals("UserFull")) {
+        } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           UserDetail userDetail = getUserDetail(indexEntry.getPK().getObjectId());
           if (userDetail != null) {
             result.setThumbnailURL(userDetail.getAvatar());
@@ -1558,7 +1578,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && keywords.trim().length() > 0
-        && MimeTypes.PDF_MIME_TYPE.equals(document.getContentType())) {
+          && MimeTypes.PDF_MIME_TYPE.equals(document.getContentType())) {
         // Suppression des éventuelles quotes (ne sont pas acceptées)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);
@@ -1576,10 +1596,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private String getVersioningUrl(String documentId, String componentId) throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
-      "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
+        "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(new SimpleDocumentPK(documentId, componentId), null) ;
-    SimpleDocument version =  document.getLastPublicVersion();
+        .searchAttachmentById(new SimpleDocumentPK(documentId, componentId), null);
+    SimpleDocument version = document.getLastPublicVersion();
 
     if (version != null) {
       String urlVersioning = version.getAttachmentURL();

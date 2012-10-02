@@ -228,4 +228,6 @@ public interface ArrayPane extends SimpleGraphicElement {
    * @param exportDataURL the URL to set used to export array pane data
    */
   public void setExportDataURL(String exportDataURL);
+  
+  public void setSortableLines(boolean sortableLines);
 }

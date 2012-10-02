@@ -88,6 +88,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case iframepost:
           includeIFramePost(xhtml);
           break;
+        case preview:
+          includePreview(xhtml);
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore
