@@ -94,9 +94,6 @@ public interface MimeTypes {
       POWERPOINT_2007_TEMPLATE_MIME_TYPE, MIME_TYPE_OO_FORMATTED_TEXT, MIME_TYPE_OO_SPREADSHEET,
       MIME_TYPE_OO_PRESENTATION, MIME_TYPE_OO_GRAPHICS, MIME_TYPE_OO_DIAGRAM, MIME_TYPE_OO_FORMULA,
       MIME_TYPE_OO_DB, MIME_TYPE_OO_IMAGE, MIME_TYPE_OO_MASTER}));
-  public static final Set<String> IMAGE_EXTENTIONS = new HashSet<String>(Arrays.asList(
-    new String[]{"gif", "GIF", "jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "bmp", "BMP", "pcd",
-      "PCD", "tga", "TGA", "tif", "TIF"}));
   public static final Set<String> ARCHIVE_MIME_TYPES = new HashSet<String>(Arrays.asList(
     new String[]{BZ2_ARCHIVE_MIME_TYPE, GZ_ARCHIVE_MIME_TYPE, GUNZIP_ARCHIVE_MIME_TYPE,
       TARGZ_ARCHIVE_MIME_TYPE, ARCHIVE_MIME_TYPE, SHORT_ARCHIVE_MIME_TYPE, JAVA_ARCHIVE_MIME_TYPE}));
