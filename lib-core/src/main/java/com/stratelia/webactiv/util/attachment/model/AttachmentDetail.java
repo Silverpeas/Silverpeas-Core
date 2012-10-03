@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
@@ -688,7 +689,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     if (getLanguage(language) != null) {
       jcrPath.append(getLanguage(language)).append('/');
     }
-    jcrPath.append(StringUtil.escapeQuote(getLogicalName(getLanguage(language))));
+    jcrPath.append(ConverterUtil.escapeIllegalJcrChars(getLogicalName(getLanguage(language))));
     return jcrPath.toString();
   }
 

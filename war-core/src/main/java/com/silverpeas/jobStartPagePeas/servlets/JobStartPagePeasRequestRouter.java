@@ -285,7 +285,7 @@ public class JobStartPagePeasRequestRouter extends
       if (jobStartPageSC.isComponentManageable(compoId)) {
         jobStartPageSC.setManagedInstanceId(compoId,
             JobStartPagePeasSessionController.SCOPE_FRONTOFFICE);
-        destination = "/jobStartPagePeas/jsp/componentInfo.jsp";
+        destination = getDestination("UpdateInstance", jobStartPageSC, request);
       } else {
         destination = "/admin/jsp/accessForbidden.jsp";
       }

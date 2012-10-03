@@ -46,10 +46,25 @@ import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.converter.option.PageRangeFilterOption;
-import com.silverpeas.util.FileType;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ImageUtil;
+import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.image.ImageTool;
+import org.silverpeas.image.ImageToolDirective;
+import org.silverpeas.image.option.DimensionOption;
+import org.silverpeas.viewer.exception.PreviewException;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.silverpeas.util.MimeTypes.PLAIN_TEXT_MIME_TYPE;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 /**
  * @author Yohann Chastagnier
@@ -57,7 +72,20 @@ import com.stratelia.webactiv.util.ResourceLocator;
 @Service
 public class DefaultPreviewService implements PreviewService {
 
+  // Extension of pdf document file
+  public static final String PDF_DOCUMENT_EXTENSION = "pdf";
   private final ResourceLocator settings = new ResourceLocator("org.silverpeas.viewer.viewer", "");
+  private final static Set<String> imageMimeTypePreviewable = new HashSet<String>();
+  static {
+    for (final String imageExtension : new String[] { ImageUtil.BMP_IMAGE_EXTENSION,
+        ImageUtil.GIF_IMAGE_EXTENSION, ImageUtil.JPG_IMAGE_EXTENSION,
+        ImageUtil.PCD_IMAGE_EXTENSION, ImageUtil.PNG_IMAGE_EXTENSION,
+        ImageUtil.TGA_IMAGE_EXTENSION, ImageUtil.TIF_IMAGE_EXTENSION }) {
+      imageMimeTypePreviewable.add(FileUtil.getMimeType(new StringBuilder("file.").append(
+          imageExtension).toString()));
+    }
+    imageMimeTypePreviewable.remove(MimeTypes.DEFAULT_MIME_TYPE);
+  }
 
   @Inject
   private ImageTool imageTool;
@@ -69,11 +97,12 @@ public class DefaultPreviewService implements PreviewService {
   @Override
   public boolean isPreviewable(final File file) {
     final String fileName = file.getPath();
-    return imageTool.isActived() &&
-        file.exists() &&
-        (FileType.decode(file).is(FileType.IMAGE_COMPATIBLE_WITH_IMAGETOOL) ||
-            FileUtil.isPdf(fileName) || FileUtil.isOpenOfficeCompatible(fileName) || PLAIN_TEXT_MIME_TYPE
-              .equals(FileUtil.getMimeType(fileName)));
+    if (imageTool.isActived() && file.exists()) {
+      final String mimeType = FileUtil.getMimeType(fileName);
+      return ((imageMimeTypePreviewable.contains(mimeType) || FileUtil.isPdf(fileName) ||
+          FileUtil.isOpenOfficeCompatible(fileName) || PLAIN_TEXT_MIME_TYPE.equals(mimeType)));
+    }
+    return false;
   }
 
   /*
@@ -95,8 +124,8 @@ public class DefaultPreviewService implements PreviewService {
     // 1 - converting it into PDF document
     // 2 - converting the previous result into PNG image
     if (FileUtil.isOpenOfficeCompatible(physicalFile.getName())) {
-      final File pdfFile = toPdf(physicalFile, generateTmpFile(FileType.PDF));
-      resultFile = toImage(pdfFile, changeTmpFileExtension(pdfFile, FileType.PNG));
+      final File pdfFile = toPdf(physicalFile, generateTmpFile(PDF_DOCUMENT_EXTENSION));
+      resultFile = toImage(pdfFile, changeTmpFileExtension(pdfFile, ImageUtil.PNG_IMAGE_EXTENSION));
       FileUtils.deleteQuietly(pdfFile);
     }
 
@@ -104,13 +133,13 @@ public class DefaultPreviewService implements PreviewService {
     // 1 - convert it into PNG resized image.
     else if (FileUtil.isPdf(originalFileName) ||
         PLAIN_TEXT_MIME_TYPE.equals(FileUtil.getMimeType(physicalFile.getPath()))) {
-      resultFile = toImage(physicalFile, generateTmpFile(FileType.PNG));
+      resultFile = toImage(physicalFile, generateTmpFile(ImageUtil.PNG_IMAGE_EXTENSION));
     }
 
     // If the document is an image
     // 1 - convert it into JPG resized image.
     else {
-      resultFile = toImage(physicalFile, generateTmpFile(FileType.JPG));
+      resultFile = toImage(physicalFile, generateTmpFile(ImageUtil.JPG_IMAGE_EXTENSION));
     }
 
     // Returning the result
@@ -148,9 +177,9 @@ public class DefaultPreviewService implements PreviewService {
    * @param fileType
    * @return
    */
-  protected File generateTmpFile(final FileType fileType) {
+  protected File generateTmpFile(final String fileExtension) {
     return new File(FileRepositoryManager.getTemporaryPath() + System.nanoTime() + "." +
-        fileType.getExtension());
+        fileExtension);
   }
 
   /**
@@ -158,9 +187,8 @@ public class DefaultPreviewService implements PreviewService {
    * @param fileExtension
    * @return
    */
-  protected File changeTmpFileExtension(final File file, final FileType fileType) {
-    return new File(getFullPath(file.getPath()) + getBaseName(file.getPath()) + "." +
-        fileType.getExtension());
+  protected File changeTmpFileExtension(final File file, final String fileExtension) {
+    return new File(getFullPath(file.getPath()) + getBaseName(file.getPath()) + "." + fileExtension);
   }
 
   /*
