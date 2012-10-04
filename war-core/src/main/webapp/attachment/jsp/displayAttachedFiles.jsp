@@ -493,6 +493,7 @@
     }
     
     function checkin(id, oldId, webdav, forceRelease) {
+      $("#dialog-attachment-delete").data("id", id).dialog("open");
       if (id.length > 0) {
         var webdavUpdate = 'false';
         if (webdav) {
@@ -841,5 +842,9 @@
 </div>  
 
 <div id="dialog-attachment-delete" style="display:none">
+  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+</div>
+
+<div id="dialog-attachment-checkin" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
 </div>

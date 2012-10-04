@@ -401,9 +401,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
       data.setId(pubId);
     }
 
-    List<XMLField> xmlFields = xmlModel.getFields();
+    PagesContext formContext = new PagesContext();
+    formContext.setComponentId(getCurrentComponentId());
+    formContext.setObjectId(pubId);
 
-    for (XMLField xmlField : xmlFields) {
+    for (XMLField xmlField : xmlModel.getFields()) {
       String xmlFieldName = xmlField.getName();
       String xmlFieldValue = xmlField.getValue();
       String fieldValue = null;
@@ -448,7 +450,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               fieldValue = xmlFieldValue;
             }
 
-            fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
+            fieldDisplayer.update(fieldValue, field, fieldTemplate, formContext);
           }
         }
       } catch (Exception e) {

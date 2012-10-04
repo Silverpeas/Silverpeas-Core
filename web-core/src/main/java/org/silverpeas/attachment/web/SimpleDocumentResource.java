@@ -27,13 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -51,6 +54,8 @@ import org.apache.commons.io.FileUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
@@ -134,7 +139,9 @@ public class SimpleDocumentResource extends RESTWebService {
    * @param title
    * @param description
    * @param versionType
+   * @param comment
    * @return
+   * @throws IOException
    */
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -144,15 +151,18 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("file_upload") FormDataContentDisposition fileDetail,
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
       final @FormDataParam("fileDescription") String description,
-      final @FormDataParam("versionType") String versionType) throws IOException {
+      final @FormDataParam("versionType") String versionType,
+      final @FormDataParam("commentMessage") String comment) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
     if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
-      document.setPublicDocument(Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION);
+      document.setPublicDocument(Integer.parseInt(versionType)
+          == DocumentVersion.TYPE_PUBLIC_VERSION);
     }
     document.setUpdatedBy(getUserDetail().getId());
     document.setLanguage(lang);
     document.setTitle(title);
-    document.setDescription(description);    
+    document.setDescription(description);
+    document.setComment(comment);
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
         getFileName())) {
       document.setFilename(fileDetail.getFileName());
@@ -248,6 +258,63 @@ public class SimpleDocumentResource extends RESTWebService {
     return Response.ok(stream).type(document.getContentType()).header(HttpHeaders.CONTENT_LENGTH,
         document.getSize()).header("content-disposition", "attachment;filename=" + document.
         getFilename()).build();
+  }
+
+  /**
+   * Lock the specified document for exclusive edition.
+   *
+   * @param language
+   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * otherwise..
+   */
+  @PUT
+  @Path("lock")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String lock() {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    if (document == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    boolean result = AttachmentServiceFactory.getAttachmentService().lock(getSimpleDocumentId(),
+        getUserDetail().getId(), I18NHelper.defaultLanguage);
+    return MessageFormat.format("'{'\"status\":{0}}", result);
+  }
+
+  /**
+   * Lock the specified document for exclusive edition.
+   *
+   * @param force
+   * @param webdav
+   * @param publicVersion
+   * @param comment
+   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * otherwise..
+   */
+  @POST
+  @Path("unlock")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String unlock(@FormParam("force") final boolean force,
+      @FormParam("webdav") final boolean webdav, @FormParam("public") final boolean publicVersion,
+      @FormParam("comment") final String comment) {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    if (document == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
+        I18NHelper.defaultLanguage);
+    if (force) {
+      unlockContext.addOption(UnlockOption.FORCE);
+    }
+    if (webdav) {
+      unlockContext.addOption(UnlockOption.WEBDAV);
+    }
+    if (!publicVersion) {
+      unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+    }
+    boolean result = AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+    return MessageFormat.format("'{'\"status\":{0}}", result);
   }
 
   SimpleDocument getSimpleDocument(String lang) {

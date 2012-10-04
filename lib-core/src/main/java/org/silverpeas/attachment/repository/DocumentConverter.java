@@ -133,19 +133,20 @@ class DocumentConverter extends AbstractJcrConverter {
         getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
-        getStringProperty(node, SLV_PROPERTY_STATUS), file);
+        getStringProperty(node, SLV_PROPERTY_COMMENT), file);
     doc.setCloneId(getStringProperty(node, SLV_PROPERTY_CLONE));
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
+    doc.setStatus(getStringProperty(node, SLV_PROPERTY_STATUS));
     String nodeName = node.getName();
-    if("jcr:frozenNode".equals(nodeName)) {
+    if ("jcr:frozenNode".equals(nodeName)) {
       nodeName = doc.computeNodeName();
       doc.setNodeName(nodeName);
-      if(!node.getSession().nodeExists(doc.getFullJcrPath())) {
+      if (!node.getSession().nodeExists(doc.getFullJcrPath())) {
         nodeName = SimpleDocument.VERSION_PREFIX + doc.getOldSilverpeasId();
       }
     }
-    doc.setNodeName(nodeName);   
+    doc.setNodeName(nodeName);
     doc.setPublicDocument(!doc.isVersioned() || doc.getMinorVersion() == 0);
     return doc;
   }
@@ -172,6 +173,7 @@ class DocumentConverter extends AbstractJcrConverter {
     documentNode.setProperty(SLV_PROPERTY_OLD_ID, document.getOldSilverpeasId());
     addStringProperty(documentNode, SLV_PROPERTY_INSTANCEID, document.getInstanceId());
     addStringProperty(documentNode, SLV_PROPERTY_OWNER, document.getEditedBy());
+    addStringProperty(documentNode, SLV_PROPERTY_COMMENT, document.getComment());
     addStringProperty(documentNode, SLV_PROPERTY_STATUS, document.getStatus());
     addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, document.getAlert());
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, document.getExpiry());

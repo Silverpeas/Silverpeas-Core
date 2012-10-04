@@ -23,6 +23,7 @@
  */
 package org.silverpeas.attachment.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.silverpeas.util.i18n.I18NHelper;
@@ -31,7 +32,8 @@ import com.silverpeas.util.i18n.I18NHelper;
  *
  * @author ehugonnet
  */
-public class SimpleAttachment {
+public class SimpleAttachment implements Serializable {
+  private static final long serialVersionUID = -6153003608158238503L;
 
   private String filename;
   private String language = I18NHelper.defaultLanguage;

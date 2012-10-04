@@ -40,6 +40,7 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.SequenceField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
@@ -88,10 +89,10 @@ public class SequenceFieldDisplayer extends AbstractFieldDisplayer<SequenceField
         if (parameters.containsKey("startValue")) {
           startValue = Integer.parseInt(parameters.get("startValue"));
         }
-        boolean reuseAvailableValues = (parameters.containsKey("reuseAvailableValues")
-            && "true".equals(parameters.get("reuseAvailableValues")));
+        boolean reuseAvailableValues = StringUtil.getBooleanValue( parameters.get("reuseAvailableValues") );
+        boolean global = StringUtil.getBooleanValue( parameters.get("global") );
         value = sequenceField.getNextValue(fieldName, template.getTemplateName(),
-            pagesContext.getComponentId(), minLength, startValue, reuseAvailableValues);
+            pagesContext.getComponentId(), minLength, startValue, reuseAvailableValues, global);
       }
     } else {
       value = field.getValue(language);

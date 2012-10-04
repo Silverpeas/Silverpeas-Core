@@ -547,7 +547,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 }
 
 #ticker {
-	color:#666666;
+	color:#fff;
 	left: 140px;
 }
 
@@ -572,7 +572,8 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	border:none;
 }
 
-.sousTitreFenetre {
+.sousTitreFenetre,
+#portletPages div.portlet-content  {
 	font-size:11px;
 	font-weight:100;}
 
@@ -597,7 +598,9 @@ li.event,
 #navBlog , #viewPostDraft, #viewPost, #blog #blogContainer #postsList div.post,
 #classified-view #commentaires,
 #richContent,
-#agenda #navigation, #agenda #agendaView, #agenda #footer{
+#agenda #navigation, #agenda #agendaView, #agenda #footer,
+.fc,
+#eventList{
 	border-radius: 12px;
 		-moz-border-radius: 12px;
 		-webkit-border-radius: 12px;
@@ -612,7 +615,12 @@ li.event,
 
 #blog #blogContainer #bandeau {
 	background:transparent url();
-	}
+}
+
+.eventsView .sousNavBulle {
+	float:none;
+}
+
 
 li.event  { background-color:#E0DFE0; margin-bottom:8px;}
 
@@ -723,13 +731,17 @@ li.event  { background-color:#E0DFE0; margin-bottom:8px;}
 #searchGroupTitle {
 	background-image: none;
 	background-color: #AE0000;
-	color: #222222;
+	color: #FFF;
 	border-radius:8px 8px 0 0;
 		-moz-border-radius:8px 8px 0 0;
 		-webkit-border-radius:8px 8px 0 0;
-	border-left: 1px solid #cccccc;
-	border-right: 1px solid #cccccc;
-	border-top: 1px solid #cccccc;
+	border-left: 1px solid #AE0000;
+	border-right: 1px solid #AE0000;
+	border-top: 1px solid #AE0000;
+}
+#searchGroupValues {
+	background-color:#D6D7D9;
+	margin-bottom:8px;
 }
 #searchGroupValues ul li.selected {
 	background-color:#D6D7D9;

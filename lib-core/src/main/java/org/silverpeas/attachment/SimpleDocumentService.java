@@ -711,6 +711,7 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.deleteAttachmentNode(session, document);
       }
       session.save();
+      document.setComment(context.getComment());
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
       if (document.isPublic()) {
         String userId = context.getUserId();

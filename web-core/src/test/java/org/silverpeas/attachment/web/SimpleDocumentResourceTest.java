@@ -33,18 +33,22 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.RandomGenerator;
@@ -222,6 +226,49 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat(result.getDescription(),
         is("This test is trying to simulate the update of a content"));
     assertThat(result.getLang(), is("en"));
+  }
+
+  @Test
+  public void testLockDocument() {
+    String lang = "fr";
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
+    getTestResources().setAttachmentService(service);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/lock").header(
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is("{\"status\":true}"));
+  }
+
+  @Test
+  @Ignore
+  public void testUnlockDocument() {
+    String lang = "fr";
+    String comment = "Déverrouillage";
+    SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID),
+        "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
+        MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    UnlockContext unlockContext = new UnlockContext(DOCUMENT_ID, user.getId(), lang, comment);
+    unlockContext.addOption(UnlockOption.FORCE);
+    when(service.unlock(eq(unlockContext))).thenReturn(true);
+    getTestResources().setAttachmentService(service);
+    Form form = new Form();
+    form.putSingle("comment", comment);
+    form.putSingle("force", true);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/unlock").header(
+        HTTP_SESSIONKEY, getSessionKey()).post(String.class, form);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is("{\"status\":true}"));
   }
 
   @Override

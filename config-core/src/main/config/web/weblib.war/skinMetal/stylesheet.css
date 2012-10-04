@@ -74,7 +74,7 @@ a:hover {
 }
 
 #pdcFrame {
-	background-color:#AE0000;
+	background-color:#E0DFE0;
 	color:#222222;
 }
 
@@ -84,7 +84,7 @@ a:hover {
 
 /* fil ariane */
 #browseBar #breadCrumb a:visited, #browseBar #breadCrumb a:active, #browseBar #breadCrumb a:link, #browseBar #breadCrumb a:hover,  #browseBar #breadCrumb, #browseBar .information{
-  color: #FFF;
+	color: #FFF;
 }
 
 /* NAV GAUCHE */
@@ -212,70 +212,39 @@ a:hover {
 	background-color: #5d5d5e;
 	border-color:#5d5d5e;
 }
-#domainsBar #spaceMenuDivId #spacePerso .spaceURL {
-  background:transparent url(imgDesign/bg_perso.gif) 13px 0px  no-repeat;
-  color: #000000;
-  display: block;
-  font-size: 12px;
-  height: 85px;
-  line-height: 104px;
-  padding-left: 84px;
-  text-align: left;
-  text-transform: uppercase;
-  width: 140px;
 
-}
-#domainsBar #spacePerso .browseComponent a:hover, 
-#domainsBar #spacePerso .browseComponent a ,
-#domainsBar #spacePerso .browseComponentActiv a
-{
-  background-image:none;
-  display:block;
-  padding-left:10px;
-  color:#FFF;
-  font-weight:100;
-  text-align:left;
-  font-size:11px;
-}
+/**/
 
 #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{
 	color:#AE0000;
 
-#domainsBar #spacePerso .contentSpace {
-  border-right:0;
-  border-left: 2px solid #AE0000;
-  clear: both;
-  margin-left: 60px;
-  margin-top: -6px;
-  padding-top: 5px;
-  background-color:transparent;
 }
 .txtlibform, .textePetitBold {
 	color:#444444;
 	}
 
 #myProfileFiche .action .link, #publicProfileFiche #contactCommun .link, #publicProfileFiche #allContact .link ,.txtnav, .txtbigdate, .txttitrecol{
-	color:#252122;
-	border-color:#ccc;
+   border-color: #D8B1B1;
+    color: #AE0000;
 	}
 .txtnav {
 	font-size:12px;
 }
 
-#domainsBar #spacePerso .contentSpace a{
-  padding-left:10px;}
 
-/* btn & onglet */
-.milieuBoutonV5 {
-  background-color:#AE0000;
-  border:1px solid #990404;
+.ArrayColumn , #classifieds .tableFrame #categories .categoryTitle{
+	background-color:#D6D7D9;
+	color:#000000;
 }
-#domainsBar .milieuBoutonV5 a , .milieuBoutonV5 a {
-  color: #FFF;
+.ArrayColumn a {
+	color:#000000;
+}
+.ArrayColumn a:hover {
+	color:#444444;
 }
 
-.sousOnglets , .milieuOngletOn{
-  background-color:#AE0000;
+.pageNav {
+	background-color:#FFF;
 }
 .pageNav .pageIndex {
 	background-color:transparent;
@@ -316,4 +285,35 @@ button {
 }
 
 
+.help-modal-message .ui-widget-header,
+.ui-widget-header {
+    background: none repeat scroll 0 0 #AE0000;
+    border: 1px solid #AE0000;
+}
 
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    color: #AE0000;
+}
+
+.vsplitbar {
+    background-color:#EFEFEF;
+    margin-left: 3px;
+}
+
+.jstree-default .jstree-clicked,
+.jstree-default .jstree-hovered
+{
+    background-color: #EBEBEB !important;
+    border: 1px solid #CCCCCC !important;
+}
+
+#menubar-creation-actions {
+    background-color: #EBEBEB;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
+}
+
+
+#menubar-creation-actions .menubar-creation-actions-item:hover {
+    background-color: #AE0000;
+}

@@ -74,6 +74,8 @@ public class SimpleDocumentEntity implements Exposable {
   private String permalink;
   @XmlElement(defaultValue = "")
   private String downloadUrl;
+  @XmlElement(defaultValue = "")
+  private String comment;
 
   public static SimpleDocumentEntity fromAttachment(SimpleDocument document) {
     SimpleDocumentEntity entity = new SimpleDocumentEntity();
@@ -100,6 +102,7 @@ public class SimpleDocumentEntity implements Exposable {
     entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, document.getId());
     entity.downloadUrl = document.getAttachmentURL();
     entity.lang = document.getLanguage();
+    entity.comment = document.getComment();
     return entity;
   }
 
@@ -179,4 +182,7 @@ public class SimpleDocumentEntity implements Exposable {
     return downloadUrl;
   }
 
+  public String getComment() {
+    return comment;
+  }
 }

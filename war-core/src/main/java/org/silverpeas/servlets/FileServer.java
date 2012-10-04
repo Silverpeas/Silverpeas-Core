@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.io.IOUtils;
 import com.silverpeas.util.MimeTypes;
 
@@ -239,8 +240,8 @@ public class FileServer extends HttpServlet {
       if (tempFile != null) {
         downloadFile(res, tempFile.getCanonicalPath());
       } else {
-        if (fileSize > 0) {
-          res.setContentLength(new Long(fileSize).intValue());
+        if (fileSize > 0L) {
+          res.setContentLength((int) fileSize);
         }
         downloadFile(res, filePath);
       }
@@ -249,7 +250,7 @@ public class FileServer extends HttpServlet {
     if (tempFile != null) {
       SilverTrace.info("peasUtil", "FileServer.doPost()", "root.MSG_GEN_ENTER_METHOD",
           " tempFile != null " + tempFile);
-      tempFile.delete();
+      FileUtils.deleteQuietly(tempFile);
     }
 
     if (StringUtil.isDefined(archiveIt)) {

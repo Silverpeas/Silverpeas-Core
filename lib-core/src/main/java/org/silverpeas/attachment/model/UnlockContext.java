@@ -95,4 +95,43 @@ public class UnlockContext {
   public String getComment() {
     return comment;
   }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 29 * hash + this.options;
+    hash = 29 * hash + (this.attachmentId != null ? this.attachmentId.hashCode() : 0);
+    hash = 29 * hash + (this.userId != null ? this.userId.hashCode() : 0);
+    hash = 29 * hash + (this.comment != null ? this.comment.hashCode() : 0);
+    hash = 29 * hash + (this.lang != null ? this.lang.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final UnlockContext other = (UnlockContext) obj;
+    if (this.options != other.options) {
+      return false;
+    }
+    if ((this.attachmentId == null) ? (other.attachmentId != null)
+        : !this.attachmentId.equals(other.attachmentId)) {
+      return false;
+    }
+    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
+      return false;
+    }
+    if ((this.comment == null) ? (other.comment != null) : !this.comment.equals(other.comment)) {
+      return false;
+    }
+    if ((this.lang == null) ? (other.lang != null) : !this.lang.equals(other.lang)) {
+      return false;
+    }
+    return true;
+  }
 }

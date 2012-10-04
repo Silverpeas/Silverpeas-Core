@@ -73,6 +73,8 @@ public class SimpleDocument implements Serializable {
   private boolean publicDocument = true;
   private String nodeName;
 
+  private String comment;
+
   /**
    * Get the value of cloneId
    *
@@ -103,7 +105,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      Date reservation, Date alert, Date expiry, String status, SimpleAttachment file) {
+      Date reservation, Date alert, Date expiry, String comment, SimpleAttachment file) {
     this.pk = pk;
     this.foreignId = foreignId;
     this.order = order;
@@ -111,7 +113,7 @@ public class SimpleDocument implements Serializable {
     setReservation(reservation);
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
-    this.status = status;
+    this.comment = comment;
     this.file = file;
   }
 
@@ -125,11 +127,11 @@ public class SimpleDocument implements Serializable {
    * @param reservation
    * @param alert
    * @param expiry
-   * @param status
+   * @param comment 
    * @param file
    */
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
-      String editedBy, Date reservation, Date alert, Date expiry, String status,
+      String editedBy, Date reservation, Date alert, Date expiry, String comment,
       SimpleAttachment file) {
     this.pk = pk;
     this.foreignId = foreignId;
@@ -139,7 +141,7 @@ public class SimpleDocument implements Serializable {
     setReservation(reservation);
     this.alert = DateUtil.getBeginOfDay(alert);
     this.expiry = DateUtil.getBeginOfDay(expiry);
-    this.status = status;
+    this.comment = comment;
     this.file = file;
   }
 
@@ -281,6 +283,14 @@ public class SimpleDocument implements Serializable {
 
   public void setMajorVersion(int majorVersion) {
     this.majorVersion = majorVersion;
+  }
+  
+  public String getComment() {
+    return comment;
+  }
+
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 
   public String getEditedBy() {
@@ -495,7 +505,7 @@ public class SimpleDocument implements Serializable {
         + order + ", versioned=" + versioned + ", editedBy=" + editedBy + ", reservation="
         + reservation + ", alert=" + alert + ", expiry=" + expiry + ", status=" + status
         + ", cloneId=" + cloneId + ", file=" + file + ", minorVersion=" + minorVersion
-        + ", majorVersion=" + majorVersion + '}';
+        + ", majorVersion=" + majorVersion + ", comment=" + comment + '}';
   }
 
   @Override

@@ -180,7 +180,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
-    String status = "My Status";
+    String comment = "My Status";
     String description = "This is a test document";
     String formId = "18";
     String updatedBy = "5";
@@ -197,7 +197,8 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument expectedResult = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status,  new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), comment,
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
     expectedResult.setOldSilverpeasId(oldSilverpeasId);
@@ -215,7 +216,7 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_OLD_ID, oldSilverpeasId);
       documentNode.setProperty(SLV_PROPERTY_INSTANCEID, instanceId);
       documentNode.setProperty(SLV_PROPERTY_OWNER, owner);
-      documentNode.setProperty(SLV_PROPERTY_STATUS, status);
+      documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
       documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
@@ -255,7 +256,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
-    String status = "My Status";
+    String comment = "My Status";
     String description = "This is a test document";
     String formId = "18";
     String updatedBy = "5";
@@ -270,7 +271,8 @@ public class DocumentConverterTest {
     Calendar alert = RandomGenerator.getRandomCalendar();
     Calendar expiry = RandomGenerator.getRandomCalendar();
     Calendar reservation = RandomGenerator.getRandomCalendar();
-    SimpleAttachment expectedResult = new SimpleAttachment(fileName, language, title, description,
+    SimpleAttachment expectedResult =
+        new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId);
     expectedResult.setUpdated(updateDate);
@@ -284,7 +286,7 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_OLD_ID, oldSilverpeasId);
       documentNode.setProperty(SLV_PROPERTY_INSTANCEID, instanceId);
       documentNode.setProperty(SLV_PROPERTY_OWNER, owner);
-      documentNode.setProperty(SLV_PROPERTY_STATUS, status);
+      documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
       documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
@@ -303,7 +305,7 @@ public class DocumentConverterTest {
       attachNode.setProperty(JCR_LAST_MODIFIED_BY, updatedBy);
       calend.setTime(updateDate);
       attachNode.setProperty(JCR_LAST_MODIFIED, calend);
-      attachNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);      
+      attachNode.setProperty(JCR_MIMETYPE, MimeTypes.PDF_MIME_TYPE);
       attachNode.setProperty(SLV_PROPERTY_SIZE, "my test content".getBytes("UTF-8").length);
       SimpleAttachment result = instance.getAttachment(documentNode, language);
       assertThat(result, SimpleAttachmentMatcher.matches(expectedResult));
@@ -320,7 +322,7 @@ public class DocumentConverterTest {
     Session session = BasicDaoFactory.getSystemSession();
     long oldSilverpeasId = 100L;
     String language = "en";
-    String status = "My Status";
+    String comment = "My Status";
     String foreignId = "node36";
     boolean versionned = false;
     String owner = "25";
@@ -339,7 +341,7 @@ public class DocumentConverterTest {
       documentNode.setProperty(SLV_PROPERTY_OLD_ID, oldSilverpeasId);
       documentNode.setProperty(SLV_PROPERTY_INSTANCEID, instanceId);
       documentNode.setProperty(SLV_PROPERTY_OWNER, owner);
-      documentNode.setProperty(SLV_PROPERTY_STATUS, status);
+      documentNode.setProperty(SLV_PROPERTY_COMMENT, comment);
       documentNode.setProperty(SLV_PROPERTY_ALERT_DATE, alert);
       documentNode.setProperty(SLV_PROPERTY_EXPIRY_DATE, expiry);
       documentNode.setProperty(SLV_PROPERTY_RESERVATION_DATE, reservation);
@@ -360,7 +362,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
-    String status = "My Status";
+    String comment = "My Status";
     String description = "This is a test document";
     String formId = "18";
     String updatedBy = "5";
@@ -377,7 +379,7 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status,
+        expiry.getTime(), comment,
         new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
@@ -398,7 +400,7 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong(), is(oldSilverpeasId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_INSTANCEID).getString(), is(instanceId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_OWNER).getString(), is(owner));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_COMMENT).getString(), is(comment));
       assertThat(documentNode.getProperty(SLV_PROPERTY_ALERT_DATE).getDate().getTimeInMillis(),
           is(alert.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
@@ -434,7 +436,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
-    String status = "My Status";
+    String comment = "My Status";
     String description = "This is a test document";
     String formId = "18";
     String updatedBy = "5";
@@ -451,7 +453,7 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), comment, new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId));
     document.setMajorVersion(1);
@@ -471,7 +473,7 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong(), is(oldSilverpeasId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_INSTANCEID).getString(), is(instanceId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_OWNER).getString(), is(owner));
-      assertThat(documentNode.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_COMMENT).getString(), is(comment));
       assertThat(documentNode.getProperty(SLV_PROPERTY_ALERT_DATE).getDate().getTimeInMillis(),
           is(alert.getTimeInMillis()));
       assertThat(documentNode.getProperty(SLV_PROPERTY_EXPIRY_DATE).getDate().getTimeInMillis(),
@@ -510,6 +512,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
+    String comment = "My comment";
     String status = "My Status";
     String description = "This is a test document";
     String formId = "18";
@@ -529,10 +532,11 @@ public class DocumentConverterTest {
         creationDate, formId);
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status, attachment);
+        expiry.getTime(), comment, attachment);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
+    document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
     document.getFile().setUpdated(updateDate);
     document.getFile().setUpdatedBy(updatedBy);
@@ -580,6 +584,7 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
+    String comment = "My comment";
     String status = "My Status";
     String description = "This is a test document";
     String formId = "18";
@@ -596,12 +601,13 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status, new SimpleAttachment(fileName, language, title, description,
+        expiry.getTime(), comment, new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes(CharEncoding.UTF_8).length, MimeTypes.PDF_MIME_TYPE, creatorId,
         creationDate, formId));
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
     reservation.setTime(document.getReservation());
+    document.setStatus(status);
     document.setOldSilverpeasId(oldSilverpeasId);
     document.getFile().setUpdated(updateDate);
     document.getFile().setUpdatedBy(updatedBy);
@@ -627,7 +633,8 @@ public class DocumentConverterTest {
     String language = "en";
     String fileName = "test.pdf";
     String title = "My test document";
-    String status = "My Status";
+    String comment = "My comment";
+    String status = "My status";
     String description = "This is a test document";
     String formId = "18";
     String updatedBy = "5";
@@ -644,10 +651,11 @@ public class DocumentConverterTest {
     Calendar reservation = RandomGenerator.getRandomCalendar();
     SimpleDocument document = new SimpleDocument(new SimpleDocumentPK("-1", instanceId),
         foreignId, order, versionned, owner, reservation.getTime(), alert.getTime(),
-        expiry.getTime(), status,
+        expiry.getTime(), comment,
         new SimpleAttachment(fileName, language, title, description,
         "my test content".getBytes("UTF-8").length, MimeTypes.PDF_MIME_TYPE, creatorId, creationDate,
         formId));
+    document.setStatus(status);
     document.setMajorVersion(1);
     alert.setTime(document.getAlert());
     expiry.setTime(document.getExpiry());
@@ -667,6 +675,7 @@ public class DocumentConverterTest {
       assertThat(documentNode.getProperty(SLV_PROPERTY_OLD_ID).getLong(), is(oldSilverpeasId));
       assertThat(documentNode.getProperty(SLV_PROPERTY_INSTANCEID).getString(), is(instanceId));
       assertThat(documentNode.hasProperty(SLV_PROPERTY_OWNER), is(false));
+      assertThat(documentNode.getProperty(SLV_PROPERTY_COMMENT).getString(), is(comment));
       assertThat(documentNode.getProperty(SLV_PROPERTY_STATUS).getString(), is(status));
       assertThat(documentNode.hasProperty(SLV_PROPERTY_ALERT_DATE), is(false));
       assertThat(documentNode.hasProperty(SLV_PROPERTY_EXPIRY_DATE), is(false));

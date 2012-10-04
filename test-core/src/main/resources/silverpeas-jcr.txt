@@ -9,7 +9,12 @@
   mixin
   - slv:owner (STRING)
 
-[slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable
+/* Mixin commentable */
+[slv:commentable]
+  mixin
+  - slv:comment (STRING)
+
+[slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable, slv:commentable
   - slv:foreignKey (STRING) 
   - slv:instanceId (STRING) MANDATORY
   - slv:versioned (BOOLEAN)  = 'false'
