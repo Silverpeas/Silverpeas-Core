@@ -21,33 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
+package org.silverpeas.viewer.flexpaper;
 
 import java.io.File;
 
-import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.viewer.AbstractView;
 
 import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-public class TemporaryPageView extends AbstractPageView {
+public class TemporaryFlexPaperView extends AbstractView {
 
-  private final int index;
+  private int width = 0;
+  private int height = 0;
 
   /**
    * Default constructor
    * @param physicalFile
    */
-  public TemporaryPageView(final String originalFilename, final File physicalFile) {
-    super(originalFilename, physicalFile);
-    final String[] parts = FilenameUtils.getBaseName(physicalFile.getName()).split("-");
-    if (parts.length == 1) {
-      index = 0;
-    } else {
-      index = Integer.valueOf(parts[parts.length - 1]);
-    }
+  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
+      final int nbPages, final int width, final int height) {
+    super(originalFileName, physicalFile, nbPages);
+    this.width = width;
+    this.height = height;
   }
 
   /*
@@ -61,10 +59,19 @@ public class TemporaryPageView extends AbstractPageView {
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.viewer.PageView#index()
+   * @see org.silverpeas.viewer.AbstractPreview#getWidth()
    */
   @Override
-  public int getIndex() {
-    return index;
+  public String getWidth() {
+    return String.valueOf(width);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getHeight()
+   */
+  @Override
+  public String getHeight() {
+    return String.valueOf(height);
   }
 }

@@ -21,41 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer.web;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.viewer.PageView;
+package org.silverpeas.viewer;
 
 /**
- * The preview entity is a preview instance that is exposed in the web as
- * an entity (web entity).
  * @author Yohann Chastagnier
  */
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class PageViewEntity extends PreviewEntity {
-  private static final long serialVersionUID = 2468951380664354227L;
+public interface DocumentView extends Preview {
 
   /**
-   * Creates a new Preview entity from the specified preview.
-   * @param pageView the preview to entitify.
-   * @return the entity representing the specified preview.
+   * Gets total of pages
+   * @return
    */
-  public static PageViewEntity createFrom(final PageView pageView) {
-    return new PageViewEntity(pageView);
-  }
-
-  /**
-   * Default constructorC
-   * @param pageView
-   */
-  private PageViewEntity(final PageView pageView) {
-    super(null, pageView);
-  }
-
-  protected PageViewEntity() {
-  }
+  int getNbPages();
 }

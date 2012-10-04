@@ -31,15 +31,36 @@
   $.view = {
     webServiceContext : webContext + '/services',
     initialized: false,
+    languages : null,
     doInitialize : function() {
       if (! $.view.initialized) {
-        $.i18n.properties({
-          name: 'generalMultilang',
-          path: webContext + '/services/bundles/org/silverpeas/multilang/',
-          language: '$$', /* by default the language of the user in the current session */
-          mode: 'map'
-        });
         $.view.initialized = true;
+        // FlexPaper languages
+        $.view.languages = new Array();
+        $.view.languages["en"] = "en_US";
+        $.view.languages["us"] = "en_US";
+        $.view.languages["fr"] = "fr_FR";
+        $.view.languages["zh"] = "zh_CN";
+        $.view.languages["cn"] = "zh_CN";
+        $.view.languages["es"] = "es_ES";
+        $.view.languages["br"] = "pt_BR";
+        $.view.languages["pt"] = "pt_BR";
+        $.view.languages["ru"] = "ru_RU";
+        $.view.languages["fi"] = "fi_FN";
+        $.view.languages["fn"] = "fi_FN";
+        $.view.languages["de"] = "de_DE";
+        $.view.languages["nl"] = "nl_NL";
+        $.view.languages["tr"] = "tr_TR";
+        $.view.languages["se"] = "se_SE";
+        $.view.languages["pt"] = "pt_PT";
+        $.view.languages["el"] = "el_EL";
+        $.view.languages["da"] = "da_DN";
+        $.view.languages["dn"] = "da_DN";
+        $.view.languages["cz"] = "cz_CS";
+        $.view.languages["cs"] = "cz_CS";
+        $.view.languages["it"] = "it_IT";
+        $.view.languages["pl"] = "pl_PL";
+        $.view.languages["pv"] = "pv_FN";
       }
     }
   }
@@ -140,9 +161,10 @@
   }
 
   /**
-   * Private function that centralizes the dialog view construction
+   * Private function that centralizes the dialog view construction.
    */
   function __openDialogView($this, view) {
+    __adjustViewSize(view);
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentView");
@@ -160,128 +182,143 @@
       $baseContainer.dialog("destroy");
     }
 
-    // View content
-    var index = 0;
-
     // Settings
     var settings = {
-        title : view.pages[0].originalFileName,
-        width : view.width + 50,
-        height : view.height + 50,
-        keydown : function (e) {
-          var keyCode = eval(e.keyCode);
-          if (37 <= keyCode && keyCode <= 40) {
-            e.preventDefault();
-            if (view.pages.length > 1) {
-              if (39 == keyCode) {
-                // Right
-                index = __nextPage($baseContainer, view.pages, index, true);
-              } else if (37 == keyCode) {
-                // left
-                index = __nextPage($baseContainer, view.pages, index, false);
-              }
-              $baseContainer.dialog("widget").focus();
-            }
-          }
-        }
+        title : view.originalFileName,
+        width : view.width,
+        height : view.height
     };
 
     // Popup
-    var $pageIndicator = __setImage($baseContainer, view.pages.length, 0, view.pages[0]);
+    __setView($baseContainer, view);
+    __configureFlexPaper(view);
     $baseContainer.popup('view', settings);
-    __configurePageIndicatorPosition($baseContainer, $pageIndicator);
   }
 
-  function __setImage($baseContainer, nbPages, index, page) {
-    $viewContent = $('<div>')
-                      .css('display', 'block')
-                      .css('margin', '0px')
-                      .css('padding', '0px')
-                      .css('text-align', 'center');
+  /**
+   * Private function that adjust size of view (size limitations)
+   */
+  function __adjustViewSize(view) {
 
-    $viewContent.append($('<img>').attr('src', page.url)
-                                  .attr('width', page.width)
-                                  .attr('height', page.height));
-    var $pageIndicator = __buildPageIndicator($baseContainer, nbPages, index)
-    $viewContent.append($pageIndicator);
-    $baseContainer.html($viewContent);
-    return $pageIndicator;
-  }
+    // Screen size
+    var offsetWidth = view.displayLicenseKey.length == 0 ? 1 : (view.width < view.height ? 2 : 1.75);
+    var parentWidth = $(window).width() * 0.9;
+    var parentHeight = $(window).height() * 0.9;
 
-  function __nextPage($baseContainer, pages, curIndex, isNext) {
-    $.popup.showWaiting();
-    if (isNext) {
-      curIndex++;
-      if (curIndex >= pages.length ) {
-        curIndex = 0;
-      }
-    } else {
-      curIndex--;
-      if (curIndex < 0) {
-        curIndex = (pages.length - 1);
-      }
+    // Document size
+    var width = view.width * offsetWidth;
+    var height = view.height;
+
+    // Maximum size
+    if (width > parentWidth) {
+      height = height * (parentWidth / width);
+      width = parentWidth;
+    }
+    if (height > parentHeight) {
+      width = width * (parentHeight / height);
+      height = parentHeight;
     }
 
-    $.ajax({
-      url : pages[curIndex].uri,
-      type : 'GET',
-      dataType : 'json',
-      cache : false,
-      success : function(data, status, jqXHR) {
-        var $pageIndicator = __setImage($baseContainer, pages.length, curIndex, data);
-        __configurePageIndicatorPosition($baseContainer, $pageIndicator);
-        $.popup.hideWaiting();
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-        $.popup.hideWaiting();
-        alert(errorThrown);
+    // Size
+    if (view.displayLicenseKey.length == 0)  {
+      view.height = (height < 480) ? 480 : height;
+      view.width = (width < 680) ? 680 : width;
+    } else {
+      view.height = height;
+      view.width = width;
+    }
+  }
+
+  /**
+   * Private function that sets the view container.
+   */
+  function __setView($baseContainer, view) {
+    $baseContainer.html($('<div>')
+        .attr('id','viewercontainer')
+        .css('display', 'block')
+        .css('margin', '0px')
+        .css('padding', '0px')
+        .css('width', view.width + 'px')
+        .css('height', view.height + 'px')
+        .css('text-align', 'center')
+        .append($('<div>')
+            .attr('id','documentViewer')
+            .css('display', 'block')
+            .css('margin', '0px')
+            .css('padding', '0px')
+            .css('width', view.width + 'px')
+            .css('height', view.height + 'px')
+            .css('background-color', '#222222')));
+  }
+
+  /**
+   * Private function that configures FlexPaper plugin.
+   */
+  function __configureFlexPaper(view) {
+    $('#documentViewer').FlexPaperViewer({
+      config : {
+        flashDirectory : view.displayViewerPath,
+        jsDirectory : (webContext + '/util/javaScript/flexpaper'),
+        SwfFile : view.url,
+        key : view.displayLicenseKey,
+        Scale : 0.6,
+        ZoomTransition : 'easeOut',
+        ZoomTime : 0.5,
+        ZoomInterval : 0.2,
+        FitPageOnLoad : true,
+        FitWidthOnLoad : false,
+        FullScreenAsMaxWindow : false,
+        ProgressiveLoading : false,
+        MinZoomSize : 0.2,
+        MaxZoomSize : 5,
+        SearchMatchAll : false,
+        InitViewMode : (view.displayLicenseKey.length == 0 ? 'Portrait' : 'TwoPage' ),
+        PrintPaperAsBitmap : false,
+
+        ViewModeToolsVisible : true,
+        ZoomToolsVisible : true,
+        NavToolsVisible : true,
+        CursorToolsVisible : true,
+        SearchToolsVisible : true,
+
+        BackgroundColor : '#222222',
+        PanelColor : '#555555',
+        EnableCornerDragging : true,
+
+        WMode : 'transparent',
+        localeChain : __getFlexPaperLanguage(view)
       }
     });
-
-    return curIndex;
   }
 
   /**
-   * Private function that centralizes an page indicator construction
+   * Private function that returns the FlexPaper locale chain.
+   * FlexPaper knows following languages :
+   * en_US (English)
+   * fr_FR (French)
+   * zh_CN (Chinese, Simple)
+   * es_ES (Spanish)
+   * pt_BR (Brazilian Portugese)
+   * ru_RU (Russian)
+   * fi_FN (Finnish)
+   * de_DE (German)
+   * nl_NL (Netherlands)
+   * tr_TR (Turkish)
+   * se_SE (Swedish)
+   * pt_PT (Portugese)
+   * el_EL (Greek)
+   * da_DN (Danish)
+   * cz_CS (Czech)
+   * it_IT (Italian)
+   * pl_PL (Polish)
+   * pv_FN (Finnish)
+   * hu_HU (Hungarian)
    */
-  function __buildPageIndicator($baseContainer, nbPages, index) {
-
-    // Initializing
-    var $pageIndicatorContainer = $('<div>')
-                            .addClass('preview-button')
-                            .css('display', 'none')
-                            .css('position', 'absolute')
-                            .css('top', '0px')
-                            .css('left', '0px')
-                            .css('cursor', 'pointer');
-
-    // This second call permits to load required images for a simple button
-    var $pageIndicator = $("<span>");
-    $pageIndicator.html((index + 1) + "/" + nbPages);
-    $pageIndicatorContainer.html($pageIndicator);
-
-    // Setting baseContainer event (print buttons)
-    $baseContainer.mouseenter(function() {
-      $pageIndicatorContainer.fadeIn(200);
-    });
-    $baseContainer.mouseleave(function() {
-      $pageIndicatorContainer.fadeOut(400);
-    });
-    return $pageIndicatorContainer;
-  }
-
-  /**
-   * Private function that centralizes the position configuration of a page indicator
-   */
-  function __configurePageIndicatorPosition($target, $pageIndicatorContainer) {
-
-    // Top
-    var top = 0;
-
-    // Left
-    var left = ($target.outerWidth(true) - ($pageIndicatorContainer.outerWidth(true)));
-
-    // Changing the position
-    $pageIndicatorContainer.offset({ top: 0, left: left });
+  function __getFlexPaperLanguage(view) {
+    var language = $.view.languages[view.language];
+    if (language == null || language.length == 0) {
+      language = $.view.languages["en"];
+    }
+    return language;
   }
 })( jQuery );

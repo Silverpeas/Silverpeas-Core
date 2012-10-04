@@ -26,11 +26,9 @@ package org.silverpeas.viewer.web.mock;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
-import java.util.List;
 
 import javax.inject.Named;
 
-import org.silverpeas.viewer.PageView;
 import org.silverpeas.viewer.Preview;
 import org.silverpeas.viewer.PreviewService;
 
@@ -69,13 +67,5 @@ public class PreviewServiceMockWrapper implements PreviewService {
   @Override
   public Preview getPreview(final String originalFileName, final File physicalFile) {
     return mock.getPreview(originalFileName, physicalFile);
-  }
-
-  /* (non-Javadoc)
-   * @see org.silverpeas.viewer.PreviewService#getDocument(java.lang.String, java.io.File)
-   */
-  @Override
-  public List<PageView> getDocument(String originalFileName, File physicalFile) {
-    return mock.getDocument(originalFileName, physicalFile);
   }
 }

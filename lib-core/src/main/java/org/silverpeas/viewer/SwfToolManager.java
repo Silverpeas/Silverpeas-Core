@@ -23,19 +23,49 @@
  */
 package org.silverpeas.viewer;
 
-import java.io.File;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractPageView extends AbstractPreview implements PageView {
+@Named("swfToolManager")
+@Singleton
+public class SwfToolManager {
+
+  private static boolean isActivated = false;
+
+  @PostConstruct
+  public void initialize() throws Exception {
+
+    // Im4java settings
+    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+      if ("path".equals(entry.getKey().toLowerCase())) {
+        Process process = null;
+        try {
+          final StringBuilder pdf2SwfCommand = new StringBuilder();
+          pdf2SwfCommand.append("pdf2swf --version");
+          process = Runtime.getRuntime().exec(pdf2SwfCommand.toString());
+          isActivated = true;
+        } catch (final Exception e) {
+          // SwfTool is not installed
+        } finally {
+          if (process != null) {
+            process.destroy();
+          }
+        }
+      }
+    }
+  }
 
   /**
-   * Default constructor
-   * @param originalFileName
-   * @param physicalFile
+   * Indicates if im4java is actived
+   * @return
    */
-  protected AbstractPageView(final String originalFileName, final File physicalFile) {
-    super(originalFileName, physicalFile);
+  public static boolean isActivated() {
+    return isActivated;
   }
 }

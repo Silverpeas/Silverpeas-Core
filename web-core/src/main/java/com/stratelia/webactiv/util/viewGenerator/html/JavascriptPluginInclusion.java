@@ -59,6 +59,9 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
+  private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
+  private static final String flexPaperPath = javascriptPath + "flexpaper/";
+  private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -159,10 +162,12 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includePreview(final ElementContainer xhtml) {
-    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_PREVIEW);
+    script popup =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PREVIEW);
     xhtml.addElement(popup);
-    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + "silverpeas-view.js");
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_VIEW);
+    xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
     xhtml.addElement(popup);
     return xhtml;
   }

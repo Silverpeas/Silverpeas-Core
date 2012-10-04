@@ -23,14 +23,39 @@
  */
 package org.silverpeas.viewer;
 
+import java.io.File;
+
 /**
  * @author Yohann Chastagnier
  */
-public interface PageView extends Preview {
+public abstract class AbstractView extends AbstractPreview implements DocumentView {
+
+  private int nbPages = 0;
 
   /**
-   * Gets the page number
-   * @return
+   * Default constructor
+   * @param originalFileName
+   * @param physicalFile
    */
-  int getIndex();
+  protected AbstractView(final String originalFileName, final File physicalFile, final int nbPages) {
+    super(originalFileName, physicalFile);
+    this.nbPages = nbPages;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+   */
+  @Override
+  public String getDisplayLicenseKey() {
+    return settings.getString("flexpaper.licenseKey", "");
+  }
+
+  /**
+   * @return the nbPages
+   */
+  @Override
+  public int getNbPages() {
+    return nbPages;
+  }
 }

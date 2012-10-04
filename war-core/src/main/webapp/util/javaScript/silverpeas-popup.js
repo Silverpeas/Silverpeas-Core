@@ -182,17 +182,17 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-      settings.title = "Visualisation";
+      settings.title = $.i18n.prop('GML.view.dialog.title');
       if (options.title && options.title.length > 0) {
         settings.title = settings.title + " "
-            + $.i18n.prop('GML.preview.dialog.title.of') + " " + options.title;
+            + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
       }
 
       // Internal settings
       $.extend(settings, __buildInternalSettings({
         buttonDisplayed : false,
-        width : options.width,
-        height : options.height
+        disabledParentScroll : true,
+        width : 'auto'
       }));
 
       if (__isIE7()) {
@@ -276,6 +276,7 @@
     var settings = {
       displayTitle : true,
       closeOnEscape : true,
+      disabledParentScroll : false,
       buttonDisplayed : true,
       buttonTextYes : '',
       buttonTextNo : '',
@@ -340,6 +341,14 @@
             $_this.dialog("close");
           }
         } ]);
+      }
+
+      // Scroll
+      if (options.disabledParentScroll) {
+        $("html,body").css("overflow", "hidden");
+        $_this.dialog("option", "beforeClose", function(event, ui){
+          $("html,body").css("overflow", "auto");
+        });
       }
 
       // Width

@@ -23,16 +23,18 @@
  */
 package org.silverpeas.viewer.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.silverpeas.viewer.DocumentView;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+
 /**
- * The preview entity is a preview instance that is exposed in the web as
+ * The document view entity is a document view instance that is exposed in the web as
  * an entity (web entity).
  * @author Yohann Chastagnier
  */
@@ -42,56 +44,112 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   private static final long serialVersionUID = 4270519541076741138L;
 
   @XmlElement(defaultValue = "")
-  private int width = 0;
+  private final String displayLicenseKey;
 
   @XmlElement(defaultValue = "")
-  private int height = 0;
+  private final String displayViewerPath;
 
-  @XmlElement
-  private final List<PageViewEntity> pages = new ArrayList<PageViewEntity>();
+  @XmlElement(defaultValue = "")
+  private final String url;
+
+  @XmlElement(defaultValue = "")
+  private final String originalFileName;
+
+  @XmlElement(defaultValue = "")
+  private final String width;
+
+  @XmlElement(defaultValue = "")
+  private final String height;
+
+  @XmlElement(defaultValue = "")
+  private final String language;
+
+  @XmlElement(defaultValue = "")
+  private final int nbPages;
 
   /**
-   * Creates a new Preview entity from the specified preview.
-   * @return the entity representing the specified preview.
+   * Creates a new document view entity from the specified document view.
+   * @param documentView
+   * @param language
+   * @return the entity representing the specified document view.
    */
-  public static DocumentViewEntity createFrom() {
-    return new DocumentViewEntity();
+  public static DocumentViewEntity createFrom(final DocumentView documentView, final String language) {
+    return new DocumentViewEntity(documentView, language);
   }
 
   /**
    * Default constructor
+   * @param documentView
+   * @param language
    */
-  protected DocumentViewEntity() {
+  protected DocumentViewEntity(final DocumentView documentView, final String language) {
+    displayLicenseKey = documentView.getDisplayLicenseKey();
+    if (StringUtil.isDefined(displayLicenseKey)) {
+      displayViewerPath = "/weblib/flexpaper/flash";
+    } else {
+      displayViewerPath = URLManager.getApplicationURL() + "/util/flash/flexpaper";
+    }
+    url = documentView.getURLAsString();
+    originalFileName = documentView.getOriginalFileName();
+    width = documentView.getWidth();
+    height = documentView.getHeight();
+    this.language = language;
+    nbPages = documentView.getNbPages();
   }
 
   /**
-   * Adding a page
-   * @param pageView
+   * @return the displayLicenseKey
    */
-  protected void addPageView(final PageViewEntity pageView) {
-    width = Math.max(width, Integer.valueOf(pageView.getWidth()));
-    height = Math.max(height, Integer.valueOf(pageView.getHeight()));
-    pages.add(pageView);
+  protected String getDisplayLicenseKey() {
+    return displayLicenseKey;
+  }
+
+  /**
+   * @return the displayViewerPath
+   */
+  protected String getDisplayViewerPath() {
+    return displayViewerPath;
+  }
+
+  /**
+   * @return the urlBase
+   */
+  protected String getUrl() {
+    return url;
+  }
+
+  /**
+   * @return the originalFileName
+   */
+  protected String getOriginalFileName() {
+    return originalFileName;
   }
 
   /**
    * @return the width
    */
-  protected int getWidth() {
+  protected String getWidth() {
     return width;
   }
 
   /**
    * @return the height
    */
-  protected int getHeight() {
+  protected String getHeight() {
     return height;
   }
 
   /**
-   * @return the pages
+   * @return the language
    */
-  protected List<PageViewEntity> getPages() {
-    return pages;
+  protected String getLanguage() {
+    return language;
+  }
+
+  /**
+   * @return the nbPages
+   */
+  protected int getNbPages() {
+    return nbPages;
   }
 }

@@ -24,7 +24,7 @@
 
 --%>
 
-<%@page import="org.silverpeas.viewer.ViewFactory"%>
+<%@page import="org.silverpeas.viewer.ViewerFactory"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -209,16 +209,21 @@
           }
           out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreationDate()));
 
-          if (ViewFactory.getPreviewService().isPreviewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
+          if (ViewerFactory.getPreviewService().isPreviewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
             %>
             <img  onclick='javascript:preview(this, <%=attachmentDetail.getPK().getId()%>);'
                   class="preview-file" src='<c:url value="/util/icons/preview.png"/>'
                   alt="<%=attResources.getString("GML.preview") %>"
                   title="<%=attResources.getString("GML.preview") %>"/>
+            <%
+          }
+
+          if (ViewerFactory.getViewService().isViewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
+            %>
             <img  onclick='javascript:view(this, <%=attachmentDetail.getPK().getId()%>);'
-                  class="view-file" src='<c:url value="/util/icons/duplicate.gif"/>'
-                  alt="<%=attResources.getString("GML.preview") %>"
-                  title="<%=attResources.getString("GML.preview") %>"/>
+                  class="view-file" src='<c:url value="/util/icons/view.png"/>'
+                  alt="<%=attResources.getString("GML.view") %>"
+                  title="<%=attResources.getString("GML.view") %>"/>
             <%
           }
           out.println("</span>");

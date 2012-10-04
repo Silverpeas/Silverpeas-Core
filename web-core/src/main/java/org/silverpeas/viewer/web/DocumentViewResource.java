@@ -13,9 +13,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.viewer.PageView;
-import org.silverpeas.viewer.PreviewService;
-import org.silverpeas.viewer.TemporaryPageView;
+import org.silverpeas.viewer.DocumentView;
+import org.silverpeas.viewer.ViewService;
 import org.silverpeas.viewer.exception.PreviewException;
 
 import com.silverpeas.annotation.Authorized;
@@ -25,7 +24,6 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
@@ -66,13 +64,13 @@ public class DocumentViewResource extends RESTWebService {
   private AttachmentService attachmentService;
 
   @Inject
-  private PreviewService previewService;
+  private ViewService viewService;
 
   @PathParam("componentId")
   private String componentId;
 
   /**
-   * Gets the JSON representation of preview information.
+   * Gets the JSON representation of document view information.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -95,12 +93,9 @@ public class DocumentViewResource extends RESTWebService {
       }
 
       // Computing the document view entity
-      final DocumentViewEntity documentViewEntity = DocumentViewEntity.createFrom();
-      for (final PageView pageView : previewService.getDocument(attachment.getLogicalName(),
-          new File(attachment.getAttachmentPath(getUserPreferences().getLanguage())))) {
-        documentViewEntity.addPageView(asWebEntity(pageView));
-      }
-      return documentViewEntity;
+      return asWebEntity(viewService.getDocumentView(attachment.getLogicalName(), new File(
+          attachment.getAttachmentPath(getUserPreferences().getLanguage()))));
+
     } catch (final PreviewException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);
     } catch (final WebApplicationException ex) {
@@ -111,11 +106,11 @@ public class DocumentViewResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of preview information.
+   * Gets the JSON representation of document view information.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return the response to the HTTP GET request with the JSON representation of preview
+   * @return the response to the HTTP GET request with the JSON representation of document view
    * information.
    */
   @GET
@@ -136,12 +131,8 @@ public class DocumentViewResource extends RESTWebService {
       }
 
       // Computing the document view entity
-      final DocumentViewEntity documentViewEntity = DocumentViewEntity.createFrom();
-      for (final PageView pageView : previewService.getDocument(version.getLogicalName(), new File(
-          version.getDocumentPath()))) {
-        documentViewEntity.addPageView(asWebEntity(pageView));
-      }
-      return documentViewEntity;
+      return asWebEntity(viewService.getDocumentView(version.getLogicalName(),
+          new File(version.getDocumentPath())));
 
     } catch (final PreviewException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);
@@ -153,45 +144,13 @@ public class DocumentViewResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of preview information.
-   * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @return the response to the HTTP GET request with the JSON representation of preview
-   * information.
-   */
-  @GET
-  @Path("page/{name}")
-  @Produces(APPLICATION_JSON)
-  public PageViewEntity getPageView(@PathParam("name") final String name) {
-    try {
-
-      final File pageFile = new File(FileRepositoryManager.getTemporaryPath() + name);
-
-      // Checking availability
-      if (!pageFile.exists()) {
-        throw new PreviewException("ATTACHMENT DOESN'T EXIST");
-      }
-
-      return asWebEntity(new TemporaryPageView(null, pageFile));
-    } catch (final PreviewException pe) {
-      throw new WebApplicationException(pe, Status.NOT_FOUND);
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
-  }
-
-  /**
-   * Converts the preview into its corresponding web entity.
-   * @param preview the view to convert.
+   * Converts the document view into its corresponding web entity.
+   * @param documentView the view to convert.
    * @return the corresponding view entity.
    */
-  protected PageViewEntity asWebEntity(final PageView pageView) {
-    return (PageViewEntity) PageViewEntity.createFrom(pageView).withURI(
-        getUriInfo().getBaseUriBuilder().path("view").path(getComponentId()).path("page")
-            .path(pageView.getPhysicalFile().getName()).build());
+  protected DocumentViewEntity asWebEntity(final DocumentView documentView) {
+    return DocumentViewEntity.createFrom(documentView, getUserPreferences().getLanguage()).withURI(
+        getUriInfo().getRequestUri());
   }
 
   /*

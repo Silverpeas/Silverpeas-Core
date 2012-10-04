@@ -24,7 +24,6 @@
 package org.silverpeas.viewer;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * @author Yohann Chastagnier
@@ -45,12 +44,4 @@ public interface PreviewService {
    * @return
    */
   Preview getPreview(String originalFileName, File physicalFile);
-
-  /**
-   * Getting pages view instances of the given file
-   * @param originalFileName
-   * @param physicalFile
-   * @return
-   */
-  List<PageView> getDocument(String originalFileName, File physicalFile);
 }

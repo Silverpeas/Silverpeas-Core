@@ -26,16 +26,19 @@ package org.silverpeas.viewer;
 import javax.inject.Inject;
 
 /**
+ * Viewer factory which provides preview and view services.
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
+public class ViewerFactory {
+  private static ViewerFactory instance = new ViewerFactory();
 
   @Inject
   private PreviewService previewService;
 
-  private static ViewFactory instance;
+  @Inject
+  private ViewService viewService;
 
-  private ViewFactory() {
+  private ViewerFactory() {
     // Nothing to do
   }
 
@@ -43,22 +46,23 @@ public class ViewFactory {
    * Instance accessor (singleton)
    * @return
    */
-  private static ViewFactory getInstance() {
-    if (ViewFactory.instance == null) {
-      synchronized (ViewFactory.class) {
-        if (ViewFactory.instance == null) {
-          ViewFactory.instance = new ViewFactory();
-        }
-      }
-    }
-    return ViewFactory.instance;
+  private static ViewerFactory getInstance() {
+    return ViewerFactory.instance;
   }
 
   /**
-   * Viewer services accessor
+   * Preview services accessor
    * @return
    */
   public static PreviewService getPreviewService() {
     return getInstance().previewService;
+  }
+
+  /**
+   * View services accessor
+   * @return
+   */
+  public static ViewService getViewService() {
+    return getInstance().viewService;
   }
 }
