@@ -68,5 +68,13 @@
         </li> 
       </ol>
     </section> 
+    <section name="Native Packages">
+      <p>We are providing GNU/Linux native packaging <b>in beta</b>. So if you want to give it a try go to : 
+      <a href="https://www.silverpeas.org/repo/index.html">https://www.silverpeas.org/repo/index.html</a></p>
+      <p>If you want to help us to provide a better packaging or propose new formats, feel free to look at the <a href="https://github.com/ehsavoie/silverpeas-native-packages">Github project</a></p>
+    </section> 
+    <section name="Problems">
+      <p>If you encounter a problem during installation or if you have any question, you can post them on the <a href="http://groups.google.com/group/silverpeas-users" >users mailing-list</a></p>
+    </section> 
   </body>
 </document>
