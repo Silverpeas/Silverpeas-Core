@@ -268,7 +268,7 @@
           </c:if>	
           <c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(currentAttachment.filename)}">
             <div id="switchView" name="switchView" style="display: none">
-<a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
+            <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
             </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
               <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
                 <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">
@@ -494,21 +494,7 @@
     
     function checkin(id, oldId, webdav, forceRelease) {
       $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
-      pageMustBeReloadingAfterSorting = true;/*
-      if (id.length > 0) {
-        var webdavUpdate = 'false';
-        if (webdav) {
-          if (confirm('<fmt:message key="confirm.checkin.message" />')) {
-            webdavUpdate = 'true';
-          }
-        }
-        if (forceRelease == 'true') {
-          loadAttachment(attachmentId, lang);
-        }
-        $.get('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkin', update_attachment:webdavUpdate, force_release:forceRelease}, function(data) {
-          }, "text");
-        pageMustBeReloadingAfterSorting = true;
-      }*/
+      pageMustBeReloadingAfterSorting = true;
     }
     
     function menuCheckin(id) {
@@ -630,13 +616,14 @@
       post : function () {},
       complete : function (response) {
         if (response.status) {
-          menuCheckin($(this).data("oldId"));
+          menuCheckin($('#checkin_oldId').val());
+          pageMustBeReloadingAfterSorting = true;
         } else {
-          displayWarning($(this).data("id"));
+          displayWarning($(this).val("attachmentId"));
         }
+        clearCheckin();
         reloadIncludingPage();
-        $(this).dialog("close");
-      }
+      }      
     });
 
     $("#dialog-attachment-delete").dialog({
@@ -735,6 +722,7 @@
           '<fmt:message key="GML.ok"/>': function() {
             $('#force').val($(this).data('forceRelease'));
             $('#webdav').val($(this).data('webdav'));
+            $('#checkin_oldId').val($(this).data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             $('#checkin-attachment-form').attr('action', submitUrl);
             $('#checkin-attachment-form').submit();
@@ -749,6 +737,7 @@
               $(this).dialog("close");
             },
             '<fmt:message key="GML.cancel"/>': function() {
+              clearCheckin();
               $(this).dialog("close");
             }
           },
@@ -804,6 +793,13 @@
     $('#fileName').html('');
     $('#fileTitle').val('');
     $('#fileDescription').val('');
+  }
+  
+  function clearCheckin() {
+    $('#checkin_oldId').val('');
+    $('#force').val('false');
+    $('#webdav').val('false');    
+    $('#comment').val('false');
   }
   
   function loadAttachment(id, lang) {
@@ -884,6 +880,7 @@
 
 <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
+    <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
     <c:if test="${view:booleanValue(isComponentVersioned)}">
