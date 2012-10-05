@@ -493,7 +493,8 @@
     }
     
     function checkin(id, oldId, webdav, forceRelease) {
-      $("#dialog-attachment-delete").data("id", id).dialog("open");
+      $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
+      pageMustBeReloadingAfterSorting = true;/*
       if (id.length > 0) {
         var webdavUpdate = 'false';
         if (webdav) {
@@ -502,20 +503,12 @@
           }
         }
         if (forceRelease == 'true') {
-          closeMessage();
+          loadAttachment(attachmentId, lang);
         }
         $.get('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkin', update_attachment:webdavUpdate, force_release:forceRelease}, function(data) {
-          data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-          if (data == "locked") {
-            displayWarning(id);
-          } else {
-            if (data == "ok") {
-              menuCheckin(oldId);
-            }
-          }
-        }, "text");
+          }, "text");
         pageMustBeReloadingAfterSorting = true;
-      }
+      }*/
     }
     
     function menuCheckin(id) {
@@ -631,6 +624,20 @@
         $(this).dialog("close");
       }
     });
+    
+    $('#checkin-attachment-form').iframePostForm ({
+      json : true,
+      post : function () {},
+      complete : function (response) {
+        if (response.status) {
+          menuCheckin($(this).data("oldId"));
+        } else {
+          displayWarning($(this).data("id"));
+        }
+        reloadIncludingPage();
+        $(this).dialog("close");
+      }
+    });
 
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
@@ -717,6 +724,36 @@
           title: '<fmt:message key="attachment.dialog.delete" />',
           height: 'auto',
           width: 400
+        });
+        
+        $("#dialog-attachment-checkin").dialog({
+        autoOpen: false,
+        height: 350,
+        width: 600,
+        modal: true,
+        buttons: {
+          '<fmt:message key="GML.ok"/>': function() {
+            $('#force').val($(this).data('forceRelease'));
+            $('#webdav').val($(this).data('webdav'));
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
+            $('#checkin-attachment-form').attr('action', submitUrl);
+            $('#checkin-attachment-form').submit();
+            $(this).dialog("close");
+          },
+          '<fmt:message key="attachment.revert"/>': function() {
+              $('#force').val('true');
+              $('#webdav').val('false');
+              var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
+              $('#checkin-attachment-form').attr('action', submitUrl);
+              $('#checkin-attachment-form').submit();
+              $(this).dialog("close");
+            },
+            '<fmt:message key="GML.cancel"/>': function() {
+              $(this).dialog("close");
+            }
+          },
+          close: function() {
+          }
         });
       });
       
@@ -811,7 +848,7 @@
       <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
       <input value="0" type="radio" name="versionType" id="versionType"><fmt:message key="attachment.version_public.label"/>
       <input value="1" type="radio" name="versionType" id="versionType" checked><fmt:message key="attachment.version_wip.label"/><br/>
-      <label for="commentMessage"><fmt:message key="attachment.comment.label"/></label>
+      <label for="commentMessage"><fmt:message key="attachment.dialog.comment"/></label>
       <input type="text" name="commentMessage" size="100" id="commentMessage" /><br/>
     </c:if>
     <label for="fileTitle"><fmt:message key="Title"/></label><br/>
@@ -846,5 +883,16 @@
 </div>
 
 <div id="dialog-attachment-checkin" style="display:none">
-  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+  <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
+    <input type="hidden" name="force" id="force" value="false" />
+    <input type="hidden" name="webdav" id="webdav" value="false" />
+    <c:if test="${view:booleanValue(isComponentVersioned)}">
+      <label for="public"><fmt:message key="attachment.version.label"/></label><br/>
+      <input value="false" type="radio" name="private" id="private" checked><fmt:message key="attachment.version_public.label"/>
+      <input value="true" type="radio" name="private" id="private"><fmt:message key="attachment.version_wip.label"/><br/>
+    </c:if>
+    <label for="comment"><fmt:message key="attachment.dialog.comment" /></label><br/>
+    <textarea name="comment" cols="60" rows="3" id="comment"></textarea><br/>
+    <input type="submit" value="Submit" style="display:none" />
+  </form>
 </div>

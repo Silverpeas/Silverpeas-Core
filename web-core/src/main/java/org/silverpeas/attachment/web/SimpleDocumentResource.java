@@ -154,9 +154,11 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("versionType") String versionType,
       final @FormDataParam("commentMessage") String comment) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
+    boolean isPublic = false;
     if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
       document.setPublicDocument(Integer.parseInt(versionType)
           == DocumentVersion.TYPE_PUBLIC_VERSION);
+      isPublic = true;
     }
     document.setUpdatedBy(getUserDetail().getId());
     document.setLanguage(lang);
@@ -177,6 +179,12 @@ public class SimpleDocumentResource extends RESTWebService {
       FileUtils.deleteQuietly(tempFile);
     } else {
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+      UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(), lang, comment);
+      unlockContext.addOption(UnlockOption.UPLOAD);
+      if(!isPublic) {
+        unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+      }
+      AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
     }
     document = getSimpleDocument(lang);
     URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
@@ -295,7 +303,7 @@ public class SimpleDocumentResource extends RESTWebService {
   @Path("unlock")
   @Produces(MediaType.APPLICATION_JSON)
   public String unlock(@FormParam("force") final boolean force,
-      @FormParam("webdav") final boolean webdav, @FormParam("public") final boolean publicVersion,
+      @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
         searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
@@ -310,7 +318,7 @@ public class SimpleDocumentResource extends RESTWebService {
     if (webdav) {
       unlockContext.addOption(UnlockOption.WEBDAV);
     }
-    if (!publicVersion) {
+    if (privateVersion) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
     boolean result = AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);

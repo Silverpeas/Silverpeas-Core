@@ -705,14 +705,20 @@ public class SimpleDocumentService implements AttachmentService {
         document.setUpdatedBy(workerId);
         invokeCallback = true;
       }
-      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
-        webdavRepository.updateAttachment(session, document);
-      } else if (document.isOpenOfficeCompatible() && (context.isUpload() || !context.isWebdav())) {
-        webdavRepository.deleteAttachmentNode(session, document);
-      }
-      session.save();
+      document.setPublicDocument(context.isPublicVersion());
       document.setComment(context.getComment());
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
+      if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
+        webdavRepository.updateAttachment(session, finalDocument);
+      } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.isWebdav())) {
+        webdavRepository.deleteAttachmentNode(session, finalDocument);
+      } else {
+        File file = new File(finalDocument.getAttachmentPath());
+        if(!file.exists() && !context.isForce()) {
+          repository.duplicateContent(session, document, finalDocument);
+        }
+      }      
+      session.save();
       if (document.isPublic()) {
         String userId = context.getUserId();
         if (StringUtil.isDefined(userId) && invokeCallback) {

@@ -810,7 +810,7 @@ public class DocumentRepository {
     return file.length();
   }
 
-  private void duplicateContent(Session session, SimpleDocument origin, SimpleDocument document)
+  public void duplicateContent(Session session, SimpleDocument origin, SimpleDocument document)
       throws IOException, RepositoryException {
     File target = new File(document.getAttachmentPath());
     File source = new File(origin.getAttachmentPath());
