@@ -25,23 +25,55 @@
 /**
  * Object to manage menu sets
  */
-function MenuSet(menuItems, options) {
+function MenuSet(domMenuRootContainer, parentMenuItem, menuItems, options) {
   var self = this;
-  var _menuItems = new Array();
-  i = 0;
+  var _content = null;
+  var $_render = null;
+
+  this.getMenuItems = function() {
+    return (_content == null) ? null : _content.getFirst();
+  };
+
+  /**
+   * Verify if a menu is displayable
+   */
+  this.isDisplayable = function(menuData) {
+    return ($.menu.displayUserContext.userMenuDisplay != $.spCore.definitions.MENU.FAVORITES.BOOKMARKS
+            || menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) < 0
+            || menuData.favorite != "false");
+  };
+
+  /**
+   * Build menu items
+   */
   $(menuItems).each(function() {
-    _menuItems[i++] = new options.menuItemObjectClass(this, options);
+    if (self.isDisplayable(this)) {
+      var _current = new options.menuItemObjectClass(domMenuRootContainer, parentMenuItem, this, options);
+      if (_content != null) {
+        _content.add(_current);
+      }
+      _content = _current;
+    }
   });
 
   /**
    * Rendering the menu set (default)
    */
   this.defaultRender = function() {
-    var $result = $('<ul>').addClass('sp-menu-set');
-    for ( var i = 0; i < _menuItems.length; i++) {
-      $result = $result.append(_menuItems[i].render());
+    if ($_render == null) {
+      $_render = $('<ul>').addClass('sp-menu-set');
+    } else {
+      $_render.empty();
     }
-    return $result;
+    var _current = self.getMenuItems();
+    if (_current == null) {
+      return null;
+    }
+    while (_current != null) {
+      $_render.append(_current.render());
+      _current = _current.getNext();
+    }
+    return $_render;
   };
 
   /**
@@ -55,23 +87,41 @@ function MenuSet(menuItems, options) {
 /**
  * Object to manage menu item actions
  */
-function MenuItem(menuItem, options) {
+function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
+  LinkedItem.apply(this, null);
   var self = this;
+  var _domMenuRootContainer = domMenuRootContainer;
+  var _parent = parentMenuItem;
   var _id = null;
-  var _menuItem = menuItem;
+  var _menuData = menuData;
   var _options = options;
   var _state = {
     isExpanded : false
   };
+  var $_favoriteContainer = null;
 
   /**
    * Gets the id of the menu item
    */
   this.getId = function() {
     if (_id == null) {
-      _id = $.menu.buildId(_menuItem);
+      _id = $.menu.buildId(_menuData);
     }
     return _id;
+  };
+
+  /**
+   * Gets the dom target container
+   */
+  this.getDomMenuRootContainer = function() {
+    return _domMenuRootContainer;
+  }
+
+  /**
+   * Gets the parent menu item
+   */
+  this.getParent = function () {
+    return _parent;
   };
 
   /**
@@ -99,18 +149,28 @@ function MenuItem(menuItem, options) {
   };
 
   /**
-   * Gets parent of the menu item
-   */
-  this.getParent = function() {
-    return _options.parentMenuItem;
-  };
-
-  /**
    * Gets data of the menu item
    */
   this.getData = function() {
-    return _menuItem;
+    return _menuData;
   };
+
+  /**
+   * Sets data of the menu item
+   */
+  this.setData = function(menuData) {
+    _menuData = menuData;
+  };
+
+  /**
+   * Refreshing the display of the menu item
+   */
+  this.refreshDisplay = function() {
+    if ($.menu.displayUserContext.userMenuDisplay == $.spCore.definitions.MENU.FAVORITES.ALL
+        && _menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      self.renderFavorite();
+    }
+  }
 
   /**
    * Gets appearance of the menu item
@@ -119,8 +179,8 @@ function MenuItem(menuItem, options) {
     var result = {};
 
     // Data appearance can be retrieved only for a space
-    if (_menuItem.type.indexOf($.menu.definitions.SPACE_TYPE) >= 0) {
-      return $.menu.getData(_menuItem.appearanceURI);
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      return $.spCore.getData(_menuData.appearanceURI);
     } else if (self.getParent() != null) {
       return self.getParent().getAppearance();
     }
@@ -132,69 +192,131 @@ function MenuItem(menuItem, options) {
    * Rendering the menu item (default)
    */
   this.defaultRender = function() {
-    var $result = $('<div>');
 
-    // Description
-    if (_menuItem.description) {
-      $result = $result.mouseover(function() {
-        $(this).children($.menu.definitions.LABEL_TAG).after(
-            $('<div>').addClass('sp-menu-item-description').html(
-                _menuItem.description));
+    // Root
+    var $menuRootRender = $('<li>');
+    $menuRootRender.attr('id', self.getId());
+    $menuRootRender.addClass(self.getMenuRootStyleClass());
+    $menuRootRender.on('select', function() {
+      $.menu.select(this, self);
+      return false;
+    });
+
+    // Expanding on root
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      $menuRootRender.on('forceExpand', function() {
+        $.menu.expand(this, self, false);
+        return false;
       });
-      $result = $result.mouseout(function() {
-        $(this).children('.sp-menu-item-description').remove();
+      $menuRootRender.on('expand', function() {
+        $.menu.expand(this, self, true);
+        return false;
       });
     }
 
-    // Click
-    $result.append($('<' + $.menu.definitions.LABEL_TAG + '>').click(
-        function() {
+    // Callbacks on root
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0
+        && _options.spaceCallback != null) {
+      $menuRootRender.on('callbacks', function() {
+        _options.spaceCallback(self);
+        return false;
+      });
+    } else if (_menuData.type.indexOf($.spCore.definitions.COMPONENT_TYPE) >= 0
+        && _options.componentCallback != null) {
+      $menuRootRender.on('callbacks', function() {
+        _options.componentCallback(self);
+        return false;
+      });
+    } else if (_menuData.type.indexOf($.spCore.definitions.TOOL_TYPE) >= 0
+        && _options.toolCallback != null) {
+      $menuRootRender.on('callbacks', function() {
+        _options.toolCallback(self);
+        return false;
+      });
+    }
+
+    // Menu label
+    var $menuLabel = $('<div>');
+    $menuLabel.addClass(self.getMenuLabelStyleClass());
+    $menuLabel.append($('<a>')
+        .attr('href','#')
+        .click(function() {
           var $triggers = $(this).closest('li');
-          $triggers.trigger('expand');
+          if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+            $triggers.trigger('expand');
+          }
           $triggers.trigger('select');
           $triggers.trigger('callbacks');
           return false;
-        }).append(_menuItem.label));
+        }).append($('<span>').html(_menuData.label)));
+    $menuRootRender.append($menuLabel);
 
-    return $('<li>')
-        .attr('id', self.getId())
-        .addClass(self.getStyleClass())
-        .on('select', function() {
-          $.menu.select(this, self);
-          return false;
-        })
-        .on('forceExpand', function() {
-          if (_menuItem.type.indexOf($.menu.definitions.SPACE_TYPE) >= 0) {
-            $.menu.expand(this, self, false);
-          }
-          return false;
-        })
-        .on('expand', function() {
-          if (_menuItem.type.indexOf($.menu.definitions.SPACE_TYPE) >= 0) {
-            $.menu.expand(this, self, true);
-          }
-          return false;
-        })
-        .on(
-            'callbacks',
-            function() {
-              if (_menuItem.type.indexOf($.menu.definitions.SPACE_TYPE) >= 0) {
-                if (_options.spaceCallback != null) {
-                  _options.spaceCallback(self);
-                }
-              } else if (_menuItem.type
-                  .indexOf($.menu.definitions.COMPONENT_TYPE) >= 0) {
-                if (_options.componentCallback != null) {
-                  _options.componentCallback(self);
-                }
-              } else if (_menuItem.type.indexOf($.menu.definitions.TOOL_TYPE) >= 0) {
-                if (_options.toolCallback != null) {
-                  _options.toolCallback(self);
-                }
-              }
-              return false;
-            }).append($result);
+    // Description
+    if (_menuData.description && _menuData.description.length > 0) {
+      var $menuDescription = $('<div>');
+      $menuLabel.addClass(self.getMenuLabelStyleClass());
+    }
+
+    // Menu favorite
+    if ($.menu.displayUserContext.userMenuDisplay == $.spCore.definitions.MENU.FAVORITES.ALL
+        && _menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      $menuRootRender.append(self.renderFavorite());
+    }
+
+    // Return the built menu
+    return $menuRootRender;
   }
+
+  /**
+   * Render favorite
+   */
+  this.renderFavorite = function() {
+    if ($.menu.displayUserContext.userMenuDisplay == $.spCore.definitions.MENU.FAVORITES.ALL
+        && _menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      if ($_favoriteContainer == null) {
+        $_favoriteContainer = $('<div>');
+        $_favoriteContainer.addClass('space-management-favorite');
+      } else {
+        $_favoriteContainer.empty();
+      }
+    } else {
+      if ($_favoriteContainer != null) {
+        $_favoriteContainer.remove();
+      }
+      return null;
+    }
+    var favorite = $('<a>');
+    $_favoriteContainer.append(favorite);
+    favorite.attr('href', '#');
+    if (_menuData.favorite != "false") {
+      if (_menuData.favorite == "true") {
+        favorite.css('opacity', '1');
+        favorite.click(function(){
+          $.menu.removeFromUserFavorites(self);
+          return false;
+        });
+      } else {
+        favorite.css('opacity', '0.3');
+        favorite.click(function(){
+          $.menu.addToUserFavorites(self);
+          return false;
+        });
+      }
+      favorite.append(
+          $('<img>').attr('src', '/silverpeas/util/icons/iconlook_favorites_12px.gif')
+      );
+    } else {
+      favorite.css('opacity', '1');
+      favorite.click(function(){
+        $.menu.addToUserFavorites(self);
+        return false;
+      });
+      favorite.append(
+          $('<img>').attr('src', '/silverpeas/util/icons/iconlook_favorites_empty_12px.gif')
+      );
+    }
+    return $_favoriteContainer;
+  };
 
   /**
    * Rendering the menu item (can be overridden)
@@ -204,18 +326,55 @@ function MenuItem(menuItem, options) {
   };
 
   /**
-   * Computes the style classes by the type of the menu item
+   * Computes the style classes by the type of the menu root item
    */
-  this.getStyleClass = function() {
+  this.getMenuRootStyleClass = function() {
     var styleClass = " ";
-    if (_menuItem.type.indexOf($.menu.definitions.SPACE_TYPE) >= 0) {
-      styleClass += "sp-space";
-    } else if (_menuItem.type.indexOf($.menu.definitions.COMPONENT_TYPE) >= 0) {
-      styleClass += "sp-component";
-    } else if (_menuItem.type.indexOf($.menu.definitions.TOOL_TYPE) >= 0) {
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      styleClass += "sp-space level-" + _menuData.level;
+    } else if (_menuData.type.indexOf($.spCore.definitions.COMPONENT_TYPE) >= 0) {
+      styleClass += "sp-component " + _menuData.name;
+    } else if (_menuData.type.indexOf($.spCore.definitions.TOOL_TYPE) >= 0) {
       styleClass += "sp-tool";
     }
     return styleClass;
+  };
+
+  /**
+   * Computes the style classes by the type of the menu label item
+   */
+  this.getMenuLabelStyleClass = function() {
+    var styleClass = " ";
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      styleClass += "sp-space-name";
+    }
+    return styleClass;
+  };
+
+  /**
+   * Computes the style classes by the type of the menu label item
+   */
+  this.getMenuDescriptionStyleClass = function() {
+    var styleClass = " ";
+    if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
+      styleClass += "sp-space-description";
+    } else if (_menuData.type.indexOf($.spCore.definitions.COMPONENT_TYPE) >= 0) {
+      styleClass += "sp-component-description";
+    } else if (_menuData.type.indexOf($.spCore.definitions.TOOL_TYPE) >= 0) {
+      styleClass += "sp-tool-description";
+    }
+    return styleClass;
+  };
+
+  /**
+   * Selection behaviour
+   */
+  this.select = function() {
+    var menuItem = self;
+    while (menuItem) {
+      $('#' + menuItem.getId()).children('div').children('a').addClass('sp-menu-selected');
+      menuItem = menuItem.getParent();
+    }
   };
 }
 
@@ -223,13 +382,41 @@ function MenuItem(menuItem, options) {
 (function($) {
 
   $.menu = {
-    definitions : {
-      LABEL_TAG : 'a',
-      SPACE_TYPE : 'space',
-      COMPONENT_TYPE : 'component',
-      TOOL_TYPE : 'tool'
+    initialized: false,
+    doInitialize : function() {
+      if (! $.menu.initialized) {
+        $.menu.initialized = true;
+        $.menu.loadDisplayUserContext();
+      }
     },
+
+    // Context / Settings
     webServiceContext : webContext + '/services',
+    displayUserContext : null,
+
+    // Context / Nav
+    lastMenuItemSelected : null,
+
+    /**
+     * Loading display user context data
+     */
+    loadDisplayUserContext : function() {
+      $.menu.displayUserContext = $.spCore.getData($.menu.webServiceContext + "/display/userContext");
+    },
+
+    /**
+     * Loading display user context data
+     */
+    addToUserFavorites : function(menuItem) {
+      __setFavorite(menuItem, true);
+    },
+
+    /**
+     * Loading display user context data
+     */
+    removeFromUserFavorites : function(menuItem) {
+      __setFavorite(menuItem, false);
+    },
 
     /**
      * Selects the given menu
@@ -239,14 +426,20 @@ function MenuItem(menuItem, options) {
      */
     select : function(target, menuItem) {
       $('.sp-menu-selected').removeClass('sp-menu-selected');
-      $(target).children('div').children($.menu.definitions.LABEL_TAG)
-          .addClass('sp-menu-selected');
-      var menuItem = menuItem.getParent();
-      while (menuItem) {
-        $('#' + menuItem.getId()).children('div').children(
-            $.menu.definitions.LABEL_TAG).addClass('sp-menu-selected');
-        menuItem = menuItem.getParent();
+      if (menuItem.getData().type.indexOf($.spCore.definitions.COMPONENT_TYPE) >= 0
+          || menuItem.getData().type.indexOf($.spCore.definitions.TOOL_TYPE) >= 0) {
+        $.spCore.loadHtml(webContext + menuItem.getData().url, "body-target");
       }
+      $.menu.lastMenuItemSelected = menuItem;
+      menuItem.select();
+    },
+
+    /**
+     * Refreshes the given menu
+     */
+    refresh : function($target) {
+      var lastMenuItemSelected = $.menu.lastMenuItemSelected;
+      $target.empty();
     },
 
     /**
@@ -275,14 +468,14 @@ function MenuItem(menuItem, options) {
      *
      * @param componentId
      */
-    reverseExpand : function(componentId) {
-      var component = $.menu.getComponentData(componentId);
-      if ($.isPlainObject(component)) {
+    reverseExpand : function(id, isSpaceId) {
+      var data = (isSpaceId) ? $.menu.getSpaceData(id) : $.menu.getComponentData(id);
+      if ($.isPlainObject(data)) {
         var path = [];
-        var parentURI = component.parentURI;
-        path.push(component);
+        var parentURI = data.parentURI;
+        path.push(data);
         while (parentURI) {
-          var space = $.menu.getData(parentURI);
+          var space = $.spCore.getData(parentURI);
           path.push(space);
           parentURI = space.parentURI;
         }
@@ -308,11 +501,7 @@ function MenuItem(menuItem, options) {
      * @returns
      */
     buildId : function(menu) {
-      var menuData = menu;
-      if (menu instanceof MenuItem) {
-        menuId = menu.getData();
-      }
-      return menuData.type + '-' + menuData.id;
+      return menu.type + '-' + menu.id;
     },
 
     /**
@@ -321,63 +510,16 @@ function MenuItem(menuItem, options) {
      * @returns
      */
     getComponentData : function(id) {
-      return $.menu.getData($.menu.webServiceContext + "/components/" + id);
+      return $.spCore.getData($.menu.webServiceContext + "/components/" + id);
     },
 
     /**
-     * Centralizes synchronous ajax request
+     * Gets space data from a given id
      *
      * @returns
      */
-    getData : function(url) {
-      var result = {};
-      $.ajax({
-        url : url,
-        type : 'GET',
-        dataType : 'json',
-        cache : false,
-        async : false,
-        success : function(data, status, jqXHR) {
-          result = data;
-        },
-        error : function(jqXHR, textStatus, errorThrown) {
-          alert(errorThrown);
-        }
-      });
-      return result;
-    },
-
-    /**
-     * Debug function
-     *
-     * @param object
-     * @returns
-     */
-    printParams : function(object) {
-      var $result = $('<div>').attr('style',
-          'display: table; padding: 5px; margin: 5px;');
-      var object = object;
-      if (object instanceof MenuItem) {
-        object = object.getData();
-      }
-      if ($.isPlainObject(object)) {
-        var content = $.param(object).replace(/%3A/g, ":").replace(/%2F/g, "/")
-            .replace(/%C3%A9/g, "é").replace(/%C3%A8/g, "è").replace(/%C3%89/g,
-                'E').replace(/%C3%88/g, 'E').replace(/%C3%AA/g, 'ê').replace(
-                /%C3%A0/g, 'à').replace(/\+/g, " ").replace(/%23/g, "#")
-            .replace(/%C3%A2/g, "â");
-        var splittedContent = content.split("&");
-        for ( var i = 0; i < splittedContent.length; i++) {
-          var $line = $('<div>').attr('style', 'display: table-row;')
-          var splittedLine = splittedContent[i].split("=");
-          for ( var j = 0; j < splittedLine.length; j++) {
-            $line.append($('<div>').attr('style',
-                'display: table-cell; padding: 2px;').html(splittedLine[j]));
-          }
-          $result.append($line);
-        }
-      }
-      return $result;
+    getSpaceData : function(id) {
+      return $.spCore.getData($.menu.webServiceContext + "/spaces/" + id);
     }
   }
 
@@ -403,13 +545,39 @@ function MenuItem(menuItem, options) {
       $.extend(settings, __buildInternalSettings());
 
       // Menu
-      return __build($(this), settings);
+      return __build(null, $(this), settings);
+    },
+
+    /**
+     * The default menu handler. It accepts one parameter that is an object with
+     * below attributes: - spaceCallback : the callback to invoke when the user
+     * expands a space, - componentCallback : the callback to invoke when the
+     * user clicks on component, - toolCallback : the callback to invoke when
+     * the user clicks on tool, - callback : the callback to invoke after menu
+     * initialization
+     */
+    refresh : function(options) {
+      var $this = $(this);
+      $.menu.loadDisplayUserContext();
+
+      var lastMenuItemSelected = $.menu.lastMenuItemSelected;
+      $this.empty();
+
+      var result = $this.menu(options);
+      if (lastMenuItemSelected != null
+          && $this.get(0) == lastMenuItemSelected.getDomMenuRootContainer()) {
+        $.menu.reverseExpand(lastMenuItemSelected.getData().id,
+            (lastMenuItemSelected.getData().type
+                .indexOf($.spCore.definitions.SPACE_TYPE) >= 0));
+      }
+
+      // Menu
+      return result;
     },
 
   /**
-   * The expand menu handler.
-   * It accepts two parameters that are a MenuItem and a callback that is invoked after a well
-   * performed treatment.
+   * The expand menu handler. It accepts two parameters that are a MenuItem and
+   * a callback that is invoked after a well performed treatment.
    */
     expand : function(menuItem, callback) {
 
@@ -425,12 +593,11 @@ function MenuItem(menuItem, options) {
       $.extend(settings, __buildInternalSettings({
         "async" : false,
         "url" : menuItem.getData().contentURI,
-        "parentMenuItem" : menuItem,
         "callback" : callback
       }));
 
       // Menu
-      return __build($(this), settings);
+      return __build(menuItem, $(this), settings);
     },
 
   /**
@@ -445,11 +612,11 @@ function MenuItem(menuItem, options) {
       // Internal settings
       $.extend(settings, __buildInternalSettings({
         "url" : $.menu.webServiceContext
-            + '/spaces/personal?getUsedComponents=true&getUsedTools=true',
+                + '/spaces/personal?getUsedComponents=true&getUsedTools=true'
       }));
 
       // Menu
-      return __build($(this), settings);
+      return __build(null, $(this), settings);
     },
 
   /**
@@ -464,11 +631,11 @@ function MenuItem(menuItem, options) {
       // Internal settings
       $.extend(settings, __buildInternalSettings({
         "url" : $.menu.webServiceContext
-            + '/spaces/personal?getNotUsedComponents=true',
+            + '/spaces/personal?getNotUsedComponents=true'
       }));
 
       // Menu
-      return __build($(this), settings);
+      return __build(null, $(this), settings);
     }
   }
 
@@ -480,6 +647,7 @@ function MenuItem(menuItem, options) {
    * Here the menu namespace in JQuery in which methods on messages are provided.
    */
   $.fn.menu = function( method ) {
+    $.menu.doInitialize();
     if ( methods[method] ) {
       return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {
@@ -514,8 +682,7 @@ function MenuItem(menuItem, options) {
         "menuItemObjectClass" : MenuItem,
         "async" : true,
         "isPersonalNotUsed" : false,
-        "url" : $.menu.webServiceContext + '/spaces',
-        "parentMenuItem" : null
+        "url" : $.menu.webServiceContext + '/spaces'
     }
     if (options) {
       $.extend(settings, options);
@@ -526,7 +693,7 @@ function MenuItem(menuItem, options) {
   /**
    * Private function that centralizes the build of the menu
    */
-  function __build($this, options) {
+  function __build(parentMenuItem, $this, options) {
 
     // Iterate over the current set of matched elements
     return $this.each(function() {
@@ -540,7 +707,13 @@ function MenuItem(menuItem, options) {
         cache : false,
         async : options.async,
         success : function(data, status, jqXHR) {
-          var menuSet = new options.menuSetObjectClass(data, options);
+          var domMenuRootContainer;
+          if (parentMenuItem != null) {
+            domMenuRootContainer = parentMenuItem.getDomMenuRootContainer();
+          } else {
+            domMenuRootContainer = $this.get(0);
+          }
+          var menuSet = new options.menuSetObjectClass(domMenuRootContainer, parentMenuItem, data, options);
           $this.append(menuSet.render());
 
           // Callback
@@ -554,4 +727,25 @@ function MenuItem(menuItem, options) {
       });
     });
   };
+
+  /**
+   * Private function that centralizes the favorite user action handling
+   */
+  function __setFavorite(menuItem, addOrRemove) {
+    if (menuItem != null) {
+      var data;
+      if (addOrRemove != null) {
+        data = $.extend(menuItem.getData(), {});
+        data.favorite = addOrRemove;
+        data = $.spCore.putData(menuItem.getData().uri, data);
+      } else {
+        data = $.spCore.getData(menuItem.getData().uri);
+      }
+      if (!$.isEmptyObject(data)) {
+        menuItem.setData(data);
+        menuItem.refreshDisplay();
+      }
+      __setFavorite(menuItem.getParent(), null);
+    }
+  }
 })(jQuery);

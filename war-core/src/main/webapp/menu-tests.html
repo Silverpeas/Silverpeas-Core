@@ -1,0 +1,144 @@
+<!--
+
+    Copyright (C) 2000 - 2011 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Redirection sur la page d'identification</title>
+<link REL="SHORTCUT ICON" HREF="util/icons/favicon.ico">
+<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasV5.css" rel="stylesheet" type="text/css">
+<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasLight.css" rel="stylesheet" type="text/css">
+<link href="/silverpeas/util/styleSheets/silverpeas-menu.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+  var webContext = 'http://localhost:8000/silverpeas';
+</script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery.json-2.3.min.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-include.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas-core.js"></script>
+<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas-menu.js"></script>
+</head>
+<body>
+
+  <script type="text/javascript">
+      var mainMenuOptions = {
+        "spaceCallback" : function(menuItem) {
+          if (menuItem.getState().isExpanded) {
+            var spaceAppearance = menuItem.getAppearance();
+            $('#header').html($.spCore.printParams(spaceAppearance));
+          }
+          $('#body-header').html($.spCore.printParams(menuItem));
+        },
+        "componentCallback" : function(menuItem) {
+          var spaceAppearance = menuItem.getAppearance();
+          $('#header').html($.spCore.printParams(spaceAppearance));
+          $('#body-header').html($.spCore.printParams(menuItem));
+        }
+      };
+      var personalMenuOptions = {
+        "componentCallback" : function(menuItem) {
+          $('#body-header').html($.spCore.printParams(menuItem));
+        },
+        "toolCallback" : function(menuItem) {
+          $('#body-header').html($.spCore.printParams(menuItem));
+        }
+      };
+
+      $(document)
+          .ready(
+              function() {
+                $(".sp-menu-root").menu(mainMenuOptions);
+
+                $(".sp-personal-menu-root").menu('personal',
+                    personalMenuOptions);
+
+                $(".sp-personal-not-used-menu-root").menu('personalNotUsed',
+                    personalMenuOptions);
+
+                $("#componentIdOK").click(function() {
+                  $.menu.reverseExpand($('#componentId').val());
+                });
+
+                // Post initialize
+                if ($.menu.displayUserContext.userMenuDisplay != $.spCore.definitions.MENU.FAVORITES.DISABLED) {
+                  var $button = $('<input>');
+                  $button.attr('type', 'button');
+                  $button.val($.menu.displayUserContext.userMenuDisplay);
+                  $button
+                      .click(function() {
+                        var value = $(this).val();
+                        var nextValue = $.spCore.definitions.MENU.FAVORITES.ALL;
+                        if (value == $.spCore.definitions.MENU.FAVORITES.ALL) {
+                          nextValue = $.spCore.definitions.MENU.FAVORITES.BOOKMARKS;
+                        }
+                        $.ajax({
+                          url : webContext + '/RAjaxSilverpeasV5/dummy',
+                          data : {
+                            ResponseId : 'spaceUpdater',
+                            Init : 1,
+                            UserMenuDisplayMode : nextValue
+                          },
+                          success : function(data) {
+                            $button.val(nextValue);
+                            $(".sp-menu-root").menu('refresh', mainMenuOptions);
+                          },
+                          error : function() {
+                          },
+                          dataType : 'xml'
+                        });
+                      });
+                  $("#favoriteDisplay").append($button);
+                }
+              });
+    </script>
+
+  <div id="page" style="display: table;">
+    <div id="header" style="display: table-row;">
+      <center>header</center>
+    </div>
+    <div id="content" style="display: table-row;">
+      <div id="menu" class="sp-menu" style="display: table-cell; width: 300px;">
+        <div id="favoriteDisplay" style="width: 300px;"></div>
+        <div class="sp-menu-root" style="width: 300px;"></div>
+        <div class="sp-personal-menu-root" style="width: 300px;"></div>
+        <div class="sp-personal-not-used-menu-root" style="width: 300px;"></div>
+      </div>
+      <div id="body" style="display: table-cell; width: 100%; border: 1px;">
+        <div id="body-header" style="width: 100%;">body-header</div>
+        <div id="body-target" style="width: 100%;">body-target</div>
+      </div>
+      <div id="action" style="display: table-cell; width: 200px; border: 1px;">
+        <input id="componentId" type="text"> <input id="componentIdOK" type="button" value="OK">
+      </div>
+    </div>
+    <div id="footer" style="display: table-row;">
+      <center>footer</center>
+    </div>
+  </div>
+</body>
+</html>
