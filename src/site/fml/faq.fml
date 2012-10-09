@@ -52,14 +52,80 @@
         <p>Jboss should be listening on every IP address.</p>
       </answer>
     </faq>
-        <faq id="macosx">
+    <faq id="jboss-ssl-port">
+      <question>
+        How do I configure the default SSL port for JBoss ?
+      </question>
+      <answer>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Edit your specific properties configuration file (i.e. <i>CustomerSettings.xml</i>, see below) 
+            and append             
+            <source>
+<![CDATA[<fileset root="${JBOSS_CONF}/bindingservice.beans/META-INF/">
+  <xmlfile name="bindings-jboss-beans.xml">
+    <parameter key="/deployment/bean[@name='StandardBindings']//bean[property = 'HttpsConnector']" mode="update">
+      <value location="property[@name='port']">${JBOSS_SSL_LISTEN_PORT}</value>
+    </parameter>
+  </xmlfile>
+</fileset>]]></source> as a <b>silverpeas-settings</b> tag child.
+          </li>
+          <li>Configure JBOSS_SSL_LISTEN_PORT in $SILVERPEAS_HOME/setup/settings/config.properties. For example : <source>JBOSS_SSL_LISTEN_PORT=8443</source></li>
+          <li>Launch SilverpeasSettings script (.bat or .sh)</li>
+          <li>Restart Silverpeas</li>
+        </ol>                
+        <p><strong>Warning</strong> : this is not enabling a SSL connector. For this purpose, you still need to uncomment the SSL connector in JBoss server.xml</p>
+      </answer>
+    </faq>
+    <faq id="jboss-win-service">
+      <question>
+        How do I install JBoss as a Windows service ?
+      </question>
+      <answer>
+        <ol>
+          <li>Stop Silverpeas.</li>
+          <li>Edit $JBOSS_HOME/bin/run.conf.bat. Add an empty ADDITIONAL_JAVA_OPTS variable, initialize PROFILE variable and add the <em>-server</em> option at the first JAVA_OPTS line :
+            <source>rem # these variables will be set by SilverpeasSettings script
+<strong>set ADDITIONAL_JAVA_OPTS=
+set PROFILE=default</strong>
+
+rem # JVM memory allocation pool parameters - modify as appropriate. Memory params will be set by SilverpeasSettings script
+set "JAVA_OPTS=<strong>-server</strong> -Xmx2048m -Xms2048m -XX:MaxPermSize=512m"</source>
+          </li>
+          <li>You can customize service name, display name and description by editing SVCNAME, SVCDISP and SVCDESC in $JBOSS_HOME/bin/service.bat. For example :
+            <source>if "x%SVCNAME%" == "x" (
+    set "SVCNAME=Silverpeas"
+)
+set SVCDISP=Silverpeas X.X
+set SVCDESC=Silverpeas X.X on a JBoss Application Server 6.1.0</source>
+          </li>
+          <li>Edit your specific properties configuration file (i.e. <i>CustomerSettings.xml</i>, see below) so that the SilverpeasSettings script update some parameters (Java options and JBoss profile) in the same way as start/debug commands. Append :
+<source>
+<![CDATA[<fileset root="${JBOSS_HOME}/bin/">
+  <textfile name="run.conf.bat">
+    <parameter key="-Xms[0-9]+m" use-regex="true">-Xms${RAM_MIN}m</parameter>
+    <parameter key="-Xmx[0-9]+m" use-regex="true">-Xmx${RAM_MAX}m</parameter>
+    <parameter key="-XX:MaxPermSize=[0-9]+m" use-regex="true">-XX:MaxPermSize=${PERMSIZE_MAX}m</parameter>
+    <parameter key="PROFILE=[a-zA-Z]+" use-regex="true">PROFILE=${JBOSS_SERVER_PROFILE}</parameter>
+    <parameter key="ADDITIONAL_JAVA_OPTS=.*" use-regex="true">ADDITIONAL_JAVA_OPTS=${JAVA_OPTS}</parameter>
+  </textfile>
+</fileset>]]></source> as a <b>silverpeas-settings</b> tag child.
+          </li>
+          <li>Launch SilverpeasSettings script (.bat or .sh)</li>
+          <li>Install service : <source>cd /d %JBOSS_HOME%\bin
+service.bat install</source></li>
+          <li>Silverpeas can now be launched as a service</li>
+        </ol>
+      </answer>
+    </faq>
+    <faq id="macosx">
       <question>
         On my Mac OS X I can't access a local Silverpeas installation.
       </question>
       <answer>
         <p>Symptoms: </p>        
         <ul>
-          <li>Muy Mac doesn't resolve <i>localhost</i> or <i>127.0.0.1</i> when offline.</li>         
+          <li>My Mac doesn't resolve <i>localhost</i> or <i>127.0.0.1</i> when offline.</li>         
         </ul>
         <ol>
           <li>Stop Silverpeas.</li>

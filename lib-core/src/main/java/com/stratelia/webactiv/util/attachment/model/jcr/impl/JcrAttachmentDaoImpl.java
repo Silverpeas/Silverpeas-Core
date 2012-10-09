@@ -43,8 +43,8 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
 import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
@@ -207,8 +207,8 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
    */
   protected Node addFile(Node folder, AttachmentDetail attachment,
       String language) throws RepositoryException, IOException {
-    String escapedName = StringUtil.escapeQuote(attachment
-        .getLogicalName(getLanguage(language)));
+    String escapedName =
+        ConverterUtil.escapeIllegalJcrChars(attachment.getLogicalName(getLanguage(language)));
     if (folder.hasNode(escapedName)) {
       folder.getNode(escapedName).remove();
     }

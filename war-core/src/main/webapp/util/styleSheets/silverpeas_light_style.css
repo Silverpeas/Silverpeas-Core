@@ -230,7 +230,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
     margin-right: 10px;
 }
 
-#spaces, #spacePerso {
+#spaces, #spacePerso, #spaceTransverse {
 	background-color: transparent;
 	background-image:none;
 	border: none;
@@ -259,14 +259,15 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	width:170px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
-#spacePerso .contentSpace, .spaceLevel1On .contentSpace{
+
+#spacePerso .contentSpace, 
+.spaceLevel1On .contentSpace {
 	margin-top:10px;
 	margin-left:0;
 }
 
 .contentSpace .contentSpace {
 	margin:2px 0 0 10px;
-
 }
 
 .contentSpace .contentSpace .browseSpace {
@@ -302,8 +303,6 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding:4px 0 8px;
 	position:relative;
 }
-#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL{
-	margin-left:19px;}
 
 .browseSpace {
 	position:relative;
@@ -320,17 +319,30 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding-top:12px;
 }
 
-#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL,
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL,
+#domainsBar #spaceTransverse .spaceLevel1 .spaceURL,
+#domainsBar #spaceTransverse .spaceLevel1On .spaceURL,
+#domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	margin-left:19px;
 	color: #444444;
 	font-size:14px;
 }
 #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
-	font-size:14px;
 	margin-left:29px;
 }
 #basSpaces {
 	display: none;
 }
+
+#domainsBar #spaceTransverse {
+	background-color: inherit;
+}
+
+#domainsBar #basSpaceTransverse {
+	display: none;
+}
+
 .gaucheBoutonV5, .droiteBoutonV5, .gaucheOngletOn, .droiteOngletOn, .gaucheOngletOff, .droiteOngletOff {
 	display: none;
 }
