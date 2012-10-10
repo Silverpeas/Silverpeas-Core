@@ -26,14 +26,13 @@ package com.stratelia.silverpeas.notificationManager.model;
 
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -55,15 +54,17 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
     try {
 
       List<String> users = new ArrayList<String>();
-      Iterator<UserRecipient> it = usersSet.iterator();
       for (UserRecipient user : usersSet) {
         users.add(user.getUserId());
       }
+      String language =
+          SilverpeasServiceProvider.getPersonalizationService()
+              .getUserSettings(metaData.getSender()).getLanguage();
       SendedNotificationDetail notif =
           new SendedNotificationDetail(Integer.parseInt(metaData.getSender()), metaData.
-          getMessageType(), metaData.getDate(), metaData.getTitle("fr"), metaData.getSource(),
+          getMessageType(), metaData.getDate(), metaData.getTitle(language), metaData.getSource(),
           metaData.getLink(), metaData.getSessionId(), metaData.getComponentId(), metaData.
-          getContent("fr"));
+          getContent(language));
       notif.setUsers(users);
       int id = SendedNotificationDAO.saveNotifUser(con, notif);
       notif.setNotifId(id);
@@ -71,8 +72,7 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       throw new NotificationManagerException("NotificationInterface.saveNotifUser()",
           SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
-      // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -86,8 +86,7 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       throw new NotificationManagerException("NotificationInterface.getAllNotifByUser()",
           SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
-      // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -100,8 +99,7 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       throw new NotificationManagerException("NotificationInterface.getNotification()",
           SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
-      // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -114,8 +112,7 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       throw new NotificationManagerException("NotificationInterface.deleteNotif()",
           SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
-      // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
@@ -128,29 +125,16 @@ public class SendedNotificationInterfaceImpl implements SendedNotificationInterf
       throw new NotificationManagerException("NotificationInterface.deleteNotifByUser()",
           SilverpeasRuntimeException.ERROR, "root.MSG_GET_NOTIFICATION", e);
     } finally {
-      // fermer la connexion
-      closeConnection(con);
+      DBUtil.close(con);
     }
   }
 
   private Connection initCon() throws NotificationManagerException {
     try {
-      Connection con = DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
-      return con;
+      return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
     } catch (Exception e) {
       throw new NotificationManagerException("NotificationInterfaceImpl.initCon()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  private void closeConnection(Connection con) {
-    try {
-      if (con != null) {
-        con.close();
-      }
-    } catch (Exception e) {
-      SilverTrace.error("attachment", "NotificationInterfaceImpl.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", "", e);
     }
   }
 }
