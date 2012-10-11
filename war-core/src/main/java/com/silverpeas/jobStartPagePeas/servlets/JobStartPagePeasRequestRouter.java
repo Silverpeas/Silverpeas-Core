@@ -1252,7 +1252,7 @@ public class JobStartPagePeasRequestRouter extends
         getLanguage());
     request.setAttribute("Parameters", visibleParameters);
     request.setAttribute("ComponentInst", componentInst);
-    request.setAttribute("JobPeas", localizedComponent.getName());
+    request.setAttribute("JobPeas", localizedComponent.getLabel());
     request.setAttribute("Profiles", sessionController.getAllProfiles(componentInst));
     request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
     request.setAttribute("MaintenanceState", sessionController.getCurrentSpaceMaintenanceState());

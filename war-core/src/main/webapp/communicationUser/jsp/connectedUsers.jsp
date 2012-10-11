@@ -101,20 +101,20 @@
 
           arrayLine = arrayPane.addArrayLine();
           arrayLine.addArrayCellText(
-              "<div align=right><img src=\"" + icoMonitor + "\" border=0></div>");
+              "<div align=\"right\"><img src=\"" + icoMonitor + "\" border=\"0\"/></div>");
           arrayLine.addArrayCellText(item.getUserDetail().getDisplayedName());
           if (settings.getBoolean("displayColumnLanguage", false)) {
             arrayLine.addArrayCellText(preferences.getLanguage());
           }
 
           arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString(
-              "notifyUser") + "\" src=\"" + icoNotify + "\" border=0 onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></A></div>");
+              "notifyUser") + "\" src=\"" + icoNotify + "\" border=\"0\" onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></a></div>");
         }
       }
       out.println(arrayPane.print());
     }
     out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString(
-        "refreshList") + "&nbsp;" + resources.getString("seconds") + "<BR>");
+        "refreshList") + "&nbsp;" + resources.getString("seconds") + "<br/>");
   %>
 </CENTER>
 <%
