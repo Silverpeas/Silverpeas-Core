@@ -23,46 +23,49 @@
  */
 package org.silverpeas.viewer;
 
-import java.io.File;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface Preview {
+@Named("swfToolManager")
+@Singleton
+public class SwfToolManager {
+
+  private static boolean isActivated = false;
+
+  @PostConstruct
+  public void initialize() throws Exception {
+
+    // Im4java settings
+    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+      if ("path".equals(entry.getKey().toLowerCase())) {
+        Process process = null;
+        try {
+          final StringBuilder pdf2SwfCommand = new StringBuilder();
+          pdf2SwfCommand.append("pdf2swf --version");
+          process = Runtime.getRuntime().exec(pdf2SwfCommand.toString());
+          isActivated = true;
+        } catch (final Exception e) {
+          // SwfTool is not installed
+        } finally {
+          if (process != null) {
+            process.destroy();
+          }
+        }
+      }
+    }
+  }
 
   /**
-   * Getting the license of display software product if any
+   * Indicates if im4java is actived
    * @return
    */
-  String getDisplayLicenseKey();
-
-  /**
-   * Getting URL of the document
-   * @return
-   */
-  String getURLAsString();
-
-  /**
-   * Getting the original file of the document
-   * @return
-   */
-  String getOriginalFileName();
-
-  /**
-   * Getting the physical file of the document
-   * @return
-   */
-  File getPhysicalFile();
-
-  /**
-   * Getting the width of the document
-   * @return
-   */
-  String getWidth();
-
-  /**
-   * Getting the height of the document
-   * @return
-   */
-  String getHeight();
+  public static boolean isActivated() {
+    return isActivated;
+  }
 }

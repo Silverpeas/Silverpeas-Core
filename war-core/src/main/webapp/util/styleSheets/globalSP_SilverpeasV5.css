@@ -3854,12 +3854,31 @@ ul#attachmentList li.attachmentListItem .lineSize img {
   margin-right:10px;
 }
 
+ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
+  margin-right:0px;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.view-file {
+  margin-right:0px;
+}
+
 img.preview-file {
   cursor:pointer;
-  margin:0 0 0 4px;
+  margin-left:5px;
+  margin-right:0px;
+}
+
+img.view-file {
+  cursor:pointer;
+  margin-left:5px;
+  margin-right:0px;
 }
 
 ul#attachmentList li.attachmentListItem .lineSize img.preview-file {
+  float:inherit;
+}
+
+ul#attachmentList li.attachmentListItem .lineSize img.view-file {
   float:inherit;
 }
 

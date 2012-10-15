@@ -23,42 +23,14 @@
  */
 package org.silverpeas.viewer;
 
-import javax.inject.Inject;
-
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
-
-  @Inject
-  private PreviewService previewService;
-
-  private static ViewFactory instance;
-
-  private ViewFactory() {
-    // Nothing to do
-  }
+public interface DocumentView extends Preview {
 
   /**
-   * Instance accessor (singleton)
+   * Gets total of pages
    * @return
    */
-  private static ViewFactory getInstance() {
-    if (ViewFactory.instance == null) {
-      synchronized (ViewFactory.class) {
-        if (ViewFactory.instance == null) {
-          ViewFactory.instance = new ViewFactory();
-        }
-      }
-    }
-    return ViewFactory.instance;
-  }
-
-  /**
-   * Viewer services accessor
-   * @return
-   */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
-  }
+  int getNbPages();
 }

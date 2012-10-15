@@ -21,48 +21,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
+package org.silverpeas.viewer.flexpaper;
 
 import java.io.File;
+
+import org.silverpeas.viewer.AbstractView;
+
+import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface Preview {
+public class TemporaryFlexPaperView extends AbstractView {
+
+  private int width = 0;
+  private int height = 0;
 
   /**
-   * Getting the license of display software product if any
-   * @return
+   * Default constructor
+   * @param physicalFile
    */
-  String getDisplayLicenseKey();
+  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
+      final int nbPages, final int width, final int height) {
+    super(originalFileName, physicalFile, nbPages);
+    this.width = width;
+    this.height = height;
+  }
 
-  /**
-   * Getting URL of the document
-   * @return
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getURLAsString()
    */
-  String getURLAsString();
+  @Override
+  public String getURLAsString() {
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
+  }
 
-  /**
-   * Getting the original file of the document
-   * @return
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getWidth()
    */
-  String getOriginalFileName();
+  @Override
+  public String getWidth() {
+    return String.valueOf(width);
+  }
 
-  /**
-   * Getting the physical file of the document
-   * @return
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getHeight()
    */
-  File getPhysicalFile();
-
-  /**
-   * Getting the width of the document
-   * @return
-   */
-  String getWidth();
-
-  /**
-   * Getting the height of the document
-   * @return
-   */
-  String getHeight();
+  @Override
+  public String getHeight() {
+    return String.valueOf(height);
+  }
 }

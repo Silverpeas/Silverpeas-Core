@@ -57,6 +57,15 @@ public class PreviewBuilder {
 
     /*
      * (non-Javadoc)
+     * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+     */
+    @Override
+    public String getDisplayLicenseKey() {
+      return null;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.silverpeas.viewer.Preview#getURLAsString()
      */
     @Override
