@@ -48,7 +48,7 @@ public class StringUtilTest {
   @Test
   public void testIsDefined() {
     assertTrue(StringUtil.isDefined("1"));
-    assertTrue(StringUtil.isDefined("   "));
+    assertFalse(StringUtil.isDefined("   "));
     assertFalse(StringUtil.isDefined(""));
     assertFalse(StringUtil.isDefined("null"));
     assertFalse(StringUtil.isDefined("NuLl"));
