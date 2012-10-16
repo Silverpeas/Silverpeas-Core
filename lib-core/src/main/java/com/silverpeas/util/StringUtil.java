@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -50,7 +50,7 @@ public class StringUtil extends StringUtils {
     "^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$";
 
   public static boolean isDefined(String parameter) {
-    return (parameter != null && parameter.length() > 0 && !"null".equalsIgnoreCase(parameter));
+    return (parameter != null && parameter.trim().length() > 0 && !"null".equalsIgnoreCase(parameter));
   }
 
   public static boolean isInteger(String id) {

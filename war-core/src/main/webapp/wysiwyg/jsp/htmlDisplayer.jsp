@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -40,50 +40,39 @@
   <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement"%>
   <%@ page import="com.silverpeas.glossary.HighlightGlossaryTerms"%>
 <%
-  //initialisation des variables
-  String objectId = request.getParameter("ObjectId");
-  String spaceId = request.getParameter("SpaceId");
-  String componentId = request.getParameter("ComponentId");
-  String language = request.getParameter("Language");
-  String axisId = request.getParameter("axisId");
-  String highlightFirst = request.getParameter("highlightFirst");
+//initialisation des variables
+String objectId = request.getParameter("ObjectId");
+String componentId = request.getParameter("ComponentId");
+String language = request.getParameter("Language");
+String axisId = request.getParameter("axisId");
+String highlightFirst = request.getParameter("highlightFirst");
   
 
-  try {
-if (StringUtil.isDefined(language))
-{
-String content = WysiwygController.load(componentId, objectId, language);
-
-//if content not found in specified language, check other ones
-if (!StringUtil.isDefined(content))
-{
-Iterator languages = I18NHelper.getLanguages();
-if (languages != null)
-{
-while (languages.hasNext() && !StringUtil.isDefined(content))
-{
-language = (String) languages.next();
-content = WysiwygController.load(componentId, objectId, language);
-}
-}
-}
-//dynamic value functionnality : check if active and try to replace the keys by their values
-if(DynamicValueReplacement.isActivate()){
-DynamicValueReplacement replacement = new DynamicValueReplacement();
-content = replacement.replaceKeyByValue(content);
-}
-//highlight glossary term
-if(StringUtil.isDefined(axisId)){
-content = new HighlightGlossaryTerms().searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
-}
-      if(content == null) {
-        content = "";
-      }
-out.println(content);
-}
-else
-{
-out.println(WysiwygController.loadFileAndAttachment(spaceId, componentId, objectId));
-}
-  } catch (WysiwygException exc) {}
+try {
+  String content = WysiwygController.load(componentId, objectId, language);
+  if (StringUtil.isDefined(language)) {
+	//if content not found in specified language, check other ones
+	if (!StringUtil.isDefined(content)) {
+	  Iterator languages = I18NHelper.getLanguages();
+	  if (languages != null) {
+		while (languages.hasNext() && !StringUtil.isDefined(content)) {
+		  language = (String) languages.next();
+		  content = WysiwygController.load(componentId, objectId, language);
+		}
+	  }
+	}
+	
+	//dynamic value functionnality : check if active and try to replace the keys by their values
+	if(DynamicValueReplacement.isActivate()){
+	  DynamicValueReplacement replacement = new DynamicValueReplacement();
+	  content = replacement.replaceKeyByValue(content);
+	}
+	
+	//highlight glossary term
+	if(StringUtil.isDefined(axisId)){
+	  content = new HighlightGlossaryTerms().searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
+	}
+  }
+  out.println(content);
+} catch (WysiwygException exc) {}
 %>

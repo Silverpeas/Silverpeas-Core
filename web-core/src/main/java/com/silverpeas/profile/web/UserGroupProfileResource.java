@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,12 +24,11 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.annotation.Authenticated;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Group;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -37,8 +36,9 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user groups in Silverpeas. Each provided method is a
@@ -66,6 +66,9 @@ public class UserGroupProfileResource extends RESTWebService {
 
   /**
    * Gets all the root user groups in Silverpeas.
+   * @param name a pattern on the name of the root groups to retrieve. If null, all the root
+   * groups are fetched.
+   * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -84,22 +87,40 @@ public class UserGroupProfileResource extends RESTWebService {
     return asWebEntity(Arrays.asList(allGroups), locatedAt(getUriInfo().getAbsolutePath()));
   }
 
+  /**
+   * Gets the groups of users having the priviledges to access the specified Silverpeas application
+   * instance.
+   * In the context some groups are parents of others groups, only the parent groups are fetched, no
+   * their subgroups.
+   * @param instanceId the unique identifier of the Silverpeas application instance.
+   * @param roles the roles the groups must play. Null if no specific roles have to be played by the
+   * groups.
+   * @param name the pattern on the name the groups name must match. Null if all groups for the
+   * specified application have to be fetched.
+   * @return the JSON representation of the array with the parent groups having access the application
+   * instance.
+   */
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getAllRootGroupsInApplication(
+  public UserGroupProfileEntity[] getGroupsInApplication(
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
           @QueryParam("name") String name) {
     String[] roleNames = (isDefined(roles) ? roles.split(","):new String[0]);
     String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
-    String[] groupIds = getOrganizationController().searchGroupsIds(true, null, roleIds,
+    String[] groupIds = getOrganizationController().searchGroupsIds(false, null, roleIds,
             aFilteringModel(name, null));
     Group[] groups = getOrganizationController().getGroups(groupIds);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return asWebEntity(Arrays.asList(groups), locatedAt(groupsUri));
   }
 
+  /**
+   * Gets the group of users identified by the specified path.
+   * @param groupPath the path of group identifiers, from the root group downto the seeked one.
+   * @return the JSON representation of the user group.
+   */
   @GET
   @Path("{path: [0-9]+(/groups/[0-9]+)*}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -110,6 +131,14 @@ public class UserGroupProfileResource extends RESTWebService {
     return asWebEntity(theGroup, identifiedBy(getUriInfo().getAbsolutePath()));
   }
 
+  /**
+   * Gets the direct subgroups of the group of users identified by the specified path.
+   * @param groups the path of group identifiers, from the root group downto the group for which the
+   * direct subgroups are seeked.
+   * @param name a pattern the subgroup names must match. If null, all the direct subgroups are
+   * fetched.
+   * @return a JSON representation of the array of the direct subgroups.
+   */
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)

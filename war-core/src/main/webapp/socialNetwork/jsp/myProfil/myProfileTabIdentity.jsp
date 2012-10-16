@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -139,7 +139,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
     <%} else { %>
 	    <tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
+	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
 	    </tr>
     <% }
 
@@ -197,8 +197,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
  </div>
  <%
 		ButtonPane buttonPane = gef.getButtonPane();
-		if (updateIsAllowed)
-		{
+		if (updateIsAllowed) {
 			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=submitForm();", false);
 			buttonPane.addButton(validateButton);
 		}
@@ -221,15 +220,15 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 		<% if (isPasswordChangeAllowed) {%>
 		if (document.UserForm.NewPassword.value != document.UserForm.NewPasswordConfirm.value)
 		{
-			errorMsg += "- <%=resource.getString("WrongNewPwd")%>\n";
+			errorMsg += "- <%=resource.getString("myProfile.WrongNewPwd")%>\n";
 		}
 		if (<%=! blanksAllowedInPwd.booleanValue()%> && document.UserForm.NewPassword.value.indexOf(" ") != -1)
 		{
-			errorMsg += "- <%=resource.getString("NoSpacesInPassword")%>\n";
+			errorMsg += "- <%=resource.getString("myProfile.NoSpacesInPassword")%>\n";
 		}
 		else if ((document.UserForm.NewPassword.value.length > 0) &&
 				(document.UserForm.NewPassword.value.length < <%=minLengthPwd.intValue()%>))
-			errorMsg += "- <%=resource.getString("WrongLength")%>\n";
+			errorMsg += "- <%=resource.getString("myProfile.WrongLength")%>\n";
 		<%
 		}
 		%>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -185,6 +185,11 @@ public class NotificationSender implements java.io.Serializable {
 
     // Notify other users in language of the sender.
     notificationManager.notifyUsers(params, allUserIds.toArray(new String[allUserIds.size()]));
+    
+    if (isNotificationManual(metaData)) {
+      // save notification for history
+      saveNotification(metaData, usersSet);
+    }
 
     SilverTrace.info("notificationManager", "NotificationSender.notifyUser()",
         "root.MSG_GEN_EXIT_METHOD");
@@ -266,7 +271,7 @@ public class NotificationSender implements java.io.Serializable {
   }
 
   /**
-   * Add all recipients to the notification message and save the notification for history.
+   * Add all recipients to the notification message.
    * @param usersSet set of the recipients.
    * @param languages set of recipients languages.
    * @param metaData the message metadata.
@@ -285,7 +290,6 @@ public class NotificationSender implements java.io.Serializable {
           metaData.setContent(newContent, language);
         }
       }
-      saveNotification(metaData, usersSet);
     }
   }
 
