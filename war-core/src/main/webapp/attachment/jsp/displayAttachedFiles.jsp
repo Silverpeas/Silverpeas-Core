@@ -742,6 +742,7 @@
             }
           },
           close: function() {
+            clearCheckin();
           }
         });
       });
