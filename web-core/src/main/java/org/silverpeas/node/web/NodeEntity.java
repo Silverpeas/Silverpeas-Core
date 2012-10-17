@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.silverpeas.util.i18n.Translation;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 
 @XmlRootElement
 public class NodeEntity implements Exposable {
@@ -192,5 +193,13 @@ public class NodeEntity implements Exposable {
   public NodeTranslationEntity[] getTranslations() {
     return translations;
   }
-
+  
+  /**
+  * Gets the node pk objet that this entity represents.
+  * @return a node PK.
+  */
+  public NodePK toNodePK() {
+    NodePK nodePk = new NodePK(this.attr.getId(), this.attr.getComponentId());
+    return nodePk;
+  }
 }

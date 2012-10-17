@@ -55,6 +55,8 @@ public class NodeAttrEntity {
   private String nbItems;
   @XmlElement(defaultValue = "")
   private String status;
+  @XmlElement(defaultValue = "0")
+  private int order = 0;
   @XmlElement(defaultValue = "")
   private String role;
   @XmlElement(defaultValue = "")
@@ -163,6 +165,14 @@ public class NodeAttrEntity {
 
   public String getStatus() {
     return status;
+  }
+  
+  public void setOrder(int order) {
+    this.order = order;
+  }
+
+  public int getOrder() {
+    return order;
   }
 
   public void setRole(String role) {
