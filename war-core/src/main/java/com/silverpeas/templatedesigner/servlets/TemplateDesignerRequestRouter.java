@@ -142,10 +142,8 @@ public class TemplateDesignerRequestRouter extends
       } else if (function.equals("NewField")) {
         String displayer = request.getParameter("Displayer");
 
-        request.setAttribute("Languages", templateDesignerSC.getLanguages());
-        request.setAttribute("Displayer", displayer);
-        request.setAttribute("Fields", templateDesignerSC.getFields());
-
+        setCommonAttributesOfFieldDisplayers(displayer, templateDesignerSC, request);
+        
         destination = root + getDestinationFromDisplayer(displayer);
       } else if (function.equals("BackToFormField")) {
         GenericFieldTemplate field = (GenericFieldTemplate) request.getAttribute("field");
@@ -153,9 +151,8 @@ public class TemplateDesignerRequestRouter extends
 
         String actionForm = (String) request.getAttribute("actionForm");
         request.setAttribute("actionForm", actionForm);
-
-        request.setAttribute("Languages", templateDesignerSC.getLanguages());
-        request.setAttribute("Displayer", field.getDisplayerName());
+        
+        setCommonAttributesOfFieldDisplayers(field.getDisplayerName(), templateDesignerSC, request);
 
         destination = root + getDestinationFromDisplayer(field.getDisplayerName());
       } else if (function.equals("AddField")) {
@@ -170,12 +167,10 @@ public class TemplateDesignerRequestRouter extends
 
         FieldTemplate field = templateDesignerSC.getField(fieldName);
         request.setAttribute("Field", field);
+        
+        setCommonAttributesOfFieldDisplayers(field.getDisplayerName(), templateDesignerSC, request);
 
-        request.setAttribute("Languages", templateDesignerSC.getLanguages());
-        request.setAttribute("Displayer", field.getDisplayerName());
-
-        destination = root
-            + getDestinationFromDisplayer(field.getDisplayerName());
+        destination = root + getDestinationFromDisplayer(field.getDisplayerName());
       } else if (function.equals("UpdateField")) {
         GenericFieldTemplate field = request2Field(request);
 
@@ -370,5 +365,12 @@ public class TemplateDesignerRequestRouter extends
       }
     }
     return field;
+  }
+  
+  private void setCommonAttributesOfFieldDisplayers(String displayerName,
+      TemplateDesignerSessionController sc, HttpServletRequest request) {
+    request.setAttribute("Languages", sc.getLanguages());
+    request.setAttribute("Displayer", displayerName);
+    request.setAttribute("Fields", sc.getFields());
   }
 }
