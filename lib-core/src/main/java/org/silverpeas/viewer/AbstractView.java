@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,41 +28,34 @@ import java.io.File;
 /**
  * @author Yohann Chastagnier
  */
-public interface Preview {
+public abstract class AbstractView extends AbstractPreview implements DocumentView {
+
+  private int nbPages = 0;
 
   /**
-   * Getting the license of display software product if any
-   * @return
+   * Default constructor
+   * @param originalFileName
+   * @param physicalFile
    */
-  String getDisplayLicenseKey();
+  protected AbstractView(final String originalFileName, final File physicalFile, final int nbPages) {
+    super(originalFileName, physicalFile);
+    this.nbPages = nbPages;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+   */
+  @Override
+  public String getDisplayLicenseKey() {
+    return settings.getString("flexpaper.licenseKey", "");
+  }
 
   /**
-   * Getting URL of the document
-   * @return
+   * @return the nbPages
    */
-  String getURLAsString();
-
-  /**
-   * Getting the original file of the document
-   * @return
-   */
-  String getOriginalFileName();
-
-  /**
-   * Getting the physical file of the document
-   * @return
-   */
-  File getPhysicalFile();
-
-  /**
-   * Getting the width of the document
-   * @return
-   */
-  String getWidth();
-
-  /**
-   * Getting the height of the document
-   * @return
-   */
-  String getHeight();
+  @Override
+  public int getNbPages() {
+    return nbPages;
+  }
 }
