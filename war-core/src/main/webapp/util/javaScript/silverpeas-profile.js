@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,16 +36,19 @@ function isAUserGroup(object) {
 }
 
 function UserProfile(user) {
-  
   var self = this;
+
+  var userProfileManagementParams = $.extend({extended: false, async:true}, user);
   var usermgt = new UserProfileManagement({
-    id: user.id
+    id: userProfileManagementParams.id,
+    extended : userProfileManagementParams.extended,
+    async : userProfileManagementParams.async
   });
-  
+
   if (user != null)
     for (var prop in user)
       this[prop] = user[prop];
-  
+
   /**
    * Loads the attributes of the profile of this user.
    * Whether a callback is passed as argument, invokes the callback with this user profile once its
@@ -67,7 +70,7 @@ function UserProfile(user) {
     });
     return self;
   }
-  
+
   /**
    * Sets this user as belonging to the specified component instance (the unique identifier
    * of the component instance).
@@ -76,7 +79,7 @@ function UserProfile(user) {
     usermgt.filter.component = component;
     return self;
   }
-  
+
   /**
    * Sets this user as playing the specified roles (a string of comma-separated list of roles)
    */
@@ -84,7 +87,7 @@ function UserProfile(user) {
     usermgt.filter.roles = roles;
     return self;
   }
-  
+
   /**
    * Loads the profiles of the users that are part of the relationships of this user and calls
    * the callback function by passing it the loaded user profiles.
@@ -114,7 +117,7 @@ function UserProfile(user) {
     var callback = arguments[arg];
     if (usermgt.users == null) {
       toload = true;
-    } 
+    }
     if (usermgt.filter.name != name) {
       usermgt.filter.name = name;
       toload = true;
@@ -123,7 +126,7 @@ function UserProfile(user) {
       if (usermgt.filter.pagination == null || usermgt.filter.pagination.page != page ||
         usermgt.filter.pagination.count != pagesize) {
         usermgt.filter.pagination = {
-          page: page, 
+          page: page,
           count: pagesize
         };
         toload = true;
@@ -137,11 +140,11 @@ function UserProfile(user) {
       usermgt.get({
         contacts: true
       }, callback);
-    else 
+    else
       callback(usermgt.users);
     return self;
   }
-  
+
   /**
    * Gets the loaded relationships.
    * Returns null if the relationships were not loaded.
@@ -156,15 +159,15 @@ function UserProfile(user) {
  * It provides additional methods.
  */
 function UserGroup(group) {
-  
+
   var self        = this;
   var subgroupmgt = new UserGroupManagement();
   var usermgt     = new UserProfileManagement();
-  
+
   if (group != null)
     for (var prop in group)
       this[prop] = group[prop];
-  
+
   /**
    * Sets this user group as belonging to the specified component instance (the unique identifier
    * of the component instance).
@@ -174,7 +177,7 @@ function UserGroup(group) {
     usermgt.filter.component = component;
     return self;
   }
-  
+
   /**
    * Sets this user group as playing the specified roles (a string of comma-separated list of roles)
    */
@@ -183,7 +186,7 @@ function UserGroup(group) {
     usermgt.filter.roles = roles;
     return self;
   }
-  
+
   /**
    * Loads the attributes of this user group.
    * Whether a callback is passed as argument, invokes the callback with this user group once its
@@ -206,7 +209,7 @@ function UserGroup(group) {
     });
     return self;
   }
-  
+
   /**
    * Loads the children (subgroups) of this user group, and calls the specified callback operation
    * by passing it the fetched subgroups.
@@ -224,11 +227,11 @@ function UserGroup(group) {
         name: name,
         url: self.childrenUri
       },callback);
-    } else 
+    } else
       callback(subgroupmgt.groups);
     return self;
   }
-  
+
   /**
    * Loads the nth page of the users that belong to this group (and its subgroups), and calls the
    * specified callback operation by passing it the fetched users.
@@ -257,7 +260,7 @@ function UserGroup(group) {
     if (usermgt.users == null) {
       usermgt.filter.group = self.id;
       toload = true;
-    } 
+    }
     if (usermgt.filter.name != name) {
       usermgt.filter.name = name;
       toload = true;
@@ -266,7 +269,7 @@ function UserGroup(group) {
       if (usermgt.filter.pagination == null || usermgt.filter.pagination.page != page ||
         usermgt.filter.pagination.count != pagesize) {
         usermgt.filter.pagination = {
-          page: page, 
+          page: page,
           count: pagesize
         };
         toload = true;
@@ -278,11 +281,11 @@ function UserGroup(group) {
     }
     if (toload)
       usermgt.get(callback);
-    else 
+    else
       callback(usermgt.users);
     return self;
   }
-  
+
   /**
    * Gets the loaded subgroups of this user group.
    * Null is returned if the subgroups are not loaded.
@@ -290,7 +293,7 @@ function UserGroup(group) {
   this.children = function() {
     return subgroupmgt.groups;
   }
-  
+
   /**
    * Gets the loaded users in this user group.
    * Null is returned if the users are not loaded.
@@ -316,20 +319,21 @@ var rootUserGroup = new UserGroup({
  * You can give some parameters to filter the users on which this object works.
  */
 function UserProfileManagement(params) {
-  
+
   var self = this;
-  
+
   this.filter = {
     id: null, // the unique identifier of a user to get
+    extended: false, // a flag to load user full details
     contacts: false, // the contacts of the refered user. The id must be set to be taken into account
     group: null, // a user group unique identifier
     name: null, // a pattern about a user name (* is a wildcard)
     component: null, // a component instance identifier
     roles: null, // a string with a comma-separated role names
-    pagination: null // pagination data in the form of 
+    pagination: null // pagination data in the form of
   // { page: <number of the page>, count: <count of users to fetch> }
   };
-  
+
   /**
    * The filtering parameters about the user profiles to get.
    */
@@ -338,7 +342,7 @@ function UserProfileManagement(params) {
       for(var prop in params)
         self.filter[prop] = params[prop];
   }
-  
+
   /**
    * Decorates the user profiles with usefull method to improve the usability.
    */
@@ -352,12 +356,12 @@ function UserProfileManagement(params) {
     }
     return decoratedUsers;
   }
-  
+
   setUpFilter(params);
-  
+
   // the users it manages
   this.users = null;
-  
+
   /**
    * Gets the user profiles matching the filters (if any) and passes them to the
    * specified callback 'loaded'.
@@ -374,6 +378,10 @@ function UserProfileManagement(params) {
       urlOfUsers += '/' + self.filter.id;
       if (self.filter.contacts)
         urlOfUsers += '/contacts';
+      if (self.filter.extended) {
+        urlOfUsers += separator + 'extended=' + self.filter.extended;
+        separator = '&';
+      }
       application = separator + 'application=';
       if (self.filter.component)
         separator = '&';
@@ -395,12 +403,13 @@ function UserProfileManagement(params) {
     }
     if (self.filter.pagination) {
       urlOfUsers += separator + 'page=' + self.filter.pagination.page + ';' + self.filter.pagination.count;
-    } 
+    }
     $.ajax({
       url: urlOfUsers,
       type: 'GET',
       dataType: 'json',
       cache: false,
+      async: params.async,
       success: function(users, status, jqXHR) {
         self.users = decorate(users);
         self.users.maxlength = jqXHR.getResponseHeader('X-Silverpeas-UserSize');
@@ -420,9 +429,9 @@ function UserProfileManagement(params) {
  * You can give some parameters to contraints the user groups on which this object should work.
  */
 function UserGroupManagement(params) {
-  
+
   var self = this;
-  
+
   this.filter = {
     id: null, // the unique identifier of a user group to get.
     url: null, // the URL at which the groups have to be get. If not set, the URL of the root groups
@@ -432,7 +441,7 @@ function UserGroupManagement(params) {
     component: null, // a component instance identifier
     roles: null // a string with a comma-separated role names
   };
-  
+
   /**
    * The filtering parameters about the user groups to get.
    */
@@ -441,7 +450,7 @@ function UserGroupManagement(params) {
       for(var prop in params)
         self.filter[prop] = params[prop];
   }
-  
+
   /**
    * Decorates the user groups with usefull method to improve the usability:
    * - children(loaded) with loaded a callback called with as argument the loaded groups,
@@ -458,12 +467,12 @@ function UserGroupManagement(params) {
     }
     return decoratedGroups;
   }
-  
+
   setUpFilter(params);
-  
+
   // the groups it manages.
   this.groups = null;
-  
+
   /**
    * Gets the user profiles matching the filters (if any) and passes them to the specified callback
    * 'loaded'.
