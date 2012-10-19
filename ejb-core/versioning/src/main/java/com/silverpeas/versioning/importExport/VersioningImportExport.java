@@ -106,7 +106,7 @@ public class VersioningImportExport {
       SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
         // Un document portant le même nom existe déjà. On ajoute une nouvelle version au document
-        AttachmentServiceFactory.getAttachmentService().addContent(document, new File(attachment.
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, new File(attachment.
             getPhysicalName()), indexIt, indexIt);
       } else {
         HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null,
@@ -416,7 +416,7 @@ public class VersioningImportExport {
     }
     AttachmentServiceFactory.getAttachmentService().
         lock(existingDocument.getId(), "" + userId, existingDocument.getLanguage());
-    AttachmentServiceFactory.getAttachmentService().addContent(existingDocument,
+    AttachmentServiceFactory.getAttachmentService().updateAttachment(existingDocument,
         new File(version.getDocumentPath()), indexIt, launchCallback);
     AttachmentServiceFactory.getAttachmentService().
         unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.

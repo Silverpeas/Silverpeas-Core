@@ -338,7 +338,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       if (StringUtil.isDefined(primaryKey.getId())) {
-        return repository.findDocumentById(session, primaryKey, lang);
+       return repository.findDocumentById(session, primaryKey, lang);
       }
       SimpleDocument doc = repository.findDocumentByOldSilverpeasId(session, primaryKey
           .getComponentName(), primaryKey.getOldSilverpeasId(), false, lang);
@@ -386,7 +386,7 @@ public class SimpleDocumentService implements AttachmentService {
           webdavRepository.updateNodeAttachment(session, document);
         }
       }
-      String userId = document.getCreatedBy();
+      String userId = document.getUpdatedBy();
       if ((userId != null) && (userId.length() > 0) && invokeCallback) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),
@@ -406,7 +406,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void addContent(SimpleDocument document, InputStream in, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, InputStream in, boolean indexIt,
       boolean invokeCallback) {
     Session session = null;
     try {
@@ -427,6 +427,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (document.isOpenOfficeCompatible() && finalDocument.isReadOnly()) {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
+      repository.duplicateContent(session, document, finalDocument);
       String userId = finalDocument.getCreatedBy();
       if (StringUtil.isDefined(userId) && invokeCallback && finalDocument.isPublic()) {
         CallBackManager callBackManager = CallBackManager.get();
@@ -452,8 +453,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
-      repository.removeContent(session, document.getPk(), lang);
-      FileUtils.deleteQuietly(new File(document.getDirectoryPath(lang)));
+      repository.removeContent(session, document.getPk(), lang);      
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.deleteAttachmentNode(session, document);
       }
@@ -464,11 +464,17 @@ public class SimpleDocumentService implements AttachmentService {
             document.getInstanceId(), document.getForeignId());
       }
       deleteIndex(document, document.getLanguage());
-      session.save();
+      session.save(); 
+      SimpleDocument finalDocument = document;
       if (requireLock) {
-        repository.unlock(session, document, false);
+        finalDocument = repository.unlock(session, document, false);      
+        repository.duplicateContent(session, document, finalDocument);
       }
+      finalDocument.setLanguage(lang);
+      FileUtils.deleteQuietly(new File(finalDocument.getAttachmentPath()));
     } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
@@ -617,12 +623,12 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public void addContent(SimpleDocument document, File content, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, File content, boolean indexIt,
       boolean invokeCallback) {
     InputStream in = null;
     try {
       in = new BufferedInputStream(new FileInputStream(content));
-      addContent(document, in, indexIt, invokeCallback);
+      updateAttachment(document, in, indexIt, invokeCallback);
     } catch (FileNotFoundException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {

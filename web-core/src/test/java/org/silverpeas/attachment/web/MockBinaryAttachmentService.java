@@ -54,13 +54,13 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
-  public void addContent(SimpleDocument document, InputStream content, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
       boolean invokeCallback) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void addContent(SimpleDocument document, File content, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, File content, boolean indexIt,
       boolean invokeCallback) {
     throw new UnsupportedOperationException("Not supported yet.");
   }

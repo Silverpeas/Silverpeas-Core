@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,13 +20,15 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.ejb.CreateException;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
@@ -40,7 +41,6 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -143,15 +143,6 @@ public class FileServer extends HttpServlet {
   }
 
   @Override
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
-    }
-  }
-
-  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
@@ -172,7 +163,6 @@ public class FileServer extends HttpServlet {
     SilverTrace.info("peasUtil", "FileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     String mimeType = req.getParameter(MIME_TYPE_PARAMETER);
     String sourceFile = req.getParameter(SOURCE_FILE_PARAMETER);
-    String directory = req.getParameter(DIRECTORY_PARAMETER);
     String archiveIt = req.getParameter(ARCHIVE_IT_PARAMETER);
     String dirType = req.getParameter(DIR_TYPE_PARAMETER);
     String userId = req.getParameter(USER_ID_PARAMETER);
@@ -184,7 +174,6 @@ public class FileServer extends HttpServlet {
     File tempFile = null;
     String attachmentId = req.getParameter(ATTACHMENT_ID_PARAMETER);
     String language = req.getParameter(LANGUAGE_PARAMETER);
-    long fileSize = 0;
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = req.getParameter(VERSION_ID_PARAMETER);
     }
@@ -195,8 +184,6 @@ public class FileServer extends HttpServlet {
       if (attachment != null) {
         mimeType = attachment.getContentType();
         sourceFile = attachment.getFilename();
-        directory = attachment.getAttachmentPath();
-        fileSize = attachment.getSize();
       }
     }
     HttpSession session = req.getSession(true);
@@ -205,9 +192,9 @@ public class FileServer extends HttpServlet {
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
           "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-          + GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.
-          getGeneralResourceLocator().getString("sessionTimeout"));
+          + GeneralPropertiesManager.getString("sessionTimeout"));
+      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+      return;
     }
 
     String filePath = null;
@@ -215,8 +202,7 @@ public class FileServer extends HttpServlet {
       filePath = sourceFile;
     } else {
       if (dirType != null) {
-        if (dirType.equals(GeneralPropertiesManager.getGeneralResourceLocator().getString(
-            "RepositoryTypeTemp"))) {
+        if (dirType.equals(GeneralPropertiesManager.getString("RepositoryTypeTemp"))) {
           filePath = FileRepositoryManager.getTemporaryPath("useless", componentId) + sourceFile;
         }
       } else if (attachment != null) {
@@ -241,9 +227,6 @@ public class FileServer extends HttpServlet {
       if (tempFile != null) {
         downloadFile(res, tempFile.getCanonicalPath());
       } else {
-        if (fileSize > 0L) {
-          res.setContentLength((int) fileSize);
-        }
         downloadFile(res, filePath);
       }
     }
@@ -263,9 +246,12 @@ public class FileServer extends HttpServlet {
             JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
         StatisticBm statisticBm = statisticBmHome.create();
         statisticBm.addStat(userId, pubPK, 1, "Publication");
-      } catch (Exception e) {
+      } catch (CreateException ex) {
         SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
-            "pubPK = " + pubPK + " and nodeId = " + nodeId, e);
+            "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
+      } catch (RemoteException ex) {
+        SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
+            "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
       }
     }
   }
@@ -295,42 +281,37 @@ public class FileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void downloadFile(HttpServletResponse res, String htmlFilePath)
-      throws IOException {
-    OutputStream out2 = res.getOutputStream();
-    BufferedInputStream input = null; // for the html document generated
+  private void downloadFile(HttpServletResponse res, String htmlFilePath) throws IOException {
+    File downloadedFile = new File(htmlFilePath);
+    res.setContentLength((int) downloadedFile.length());
     SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()",
         "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
     try {
-      input = new BufferedInputStream(new FileInputStream(htmlFilePath));
-      IOUtils.copy(input, out2);
-      SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()",
-          "root.MSG_GEN_ENTER_METHOD", " BufferedInputStream was ok ");
-    } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "FileServer.doPost",
-          "root.EX_CANT_READ_FILE", "file name=" + htmlFilePath);
+      OutputStream out = res.getOutputStream();
+      FileUtils.copyFile(downloadedFile, out);
+      out.flush();
+      SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()", "root.MSG_GEN_ENTER_METHOD",
+          " BufferedInputStream was ok ");
+    } catch (IOException e) {
+      SilverTrace.warn("peasUtil", "FileServer.doPost", "root.EX_CANT_READ_FILE", "file name="
+          + htmlFilePath, e);
       displayWarningHtmlCode(res);
-    } finally {
-      SilverTrace.info("peasUtil", "FileServer.displayHtmlCode()", "",
-          " finally ");
-      IOUtils.closeQuietly(input);
-      IOUtils.closeQuietly(out2);
     }
   }
 
   private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
-    OutputStream out2 = res.getOutputStream();
+    OutputStream out = res.getOutputStream();
     ResourceLocator resourceLocator = new ResourceLocator(
         "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
     StringReader sr = new StringReader(resourceLocator.getString("warning"));
     try {
-      IOUtils.copy(sr, out2);
-    } catch (Exception e) {
+      IOUtils.copy(sr, out);
+      out.flush();
+    } catch (IOException e) {
       SilverTrace.warn("peasUtil", "FileServer.displayWarningHtmlCode",
-          "root.EX_CANT_READ_FILE", "warning properties");
+          "root.EX_CANT_READ_FILE", "warning properties", e);
     } finally {
       IOUtils.closeQuietly(sr);
-      IOUtils.closeQuietly(out2);
     }
   }
 }

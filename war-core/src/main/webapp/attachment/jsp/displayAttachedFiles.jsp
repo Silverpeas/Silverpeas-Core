@@ -616,13 +616,12 @@
       post : function () {},
       complete : function (response) {
         if (response.status) {
-          menuCheckin($('#checkin_oldId').val());
-          pageMustBeReloadingAfterSorting = true;
+          menuCheckin(response.id);
+          //update version
         } else {
-          displayWarning($(this).val("attachmentId"));
+          displayWarning(response.attachmentId);
         }
         clearCheckin();
-        reloadIncludingPage();
       }      
     });
 

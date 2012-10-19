@@ -73,9 +73,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public void addContent(SimpleDocument document, InputStream in, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, InputStream in, boolean indexIt,
       boolean invokeCallback) {
-    realService.addContent(document, in, indexIt, invokeCallback);
+    realService.updateAttachment(document, in, indexIt, invokeCallback);
   }
 
   @Override
@@ -183,9 +183,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public void addContent(SimpleDocument document, File content, boolean indexIt,
+  public void updateAttachment(SimpleDocument document, File content, boolean indexIt,
       boolean invokeCallback) {
-    realService.addContent(document, content, indexIt, invokeCallback);
+    realService.updateAttachment(document, content, indexIt, invokeCallback);
   }
 
   @Override

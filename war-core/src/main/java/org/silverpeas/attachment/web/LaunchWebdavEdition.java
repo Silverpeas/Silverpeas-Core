@@ -72,8 +72,7 @@ public class LaunchWebdavEdition extends HttpServlet {
       MainSessionController mainSessionController = (MainSessionController) request.getSession().
           getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       if (mainSessionController == null) {
-        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-            "sessionTimeout");
+        String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
       }
       String login = mainSessionController.getCurrentUserDetail().getLogin();

@@ -49,27 +49,6 @@ public interface AttachmentService {
   String UPDATE_SHORTCUT_MODE = "2";
 
   /**
-   * To update a document content by updating or adding some content.
-   *
-   * @param document
-   * @param content
-   * @param indexIt
-   * @param invokeCallback
-   */
-  void addContent(SimpleDocument document, InputStream content, boolean indexIt,
-      boolean invokeCallback);
-
-  /**
-   * To update a document content by updating or adding some content.
-   *
-   * @param document
-   * @param content
-   * @param indexIt
-   * @param invokeCallback
-   */
-  void addContent(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
-
-  /**
    * Writes the binary content into the specified File.
    *
    * @param file the file where the content is to be written.
@@ -253,6 +232,27 @@ public interface AttachmentService {
    * @param invokeCallback
    */
   void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback);
+  
+  /**
+   * To update a document content by updating or adding some content.
+   *
+   * @param document
+   * @param content 
+   * @param indexIt
+   * @param invokeCallback
+   */
+  void updateAttachment(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
+  
+  
+  /**
+   * To update a document content by updating or adding some content.
+   *
+   * @param document
+   * @param content 
+   * @param indexIt
+   * @param invokeCallback
+   */
+  void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt, boolean invokeCallback);
 
   void updateIndexEntryWithAttachments(FullIndexEntry indexEntry);
 

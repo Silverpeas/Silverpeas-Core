@@ -64,6 +64,7 @@ import com.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
@@ -164,11 +165,11 @@ public class DocumentRepository {
     prepareComponentAttachments(destination.getInstanceId());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     SimpleDocument targetDoc;
-    if(document.isVersioned()) {
+    if (document.isVersioned()) {
       targetDoc = new HistorisedDocument();
     } else {
       targetDoc = new SimpleDocument();
-    }    
+    }
     targetDoc.setNodeName(null);
     targetDoc.setPK(pk);
     targetDoc.setForeignId(destination.getId());
@@ -197,15 +198,15 @@ public class DocumentRepository {
     if (!StringUtil.isDefined(owner)) {
       owner = document.getUpdatedBy();
     }
-    boolean checkinRequired = lock(session, document, owner);
-    if (checkinRequired && StringUtil.isDefined(document.getEditedBy())) {
+    /*boolean checkinRequired = lock(session, document, owner);*/
+    if (/*checkinRequired && */StringUtil.isDefined(document.getEditedBy())) {
       document.setUpdatedBy(document.getEditedBy());
     }
     converter.fillNode(document, documentNode);
-    if (checkinRequired) {
-      checkinNode(documentNode, document.getLanguage(), document.isPublic());
-      duplicateContent(session, document, findDocumentById(session, document.getPk(), null));
-    }
+    /*if (checkinRequired) {
+      SimpleDocument finalDocument = checkinNode(documentNode, document.getLanguage(), document.isPublic());
+      duplicateContent(session, document, finalDocument);
+    }*/
   }
 
   /**
@@ -234,7 +235,8 @@ public class DocumentRepository {
       RepositoryException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-      deleteDocumentNode(documentNode);
+      deleteContent(documentNode, documentPk.getInstanceId());
+      deleteDocumentNode(documentNode);      
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
     }
@@ -627,7 +629,7 @@ public class DocumentRepository {
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
     }
-    SimpleDocument document =  converter.fillDocument(docNode, language);
+    SimpleDocument document = converter.fillDocument(docNode, language);
     return new BufferedInputStream(FileUtils.openInputStream(new File(document.getAttachmentPath())));
   }
 
@@ -666,9 +668,9 @@ public class DocumentRepository {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
       if (!documentNode.isCheckedOut()) {
-        checkoutNode(documentNode, owner);
-        return true;
+        checkoutNode(documentNode, owner);        
       }
+      return true;
     }
     return false;
   }
@@ -693,11 +695,17 @@ public class DocumentRepository {
     }
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
-        Version lastVersion = session.getWorkspace().getVersionManager().getVersionHistory(document.
-            getFullJcrPath()).getAllVersions().nextVersion();
-        session.getWorkspace().getVersionManager().restore(document.getFullJcrPath(), lastVersion,
-            true);
-        return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
+        VersionIterator iter = session.getWorkspace().getVersionManager().
+            getVersionHistory(document.
+            getFullJcrPath()).getAllVersions();
+        Version lastVersion = null;
+        while (iter.hasNext()) {
+          lastVersion = iter.nextVersion();
+        }
+        if (lastVersion != null) {
+          session.getWorkspace().getVersionManager().restore(lastVersion, true);
+          return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
+        }
       }
       converter.fillNode(document, documentNode);
       return checkinNode(documentNode, document.getLanguage(), document.isPublic());
@@ -812,10 +820,31 @@ public class DocumentRepository {
 
   public void duplicateContent(Session session, SimpleDocument origin, SimpleDocument document)
       throws IOException, RepositoryException {
-    File target = new File(document.getAttachmentPath());
-    File source = new File(origin.getAttachmentPath());
-    if (!target.exists() && source.exists()) {
-      FileUtils.copyFile(source, target);
+    String originDir = origin.getDirectoryPath(null);
+    String targetDir = document.getDirectoryPath(null);;
+    targetDir = targetDir.replace('/', File.separatorChar);
+    File target = new File(targetDir).getParentFile();
+    File source = new File(originDir).getParentFile();
+    if(!source.exists() && ! source.isDirectory()) {
+      return;
+    }
+    if(!target.exists()) {
+      target.mkdir();
+    }
+    for(File langDir : source.listFiles()) {
+      File targetLangDir = new File(target, langDir.getName());
+      if(!targetLangDir.exists()) {
+        FileUtils.copyDirectory(langDir, targetLangDir);
+      }
+    }
+  }
+
+  public void deleteContent(Node documentNode, String instanceId) throws RepositoryException {
+    String directory = FileRepositoryManager.getAbsolutePath(instanceId) + documentNode.getName();
+    directory = directory.replace('/', File.separatorChar);
+    File documentDirectory = new File(directory);
+    if (documentDirectory.exists() && documentDirectory.isDirectory()) {
+      FileUtils.deleteQuietly(documentDirectory);
     }
   }
 }

@@ -155,10 +155,9 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("commentMessage") String comment) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
     boolean isPublic = false;
-    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
-      document.setPublicDocument(Integer.parseInt(versionType)
-          == DocumentVersion.TYPE_PUBLIC_VERSION);
-      isPublic = true;
+    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {      
+      isPublic = Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION;
+      document.setPublicDocument(isPublic);
     }
     document.setUpdatedBy(getUserDetail().getId());
     document.setLanguage(lang);
@@ -174,18 +173,19 @@ public class SimpleDocumentResource extends RESTWebService {
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-      AttachmentServiceFactory.getAttachmentService().addContent(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
-      UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(), lang, comment);
-      unlockContext.addOption(UnlockOption.UPLOAD);
-      if(!isPublic) {
-        unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
-      }
-      AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
     }
+    UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
+        lang, comment);
+    unlockContext.addOption(UnlockOption.UPLOAD);
+    if (!isPublic) {
+      unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+    }
+    AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
     document = getSimpleDocument(lang);
     URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
         getLanguage()).build();
@@ -322,7 +322,8 @@ public class SimpleDocumentResource extends RESTWebService {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
     boolean result = AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
-    return MessageFormat.format("'{'\"status\":{0}}", result);
+    return MessageFormat.format("'{'\"status\":{0}, \"id\":{1}, \"attachmentId\":\"{2}\"}", result,
+        document.getOldSilverpeasId(), document.getId());
   }
 
   SimpleDocument getSimpleDocument(String lang) {

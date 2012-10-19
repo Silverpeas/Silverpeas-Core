@@ -44,6 +44,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+
 /**
  * Class declaration
  *
@@ -125,8 +128,14 @@ public class VersionedDragAndDrop extends HttpServlet {
                 item.getInputStream(), bIndexIt, publicDocument);
           } else {
             document.edit("" + userId);
-            AttachmentServiceFactory.getAttachmentService().addContent(document,
+            AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
                 item.getInputStream(), bIndexIt, publicDocument);
+            UnlockContext unlockContext = new UnlockContext(document.getId(), "" + userId, lang, "");
+            unlockContext.addOption(UnlockOption.UPLOAD);
+            if (!publicDocument) {
+              unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+            }
+            AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
           }
 
         } catch (AttachmentException e) {

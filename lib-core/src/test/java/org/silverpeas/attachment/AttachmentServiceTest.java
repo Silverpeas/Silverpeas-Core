@@ -222,7 +222,7 @@ public class AttachmentServiceTest {
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-    instance.addContent(document, content, false, false);
+    instance.updateAttachment(document, content, false, false);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
@@ -241,7 +241,7 @@ public class AttachmentServiceTest {
     currentLang = "en";
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     document.setLanguage(currentLang);
-    instance.addContent(document, content, false, false);
+    instance.updateAttachment(document, content, false, false);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
@@ -264,7 +264,7 @@ public class AttachmentServiceTest {
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
     currentLang = "en";
     document.setLanguage(currentLang);
-    instance.addContent(document, file, false, false);
+    instance.updateAttachment(document, file, false, false);
     File tempFile = File.createTempFile("LibreOffice", ".odt");
     instance.getBinaryContent(tempFile, existingFrDoc, currentLang);
     assertThat(FileUtils.contentEquals(file, tempFile), is(true));
@@ -282,7 +282,7 @@ public class AttachmentServiceTest {
     File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
     String currentLang = "fr";
     SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
-    instance.addContent(document, file, false, false);
+    instance.updateAttachment(document, file, false, false);
     File tempFile = File.createTempFile("LibreOffice", ".odt");
     instance.getBinaryContent(tempFile, existingFrDoc, currentLang);
     assertThat(FileUtils.contentEquals(file, tempFile), is(true));

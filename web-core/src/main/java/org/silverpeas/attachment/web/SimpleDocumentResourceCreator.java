@@ -136,8 +136,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       } else {
         document.edit(userId);
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, language);
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, false, false);
-        AttachmentServiceFactory.getAttachmentService().addContent(document, uploadedInputStream,
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, uploadedInputStream,
             StringUtil.getBooleanValue(indexIt), publicDocument);
         UnlockContext context = new UnlockContext(document.getId(), userId, language);
         context.addOption(UnlockOption.UPLOAD);

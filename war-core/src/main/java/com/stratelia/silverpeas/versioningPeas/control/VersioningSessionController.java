@@ -449,7 +449,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       newVersion.edit(getUserId());
       newVersion.setUpdated(new Date());
     }
-    AttachmentServiceFactory.getAttachmentService().addContent(newVersion, in, isIndexable(),
+    AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in, isIndexable(),
         true);
     return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(newVersion.getPk(),
         newVersion.getLanguage());

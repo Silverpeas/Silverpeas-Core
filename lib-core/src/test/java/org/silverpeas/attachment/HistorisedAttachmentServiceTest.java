@@ -236,7 +236,7 @@ public class HistorisedAttachmentServiceTest {
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-    instance.addContent(document, content, false, false);
+    instance.updateAttachment(document, content, false, false);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
@@ -255,7 +255,8 @@ public class HistorisedAttachmentServiceTest {
     currentLang = "en";
     InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
     document.setLanguage(currentLang);
-    instance.addContent(document, content, false, false);
+    instance.updateAttachment(document, content, false, false);
+    document = instance.searchAttachmentById(existingFrDoc, currentLang);
     out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("This is a test"));
@@ -278,7 +279,7 @@ public class HistorisedAttachmentServiceTest {
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
     currentLang = "en";
     document.setLanguage(currentLang);
-    instance.addContent(document, file, false, false);
+    instance.updateAttachment(document, file, false, false);
     File tempFile = File.createTempFile("LibreOffice", ".odt");
     instance.getBinaryContent(tempFile, existingFrDoc, currentLang);
     assertThat(FileUtils.contentEquals(file, tempFile), is(true));
@@ -296,7 +297,7 @@ public class HistorisedAttachmentServiceTest {
     File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
     String currentLang = "fr";
     SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
-    instance.addContent(document, file, false, false);
+    instance.updateAttachment(document, file, false, false);
     File tempFile = File.createTempFile("LibreOffice", ".odt");
     instance.getBinaryContent(tempFile, existingFrDoc, currentLang);
     assertThat(FileUtils.contentEquals(file, tempFile), is(true));
@@ -713,7 +714,7 @@ public class HistorisedAttachmentServiceTest {
    */
   @Test
   public void testUpdateAttachment() {
-    SimpleDocument result = instance.searchAttachmentById(existingFrDoc, null);
+    SimpleDocument result = instance.searchAttachmentById(existingFrDoc, "fr");
     checkFrenchSimpleDocument(result);
     Date alertDate = RandomGenerator.getRandomCalendar().getTime();
     result.setAlert(alertDate);
@@ -727,16 +728,18 @@ public class HistorisedAttachmentServiceTest {
     Date expiryDate = RandomGenerator.getRandomCalendar().getTime();
     result.setExpiry(expiryDate);
     result.setFilename("toto"); //shouldn't change
-    int majorVersion = 5;
+    /*int majorVersion = 5;
     result.setMajorVersion(majorVersion);
     int minorVersion = 10;
-    result.setMinorVersion(minorVersion);
+    result.setMinorVersion(minorVersion);*/
     int order = 5000;
     result.setOrder(order);
     String title = "Mon document de test mis à jour";
     result.setTitle(title);
+    instance.lock(existingFrDoc.getId(),  creatorId, "fr");
     instance.updateAttachment(result, false, false);
-    result = instance.searchAttachmentById(existingFrDoc, null);
+    existingFrDoc.setId(null);
+    result = instance.searchAttachmentById(existingFrDoc, "fr");
     assertThat(result, is(notNullValue()));
     assertThat(result.getAlert(), is(DateUtil.getBeginOfDay(alertDate)));
     assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));
