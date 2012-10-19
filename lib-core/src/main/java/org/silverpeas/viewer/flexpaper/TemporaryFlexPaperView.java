@@ -21,60 +21,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
+package org.silverpeas.viewer.flexpaper;
 
 import java.io.File;
-import javax.inject.Inject;
+
+import org.silverpeas.viewer.AbstractView;
+
+import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
+public class TemporaryFlexPaperView extends AbstractView {
 
-  @Inject
-  private PreviewService previewService;
-
-  private final static ViewFactory instance = new ViewFactory();
-
-  PreviewService getService() {
-    return this.previewService;
-  }
-  
-  private ViewFactory() {
-    // Nothing to do
-  }
+  private int width = 0;
+  private int height = 0;
 
   /**
-   * Instance accessor (singleton)
-   * @return
+   * Default constructor
+   * @param physicalFile
    */
-  public static ViewFactory getInstance() {
-    return instance;
+  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
+      final int nbPages, final int width, final int height) {
+    super(originalFileName, physicalFile, nbPages);
+    this.width = width;
+    this.height = height;
   }
 
-  /**
-   * Viewer services accessor
-   * @return
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getURLAsString()
    */
-  public static PreviewService getPreviewService() {
-    return instance.getService();
+  @Override
+  public String getURLAsString() {
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
   }
-  
-  /**
-   * Indicates if file is previewable.
-   * @param file 
-   * @return true if a preview can be produced  - false otherwise.
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getWidth()
    */
-  public static boolean isPreviewable(File file) {
-    return instance.getService().isPreviewable(file);
+  @Override
+  public String getWidth() {
+    return String.valueOf(width);
   }
-  
-   /**
-   * Indicates if file is previewable.
-   * @param path 
-   * @return true if a preview can be produced  - false otherwise.
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getHeight()
    */
-  public static boolean isPreviewable(String path) {
-    return instance.getService().isPreviewable(new File(path));
+  @Override
+  public String getHeight() {
+    return String.valueOf(height);
   }
 }

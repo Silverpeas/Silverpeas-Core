@@ -172,6 +172,44 @@
     },
 
     /**
+     * The modal view dialog.
+     * It accepts one parameter that is an object with three attributes:
+     * - title : the document title of the dialog box
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     */
+    view : function( options ) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+      settings.title = $.i18n.prop('GML.view.dialog.title');
+      if (options.title && options.title.length > 0) {
+        settings.title = settings.title + " "
+            + $.i18n.prop('GML.view.dialog.title.of') + " " + options.title;
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonDisplayed : false,
+        disabledParentScroll : true,
+        width : 'auto'
+      }));
+
+      if (__isIE7()) {
+        // Width & Height
+        if (options.width) {
+          settings.width = options.width;
+        }
+        if (options.height) {
+          settings.height = eval(options.height) + 27;
+        }
+      }
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+
+    /**
      * The modal waiting dialog.
      */
     waiting : function() {
@@ -238,6 +276,7 @@
     var settings = {
       displayTitle : true,
       closeOnEscape : true,
+      disabledParentScroll : false,
       buttonDisplayed : true,
       buttonTextYes : '',
       buttonTextNo : '',
@@ -302,6 +341,14 @@
             $_this.dialog("close");
           }
         } ]);
+      }
+
+      // Scroll
+      if (options.disabledParentScroll) {
+        $("html,body").css("overflow", "hidden");
+        $_this.dialog("option", "beforeClose", function(event, ui){
+          $("html,body").css("overflow", "auto");
+        });
       }
 
       // Width

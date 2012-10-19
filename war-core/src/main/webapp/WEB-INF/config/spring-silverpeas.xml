@@ -125,7 +125,7 @@
 
   <!-- the factory for document viewing features available in Silverpeas.
         It wraps and provides an access to the actual view implementations -->
-  <bean id="viewFactory" class="org.silverpeas.viewer.ViewFactory"
+  <bean id="viewerFactory" class="org.silverpeas.viewer.ViewerFactory"
         factory-method="getInstance"/>
 
   <!-- the factory of the content management services.

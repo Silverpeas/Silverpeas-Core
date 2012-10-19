@@ -68,7 +68,7 @@ public class PreviewEntity extends AbstractPreviewEntity<PreviewEntity> {
    * @param request
    * @param preview
    */
-  private PreviewEntity(final HttpServletRequest request, final Preview preview) {
+  protected PreviewEntity(final HttpServletRequest request, final Preview preview) {
     url = preview.getURLAsString().replaceAll("[/]{2,}", "/");
     originalFileName = preview.getOriginalFileName();
     width = preview.getWidth();

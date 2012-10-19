@@ -231,6 +231,9 @@
             <c:if test="${view:isPreviewable(currentAttachment.attachmentPath)}">
             <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
             </c:if>
+            <c:if test="${view:isViewable(currentAttachment.attachmentPath)}">
+            <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+            </c:if>
           </span>
           <c:if test="${view:isDefined(currentAttachment.title) && showTitle}">
             <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
@@ -827,6 +830,14 @@
   function preview(target, attachmentId) {
     $(target).preview("previewAttachment", {
       componentInstanceId: '<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />',
+      attachmentId: attachmentId
+    });
+    return false;
+  }
+  
+  function view(target, attachmentId) {
+    $(target).view("viewAttachment", {
+      componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
       attachmentId: attachmentId
     });
     return false;

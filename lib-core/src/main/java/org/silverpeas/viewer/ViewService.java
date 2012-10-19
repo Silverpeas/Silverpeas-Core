@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,41 +28,20 @@ import java.io.File;
 /**
  * @author Yohann Chastagnier
  */
-public interface Preview {
+public interface ViewService {
 
   /**
-   * Getting the license of display software product if any
+   * Verifying if it is possible to obtain a view of the given file.
+   * @param file
    * @return
    */
-  String getDisplayLicenseKey();
+  boolean isViewable(File file);
 
   /**
-   * Getting URL of the document
+   * Getting pages view instances of the given file
+   * @param originalFileName
+   * @param physicalFile
    * @return
    */
-  String getURLAsString();
-
-  /**
-   * Getting the original file of the document
-   * @return
-   */
-  String getOriginalFileName();
-
-  /**
-   * Getting the physical file of the document
-   * @return
-   */
-  File getPhysicalFile();
-
-  /**
-   * Getting the width of the document
-   * @return
-   */
-  String getWidth();
-
-  /**
-   * Getting the height of the document
-   * @return
-   */
-  String getHeight();
+  DocumentView getDocumentView(String originalFileName, File physicalFile);
 }
