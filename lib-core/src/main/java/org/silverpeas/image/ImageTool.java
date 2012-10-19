@@ -37,7 +37,7 @@ public interface ImageTool {
    * Indicates if image tools are available
    * @return
    */
-  boolean isActived();
+  boolean isActivated();
 
   /**
    * Converts an image with some directives

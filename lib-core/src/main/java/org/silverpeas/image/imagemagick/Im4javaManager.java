@@ -61,10 +61,10 @@ public class Im4javaManager {
   }
 
   /**
-   * Indicates if im4java is actived
+   * Indicates if im4java is activated
    * @return
    */
-  public static boolean isActived() {
+  public static boolean isActivated() {
     return StringUtil.isDefined(ProcessStarter.getGlobalSearchPath());
   }
 }
