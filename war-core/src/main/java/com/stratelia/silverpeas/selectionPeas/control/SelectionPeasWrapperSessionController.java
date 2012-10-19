@@ -31,6 +31,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
@@ -156,8 +157,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    * Init the user panel.
    */
   public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostUrl = m_context + "/RselectionPeasWrapper/jsp/close";
 
     Selection sel = getSelection();

@@ -274,8 +274,7 @@ public class NotificationUserSessionController extends AbstractComponentSessionC
         "NotificationUsersessionController.initSelectionPeas()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER METHOD");
 
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostUrl = m_context
         + URLManager.getURL(URLManager.CMP_NOTIFICATIONUSER) + "GetTarget"
         + paramValues;

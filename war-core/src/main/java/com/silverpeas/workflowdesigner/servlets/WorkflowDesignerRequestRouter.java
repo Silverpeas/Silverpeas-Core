@@ -120,7 +120,7 @@ public class WorkflowDesignerRequestRouter extends
 
     // Check access rights
     if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString("accessForbidden");
+      return GeneralPropertiesManager.getString("accessForbidden");
     }
 
     try {
