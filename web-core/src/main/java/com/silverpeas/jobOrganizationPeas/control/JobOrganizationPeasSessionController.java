@@ -321,8 +321,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * Retour du initialisation userPanel un user ou (exclusif) un groupe
    */
   public String initSelectionPeas() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
     String cancelUrl = m_context
         + Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);

@@ -109,6 +109,7 @@ public abstract class AbstractWindow implements Window {
    * @param width
    * @see
    */
+  @Override
   public void setWidth(String width) {
     this.width = width;
   }
@@ -130,11 +131,11 @@ public abstract class AbstractWindow implements Window {
    * @return
    * @see
    */
+  @Override
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
-          "AdminFromComponentEnable", true) &&
+      if (GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
           StringUtil.isDefined(getGEF().getComponentId())) {
         addOperationToSetupComponent();
       }
@@ -146,11 +147,9 @@ public abstract class AbstractWindow implements Window {
     MainSessionController msc = getGEF().getMainSessionController();
     if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label =
-          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+      String label = GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
           .getString("GML.operations.setupComponent");
-      String url =
-          URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
+      String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();

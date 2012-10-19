@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model;
 
 import java.io.File;
@@ -35,6 +31,8 @@ import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -46,6 +44,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public final class AttachmentDetail extends AbstractI18NBean implements Serializable, MimeTypes,
@@ -79,7 +78,6 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   private String importUpdateRule = IMPORT_UPDATE_RULE_ADD; // used by the import engine
   private boolean removeAfterImport = false;
   private String originalPath;
-
   private Date reservationDate = null; // date de réservation
   private Date alertDate = null; // date d'alerte pour la notification intermédiaire
   private Date expiryDate = null; // date d'expiration
@@ -96,6 +94,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Constructor
+   *
    * @author Jean-Claude Groccia
    * @version
    */
@@ -104,6 +103,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Constructor
+   *
    * @param foreignKey : type WAPrimaryKey: the key of custumer object
    * @see com.stratelia.util.WAPrimaryKey
    * @author Jean-Claude Groccia
@@ -118,6 +118,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Constructor
+   *
    * @param attachPK : type AttachmentPK: the primary key of AttachmentDetail
    * @param logicalName :type String: the name file
    * @param physicalName : type String: the name file stored in the server
@@ -236,6 +237,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Constructors
+   *
    * @param AttachmentPK , the primary key of AttachmentDetail
    * @see com.stratelia.webactiv.util.attachment.ejb.AttachmentPK
    * @author Jean-Claude Groccia
@@ -257,6 +259,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param pk
    * @see
    */
@@ -275,6 +278,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -295,6 +299,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param physicalName
    * @see
    */
@@ -304,6 +309,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -324,6 +330,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param logicalName
    * @see
    */
@@ -335,6 +342,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -344,6 +352,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param desc
    * @see
    */
@@ -353,6 +362,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -377,6 +387,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param type
    * @see
    */
@@ -390,6 +401,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -410,6 +422,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param size
    * @see
    */
@@ -419,6 +432,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Methode declaration
+   *
    * @see
    */
   public Date getCreationDate() {
@@ -438,6 +452,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Methode declaration
+   *
    * @param fileDate
    * @see
    */
@@ -447,6 +462,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param context
    * @see
    */
@@ -460,6 +476,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -469,6 +486,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @param foreignKey
    * @see
    */
@@ -479,6 +497,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -561,6 +580,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Set the use who's working on the document
+   *
    * @param workerId
    */
   public void setWorkerId(String workerId) {
@@ -569,6 +589,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Get the current user who's working on the document
+   *
    * @return
    */
   public String getWorkerId() {
@@ -577,6 +598,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Retourne le group auquel appartient l'attachment. Ce groupe est deduit du champ description
+   *
    * @see
    */
   public int getAttachmentGroup() {
@@ -598,6 +620,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Retourne l'URL de l'attachment. Cette URL est construite a partir des autres informations
+   *
    * @see
    */
   public String getAttachmentURL(String language) {
@@ -659,14 +682,13 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   public String getWebdavUrl(String language) {
     StringBuilder url = new StringBuilder(500);
-    ResourceLocator messages = GeneralPropertiesManager.getGeneralResourceLocator();
-    String webAppContext = messages.getString("ApplicationURL");
+    String webAppContext = URLManager.getApplicationURL();
     if (!webAppContext.endsWith("/")) {
       webAppContext = webAppContext + '/';
     }
-    url.append(webAppContext).append(messages.getString("webdav.respository")).append('/').append(
-        messages.getString("webdav.workspace")).append('/').append(
-        getJcrPath(getLanguage(language)));
+    url.append(webAppContext).append(GeneralPropertiesManager.getString("webdav.respository")).
+        append('/').append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
+        append(getJcrPath(getLanguage(language)));
     return url.toString();
   }
 
@@ -692,6 +714,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   /**
    * Retourne l'URL de l'attachment pour l'utilisation externe (web). Cette URL est construite a
    * partir des autres informations
+   *
    * @see
    */
   public String getWebURL() {
@@ -707,6 +730,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   /**
    * Retourne l'URL de l'attachment afin que le téléchargement soit enregistré. Cette URL est
    * construite a partir des autres informations
+   *
    * @see
    */
   public String getAttachmentURLToMemorize(String userId, String fatherId) {
@@ -762,6 +786,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Retourne l'extension de l'icone de l'attachment.
+   *
    * @see
    */
   public String getAttachmentIcon(String language) {
@@ -783,6 +808,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Retourne la taille du fichier lie sour forme de string.
+   *
    * @see
    */
   public String getAttachmentFileSize(String language) {
@@ -803,6 +829,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Retourne la taille du fichier lie sour forme de string.
+   *
    * @see
    */
   public String getAttachmentDownloadEstimation(String language) {
@@ -837,6 +864,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Return the path to the attachment file.
+   *
    * @param language the language for the file.
    * @return the path to the attachment file.
    */
@@ -852,6 +880,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Check if the attachment is compatible with OpenOffice using the mime type .
+   *
    * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
   public boolean isOpenOfficeCompatible() {
@@ -861,6 +890,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   /**
    * Check if the attachment for the specified language is compatible with OpenOffice using the mime
    * type .
+   *
    * @param language the language of the attachment.
    * @return true if the attachment is compatible with OpenOffice false otherwise.
    */
@@ -870,6 +900,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
+   *
    * @return
    * @deprecated Use isOpenOfficeCompatible instead as Ms Office is no longer a special case.
    */
@@ -880,6 +911,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * If 3d document
+   *
    * @param language
    * @return true or false
    */
@@ -907,6 +939,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
 
   /**
    * Is the Office file in read-only mode ?
+   *
    * @return
    * @throws AttachmentException
    */

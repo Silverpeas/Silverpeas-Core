@@ -544,8 +544,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   protected Selection communInitUserPanel(String compoName, String operation) {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("silverStatisticsPeas.statistics");// getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
         m_context + getComponentUrl() + compoName);

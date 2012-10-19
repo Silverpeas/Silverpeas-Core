@@ -38,6 +38,8 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
+
 public class I18NHelper {
 
   // "fr" - List of I18NLanguage : all available languages in french
@@ -284,7 +286,7 @@ public class I18NHelper {
     list += "</SELECT>";
 
     if (bean != null) {
-      String path = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+      String path = URLManager.getApplicationURL();
       String text = GeneralPropertiesManager.getGeneralMultilang(userLanguage).getString(
           "GML.translationRemove");
 

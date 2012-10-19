@@ -193,8 +193,7 @@ public class URLManager {
         absoluteUrl += ":" + request.getServerPort();
       }
     }
-    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-    return generalSettings.getString("httpServerBase", absoluteUrl);
+    return GeneralPropertiesManager.getString("httpServerBase", absoluteUrl);
   }
 
   public static String getHttpMode() {

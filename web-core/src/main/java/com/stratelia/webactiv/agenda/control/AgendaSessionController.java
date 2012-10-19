@@ -1292,8 +1292,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public String initSelectionPeas() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject hostComponentName = new PairObject(getString("agenda"),
         m_context + "/Ragenda/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
@@ -1426,8 +1425,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public String initUserPanelOtherAgenda() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject hostComponentName = new PairObject(getString("agenda"),
         m_context + "/Ragenda/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
