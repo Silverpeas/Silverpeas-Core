@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,12 +27,6 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.viewer.exception.PreviewException;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -62,48 +56,7 @@ public abstract class AbstractViewerService {
    * @param fileExtension
    * @return
    */
-  protected File changeTmpFileExtension(final File file, final String fileExtension) {
+  protected File changeFileExtension(final File file, final String fileExtension) {
     return new File(getFullPath(file.getPath()) + getBaseName(file.getPath()) + "." + fileExtension);
-  }
-
-  /**
-   * Centralizing command exececution code
-   * @param command
-   * @return
-   */
-  protected List<String> exec(final String command) {
-    final List<String> result = new ArrayList<String>();
-    final Process process;
-    try {
-      process = Runtime.getRuntime().exec(command);
-      final Thread errEater = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-          try {
-            IOUtils.readLines(process.getErrorStream());
-          } catch (final IOException e) {
-            throw new PreviewException(e);
-          }
-        }
-      });
-      errEater.start();
-      final Thread outEater = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-          try {
-            result.addAll(IOUtils.readLines(process.getInputStream()));
-          } catch (final IOException e) {
-            throw new PreviewException(e);
-          }
-        }
-      });
-      outEater.start();
-      process.waitFor();
-    } catch (final Exception e) {
-      throw new PreviewException(e);
-    }
-    return result;
   }
 }
