@@ -26,15 +26,27 @@ package org.silverpeas.viewer;
 import java.io.File;
 
 import com.silverpeas.util.ImageUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractPreview implements Preview {
+  protected final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.viewer.viewer", "");
 
   private final String originalFileName;
   private final File physicalFile;
   private String[] widthAndHeight = null;
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+   */
+  @Override
+  public String getDisplayLicenseKey() {
+    return "";
+  }
 
   /**
    * Default constructor

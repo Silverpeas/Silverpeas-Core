@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,46 +23,46 @@
  */
 package org.silverpeas.viewer;
 
-import java.io.File;
+import javax.inject.Inject;
 
 /**
+ * Viewer factory which provides preview and view services.
  * @author Yohann Chastagnier
  */
-public interface Preview {
+public class ViewerFactory {
+  private static ViewerFactory instance = new ViewerFactory();
+
+  @Inject
+  private PreviewService previewService;
+
+  @Inject
+  private ViewService viewService;
+
+  private ViewerFactory() {
+    // Nothing to do
+  }
 
   /**
-   * Getting the license of display software product if any
+   * Instance accessor (singleton)
    * @return
    */
-  String getDisplayLicenseKey();
+  private static ViewerFactory getInstance() {
+    return ViewerFactory.instance;
+  }
 
   /**
-   * Getting URL of the document
+   * Preview services accessor
    * @return
    */
-  String getURLAsString();
+  public static PreviewService getPreviewService() {
+    return getInstance().previewService;
+  }
 
   /**
-   * Getting the original file of the document
+   * View services accessor
    * @return
    */
-  String getOriginalFileName();
-
-  /**
-   * Getting the physical file of the document
-   * @return
-   */
-  File getPhysicalFile();
-
-  /**
-   * Getting the width of the document
-   * @return
-   */
-  String getWidth();
-
-  /**
-   * Getting the height of the document
-   * @return
-   */
-  String getHeight();
+  public static ViewService getViewService() {
+    return getInstance().viewService;
+  }
 }

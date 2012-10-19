@@ -21,44 +21,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.viewer;
+package org.silverpeas.viewer.flexpaper;
 
-import javax.inject.Inject;
+import java.io.File;
+
+import org.silverpeas.viewer.AbstractView;
+
+import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
+public class TemporaryFlexPaperView extends AbstractView {
 
-  @Inject
-  private PreviewService previewService;
-
-  private static ViewFactory instance;
-
-  private ViewFactory() {
-    // Nothing to do
-  }
+  private int width = 0;
+  private int height = 0;
 
   /**
-   * Instance accessor (singleton)
-   * @return
+   * Default constructor
+   * @param physicalFile
    */
-  private static ViewFactory getInstance() {
-    if (ViewFactory.instance == null) {
-      synchronized (ViewFactory.class) {
-        if (ViewFactory.instance == null) {
-          ViewFactory.instance = new ViewFactory();
-        }
-      }
-    }
-    return ViewFactory.instance;
+  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
+      final int nbPages, final int width, final int height) {
+    super(originalFileName, physicalFile, nbPages);
+    this.width = width;
+    this.height = height;
   }
 
-  /**
-   * Viewer services accessor
-   * @return
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getURLAsString()
    */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
+  @Override
+  public String getURLAsString() {
+    return FileServerUtils.getUrlToTempDir(getPhysicalFile().getName());
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getWidth()
+   */
+  @Override
+  public String getWidth() {
+    return String.valueOf(width);
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.AbstractPreview#getHeight()
+   */
+  @Override
+  public String getHeight() {
+    return String.valueOf(height);
   }
 }
