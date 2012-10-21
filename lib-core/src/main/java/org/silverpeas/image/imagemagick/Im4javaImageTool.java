@@ -51,8 +51,8 @@ public class Im4javaImageTool extends AbstractImageTool {
    * @see org.silverpeas.image.ImageTool#isActived()
    */
   @Override
-  public boolean isActived() {
-    return Im4javaManager.isActived();
+  public boolean isActivated() {
+    return Im4javaManager.isActivated();
   }
 
   /*

@@ -26,6 +26,7 @@ package org.silverpeas.viewer.flexpaper;
 import java.io.File;
 
 import org.silverpeas.viewer.AbstractView;
+import org.silverpeas.viewer.util.DocumentInfo;
 
 import com.stratelia.webactiv.util.FileServerUtils;
 
@@ -42,10 +43,10 @@ public class TemporaryFlexPaperView extends AbstractView {
    * @param physicalFile
    */
   public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
-      final int nbPages, final int width, final int height) {
-    super(originalFileName, physicalFile, nbPages);
-    this.width = width;
-    this.height = height;
+      final DocumentInfo info) {
+    super(originalFileName, physicalFile, info.getNbPages());
+    width = info.getMaxWidh();
+    height = info.getMaxHeight();
   }
 
   /*

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,12 +23,15 @@
  */
 package org.silverpeas.viewer;
 
+import static org.silverpeas.viewer.util.SwfUtil.SWF_DOCUMENT_EXTENSION;
+
 import java.io.File;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.viewer.exception.PreviewException;
 import org.silverpeas.viewer.flexpaper.TemporaryFlexPaperView;
+import org.silverpeas.viewer.util.DocumentInfo;
+import org.silverpeas.viewer.util.SwfUtil;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.converter.DocumentFormat;
@@ -48,7 +51,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
   @Override
   public boolean isViewable(final File file) {
     final String fileName = file.getPath();
-    return (SwfToolManager.isActivated() && file.exists() && (FileUtil.isPdf(fileName) || FileUtil
+    return (SwfUtil.isActivated() && file.exists() && (FileUtil.isPdf(fileName) || FileUtil
         .isOpenOfficeCompatible(fileName)));
   }
 
@@ -72,14 +75,15 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
     // 2 - converting the previous result into PNG image
     if (FileUtil.isOpenOfficeCompatible(physicalFile.getName())) {
       final File pdfFile = toPdf(physicalFile, generateTmpFile(PDF_DOCUMENT_EXTENSION));
-      documentView = toSwf(originalFileName, pdfFile, changeTmpFileExtension(pdfFile, "swf"));
+      documentView =
+          toSwf(originalFileName, pdfFile, changeFileExtension(pdfFile, SWF_DOCUMENT_EXTENSION));
       FileUtils.deleteQuietly(pdfFile);
     }
 
     // If the document is a PDF (or plain text)
     // 1 - convert it into PNG resized image.
     else {
-      documentView = toSwf(originalFileName, physicalFile, generateTmpFile("swf"));
+      documentView = toSwf(originalFileName, physicalFile, generateTmpFile(SWF_DOCUMENT_EXTENSION));
     }
 
     // Returning the result
@@ -105,60 +109,13 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
   private DocumentView toSwf(final String originalFileName, final File source,
       final File destination) {
 
-    // NbPages
-    final List<String> pageInfoOutputLines =
-        exec(new StringBuilder().append("pdf2swf -qq ").append(source.getPath()).append(" --info")
-            .toString());
+    // NbPages & max page width & max page height
+    final DocumentInfo info = SwfUtil.getPdfDocumentInfo(source);
 
     // Create images
-    final StringBuilder pdf2SwfCommand = new StringBuilder();
-    pdf2SwfCommand.append("pdf2swf ");
-    pdf2SwfCommand.append(source.getPath());
-    pdf2SwfCommand.append(" -o ");
-    pdf2SwfCommand.append(destination.getPath());
-    pdf2SwfCommand.append(" -f -T 9 -t -s storeallcharacters");
-    exec(pdf2SwfCommand.toString());
-
-    // Width & height (max)
-    final PageInfo info = new PageInfo();
-    for (final String pageInfoOutputLine : pageInfoOutputLines) {
-      info.copyInfosIfGreater(parsePageInfo(pageInfoOutputLine));
-    }
+    SwfUtil.fromPdfToSwf(source, destination);
 
     // Files
-    return new TemporaryFlexPaperView(originalFileName, destination, pageInfoOutputLines.size(),
-        info.width, info.height);
-  }
-
-  /**
-   * Parsing Swftool output line
-   * @param outputLine
-   * @return
-   */
-  private PageInfo parsePageInfo(final String outputLine) {
-    final PageInfo pageInfo = new PageInfo();
-    for (final String info : outputLine.split(" ")) {
-      if (info.indexOf("width") >= 0) {
-        pageInfo.width =
-            Integer.valueOf(info.replaceAll("width=", "").replaceAll("\\.[0-9]{1,}", ""));
-      } else if (info.indexOf("height") >= 0) {
-        pageInfo.height =
-            Integer.valueOf(info.replaceAll("height=", "").replaceAll("\\.[0-9]{1,}", ""));
-      }
-    }
-    return pageInfo;
-  }
-
-  /**
-   * @author Yohann Chastagnier
-   */
-  private class PageInfo {
-    public int width = 0;
-    public int height = 0;
-
-    public void copyInfosIfGreater(final PageInfo pageInfo) {
-      width = Math.max(width, pageInfo.width);
-      height = Math.max(height, pageInfo.height);
-    }
+    return new TemporaryFlexPaperView(originalFileName, destination, info);
   }
 }
