@@ -43,6 +43,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
+
 /**
  * @author Bensalem Nabil
  */
@@ -50,7 +52,7 @@ public class DirectoryServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
   private static int ELEMENTS_PER_PAGE = 2;
-  private String m_context;
+  private String m_context = URLManager.getApplicationURL();
   private ResourceLocator multilangG;
   private ResourceLocator multilang;
   private DirectoryService directorySC = new DirectoryService();
@@ -59,17 +61,15 @@ public class DirectoryServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String destination = "";
-    m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
     HttpSession session = request.getSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     String userId = m_MainSessionCtrl.getUserId();
     directorySC.setUserId(userId);
-    multilang = new ResourceLocator("com.silverpeas.directory.multilang.DirectoryBundle", "");
-    multilangG = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", "");
+    multilang = new ResourceLocator("org.silverpeas.directory.multilang.DirectoryBundle", "");
+    multilangG = new ResourceLocator("org.stratelia.webactiv.multilang.generalMultilang", "");
     ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.directory.settings.DirectorySettings", "");
+        new ResourceLocator("org.silverpeas.directory.settings.DirectorySettings", "");
     try {
       ELEMENTS_PER_PAGE = Integer.parseInt(settings.getString("ELEMENTS_PER_PAGE"));
 

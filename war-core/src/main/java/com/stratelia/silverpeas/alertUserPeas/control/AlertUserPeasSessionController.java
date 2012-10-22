@@ -54,7 +54,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
   protected AlertUser m_AlertUser = null;
   protected Selection m_Selection = null;
   protected NotificationSender notificationSender = null;
-  protected String m_Context = "";
+  protected String m_Context = URLManager.getApplicationURL();
   protected UserDetail[] m_userRecipients;
   protected Group[] m_groupRecipients;
 
@@ -70,8 +70,6 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
         "com.stratelia.silverpeas.alertUserPeas.multilang.alertUserPeasBundle",
         "com.stratelia.silverpeas.alertUserPeas.settings.alertUserPeasIcons");
     setComponentRootName(URLManager.CMP_ALERTUSERPEAS);
-    m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
     m_AlertUser = getAlertUser();
     m_Selection = getSelection();
     notificationSender = new NotificationSender(null);
