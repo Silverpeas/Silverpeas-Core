@@ -25,6 +25,8 @@ package org.silverpeas.node.web;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -41,15 +43,15 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Authorized;
 
 /**
- * A REST Web resource representing a list of node.
- * It is a web service that provides an access to a node referenced by its URL.
+ * A REST Web resource representing a list of node. It is a web service that provides an access to a
+ * node referenced by its URL.
  */
 @Service
 @RequestScoped
 @Path("nodes/{instanceId}")
 @Authorized
 public class ListNodeResource extends RESTWebService {
-  
+
   @PathParam("instanceId")
   private String instanceId;
 
@@ -57,7 +59,7 @@ public class ListNodeResource extends RESTWebService {
   public String getComponentId() {
     return instanceId;
   }
-  
+
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
@@ -70,28 +72,42 @@ public class ListNodeResource extends RESTWebService {
   }
   
   /**
-  * Updates order of the list of Node from the JSON representation. If the user isn't
-  * authentified, a 401 HTTP code is returned. If the user isn't authorized to save the delegated
-  * news, a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
-  * returned.
-  * @param tab of node to update order
-  * @return the new list of node after update
-  */
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public NodeEntity[] updateListNode(final NodeEntity[] newListNode) {
-      try {
-        //TODO verif que l'utilisateur courant a bien les droits d'Admin (Gestionnaire) pour exécuter ce service REST 
-        
+   * @return true if the current user has the admin role
+   */
+  private boolean isUserAdmin() {
+    String[] profiles = getOrganizationController().getUserProfiles(getUserDetail().getId(), getComponentId());
+    for (String profile : profiles) {
+      if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Updates order of the list of Node from the JSON representation. If the user isn't authentified,
+   * a 401 HTTP code is returned. If the user isn't authorized to save the node, a 403 is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param tab of node to update order
+   * @return the new list of node after update
+   */
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public NodeEntity[] updateListNode(final NodeEntity[] newListNode) {
+    try {
+      // Verif that the current user has the Admin role to execute this REST service
+      if(isUserAdmin()) {
+        //Update list Node
         List<NodePK> nodePKs = new ArrayList<NodePK>();
         for (NodeEntity nodeEntity : newListNode) {
           nodePKs.add(nodeEntity.toNodePK());
         }
         getNodeBm().sortNodes(nodePKs);
-      } catch (RemoteException e) {
-        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
       }
-      return newListNode;
+    } catch (RemoteException e) {
+      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
+    return newListNode;
+  }
 }

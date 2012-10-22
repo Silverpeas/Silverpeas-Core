@@ -68,6 +68,10 @@ public class NodeAttrEntity {
   @XmlElement(defaultValue = "")
   private Date creationDate;
 
+  public NodeAttrEntity() {
+    
+  }
+ 
   /**
    * Creates a new node entity from the specified node.
    * @param node the node to entitify.

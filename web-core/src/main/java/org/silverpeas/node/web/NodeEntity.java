@@ -59,6 +59,10 @@ public class NodeEntity implements Exposable {
   @XmlElement(required = true)
   private String state = "closed";
 
+  public NodeEntity() {
+    
+  }
+  
   /**
    * Creates a new node entity from the specified node.
    * @param node the node to entitify.
