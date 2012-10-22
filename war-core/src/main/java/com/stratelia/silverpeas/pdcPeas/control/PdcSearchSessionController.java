@@ -2227,8 +2227,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ****************************************************************************************************************
    */
   public String initUserPanel() throws RemoteException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     String hostSpaceName = getString("pdcPeas.SearchPage");
     String hostUrl = m_context + "/RpdcSearch/jsp/FromUserPanel";
 

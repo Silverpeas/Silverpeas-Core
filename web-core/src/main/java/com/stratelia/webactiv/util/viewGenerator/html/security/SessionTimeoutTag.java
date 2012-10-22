@@ -36,6 +36,7 @@ import java.io.IOException;
  *Tag that checks the validity of the current session and forwards to the error page.
  */
 public class SessionTimeoutTag extends TagSupport {
+  private static final long serialVersionUID = -8792580298207815280L;
   @Override
   public int doEndTag() throws JspException {
     MainSessionController mainSessionController = (MainSessionController) pageContext.getSession()
@@ -44,7 +45,7 @@ public class SessionTimeoutTag extends TagSupport {
     if (mainSessionController == null) {
       // No session controller in the request -> security exception
       String sessionTimeout =
-          GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+          GeneralPropertiesManager.getString("sessionTimeout");
       try {
         pageContext.forward(sessionTimeout);
       } catch (IOException ioex) {

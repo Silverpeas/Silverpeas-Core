@@ -222,8 +222,7 @@ public abstract class RssServlet<T> extends HttpServlet {
     if (!isLoggedIn) {
       res.sendRedirect("/weblib/notFound.html");
     } else {
-      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
+      res.sendRedirect(URLManager.getApplicationURL() + "/admin/jsp/documentNotFound.jsp");
     }
   }
 }

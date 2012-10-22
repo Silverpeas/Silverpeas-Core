@@ -23,42 +23,25 @@
  */
 package org.silverpeas.viewer;
 
-import javax.inject.Inject;
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
-
-  @Inject
-  private PreviewService previewService;
-
-  private static ViewFactory instance;
-
-  private ViewFactory() {
-    // Nothing to do
-  }
+public interface ViewService {
 
   /**
-   * Instance accessor (singleton)
+   * Verifying if it is possible to obtain a view of the given file.
+   * @param file
    * @return
    */
-  private static ViewFactory getInstance() {
-    if (ViewFactory.instance == null) {
-      synchronized (ViewFactory.class) {
-        if (ViewFactory.instance == null) {
-          ViewFactory.instance = new ViewFactory();
-        }
-      }
-    }
-    return ViewFactory.instance;
-  }
+  boolean isViewable(File file);
 
   /**
-   * Viewer services accessor
+   * Getting pages view instances of the given file
+   * @param originalFileName
+   * @param physicalFile
    * @return
    */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
-  }
+  DocumentView getDocumentView(String originalFileName, File physicalFile);
 }

@@ -31,31 +31,37 @@ import java.io.File;
 public interface Preview {
 
   /**
-   * Getting URL of the preview
+   * Getting the license of display software product if any
+   * @return
+   */
+  String getDisplayLicenseKey();
+
+  /**
+   * Getting URL of the document
    * @return
    */
   String getURLAsString();
 
   /**
-   * Getting the original file of the preview
+   * Getting the original file of the document
    * @return
    */
   String getOriginalFileName();
 
   /**
-   * Getting the physical file of the preview
+   * Getting the physical file of the document
    * @return
    */
   File getPhysicalFile();
 
   /**
-   * Getting the width of the preview
+   * Getting the width of the document
    * @return
    */
   String getWidth();
 
   /**
-   * Getting the height of the preview
+   * Getting the height of the document
    * @return
    */
   String getHeight();
