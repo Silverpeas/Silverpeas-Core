@@ -66,13 +66,14 @@ else
 
   	Schedulable task 		= null;
   	String 		taskname 	= null;
-  	String		taskURL 	= null;
+  	String		taskDateURL 	= null;
+    String    taskEventURL   = null;
   	while (events.hasNext())
   	{
-      	task 		= (Schedulable) events.next();
-      	taskname 	= EncodeHelper.convertHTMLEntities(task.getName());
+    	task 		= (Schedulable) events.next();
+    	taskname 	= EncodeHelper.convertHTMLEntities(task.getName());
 
-      	// convertir la date de l'�v�nement
+      	// convertir la date de l'évènement
     	Calendar taskDate = Calendar.getInstance();
     	taskDate.setTime(task.getStartDate());
     	taskDate.set(Calendar.HOUR_OF_DAY, 0);
@@ -80,36 +81,51 @@ else
     	// formatage de la date sous forme jj/mm/aaaa pour param�tre de agenda.jsp
     	String date = DateUtil.getInputDate(task.getStartDate(), language);
 
-    	taskURL = m_sContext + URLManager.getURL(URLManager.CMP_AGENDA, null, null)  + "SelectDay?Day=" + date;
+    	taskDateURL = m_sContext + URLManager.getURL(URLManager.CMP_AGENDA, null, null)  + "SelectDay?Day=" + date;
+      taskEventURL = m_sContext + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "journal.jsp?JournalId=" + task.getId() + "&Action=Update";
 
-    	if (today.equals(taskDate))
-    	{
-    		// �v�nement du jour
-    		if ( task.getStartHour() != null)
-    		  	out.println("&#149; " + message.getString("today") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
-    		else
-    			out.println("&#149; " + message.getString("today") + " : <a href=\""+taskURL+"\">" + task.getName() + "</a>");
+      final StringBuilder sb = new StringBuilder("&#149; <a href=\"");
+      sb.append(taskDateURL);
+      sb.append("\" class=\"color-inherited\">");
+
+      // évènement du jour
+    	if (today.equals(taskDate)) {
+    	  sb.append(message.getString("today"));
     	}
-    	else if (tomorrow.equals(taskDate))
-    	{
-    		// �v�nement du lendemain
-    		if ( task.getStartHour() != null)
-    		  	out.println("&#149; " + message.getString("tomorrow") + ", "+task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
-    		else
-       		  	out.println("&#149; " + message.getString("tomorrow") + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
+      // évènement du lendemain
+    	else if (tomorrow.equals(taskDate)) {
+        sb.append(message.getString("tomorrow"));
     	}
+      // autres
     	else
     	{
-    	  	int day = taskDate.get(Calendar.DAY_OF_WEEK);
-    	 	String jour = "GML.jour" + day;
-			int month = taskDate.get(Calendar.MONTH);
-    	  	String mois = "GML.mois" + month;
+    	 	String jour = "GML.jour" + taskDate.get(Calendar.DAY_OF_WEEK);
+  	  	String mois = "GML.mois" + taskDate.get(Calendar.MONTH);
+        sb.append(generalMessage.getString(jour));
+        sb.append(" ");
+        sb.append(taskDate.get(Calendar.DATE));
+        sb.append(" ");
+        sb.append(generalMessage.getString(mois));
+        sb.append(" ");
+        sb.append(taskDate.get(Calendar.YEAR));
+      }
 
-    	  	if (task.getStartHour() != null)
-    	   		out.println("&#149; "+ generalMessage.getString(jour)+ " " + taskDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + taskDate.get(Calendar.YEAR) + ", " + task.getStartHour() + " - " + task.getEndHour() + " : <a href=\""+taskURL+"\">" + taskname + "</a>");
-    	  	else
- 		  		out.println("&#149; "+ generalMessage.getString(jour)+ " " + taskDate.get(Calendar.DATE) +" " + generalMessage.getString(mois) + " " + taskDate.get(Calendar.YEAR) + " : " + "<a href=\""+taskURL+"\">" + taskname + "</a>");
-      	}
+      // Heure définie
+      if (StringUtil.isDefined(task.getStartHour())) {
+        sb.append(", ");
+        sb.append(task.getStartHour());
+        sb.append(" - ");
+        sb.append(task.getEndHour());
+      }
+
+      // Accès
+      sb.append("</a> : <a href=\"");
+      sb.append(taskEventURL);
+      sb.append("\">");
+      sb.append(taskname);
+      sb.append("</a>");
+      out.println(sb.toString());
+
     	out.println("<br/>");
   	}
 }
