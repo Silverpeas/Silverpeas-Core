@@ -176,120 +176,130 @@
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
     <ul id="attachmentList">
-      <c:if test="${!empty pageScope.attachments  && view:isDefined(userProfile) && ('user' != userProfile)}">
-      <c:forEach items="${pageScope.attachments}" var="currentAttachment" >        
-        <c:if test="${isAttachmentPositionRight}">
-          <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
-        </c:if>
-        <c:if test="${contextualMenuEnabled}">
-          <%com.silverpeas.attachment.MenuHelper.displayActions((SimpleDocument) pageContext.
-                  getAttribute("currentAttachment"), (Boolean) pageContext.getAttribute("useXMLForm"),
-                  (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
-                  getAttribute("webdavEditingEnable"), userId, (String) pageContext.getAttribute(
-                  "contentLanguage"), attResources, URLManager.getServerURL(request), 
-                  (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>              
-        </c:if>
-        <span class="lineMain">
-            <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
-              <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
-            </c:if>
-            <c:if test="${showIcon}">
-              <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
-            </c:if>
-            <c:choose>
-              <c:when test="${fromAlias}">
-                <c:set var="attachmentUrl" value="${currentAttachment.aliasURL}" />
-              </c:when>
-              <c:otherwise>
-                <c:url var="attachmentUrl" value="${currentAttachment.attachmentURL}" />
-              </c:otherwise>
-            </c:choose>
-            <c:choose>
-              <c:when test="${! view:isDefined(currentAttachment.title) || ! showTitle}">
-                <c:set var="title" value="${currentAttachment.filename}" />
-              </c:when>
-              <c:otherwise>
-                <c:set var="title" value="${currentAttachment.title}" />
-              </c:otherwise>
-            </c:choose>
-            <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href='<c:out value="${attachmentUrl}" escapeXml="false"/>' target="_blank"><c:out value="${title}" /></a>
-            <c:if test="${currentAttachment.versioned}">
-              &nbsp;<span class="version-number" id="version_<c:out value="${currentAttachment.oldSilverpeasId}"/>">v<c:out value="${currentAttachment.majorVersion}"/>.<c:out value="${currentAttachment.minorVersion}"/></span>
-            </c:if>
-          </span>
-          <span class="lineSize">
-            <c:if test="${displayUniversalLinks}">
-              <a href='<c:out value="${currentAttachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>" /></a>
-              </c:if>
-              <c:if test="${showFileSize}">
-                <c:out value="${view:humanReadableSize(currentAttachment.size)}" />
-              </c:if>
-              <c:if test="${showFileSize && showDownloadEstimation}"> / </c:if>
-            <c:if test="${showDownloadEstimation}">
-              <c:out value="${view:estimateDownload(currentAttachment.size)}" />
-            </c:if> - <view:formatDate value="${currentAttachment.created}" />
-            <c:if test="${view:isPreviewable(currentAttachment.attachmentPath)}">
-            <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
-            </c:if>
-            <c:if test="${view:isViewable(currentAttachment.attachmentPath)}">
-            <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
-            </c:if>
-          </span>
-          <c:if test="${view:isDefined(currentAttachment.title) && showTitle}">
-            <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
-          </c:if>
-          <c:if test="${view:isDefined(currentAttachment.description) && showInfo}">
-            <span class="description"><view:encodeHtml string="${currentAttachment.description}" /></span>
-          </c:if>
-          <c:if test="${view:isDefined(currentAttachment.xmlFormId)}"> 
-            <br/><a rel='<c:url value="/RformTemplate/jsp/View">
-                      <c:param name="width" value="400"/>
-                      <c:param name="ObjectId" value="${currentAttachment.id}"/>            
-                      <c:param name="ObjectLanguage" value="${contentLanguage}"/>
-                      <c:param name="ComponentId" value="${componentId}"/>
-                      <c:param name="ObjectType" value="${'Attachment'}"/>
-                      <c:param name="XMLFormName" value="${currentAttachment.xmlFormId}"/>
-                    </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
-          </c:if>
-          <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
-          <c:set var="shouldHideAllVersionsLink" scope="page" value="${view:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
-          <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.publicDocument) || !('user' eq userProfile  || empty currentAttachment.history))}" />
-          <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
-              <span class="linkAllVersions">
-                <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')" /><fmt:message key="allVersions" /></a>
-              </span>
+      <c:if test="${!empty pageScope.attachments  || (view:isDefined(userProfile) && ('user' != userProfile))}">
+      <c:forEach items="${pageScope.attachments}" var="varAttachment" >
+        <c:choose>
+          <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
+            <c:set var="currentAttachment" value="${varAttachment.lastPublicVersion}" />            
+          </c:when>
+          <c:otherwise>
+            <c:set var="currentAttachment" value="${varAttachment}" />    
+          </c:otherwise>
+        </c:choose>
+        <c:if test="${currentAttachment ne null}">
+          <c:if test="${isAttachmentPositionRight}">
+            <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
           <c:if test="${contextualMenuEnabled}">
-            <c:choose>
-              <c:when test="${currentAttachment.readOnly}">
-                <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${currentAttachment.editedBy}" /> <fmt:message key="at" /> <view:formatDate value="${currentAttachment.reservation}" /></div>
-              </c:when>
-              <c:otherwise>
-                <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:hidden"> </div>
-              </c:otherwise>
-            </c:choose>
-          </c:if>	
-          <c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(currentAttachment.filename)}">
-            <div id="switchView" name="switchView" style="display: none">
-            <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
-            </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
-              <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
-                <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">
-                <param name="BorderWidth" value="1">
-                <param name="ReferenceFrame" value="1">
-                <param name="ViewportActiveBorder" value="FALSE">
-                <param name="DisplayMessages" value="TRUE">
-                <param name="DisplayInfo" value="TRUE">
-                <param name="SpinX" value="0">
-                <param name="SpinY" value="0">
-                <param name="SpinZ" value="0">
-                <param name="AnimateTransitions" value="0">
-                <param name="ZoomFit" value="1">
-              </object>
-            </div>
-            <br/>
+            <%com.silverpeas.attachment.MenuHelper.displayActions((SimpleDocument) pageContext.
+                    getAttribute("currentAttachment"), (Boolean) pageContext.getAttribute("useXMLForm"),
+                    (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
+                    getAttribute("webdavEditingEnable"), userId, (String) pageContext.getAttribute(
+                    "contentLanguage"), attResources, URLManager.getServerURL(request), 
+                    (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>              
           </c:if>
-          <c:if test="${isAttachmentPositionRight}"></li></c:if>
+          <span class="lineMain">
+              <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
+                <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
+              </c:if>
+              <c:if test="${showIcon}">
+                <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
+              </c:if>
+              <c:choose>
+                <c:when test="${fromAlias}">
+                  <c:set var="attachmentUrl" value="${currentAttachment.aliasURL}" />
+                </c:when>
+                <c:otherwise>
+                  <c:url var="attachmentUrl" value="${currentAttachment.attachmentURL}" />
+                </c:otherwise>
+              </c:choose>
+              <c:choose>
+                <c:when test="${! view:isDefined(currentAttachment.title) || ! showTitle}">
+                  <c:set var="title" value="${currentAttachment.filename}" />
+                </c:when>
+                <c:otherwise>
+                  <c:set var="title" value="${currentAttachment.title}" />
+                </c:otherwise>
+              </c:choose>
+              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href='<c:out value="${attachmentUrl}" escapeXml="false"/>' target="_blank"><c:out value="${title}" /></a>
+              <c:if test="${currentAttachment.versioned}">
+                &nbsp;<span class="version-number" id="version_<c:out value="${currentAttachment.oldSilverpeasId}"/>">v<c:out value="${currentAttachment.majorVersion}"/>.<c:out value="${currentAttachment.minorVersion}"/></span>
+              </c:if>
+            </span>
+            <span class="lineSize">
+              <c:if test="${displayUniversalLinks}">
+                <a href='<c:out value="${currentAttachment.universalURL}" escapeXml="false" />'><img src='<c:url value="/util/icons/link.gif"/>' border="0" alt="<fmt:message key="CopyLink"/>" title="<fmt:message key="CopyLink"/>" /></a>
+                </c:if>
+                <c:if test="${showFileSize}">
+                  <c:out value="${view:humanReadableSize(currentAttachment.size)}" />
+                </c:if>
+                <c:if test="${showFileSize && showDownloadEstimation}"> / </c:if>
+              <c:if test="${showDownloadEstimation}">
+                <c:out value="${view:estimateDownload(currentAttachment.size)}" />
+              </c:if> - <view:formatDate value="${currentAttachment.created}" />
+              <c:if test="${view:isPreviewable(currentAttachment.attachmentPath)}">
+              <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
+              </c:if>
+              <c:if test="${view:isViewable(currentAttachment.attachmentPath)}">
+              <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+              </c:if>
+            </span>
+            <c:if test="${view:isDefined(currentAttachment.title) && showTitle}">
+              <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
+            </c:if>
+            <c:if test="${view:isDefined(currentAttachment.description) && showInfo}">
+              <span class="description"><view:encodeHtml string="${currentAttachment.description}" /></span>
+            </c:if>
+            <c:if test="${view:isDefined(currentAttachment.xmlFormId)}"> 
+              <br/><a rel='<c:url value="/RformTemplate/jsp/View">
+                        <c:param name="width" value="400"/>
+                        <c:param name="ObjectId" value="${currentAttachment.id}"/>            
+                        <c:param name="ObjectLanguage" value="${contentLanguage}"/>
+                        <c:param name="ComponentId" value="${componentId}"/>
+                        <c:param name="ObjectType" value="${'Attachment'}"/>
+                        <c:param name="XMLFormName" value="${currentAttachment.xmlFormId}"/>
+                      </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
+            </c:if>
+            <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
+            <c:set var="shouldHideAllVersionsLink" scope="page" value="${view:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
+            <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.history))}" />
+            <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
+                <span class="linkAllVersions">
+                  <img alt='<fmt:message key="allVersions" />' src='<c:url value="/util/icons/bullet_add_1.gif" />' /> <a href="javaScript:viewPublicVersions('<c:out value="${currentAttachment.id}" />')" /><fmt:message key="allVersions" /></a>
+                </span>
+            </c:if>
+            <c:if test="${contextualMenuEnabled}">
+              <c:choose>
+                <c:when test="${currentAttachment.readOnly}">
+                  <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${currentAttachment.editedBy}" /> <fmt:message key="at" /> <view:formatDate value="${currentAttachment.reservation}" /></div>
+                </c:when>
+                <c:otherwise>
+                  <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:hidden"> </div>
+                </c:otherwise>
+              </c:choose>
+            </c:if>	
+            <c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(currentAttachment.filename)}">
+              <div id="switchView" name="switchView" style="display: none">
+              <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
+              </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
+                <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
+                  <param name="ModelName" value="<c:out value="${url}" escapeXml="false"/>">
+                  <param name="BorderWidth" value="1">
+                  <param name="ReferenceFrame" value="1">
+                  <param name="ViewportActiveBorder" value="FALSE">
+                  <param name="DisplayMessages" value="TRUE">
+                  <param name="DisplayInfo" value="TRUE">
+                  <param name="SpinX" value="0">
+                  <param name="SpinY" value="0">
+                  <param name="SpinZ" value="0">
+                  <param name="AnimateTransitions" value="0">
+                  <param name="ZoomFit" value="1">
+                </object>
+              </div>
+              <br/>
+            </c:if>
+            <c:if test="${isAttachmentPositionRight}"></li></c:if>
+          </c:if>
         </c:forEach>
       </c:if>
     </ul> 
