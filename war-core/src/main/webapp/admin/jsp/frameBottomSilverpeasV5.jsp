@@ -78,7 +78,7 @@ else if (strGoToNew==null)
 	{
 		String homePage = rsc.getString("defaultHomepage", "/dt");
 		String param = "";
-		if (spaceId != null && spaceId.length() >= 3){
+		if (StringUtil.isDefined(spaceId)){
 		    param = "?SpaceId=" + spaceId;
 		}
 		frameURL = URLManager.getApplicationURL()+homePage+param;
