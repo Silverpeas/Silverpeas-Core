@@ -80,7 +80,7 @@ else
     	// formatage de la date sous forme jj/mm/aaaa pour param�tre de agenda.jsp
     	String date = DateUtil.getInputDate(task.getStartDate(), language);
 
-    	taskURL	= m_sContext+URLManager.getURL(URLManager.CMP_AGENDA)+"agenda.jsp?Action=SelectDay&Day="+date;
+    	taskURL = m_sContext + URLManager.getURL(URLManager.CMP_AGENDA, null, null)  + "SelectDay?Day=" + date;
 
     	if (today.equals(taskDate))
     	{
