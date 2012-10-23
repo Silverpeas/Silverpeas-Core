@@ -2036,6 +2036,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
   color: #000;
 }
 
+#portletPages a.color-inherited {
+  color: inherit;
+}
+
 #portletPages .clear {
   clear: both;
   font-size: 1px;
