@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -319,7 +319,7 @@ Be careful that all the paths are case sensitive (XPath and file Path).<br/>
     </faq>
   </part>
 
-  <part id="install">
+  <part id="configuration">
 
     <title>Configuration</title>
     <faq id="csv-import">
@@ -330,7 +330,7 @@ Be careful that all the paths are case sensitive (XPath and file Path).<br/>
         <p>The format is :</p><source>LastName;FirstName;Login;Email;Profile(Ex: Admin, AdminPdc, AdminDomain, User, Guest);Password</source>
       </answer>
     </faq>
-    <faq id="how-install">
+    <faq id="unactivate-publication-stars">
       <question>
         How do I unactivate the display of the importance of a publication (the stars) in 
         <b>Theme Tracker</b> ?
@@ -343,6 +343,23 @@ Be careful that all the paths are case sensitive (XPath and file Path).<br/>
           <ul>
             <li>yes : activated</li>
             <li>no : desactivated</li>
+          </ul>
+        </p>
+      </answer>
+    </faq>
+     <faq id="how-to-setup-default-language">
+      <question>
+        How do I put all of Silverpeas in <b>English</b> ?
+      </question>
+      <answer>
+        <p>There are two kinds of languages in Silverpeas : one for content and one for displaying the portal.<br/>
+           Thus you have two files to edit : 
+          <b>showImportance</b> in the file 
+          <i>$SILVERPEAS_HOME/properties/com/stratelia/webactiv/kmelia/settings/kmeliaSettings.properties</i>.
+        The accepted values are : 
+          <ul>
+            <li><i>org.silverpeas.personalizationPeas.settings.personalizationPeasSettings.properties</i> : the key <b>DefaultLanguage</b> defines the default language for new users.</li>
+            <li><i>org.silverpeas.util.i18n.properties</i> : the key <b>languages</b> defines the languages of the content.</li>
           </ul>
         </p>
       </answer>

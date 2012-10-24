@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -311,13 +311,13 @@
   function __configureButtonPosition(type, $target, $buttonContainer) {
 
     // Top
-    var top = 0;
+    var top = $(document).scrollTop();
     if (type != 'previousPreview') {
-      top = ($target.outerHeight(true) - $buttonContainer.outerHeight(true));
+      top += ($target.outerHeight(true) - $buttonContainer.outerHeight(true));
     }
 
     // Left
-    var left = (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
+    var left = $(document).scrollLeft() + (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
 
     // Changing the position
     $buttonContainer.offset({ top: top, left: left });

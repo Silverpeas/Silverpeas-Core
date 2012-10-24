@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,6 +59,9 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
+  private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
+  private static final String flexPaperPath = javascriptPath + "flexpaper/";
+  private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -159,8 +162,12 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includePreview(final ElementContainer xhtml) {
-    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_PREVIEW);
+    script popup =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PREVIEW);
+    xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_VIEW);
+    xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
     xhtml.addElement(popup);
     return xhtml;
   }

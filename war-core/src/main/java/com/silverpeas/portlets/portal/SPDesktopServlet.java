@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.portlets.portal;
 
 import java.io.IOException;
@@ -80,6 +76,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Reads the DriverConfig.properties file. Initializes the Portlet Registry files.
+   *
    * @param config the ServletConfig Object
    * @throws javax.servlet.ServletException
    */
@@ -205,6 +202,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the PortletWindowData object for the portlet window. A Set of PortletWindowData for all
    * portlet windows is stored in the Session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the PortletWindowData object for the portlet window.
@@ -251,6 +249,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Returns a Map of portlet data and title for all portlet windows. In the portlet window is
    * maximized, only the data and title for that portlet is displayed. For any portlet window that
    * is minimized , only the title is shown.
+   *
    * @param request the HttpServletRequest Object
    * @param portletContent the PortletContent Object
    * @param portletRegistryContext the PortletRegistryContext Object
@@ -276,6 +275,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Initializes the specified portlet content from the data carries by specified HTTP request.
+   *
    * @param portletContent the portlet content to initialize.
    * @param request the HTTP request carrying the data (by itself or through the HTTP session) about
    * the portlet.
@@ -291,6 +291,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
+   *
    * @param request the HttpServletRequest Object
    * @param portletContent the PortletContent Cobject
    * @param portletList the List of portlet windows
@@ -311,6 +312,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns a Map of PortletWindowData for the portlet windows for both thick and think widths.
+   *
    * @param request the HttpServletRequest Object
    * @param portletContents a Map of portlet data and title for the portlet windows
    * @param portletRegistryContext the PortletRegistryContext Object
@@ -341,9 +343,9 @@ public class SPDesktopServlet extends HttpServlet {
         new HashMap<String, SortedSet<PortletWindowData>>();
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THICK, portletWindowContentsThick);
     portletWindowContents.put(PortletRegistryConstants.WIDTH_THIN, portletWindowContentsThin);
-    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[] {
-        String.valueOf(portletWindowContentsThin.
-        size()), String.valueOf(portletWindowContentsThick.size()) });
+    logger.log(Level.INFO, "PSPCD_CSPPD0022", new String[]{
+          String.valueOf(portletWindowContentsThin.
+          size()), String.valueOf(portletWindowContentsThick.size())});
 
     return portletWindowContents;
   }
@@ -364,6 +366,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   /**
    * Returns the list of visible portlet windows from the portlet registry.
+   *
    * @param portletRegistryContext the PortletRegistryContext Object
    * @return the list of visible portlet windows from the portlet registry.
    */
@@ -383,6 +386,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Gets the state of the portlet window identified by the specified name. It looks for the state
    * in the request (current portlet window). If not found, it looks for it among the available
    * portlets in the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the state of the specified portlet window.
@@ -404,6 +408,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Gets the mode of the portlet window identified by the specified name. It looks for the mode in
    * the request (current portlet window). If not found, it looks for it among the available
    * portlets in the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the mode of the specified portlet window.
@@ -424,6 +429,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the portlet window state for the portlet window from the PortletWindowData that is in
    * the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the portlet window state for the portlet window from session.
@@ -444,6 +450,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Returns the portlet window mode for the portlet window from the PortletWindowData that is in
    * the session.
+   *
    * @param request the HttpServletRequest Object
    * @param portletWindowName the name of the portlet window
    * @return the portlet window mode for the portlet window from session.
@@ -546,6 +553,7 @@ public class SPDesktopServlet extends HttpServlet {
   /**
    * Gets the identifier of the selected space from the request. If the space is the user personal
    * one or it is not of type portlet, then null is returned (no specific space)
+   *
    * @param request the HTTP request.
    * @return the space identifier or null if the space hasn't to be taken into account in the
    * portlets rendering.
@@ -610,10 +618,9 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId)
-          && m_MainSessionCtrl.getUserAccessLevel().equals("U")) {
-        return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-            + "/admin/jsp/spaceInMaintenance.jsp";
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) && "U".equals(m_MainSessionCtrl.
+          getUserAccessLevel())) {
+        return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 
       // Page d'accueil de l'espace = Composant
@@ -621,8 +628,7 @@ public class SPDesktopServlet extends HttpServlet {
           && isDefined(spaceStruct.getFirstPageExtraParam())) {
         String componentId = spaceStruct.getFirstPageExtraParam();
         if (organizationCtrl.isComponentAvailable(componentId, userId)) {
-          return GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
-              + URLManager.getURL("useless", componentId) + "Main";
+          return URLManager.getApplicationURL() + URLManager.getURL("useless", componentId) + "Main";
         }
       }
 

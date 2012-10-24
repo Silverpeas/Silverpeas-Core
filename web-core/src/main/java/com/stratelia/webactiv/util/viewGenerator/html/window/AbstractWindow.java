@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -109,6 +109,7 @@ public abstract class AbstractWindow implements Window {
    * @param width
    * @see
    */
+  @Override
   public void setWidth(String width) {
     this.width = width;
   }
@@ -130,11 +131,11 @@ public abstract class AbstractWindow implements Window {
    * @return
    * @see
    */
+  @Override
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
-          "AdminFromComponentEnable", true) &&
+      if (GeneralPropertiesManager.getBoolean("AdminFromComponentEnable", true) &&
           StringUtil.isDefined(getGEF().getComponentId())) {
         addOperationToSetupComponent();
       }
@@ -146,11 +147,9 @@ public abstract class AbstractWindow implements Window {
     MainSessionController msc = getGEF().getMainSessionController();
     if (msc.getOrganizationController().isComponentManageable(getGEF().getComponentId(),
         msc.getUserId()) && getGEF().isComponentMainPage()) {
-      String label =
-          GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
+      String label = GeneralPropertiesManager.getGeneralMultilang(getGEF().getMultilang().getLanguage())
           .getString("GML.operations.setupComponent");
-      String url =
-          URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
+      String url = URLManager.getApplicationURL() + "/R" + URLManager.CMP_JOBSTARTPAGEPEAS +
           "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentId();
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();

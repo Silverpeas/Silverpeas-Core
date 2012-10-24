@@ -1,0 +1,1 @@
+$startDate$$if(startHour)$ à $startHour$$else$ toute la journée$endif$

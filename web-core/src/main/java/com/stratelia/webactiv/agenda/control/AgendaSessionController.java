@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,10 +41,9 @@ import javax.ejb.RemoveException;
 import com.silverpeas.ical.ExportIcalManager;
 import com.silverpeas.ical.ImportIcalManager;
 import com.silverpeas.ical.SynchroIcalManager;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.silverpeas.notification.builder.helper.UserNotificationHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -55,6 +54,7 @@ import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.agenda.model.CalendarImportSettings;
 import com.stratelia.webactiv.agenda.model.CalendarImportSettingsDao;
 import com.stratelia.webactiv.agenda.model.CalendarImportSettingsDaoJdbc;
+import com.stratelia.webactiv.agenda.notification.AgendaUserNotification;
 import com.stratelia.webactiv.agenda.view.AgendaHtmlView;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -231,37 +231,36 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Method declaration
+   * Notification from delagator to attendees.
    * @param id
-   * @param title
-   * @param text
-   * @see
+   * @param action
    */
-  protected void notifyAttendees(String id, String title, String text) {
-    notifyAttendees(id, title, text, null);
-  }
-
-  protected void notifyAttendees(String id, String title, String text,
-      String url) {
+  protected void notifyAttendees(final String id, final NotifAction action) {
     try {
-      Collection<Attendee> attendees = getJournalAttendees(id);
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, title, text);
-      notifMetaData.setSender(getUserId());
-      notifMetaData.setSource(getString("agenda"));
 
-      for (Attendee attendee : attendees) {
-        notifMetaData.addUserRecipient(new UserRecipient(attendee.getUserId()));
-      }
+      UserNotificationHelper.buildAndSend(new AgendaUserNotification(action, getUserDetail(),
+          getJournalHeader(id)));
 
-      if (url != null) {
-        notifMetaData.setLink(url);
-      }
-
-      getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
       SilverTrace.warn("agenda", "AgendaSessionController.notifyAttendees()",
-          "agenda.MSG_CANT_SEND_MAILS", "for title=" + title, e);
+          "agenda.MSG_CANT_SEND_MAILS", e);
+    }
+  }
+
+  /**
+   * Notification from attendee to delegator.
+   * @param id
+   * @param attend
+   */
+  protected void notifyFromAttendee(final String id, final String attend) {
+    try {
+
+      UserNotificationHelper.buildAndSend(new AgendaUserNotification(getUserDetail(),
+          getJournalHeader(id), attend));
+
+    } catch (Exception e) {
+      SilverTrace.warn("agenda", "AgendaSessionController.notifyFromAttendee()",
+          "agenda.MSG_CANT_SEND_MAILS", e);
     }
   }
 
@@ -314,14 +313,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
     calendarBm.updateJournal(journal);
     if (changed) {
-      UserDetail you = getUserDetail();
-      String url = URLManager.getURL(URLManager.CMP_AGENDA)
-          + "journal.jsp?JournalId=" + id + "&Action=Update";
-      notifyAttendees(id, getString("titleUpdate"), getString("subject")
-          + "\n '" + journal.getName() + "' " + getString("with") + " "
-          + you.getDisplayedName() + " \n" + getString("delayed") + " "
-          + DateUtil.getOutputDate(journal.getStartDate(), getLanguage()) + " "
-          + getString("HeureRDV") + " " + journal.getStartHour() + "\n", url);
+      notifyAttendees(id, NotifAction.UPDATE);
     }
   }
 
@@ -355,16 +347,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public void removeJournal(String id) throws RemoteException,
       CalendarException {
-    JournalHeader journal = getJournalHeader(id);
-    UserDetail you = getUserDetail(journal.getDelegatorId());
-
-    notifyAttendees(id, getString("titleDelete"), getString("subject") + " '"
-        + journal.getName() + "'\n" + getString("with") + " "
-        + you.getDisplayedName() + "\n" + getString("planned") + " "
-        + DateUtil.getOutputDate(journal.getStartDate(), getLanguage()) + " "
-        + getString("HeureRDV") + " " + journal.getStartHour() + " "
-        + getString("removed") + "\n");
-
+    notifyAttendees(id, NotifAction.DELETE);
     calendarBm.removeJournal(id);
   }
 
@@ -408,17 +391,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       throws AgendaException {
     try {
       calendarBm.setJournalAttendees(journalId, userIds);
-
-      JournalHeader journal = getJournalHeader(journalId);
-      UserDetail you = getUserDetail();
-      String url = URLManager.getURL(URLManager.CMP_AGENDA)
-          + "journal.jsp?JournalId=" + journalId + "&Action=Update";
-      notifyAttendees(journalId, getString("NewRDV"), you.getDisplayedName()
-          + " " + getString("NewRDVcalled") + " '" + journal.getName() + "' \n"
-          + " " + getString("JourRDV") + " "
-          + DateUtil.getOutputDate(journal.getStartDate(), getLanguage()) + " "
-          + getString("HeureRDV") + " " + journal.getStartHour() + "\n"
-          + getString("ThanksToConfirm"), url);
+      notifyAttendees(journalId, NotifAction.CREATE);
     } catch (Exception e) {
       throw new AgendaException(
           "AgendaSessionController.setJournalAttendees(String journalId, String[] userIds)",
@@ -439,6 +412,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       String status) throws AgendaException {
     try {
       calendarBm.setJournalParticipationStatus(journalId, userId, status);
+      notifyFromAttendee(journalId, status);
     } catch (Exception e) {
       throw new AgendaException(
           "AgendaSessionController.setJournalParticipationStatus(String journalId, String userId, String status)",
@@ -726,7 +700,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    */
   public AgendaHtmlView getCurrentHtmlView() throws RemoteException {
     AgendaHtmlView agendaView = null;
-    Collection schedules = null;
+    Collection<?> schedules = null;
 
     if (currentDisplayType == AgendaHtmlView.BYDAY) {
       agendaView = new AgendaHtmlView(currentDisplayType, getCurrentDay(),
@@ -844,16 +818,15 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @throws RemoteException
    * @see
    */
-  public Collection getBusyTime(String userId, java.util.Date day)
+  public Collection<JournalHeader> getBusyTime(String userId, java.util.Date day)
       throws RemoteException {
     Collection<JournalHeader> result = calendarBm.getDaySchedulablesForUser(DateUtil
         .date2SQLDate(day), userId, null, ParticipationStatus.ACCEPTED);
 
     if (!userId.equals(getUserId())) {
-      Collection subResult = new ArrayList();
+      Collection<JournalHeader> subResult = new ArrayList<JournalHeader>();
 
-      for (JournalHeader aResult : result) {
-        Schedulable schedule = aResult;
+      for (JournalHeader schedule : result) {
         boolean toView = false;
 
         if (!schedule.getClassification().isConfidential()) {
@@ -1301,15 +1274,11 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Paramètre le userPannel => tous les users, sélection des users participants
-   * @param
-   * @return
-   * @throws
-   * @see
+   * Paramètre le userPannel => tous les users, sélection des users participants.
+   * @return 
    */
   public String initSelectionPeas() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject hostComponentName = new PairObject(getString("agenda"),
         m_context + "/Ragenda/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
@@ -1444,16 +1413,15 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public String initUserPanelOtherAgenda() {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject hostComponentName = new PairObject(getString("agenda"),
         m_context + "/Ragenda/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("viewOtherAgenda"), m_context
-        + URLManager.getURL(URLManager.CMP_AGENDA) + "Main");
-    String hostUrl = m_context + URLManager.getURL(URLManager.CMP_AGENDA)
+        + URLManager.getURL(URLManager.CMP_AGENDA, null, null) + "Main");
+    String hostUrl = m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null)
         + "ViewOtherAgenda";
-    String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_AGENDA)
+    String cancelUrl = m_context + URLManager.getURL(URLManager.CMP_AGENDA, null, null)
         + "Main";
 
     Selection sel = getSelection();

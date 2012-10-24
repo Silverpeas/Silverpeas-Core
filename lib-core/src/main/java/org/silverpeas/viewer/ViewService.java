@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,31 +23,25 @@
  */
 package org.silverpeas.viewer;
 
-import javax.inject.Inject;
+import java.io.File;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
-
-  @Inject
-  private PreviewService previewService;
-
-  private static ViewFactory instance = new ViewFactory();
+public interface ViewService {
 
   /**
-   * Instance accessor (singleton)
+   * Verifying if it is possible to obtain a view of the given file.
+   * @param file
    * @return
    */
-  private static ViewFactory getInstance() {
-    return instance;
-  }
+  boolean isViewable(File file);
 
   /**
-   * Viewer services accessor
+   * Getting pages view instances of the given file
+   * @param originalFileName
+   * @param physicalFile
    * @return
    */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
-  }
+  DocumentView getDocumentView(String originalFileName, File physicalFile);
 }
