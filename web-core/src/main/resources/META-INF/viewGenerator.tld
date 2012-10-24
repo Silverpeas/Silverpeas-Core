@@ -1543,15 +1543,15 @@
   <function>
     <description>Function that indicates if a file is previewable.</description>
     <name>isPreviewable</name>
-    <function-class>org.silverpeas.viewer.ViewFactory</function-class>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
     <function-signature>
       boolean isPreviewable( java.lang.String )
     </function-signature>
   </function>
-  function>
+  <function>
     <description>Function that indicates if a file can be displayed with FlexPaper.</description>
     <name>isViewable</name>
-    <function-class>org.silverpeas.viewer.ViewFactory</function-class>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
     <function-signature>
       boolean isViewable( java.lang.String )
     </function-signature>

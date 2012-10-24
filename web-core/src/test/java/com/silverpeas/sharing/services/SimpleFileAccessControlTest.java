@@ -43,6 +43,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -131,7 +132,7 @@ public class SimpleFileAccessControlTest {
       Reader reader = null;
       try {
         reader = new InputStreamReader(SimpleFileAccessControlTest.class.getClassLoader().
-            getResourceAsStream("silverpeas-jcr.txt"));
+            getResourceAsStream("silverpeas-jcr.txt"), CharEncoding.UTF_8);
         SilverpeasRegister.registerNodeTypes(reader);
       } finally {
         IOUtils.closeQuietly(reader);

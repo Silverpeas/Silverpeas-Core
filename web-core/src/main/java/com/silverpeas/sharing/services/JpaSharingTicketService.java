@@ -47,13 +47,12 @@ public class JpaSharingTicketService implements SharingTicketService {
 
   @Inject
   TicketRepository repository;
-  
   @Inject
   DownloadDetailRepository historyRepository;
 
   @Override
   public List<Ticket> getTicketsByUser(String userId) {
-    List<Ticket> tickets =  repository.findAllReservationsForUser(userId);
+    List<Ticket> tickets = repository.findAllReservationsForUser(userId);
     return tickets;
   }
 
@@ -83,9 +82,9 @@ public class JpaSharingTicketService implements SharingTicketService {
       downloads.add(download);
       ticket.setDownloads(downloads);
       historyRepository.saveAndFlush(download);
+      ticket.addDownload();
+      repository.saveAndFlush(ticket);
     }
-    ticket.addDownload();
-    repository.saveAndFlush(ticket);
   }
 
   @Override

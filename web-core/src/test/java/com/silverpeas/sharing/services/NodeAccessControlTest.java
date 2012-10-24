@@ -49,6 +49,8 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -92,10 +94,11 @@ public class NodeAccessControlTest {
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
             thenReturn(nodeHome);
 
-    DocumentPK resourcePk = new DocumentPK(5, "kmelia2");
-    Document document = new Document();
-    document.setPk(resourcePk);
-    document.setForeignKey(publicationPK);
+    SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
+    resourcePk.setOldSilverpeasId(5L);
+    HistorisedDocument document = new HistorisedDocument();
+    document.setPK(resourcePk);
+    document.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
     PowerMockito.mockStatic(SharingServiceFactory.class);
@@ -132,10 +135,11 @@ public class NodeAccessControlTest {
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
             thenReturn(nodeHome);
 
-    DocumentPK resourcePk = new DocumentPK(5, "kmelia2");
-    Document document = new Document();
-    document.setPk(resourcePk);
-    document.setForeignKey(publicationPK);
+    SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
+    resourcePk.setOldSilverpeasId(5L);
+    HistorisedDocument document = new HistorisedDocument();
+    document.setPK(resourcePk);
+    document.setForeignId(publicationPK.getId());
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
     ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
     PowerMockito.mockStatic(SharingServiceFactory.class);

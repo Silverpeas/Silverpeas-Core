@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,7 +20,9 @@
  */
 package org.silverpeas.publication.web;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +39,6 @@ import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.profile.web.UserProfileEntity;
 import com.silverpeas.web.Exposable;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -90,10 +90,14 @@ public class PublicationEntity implements Exposable {
     if (attachmentDetails != null && !attachmentDetails.isEmpty()) {
       List<AttachmentEntity> entities = new ArrayList<AttachmentEntity>(attachmentDetails.size());
       for (SimpleDocument attachment : attachmentDetails) {
-        AttachmentEntity entity = AttachmentEntity.fromAttachment(attachment);
-        URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
-        entity.setSharedUri(sharedUri);
-        entities.add(entity);
+        SimpleDocument document = attachment.getLastPublicVersion();
+        if (document != null) {
+          AttachmentEntity entity = AttachmentEntity.fromAttachment(document);
+          URI sharedUri = getAttachmentSharedURI(attachment, baseURI, token);
+          entity.setSharedUri(sharedUri);
+          entities.add(entity);
+        }
+
       }
       this.attachments = entities.toArray(new AttachmentEntity[entities.size()]);
     }
@@ -106,10 +110,14 @@ public class PublicationEntity implements Exposable {
       sharedUri = new URI(baseURI + "attachments/" + attachment.getInstanceId() + "/" + token + "/"
           + attachment.getId() + "/" + URLEncoder.encode(attachment.getFilename(),
           CharEncoding.UTF_8));
-    } catch (Exception e) {
-      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, e);
-      throw new RuntimeException(e.getMessage(), e);
+    } catch (UnsupportedEncodingException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(NodeEntity.class.getName()).log(Level.SEVERE, null, ex);
+      throw new RuntimeException(ex.getMessage(), ex);
     }
+
     return sharedUri;
   }
 

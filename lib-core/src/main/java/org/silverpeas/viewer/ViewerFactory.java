@@ -56,7 +56,7 @@ public class ViewerFactory {
    * @return
    */
   public static PreviewService getPreviewService() {
-    return getInstance().previewService;
+    return instance.previewService;
   }
 
   /**
@@ -65,7 +65,7 @@ public class ViewerFactory {
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isPreviewable(File file) {
-    return instance.getPreviewService().isPreviewable(file);
+    return getPreviewService().isPreviewable(file);
   }
   
    /**
@@ -74,7 +74,7 @@ public class ViewerFactory {
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isPreviewable(String path) {
-    return instance.getPreviewService().isPreviewable(new File(path));
+    return getPreviewService().isPreviewable(new File(path));
   }
   
   
@@ -84,7 +84,7 @@ public class ViewerFactory {
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isViewable(File file) {
-    return instance.getViewService().isViewable(file);
+    return getViewService().isViewable(file);
   }
   
    /**
@@ -93,7 +93,7 @@ public class ViewerFactory {
    * @return true if a preview can be produced  - false otherwise.
    */
   public static boolean isViewable(String path) {
-    return instance.getViewService().isViewable(new File(path));
+    return getViewService().isViewable(new File(path));
   }
 
   /**
@@ -101,6 +101,6 @@ public class ViewerFactory {
    * @return
    */
   public static ViewService getViewService() {
-    return getInstance().viewService;
+    return instance.viewService;
   }
 }

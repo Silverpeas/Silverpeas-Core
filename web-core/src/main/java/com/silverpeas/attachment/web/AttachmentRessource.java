@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -55,7 +54,6 @@ import com.silverpeas.web.RESTWebService;
 
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-
 @Service
 @RequestScoped
 @Path("attachments/{componentId}/{token}")
@@ -75,8 +73,8 @@ public class AttachmentRessource extends RESTWebService {
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(final @PathParam("id") String attachmentId) {
-    SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(attachmentId), null);
+    final SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+        searchAttachmentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
     if (!isFileReadable(attachment)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
@@ -84,8 +82,8 @@ public class AttachmentRessource extends RESTWebService {
       @Override
       public void write(OutputStream output) throws IOException, WebApplicationException {
         try {
-          AttachmentServiceFactory.getAttachmentService().getBinaryContent(output,
-              new SimpleDocumentPK(attachmentId), null);
+          AttachmentServiceFactory.getAttachmentService().getBinaryContent(output, attachment.
+              getPk(), attachment.getLanguage());
         } catch (Exception e) {
           throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }

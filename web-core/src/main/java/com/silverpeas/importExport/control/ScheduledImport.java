@@ -44,7 +44,7 @@ public class ScheduledImport implements SchedulerEventListener {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
   private final ResourceLocator resources = new ResourceLocator(
-      "com.silverpeas.importExport.settings.importSettings", "");
+      "org.silverpeas.importExport.settings.importSettings", "");
   private File dir = null; // Where the import XML descriptors are stored
   private String postPolicy = null;
 
@@ -56,7 +56,7 @@ public class ScheduledImport implements SchedulerEventListener {
       String sDir = resources.getString("importRepository");
       dir = new File(sDir);
       if (!dir.exists() && !dir.isDirectory()) {
-        SilverTrace.error("importExport", "ScheduledImport.initialize()",
+        SilverTrace.warn("importExport", "ScheduledImport.initialize()",
             "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
             + "' does not exists !");
       } else {
