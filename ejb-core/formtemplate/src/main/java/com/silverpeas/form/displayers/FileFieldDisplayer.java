@@ -39,7 +39,7 @@ import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.viewer.ViewFactory;
+import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
