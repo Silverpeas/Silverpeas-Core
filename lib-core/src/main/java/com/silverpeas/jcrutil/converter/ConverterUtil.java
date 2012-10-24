@@ -24,6 +24,7 @@
 
 package com.silverpeas.jcrutil.converter;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import org.apache.jackrabbit.util.ISO9075;
 import org.apache.jackrabbit.util.Text;
@@ -51,6 +52,8 @@ public class ConverterUtil {
    * Token used in path.
    */
   public static final String PATH_SEPARATOR = "/";
+  private static final String OPENING_BRACKET = "[";
+  private static final String CLOSING_BRACKET = "]";
 
   /**
    * Encodes the JCR path to a Xpath compatible path.
@@ -80,14 +83,9 @@ public class ConverterUtil {
     }
     return buffer.toString();
   }
-
-  /**
-   * Replace all "'" chars with %39
-   * @param text
-   * @return a String with all quotes replaced by %39
-   */
-  public static String escapeQuote(String text) {
-    return text.replaceAll("'", "%" + ((int) ('\'')));
+  
+  public static String escapeIllegalJcrChars(String name) {
+    return StringUtil.escapeQuote(name).replace(OPENING_BRACKET, " ").replace(CLOSING_BRACKET, " ");
   }
 
   /**
