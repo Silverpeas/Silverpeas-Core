@@ -242,6 +242,7 @@ function checkSubmit(ev)
             </div>
             <div id="copyright"><fmt:message key="GML.trademark" /></div>
         </div>
+		<input type="submit" value="ok" id="login-submitHide"/>
         </form><!-- Fin class="page" -->
 
 		<script type="text/javascript">

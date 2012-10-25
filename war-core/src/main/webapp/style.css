@@ -220,3 +220,7 @@ p label span {
   margin-left:25px;
   text-align:left;
 }
+
+#login-submitHide {
+	display:none;
+}
