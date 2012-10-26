@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2012 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have recieved a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,25 +23,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-<title>Redirection sur la page d'identification</title>
+<view:looknfeel />
 <link REL="SHORTCUT ICON" HREF="util/icons/favicon.ico">
-<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasV5.css" rel="stylesheet" type="text/css">
-<link href="/silverpeas/util/styleSheets/globalSP_SilverpeasLight.css" rel="stylesheet" type="text/css">
-<link href="/silverpeas/util/styleSheets/silverpeas-menu.css" rel="stylesheet" type="text/css">
-<script type="text/javascript">
-  var webContext = 'http://localhost:8000/silverpeas';
-</script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery.json-2.3.min.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-include.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas-core.js"></script>
-<script type="text/javascript" src="/silverpeas/util/javaScript/silverpeas-menu.js"></script>
+<title>Démo de l'utilisation des Web-Services des espaces et applications : menus</title>
+<link href="/silverpeas/demo/menu/css/silverpeas-menu.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/silverpeas/demo/menu/js/silverpeas-core.js"></script>
+<script type="text/javascript" src="/silverpeas/demo/menu/js/silverpeas-menu.js"></script>
 </head>
 <body>
 
@@ -133,7 +128,11 @@
         <div id="body-target" style="width: 100%;">body-target</div>
       </div>
       <div id="action" style="display: table-cell; width: 200px; border: 1px;">
-        <input id="componentId" type="text"> <input id="componentIdOK" type="button" value="OK">
+        <c:set var="componentIdTitle" value="Lorsque vous allez appuyer sur OK, le menu contenant l'application sera visualisé ... (il est possible de ne renseigner que l'identifiant numérique de l'instance de l'application)" />
+        <c:set var="componentIdLabel" value="Renseigner un identifiant (alpha-numérique ou numérique) d'instance d'une application" />
+        <label for="componentId" title="${componentIdLabel}"><c:out value="${componentIdLabel}" /> :</label>
+        <input id="componentId" name="componentId" type="text" title="${componentIdTitle}">
+        <input id="componentIdOK" title="${componentIdTitle}" type="button" value="OK">
       </div>
     </div>
     <div id="footer" style="display: table-row;">

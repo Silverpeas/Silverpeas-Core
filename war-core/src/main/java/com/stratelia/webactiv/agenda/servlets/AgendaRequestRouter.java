@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.agenda.servlets;
 
 import com.silverpeas.ical.ImportIcalManager;
@@ -55,6 +51,7 @@ import java.util.StringTokenizer;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionController> {
@@ -63,6 +60,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public AgendaRequestRouter() {
@@ -70,6 +68,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
 
   /**
    * Method declaration
+   *
    * @param mainSessionCtrl
    * @param context
    * @return
@@ -91,6 +90,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
   /**
    * This method has to be implemented by the component request router it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param scc The component Session Controller, build and initialised.
    * @param request The entering request. The request router need it to get parameters
@@ -405,23 +405,18 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
           // Directory Temp for the uploaded file
           tempFolderPath = FileRepositoryManager.getAbsolutePath(agendaSc
               .getComponentId())
-              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp") + File.separator + tempFolderName;
+              + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+              + tempFolderName;
           if (!new File(tempFolderPath).exists()) {
             FileRepositoryManager.createAbsolutePath(agendaSc.getComponentId(),
-                GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                "RepositoryTypeTemp")
-                + File.separator + tempFolderName);
+                GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+                + tempFolderName);
           }
 
           // Creation of the file in the temp folder
-          fileUploaded = new File(FileRepositoryManager
-              .getAbsolutePath(agendaSc.getComponentId())
-              + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp")
-              + File.separator
-              + tempFolderName
-              + File.separator + logicalName);
+          fileUploaded = new File(FileRepositoryManager.getAbsolutePath(agendaSc.getComponentId())
+              + GeneralPropertiesManager.getString("RepositoryTypeTemp") + File.separator
+              + tempFolderName + File.separator + logicalName);
           fileItem.write(fileUploaded);
 
           // Is a real file ?

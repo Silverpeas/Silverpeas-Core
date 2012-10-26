@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.control;
 
 import java.rmi.RemoteException;
@@ -43,6 +39,7 @@ import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -57,6 +54,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class PdcSessionController extends AbstractComponentSessionController {
+
   private String currentView = "P";
   private Axis currentAxis = null;
   private Value currentValue = null;
@@ -64,11 +62,11 @@ public class PdcSessionController extends AbstractComponentSessionController {
   private ThesaurusManager thBm = null;
   private String values = "";
   private String currentLanguage = null;
-
   private AdminController m_AdminCtrl = null;
 
   /**
    * Constructor declaration
+   *
    * @param mainSessionCtrl
    * @param componentContext
    * @see
@@ -162,8 +160,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isCreationAllowed() throws PdcException {
     int nbAxis = getPdcBm().getNbAxis();
-    if (nbAxis < getNbMaxAxis())
+    if (nbAxis < getNbMaxAxis()) {
       return true;
+    }
     return false;
   }
 
@@ -219,8 +218,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
         new Integer(getCurrentAxis().getAxisHeader().getRootId()).toString());
     value.setAxisId(Integer.parseInt(getCurrentAxis().getAxisHeader().getPK()
         .getId()));
-    if (setAsCurrentValue)
+    if (setAsCurrentValue) {
       setCurrentValue(value);
+    }
     return value;
   }
 
@@ -337,6 +337,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Returns the full path of the value
+   *
    * @param valueId - the id of the selected value (valueId is not empty)
    * @return the complet path
    */
@@ -407,6 +408,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * Initialise le UserPanel avec les permissions déjà existantes pour la valeur courante
+   *
    * @return l'URL du panel
    * @throws RemoteException
    * @throws PdcException
@@ -414,14 +416,14 @@ public class PdcSessionController extends AbstractComponentSessionController {
    */
   public String initUserPanelForPdcManager() throws RemoteException,
       PdcException, SQLException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     PairObject[] hostPath = new PairObject[1];
 
     String name = getCurrentAxis().getAxisHeader()
         .getName(getCurrentLanguage());
-    if (getCurrentValue() != null)
+    if (getCurrentValue() != null) {
       name = getCurrentValue().getName(getCurrentLanguage());
+    }
 
     hostPath[0] = new PairObject(name, "/Rpdc/jsp/ViewManager");
 
@@ -469,6 +471,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * récupère le résultat du UserPanel
+   *
    * @throws PdcException
    * @throws SQLException
    */
@@ -508,6 +511,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers for the current value
+   *
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
    */
@@ -515,8 +519,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
     List usersAndGroups = new ArrayList();
 
     String valueId = "-1";
-    if (getCurrentValue() != null)
+    if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
+    }
 
     List<List<String>> managers = pdcBm.getManagers(getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
@@ -530,6 +535,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the managers of the specified value
+   *
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException
@@ -549,6 +555,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * get the inherited managers of the specified value
+   *
    * @param Value
    * @return ArrayList ( ArrayList UserDetail, ArrayList Group )
    * @throws PdcException , SQLException
@@ -568,10 +575,10 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * retourne un tableau des valeurs où l'utilisateur courant possède des droits
+   *
    * @return ArrayList ( valueid )
    * @throws PdcException , SQLException
    */
-
   public List<String> getRights() throws PdcException, SQLException {
     String valueId = "";
     String currentUserId = getUserId();
@@ -624,8 +631,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isManager(String axisId, String valueId) throws PdcException,
       SQLException {
-    if (getUserDetail().isAccessKMManager() || getUserDetail().isAccessAdmin())
+    if (getUserDetail().isAccessKMManager() || getUserDetail().isAccessAdmin()) {
       return true;
+    }
 
     boolean userAllowed = false;
 
@@ -634,8 +642,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
     List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
     for (int j = 0; !userAllowed && j < users.size(); j++) {
       UserDetail user = users.get(j);
-      if (user.getId().equals(getUserId()))
+      if (user.getId().equals(getUserId())) {
         return true;
+      }
     }
 
     if (!userAllowed) {
@@ -643,8 +652,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
       for (int j = 0; !userAllowed && j < groups.size(); j++) {
         Group groupe = groups.get(j);
         for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
-          if (groupe.getUserIds()[k].equals(getUserId()))
+          if (groupe.getUserIds()[k].equals(getUserId())) {
             return true;
+          }
         }
       }
     }
@@ -659,8 +669,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
     List<UserDetail> users = (List<UserDetail>) usersAndGroups.get(0);
     for (int j = 0; !userAllowed && j < users.size(); j++) {
       UserDetail user = users.get(j);
-      if (user.getId().equals(getUserId()))
+      if (user.getId().equals(getUserId())) {
         return true;
+      }
     }
 
     if (!userAllowed) {
@@ -668,8 +679,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
       for (int j = 0; !userAllowed && j < groups.size(); j++) {
         Group groupe = groups.get(j);
         for (int k = 0; !userAllowed && k < groupe.getUserIds().length; k++) {
-          if (groupe.getUserIds()[k].equals(getUserId()))
+          if (groupe.getUserIds()[k].equals(getUserId())) {
             return true;
+          }
         }
       }
     }
@@ -695,6 +707,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * update permissions on current value
+   *
    * @param ArrayList usersId
    * @param ArrayList groupsId
    * @throws PdcException
@@ -703,8 +716,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
   public void setManagers(List userIds, List groupIds) throws PdcException,
       SQLException {
     String valueId = "-1";
-    if (getCurrentValue() != null)
+    if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
+    }
 
     pdcBm.setManagers(userIds, groupIds, getCurrentAxis().getAxisHeader()
         .getPK().getId(), valueId);
@@ -712,21 +726,24 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   /**
    * delete permissions on current value
+   *
    * @throws PdcException
    * @throws SQLException
    */
   public void eraseManagers() throws PdcException, SQLException {
     String valueId = "-1";
-    if (getCurrentValue() != null)
+    if (getCurrentValue() != null) {
       valueId = getCurrentValue().getPK().getId();
+    }
 
     pdcBm.setManagers(null, null, getCurrentAxis().getAxisHeader().getPK()
         .getId(), valueId);
   }
 
   private AdminController getAdmin() {
-    if (m_AdminCtrl == null)
+    if (m_AdminCtrl == null) {
       m_AdminCtrl = new AdminController(getUserId());
+    }
 
     return m_AdminCtrl;
   }
@@ -737,8 +754,9 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
       theGroup = getAdmin().getGroupById(groupIds.get(nI));
-      if (theGroup != null)
+      if (theGroup != null) {
         res.add(theGroup);
+      }
     }
 
     return res;
@@ -750,11 +768,11 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
     for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
       user = getUserDetail(userIds.get(nI));
-      if (user != null)
+      if (user != null) {
         res.add(user);
+      }
     }
 
     return res;
   }
-
 }

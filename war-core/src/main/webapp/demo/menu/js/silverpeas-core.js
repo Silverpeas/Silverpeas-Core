@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,9 +26,9 @@
 (function($) {
 
   $.spCore = {
-    initialized: false,
+    initialized : false,
     doInitialize : function() {
-      if (! $.spCore.initialized) {
+      if (!$.spCore.initialized) {
         $.spCore.initialized = true;
       }
     },
@@ -55,52 +55,32 @@
 
     /**
      * Centralizes synchronous ajax request for json response
+     *
      * @returns
      */
-    getData : function(url) {
-      var result = {};
-      $.ajax({
-        url : url,
-        type : 'GET',
-        dataType : 'json',
-        cache : false,
-        async : false,
-        success : function(data, status, jqXHR) {
-          result = data;
-        },
-        error : function(jqXHR, textStatus, errorThrown) {
-          alert(errorThrown);
-        }
-      });
-      return result;
+    getJSonData : function(url) {
+      return __performAjaxRequest({url: url, type: 'GET', dataType : 'json'});
     },
 
     /**
      * Centralizes synchronous ajax request for json response
+     *
      * @returns
      */
-    putData : function(url, data) {
-      var result = {};
-      $.ajax({
+    putJSonData : function(url, data) {
+      return __performAjaxRequest({
         url : url,
         type : 'PUT',
-        data: $.toJSON(data),
-        contentType: "application/json",
         dataType : 'json',
-        cache : false,
-        async : false,
-        success : function(data, status, jqXHR) {
-          result = data;
-        },
-        error : function(jqXHR, textStatus, errorThrown) {
-          alert(errorThrown);
-        }
+        data : $.toJSON(data),
+        contentType : "application/json",
       });
       return result;
     },
 
     /**
      * Centralizes asynchronous ajax request for html response
+     *
      * @returns
      */
     loadHtml : function(url, targetOrTargetId) {
@@ -111,11 +91,13 @@
       } else {
         $target = targetOrTargetId;
       }
-      $target.html($('<iframe>').attr('width', '100%').attr('height', '600px').attr('src', url));
+      $target.html($('<iframe>').attr('width', '100%').attr('height', '600px')
+          .attr('src', url));
     },
 
     /**
      * Debug function
+     *
      * @param object
      * @returns
      */
@@ -153,6 +135,38 @@
   $.fn.spCore = function() {
     $.spCore.doInitialize();
   };
+
+  /**
+   * Private function that performs an ajax request. By default, the request is
+   * synchroned, that is to say the javascript running is waiting for the return of ajax request
+   * request.
+   */
+  function __performAjaxRequest(settings) {
+    var result = {};
+
+    // Default options.
+    // url, type, dataType are missing.
+    var options = {
+      cache : false,
+      async : false,
+      success : function(data, status, jqXHR) {
+        result = data;
+        if (options.onSuccessful) {
+          options.onSuccessful(data);
+        }
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    };
+
+    // Adding settings
+    options = $.extend(options, settings);
+
+    // Ajax request
+    $.ajax(options);
+    return result;
+  }
 })(jQuery);
 
 /**

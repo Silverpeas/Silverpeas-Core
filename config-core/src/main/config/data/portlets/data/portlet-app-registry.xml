@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,6 +90,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Dernières publications"/>
+		<String name="en" value="Latest publications"/>
 		<String name="de" value="Letzte Veröffentlichung"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -116,6 +117,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes prochains événements"/>
+		<String name="en" value="My next events"/>
 		<String name="de" value="Meine nächsten Ereignisse"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -141,7 +143,8 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Un composant"/>
+        <String name="fr" value="Une application"/>
+		<String name="en" value="An application"/>
 		<String name="de" value="Eine Komponente"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -167,7 +170,8 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes requêtes préférées"/>
+        <String name="fr" value="Mes requêtes favorites"/>
+		<String name="en" value="Favourite searches"/>
 		<String name="de" value="Meine Lieblings-Queries"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -191,7 +195,8 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Mes favoris"/>
+        <String name="fr" value="Mes liens favoris"/>
+		<String name="en" value="Favourite links"/>
 		<String name="de" value="Meine Favoriten"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -216,6 +221,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Actualités"/>
+		<String name="en" value="Breaking news"/>
 		<String name="de" value="Neuigkeiten"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -240,6 +246,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes notifications"/>
+		<String name="en" value="My notifications"/>
 		<String name="de" value="Meine Benachrichtigungen"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -264,6 +271,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes fichiers réservés"/>
+		<String name="en" value="My reserved files"/>
 		<String name="de" value="Meine Reservierte Dateien"/>
       </Collection>
       <Collection name="descriptionMap">
@@ -288,6 +296,7 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Portlet IFrame"/>
+		<String name="en" value="IFrame portlet"/>
 		<String name="de" value="IFrame Portlet"/>
       </Collection>
       <Collection name="descriptionMap">

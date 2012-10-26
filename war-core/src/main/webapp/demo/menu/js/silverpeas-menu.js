@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -180,7 +180,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
 
     // Data appearance can be retrieved only for a space
     if (_menuData.type.indexOf($.spCore.definitions.SPACE_TYPE) >= 0) {
-      return $.spCore.getData(_menuData.appearanceURI);
+      return $.spCore.getJSonData(_menuData.appearanceURI);
     } else if (self.getParent() != null) {
       return self.getParent().getAppearance();
     }
@@ -401,7 +401,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
      * Loading display user context data
      */
     loadDisplayUserContext : function() {
-      $.menu.displayUserContext = $.spCore.getData($.menu.webServiceContext + "/display/userContext");
+      $.menu.displayUserContext = $.spCore.getJSonData($.menu.webServiceContext + "/display/userContext");
     },
 
     /**
@@ -475,7 +475,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
         var parentURI = data.parentURI;
         path.push(data);
         while (parentURI) {
-          var space = $.spCore.getData(parentURI);
+          var space = $.spCore.getJSonData(parentURI);
           path.push(space);
           parentURI = space.parentURI;
         }
@@ -510,7 +510,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
      * @returns
      */
     getComponentData : function(id) {
-      return $.spCore.getData($.menu.webServiceContext + "/components/" + id);
+      return $.spCore.getJSonData($.menu.webServiceContext + "/components/" + id);
     },
 
     /**
@@ -519,7 +519,7 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
      * @returns
      */
     getSpaceData : function(id) {
-      return $.spCore.getData($.menu.webServiceContext + "/spaces/" + id);
+      return $.spCore.getJSonData($.menu.webServiceContext + "/spaces/" + id);
     }
   }
 
@@ -737,9 +737,9 @@ function MenuItem(domMenuRootContainer, parentMenuItem, menuData, options) {
       if (addOrRemove != null) {
         data = $.extend(menuItem.getData(), {});
         data.favorite = addOrRemove;
-        data = $.spCore.putData(menuItem.getData().uri, data);
+        data = $.spCore.putJSonData(menuItem.getData().uri, data);
       } else {
-        data = $.spCore.getData(menuItem.getData().uri);
+        data = $.spCore.getJSonData(menuItem.getData().uri);
       }
       if (!$.isEmptyObject(data)) {
         menuItem.setData(data);

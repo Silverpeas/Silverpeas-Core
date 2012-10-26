@@ -1,25 +1,22 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.util;
 
@@ -30,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -41,7 +39,12 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -65,6 +68,7 @@ public class FileUtil implements MimeTypes {
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
    * com.stratelia.silverpeas, com.stratelia.webactiv to org.silverpeas
+   *
    * @param bundle the name of the bundle.
    * @return the name of the migrated bundle.
    */
@@ -77,6 +81,7 @@ public class FileUtil implements MimeTypes {
   /**
    * Utility method for migration of Silverpeas configuration from : com/silverpeas,
    * com/stratelia/silverpeas, com/stratelia/webactiv to org/silverpeas
+   *
    * @param resource the name of the resource.
    * @return the name of the migrated resource.
    */
@@ -88,6 +93,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Extract the mime-type from the file name.
+   *
    * @param fileName the name of the file.
    * @return the mime-type as a String.
    */
@@ -103,13 +109,12 @@ public class FileUtil implements MimeTypes {
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
     if (mimeType == null) {
-      MIME_TYPES.getContentType(fileName);
+      mimeType = MIME_TYPES.getContentType(fileName);
     }
-    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) ||
-        SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType)) {
-      if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) ||
-          WAR_EXTENSION.equalsIgnoreCase(fileExtension) ||
-          EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
+    if (ARCHIVE_MIME_TYPE.equalsIgnoreCase(mimeType) || SHORT_ARCHIVE_MIME_TYPE.equalsIgnoreCase(
+        mimeType)) {
+      if (JAR_EXTENSION.equalsIgnoreCase(fileExtension) || WAR_EXTENSION.equalsIgnoreCase(
+          fileExtension) || EAR_EXTENSION.equalsIgnoreCase(fileExtension)) {
         mimeType = JAVA_ARCHIVE_MIME_TYPE;
       } else if ("3D".equalsIgnoreCase(fileExtension)) {
         mimeType = SPINFIRE_MIME_TYPE;
@@ -124,12 +129,13 @@ public class FileUtil implements MimeTypes {
   /**
    * Create the array of strings this array represents the repertories where the files must be
    * stored.
+   *
    * @param context
    * @return
    */
   public static String[] getAttachmentContext(final String context) {
     if (!StringUtil.isDefined(context)) {
-      return new String[] { BASE_CONTEXT };
+      return new String[]{BASE_CONTEXT};
     }
     final StringTokenizer strToken = new StringTokenizer(context, CONTEXT_TOKEN);
     final List<String> folders = new ArrayList<String>(10);
@@ -142,6 +148,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Read the content of a file in a byte array.
+   *
    * @param file the file to be read.
    * @return the bytes array containing the content of the file.
    * @throws IOException
@@ -152,6 +159,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Write a stream into a file.
+   *
    * @param file the file to be written.
    * @param data the data to be written.
    * @throws IOException
@@ -170,6 +178,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Write a stream into a file.
+   *
    * @param file the file to be written.
    * @param data the data to be written.
    * @throws IOException
@@ -185,6 +194,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Loads a ResourceBundle from the Silverpeas configuration directory.
+   *
    * @param bundleName the name of the bundle.
    * @param locale the locale of the bundle.
    * @return the corresponding ResourceBundle if it exists - null otherwise.
@@ -197,11 +207,11 @@ public class FileUtil implements MimeTypes {
       loc = Locale.ROOT;
     }
     try {
-      bundle =  ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
-      if(bundle == null) {
+      bundle = ResourceBundle.getBundle(name, loc, loader, new ConfigurationControl());
+      if (bundle == null) {
         bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
       }
-    } catch(MissingResourceException mex) {
+    } catch (MissingResourceException mex) {
       //Let's try with the real name
       bundle = ResourceBundle.getBundle(bundleName, loc, loader, new ConfigurationControl());
     }
@@ -210,17 +220,19 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Loads loads the resource into the specified properties.
+   *
    * @param properties the properties to be loaded with the resource.
    * @param resourceName the name of the resource.
    * @throws IOException
    */
-  public static void loadProperties(final Properties properties, final String resourceName) throws IOException {
+  public static void loadProperties(final Properties properties, final String resourceName) throws
+      IOException {
     if (StringUtil.isDefined(resourceName) && properties != null) {
       String name = convertResourceName(resourceName);
       InputStream in = loader.getResourceAsStream(name);
       try {
         properties.load(in);
-      }finally {
+      } finally {
         IOUtils.closeQuietly(in);
       }
     }
@@ -228,6 +240,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Indicates if the OS is from the Microsoft Windows familly
+   *
    * @return true if the OS is from the Microsoft Windows familly - false otherwise.
    */
   public static boolean isWindows() {
@@ -236,6 +249,7 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Indicates if the current file is of type archive.
+   *
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
@@ -245,15 +259,17 @@ public class FileUtil implements MimeTypes {
 
   /**
    * Indicates if the current file is of type archive.
+   *
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
   public static boolean isImage(final String filename) {
-    return FilenameUtils.isExtension(filename, IMAGE_EXTENTIONS);
+    return FilenameUtils.isExtension(filename, ImageUtil.IMAGE_EXTENTIONS);
   }
 
   /**
    * Indicates if the current file is of type PDF.
+   *
    * @param filename the name of the file.
    * @return true is the file s of type archive - false otherwise.
    */
@@ -268,8 +284,31 @@ public class FileUtil implements MimeTypes {
   }
 
   static boolean isMsOfficeExtension(final String mimeType) {
-    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION) ||
-        mimeType.startsWith(POWERPOINT_2007_EXTENSION);
+    return mimeType.startsWith(WORD_2007_EXTENSION) || mimeType.startsWith(EXCEL_2007_EXTENSION)
+        || mimeType.startsWith(POWERPOINT_2007_EXTENSION);
+  }
+
+  public static Collection<File> listFiles(File directory, String[] extensions, boolean recursive) {
+    return FileUtils.listFiles(directory, extensions, recursive);
+  }
+
+  public static Collection<File> listFiles(File directory, String[] extensions,
+      boolean caseSensitive, boolean recursive) {
+    if (caseSensitive) {
+      return listFiles(directory, extensions, recursive);
+    }
+    IOFileFilter filter;
+    if (extensions == null) {
+      filter = TrueFileFilter.INSTANCE;
+    } else {
+      String[] suffixes = new String[extensions.length];
+      for (int i = 0; i < extensions.length; i++) {
+        suffixes[i] = "." + extensions[i];
+      }
+      filter = new SuffixFileFilter(suffixes, IOCase.INSENSITIVE);
+    }
+    return FileUtils.listFiles(directory, filter, (recursive ? TrueFileFilter.INSTANCE
+        : FalseFileFilter.INSTANCE));
   }
 
   private FileUtil() {

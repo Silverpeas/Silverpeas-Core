@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.viewer.ViewFactory;
+import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -179,13 +179,23 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html +=
             "<a href=\"" + webContext + attachment.getAttachmentURL(pageContext.getContentLanguage()) + "\" target=\"_blank\">" +
             attachment.getLogicalName() + "</a>";
-        if (ViewFactory.getPreviewService().isPreviewable(new File(attachment.getAttachmentPath(pageContext.getContentLanguage())))) {
+        if (ViewerFactory.getPreviewService().isPreviewable(
+            new File(attachment.getAttachmentPath(pageContext.getContentLanguage())))) {
           html +=
               "<img onclick=\"javascript:previewFormFile(this, " + attachment.getPK().getId() +
                   ");\" class=\"preview-file\" src=\"" + webContext +
                   "/util/icons/preview.png\" alt=\"" +
                   Util.getString("GML.preview", pageContext.getLanguage()) + "\" title=\"" +
                   Util.getString("GML.preview", pageContext.getLanguage()) + "\"/>";
+        }
+        if (ViewerFactory.getViewService().isViewable(
+            new File(attachment.getAttachmentPath(pageContext.getContentLanguage())))) {
+          html +=
+              "<img onclick=\"javascript:viewFormFile(this, " + attachment.getPK().getId() +
+                  ");\" class=\"view-file\" src=\"" + webContext +
+                  "/util/icons/view.png\" alt=\"" +
+                  Util.getString("GML.view", pageContext.getLanguage()) + "\" title=\"" +
+                  Util.getString("GML.view", pageContext.getLanguage()) + "\"/>";
         }
       }
     } else if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
@@ -222,17 +232,32 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         html += Util.getMandatorySnippet();
       }
     }
-    
+
     html += displayPreviewJavascript(pageContext);
-    
+    html += displayViewJavascript(pageContext);
+
     out.println(html);
   }
-  
+
   private String displayPreviewJavascript(PagesContext context) {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">\n");
     sb.append("function previewFormFile(target, attachmentId) {\n");
     sb.append("$(target).preview(\"previewAttachment\", {\n");
+    sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
+    sb.append("attachmentId: attachmentId\n");
+    sb.append("});\n");
+    sb.append("return false;");
+    sb.append("}\n");
+    sb.append("</script>\n");
+    return sb.toString();
+  }
+
+  private String displayViewJavascript(PagesContext context) {
+    StringBuilder sb = new StringBuilder(50);
+    sb.append("<script type=\"text/javascript\">\n");
+    sb.append("function viewFormFile(target, attachmentId) {\n");
+    sb.append("$(target).view(\"viewAttachment\", {\n");
     sb.append("componentInstanceId: \"").append(context.getComponentId()).append("\",\n");
     sb.append("attachmentId: attachmentId\n");
     sb.append("});\n");

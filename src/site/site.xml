@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,7 +57,7 @@
   </custom>
   <!-- Powered By -->
   <poweredBy>
-    <logo name="Netbeans 7.1" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
+    <logo name="Netbeans 7.2" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
     <logo name="Eclipse 3.7"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
     <logo name="Intellij Idea" href="http://www.jetbrains.com/idea/" img="http://www.jetbrains.com/idea/opensource/img/all/banners/idea120x60_white.gif" />
     <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
@@ -95,10 +95,10 @@
       <item name="Source Code" href="source-repository.html" collapse="true"/>
     </menu>
     <menu name="Configuration" inherit="none">
-      <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="true"/>
-      <item name="Security" href="configuration/securing.html" collapse="true"/>
-      <item name="Migration" href="configuration/migration.html"  collapse="true"/>
-      <item name="LDAP Synchronization" href="configuration/ldap.html" collapse="true"/>
+      <item name="Securing Jboss" href="configuration/securing_jboss.html" collapse="false"/>
+      <item name="Security" href="configuration/securing.html" collapse="false"/>
+      <item name="Migration" href="configuration/migration.html"  collapse="false"/>
+      <item name="LDAP Synchronization" href="configuration/ldap.html" collapse="false"/>
       <item name="Configuring a reverse-proxy" href="configuration/proxy.html"  collapse="true"/>
     </menu>
     <menu name="Product" inherit="none">

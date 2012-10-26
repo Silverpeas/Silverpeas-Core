@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * fileFolderManager.java
- *
- * Created on 17 janvier 2001, 14:38
- */
 package com.stratelia.webactiv.util.fileFolder;
 
 /**
@@ -34,11 +28,12 @@ package com.stratelia.webactiv.util.fileFolder;
  * @author  cbonin
  * @version
  */
-import com.silverpeas.util.MimeTypes;
+
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,31 +103,15 @@ public class FileFolderManager {
    * @throws UtilException
    */
   public static Collection<File> getAllImages(String chemin) throws UtilException {
-    List<File> resultat = new ArrayList<File>();
 
     File directory = new File(chemin);
     if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isFile()) {
-          String fichier = file.getName();
-          if (FilenameUtils.isExtension(fichier, MimeTypes.IMAGE_EXTENTIONS)) {
-            resultat.add(file);
-          }
-        } else if (file.isDirectory()) {
-          String cheminRep = file.getAbsolutePath();
-          Collection<File> fich = getAllImages(cheminRep);
-          for (File image : fich) {
-            resultat.add(image);
-          }
-        }
-      }
+      return FileUtil.listFiles(directory, ImageUtil.IMAGE_EXTENTIONS, false, true);
     } else {
       SilverTrace
           .error("util", "FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
       throw new UtilException("FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
-    return resultat;
   }
 
   /**

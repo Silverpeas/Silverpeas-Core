@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,35 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.viewer;
 
-package com.silverpeas.filters;
+import java.io.File;
 
-import java.io.IOException;
+/**
+ * @author Yohann Chastagnier
+ */
+public interface ViewService {
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+  /**
+   * Verifying if it is possible to obtain a view of the given file.
+   * @param file
+   * @return
+   */
+  boolean isViewable(File file);
 
-public class AbsoluteSendRedirectFilter implements Filter {
-
-  @Override
-  public void init(FilterConfig filterConfig)
-      throws ServletException {
-  }
-
-  @Override
-  public void destroy() {
-  }
-
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    chain.doFilter(request, new SendRedirectOverloadedResponse((HttpServletRequest) request,
-        (HttpServletResponse) response));
-  }
+  /**
+   * Getting pages view instances of the given file
+   * @param originalFileName
+   * @param physicalFile
+   * @return
+   */
+  DocumentView getDocumentView(String originalFileName, File physicalFile);
 }

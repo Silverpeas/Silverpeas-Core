@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,15 +26,27 @@ package org.silverpeas.viewer;
 import java.io.File;
 
 import com.silverpeas.util.ImageUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractPreview implements Preview {
+  protected final ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.viewer.viewer", "");
 
   private final String originalFileName;
   private final File physicalFile;
   private String[] widthAndHeight = null;
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.viewer.Preview#getDisplayLicenseKey()
+   */
+  @Override
+  public String getDisplayLicenseKey() {
+    return "";
+  }
 
   /**
    * Default constructor

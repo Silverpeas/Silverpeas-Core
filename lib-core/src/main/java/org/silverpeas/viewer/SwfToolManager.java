@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,42 +23,49 @@
  */
 package org.silverpeas.viewer;
 
-import javax.inject.Inject;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ViewFactory {
+@Named("swfToolManager")
+@Singleton
+public class SwfToolManager {
 
-  @Inject
-  private PreviewService previewService;
+  private static boolean isActivated = false;
 
-  private static ViewFactory instance;
+  @PostConstruct
+  public void initialize() throws Exception {
 
-  private ViewFactory() {
-    // Nothing to do
-  }
-
-  /**
-   * Instance accessor (singleton)
-   * @return
-   */
-  private static ViewFactory getInstance() {
-    if (ViewFactory.instance == null) {
-      synchronized (ViewFactory.class) {
-        if (ViewFactory.instance == null) {
-          ViewFactory.instance = new ViewFactory();
+    // Im4java settings
+    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+      if ("path".equals(entry.getKey().toLowerCase())) {
+        Process process = null;
+        try {
+          final StringBuilder pdf2SwfCommand = new StringBuilder();
+          pdf2SwfCommand.append("pdf2swf --version");
+          process = Runtime.getRuntime().exec(pdf2SwfCommand.toString());
+          isActivated = true;
+        } catch (final Exception e) {
+          // SwfTool is not installed
+        } finally {
+          if (process != null) {
+            process.destroy();
+          }
         }
       }
     }
-    return ViewFactory.instance;
   }
 
   /**
-   * Viewer services accessor
+   * Indicates if im4java is actived
    * @return
    */
-  public static PreviewService getPreviewService() {
-    return getInstance().previewService;
+  public static boolean isActivated() {
+    return isActivated;
   }
 }
