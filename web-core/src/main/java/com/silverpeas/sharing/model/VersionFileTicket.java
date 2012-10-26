@@ -68,7 +68,7 @@ public class VersionFileTicket extends Ticket {
       SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
       pk.setOldSilverpeasId(getSharedObjectId());
       return (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(pk, null);
+          searchDocumentById(pk, null);
     } catch (AttachmentRuntimeException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
     }
@@ -81,7 +81,7 @@ public class VersionFileTicket extends Ticket {
       SimpleDocumentPK pk = new SimpleDocumentPK("" + getSharedObjectId(), getComponentId());
       pk.setOldSilverpeasId(getSharedObjectId());
       HistorisedDocument doc = (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(pk, null);
+          searchDocumentById(pk, null);
       if(doc != null) {
         return new ShareableVersionDocument(getToken(), doc);
       }

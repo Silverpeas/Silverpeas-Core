@@ -1,17 +1,9 @@
 package org.silverpeas.viewer.web;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.io.File;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.web.RESTWebService;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -19,15 +11,13 @@ import org.silverpeas.viewer.DocumentView;
 import org.silverpeas.viewer.ViewService;
 import org.silverpeas.viewer.exception.PreviewException;
 
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /*
  * Copyright (C) 2000 - 2012 Silverpeas
@@ -62,7 +52,9 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 public class DocumentViewResource extends RESTWebService {
 
   @Inject
+  @Named("simpleDocumentService")
   private AttachmentService attachmentService;
+
   @Inject
   private ViewService viewService;
   @PathParam("componentId")
@@ -83,7 +75,7 @@ public class DocumentViewResource extends RESTWebService {
     try {
 
       // Retrieve attachment data
-      final SimpleDocument attachment = attachmentService.searchAttachmentById(new SimpleDocumentPK(
+      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
           id, getComponentId()), getUserPreferences().getLanguage());
 
       // Checking availability
@@ -119,19 +111,17 @@ public class DocumentViewResource extends RESTWebService {
     try {
 
       // Retrieve attachment data
-      final VersioningUtil versioning = new VersioningUtil();
-      final DocumentVersion version =
-          versioning.getDocumentVersion(new DocumentVersionPK(Integer.parseInt(id), null,
-          getComponentId()));
+      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
+          id, getComponentId()), getUserPreferences().getLanguage());
 
       // Checking availability
-      if (version == null) {
+      if (attachment == null) {
         throw new PreviewException("ATTACHMENT DOESN'T EXIST");
       }
 
       // Computing the document view entity
-      return asWebEntity(viewService.getDocumentView(version.getLogicalName(),
-          new File(version.getDocumentPath())));
+      return asWebEntity(viewService.getDocumentView(attachment.getFilename(),new File(attachment.
+          getAttachmentPath())));
 
     } catch (final PreviewException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);

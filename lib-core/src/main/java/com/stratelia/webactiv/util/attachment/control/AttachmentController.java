@@ -429,8 +429,7 @@ public class AttachmentController {
   // méthode pour wysiwig pb de gestion d'exception
   public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
       String context, Connection con) {
-    AttachmentPK fk =
-        new AttachmentPK(foreignKey.getId(), foreignKey.getSpace(), foreignKey.getComponentName());
+    AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey.getComponentName());
 
     try {
       return attachmentBm.getAttachmentsByPKAndContext(fk, context, con);

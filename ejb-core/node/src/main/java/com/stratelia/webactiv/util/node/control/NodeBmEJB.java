@@ -545,7 +545,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         @Override
         public void invoke(NodePK pk) throws Exception {
           // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(null, pk.getInstanceId(),
+          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(),
               "Node_" + pk.getId());
         }
       });
@@ -1002,7 +1002,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         + ", nodePK = " + nodePK.toString());
     try {
       if (nodePK != null) {
-        String wysiwygContent = WysiwygController.loadFileAndAttachment(nodePK.getSpace(), nodePK.
+        String wysiwygContent = WysiwygController.loadFileAndAttachment(nodePK.
             getComponentName(), "Node_" + nodePK.getId());
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);

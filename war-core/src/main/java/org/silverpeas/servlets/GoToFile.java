@@ -59,7 +59,7 @@ public class GoToFile extends GoTo {
       
     }
     SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(objectId), language);
+        searchDocumentById(new SimpleDocumentPK(objectId), language);
     if (attachment == null) {
       return null;
     }

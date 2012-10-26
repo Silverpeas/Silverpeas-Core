@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSessionController> {
 
   private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "org.silverpeas.util.publication.publicationSettings", "fr");
   private static final long serialVersionUID = -2685660972761271210L;
 
   @Override
@@ -89,14 +89,12 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
         destination = "/thumbnail/jsp/thumbnailManager.jsp";
       } else if ("Save".equals(action)) {
         if (destination == null) {
-          destination = FileUploadUtil.getParameter(parameters,
-              "BackUrl");
+          destination = FileUploadUtil.getParameter(parameters, "BackUrl");
         }
         result = createThumbnail(request, parameters, thumbnailSC);
       } else if ("SaveUpdateFile".equals(action)) {
         if (destination == null) {
-          destination = FileUploadUtil.getParameter(parameters,
-              "BackUrl");
+          destination = FileUploadUtil.getParameter(parameters, "BackUrl");
         }
         result = updateFile(request, parameters, thumbnailSC);
       } else if ("Update".equals(action)) {
@@ -111,58 +109,26 @@ public class ThumbnailRequestRouter extends ComponentRequestRouter<ThumbnailSess
       } else if ("Crop".equals(action)) {
         result = cropThumbnail(request, thumbnailSC);
       }
-
       if (destination != null && result != null) {
-        if (destination.indexOf("?") != -1) {
+        if (destination.indexOf('?') != -1) {
           destination = destination + "&resultThumbnail=" + result;
         } else {
           destination = destination + "?resultThumbnail=" + result;
         }
       }
     }
-
     return destination;
 
   }
 
   private String updateFile(HttpServletRequest req, List<FileItem> parameters,
       ThumbnailSessionController thumbnailSC) {
-
-    // make some control before delete
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
     FileItem item = FileUploadUtil.getFile(parameters, "OriginalFile");
-
-    String type = null;
-    String fullFileName;
     if (!item.isFormField()) {
-
-      fullFileName = item.getName();
-      if (fullFileName != null && runOnUnix) {
-        fullFileName = fullFileName.replace('\\', File.separatorChar);
-        SilverTrace.info("thumbnail", "ThumbnailRequestRouter.createAttachment",
-            "root.MSG_GEN_PARAM_VALUE", "fullFileName on Unix = " + fullFileName);
-      }
-
-      String fileName = fullFileName.substring(fullFileName.lastIndexOf(File.separator) + 1,
-          fullFileName.length());
-
-      if (fileName.lastIndexOf(".") != -1) {
-        type = fileName.substring(fileName.lastIndexOf(".") + 1,
-            fileName.length());
-      }
-      // is there a type?
-      if (type == null || type.length() == 0) {
-        return "EX_MSG_NO_TYPE_ERROR";
-      }
-
-      // file type is correct?
-      if (!type.equalsIgnoreCase("gif") && !type.equalsIgnoreCase("jpg")
-          && !type.equalsIgnoreCase("jpeg") && !type.equalsIgnoreCase("png")) {
+      String fileName = FileUtil.getFilename(item.getName());
+      if (!FileUtil.isImage(fileName)) {
         return "EX_MSG_WRONG_TYPE_ERROR";
       }
-
     } else {
       return "error";
     }

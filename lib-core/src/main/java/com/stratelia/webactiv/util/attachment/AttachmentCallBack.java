@@ -29,9 +29,6 @@ import java.util.Hashtable;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -78,7 +75,7 @@ public class AttachmentCallBack implements CallBack {
           AttachmentServiceFactory.getAttachmentService().addXmlForm(pk, objectLanguage, null);
         }
       SimpleDocument document =  AttachmentServiceFactory.getAttachmentService()
-          .searchAttachmentById(pk, objectLanguage);
+          .searchDocumentById(pk, objectLanguage);
       AttachmentServiceFactory.getAttachmentService().createIndex(document);
     }
   }

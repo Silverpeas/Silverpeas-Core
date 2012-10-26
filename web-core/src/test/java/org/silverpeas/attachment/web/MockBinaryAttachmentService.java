@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -159,7 +160,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang) {
+  public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
     SimpleDocument doc =  new SimpleDocument();
     doc.setFile(new SimpleAttachment());
     doc.setFilename("Test.pdf");
@@ -222,6 +223,17 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
+                                                               DocumentType type, String lang) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  @Override
+  public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
   
 }

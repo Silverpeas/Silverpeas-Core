@@ -50,7 +50,7 @@
 
     //recuperation de l'objet
     SimpleDocument document =
-            AttachmentServiceFactory.getAttachmentService().searchAttachmentById(atPK, null);
+            AttachmentServiceFactory.getAttachmentService().searchDocumentById(atPK, null);
     List<SimpleDocument> docs  = AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(new
             ForeignPK(document.getForeignId(), document.getInstanceId()), null);
     int index = docs.indexOf(document);

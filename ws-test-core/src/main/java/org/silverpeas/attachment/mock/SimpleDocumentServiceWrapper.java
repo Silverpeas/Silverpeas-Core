@@ -34,6 +34,7 @@ import javax.inject.Named;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -143,8 +144,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang) {
-    return realService.searchAttachmentById(primaryKey, lang);
+  public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
+    return realService.searchDocumentById(primaryKey, lang);
   }
 
   @Override
@@ -234,5 +235,16 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang) {
     return realService.findExistingDocument(pk, fileName, foreign, lang);
+  }
+
+  @Override
+  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
+                                                               DocumentType type, String lang) {
+    return realService.listDocumentsByForeignKeyAndType(foreignKey, type, lang);
+  }
+
+  @Override
+  public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

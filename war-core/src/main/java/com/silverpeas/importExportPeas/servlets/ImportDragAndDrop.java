@@ -30,6 +30,7 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.SessionManager;
@@ -122,7 +123,7 @@ public class ImportDragAndDrop extends HttpServlet {
               parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
             }
           }
-          parentPath = FileUploadUtil.convertPathToServerOS(parentPath);
+          parentPath = FileUtil.convertPathToServerOS(parentPath);
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
               "fileName = " + fileName);
           if (fileName != null) {

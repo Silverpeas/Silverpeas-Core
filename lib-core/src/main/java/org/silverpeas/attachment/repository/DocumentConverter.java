@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
@@ -45,6 +46,7 @@ import org.silverpeas.util.jcr.AbstractJcrConverter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
+import com.stratelia.webactiv.util.DateUtil;
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
@@ -110,6 +112,21 @@ class DocumentConverter extends AbstractJcrConverter {
       return document;
     }
     return fillDocument(node, lang);
+  }
+  
+  /**
+   * Convert a NodeIteraor into a collection of SimpleDocument.
+   * @param iter th NodeIterator to convert.
+   * @param language the language of the wanted document.
+   * @return a collection of SimpleDocument.
+   * @throws RepositoryException 
+   */
+  public List<SimpleDocument> convertNodeIterator(NodeIterator iter, String language) throws RepositoryException {
+    List<SimpleDocument> result = new ArrayList<SimpleDocument>((int) iter.getSize());
+    while (iter.hasNext()) {
+      result.add(convertNode(iter.nextNode(), language));
+    }
+    return result;
   }
 
   SimpleDocument fillDocument(Node node, String lang) throws RepositoryException {
@@ -212,6 +229,10 @@ class DocumentConverter extends AbstractJcrConverter {
   public boolean isVersioned(Node node) throws RepositoryException {
     return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
+  }
+
+  public boolean isForm(Node node) throws RepositoryException {
+    return node.getPath().contains('/' + SimpleDocument.FORM_FOLDER + '/');
   }
 
   public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {

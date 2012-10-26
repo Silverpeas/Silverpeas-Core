@@ -23,20 +23,20 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -69,13 +69,23 @@ public interface AttachmentService {
   void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName);
 
   /**
-   * Clone the attchments
+   * Clone the attachment.
    *
    * @param original
    * @param foreignCloneId
    * @return
    */
   SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId);
+  
+  
+  /**
+   * Copy the attachment.
+   *
+   * @param original
+   * @param targetPk 
+   * @return
+   */
+  SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk);
 
   /**
    * Create file attached to an object who is identified by the foreignId.
@@ -210,7 +220,7 @@ public interface AttachmentService {
    * @return java.util.Vector: a collection of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
    */
-  SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang);
+  SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang);
 
   /**
    * Search all file attached to a foreing object.
@@ -220,7 +230,20 @@ public interface AttachmentService {
    * @return the list of attached documents.
    * @throws AttachmentRuntimeException when is impossible to search
    */
-  List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang);
+  List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey,
+      String lang);
+
+  /**
+   * Search all file attached to a foreing object.
+   *
+   * @param foreignKey : the primary key of foreign object.
+   * @param type : the type of document
+   * @param lang the lang for the documents.
+   * @return the list of attached documents.
+   * @throws AttachmentRuntimeException when is impossible to search
+   */
+  List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey, DocumentType type,
+                                                        String lang);
 
   void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
 
@@ -232,27 +255,28 @@ public interface AttachmentService {
    * @param invokeCallback
    */
   void updateAttachment(SimpleDocument document, boolean indexIt, boolean invokeCallback);
-  
+
   /**
    * To update a document content by updating or adding some content.
    *
    * @param document
-   * @param content 
+   * @param content
    * @param indexIt
    * @param invokeCallback
    */
-  void updateAttachment(SimpleDocument document, File content, boolean indexIt, boolean invokeCallback);
-  
-  
+  void updateAttachment(SimpleDocument document, File content, boolean indexIt,
+      boolean invokeCallback);
+
   /**
    * To update a document content by updating or adding some content.
    *
    * @param document
-   * @param content 
+   * @param content
    * @param indexIt
    * @param invokeCallback
    */
-  void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt, boolean invokeCallback);
+  void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
+      boolean invokeCallback);
 
   void updateIndexEntryWithAttachments(FullIndexEntry indexEntry);
 

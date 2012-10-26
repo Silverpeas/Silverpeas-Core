@@ -110,8 +110,8 @@ public class AjaxServlet extends HttpServlet {
       context.addOption(UnlockOption.WEBDAV);
     }
     SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(new SimpleDocumentPK(req.getParameter("Id")),
-        req.getParameter("FileLanguage"));
+        .searchDocumentById(new SimpleDocumentPK(req.getParameter("Id")),
+            req.getParameter("FileLanguage"));
     if (!doc.isPublic()) {
       context.addOption(UnlockOption.PRIVATE_VERSION);
     }
@@ -139,12 +139,12 @@ public class AjaxServlet extends HttpServlet {
         if ("all".equals(lang)) {
           // suppresion de l'objet
           SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
-              .searchAttachmentById(atPK, null);
+              .searchDocumentById(atPK, null);
           AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
           return "attachmentRemoved";
         } else {
           SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
-              .searchAttachmentById(atPK, lang);
+              .searchDocumentById(atPK, lang);
 
           boolean hasMoreTranslations = true;
           while (hasMoreTranslations) {
@@ -158,7 +158,7 @@ public class AjaxServlet extends HttpServlet {
         }
       } else {
         SimpleDocument doc = AttachmentServiceFactory.getAttachmentService()
-            .searchAttachmentById(atPK, null);
+            .searchDocumentById(atPK, null);
         AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
         return "attachmentRemoved";
       }
@@ -182,7 +182,7 @@ public class AjaxServlet extends HttpServlet {
         pk = new SimpleDocumentPK(id, componentId);
       }
       attachments.
-          add(AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null));
+          add(AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null));
     }
     AttachmentServiceFactory.getAttachmentService().reorderDocuments(attachments);
     return "ok";

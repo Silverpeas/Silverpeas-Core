@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -32,7 +31,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
@@ -44,24 +42,19 @@ import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer
  * (http://flowplayer.org/index.html).
  */
-public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
+public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
 
   /**
    * The default width in pixels of the video display area.
@@ -97,16 +90,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * The different kinds of operation that can be applied into an attached video file.
    */
   private enum Operation {
-
     ADD, UPDATE, DELETION;
-  }
-
-  /**
-   * Returns the name of the managed types.
-   * @return 
-   */
-  public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
   }
 
   @Override
@@ -193,7 +177,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       if (StringUtil.isDefined(attachmentId)) {
         attachmentIds.addAll(update(attachmentId, field, template, pageContext));
       }
-    } catch (Exception ex) {
+    } catch (IOException ex) {
       SilverTrace.error("form", "VideoFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, ex);
     }
 
@@ -367,7 +351,7 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @return the identifier of the uploaded attached video file.
    */
   private String uploadVideoFile(final List<FileItem> items, final String itemKey,
-      final PagesContext pageContext) throws Exception {
+      final PagesContext pageContext) throws IOException {
     String attachmentId = "";
 
     FileItem item = FileUploadUtil.getFile(items, itemKey);
@@ -376,26 +360,13 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       String userId = pageContext.getUserId();
       String objectId = pageContext.getObjectId();
       String logicalName = item.getName();
-      long size = item.getSize();
       if (StringUtil.isDefined(logicalName)) {
-        if (!FileUtil.isWindows()) {
-          logicalName = logicalName.replace('\\', File.separatorChar);
-          SilverTrace.info("form", "VideoFieldDisplayer.uploadVideoFile",
-              "root.MSG_GEN_PARAM_VALUE",
-              "fullFileName on Unix = " + logicalName);
-        }
-
-        logicalName = logicalName.substring(logicalName.lastIndexOf(File.separatorChar) + 1,
-            logicalName.length());
-        String type = FileRepositoryManager.getFileExtension(logicalName);
-        SimpleDocument document = createAttachmentDetail(objectId, componentId, logicalName, type,
-            size, userId);
-        document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-            item.getInputStream());
+        logicalName = FileUtil.getFilename(logicalName);
+        SimpleDocument document = createSimpleDocument(objectId, componentId, item, logicalName,
+            userId);
         attachmentId = document.getId();
       }
     }
-
     return attachmentId;
   }
 
@@ -419,26 +390,5 @@ public class VideoFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    */
   private boolean isUpdate(final Operation operation, final String attachmentId) {
     return StringUtil.isDefined(attachmentId) && operation == Operation.UPDATE;
-  }
-
-  /**
-   * Deletes the specified attachment, identified by its unique identifier.?
-   *
-   * @param attachmentId the unique identifier of the attachment to delete.
-   * @param pageContext the context of the page.
-   */
-  private void deleteAttachment(String attachmentId, PagesContext pageContext) {
-    SilverTrace.info("form", "VideoFieldDisplayer.deleteAttachment", "root.MSG_GEN_ENTER_METHOD",
-        "attachmentId = " + attachmentId + ", componentId = " + pageContext.getComponentId());
-    SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
-    AttachmentServiceFactory.getAttachmentService().deleteAttachment(AttachmentServiceFactory.
-        getAttachmentService().searchAttachmentById(pk, null));
-  }
-
-  private SimpleDocument createAttachmentDetail(String objectId, String componentId,
-      String fileName, String mimeType, long size, String userId) {
-    return new SimpleDocument(new SimpleDocumentPK(null, componentId), objectId,
-        0, false, new SimpleAttachment(fileName, null, fileName, "", size, mimeType, userId,
-        new Date(), null));
   }
 }

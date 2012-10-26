@@ -145,7 +145,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			} else {
 				imagesContext = WysiwygController.getImagesFileName(objectId);
 				SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId="+objectId+" imagesContext="+imagesContext);
-				collectionImages = WysiwygController.searchAllAttachments(objectId, spaceId, componentId, imagesContext);
+				collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
 			}
         }
     } else if ("Load".equals(actionWysiwyg)) {
@@ -206,7 +206,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
           specificURL = "/website/"+componentId+"/"+objectId+"/";
 		} else {
 			imagesContext = WysiwygController.getImagesFileName(objectId);
-	        collectionImages = WysiwygController.searchAllAttachments(objectId, spaceId, componentId, imagesContext);
+	        collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
 		}
         session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 
@@ -217,7 +217,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				if (StringUtil.isDefined(contentLanguage)) {
 					wysiwygTextValue = WysiwygController.load(componentId, objectId, contentLanguage);
 				} else {
-					wysiwygTextValue = WysiwygController.loadFileAndAttachment(spaceId, componentId, objectId);
+					wysiwygTextValue = WysiwygController.loadFileAndAttachment(componentId, objectId);
 				}
 			}
 	        if (wysiwygTextValue==null) {

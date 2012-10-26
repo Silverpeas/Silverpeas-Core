@@ -505,7 +505,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // le modele existant n'est pas le meme que l'importe
         unitReport.setError(UnitReport.ERROR_CANT_UPDATE_CONTENT);
       }
-    } else if (!WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), pubId)) {
+    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId)) {
       // on ne remplace pas un type de contenu par un autre
       // Preparation des donnees DBModel a  creer
       if (modelDetail == null) {
@@ -616,7 +616,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), java.lang.Integer.
+    if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), java.lang.Integer.
         toString(pubId))) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
@@ -637,8 +637,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
-    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, "useless",
-        getCurrentComponentId(), "wysiwyg", java.lang.Integer.toString(pubId), userId);
+    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName,
+        getCurrentComponentId(), WysiwygController.WYSIWYG_CONTEXT, String.valueOf(pubId), userId);
   }
 
   /**
@@ -1138,7 +1138,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg("useless", componentId, pubId)) {
+      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId)) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
         String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId);

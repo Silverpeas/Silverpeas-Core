@@ -53,6 +53,7 @@ public class SimpleDocument implements Serializable {
   private final static ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   public static final String WEBDAV_FOLDER = "webdav";
+  public static final String FORM_FOLDER = "xmlform";
   public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
@@ -72,8 +73,12 @@ public class SimpleDocument implements Serializable {
   private int majorVersion = 0;
   private boolean publicDocument = true;
   private String nodeName;
-
   private String comment;
+  private DocumentType documentType = DocumentType.attachment;
+
+  public void setDocumentType(DocumentType documentType) {
+    this.documentType = documentType;
+  }
 
   /**
    * Get the value of cloneId
@@ -127,7 +132,7 @@ public class SimpleDocument implements Serializable {
    * @param reservation
    * @param alert
    * @param expiry
-   * @param comment 
+   * @param comment
    * @param file
    */
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
@@ -284,7 +289,7 @@ public class SimpleDocument implements Serializable {
   public void setMajorVersion(int majorVersion) {
     this.majorVersion = majorVersion;
   }
-  
+
   public String getComment() {
     return comment;
   }
@@ -423,7 +428,7 @@ public class SimpleDocument implements Serializable {
 
   public String computeNodeName() {
     if (!StringUtil.isDefined(nodeName)) {
-      if(getOldSilverpeasId() <= 0L) {
+      if (getOldSilverpeasId() <= 0L) {
         setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
       }
       setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
@@ -447,7 +452,7 @@ public class SimpleDocument implements Serializable {
    * @return the full JCR path to the document node (starting with /).
    */
   public String getFullJcrPath() {
-    return '/' + getInstanceId() + "/attachments/" + getNodeName();
+    return '/' + getInstanceId() + '/' + getFolder() + '/' + getNodeName();
   }
 
   /**
@@ -619,5 +624,9 @@ public class SimpleDocument implements Serializable {
    */
   public SimpleDocument getLastPublicVersion() {
     return this;
+  }
+
+  public String getFolder() {
+    return documentType.getForlderName();
   }
 }

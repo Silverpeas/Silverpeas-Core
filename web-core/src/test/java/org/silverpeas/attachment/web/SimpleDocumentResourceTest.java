@@ -117,7 +117,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
         thenReturn(document);
     getTestResources().setAttachmentService(service);
     SimpleDocumentEntity result = getAt(getDocumentUri(DOCUMENT_ID, null),
@@ -137,11 +137,11 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "18", 5, false, new SimpleAttachment("My Test.pdf", "en", "English Test", "This is a test.",
         600L, MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("fr"))).thenReturn(
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("fr"))).thenReturn(
         document_fr);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("de"))).thenReturn(
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("de"))).thenReturn(
         document_fr);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("en"))).thenReturn(
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq("en"))).thenReturn(
         document_en);
     getTestResources().setAttachmentService(service);
     SimpleDocumentEntity[] result = getAt(getTranslationsUri(DOCUMENT_ID),
@@ -179,7 +179,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
         thenReturn(document);
     getTestResources().setAttachmentService(service);
     FormDataMultiPart form = new FormDataMultiPart();
@@ -209,7 +209,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "18", 10, false, new SimpleAttachment("test.pdf", "fr", "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), anyString())).
         thenReturn(document);
     getTestResources().setAttachmentService(service);
     FormDataMultiPart form = new FormDataMultiPart();
@@ -235,7 +235,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
         thenReturn(document);
     when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
     getTestResources().setAttachmentService(service);
@@ -255,7 +255,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         "18", 10, false, new SimpleAttachment("test.pdf", lang, "Test", "Ceci est un test.", 500L,
         MimeTypes.PDF_MIME_TYPE, USER_ID_IN_TEST, creationDate, null));
     AttachmentService service = mock(AttachmentService.class);
-    when(service.searchAttachmentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
         thenReturn(document);
     UnlockContext unlockContext = new UnlockContext(DOCUMENT_ID, user.getId(), lang, comment);
     unlockContext.addOption(UnlockOption.FORCE);

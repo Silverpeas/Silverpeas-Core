@@ -217,7 +217,7 @@ public class AttachmentServiceTest {
   @Test
   public void testUpdateStreamContent() throws UnsupportedEncodingException {
     String currentLang = "fr";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
@@ -234,7 +234,7 @@ public class AttachmentServiceTest {
   @Test
   public void testAddNewStreamContent() throws UnsupportedEncodingException {
     String currentLang = "fr";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
@@ -258,7 +258,7 @@ public class AttachmentServiceTest {
   public void testAddFileContent() throws URISyntaxException, IOException {
     File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
     String currentLang = "fr";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     instance.getBinaryContent(out, existingFrDoc, currentLang);
     assertThat(out.toString(CharEncoding.UTF_8), is("Ceci est un test"));
@@ -281,7 +281,7 @@ public class AttachmentServiceTest {
   public void testUpdateFileContent() throws URISyntaxException, IOException {
     File file = new File(this.getClass().getResource("/LibreOffice.odt").toURI());
     String currentLang = "fr";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, currentLang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, currentLang);
     instance.updateAttachment(document, file, false, false);
     File tempFile = File.createTempFile("LibreOffice", ".odt");
     instance.getBinaryContent(tempFile, existingFrDoc, currentLang);
@@ -333,15 +333,15 @@ public class AttachmentServiceTest {
   public void testAddXmlForm() {
     String language = "fr";
     String xmlFormName = "15";
-    SimpleDocument result = instance.searchAttachmentById(existingFrDoc, language);
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, language);
     assertThat(result, is(notNullValue()));
     assertThat(result.getXmlFormId(), is("5"));
     instance.addXmlForm(existingFrDoc, language, xmlFormName);
-    result = instance.searchAttachmentById(existingFrDoc, language);
+    result = instance.searchDocumentById(existingFrDoc, language);
     assertThat(result, is(notNullValue()));
     assertThat(result.getXmlFormId(), is(xmlFormName));
     instance.addXmlForm(existingFrDoc, language, null);
-    result = instance.searchAttachmentById(existingFrDoc, language);
+    result = instance.searchDocumentById(existingFrDoc, language);
     assertThat(result, is(notNullValue()));
     assertThat(result.getXmlFormId(), is(nullValue()));
   }
@@ -353,11 +353,11 @@ public class AttachmentServiceTest {
   public void testCloneDocument() throws IOException {
     String language = "fr";
     String foreignCloneId = "node59";
-    SimpleDocument original = instance.searchAttachmentById(existingFrDoc, language);
+    SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
     SimpleDocumentPK clonePk = instance.cloneDocument(original, foreignCloneId);
-    SimpleDocument clone = instance.searchAttachmentById(clonePk, language);
+    SimpleDocument clone = instance.searchDocumentById(clonePk, language);
     original.setCloneId(original.getId());
-    SimpleDocument updatedOriginal = instance.searchAttachmentById(existingFrDoc, language);
+    SimpleDocument updatedOriginal = instance.searchDocumentById(existingFrDoc, language);
     assertThat(updatedOriginal, SimpleDocumentMatcher.matches(original));
     original.setCloneId(null);
     original.setForeignId(foreignCloneId);
@@ -481,11 +481,11 @@ public class AttachmentServiceTest {
   @Test
   public void testDeleteAttachment() {
     String lang = "en";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, lang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(notNullValue()));
     checkFrenchSimpleDocument(document);
     instance.deleteAttachment(document);
-    document = instance.searchAttachmentById(existingFrDoc, lang);
+    document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(nullValue()));
   }
 
@@ -495,11 +495,11 @@ public class AttachmentServiceTest {
   @Test
   public void testDeleteIndexedAttachment() {
     String lang = "en";
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, lang);
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(notNullValue()));
     checkFrenchSimpleDocument(document);
     instance.deleteAttachment(document, true);
-    document = instance.searchAttachmentById(existingFrDoc, lang);
+    document = instance.searchDocumentById(existingFrDoc, lang);
     assertThat(document, is(nullValue()));
   }
 
@@ -508,16 +508,16 @@ public class AttachmentServiceTest {
    */
   @Test
   public void testRemoveContent() {
-    SimpleDocument document = instance.searchAttachmentById(existingFrDoc, "fr");
+    SimpleDocument document = instance.searchDocumentById(existingFrDoc, "fr");
     checkFrenchSimpleDocument(document);
     instance.removeContent(document, "fr", false);
-    document = instance.searchAttachmentById(existingFrDoc, "fr");
+    document = instance.searchDocumentById(existingFrDoc, "fr");
     assertThat(document, is(nullValue()));
 
-    document = instance.searchAttachmentById(existingEnDoc, "en");
+    document = instance.searchDocumentById(existingEnDoc, "en");
     checkEnglishSimpleDocument(document);
     instance.removeContent(document, "fr", false);
-    document = instance.searchAttachmentById(existingEnDoc, "en");
+    document = instance.searchDocumentById(existingEnDoc, "en");
     assertThat(document, is(notNullValue()));
     checkEnglishSimpleDocument(document);
   }
@@ -607,20 +607,20 @@ public class AttachmentServiceTest {
   }
 
   /**
-   * Test of searchAttachmentById method, of class AttachmentService.
+   * Test of searchDocumentById method, of class AttachmentService.
    */
   @Test
   public void testSearchAttachmentById() {
-    SimpleDocument result = instance.searchAttachmentById(existingFrDoc, null);
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
     assertThat(existingFrDoc.getOldSilverpeasId(), greaterThan(0L));
     String id = existingFrDoc.getId();
     existingFrDoc.setId(null);
-    result = instance.searchAttachmentById(existingFrDoc, null);
+    result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
     existingFrDoc.setId(id);
     existingFrDoc.setOldSilverpeasId(-1L);
-    result = instance.searchAttachmentById(existingFrDoc, null);
+    result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
   }
 
@@ -697,7 +697,7 @@ public class AttachmentServiceTest {
    */
   @Test
   public void testUpdateAttachment() {
-    SimpleDocument result = instance.searchAttachmentById(existingFrDoc, null);
+    SimpleDocument result = instance.searchDocumentById(existingFrDoc, null);
     checkFrenchSimpleDocument(result);
     Date alertDate = RandomGenerator.getRandomCalendar().getTime();
     result.setAlert(alertDate);
@@ -720,7 +720,7 @@ public class AttachmentServiceTest {
     String title = "Mon document de test mis à jour";
     result.setTitle(title);
     instance.updateAttachment(result, false, false);
-    result = instance.searchAttachmentById(existingFrDoc, null);
+    result = instance.searchDocumentById(existingFrDoc, null);
     assertThat(result, is(notNullValue()));
     assertThat(result.getAlert(), is(DateUtil.getBeginOfDay(alertDate)));
     assertThat(result.getContentType(), is(MimeTypes.BZ2_ARCHIVE_MIME_TYPE));

@@ -74,7 +74,7 @@ public class AttachmentRessource extends RESTWebService {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(final @PathParam("id") String attachmentId) {
     final SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
+        searchDocumentById(new SimpleDocumentPK(attachmentId), null).getLastPublicVersion();
     if (!isFileReadable(attachment)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
@@ -85,7 +85,7 @@ public class AttachmentRessource extends RESTWebService {
           AttachmentServiceFactory.getAttachmentService().getBinaryContent(output, attachment.
               getPk(), attachment.getLanguage());
         } catch (Exception e) {
-          throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+          throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
         }
       }
     };
@@ -104,7 +104,7 @@ public class AttachmentRessource extends RESTWebService {
     while (tokenizer.hasMoreTokens()) {
       SimpleDocumentPK pk = new SimpleDocumentPK(tokenizer.nextToken());
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(pk, null);
+          searchDocumentById(pk, null);
       if (!isFileReadable(attachment)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }

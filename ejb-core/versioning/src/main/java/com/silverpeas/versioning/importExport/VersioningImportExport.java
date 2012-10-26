@@ -225,7 +225,7 @@ public class VersioningImportExport {
       SimpleDocument existingDocument = null;
       if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
           && !"-1".equals(document.getPk().getId())) {
-        existingDocument = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
+        existingDocument = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
             new SimpleDocumentPK("", document.getPk()), null);
       }
       if (existingDocument == null) {
@@ -421,7 +421,7 @@ public class VersioningImportExport {
     AttachmentServiceFactory.getAttachmentService().
         unlock(new UnlockContext(existingDocument.getId(), "" + userId, existingDocument.
         getLanguage()));
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(existingDocument.
+    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(existingDocument.
         getPk(), existingDocument.getLanguage());
   }
 }

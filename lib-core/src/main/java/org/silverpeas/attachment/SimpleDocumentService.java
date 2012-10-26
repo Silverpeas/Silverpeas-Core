@@ -44,6 +44,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
@@ -72,7 +73,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 
 /**
  *
@@ -263,7 +263,7 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      SimpleDocumentPK docPk = repository.createDocument(session, document);      
+      SimpleDocumentPK docPk = repository.createDocument(session, document);
       if (invokeCallback && StringUtil.isDefined(document.getCreatedBy())) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_ADD, Integer.
@@ -271,7 +271,8 @@ public class SimpleDocumentService implements AttachmentService {
             document.getForeignId());
       }
       session.save();
-      SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.getLanguage());
+      SimpleDocument createdDocument = repository.findDocumentById(session, docPk, document.
+          getLanguage());
       createdDocument.setPublicDocument(document.isPublic());
       SimpleDocument finalDocument = repository.unlock(session, createdDocument, false);
       repository.storeContent(session, finalDocument, content);
@@ -333,12 +334,12 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument searchAttachmentById(SimpleDocumentPK primaryKey, String lang) {
+  public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
       if (StringUtil.isDefined(primaryKey.getId())) {
-       return repository.findDocumentById(session, primaryKey, lang);
+        return repository.findDocumentById(session, primaryKey, lang);
       }
       SimpleDocument doc = repository.findDocumentByOldSilverpeasId(session, primaryKey
           .getComponentName(), primaryKey.getOldSilverpeasId(), false, lang);
@@ -453,7 +454,7 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       boolean requireLock = repository.lock(session, document, document.getEditedBy());
-      repository.removeContent(session, document.getPk(), lang);      
+      repository.removeContent(session, document.getPk(), lang);
       if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
         webdavRepository.deleteAttachmentNode(session, document);
       }
@@ -464,10 +465,10 @@ public class SimpleDocumentService implements AttachmentService {
             document.getInstanceId(), document.getForeignId());
       }
       deleteIndex(document, document.getLanguage());
-      session.save(); 
+      session.save();
       SimpleDocument finalDocument = document;
       if (requireLock) {
-        finalDocument = repository.unlock(session, document, false);      
+        finalDocument = repository.unlock(session, document, false);
         repository.duplicateContent(session, document, finalDocument);
       }
       finalDocument.setLanguage(lang);
@@ -482,7 +483,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   /**
-   * Clone the attchments
+   * Clone the attachment.
    *
    * @param original
    * @param foreignCloneId
@@ -500,6 +501,35 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
       original.setCloneId(clonePk.getId());
       repository.updateDocument(session, original);
+      repository.storeContent(session, clone, in);
+      session.save();
+      return clonePk;
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      IOUtils.closeQuietly(in);
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  /**
+   * Clone the attachment.
+   *
+   * @param original
+   * @param targetPk
+   * @return
+   */
+  @Override
+  public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
+    Session session = null;
+    InputStream in = null;
+    try {
+      in = new FileInputStream(original.getAttachmentPath());
+      session = BasicDaoFactory.getSystemSession();
+      SimpleDocumentPK clonePk = repository.copyDocument(session, original, targetPk);
+      SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
       repository.storeContent(session, clone, in);
       session.save();
       return clonePk;
@@ -716,14 +746,15 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocument finalDocument = repository.unlock(session, document, context.isForce());
       if (document.isOpenOfficeCompatible() && !context.isUpload() && context.isWebdav()) {
         webdavRepository.updateAttachment(session, finalDocument);
-      } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.isWebdav())) {
+      } else if (finalDocument.isOpenOfficeCompatible() && (context.isUpload() || !context.
+          isWebdav())) {
         webdavRepository.deleteAttachmentNode(session, finalDocument);
       } else {
         File file = new File(finalDocument.getAttachmentPath());
-        if(!file.exists() && !context.isForce()) {
+        if (!file.exists() && !context.isForce()) {
           repository.duplicateContent(session, document, finalDocument);
         }
-      }      
+      }
       session.save();
       if (document.isPublic()) {
         String userId = context.getUserId();
@@ -823,7 +854,7 @@ public class SimpleDocumentService implements AttachmentService {
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang) {
     List<SimpleDocument> exisitingsDocuments = searchAttachmentsByExternalObject(foreign, lang);
-    SimpleDocument document = searchAttachmentById(pk, lang);
+    SimpleDocument document = searchDocumentById(pk, lang);
     if (document == null) {
       for (SimpleDocument doc : exisitingsDocuments) {
         if (doc.getFilename().equalsIgnoreCase(fileName)) {
@@ -832,5 +863,20 @@ public class SimpleDocumentService implements AttachmentService {
       }
     }
     return document;
+  }
+
+  @Override
+  public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
+      DocumentType type, String lang) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
+          getId(), type, lang);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
   }
 }

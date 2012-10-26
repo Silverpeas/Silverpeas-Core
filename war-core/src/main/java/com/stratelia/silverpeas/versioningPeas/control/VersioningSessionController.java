@@ -344,7 +344,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (creator_id != -1) {
       return creator_id;
     }
-    String creator = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(pk, null)
+    String creator = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk, null)
         .getCreatedBy();
     if (StringUtil.isInteger(creator)) {
       return Integer.parseInt(creator);
@@ -392,7 +392,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    *
    */
   public SimpleDocument getDocument(SimpleDocumentPK documentPK) {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(documentPK, null);
+    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(documentPK, null);
   }
 
   /**
@@ -451,7 +451,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     AttachmentServiceFactory.getAttachmentService().updateAttachment(newVersion, in, isIndexable(),
         true);
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(newVersion.getPk(),
+    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(newVersion.getPk(),
         newVersion.getLanguage());
   }
 
@@ -495,7 +495,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    */
   public boolean isDocumentLocked(SimpleDocumentPK documentPK) {
-    return !AttachmentServiceFactory.getAttachmentService().searchAttachmentById(documentPK, null)
+    return !AttachmentServiceFactory.getAttachmentService().searchDocumentById(documentPK, null)
         .isReadOnly();
   }
 
@@ -506,7 +506,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return SimpleDocument
    */
   public SimpleDocument getLastPublicVersion(SimpleDocumentPK documentPK) {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(documentPK, null)
+    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(documentPK, null)
         .getLastPublicVersion();
   }
 
@@ -517,7 +517,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return SimpleDocument
    */
   public SimpleDocument getLastVersion(SimpleDocumentPK documentPK) {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentById(documentPK, null);
+    return AttachmentServiceFactory.getAttachmentService().searchDocumentById(documentPK, null);
   }
 
   /**
@@ -528,7 +528,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public List<SimpleDocument> getDocumentVersions(SimpleDocumentPK documentPK) {
     return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(documentPK, null)).getHistory();
+        .searchDocumentById(documentPK, null)).getHistory();
   }
 
   /**
@@ -539,7 +539,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
     return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(documentPK, null)).getPublicVersions();
+        .searchDocumentById(documentPK, null)).getPublicVersions();
   }
 
   /**
@@ -552,7 +552,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       throws RemoteException {
     // Get all versions for given document
     HistorisedDocument currentDocument = ((HistorisedDocument) AttachmentServiceFactory
-        .getAttachmentService().searchAttachmentById(documentPK, null));
+        .getAttachmentService().searchDocumentById(documentPK, null));
     List<SimpleDocument> versions = currentDocument.getHistory();
     List<SimpleDocument> filtered_versions;
     if (user_id < 0 || !useRights()) {
@@ -1043,21 +1043,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         "root.MSG_GEN_ENTER_METHOD");
 
     SimpleDocumentPK docPK = new SimpleDocumentPK(documentId, getComponentId());
-    /*  if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-     request.setCharacterEncoding(CharEncoding.UTF_8);
-     }
-     String encoding = request.getCharacterEncoding();
-
-     List<FileItem> items = FileUploadUtil.parseRequest(request);
-     String comments = FileUploadUtil.getParameter(items, "comments", "", encoding);
-     int versionType = Integer.parseInt(FileUploadUtil.getParameter(items, "versionType", "0",
-     encoding));
-     FileItem fileItem = FileUploadUtil.getFile(items, "file_upload");*/
     String filename = fileItem.getName();
     if (filename != null) {
-      filename = filename.replace('\\', File.separatorChar);
-      filename = filename.replace('/', File.separatorChar);
-      filename = filename.substring(filename.lastIndexOf(File.separator) + 1, filename.length());
+      filename = FileUtil.getFilename(filename);
     }
     String mimeType = FileUtil.getMimeType(filename);
     SimpleDocument documentVersion;
@@ -1080,8 +1068,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       }
       documentVersion = addNewDocumentVersion(documentVersion, fileItem.getInputStream());
     } else {
-      /*String publicationId = FileUploadUtil.getParameter(items, "publicationId", "-1", encoding);
-       String description = FileUploadUtil.getParameter(items, "description", "", encoding);*/
       String xmlFormId = null;
       if (addXmlForm) {
         xmlFormId = getXmlForm();
@@ -1092,9 +1078,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       documentVersion.setPublicDocument(isPublic);
       documentVersion = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
           fileItem.getInputStream());
-      /*String name = FileUploadUtil.getParameter(items, "name", "", encoding);
-       String publicationId = FileUploadUtil.getParameter(items, "publicationId", "-1", encoding);
-       String description = FileUploadUtil.getParameter(items, "description", "", encoding);*/
       setEditingDocument(documentVersion);
     }
     if (addXmlForm) {

@@ -914,8 +914,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
             fieldValue = attachmentId;
           } else {
             SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
-                .searchAttachmentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
-                language);
+                .searchDocumentById(new SimpleDocumentPK(attachmentId, getPK().getInstanceId()),
+                    language);
             if (attachment != null) {
               fieldValue = attachment.getAttachmentURL();
             }
@@ -1030,7 +1030,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getWysiwyg() {
     String wysiwygContent;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getSpace(), getPK().
+      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().
           getComponentName(), getPK().getId());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";

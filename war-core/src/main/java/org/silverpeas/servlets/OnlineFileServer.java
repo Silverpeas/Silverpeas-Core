@@ -76,7 +76,7 @@ public class OnlineFileServer extends HttpServlet {
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
-          .searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
+          .searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         onlineFile = new OnlineAttachment(attachment);
       }

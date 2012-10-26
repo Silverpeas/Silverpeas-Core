@@ -26,10 +26,7 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.web.servlet.RestRequest;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -68,7 +65,7 @@ public class GetLinkFileServlet extends HttpServlet {
         SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
         pk.setOldSilverpeasId(ticket.getSharedObjectId());
         SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-            searchAttachmentById(pk, null);
+            searchDocumentById(pk, null);
         filePath = document.getAttachmentPath();
         fileType = document.getContentType();
         fileName = document.getFilename();
@@ -77,7 +74,7 @@ public class GetLinkFileServlet extends HttpServlet {
         SimpleDocumentPK pk = new SimpleDocumentPK(null, ticket.getComponentId());
         pk.setOldSilverpeasId(ticket.getSharedObjectId());
         HistorisedDocument versionedDocument = (HistorisedDocument) AttachmentServiceFactory.
-            getAttachmentService().searchAttachmentById(pk, null);
+            getAttachmentService().searchDocumentById(pk, null);
         SimpleDocument document = versionedDocument.getLastPublicVersion();
         filePath = document.getAttachmentPath();
         fileType = document.getContentType();

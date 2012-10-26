@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -22,16 +21,15 @@
 package com.silverpeas.form.displayers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
@@ -54,7 +52,6 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 
 /**
@@ -66,25 +63,19 @@ import com.stratelia.webactiv.util.FileServerUtils;
  * @see Form
  * @see FieldDisplayer
  */
-public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
+public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
-  /**
-   * Returns the name of the managed types.
-   * @return 
-   */
-  public String[] getManagedTypes() {
-    return new String[]{FileField.TYPE};
-  }
-
+  
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
    * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
    * template. <LI>the field type is not a managed type. </UL>
-   * @param pageContext 
+   *
+   * @param pageContext
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
@@ -127,7 +118,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * @param field
    * @param template
    * @param pagesContext
-   * @param webContext 
+   * @param webContext
    * @throws FormException
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
@@ -153,7 +144,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       if (attachmentId.startsWith("/")) {
         imageURL = attachmentId;
       } else {
-        attachment = AttachmentServiceFactory.getAttachmentService().searchAttachmentById(
+        attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
             attachmentPk, language);
         if (attachment != null) {
           if (pagesContext.getRenderingContext() == RenderingContext.EXPORT) {
@@ -307,8 +298,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws
-      FormException {
+      PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
     String itemName = template.getFieldName();
     try {
@@ -343,7 +333,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         return attachmentIds;
       }
       attachmentIds.addAll(update(value, field, template, pageContext));
-    } catch (Exception e) {
+    } catch (IOException e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
     return attachmentIds;
@@ -370,52 +360,23 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   private String processUploadedImage(List<FileItem> items, String parameterName,
-      PagesContext pagesContext) throws Exception {
+      PagesContext pagesContext) throws IOException {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
     if (item != null && !item.isFormField()) {
       String componentId = pagesContext.getComponentId();
       String userId = pagesContext.getUserId();
       String objectId = pagesContext.getObjectId();
-      String logicalName = item.getName();
-      long size = 0L;
-      if (StringUtil.isDefined(logicalName)) {
-        if (!FileUtil.isWindows()) {
-          logicalName = logicalName.replace('\\', File.separatorChar);
-          SilverTrace.info("form", "AbstractForm.processUploadedImage", "root.MSG_GEN_PARAM_VALUE",
-              "fullFileName on Unix = " + logicalName);
-        }
-        logicalName = logicalName.substring(logicalName.lastIndexOf(File.separatorChar) + 1,
-            logicalName.length());
-        String type = FileRepositoryManager.getFileExtension(logicalName);
-        size = item.getSize();
-        // l'ajout du fichier joint ne se fait que si la taille du fichier (size) est >0
-        // sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non
-        // accessible)
-        if (size > 0) {
-          SimpleDocument document = createAttachmentDetail(objectId, componentId, logicalName, type,
-              size, userId);
-          document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-              item.getInputStream());
+      if (StringUtil.isDefined(item.getName())) {
+        String fileName = FileUtil.getFilename(item.getName());
+        long size = item.getSize();
+        if (size > 0L) {
+          SimpleDocument document = createSimpleDocument(objectId, componentId, item, fileName,
+              userId);
           attachmentId = document.getId();
         }
       }
     }
     return attachmentId;
-  }
-
-  private SimpleDocument createAttachmentDetail(String objectId, String componentId,
-      String fileName, String mimeType, long size, String userId) {
-    return new SimpleDocument(new SimpleDocumentPK(null, componentId), objectId,
-        0, false, new SimpleAttachment(fileName, null, fileName, "", size, mimeType, userId,
-        new Date(), null));
-  }
-
-  private void deleteAttachment(String attachmentId, PagesContext pageContext) {
-    SilverTrace.info("form", "AbstractForm.deleteAttachment", "root.MSG_GEN_ENTER_METHOD",
-        "attachmentId = " + attachmentId + ", componentId = " + pageContext.getComponentId());
-    SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, pageContext.getComponentId());
-    AttachmentServiceFactory.getAttachmentService().deleteAttachment(AttachmentServiceFactory.
-        getAttachmentService().searchAttachmentById(pk, null));
   }
 }

@@ -57,6 +57,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -441,8 +442,8 @@ public class HistorisedDocumentRepositoryTest {
       createVersionedDocument(session, docNode25_2, content);
       docNode25_2.setMajorVersion(2);
       session.save();
-      NodeIterator nodes = documentRepository.selectDocumentsByForeignId(session, instanceId,
-          "node78");
+      NodeIterator nodes = documentRepository.selectDocumentsByForeignIdAndType(session, instanceId,
+          "node78", DocumentType.attachment);
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docNode18_1.getId()));

@@ -39,7 +39,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -55,17 +54,6 @@ import org.silverpeas.attachment.model.UnlockOption;
 public class VersionedDragAndDrop extends HttpServlet {
 
   private static final long serialVersionUID = -4994428375938427492L;
-
-  private String getFileName(FileItem item) {
-    String fileName = item.getName();
-    if (fileName != null) {
-      fileName = fileName.replace('\\', File.separatorChar);
-      fileName = fileName.replace('/', File.separatorChar);
-      SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "file = " + fileName);
-    }
-    return fileName;
-  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -100,7 +88,7 @@ public class VersionedDragAndDrop extends HttpServlet {
     List<FileItem> items = FileUploadUtil.parseRequest(req);
     for (FileItem item : items) {
       if (!item.isFormField()) {
-        String fileName = getFileName(item);
+        String fileName = FileUtil.getFilename(item.getName());
         long size = item.getSize();
         SilverTrace.info("versioningPeas", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
             "item #" + fileName + " size = " + size);

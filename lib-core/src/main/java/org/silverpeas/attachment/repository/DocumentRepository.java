@@ -42,6 +42,7 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.ChildNode;
 import javax.jcr.query.qom.Comparison;
+import javax.jcr.query.qom.DescendantNode;
 import javax.jcr.query.qom.Ordering;
 import javax.jcr.query.qom.QueryObjectModel;
 import javax.jcr.query.qom.QueryObjectModelFactory;
@@ -53,6 +54,7 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.io.FileUtils;
 
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -79,21 +81,22 @@ public class DocumentRepository {
 
   DocumentConverter converter = new DocumentConverter();
 
-  public void prepareComponentAttachments(String instanceId) throws
+  public void prepareComponentAttachments(String instanceId, String folder) throws
       RepositoryException {
     Session session = BasicDaoFactory.getSystemSession();
     try {
-      prepareComponentAttachments(session, instanceId);
+      prepareComponentAttachments(session, instanceId, folder);
       session.save();
     } finally {
       BasicDaoFactory.logout(session);
     }
   }
 
-  protected Node prepareComponentAttachments(Session session, String instanceId) throws
+  protected Node prepareComponentAttachments(Session session, String instanceId, String folder)
+      throws
       RepositoryException {
     Node targetInstanceNode = converter.getFolder(session.getRootNode(), instanceId);
-    return converter.getFolder(targetInstanceNode, "attachments");
+    return converter.getFolder(targetInstanceNode, folder);
   }
 
   /**
@@ -113,7 +116,8 @@ public class DocumentRepository {
     if (last != null && document.getOrder() <= 0) {
       document.setOrder(last.getOrder() + 1);
     }
-    Node docsNode = prepareComponentAttachments(session, document.getInstanceId());
+    Node docsNode = prepareComponentAttachments(session, document.getInstanceId(), document.
+        getFolder());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
     converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
@@ -139,7 +143,7 @@ public class DocumentRepository {
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     pk.setOldSilverpeasId(document.getOldSilverpeasId());
     targetDoc.setPK(pk);
-    prepareComponentAttachments(session, destination.getInstanceId());
+    prepareComponentAttachments(session, destination.getInstanceId(), document.getFolder());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
       checkoutNode(originDocumentNode, document.getUpdatedBy());
@@ -162,7 +166,7 @@ public class DocumentRepository {
    */
   public SimpleDocumentPK copyDocument(Session session, SimpleDocument document,
       WAPrimaryKey destination) throws RepositoryException {
-    prepareComponentAttachments(destination.getInstanceId());
+    prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     SimpleDocument targetDoc;
     if (document.isVersioned()) {
@@ -174,7 +178,6 @@ public class DocumentRepository {
     targetDoc.setPK(pk);
     targetDoc.setForeignId(destination.getId());
     targetDoc.computeNodeName();
-    prepareComponentAttachments(destination.getInstanceId());
     session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
@@ -190,6 +193,7 @@ public class DocumentRepository {
    * @param session
    * @param document
    * @throws RepositoryException
+   * @throws IOException
    */
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException, IOException {
@@ -198,15 +202,8 @@ public class DocumentRepository {
     if (!StringUtil.isDefined(owner)) {
       owner = document.getUpdatedBy();
     }
-    /*boolean checkinRequired = lock(session, document, owner);*/
-    if (/*checkinRequired && */StringUtil.isDefined(document.getEditedBy())) {
-      document.setUpdatedBy(document.getEditedBy());
-    }
+    document.setUpdatedBy(owner);
     converter.fillNode(document, documentNode);
-    /*if (checkinRequired) {
-      SimpleDocument finalDocument = checkinNode(documentNode, document.getLanguage(), document.isPublic());
-      duplicateContent(session, document, finalDocument);
-    }*/
   }
 
   /**
@@ -236,7 +233,7 @@ public class DocumentRepository {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       deleteContent(documentNode, documentPk.getInstanceId());
-      deleteDocumentNode(documentNode);      
+      deleteDocumentNode(documentNode);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
     }
@@ -322,7 +319,7 @@ public class DocumentRepository {
     final String alias = "SimpleDocuments";
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
+        + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
     Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(oldSilverpeasId)));
@@ -351,7 +348,8 @@ public class DocumentRepository {
    */
   public SimpleDocument findLast(Session session, String instanceId, String foreignId) throws
       RepositoryException {
-    NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
+    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        DocumentType.attachment);
     while (iter.hasNext()) {
       Node node = iter.nextNode();
       if (!iter.hasNext()) {
@@ -362,7 +360,7 @@ public class DocumentRepository {
   }
 
   /**
-   * Search all the documents in an instance with the specified foreignId.
+   * Search all the documents of type attachment in an instance with the specified foreignId.
    *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
@@ -373,12 +371,25 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsByForeignId(Session session, String instanceId,
       String foreignId, String language) throws RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
-    while (iter.hasNext()) {
-      result.add(converter.convertNode(iter.nextNode(), language));
-    }
-    return result;
+    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
+        DocumentType.attachment);        
+    return converter.convertNodeIterator(iter, language);
+  }
+  
+  /**
+   * Search all the documents in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  public List<SimpleDocument> listDocumentsByForeignIdAndType(Session session, String instanceId,
+      String foreignId, DocumentType type, String language) throws RepositoryException {
+    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId, type);        
+    return converter.convertNodeIterator(iter, language);
   }
 
   /**
@@ -393,12 +404,8 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsByOwner(Session session, String instanceId,
       String owner, String language) throws RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectDocumentsByOwnerId(session, instanceId, owner);
-    while (iter.hasNext()) {
-      result.add(converter.convertNode(iter.nextNode(), language));
-    }
-    return result;
+    NodeIterator iter = selectDocumentsByOwnerId(session, instanceId, owner);    
+    return converter.convertNodeIterator(iter, language);
   }
 
   /**
@@ -410,14 +417,42 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectDocumentsByForeignId(Session session, String instanceId, String foreignId)
+  NodeIterator selectAllDocumentsByForeignId(Session session, String instanceId, String foreignId)
       throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     final String alias = "SimpleDocuments";
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
+    DescendantNode descendantdNodeConstraint = factory.descendantNode(alias, session.getRootNode().
+        getPath()
+        + instanceId);
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        literal(session.getValueFactory().createValue(foreignId)));
+    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
+        foreignIdComparison), new Ordering[]{order}, null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents of the specified type in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectDocumentsByForeignIdAndType(Session session, String instanceId,
+      String foreignId, DocumentType type) throws RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    final String alias = "SimpleDocuments";
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
+        + instanceId + '/' + type.getForlderName());
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
@@ -439,13 +474,9 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listExpiringDocuments(Session session, Date expiryDate,
       String language) throws RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>();
     NodeIterator iter = selectExpiringDocuments(session, DateUtil.getBeginOfDay(
-        expiryDate));
-    while (iter.hasNext()) {
-      result.add(converter.convertNode(iter.nextNode(), language));
-    }
-    return result;
+        expiryDate));    
+    return converter.convertNodeIterator(iter, language);
   }
 
   /**
@@ -459,13 +490,9 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsRequiringWarning(Session session, Date alertDate,
       String language) throws RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>();
     NodeIterator iter = selectWarningDocuments(session, DateUtil.getBeginOfDay(
-        alertDate));
-    while (iter.hasNext()) {
-      result.add(converter.convertNode(iter.nextNode(), language));
-    }
-    return result;
+        alertDate));    
+    return converter.convertNodeIterator(iter, language);
   }
 
   /**
@@ -504,12 +531,8 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsToUnlock(Session session, Date expiryDate,
       String language) throws RepositoryException {
-    List<SimpleDocument> result = new ArrayList<SimpleDocument>();
-    NodeIterator iter = selectDocumentsRequiringUnlocking(session, expiryDate);
-    while (iter.hasNext()) {
-      result.add(converter.convertNode(iter.nextNode(), language));
-    }
-    return result;
+    NodeIterator iter = selectDocumentsRequiringUnlocking(session, expiryDate);    
+    return converter.convertNodeIterator(iter, language);
   }
 
   /**
@@ -579,7 +602,7 @@ public class DocumentRepository {
     final String alias = "SimpleDocuments";
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
     ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
-        + instanceId + "/attachments");
+        + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
     Comparison ownerComparison = factory.comparison(factory.propertyValue(alias,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
@@ -668,7 +691,7 @@ public class DocumentRepository {
     if (document.isVersioned()) {
       Node documentNode = session.getNodeByIdentifier(document.getId());
       if (!documentNode.isCheckedOut()) {
-        checkoutNode(documentNode, owner);        
+        checkoutNode(documentNode, owner);
       }
       return true;
     }
@@ -825,15 +848,15 @@ public class DocumentRepository {
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
     File source = new File(originDir).getParentFile();
-    if(!source.exists() && ! source.isDirectory()) {
+    if (!source.exists() && !source.isDirectory()) {
       return;
     }
-    if(!target.exists()) {
+    if (!target.exists()) {
       target.mkdir();
     }
-    for(File langDir : source.listFiles()) {
+    for (File langDir : source.listFiles()) {
       File targetLangDir = new File(target, langDir.getName());
-      if(!targetLangDir.exists()) {
+      if (!targetLangDir.exists()) {
         FileUtils.copyDirectory(langDir, targetLangDir);
       }
     }

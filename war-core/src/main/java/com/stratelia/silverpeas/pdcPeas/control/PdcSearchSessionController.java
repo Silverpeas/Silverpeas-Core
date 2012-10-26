@@ -1567,7 +1567,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(documentPk, language);
+        .searchDocumentById(documentPk, language);
 
     String urlAttachment = document.getAttachmentURL();
 
@@ -1598,7 +1598,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
-        .searchAttachmentById(new SimpleDocumentPK(documentId, componentId), null);
+        .searchDocumentById(new SimpleDocumentPK(documentId, componentId), null);
     SimpleDocument version = document.getLastPublicVersion();
 
     if (version != null) {

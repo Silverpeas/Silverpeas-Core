@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import com.silverpeas.util.ForeignPK;
@@ -180,7 +178,7 @@ public class FileServer extends HttpServlet {
     SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       attachment = AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(new SimpleDocumentPK(attachmentId, componentId), language);
+          searchDocumentById(new SimpleDocumentPK(attachmentId, componentId), language);
       if (attachment != null) {
         mimeType = attachment.getContentType();
         sourceFile = attachment.getFilename();

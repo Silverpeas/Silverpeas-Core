@@ -1,49 +1,42 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.versioningPeas.control;
+
+import com.silverpeas.scheduler.*;
+import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
-import com.silverpeas.scheduler.Job;
-import com.silverpeas.scheduler.JobExecutionContext;
-import com.silverpeas.scheduler.Scheduler;
-import com.silverpeas.scheduler.SchedulerEvent;
-import com.silverpeas.scheduler.SchedulerEventListener;
-import com.silverpeas.scheduler.SchedulerFactory;
-import com.silverpeas.scheduler.trigger.JobTrigger;
-import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
 
 public class VersioningSchedulerImpl implements SchedulerEventListener {
 
@@ -78,15 +71,13 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
 
   /**
    * Publish in Silverpeas 3d files converted by Actify
+   *
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public synchronized void doProcessActify(java.util.Date date) throws FileNotFoundException,
+  public synchronized void doProcessActify(Date date) throws FileNotFoundException,
       IOException {
-    VersioningUtil versioningUtil = new VersioningUtil();
-    String componentId;
-    String documentId;
-    long now = new Date().getTime();
+    long now = System.currentTimeMillis();
 
     String resultActifyPath = resourcesAttachment.getString("ActifyPathResult");
     int delayBeforeProcess = resourcesAttachment.getInteger("DelayBeforeProcess", 1);
@@ -106,42 +97,32 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
       // Ex of idir: v_kmelia116_docId
       if (element.isDirectory()
           && (lastModified + delayBeforeProcess * 1000 * 60 < now)
-          && dirName.substring(0, 2).equals("v_")) {
-        componentId = dirName.substring(dirName.indexOf("_") + 1, dirName.lastIndexOf("_"));
-        documentId = dirName.substring(dirName.lastIndexOf("_") + 1);
+          && "v_".equals(dirName.substring(0, 2))) {
+        String componentId = dirName.substring(dirName.indexOf('_') + 1, dirName.lastIndexOf('_'));
+        String documentId = dirName.substring(dirName.lastIndexOf('_') + 1);
 
         String detailPathToAnalyse = element.getAbsolutePath();
-        SilverTrace.info("versioningPeas",
-            "VersioningSchedulerImpl.doProcessActify()",
+        SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doProcessActify()",
             "root.MSG_GEN_PARAM_VALUE", "detailPathToAnalyse="
             + detailPathToAnalyse);
         folderToAnalyse = new File(detailPathToAnalyse);
         File[] filesList = folderToAnalyse.listFiles();
 
-        DocumentPK docPK = new DocumentPK(Integer.parseInt(documentId),
-            componentId);
-        DocumentVersion doc = versioningUtil.getLastVersion(docPK);
+        SimpleDocumentPK docPK = new SimpleDocumentPK(documentId, componentId);
+        HistorisedDocument doc = (HistorisedDocument) AttachmentServiceFactory.
+            getAttachmentService().searchDocumentById(docPK, null);
 
-        for (int j = 0; j < filesList.length; j++) {
-          File file = filesList[j];
-          String fileName = file.getName();
-          String physicalName = new Long(new Date().getTime()).toString()
-              + ".3d";
-          String logicalName = fileName.substring(0, fileName.lastIndexOf("."))
-              + ".3d";
-          String mimeType = FileUtil.getMimeType(physicalName);
-          DocumentVersion newVersion = new DocumentVersion(null, docPK, doc.getMajorNumber(), doc.
-              getMinorNumber(), doc.getAuthorId(),
-              new Date(), null, doc.getType(), doc.getStatus(), physicalName,
-              logicalName, mimeType, new Long(file.length()).intValue(),
-              componentId);
-          versioningUtil.addNewDocumentVersion(newVersion, doc.getType());
-          String physicalPath = versioningUtil.createPath(null, componentId,
-              null);
-
-          String srcFile = resultActifyFullPath + File.separator + logicalName;
-          String destFile = physicalPath + File.separator + physicalName;
-          FileRepositoryManager.copyFile(srcFile, destFile);
+        for (File file : filesList) {
+          AttachmentServiceFactory.getAttachmentService().lock(documentId, doc.getCreatedBy(), doc.
+              getLanguage());
+          AttachmentServiceFactory.getAttachmentService().updateAttachment(doc, file, false,
+              false);
+          UnlockContext unlock =
+              new UnlockContext(documentId, doc.getCreatedBy(), doc.getLanguage());
+          if (!doc.isPublic()) {
+            unlock.addOption(UnlockOption.PRIVATE_VERSION);
+          }
+          AttachmentServiceFactory.getAttachmentService().unlock(unlock);
         }
         FileFolderManager.deleteFolder(resultActifyFullPath);
       }
@@ -152,11 +133,12 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
 
   /**
    * Purge native 3D files alreday converted by Actify
-   * @throws Exception
+   *
+   * @param date 
    */
   public synchronized void doPurgeActify(Date date) {
     int delayBeforePurge = resourcesAttachment.getInteger("DelayBeforePurge", 10);
-    long now = new Date().getTime();
+    long now = System.currentTimeMillis();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
         + resourcesAttachment.getString("ActifyPathSource"));
@@ -165,10 +147,8 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
     // List all folders in Actify
     for (File element : elementsList) {
       long lastModified = element.lastModified();
-      if (element.isDirectory()
-          && lastModified + delayBeforePurge * 1000 * 60 < now) {
-        SilverTrace.info("versioningPeas",
-            "VersioningSchedulerImpl.doPurgeActify()",
+      if (element.isDirectory() && lastModified + delayBeforePurge * 1000L * 60L < now) {
+        SilverTrace.info("versioningPeas", "VersioningSchedulerImpl.doPurgeActify()",
             "root.MSG_GEN_PARAM_VALUE", "pathToPurge=" + element.getName());
         FileFolderManager.deleteFolder(element.getAbsolutePath());
       }
@@ -177,11 +157,11 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
 
   /**
    * Gets the job relative to the actify processing.
+   *
    * @return the job for processing actify.
    */
   private Job processActify() {
     return new Job(VERSIONING_JOB_NAME_PROCESS_ACTIFY) {
-
       @Override
       public void execute(JobExecutionContext context) throws FileNotFoundException, IOException {
         Date date = context.getFireTime();
@@ -192,11 +172,11 @@ public class VersioningSchedulerImpl implements SchedulerEventListener {
 
   /**
    * Gets the job relative to the actify purging.
+   *
    * @return the job for purging actify.
    */
   private Job purgeActify() {
     return new Job(VERSIONING_JOB_NAME_PURGE_ACTIFY) {
-
       @Override
       public void execute(JobExecutionContext context) {
         Date date = context.getFireTime();

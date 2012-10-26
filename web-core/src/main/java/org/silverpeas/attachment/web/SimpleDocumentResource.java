@@ -248,7 +248,7 @@ public class SimpleDocumentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getFileContent(@PathParam("lang") final String language) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), language);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -280,7 +280,7 @@ public class SimpleDocumentResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String lock() {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -306,7 +306,7 @@ public class SimpleDocumentResource extends RESTWebService {
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -328,6 +328,6 @@ public class SimpleDocumentResource extends RESTWebService {
 
   SimpleDocument getSimpleDocument(String lang) {
     return AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentById(new SimpleDocumentPK(getSimpleDocumentId()), lang);
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), lang);
   }
 }

@@ -45,10 +45,8 @@ import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * Class declaration
@@ -103,7 +101,7 @@ public class RestOnlineFileServer extends HttpServlet {
     String language = restRequest.getElementValue("lang");
     if (StringUtil.isDefined(attachmentId)) {
       SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(new SimpleDocumentPK(attachmentId), language);
+          searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
           file = new OnlineAttachment(attachment);
@@ -122,7 +120,7 @@ public class RestOnlineFileServer extends HttpServlet {
     if (StringUtil.isDefined(documentId)) {
       String versionId = restRequest.getElementValue("versionId");
       SimpleDocument version = AttachmentServiceFactory.getAttachmentService().
-          searchAttachmentById(new SimpleDocumentPK(versionId), null);
+          searchDocumentById(new SimpleDocumentPK(versionId), null);
       if (version != null) {
         if (isUserAuthorized(restRequest, componentId, version)) {
           String[] path = new String[1];

@@ -20,23 +20,9 @@
  */
 package com.silverpeas.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-
-import javax.activation.MimetypesFileTypeMap;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -46,9 +32,9 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
+import java.util.*;
 
 public class FileUtil implements MimeTypes {
 
@@ -246,10 +232,11 @@ public class FileUtil implements MimeTypes {
   public static boolean isWindows() {
     return OsEnum.getOS().isWindows();
   }
-  
+
   /**
    * If 3D document.
-   * @param filename the name of the file. 
+   *
+   * @param filename the name of the file.
    * @return true or false
    */
   public static boolean isSpinfireDocument(String filename) {
@@ -320,6 +307,34 @@ public class FileUtil implements MimeTypes {
         : FalseFileFilter.INSTANCE));
   }
 
+  /**
+   * Remove any \ or / from the filename thus avoiding conflicts on the server.
+   *
+   * @param fileName
+   * @return
+   */
+  public static String getFilename(String fileName) {
+     if (!StringUtil.isDefined(fileName)) {
+      return "";
+    }
+    String logicalName = convertPathToServerOS(fileName);
+    return logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+  }
+
   private FileUtil() {
+  }
+
+  /**
+   * Convert a path to the current OS path format.
+   * @param undeterminedOsPath
+   * @return server OS pah.
+   */
+  public static String convertPathToServerOS(String undeterminedOsPath) {
+    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
+      return "";
+    }
+    String localPath = undeterminedOsPath;
+    localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
+    return localPath;
   }
 }

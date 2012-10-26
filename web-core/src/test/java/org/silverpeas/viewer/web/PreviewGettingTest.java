@@ -29,7 +29,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.viewer.web.PreviewEntityMatcher.matches;
 import static org.silverpeas.viewer.web.ViewerTestResources.JAVA_PACKAGE;
 import static org.silverpeas.viewer.web.ViewerTestResources.SPRING_CONTEXT;
 
@@ -71,7 +70,8 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
     sessionKey = authenticate(user);
     expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "originalFileName7");
 
-    when(getTestResources().getAttachmentServiceMock().searchAttachmentById(any(SimpleDocumentPK.class), any(String.class)))
+    when(getTestResources().getAttachmentServiceMock().searchDocumentById(
+        any(SimpleDocumentPK.class), any(String.class)))
         .thenAnswer(new Answer<SimpleDocument>() {
 
           /*

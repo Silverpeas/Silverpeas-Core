@@ -207,7 +207,7 @@ public class PublicationsTypeManager {
     gedIE.copyWysiwygImageForExport(pubId, componentId, exportPublicationPath);
 
     try {
-      wysiwygText = WysiwygController.loadFileAndAttachment("useless", componentId, pubId);
+      wysiwygText = WysiwygController.loadFileAndAttachment(componentId, pubId);
       wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
       if (wysiwygText == null) {
         wysiwygText = ""; // To avoid exception in createFile below
