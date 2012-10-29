@@ -107,28 +107,33 @@ public abstract class AbstractForm implements Form {
   public void displayScripts(final JspWriter jw, final PagesContext pagesContext) {
     try {
       String language = pagesContext.getLanguage();
-      PagesContext pc = null;
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
 
-      if (!fieldTemplates.isEmpty()) {
-        FieldTemplate fieldTemplate = fieldTemplates.get(0);
-        if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
-          out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
-              .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
-        } else if (StringUtil.isDefined(pagesContext.getComponentId()) &&
-            StringUtil.isDefined(getName())) {
-          ComponentInstLight component =
-              new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
-          if (component != null) {
-            out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
-                .append(component.getName()).append("/").append(getName())
-                .append(".js\"></script>\n");
+      boolean jsAdded = false;
+      if (StringUtil.isDefined(pagesContext.getComponentId()) && StringUtil.isDefined(getName())) {
+        ComponentInstLight component =
+            new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
+        if (component != null && component.isWorkflow()) {
+          out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
+              .append(component.getName()).append("/").append(getName())
+              .append(".js\"></script>\n");
+          jsAdded = true;
+        }
+      }
+      
+      if (!jsAdded) {
+        if (!fieldTemplates.isEmpty()) {
+          FieldTemplate fieldTemplate = fieldTemplates.get(0);
+          if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
+            out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
+                .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
           }
         }
-        pc = new PagesContext(pagesContext);
-        pc.incCurrentFieldIndex(1);
       }
+
+      PagesContext pc = new PagesContext(pagesContext);
+      pc.incCurrentFieldIndex(1);
 
       out.append(Util.getJavascriptIncludes(language))
           .append("\n<script type=\"text/javascript\">\n")
