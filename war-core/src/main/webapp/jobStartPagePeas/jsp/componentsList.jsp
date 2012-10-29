@@ -128,7 +128,7 @@ height:100%;
 							<li id="<c:out value="${component.name}" />" class="application">
 								<a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<%=resource.getString("JSPP.applications.add")%>">
 									<c:if test="${component.suite == '05 Workflow'}">
-										<img src="<%=iconsPath%>/util/icons/component/workflowBig.png" class="component-icon" alt=""/>
+										<img src="<%=iconsPath%>/util/icons/component/processManagerBig.png" class="component-icon" alt=""/>
 									</c:if>
 									<c:if test="${component.suite != '05 Workflow'}">
 										<img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
