@@ -27,6 +27,7 @@ package com.stratelia.silverpeas.peasCore;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.SilverpeasToolContent;
 import com.silverpeas.util.ComponentHelper;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -238,6 +239,9 @@ public class URLManager {
     }
     switch (type) {
       case URL_SPACE:
+        if (!id.startsWith(Admin.SPACE_KEY_PREFIX)) {
+          id = Admin.SPACE_KEY_PREFIX + id;
+        }
         url += "/Space/" + id;
         break;
       case URL_COMPONENT:

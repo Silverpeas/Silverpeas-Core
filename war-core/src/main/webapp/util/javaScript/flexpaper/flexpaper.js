@@ -153,7 +153,7 @@ function translateUrlByFormat(url,format){
             allowfullscreen: true,
             allowscriptaccess: 'always',
             quality: 'high',
-            allowFullScreenInteractive : true,
+            allowFullScreenInteractive : false,
 
             // flashembed specific options
             version: [10, 0],

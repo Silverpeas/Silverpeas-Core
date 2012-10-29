@@ -24,7 +24,6 @@
 package com.silverpeas.lookV5;
 
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -548,9 +547,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
 
           kind = component.getName();
-          WAComponent descriptor = Instanciateur.getWAComponent(component.getName());
-          if (descriptor != null
-                  && "RprocessManager".equalsIgnoreCase(descriptor.getRouter())) {
+          if (component.isWorkflow()) {
             kind = "processManager";
           }
 

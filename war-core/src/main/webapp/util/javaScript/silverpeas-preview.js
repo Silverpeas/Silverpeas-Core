@@ -311,13 +311,13 @@
   function __configureButtonPosition(type, $target, $buttonContainer) {
 
     // Top
-    var top = 0;
+    var top = $(document).scrollTop();
     if (type != 'previousPreview') {
-      top = ($target.outerHeight(true) - $buttonContainer.outerHeight(true));
+      top += ($target.outerHeight(true) - $buttonContainer.outerHeight(true));
     }
 
     // Left
-    var left = (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
+    var left = $(document).scrollLeft() + (($target.outerWidth(true) / 2) - ($buttonContainer.outerWidth(true) / 2));
 
     // Changing the position
     $buttonContainer.offset({ top: top, left: left });
