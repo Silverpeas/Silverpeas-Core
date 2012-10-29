@@ -223,18 +223,17 @@ public interface AttachmentService {
   SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang);
 
   /**
-   * Search all file attached to a foreing object.
+   * Search all file attached to a foreign object.
    *
    * @param foreignKey : the primary key of foreign object.
    * @param lang the lang for the documents.
    * @return the list of attached documents.
    * @throws AttachmentRuntimeException when is impossible to search
    */
-  List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey,
-      String lang);
+  List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
 
   /**
-   * Search all file attached to a foreing object.
+   * Search all file attached to a foreign object.
    *
    * @param foreignKey : the primary key of foreign object.
    * @param type : the type of document
@@ -248,7 +247,7 @@ public interface AttachmentService {
   void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
 
   /**
-   * To update the document : status, informations but not its content.
+   * To update the document : status, metadata but not its content.
    *
    * @param document
    * @param indexIt

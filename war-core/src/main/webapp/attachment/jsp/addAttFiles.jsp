@@ -27,6 +27,12 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ include file="checkAttachment.jsp"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ page import="com.stratelia.silverpeas.util.*"%>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
 
@@ -48,9 +54,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title><%=attResources.getString("GML.popupTitle")%></title>
-    <% out.println(gef.getLookStyleSheet());%>
+    <view:looknfeel />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <script type="text/javascript" src="<%=m_Context%>/util/javaScript/animation.js"></script>
+    <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />'></script>
     <script type="text/javascript">
 
       function rtrim(texte){
@@ -116,24 +122,19 @@
   </head>
   <body>
     <%
-          Button toAdd = (Button) gef.getFormButton(attResources.getString("GML.add"), "javascript:Attachment('add')", false);
+          Button toAdd = gef.getFormButton(attResources.getString("GML.add"), "javascript:Attachment('add')", false);
 
           ButtonPane buttonPane = gef.getButtonPane();
           buttonPane.addButton(toAdd);
 
           if (!runOnUnix()) {
-            Button toLink = (Button) gef.getFormButton(messages.getString("lier"), "javascript:Attachment('link')", false);
+            Button toLink = gef.getFormButton(messages.getString("lier"), "javascript:Attachment('link')", false);
             buttonPane.addButton(toLink);
           }
-
-          Frame frame = gef.getFrame();
-          Board board = gef.getBoard();
-
-          out.println(frame.printBefore());
-          out.println("<center>");
-          out.println(board.printBefore());
     %>
-
+    <view:frame>
+      <center>
+      <view:board>
 	<form name="addForm" action="<%=m_Context%>/attachment/jsp/saveFile.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
     <table border="0" cellspacing="0" cellpadding="5" width="100%">
         <%=I18NHelper.getFormLine(attResources)%>
@@ -159,12 +160,14 @@
         </tr>
     </table>
     </form>
+      </view:board>
+        <br/>
+      
     <%
-          out.println(board.printAfter());
-          out.println("<br/>" + buttonPane.print());
-          out.println("</center>");
-          out.println(frame.printAfter());
+          out.println(buttonPane.print());
     %>
+  </center>
+  </view:frame>
     <form name="linkForm" action="<%=m_Context%>/attachment/jsp/saveLink.jsp" method="post">
       <input type="hidden" name="Id" value="<%=id%>"/>
       <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

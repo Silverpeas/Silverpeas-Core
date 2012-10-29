@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.attachment.model.DocumentType"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -84,18 +85,18 @@ String language = (String) session.getAttribute("WYSIWYG_Language");
 String path = (String) session.getAttribute("WYSIWYG_Path");
 String url = EncodeURL("/wysiwyg/jsp/uploadFile.jsp");
 
-String imagesContext = WysiwygController.getImagesFileName(objectId);
+String imagesContext = DocumentType.image.toString();
 
 if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   //case of utilization by a xml template
   componentId = request.getParameter("ComponentId");
   objectId = request.getParameter("ObjectId");
   String context = request.getParameter("Context");
-  imagesContext = WysiwygController.getImagesFileName(context);
+  imagesContext = DocumentType.image.toString();
   url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
  
-ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 

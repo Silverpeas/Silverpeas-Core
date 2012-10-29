@@ -23,28 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.model.UnlockOption;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -53,8 +31,17 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
-
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.*;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
 
 /**
  *
@@ -98,7 +85,8 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("fileDescription") String description,
       final @FormDataParam("foreignId") String foreignId,
       final @FormDataParam("indexIt") String indexIt,
-      final @FormDataParam("versionType") String type) {
+      final @FormDataParam("versionType") String type,
+      final @FormDataParam("context") String context) {
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
         getFileName())) {
       String lang = I18NHelper.checkLanguage(language);
@@ -127,6 +115,9 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
             new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
             FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
       }
+      if (needCreation && StringUtil.isDefined(context)) {
+        document.setDocumentType(DocumentType.valueOf(context));
+      }
       document.setLanguage(language);
       document.setTitle(title);
       document.setDescription(description);
@@ -138,12 +129,12 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, language);
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, uploadedInputStream,
             StringUtil.getBooleanValue(indexIt), publicDocument);
-        UnlockContext context = new UnlockContext(document.getId(), userId, language);
-        context.addOption(UnlockOption.UPLOAD);
+        UnlockContext unlockContext = new UnlockContext(document.getId(), userId, language);
+        unlockContext.addOption(UnlockOption.UPLOAD);
         if (!publicDocument) {
-          context.addOption(UnlockOption.PRIVATE_VERSION);
+          unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
         }
-        AttachmentServiceFactory.getAttachmentService().unlock(context);
+        AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
       }
       URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();

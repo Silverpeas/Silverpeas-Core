@@ -189,7 +189,7 @@ public class SimpleDocumentService implements AttachmentService {
     if (resources.getBoolean("attachment.index.incorporated", true)) {
       if (!indexEntry.getObjectType().startsWith("Attachment")) {
         WAPrimaryKey pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
-        List<SimpleDocument> attachments = searchAttachmentsByExternalObject(pk, indexEntry.
+        List<SimpleDocument> attachments = listDocumentsByForeignKey(pk, indexEntry.
             getLang());
         for (SimpleDocument attachment : attachments) {
           indexEntry.addFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
@@ -356,7 +356,7 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang) {
+  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
@@ -853,7 +853,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang) {
-    List<SimpleDocument> exisitingsDocuments = searchAttachmentsByExternalObject(foreign, lang);
+    List<SimpleDocument> exisitingsDocuments = listDocumentsByForeignKey(foreign, lang);
     SimpleDocument document = searchDocumentById(pk, lang);
     if (document == null) {
       for (SimpleDocument doc : exisitingsDocuments) {

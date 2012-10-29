@@ -35,21 +35,19 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
@@ -257,7 +255,7 @@ public class AttachmentImportExport {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
     AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(foreignKey, null);
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
     int i = 0;
 
     String logicalName = a_Detail.getLogicalName();

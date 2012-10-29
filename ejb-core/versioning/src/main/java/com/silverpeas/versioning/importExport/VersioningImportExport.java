@@ -101,7 +101,7 @@ public class VersioningImportExport {
 
     // get existing documents of object
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(pubPK, null);
+        listDocumentsByForeignKey(pubPK, null);
     for (AttachmentDetail attachment : attachments) {
       SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
@@ -149,7 +149,7 @@ public class VersioningImportExport {
     ForeignPK pubPK = new ForeignPK(pk.getId(), componentId);
     // get existing documents of object
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(pubPK, null);
+        listDocumentsByForeignKey(pubPK, null);
 
     // retrieve last public versions of each document
     for (SimpleDocument document : documents) {
@@ -219,7 +219,7 @@ public class VersioningImportExport {
 
     // get existing documents of object
     List<SimpleDocument> existingDocuments = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(objectPK, null);
+        listDocumentsByForeignKey(objectPK, null);
     FormTemplateImportExport xmlIE = null;
     for (Document document : documents) {
       SimpleDocument existingDocument = null;

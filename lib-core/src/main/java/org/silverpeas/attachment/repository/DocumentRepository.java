@@ -27,7 +27,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -143,6 +142,7 @@ public class DocumentRepository {
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     pk.setOldSilverpeasId(document.getOldSilverpeasId());
     targetDoc.setPK(pk);
+    targetDoc.setDocumentType(document.getDocumentType());
     prepareComponentAttachments(session, destination.getInstanceId(), document.getFolder());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {

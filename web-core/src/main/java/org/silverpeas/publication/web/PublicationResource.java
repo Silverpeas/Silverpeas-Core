@@ -104,7 +104,7 @@ public class PublicationResource extends RESTWebService {
       PublicationEntity entity = PublicationEntity.fromPublicationDetail(publication, uri);
       if (withAttachments) {
         Collection<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-            searchAttachmentsByExternalObject(publication.getPK(), null);
+            listDocumentsByForeignKey(publication.getPK(), null);
         entity.withAttachments(attachments, getUriInfo().getBaseUri().toString(), token);
       }
       entities.add(entity);

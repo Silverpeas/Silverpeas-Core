@@ -33,7 +33,7 @@
 <%@ include file="checkAttachment.jsp"%>
 
 <% request.setAttribute("attachmentBundle", new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.multilang.attachment", language).getResourceBundle());%>
+      "org.silverpeas.util.attachment.multilang.attachment", language).getResourceBundle());%>
 <view:setBundle bundle="${requestScope.attachmentBundle}" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
@@ -93,7 +93,6 @@
           dataType: "json",
           cache: false,
           success: function(data) {
-            alert(data);
             $.each(data, function(index, attachment) {
               displayAttachment(attachment);
             });
@@ -130,6 +129,13 @@
           </fieldset>
         </div>        
       </view:board>
+      <fmt:message key="GML.validate" var="validateLabel"/>
+      <fmt:message key="GML.cancel" var="cancelLabel"/>
+      <view:buttonPane>
+        <view:button action="javascript:update()" disabled="false"
+                     label="${validateLabel}"/>
+        <view:button action="javascript:window.close()" disabled="false" label="${cancelLabel}"/>
+      </view:buttonPane>
     </view:frame>
   </body>
 </html>

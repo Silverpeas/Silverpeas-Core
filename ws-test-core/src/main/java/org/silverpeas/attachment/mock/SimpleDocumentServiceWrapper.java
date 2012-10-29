@@ -149,8 +149,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang) {
-    return realService.searchAttachmentsByExternalObject(foreignKey, lang);
+  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+    return realService.listDocumentsByForeignKey(foreignKey, lang);
   }
 
   @Override

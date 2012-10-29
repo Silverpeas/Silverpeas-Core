@@ -170,7 +170,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public List<SimpleDocument> searchAttachmentsByExternalObject(WAPrimaryKey foreignKey, String lang) {
+  public List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

@@ -597,7 +597,7 @@ public class HistorisedAttachmentServiceTest {
       documentRepository.storeContent(session, document4, content);
 
       session.save();
-      List<SimpleDocument> result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));
@@ -608,7 +608,7 @@ public class HistorisedAttachmentServiceTest {
       reorderedList.add(document2.getPk());
       reorderedList.add(document3.getPk());
       instance.reorderAttachments(reorderedList);
-      result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
+      result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       document1.setOrder(5);
@@ -643,7 +643,7 @@ public class HistorisedAttachmentServiceTest {
   }
 
   /**
-   * Test of searchAttachmentsByExternalObject method, of class AttachmentService.
+   * Test of listDocumentsByForeignKey method, of class AttachmentService.
    */
   @Test
   public void testSearchAttachmentsByExternalObject() throws LoginException, RepositoryException,
@@ -696,7 +696,7 @@ public class HistorisedAttachmentServiceTest {
       documentRepository.storeContent(session, document4, content);
 
       session.save();
-      List<SimpleDocument> result = instance.searchAttachmentsByExternalObject(foreignKey, "fr");
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
       assertThat(result, hasSize(3));
       assertThat(result.get(0), SimpleDocumentMatcher.matches(document2));

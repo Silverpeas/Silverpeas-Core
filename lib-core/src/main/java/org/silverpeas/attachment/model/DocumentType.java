@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,39 +21,23 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.attachment.model;
 
-package com.stratelia.webactiv.servlets;
+/**
+ *
+ * @author ehugonnet
+ */
+public enum DocumentType {
 
-public class OnlineFile {
-  private String mimeType;
-  private String sourceFile;
-  private String directory;
-  private String componentId;
-
-  public OnlineFile(String mimeType, String sourceFile, String directory) {
-    this.mimeType = mimeType;
-    this.sourceFile = sourceFile;
-    this.directory = directory;
+  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images");
+  
+  private String forlderName;
+  
+  private DocumentType(String folder) {
+    this.forlderName = folder;
   }
 
-  public String getMimeType() {
-    return mimeType;
+  public String getForlderName() {
+    return forlderName;
   }
-
-  public String getSourceFile() {
-    return sourceFile;
-  }
-
-  public String getDirectory() {
-    return directory;
-  }
-
-  public String getComponentId() {
-    return componentId;
-  }
-
-  public void setComponentId(String componentId) {
-    this.componentId = componentId;
-  }
-
 }

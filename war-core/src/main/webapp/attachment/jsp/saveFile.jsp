@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.attachment.model.DocumentType"%>
 <%@page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
@@ -42,7 +43,6 @@
       String context = (String) session.getAttribute("Silverpeas_Attachment_Context");
       boolean indexIt = ((Boolean) session.getAttribute("Silverpeas_Attachment_IndexIt")).booleanValue();
 
-      String path = AttachmentController.createPath(componentId, context);
 
       String logicalName = null;
       String physicalName = null;
@@ -54,12 +54,15 @@
       String info = null;
       boolean isExistFile = true; // par defaut, le fichier que l'utilisateur veut ajouter existe.
 
-      ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
+      ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
       boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
       if (!StringUtil.isDefined(request.getCharacterEncoding())) {
         request.setCharacterEncoding("UTF-8");
       }
-      List items = FileUploadUtil.parseRequest(request);
+      if (!StringUtil.isDefined(context)) {
+        context = DocumentType.attachment.toString();
+      }
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
 
       title = getParameterValue(items, "Title", request.getCharacterEncoding());
       info = getParameterValue(items, "Description", request.getCharacterEncoding());
@@ -108,10 +111,10 @@
         SimpleDocument ad = new SimpleDocument(atPK, id, 0, false, new SimpleAttachment(
                 logicalName, null, title, info, size, mimeType, m_MainSessionCtrl.getUserId(),
                 creationDate, null));
+        ad.setDocumentType(DocumentType.valueOf(context));
         ad.setTitle(title);
         ad.setDescription(info);
-          AttachmentServiceFactory.getAttachmentService().createAttachment(ad,
-                  file.getInputStream()) ;
+          AttachmentServiceFactory.getAttachmentService().createAttachment(ad, file.getInputStream(), indexIt) ;
         //Specific case: 3d file to convert by Actify Publisher
         if (actifyPublisherEnable) {
           String extensions = settings.getString("Actify3dFiles");
@@ -172,7 +175,7 @@
       </table><br/>
       <%
          ButtonPane buttonPane2 = gef.getButtonPane();
-         buttonPane2.addButton((Button) gef.getFormButton(attResources.getString("GML.back"), "javascript:window.opener.location.reload();window.close();", false));
+         buttonPane2.addButton(gef.getFormButton(attResources.getString("GML.back"), "javascript:window.opener.location.reload();window.close();", false));
          out.println(buttonPane2.print());
          out.println(frame.printAfter());
       %>

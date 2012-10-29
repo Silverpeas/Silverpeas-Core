@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -35,6 +34,8 @@
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.model.DocumentType" %>
+
 <%@ include file="checkAttachment.jsp"%>
 
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
@@ -154,7 +155,14 @@
 
   <c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
   <c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
-  <c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
+  <c:choose>
+    <c:when test="${view:isDefined(param.context)}">
+        <c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
+    </c:when>
+    <c:otherwise>
+      <c:set var="Silverpeas_Attachment_Context" value="attachments" scope="session" />
+    </c:otherwise>
+  </c:choose>
   <c:set var="Silverpeas_Attachment_Profile" value="${userProfile}" scope="session" />
   <c:set var="Silverpeas_Attachment_IndexIt" value="${indexIt}" />
   <c:choose>
@@ -169,8 +177,9 @@
 
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-      searchAttachmentsByExternalObject(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
-        (String) pageContext.getAttribute("contentLanguage"));
+          listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
+          DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")), 
+          (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
             %>
 <div class="attachments bgDegradeGris">

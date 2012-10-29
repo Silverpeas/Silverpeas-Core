@@ -80,6 +80,10 @@ public class SimpleDocument implements Serializable {
     this.documentType = documentType;
   }
 
+  public DocumentType getDocumentType() {
+    return documentType;
+  }
+
   /**
    * Get the value of cloneId
    *

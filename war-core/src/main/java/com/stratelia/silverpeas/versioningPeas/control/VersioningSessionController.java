@@ -404,13 +404,13 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    *
    */
   public List<SimpleDocument> getDocuments(ForeignPK foreignID) {
-    return AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
+    return AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
         foreignID, null);
   }
 
   public List<SimpleDocument> getDocuments(ForeignPK foreignID, boolean mergeGroups) {
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(foreignID, null);
+        listDocumentsByForeignKey(foreignID, null);
     for (SimpleDocument doc : documents) {
       setEditingDocument(doc);
     }

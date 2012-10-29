@@ -31,11 +31,10 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -81,7 +80,7 @@ public class WysiwygController {
    */
   public static String[][] searchAllAttachments(String id, String componentId) {
     List<SimpleDocument> vectAttachment = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(new ForeignPK(id, componentId), null);
+        listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
     int nbImages = vectAttachment.size();
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
@@ -350,21 +349,21 @@ public class WysiwygController {
 
   public static void deleteFileAndAttachment(String componentId, String id) throws WysiwygException {
     ForeignPK foreignKey = new ForeignPK(id, componentId);
-    List<SimpleDocument> files = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(foreignKey, null);
-    for (SimpleDocument file : files) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(file);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(foreignKey, null);
+    for (SimpleDocument doc : documents) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc);
     }
   }
 
   public static void deleteFile(String componentId, String objectId, String language) {
     ForeignPK foreignKey = new ForeignPK(objectId, componentId);
     List<SimpleDocument> files = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(foreignKey, null);
+        listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument file : files) {
       if (file != null && file.getFilename().
           equalsIgnoreCase(getWysiwygFileName(objectId, language))) {
-        AttachmentServiceFactory.getAttachmentService().deleteAttachment(file);
+        AttachmentServiceFactory.getAttachmentService().removeContent(file, language, false);
       }
     }
   }
@@ -403,7 +402,6 @@ public class WysiwygController {
       if (userId != null) {
         iUserId = Integer.parseInt(userId);
       }
-      String path = AttachmentController.createPath(componentId, context);
       SimpleDocumentPK docPk = new SimpleDocumentPK(null, componentId);
       SimpleDocument document = new SimpleDocument(docPk, id, 0, false, userId,
           new SimpleAttachment(fileName, null, fileName, null, textHtml.length(),
@@ -462,7 +460,7 @@ public class WysiwygController {
    * @param userId
    * @throws WysiwygException
    */
-  private static synchronized void updateFileAndAttachment(String textHtml, String fileName,
+  private static void updateFileAndAttachment(String textHtml, String fileName,
       String componentId, String context, String objectId, String userId, boolean indexIt) throws
       WysiwygException {
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
@@ -470,9 +468,13 @@ public class WysiwygController {
         + objectId);
     SimpleDocument document = searchAttachmentDetail(fileName, componentId, context, objectId);
     if (document != null) {
-      AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
-    }
+      document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
+      document.setDocumentType(DocumentType.valueOf(context));
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
+          new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
+    } else {
     createFileAndAttachment(textHtml, fileName, componentId, context, objectId, userId, indexIt);
+    }
   }
 
   /**
@@ -522,7 +524,7 @@ public class WysiwygController {
       throws WysiwygException {
     try {
       // delete all the attachments
-      AttachmentPK foreignKey = new AttachmentPK(objectId, componentId);
+      ForeignPK foreignKey = new ForeignPK(objectId, componentId);
 
       AttachmentController.deleteAttachmentByCustomerPK(foreignKey);
       // delete the images directory
@@ -807,23 +809,22 @@ public class WysiwygController {
   /**
    * Method declaration
    *
-   * @param oldSpaceId
+   *
+   *
    * @param oldComponentId
    * @param oldObjectId
-   * @param spaceId
    * @param componentId
    * @param objectId
    * @param userId
    * @see
    */
-  public static void copy(String oldSpaceId, String oldComponentId, String oldObjectId,
-      String spaceId, String componentId, String objectId, String userId) {
+  public static void copy(String oldComponentId, String oldObjectId,
+                          String componentId, String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     // copy the wysiwyg
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
-
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
     for (SimpleDocument doc : documents) {
       AttachmentServiceFactory.getAttachmentService().copyDocument(doc, targetPk);
@@ -833,12 +834,6 @@ public class WysiwygController {
     for (SimpleDocument image : images) {
       AttachmentServiceFactory.getAttachmentService().copyDocument(image, targetPk);
     }
-  }
-
-  private static String replaceInternalImageId(String wysiwygContent, String oldAttachmentId,
-      String newAttachmentId) {
-    return wysiwygContent.replaceAll("attachmentId=" + oldAttachmentId + "\"", "attachmentId="
-        + newAttachmentId + "\"");
   }
 
   /**
@@ -855,14 +850,6 @@ public class WysiwygController {
       String oldObjectId, String componentId, String objectId) {
     String newStr = "";
     if (wysiwygContent.contains("FileServer")) {
-      // search and replace
-      // SpaceId=WA8
-      // ComponentId=kmelia178
-      // Directory=Attachment/8Images
-      // Directory=Attachment%2F8Images : since integration of the new Wysiwyg editor(FCKEditor)
-      // Directory=Attachment\8Images : since integration of the new Wysiwyg editor(FCKEditor)
-      // Directory=Attachment%5C8Images : since integration of the new Wysiwyg editor(FCKEditor)
-      // String sp = "SpaceId=" + oldSpaceId;
       String co = "ComponentId=" + oldComponentId;
       String di = "Directory=Attachment/" + getImagesFileName(oldObjectId);
       String diBis = "Directory=Attachment%2F" + getImagesFileName(oldObjectId);
@@ -1014,39 +1001,14 @@ public class WysiwygController {
    * @param embeddedAttachmentIds embedded linked files ids
    */
   public static void indexEmbeddedLinkedFiles(FullIndexEntry indexEntry,
-      List<String> embeddedAttachmentIds) {
+                                              List<String> embeddedAttachmentIds) {
     for (String attachmentId : embeddedAttachmentIds) {
       try {
-        AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-            attachmentId));
+        SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+            new SimpleDocumentPK(attachmentId), null);
         if (attachment != null) {
-          String attLanguage = attachment.getLanguage();
-          String physicalName = null;
-          String type = null;
-
-          AttachmentDetailI18N translation = null;
-          if (attLanguage != null) {
-            translation = (AttachmentDetailI18N) attachment.getTranslation(attLanguage);
-            physicalName = translation.getPhysicalName();
-            type = translation.getType();
-          } else {
-            physicalName = attachment.getPhysicalName();
-            type = attachment.getType();
-          }
-
-          String path;
-          if (attachment.getAttachmentGroup() == AttachmentDetail.GROUP_FILE_LINK) {
-            /*
-             * c'est un lien, le chemin est contenu dans la colonne physicalName(complet) un lien,
-             * le chemin est contenu dans la colonne physicalName(complet)
-             */
-            path = attachment.getPhysicalName();
-          } else {
-            path = AttachmentController.createPath(attachment.getInstanceId(),
-                attachment.getContext()) + File.separator + physicalName;
-          }
-
-          indexEntry.addLinkedFileContent(path, null, type, attLanguage);
+          indexEntry.addLinkedFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
+              attachment.getContentType(), attachment.getLanguage());
           indexEntry.addLinkedFileId(attachmentId);
         }
       } catch (Exception e) {

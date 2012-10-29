@@ -23,27 +23,9 @@
 */
 package com.stratelia.webactiv.util.publication.model;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import com.google.common.base.Objects;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import com.silverpeas.SilverpeasContent;
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.TypeManager;
+import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.form.record.GenericFieldTemplate;
@@ -57,7 +39,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
@@ -70,11 +51,20 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.*;
 
 /**
  * This object contains the description of a publication
@@ -1020,7 +1010,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
         "foreignKey = " + foreignKey.toString());
     Collection<SimpleDocument> attachmentList = AttachmentServiceFactory.getAttachmentService().
-        searchAttachmentsByExternalObject(foreignKey, null);
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
     SilverTrace.
         info("publication", "PublicationDetail.getAttachments()", "root.MSG_GEN_PARAM_VALUE",
         "attachmentList.size() = " + attachmentList.size());
@@ -1030,8 +1020,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getWysiwyg() {
     String wysiwygContent;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().
-          getComponentName(), getPK().getId());
+      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getComponentName(),
+          getPK().getId());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";
     }
