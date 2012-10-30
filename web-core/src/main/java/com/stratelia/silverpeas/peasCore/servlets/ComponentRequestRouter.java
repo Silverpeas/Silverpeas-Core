@@ -183,7 +183,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       }
     }
     
-    if (selectionProcessor.isSelectionDone(request)) {
+    if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
       if (StringUtil.isDefined(destination)) {
         return destination;

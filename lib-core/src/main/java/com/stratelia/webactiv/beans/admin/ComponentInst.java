@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 
@@ -386,5 +387,9 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
       }
     }
     m_alProfileInst = newProfiles;
+  }
+  
+  public boolean isWorkflow() {
+    return Instanciateur.isWorkflow(getName());
   }
 }

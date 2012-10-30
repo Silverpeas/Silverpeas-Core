@@ -29,57 +29,103 @@ import com.stratelia.silverpeas.selection.Selection;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Processor of the selection of some users and user groups with a dedicated form.
- * This processor both prepares the required resources required by the selection form and provides
- * to the selection caller (a component instance) the users and group users that were selected
- * throught the form.
+ * Processor of the selection of some users and user groups with a dedicated form. This processor
+ * both prepares the required resources required by the selection form and provides to the selection
+ * caller (a component instance) the users and group users that were selected throught the form.
  */
 public class UserAndGroupSelectionProcessor {
   // resource provided to the selection form
+
   private static final String SELECTION_PARAMETER = "SELECTION";
-  
   // parameters of the selection form
   private static final String USER_GROUP_SELECTION_PARAMETER = "UserOrGroupSelection";
   private static final String USER_SELECTION_PARAMETER = "UserSelection";
   private static final String GROUP_SELECTION_PARAMETER = "GroupSelection";
-  
   // URI of the selection form
   private static final String SELECTION_FORM_PATH = Selection.USER_SELECTION_PANEL_PATH;
-  
+
+  /**
+   * Prepares the specified selection to be carried by the specified HTTP request.
+   *
+   * @param selection an object representing the selection that will be done with the user/group
+   * selection panel. The users or groups selected by the user will be set into this object.
+   * @param request the HTTP request driving the web flow to the user/group selection panel.
+   */
   public void prepareSelection(final Selection selection, final HttpServletRequest request) {
     request.setAttribute(SELECTION_PARAMETER, selection);
   }
-  
+
+  /**
+   * Processes the specified selection object from the parameters set into the incoming HTTP
+   * request.
+   *
+   * @param selection the object representing the selection done by the user.
+   * @param request the HTTP request with the actually selected users and groups.
+   * @return the next destination that is the view or the service that has to use the selection.
+   */
   public String processSelection(final Selection selection, final HttpServletRequest request) {
-    String userSelection = request.getParameter(USER_SELECTION_PARAMETER);
-    String[] selectedUsers = null;
-    if (isDefined(userSelection)) {
-      selectedUsers = userSelection.split(",");
-    }
-    String groupSelection = request.getParameter(GROUP_SELECTION_PARAMETER);
-    String[] selectedGroups = null;
-    if(isDefined(groupSelection)) {
-      selectedGroups = groupSelection.split(",");
-    }
-    selection.setSelectedElements(selectedUsers);
-    selection.setSelectedSets(selectedGroups);
-    
+    if (isSelectionValidated(request)) {
+      String userSelection = request.getParameter(USER_SELECTION_PARAMETER);
+      String[] selectedUsers = null;
+      if (isDefined(userSelection)) {
+        selectedUsers = userSelection.split(",");
+      }
+      String groupSelection = request.getParameter(GROUP_SELECTION_PARAMETER);
+      String[] selectedGroups = null;
+      if (isDefined(groupSelection)) {
+        selectedGroups = groupSelection.split(",");
+      }
+      selection.setSelectedElements(selectedUsers);
+      selection.setSelectedSets(selectedGroups);
+
+      // a workaround to clients that use the user panel within a window popup without taking avantage
+      // of the hot settings
+      if (!selection.isHotSetting() && selection.isPopupMode()) {
+        request.setAttribute("RedirectionURL", selection.getGoBackURL());
+        return "/selection/jsp/redirect.jsp";
+      }
     // a workaround to clients that use the user panel within a window popup without taking avantage
     // of the hot settings
-    if (!selection.isHotSetting() && selection.isPopupMode()) {
-      request.setAttribute("RedirectionURL", selection.getGoBackURL());
-      return "/selection/jsp/redirect.jsp";
+    } else if (!selection.isHotSetting() && selection.isPopupMode()) {
+      request.setAttribute("RedirectionURL", selection.getCancelURL());
+        return "/selection/jsp/redirect.jsp";
     }
-    
+
     return null;
   }
-  
+
+  /**
+   * Is a selection of users or groups is asked by a client (a JSP or request router)?
+   *
+   * @param destination the destination of a request processing (a view rendering the response, a
+   * service, ...)
+   * @return true if the user panel is asked, false otherwise.
+   */
   public boolean isSelectionAsked(String destination) {
     return isDefined(destination) && destination.endsWith(SELECTION_FORM_PATH);
   }
-  
-  public boolean isSelectionDone(final HttpServletRequest request) {
+
+  /**
+   * Is the selection was validated by the user? A selection is said validated wether the user
+   * pushed the validation button of the selection panel, whatever some users or groups were
+   * actually selected.
+   *
+   * @param request the HTTP request embodied the selection validation event.
+   * @return true if the user validated a selection of users or groups, false if it canceled it.
+   */
+  public boolean isSelectionValidated(final HttpServletRequest request) {
     String selectionDone = request.getParameter(USER_GROUP_SELECTION_PARAMETER);
     return isDefined(selectionDone) && getBooleanValue(selectionDone);
+  }
+
+  /**
+   * Is the incoming request comes from the user/group selection panel?
+   *
+   * @param request the incoming HTTP request.
+   * @return true if the request was triggered by the user/group selection panel.
+   */
+  public boolean isComeFromSelectionPanel(final HttpServletRequest request) {
+    String selectionDone = request.getParameter(USER_GROUP_SELECTION_PARAMETER);
+    return isDefined(selectionDone);
   }
 }
