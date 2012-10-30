@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,28 +23,32 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * An implementation of the search criteria for user details stored in a SQL data source and used by
+ * An implementation of the search criteria for user groups stored in a SQL data source and used by
  * the DAOs. By default, the criterion are linked together by a conjonction operator. Nevertheless,
- * you can explicitly specify it by using the UserSearchCriteriaForDAO#and() method.
+ * you can explicitly specify it by using the GroupSearchCriteriaForDAO#and() method.
  */
-public class UserSearchCriteriaForDAO implements SearchCriteria {
+public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   private StringBuilder query = new StringBuilder();
   private Set<String> tables = new HashSet<String>();
+  private List<String> domainIds = new ArrayList<String>();
 
-  public static UserSearchCriteriaForDAO newCriteria() {
-    return new UserSearchCriteriaForDAO();
+  public static GroupSearchCriteriaForDAO newCriteria() {
+    return new GroupSearchCriteriaForDAO();
   }
 
   @Override
-  public UserSearchCriteriaForDAO and() {
+  public GroupSearchCriteriaForDAO and() {
     if (query.length() > 0) {
       query.append(" and ");
     }
@@ -52,7 +56,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public UserSearchCriteriaForDAO or() {
+  public GroupSearchCriteriaForDAO or() {
     if (query.length() > 0) {
       query.append(" or ");
     }
@@ -60,45 +64,47 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public UserSearchCriteriaForDAO onName(String name) {
+  public GroupSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
-      tables.add("st_user");
-      getFixedQuery().append("(lower(st_user.firstName) like lower('").
+      tables.add("st_group");
+      getFixedQuery().append("lower(st_group.name) like lower('").
               append(name).
-              append("') or lower(st_user.lastName) like lower('").
-              append(name).
-              append("'))");
+              append("')");
     }
     return this;
   }
 
   @Override
-  public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    tables.add("st_user");
-    tables.add("st_group_user_rel");
-    StringBuilder theQuery = getFixedQuery().append("(st_group_user_rel.userid = st_user.id");
+  public GroupSearchCriteriaForDAO onGroupIds(String... groupIds) {
     if (groupIds != ANY) {
+      tables.add("st_group");
       StringBuilder[] sqlLists = asSQLList(groupIds);
-      theQuery.append(" and (st_group_user_rel.groupId in ").
-              append(sqlLists[0]);
+      StringBuilder theQuery = getFixedQuery().append("(st_group.id in ").append(sqlLists[0]);
       for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_group_user_rel.groupId in ").
-                append(sqlLists[i]);
+        theQuery.append(" or st_group.id in ").append(sqlLists[i]);
       }
       theQuery.append(")");
     }
-    theQuery.append(")");
     return this;
   }
 
   @Override
-  public UserSearchCriteriaForDAO onDomainId(String domainId) {
-    // all users that are part of the specified domain or that have administration priviledges
-    // (the administrators should be visible by anyone in order to be contacted)
+  public GroupSearchCriteriaForDAO onDomainId(String domainId) {
     if (isDefined(domainId)) {
-      tables.add("st_user");
-      getFixedQuery().append("(st_user.domainId = ").append(Integer.valueOf(domainId)).
-              append(" or st_user.accessLevel = 'A')");
+      domainIds.add(domainId);
+      tables.add("st_group");
+      getFixedQuery().append("st_group.domainId = ").append(Integer.valueOf(domainId));
+    }
+    return this;
+  }
+
+  public GroupSearchCriteriaForDAO onMixedDomainOronDomainId(String domainId) {
+    if (isDefined(domainId)) {
+      domainIds.add(domainId);
+      tables.add("st_group");
+      getFixedQuery().append("(st_group.domainId = ").append(Integer.valueOf(domainId)).
+              append(" or st_group.domainId = ").append(Integer.valueOf(Domain.MIXED_DOMAIN_ID)).
+              append(")");
     }
     return this;
   }
@@ -118,6 +124,37 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onRoleIds(String... roleIds) {
+    if (roleIds != null && roleIds.length > 0) {
+      tables.add("st_group");
+      tables.add("st_userrole_group_rel");
+      StringBuilder[] sqlLists = asSQLList(roleIds);
+      StringBuilder theQuery = getFixedQuery().
+              append("(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
+              append(sqlLists[0]);
+      for (int i = 1; i < sqlLists.length; i++) {
+        theQuery.append(" or ST_UserRole_Group_Rel.userRoleId in ").append(sqlLists[i]);
+      }
+      theQuery.append("))");
+    }
+    return this;
+  }
+
+  public SearchCriteria onSuperGroupId(String superGroupId) {
+    if (isDefined(superGroupId)) {
+      tables.add("st_group");
+      getFixedQuery().append("st_group.superGroupId = ").append(Integer.valueOf(superGroupId));
+    }
+    return this;
+  }
+
+  public SearchCriteria onAsRootGroup() {
+    tables.add("st_group");
+    getFixedQuery().append("st_group.superGroupId is null");
+    return this;
+  }
+
+  @Override
   public String toString() {
     return query.toString();
   }
@@ -125,6 +162,14 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public boolean isEmpty() {
     return query.length() == 0;
+  }
+
+  public boolean isCriterionOnDomainIdSet() {
+    return !domainIds.isEmpty();
+  }
+
+  public List<String> getCriterionOnDomainIds() {
+    return domainIds;
   }
 
   public String impliedTables() {
@@ -135,7 +180,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
   }
 
-  private UserSearchCriteriaForDAO() {
+  private GroupSearchCriteriaForDAO() {
   }
 
   /**
@@ -175,11 +220,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
       lists[i].append("null").append(")");
     }
     return lists;
-  }
-
-  @Override
-  public SearchCriteria onRoleIds(String... roleIds) {
-    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
