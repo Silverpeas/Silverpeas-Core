@@ -201,6 +201,14 @@ public class Instanciateur {
   public synchronized static WAComponent getWAComponent(String componentName) {
     return WAComponents.get(componentName);
   }
+  
+  public static boolean isWorkflow(String componentName) {
+    WAComponent descriptor = getWAComponent(componentName);
+    if (descriptor != null && "RprocessManager".equalsIgnoreCase(descriptor.getRouter())) {
+      return true;
+    }
+    return false;
+  }
 
   public synchronized static Map<String, WAComponent> getWAComponents() {
     return Collections.unmodifiableMap(WAComponents);
