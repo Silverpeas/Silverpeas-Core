@@ -23,25 +23,30 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO.newCriteria;
+import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
+import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 
 /**
- * A factory of UserSearchCriteria instances by using the adequate implementation used in the
+ * A factory of search criteria for DAO operations using the adequate implementation used in the
  * persistence layer.
  */
-public class UserSearchCriteriaFactory {
+public class SearchCriteriaDAOFactory {
   
-  private static final UserSearchCriteriaFactory instance = new UserSearchCriteriaFactory();
+  private static final SearchCriteriaDAOFactory instance = new SearchCriteriaDAOFactory();
   
-  public static UserSearchCriteriaFactory getFactory() {
+  public static SearchCriteriaDAOFactory getFactory() {
     return instance;
   }
   
-  public UserSearchCriteria getUserSearchCriteria() {
-    return newCriteria();
+  public UserSearchCriteriaForDAO getUserSearchCriteriaDAO() {
+    return UserSearchCriteriaForDAO.newCriteria();
+  }
+
+  public GroupSearchCriteriaForDAO getGroupSearchCriteriaDAO() {
+    return GroupSearchCriteriaForDAO.newCriteria();
   }
   
-  private UserSearchCriteriaFactory() {
+  private SearchCriteriaDAOFactory() {
     
   }
 }
