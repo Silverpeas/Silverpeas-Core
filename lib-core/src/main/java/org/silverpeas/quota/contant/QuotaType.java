@@ -28,5 +28,5 @@ package org.silverpeas.quota.contant;
  */
 public enum QuotaType {
 
-  USERS_IN_DOMAIN
+  USERS_IN_DOMAIN, COMPONENTS_IN_SPACE
 }

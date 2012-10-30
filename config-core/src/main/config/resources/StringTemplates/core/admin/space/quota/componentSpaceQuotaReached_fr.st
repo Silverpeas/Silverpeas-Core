@@ -1,0 +1,2 @@
+Le nombre maximum de $quota.maxCount$ applications est atteint.
+$if(fromSpaceId)$<br/><i><a href="javascript:parent.jumpToSpace('$fromSpaceId$')">Il est défini au niveau de l'espace <b>$fromSpaceName$</b>.</a></i>$endif$

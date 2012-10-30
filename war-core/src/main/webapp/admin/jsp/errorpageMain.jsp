@@ -24,12 +24,12 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <%
-    if (response.isCommitted() == false)
-        response.resetBuffer();
+if (response.isCommitted() == false) {
+  response.resetBuffer();
+}
 %>
+
 <%--
  % This page is invoked when an error happens at the server.  The
  % error details are available in the implicit 'exception' object.
@@ -37,15 +37,12 @@
  % (via the template.jsp)
 --%>
 
-<%@ page isErrorPage="true" %>
+<%@ page isErrorPage="false" import="java.io.*" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
@@ -58,15 +55,14 @@
 
 <%@ include file="import.jsp" %>
 
-<% 
-	//Exception exception = (Exception) request.getAttribute("javax.servlet.jsp.jspException");
-	Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
-	String exStr = HomePageUtil.getMessageToDisplay(exception , language);
-	String detailedString = HomePageUtil.getMessagesToDisplay(exception , language);
-
-    HomePageUtil.traceException(exception);
+<%
+Throwable exception = (Throwable) request.getAttribute("javax.servlet.jsp.jspException");
+Throwable toDisplayException = HomePageUtil.getExceptionToDisplay(exception);
+String exStr = HomePageUtil.getMessageToDisplay(exception , language);
+String detailedString = HomePageUtil.getMessagesToDisplay(exception , language);
+HomePageUtil.traceException(toDisplayException);
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -78,40 +74,36 @@ out.println(gef.getLookStyleSheet());
 
 <body>
 <%
-    Window window = gef.getWindow();
-	out.println(window.printBefore());
-	Frame frame = gef.getFrame();
-	out.println(frame.printBefore());
+Window window = gef.getWindow();
+out.println(window.printBefore());
+Frame frame = gef.getFrame();
+out.println(frame.printBefore());
 %>
 <center>
-<form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMax.jsp" method="post">
-	<input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
-  	<input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
-	<input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
-<table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
-	<tr>
-		<td class="intfdcolor4" nowrap="nowrap">
-			<center>
-				<br/>
-				<span class="txtnav">
-					<% if (exStr != null){out.print(exStr);}%>
-				</span>
-			</center>
-			<br/>
-		</td>
-	</tr>
-</table>
-</form>
-<br/>
+  <form name="formError" action="<%=m_context%>/admin/jsp/errorpageMainMax.jsp" method="post">
+    <input type="hidden" name="message" value="<% if (exStr != null){out.print(exStr);}%>"/>
+    <input type="hidden" name="detailedMessage" value="<% if (detailedString != null){out.print(detailedString);}%>"/>
+    <input type="hidden" name="pile" value="<% if (toDisplayException != null) {toDisplayException.printStackTrace(new PrintWriter(out));}%>"/>
+    <table cellpadding="0" cellspacing="2" border="0" width="98%" class="intfdcolor">
+      <tr>
+        <td class="intfdcolor4" nowrap="nowrap">
+          <center>
+            <br/><span class="txtnav"><% if (exStr != null){out.print(exStr);}%></span><br/>
+          </center>
+        </td>
+      </tr>
+    </table>
+  </form>
+  <br/>
 <%
-		  ButtonPane buttonPane = gef.getButtonPane();
-			buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.detail"), "javascript:document.formError.submit();", false));
-		  out.println(buttonPane.print());
+ButtonPane buttonPane = gef.getButtonPane();
+buttonPane.addButton((Button) gef.getFormButton(generalMessage.getString("GML.detail"), "javascript:document.formError.submit();", false));
+out.println(buttonPane.print());
 %>
 </center>
 <%
-				out.println(frame.printAfter());
-				out.println(window.printAfter());
+out.println(frame.printAfter());
+out.println(window.printAfter());
 %>
 </body>
 </html>

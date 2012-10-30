@@ -35,24 +35,22 @@ String spaceId = (String) request.getAttribute("CurrentSpaceId");
 browseBar.setSpaceId(spaceId);
 
 String messageTitle = resource.getString("JSPP.ErrorComponentCreation");
-String message = resource.getString("JSPP.ErrorComponentMessage");
+String message = (String) request.getAttribute("ErrorMessage");
+if (!StringUtil.isDefined(message)) {
+  message = resource.getString("JSPP.ErrorComponentMessage");
+}
 browseBar.setPath(resource.getString("JSPP.creationInstance"));
-if (when.equals("ComponentUpdate"))
-{
-	messageTitle = resource.getString("JSPP.ErrorComponentUpdate");
-	browseBar.setPath(resource.getString("GML.modify"));
-}
-else if (when.equals("SpaceCreation"))
-{
-	messageTitle = resource.getString("JSPP.ErrorSpaceCreation");
-	message = resource.getString("JSPP.ErrorSpaceMessage");
-	browseBar.setPath(resource.getString("JSPP.creationSpace"));
-}
-else if (when.equals("SpaceUpdate"))
-{
-	messageTitle = resource.getString("JSPP.ErrorSpaceUpdate");
-	message = resource.getString("JSPP.ErrorSpaceMessage");
-	browseBar.setPath(resource.getString("JSPP.updateSpace"));
+if (when.equals("ComponentUpdate")) {
+  messageTitle = resource.getString("JSPP.ErrorComponentUpdate");
+  browseBar.setPath(resource.getString("GML.modify"));
+} else if (when.equals("SpaceCreation")) {
+  messageTitle = resource.getString("JSPP.ErrorSpaceCreation");
+  message = resource.getString("JSPP.ErrorSpaceMessage");
+  browseBar.setPath(resource.getString("JSPP.creationSpace"));
+} else if (when.equals("SpaceUpdate")) {
+  messageTitle = resource.getString("JSPP.ErrorSpaceUpdate");
+  message = resource.getString("JSPP.ErrorSpaceMessage");
+  browseBar.setPath(resource.getString("JSPP.updateSpace"));
 }
 %>
 

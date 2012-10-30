@@ -21,18 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota;
+package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.model.Quota;
+import org.silverpeas.quota.service.QuotaService;
 
 /**
  * @author Yohann Chastagnier
+ *
  */
-public interface QuotaKey {
+public interface ComponentSpaceQuotaService extends QuotaService<ComponentSpaceQuotaKey> {
 
-  boolean isValid();
-
-  QuotaType getQuotaType();
-
-  String getResourceId();
+  /**
+   * Gets the quota reached of the resource from a given quota key in recursively way.
+   * @param key
+   * @return
+   */
+  Quota getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey key);
 }
