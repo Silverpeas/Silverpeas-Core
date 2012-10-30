@@ -50,7 +50,7 @@ public class NodeAttrEntity {
   @XmlElement(defaultValue = "")
   private URI childrenURI;
   @XmlElement(defaultValue = "")
-  private String rel;
+  private String rel = "folder";
   @XmlElement(defaultValue = "")
   private String nbItems;
   @XmlElement(defaultValue = "")
