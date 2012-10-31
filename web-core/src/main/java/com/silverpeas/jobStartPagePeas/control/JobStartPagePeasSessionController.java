@@ -24,6 +24,22 @@
 
 package com.silverpeas.jobStartPagePeas.control;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
@@ -64,17 +80,6 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 /**
  * Class declaration
  * @author
@@ -98,6 +103,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   String m_spaceTemplate = "";
   String[][] currentSpaceTemplateProfilesGroups = new String[0][0];
   String[][] m_TemplateProfilesUsers = new String[0][0];
+  String m_componentSpaceQuotaMaxCount = "";
   // Order space / component b
   boolean m_spaceFirst = true;
   // Space sort buffers
@@ -106,7 +112,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public static final int SCOPE_BACKOFFICE = 0;
   public static final int SCOPE_FRONTOFFICE = 1;
   private int scope = SCOPE_BACKOFFICE;
-  
+
   public static final int MAINTENANCE_OFF = 0;
   public static final int MAINTENANCE_PLATFORM = 1;
   public static final int MAINTENANCE_ONEPARENT = 2;
@@ -409,13 +415,14 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void setCreateSpaceParameters(String name, String desc, String ssEspace,
-      String spaceTemplate, String language, String look) {
+      String spaceTemplate, String language, String look, String componentSpaceQuotaMaxCount) {
     m_ssEspace = ssEspace;
     m_name = name;
     m_desc = desc;
     currentLanguage = language;
     m_spaceTemplate = spaceTemplate;
     m_look = look;
+    m_componentSpaceQuotaMaxCount = componentSpaceQuotaMaxCount;
     // Only use global variable to set spacePosition
     m_spaceFirst = !JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
         JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG);
@@ -453,6 +460,17 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             "JobStartPagePeasRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "setDomainFatherId !!");
         spaceInst.setDomainFatherId("WA" + fatherId);
+      }
+    }
+
+    // Data storage quota
+    if (isUserAdmin() && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED &&
+        StringUtil.isDefined(m_componentSpaceQuotaMaxCount)) {
+      try {
+        spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(m_componentSpaceQuotaMaxCount));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
       }
     }
 
@@ -511,18 +529,37 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     // Finally refresh the cache
     m_NavBarMgr.addSpaceInCache(res);
+
+    // Data storage quota
+   initializeComponentSpaceQuota(spaceInst);
+
     return res;
   }
 
   public String updateSpaceInst(SpaceInst spaceInst) {
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSessionController.updateSpaceInst()",
-        spaceInst.getId(), "SP", spaceInst.getName(),
-        getUserId(), SilverTrace.SPY_ACTION_UPDATE);
+    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSessionController.updateSpaceInst()",
+        spaceInst.getId(), "SP", spaceInst.getName(), getUserId(), SilverTrace.SPY_ACTION_UPDATE);
 
     spaceInst.setUpdaterUserId(getUserId());
     String res = adminController.updateSpaceInst(spaceInst);
+    initializeComponentSpaceQuota(spaceInst);
     return res;
+  }
+
+  /**
+   * Initializing component space quota
+   * @param space
+   */
+  public void initializeComponentSpaceQuota(final SpaceInst space) {
+    if (JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED) {
+      try {
+        SpaceServiceFactory.getComponentSpaceQuotaService().initialize(
+            ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
   }
 
   private boolean isRemovingSpaceAllowed(String spaceId) {
@@ -1010,7 +1047,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return null;
   }
 
-  public String addComponentInst(ComponentInst componentInst) {
+  public String addComponentInst(ComponentInst componentInst) throws QuotaException {
     SilverTrace.spy("jobStartPagePeas",
         "JobStartPagePeasSessionController.addComponentInst()",
         componentInst.getDomainFatherId(), "CMP", componentInst.getLabel(),
@@ -1344,11 +1381,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public void copyComponent(String id) throws RemoteException {
     copyOrCutComponent(id, false);
   }
-  
+
   public void cutComponent(String id) throws RemoteException {
     copyOrCutComponent(id, true);
   }
-  
+
   private void copyOrCutComponent(String id, boolean cut) throws RemoteException {
     ComponentInst componentInst = getComponentInst(id);
     ComponentSelection compoSelect = new ComponentSelection(componentInst);
@@ -1358,15 +1395,15 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         + getClipboardCount());
     addClipboardSelection(compoSelect);
   }
-  
+
   public void copySpace(String id) throws RemoteException {
     copyOrCutSpace(id, false);
   }
-  
+
   public void cutSpace(String id) throws RemoteException {
     copyOrCutSpace(id, true);
   }
-  
+
   private void copyOrCutSpace(String id, boolean cut) throws RemoteException {
     SpaceInst space = getSpaceInstById(id);
     SpaceSelection spaceSelect = new SpaceSelection(space);
@@ -1433,13 +1470,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         setManagedInstanceId(sComponentId);
         refreshCurrentSpaceCache();
       }
-    } catch (AdminException e) {
+    } catch (Exception e) {
       throw new JobStartPagePeasException("JobStartPagePeasSessionController.pasteComponent()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "componentId = " + componentId + " in space " + getManagedSpaceId(), e);
     }
   }
-  
+
   private void moveComponent(String componentId) throws AdminException {
     adminController.moveComponentInst(getManagedSpaceId(), componentId, null, null);
   }
@@ -1455,22 +1492,22 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           m_NavBarMgr.addSpaceInCache(newSpaceId);
         }
       }
-    } catch (AdminException e) {
+    } catch (Exception e) {
       throw new JobStartPagePeasException(
           "JobStartPagePeasSessionController.pasteSpace()",
           SilverpeasRuntimeException.ERROR, "jobStartPagePeas.EX_PASTE_ERROR",
           "spaceId = " + spaceId + " in space " + getManagedSpaceId(), e);
     }
   }
-  
+
   private void moveSpace(String spaceId) throws AdminException {
     moveSpace(spaceId, getManagedSpaceId());
   }
-  
+
   public void moveSpace(String spaceId, String targetSpaceId) throws AdminException {
     adminController.moveSpace(spaceId, targetSpaceId);
   }
-  
+
   public int getCurrentSpaceMaintenanceState() {
     if (isAppInMaintenance()) {
       return JobStartPagePeasSessionController.MAINTENANCE_PLATFORM;

@@ -33,6 +33,8 @@ String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
 Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
+boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
 
 	browseBar.setSpaceId(spaceId);
 	browseBar.setClickable(false);
@@ -40,7 +42,6 @@ String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
 	else
 		browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
-
 %>
 
 <HTML>
@@ -85,6 +86,14 @@ function isCorrectForm() {
      		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
            	errorNb++;
 		}
+
+    <% if (isComponentSpaceQuotaActivated) { %>
+     var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
+     if (isWhitespace(componentSpaceQuota)) {
+       errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
+       errorNb++;
+     }
+    <% } %>
 
 
      switch(errorNb)
@@ -160,6 +169,12 @@ out.println(board.printBefore());
                     </SELECT>
 				</td>
 			</tr>
+      <% if (isComponentSpaceQuotaActivated) { %>
+        <tr>
+          <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
+          <td><input type="text" name="ComponentSpaceQuota" size="60" maxlength="60" value="0">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+        </tr>
+      <% } %>
 			<tr align=left>
 				<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
 			</tr>

@@ -104,7 +104,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
             psc.addComponent(helper.getUserId(), componentName, getComponentLabel(componentName,
             helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
-      } catch (AdminException e) {
+      } catch (Exception e) {
         writer.write(getResult(componentName, null, e, helper).toString());
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
             "root.EX_NO_MESSAGE", e);

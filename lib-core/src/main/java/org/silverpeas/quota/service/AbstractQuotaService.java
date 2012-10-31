@@ -63,23 +63,32 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
       throws QuotaException {
 
     // Checking that it does not exist a quota with same key
-    Quota quota = getByQuotaKey(key);
-    if (quota == null) {
+    final Quota quota = getByQuotaKey(key);
+    if (!quota.exists()) {
+
+      // If quota does not exist and maxCount is zero : stop
+      if (maxCount == 0) {
+        return quota;
+      }
+
       // Initializing the quota
-      quota = new Quota();
       quota.setType(key.getQuotaType());
       quota.setResourceId(key.getResourceId());
     }
 
-    // Setting the quota
-    quota.setMinCount(minCount);
-    quota.setMaxCount(maxCount);
+    // Modifying and saving if changes are detected
+    if (!quota.exists() || minCount != quota.getMinCount() || maxCount != quota.getMaxCount()) {
 
-    // Validating
-    quota.validate();
+      // Setting the quota
+      quota.setMinCount(minCount);
+      quota.setMaxCount(maxCount);
 
-    // Saving
-    quotaRepository.saveAndFlush(quota);
+      // Validating
+      quota.validate();
+
+      // Saving
+      quotaRepository.saveAndFlush(quota);
+    }
 
     // Returning the initialized quota
     return quota;
@@ -92,7 +101,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   @Override
   public Quota get(final T key) throws QuotaException {
     final Quota quota = getByQuotaKey(key);
-    if (quota != null) {
+    if (quota.exists()) {
       final int currentCount = getCurrentCount(key);
       if (quota.getCount() != currentCount) {
         quota.setCount(currentCount);
@@ -108,7 +117,15 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * @return
    */
   private Quota getByQuotaKey(final T key) {
-    return quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+    Quota quota = null;
+    if (key.isValid()) {
+      quota =
+          quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+    }
+    if (quota == null) {
+      quota = new Quota();
+    }
+    return quota;
   }
 
   /*
@@ -139,6 +156,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    */
   @Override
   public void remove(final T key) {
-    quotaRepository.delete(getByQuotaKey(key));
+    final Quota quota = getByQuotaKey(key);
+    if (quota.exists()) {
+      quotaRepository.delete(quota);
+    }
   }
 }
