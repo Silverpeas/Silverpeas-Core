@@ -317,8 +317,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return true if he's restricted in its own domain, false otherwise.
    */
   public boolean isDomainRestricted() {
-    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
-            || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH
+    return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH
+            || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
             && !"0".equals(getDomainId()))) && !isAccessAdmin();
   }
 

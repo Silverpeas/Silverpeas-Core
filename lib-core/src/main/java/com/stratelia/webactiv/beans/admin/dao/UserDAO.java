@@ -1,25 +1,26 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify it under the terms of the
-* GNU Affero General Public License as published by the Free Software Foundation, either version 3
-* of the License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
-* redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
-* applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
-* text describing the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
-* even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-* Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License along with this program.
-* If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import java.sql.*;
@@ -35,13 +36,13 @@ public class UserDAO {
   }
 
   /**
-* Gets all the user details available in Silverpeas whatever the they are part or not of a user
-* group.
-*
-* @param connection the connection with the data source to use.
-* @return a list of user details.
-* @throws SQLException if an error occurs while getting the user details from the data source.
-*/
+   * Gets all the user details available in Silverpeas whatever the they are part or not of a user
+   * group.
+   *
+   * @param connection the connection with the data source to use.
+   * @return a list of user details.
+   * @throws SQLException if an error occurs while getting the user details from the data source.
+   */
   public List<UserDetail> getAllUsers(Connection connection) throws SQLException {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
@@ -59,12 +60,12 @@ public class UserDAO {
   }
 
   /**
-* Gets all the details on the users that are part of at least one user group in Silverpeas.
-*
-* @param connection the connetion with a data source to use.
-* @return a list of user details or an empty list of no users are found in a group.
-* @throws SQLException if an error occurs while getting the user details from the data source.
-*/
+   * Gets all the details on the users that are part of at least one user group in Silverpeas.
+   *
+   * @param connection the connetion with a data source to use.
+   * @return a list of user details or an empty list of no users are found in a group.
+   * @throws SQLException if an error occurs while getting the user details from the data source.
+   */
   public List<UserDetail> getUsersOfAllGroups(Connection connection) throws SQLException {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
@@ -83,15 +84,14 @@ public class UserDAO {
   }
 
   /**
-* Gets the user details that match the specified criteria.
-* The criteria are provided by an UserSearchCriteriaBuilder instance that was used to create
-* them.
-*
-* @param connection the connetion with a data source to use.
-* @param criteria a builder with which the criteria the user details must satisfy has been built.
-* @return a list of user details matching the criteria or an empty list if no such user details
-* are found.
-*/
+   * Gets the user details that match the specified criteria. The criteria are provided by an
+   * UserSearchCriteriaBuilder instance that was used to create them.
+   *
+   * @param connection the connetion with a data source to use.
+   * @param criteria a builder with which the criteria the user details must satisfy has been built.
+   * @return a list of user details matching the criteria or an empty list if no such user details
+   * are found.
+   */
   public List<UserDetail> getUsersByCriteria(Connection connection,
           UserSearchCriteriaForDAO criteria) throws SQLException {
     PreparedStatement statement = null;
@@ -108,6 +108,29 @@ public class UserDAO {
       statement = connection.prepareStatement(query);
       resultSet = statement.executeQuery();
       return theUserDetailsFrom(resultSet);
+    } finally {
+      DBUtil.close(resultSet, statement);
+    }
+  }
+
+  public String[] getUserIdsInGroupAndInDomain(Connection connection, String groupId,
+          String domainId) throws SQLException {
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+    if (StringUtil.isDefined(groupId)) {
+      throw new NullPointerException("The group identifier is null!");
+    }
+    try {
+      StringBuilder query =
+              new StringBuilder("select distinct st_user.id from st_user, st_group_user_rel where st_group_user_rel.groupId = ").
+              append(groupId);
+      if (StringUtil.isDefined(domainId)) {
+        query.append(" and st_user.domainId = ").append(domainId);
+      }
+      query.append(" and accessLevel <> 'R' order by lastName");
+      statement = connection.prepareStatement(query.toString());
+      resultSet = statement.executeQuery();
+      return getIds(resultSet);
     } finally {
       DBUtil.close(resultSet, statement);
     }
@@ -180,8 +203,8 @@ public class UserDAO {
   }
 
   /**
-* Fetch the current user row from a resultSet.
-*/
+   * Fetch the current user row from a resultSet.
+   */
   private static UserDetail fetchUser(ResultSet rs) throws SQLException {
     UserDetail u = new UserDetail();
     u.setId(Integer.toString(rs.getInt(1)));
@@ -195,5 +218,13 @@ public class UserDAO {
     u.setLoginQuestion(rs.getString(10));
     u.setLoginAnswer(rs.getString(11));
     return u;
+  }
+
+  private static String[] getIds(ResultSet rs) throws SQLException {
+    List<String> userIds = new ArrayList<String>();
+    while (rs.next()) {
+      userIds.add(String.valueOf(rs.getInt(1)));
+    }
+    return userIds.toArray(new String[userIds.size()]);
   }
 }

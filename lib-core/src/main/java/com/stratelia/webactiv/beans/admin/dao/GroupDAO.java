@@ -24,6 +24,9 @@
 
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.util.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,10 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.util.DBUtil;
 
 public class GroupDAO {
 
@@ -48,7 +47,58 @@ public class GroupDAO {
   static final private String queryGetGroup = "select " + GROUP_COLUMNS
       + " from ST_Group where id = ?";
 
-  public static Group getGroup(Connection con, String groupId)
+  /**
+   * Gets all the user groups available in Silverpeas whatever the user domain they belongs to.
+   *
+   * @param connection the connection with the data source to use.
+   * @return a list of user groups.
+   * @throws SQLException if an error occurs while getting the user groups from the data source.
+   */
+  public List<Group> getAllGroups(Connection connection) throws SQLException {
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+    try {
+      String query = "select " + GROUP_COLUMNS
+              + " from st_group"
+              + " order by name";
+      statement = connection.prepareStatement(query);
+      resultSet = statement.executeQuery();
+      return theGroupsFrom(resultSet);
+    } finally {
+      DBUtil.close(resultSet, statement);
+    }
+  }
+
+  /**
+   * Gets the user groups that match the specified criteria. The criteria are provided by a
+   * SearchCriteriaBuilder instance that was used to create them.
+   *
+   * @param connection the connetion with a data source to use.
+   * @param criteria a builder with which the criteria the user groups must satisfy has been built.
+   * @return a list of user groups matching the criteria or an empty list if no such user groups
+   * are found.
+   */
+  public List<Group> getGroupsByCriteria(Connection connection,
+          GroupSearchCriteriaForDAO criteria) throws SQLException {
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+    try {
+      if (criteria.isEmpty()) {
+        return getAllGroups(connection);
+      }
+      String query = "select " + GROUP_COLUMNS
+              + " from " + criteria.impliedTables()
+              + " where " + criteria.toString()
+              + " order by name";
+      statement = connection.prepareStatement(query);
+      resultSet = statement.executeQuery();
+      return theGroupsFrom(resultSet);
+    } finally {
+      DBUtil.close(resultSet, statement);
+    }
+  }
+
+  public Group getGroup(Connection con, String groupId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -72,7 +122,7 @@ public class GroupDAO {
   static final private String queryGetSubGroups = "select " + GROUP_COLUMNS
       + " from ST_Group where superGroupId = ?";
 
-  public static List<Group> getSubGroups(Connection con, String groupId) throws SQLException {
+  public List<Group> getSubGroups(Connection con, String groupId) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -96,7 +146,7 @@ public class GroupDAO {
   static final private String queryGetNBUsersDirectlyInGroup = "select count(userid)"
       + " from st_group_user_rel where groupid = ?";
 
-  public static int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
+  public int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -116,7 +166,7 @@ public class GroupDAO {
 
   }
 
-  public static List<String> getManageableGroupIds(Connection con, String userId,
+  public List<String> getManageableGroupIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
     List<String> manageableGroupIds = new ArrayList<String>();
     if (StringUtil.isDefined(userId)) {
@@ -133,7 +183,7 @@ public class GroupDAO {
       + " where st_groupuserrole_user_rel.groupuserroleid=st_groupuserrole.id"
       + " and st_groupuserrole_user_rel.userid=?";
 
-  private static List<String> getManageableGroupIdsByUser(Connection con, String userId)
+  private List<String> getManageableGroupIdsByUser(Connection con, String userId)
       throws SQLException {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -155,13 +205,13 @@ public class GroupDAO {
 
   }
 
-  private static List<String> getManageableGroupIdsByGroups(Connection con, List<String> groupIds)
+  private List<String> getManageableGroupIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
 
     try {
-      String queryGetManageableGroupIdsByUser = "select st_groupuserrole.groupid"
+      String aQueryGetManageableGroupIdsByUser = "select st_groupuserrole.groupid"
           + " from st_groupuserrole_group_rel, st_groupuserrole "
           + " where st_groupuserrole_group_rel.groupuserroleid=st_groupuserrole.id"
           + " and st_groupuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
@@ -169,7 +219,7 @@ public class GroupDAO {
       List<String> manageableGroupIds = new ArrayList<String>();
       stmt = con.createStatement();
 
-      rs = stmt.executeQuery(queryGetManageableGroupIdsByUser);
+      rs = stmt.executeQuery(aQueryGetManageableGroupIdsByUser);
 
       while (rs.next()) {
         manageableGroupIds.add(Integer.toString(rs.getInt(1)));
@@ -212,5 +262,13 @@ public class GroupDAO {
     group.setDescription(rs.getString(6));
     group.setRule(rs.getString(7));
     return group;
+  }
+
+  private static List<Group> theGroupsFrom(ResultSet rs) throws SQLException {
+    List<Group> groups = new ArrayList<Group>();
+    while (rs.next()) {
+      groups.add(fetchGroup(rs));
+    }
+    return groups;
   }
 }
