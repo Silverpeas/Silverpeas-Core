@@ -40,20 +40,20 @@ if (isComponentSpaceQuotaActivated) {
 }
 
 browseBar.setSpaceId(space.getId());
-browseBar.setClickable(false);
 browseBar.setPath(resource.getString("JSPP.updateSpace"));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 function B_VALIDER_ONCLICK() {
 	if (isCorrectForm()) {
 		document.infoSpace.submit();
@@ -108,29 +108,26 @@ function isCorrectForm() {
 
 <%
 String lang = "";
-Iterator codes = space.getTranslations().keySet().iterator();
-while (codes.hasNext())
-{
-	lang = (String) codes.next();
-	out.println("var name_"+lang+" = \""+Encode.javaStringToJsString(space.getName(lang))+"\";\n");
-	out.println("var desc_"+lang+" = \""+Encode.javaStringToJsString(space.getDescription(lang))+"\";\n");
+Iterator<String> codes = space.getTranslations().keySet().iterator();
+while (codes.hasNext()) {
+	lang = codes.next();
+	out.println("var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getName(lang))+"\";\n");
+	out.println("var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(space.getDescription(lang))+"\";\n");
 }
 %>
 
-function showTranslation(lang)
-{
+function showTranslation(lang) {
 	showFieldTranslation('spaceName', 'name_'+lang);
 	showFieldTranslation('spaceDescription', 'desc_'+lang);
 }
 
-function removeTranslation()
-{
+function removeTranslation() {
 	document.infoSpace.submit();
 }
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="document.infoSpace.NameObject.focus();">
-<FORM NAME="infoSpace" action="EffectiveUpdateSpace" METHOD="POST">
+</head>
+<body onload="document.infoSpace.NameObject.focus();">
+<form name="infoSpace" action="EffectiveUpdateSpace" method="post">
 <%
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
@@ -140,11 +137,11 @@ function removeTranslation()
 		<%=I18NHelper.getFormLine(resource, space, translation)%>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=Encode.javaStringToHtmlString(space.getName(translation))%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
+			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(space.getName(translation))%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
-			<td><textarea id="spaceDescription" name="Description" wrap="VIRTUAL" rows="4" cols="49"><%=Encode.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
+			<td><textarea id="spaceDescription" name="Description" rows="4" cols="49"><%=EncodeHelper.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
 		</tr>
     <% if (isComponentSpaceQuotaActivated) { %>
       <tr>
@@ -154,20 +151,20 @@ function removeTranslation()
     <% } %>
 		<% if (isInHeritanceEnable && !space.isRoot()) { %>
 		<tr>
-			<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
+			<td class="textePetitBold" nowrap="nowrap" valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
 			<td align="left" valign="top" width="100%">
 			<% if (space.isInheritanceBlocked()) { %>
-				<input type="radio" name="InheritanceBlocked" value="true" checked /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
+				<input type="radio" name="InheritanceBlocked" value="true" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
 				<input type="radio" name="InheritanceBlocked" value="false" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
 			<% } else { %>
 				<input type="radio" name="InheritanceBlocked" value="true"/> <%=resource.getString("JSPP.inheritanceSpaceNotUsed")%><br/>
-				<input type="radio" name="InheritanceBlocked" value="false" checked /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
+				<input type="radio" name="InheritanceBlocked" value="false" checked="checked" /> <%=resource.getString("JSPP.inheritanceSpaceUsed")%>
 			<% } %>
 			</td>
 		</tr>
 		<% } %>
 		<tr>
-			<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+			<td colspan="2"><img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
 		</tr>
 	</table>
 <%
@@ -175,12 +172,12 @@ function removeTranslation()
 
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false));
-	out.println("<br><center>"+buttonPane.print()+"</center>");
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back()", false));
+	out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 	out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

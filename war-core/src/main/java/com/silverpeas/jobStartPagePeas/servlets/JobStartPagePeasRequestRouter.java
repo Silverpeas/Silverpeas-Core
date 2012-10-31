@@ -574,8 +574,7 @@ public class JobStartPagePeasRequestRouter extends
       if (spaceId != null && spaceId.length() > 0) {
         jobStartPageSC.setSpacePlace(request.getParameter("SpaceBefore"));
         refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "StartPageInfo");
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestinationSpace("StartPageInfo", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas
@@ -604,8 +603,7 @@ public class JobStartPagePeasRequestRouter extends
       String spaceId = jobStartPageSC.updateSpaceInst(spaceint1);
       if (spaceId != null && spaceId.length() > 0) {
         refreshNavBar(jobStartPageSC, request);
-        request.setAttribute("urlToReload", "StartPageInfo");
-        destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
+        destination = getDestinationSpace("StartPageInfo", jobStartPageSC, request);
       } else {
         // TODO : Mauvaise gestion des exceptions
         // Si la création de l'espace se passe mal alors l'exception n'est pas

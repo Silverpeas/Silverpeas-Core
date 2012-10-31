@@ -74,18 +74,7 @@
 	browseBar.setI18N(space, resource.getLanguage());
 
   if (m_SpaceExtraInfos.isAdmin) {
-
-    // Popup sizes
-    int spaceUpdateWidth = 750;
-    int spaceUpdateHeight = 300;
-    int spaceCreateWidth = 750;
-    int spaceCreateHeight = 350;
-    if (isComponentSpaceQuotaActivated) {
-      spaceUpdateHeight += 50;
-      spaceCreateHeight += 50;
-    }
-
-  	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onClick=updateSpace("+spaceUpdateWidth+", "+spaceUpdateHeight+")");
+  	operationPane.addOperation(resource.getIcon("JSPP.spaceUpdate"),resource.getString("JSPP.SpacePanelModifyTitle"),"javascript:onclick=updateSpace()");
   	operationPane.addOperation(resource.getIcon("JSPP.updateHomePage"),resource.getString("JSPP.ModifyStartPage"),"javascript:onClick=openPopup('UpdateJobStartPage', 740, 600)");
     if (isUserAdmin || m_SubSpace != null) {
       operationPane.addOperation(resource.getIcon("JSPP.SpaceOrder"),resource.getString("JSPP.SpaceOrder"),"javascript:onClick=openPopup('PlaceSpaceAfter', 750, 250)");
@@ -121,7 +110,7 @@
   		}
     }
     operationPane.addLine();
-    operationPane.addOperationOfCreation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"javascript:onClick=openPopup('CreateSpace?SousEspace=SousEspace', "+spaceCreateWidth+", "+spaceCreateHeight+")");
+    operationPane.addOperationOfCreation(resource.getIcon("JSPP.subspaceAdd"),resource.getString("JSPP.SubSpacePanelCreateTitle"),"CreateSpace?SousEspace=SousEspace");
     if (!isComponentSpaceQuotaFull) {
       operationPane.addOperationOfCreation(resource.getIcon("JSPP.instanceAdd"),resource.getString("JSPP.ComponentPanelCreateTitle"),"ListComponent");
     }
@@ -171,8 +160,7 @@ function showTranslation(lang)
 	currentLanguage = lang;
 }
 
-function openPopup(action, larg, haut)
-{
+function openPopup(action, larg, haut) {
 	windowName = "actionWindow";
 	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
 	actionWindow = SP_openWindow(action, windowName, larg, haut, windowParams, false);
@@ -187,11 +175,8 @@ function openPopup(action, larg, haut)
 			}
 		}
 	<% } %>
-		function updateSpace(larg, haut)
-		{
-			windowName = "actionWindow";
-			windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-			actionWindow = SP_openWindow("UpdateSpace?Translation="+currentLanguage, windowName, larg, haut, windowParams, false);
+		function updateSpace() {
+			location.href = "UpdateSpace?Translation="+currentLanguage;
 		}
 <% } %>
 
