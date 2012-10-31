@@ -117,7 +117,7 @@
       	}
       }
   		if (objectsSelectedInClipboard) {
-  			operationPane.addOperationOfCreation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onclick=clipboardPaste()");
+  			operationPane.addOperation(resource.getIcon("JSPP.PasteComponent"),resource.getString("GML.paste"),"javascript:onclick=clipboardPaste()");
   		}
     }
     operationPane.addLine();
@@ -229,6 +229,7 @@ out.println(tabbedPane.print());
 <% } %>
 <% if (isComponentSpaceQuotaFull) { %>
   <div class="inlineMessage-nok"><%=space.getComponentSpaceQuotaReachedErrorMessage(resource.getLanguage())%></div>
+  <br clear="all"/>
 <% } %>
 <view:areaOfOperationOfCreation/>
 <view:board>

@@ -172,7 +172,7 @@ out.println(board.printBefore());
       <% if (isComponentSpaceQuotaActivated) { %>
         <tr>
           <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
-          <td><input type="text" name="ComponentSpaceQuota" size="60" maxlength="60" value="0">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+          <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="0"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
         </tr>
       <% } %>
 			<tr align=left>
@@ -184,8 +184,8 @@ out.println(board.printBefore());
 		out.println(board.printAfter());
 
 		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
 		out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 		out.println(frame.printAfter());

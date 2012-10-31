@@ -4175,11 +4175,10 @@ span.csv {
 .inlineMessage-nok {
   background-color: #F79992;
   border-color: #CE6F6F;
-  color: #666666;
 }
 
 .inlineMessage-nok a {
-  color: #444444;
+  text-decoration: underline;
 }
 
 table.pdcPositionsField {
