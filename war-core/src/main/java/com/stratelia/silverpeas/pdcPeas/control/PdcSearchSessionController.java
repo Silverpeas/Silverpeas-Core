@@ -47,6 +47,7 @@ import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -1081,7 +1082,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (!componentId.startsWith("webPages")) {
             try {
               downloadLink =
-                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
+                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent(), result);
             } catch (Exception e) {
               SilverTrace.warn("pdcPeas",
                   "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1113,7 +1114,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         } else if (resultType.startsWith("Versioning")) {
           try {
-            downloadLink = getVersioningUrl(resultType.substring(10), componentId);
+            downloadLink = getVersioningUrl(resultType.substring(10), componentId, result);
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1194,6 +1195,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     }
   }
+  
+  
 
   /**
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
@@ -1550,7 +1553,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return "";
   }
 
-  private String getAttachmentUrl(String objectType, String componentId)
+  private String getAttachmentUrl(String objectType, String componentId, GlobalSilverResult gsr)
       throws Exception {
     String id = objectType.substring(10); // object type is Attachment1245 or
     // Attachment1245_en
@@ -1563,6 +1566,16 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     AttachmentPK attachmentPK = new AttachmentPK(id, "useless", componentId);
     AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPK);
+    
+    // check if attachment is previewable and viewable
+    File attachmentFile = new File(attachmentDetail.getAttachmentPath(language));
+    boolean previewable = ViewerFactory.getPreviewService().isPreviewable(attachmentFile);
+    boolean viewable = ViewerFactory.getViewService().isViewable(attachmentFile);
+    
+    gsr.setPreviewable(previewable);
+    gsr.setViewable(viewable);
+    gsr.setAttachmentId(id);
+    gsr.setVersioned(false);
 
     String urlAttachment = attachmentDetail.getAttachmentURL(language);
 
@@ -1589,7 +1602,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return FileServerUtils.getApplicationContext() + urlAttachment;
   }
 
-  private String getVersioningUrl(String documentId, String componentId)
+  private String getVersioningUrl(String documentId, String componentId, GlobalSilverResult gsr)
       throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
@@ -1599,6 +1612,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         Integer.parseInt(documentId), "useless", componentId));
 
     if (version != null) {
+      // check if attachment is previewable and viewable
+      File file = new File(version.getDocumentPath());
+      boolean previewable = ViewerFactory.getPreviewService().isPreviewable(file);
+      boolean viewable = ViewerFactory.getViewService().isViewable(file);
+      
+      gsr.setPreviewable(previewable);
+      gsr.setViewable(viewable);
+      gsr.setAttachmentId(documentId);
+      gsr.setVersioned(true);
+      
+      // process download link
       String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
           version.getLogicalName(), documentId, version.getPk().getId());
       return FileServerUtils.getApplicationContext() + urlVersioning;
@@ -2576,7 +2600,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   private PdcBm pdcBm = null; // To retrieve items from PDC
-  private SearchEngine searchEngine = null; // To retrieve items using
 
   // searchEngine
   private PdcBm getPdcBm() {

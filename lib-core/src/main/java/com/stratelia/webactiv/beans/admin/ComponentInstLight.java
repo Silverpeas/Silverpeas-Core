@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.webactiv.organization.ComponentInstanceRow;
 
@@ -101,6 +102,8 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     createdBy = compo.createdBy;
     updatedBy = compo.updatedBy;
     removedBy = compo.removedBy;
+
+    orderNum = compo.orderNum;
 
     isInheritanceBlocked = compo.inheritanceBlocked == 1;
   }
@@ -280,6 +283,10 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
 
   public void setInheritanceBlocked(boolean isInheritanceBlocked) {
     this.isInheritanceBlocked = isInheritanceBlocked;
+  }
+  
+  public boolean isWorkflow() {
+    return Instanciateur.isWorkflow(getName());
   }
 
   @Override

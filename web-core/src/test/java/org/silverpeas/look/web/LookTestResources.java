@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -21,27 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.beans.admin;
+package org.silverpeas.look.web;
 
-import static com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO.newCriteria;
+import javax.inject.Named;
+
+import com.silverpeas.web.TestResources;
 
 /**
- * A factory of UserSearchCriteria instances by using the adequate implementation used in the
- * persistence layer.
+ * Resources required by all the unit tests on the look web resource.
  */
-public class UserSearchCriteriaFactory {
-  
-  private static final UserSearchCriteriaFactory instance = new UserSearchCriteriaFactory();
-  
-  public static UserSearchCriteriaFactory getFactory() {
-    return instance;
-  }
-  
-  public UserSearchCriteria getUserSearchCriteria() {
-    return newCriteria();
-  }
-  
-  private UserSearchCriteriaFactory() {
-    
-  }
+@Named(TestResources.TEST_RESOURCES_NAME)
+public class LookTestResources extends TestResources {
+
+  public static final String JAVA_PACKAGE = "org.silverpeas.look.web";
+  public static final String SPRING_CONTEXT = "spring-look-webservice.xml";
 }
