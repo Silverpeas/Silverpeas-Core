@@ -33,6 +33,11 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 import javax.ejb.SessionContext;
+
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -142,7 +147,11 @@ public class AdminBmEJB implements javax.ejb.SessionBean, AdminBusiness {
 
   @Override
   public String addComponentInst(ComponentInst componentInst, String userId) {
-    return getAdminController().addComponentInst(componentInst, userId);
+    try {
+      return getAdminController().addComponentInst(componentInst, userId);
+    } catch (QuotaException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

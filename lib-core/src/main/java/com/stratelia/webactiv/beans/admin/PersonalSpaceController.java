@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.silverpeas.quota.exception.QuotaException;
+
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
 public class PersonalSpaceController {
@@ -51,7 +53,7 @@ public class PersonalSpaceController {
   }
 
   public String addComponent(String userId, String componentName, String componentLabel)
-      throws AdminException {
+      throws AdminException, QuotaException {
     ComponentInst component = new ComponentInst();
     component.setCreatorUserId(userId);
     component.setInheritanceBlocked(false);

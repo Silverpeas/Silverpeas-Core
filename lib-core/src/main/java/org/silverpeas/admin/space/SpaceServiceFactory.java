@@ -21,18 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota;
+package org.silverpeas.admin.space;
 
-import org.silverpeas.quota.contant.QuotaType;
+import javax.inject.Inject;
+
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
 
 /**
  * @author Yohann Chastagnier
  */
-public interface QuotaKey {
+public class SpaceServiceFactory {
 
-  boolean isValid();
+  private static final SpaceServiceFactory instance = new SpaceServiceFactory();
 
-  QuotaType getQuotaType();
+  @Inject
+  private ComponentSpaceQuotaService componentSpaceQuotaService;
 
-  String getResourceId();
+  /**
+   * @return the componentSpaceQuotaService
+   */
+  public static ComponentSpaceQuotaService getComponentSpaceQuotaService() {
+    return getInstance().componentSpaceQuotaService;
+  }
+
+  /**
+   * Gets an instance of this SpaceServiceFactory class.
+   * @return a SpaceServiceFactory instance.
+   */
+  private static SpaceServiceFactory getInstance() {
+    return instance;
+  }
 }

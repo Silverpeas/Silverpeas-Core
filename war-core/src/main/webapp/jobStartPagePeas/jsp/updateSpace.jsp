@@ -32,6 +32,12 @@
 SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
 String		translation 		= (String) request.getParameter("Translation");
 boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
+boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+String componentSpaceQuotaMaxCount = "";
+if (isComponentSpaceQuotaActivated) {
+  componentSpaceQuotaMaxCount = String.valueOf(space.getComponentSpaceQuota().getMaxCount());
+}
 
 browseBar.setSpaceId(space.getId());
 browseBar.setClickable(false);
@@ -54,25 +60,33 @@ function B_VALIDER_ONCLICK() {
 	}
 }
 
-function isCorrectForm() {		
+function isCorrectForm() {
      	var errorMsg = "";
      	var errorNb = 0;
-     	
+
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
 		var desc = document.infoSpace.Description;
-        
+
         if (isWhitespace(name)) {
 			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-			errorNb++; 
+			errorNb++;
 		}
-		
+
      	var textAreaLength = 400;
 		var s = desc.value;
 		if (! (s.length <= textAreaLength)) {
      		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-           	errorNb++; 
-		}  	  	
-		  	
+           	errorNb++;
+		}
+
+    <% if (isComponentSpaceQuotaActivated) { %>
+     var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
+     if (isWhitespace(componentSpaceQuota)) {
+       errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
+       errorNb++;
+     }
+    <% } %>
+
      switch(errorNb)
      {
         case 0 :
@@ -89,7 +103,7 @@ function isCorrectForm() {
             result = false;
             break;
      }
-     return result;	   
+     return result;
 }
 
 <%
@@ -124,14 +138,20 @@ function removeTranslation()
 %>
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<%=I18NHelper.getFormLine(resource, space, translation)%>
-		<tr> 
+		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
 			<td><input type="text" id="spaceName" name="NameObject" size="60" maxlength="60" value="<%=Encode.javaStringToHtmlString(space.getName(translation))%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
 		</tr>
-		<tr> 
+		<tr>
 			<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
 			<td><textarea id="spaceDescription" name="Description" wrap="VIRTUAL" rows="4" cols="49"><%=Encode.javaStringToHtmlString(space.getDescription(translation))%></textarea></td>
 		</tr>
+    <% if (isComponentSpaceQuotaActivated) { %>
+      <tr>
+        <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
+        <td><input type="text" name="ComponentSpaceQuota" size="60" maxlength="60" value="<%=componentSpaceQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+      </tr>
+    <% } %>
 		<% if (isInHeritanceEnable && !space.isRoot()) { %>
 		<tr>
 			<td class="textePetitBold" nowrap valign="top"><%=resource.getString("JSPP.inheritanceBlockedComponent") %> :</td>
@@ -148,7 +168,7 @@ function removeTranslation()
 		<% } %>
 		<tr>
 			<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
-		</tr>			
+		</tr>
 	</table>
 <%
 	out.println(board.printAfter());
