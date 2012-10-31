@@ -619,8 +619,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // arrayList de String
   private List<String> getAllCurrentGroupIdSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(
-        role);
+    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
     if (m_SpaceProfileInst != null) {
       return m_SpaceProfileInst.getAllGroups();
     }
@@ -630,26 +629,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // arrayList de Group
   public List<Group> getAllCurrentGroupSpace(String role) {
-    List<Group> res = new ArrayList<Group>();
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(
-        role);
-
-    if (m_SpaceProfileInst != null) {
-      List<String> alGroupIds = m_SpaceProfileInst.getAllGroups();
-
-      Group theGroup = null;
-      for (String alGroupId : alGroupIds) {
-        theGroup = adminController.getGroupById(alGroupId);
-        res.add(theGroup);
-      }
-    }
-    return res;
+    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
+    return getGroupsFromSpaceProfile(m_SpaceProfileInst);
   }
 
   // arrayList de String
   private List<String> getAllCurrentUserIdSpace(String role) {
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(
-        role);
+    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
     if (m_SpaceProfileInst != null) {
       return m_SpaceProfileInst.getAllUsers();
     }
@@ -659,20 +645,69 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   // List de userDetail
   public List<UserDetail> getAllCurrentUserSpace(String role) {
+    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
+    return getUsersFromSpaceProfile(m_SpaceProfileInst);
+  }
+  
+  private List<UserDetail> getUsersFromSpaceProfile(SpaceProfileInst profile) {
     List<UserDetail> res = new ArrayList<UserDetail>();
-    SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(
-        role);
-
-    if (m_SpaceProfileInst != null) {
-      List<String> alUserIds = m_SpaceProfileInst.getAllUsers();
-
-      UserDetail userDetail = null;
+    if (profile != null) {
+      List<String> alUserIds = profile.getAllUsers();
       for (String alUserId : alUserIds) {
-        userDetail = adminController.getUserDetail(alUserId);
-        res.add(userDetail);
+        UserDetail userDetail = adminController.getUserDetail(alUserId);
+        if (!res.contains(userDetail)) {
+          res.add(userDetail);
+        }
       }
     }
     return res;
+  }
+  
+  private List<Group> getGroupsFromSpaceProfile(SpaceProfileInst profile) {
+    List<Group> res = new ArrayList<Group>();
+    if (profile != null) {
+      List<String> groupIds = profile.getAllGroups();
+      for (String groupId : groupIds) {
+        Group group = adminController.getGroupById(groupId);
+        if (!res.contains(group)) {
+          res.add(group);
+        }
+      }
+    }
+    return res;
+  }
+  
+  public List<UserDetail> getUsersManagerOfParentSpace() {
+    List<UserDetail> res = new ArrayList<UserDetail>();
+    List<SpaceInst> path = getCurrentSpacePath(true);
+    for (SpaceInst space : path) {
+      // get managers of each parent space
+      res.addAll(getUsersFromSpaceProfile(space.getSpaceProfileInst("Manager")));
+    }
+    return res;
+  }
+  
+  public List<Group> getGroupsManagerOfParentSpace() {
+    List<Group> res = new ArrayList<Group>();
+    List<SpaceInst> path = getCurrentSpacePath(true);
+    for (SpaceInst space : path) {
+      // get managers of each parent space
+      res.addAll(getGroupsFromSpaceProfile(space.getSpaceProfileInst("Manager")));
+    }    
+    return res;
+  }
+  
+  private List<SpaceInst> getCurrentSpacePath(boolean excludeSpace) {
+    List<SpaceInst> path = getOrganizationController().getSpacePath(getSpaceInstById().getId());
+    if (!excludeSpace) {
+      return path;
+    }
+    if (path.size() >= 2) {
+        // ignore current space
+        path.remove(path.size()-1);
+        return path;
+    }
+    return new ArrayList<SpaceInst>();
   }
 
   // user panel de selection de n groupes et n users
