@@ -207,6 +207,8 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 <![endif]-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript">
 	function submitContent(cUrl, componentId) {
 
@@ -459,6 +461,24 @@ function markAsRead(id) {
 
 function showExternalSearchError() {
   $("#externalSearchErrorDivId").dialog();
+}
+
+function previewFile(target, attachmentId, versioned, componentId) {
+  $(target).preview("previewAttachment", {
+    componentInstanceId: componentId,
+    attachmentId: attachmentId,
+    versioned: versioned
+  });
+  return false;
+}
+
+function viewFile(target, attachmentId, versioned, componentId) {
+  $(target).view("viewAttachment", {
+	componentInstanceId: componentId,
+    attachmentId: attachmentId,
+    versioned: versioned
+  });
+  return false;
 }
 </script>
 </head>

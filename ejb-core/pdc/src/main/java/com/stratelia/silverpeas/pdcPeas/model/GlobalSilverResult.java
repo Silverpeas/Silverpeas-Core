@@ -45,6 +45,10 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private String downloadLink = null;
   private String creatorName = null;
   private boolean exportable = false;
+  private boolean viewable = false;
+  private boolean previewable = false;
+  private String attachmentId = null;
+  private boolean versioned = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
   private boolean hasRead = false; // marks a result as redden
@@ -224,6 +228,42 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public Map<String, String> getFormFieldsForFacets() {
     return formFieldsForFacets;
   }
+  
+  public void setViewable(boolean viewable) {
+    this.viewable = viewable;
+  }
+
+  public boolean isViewable() {
+    return viewable;
+  }
+
+  public void setPreviewable(boolean previewable) {
+    this.previewable = previewable;
+  }
+
+  public boolean isPreviewable() {
+    return previewable;
+  }
+  
+  public void setAttachmentId(String attachmentId) {
+    this.attachmentId = attachmentId;
+  }
+
+  public String getAttachmentId() {
+    return attachmentId;
+  }
+
+  public void setVersioned(boolean versioned) {
+    this.versioned = versioned;
+  }
+
+  public boolean isVersioned() {
+    return versioned;
+  }
+  
+  public boolean isAttachment() {
+    return StringUtil.isDefined(getAttachmentId());
+  }
 
   @Override
   public boolean equals(Object other) {
@@ -241,4 +281,5 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     hash = 29 * hash + (this.getInstanceId() != null ? this.getInstanceId().hashCode() : 0);
     return hash;
   }
+
 }
