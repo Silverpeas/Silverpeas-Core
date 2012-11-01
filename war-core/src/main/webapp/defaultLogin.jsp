@@ -54,7 +54,7 @@ if(com.silverpeas.util.StringUtil.isInteger(request.getParameter("DomainId"))) {
 <title><fmt:message key="GML.popupTitle" /></title>
 <link rel="SHORTCUT ICON" href='<c:url value="/util/icons/favicon.ico" />'/>
 <link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
-
+<view:includePlugin name="jquery"/>
 <script type="text/javascript">
 <!---
 // Public domain cookie code written by:
@@ -130,13 +130,19 @@ function newRegistration() {
     form.submit();
 }
 
-function checkSubmit(ev)
-{
-	var touche = ev.keyCode;
-	if (touche == 13) {
-      checkForm();
-    }
-}
+$(document).ready(function(){
+	$("#DomainId").keypress(function(event) {
+		if(event.keyCode == 13) {
+			checkForm();
+		}
+	});
+	
+	$("#Password").keypress(function(event) {
+		if(event.keyCode == 13) {
+			checkForm();
+		}
+	});
+})
 -->
 </script>
 </head>
@@ -198,7 +204,7 @@ function checkSubmit(ev)
                         <div class="clear"></div>
                     </div>   
                     <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
-                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label></p>
+                    <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password"/></label></p>
                     <c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>

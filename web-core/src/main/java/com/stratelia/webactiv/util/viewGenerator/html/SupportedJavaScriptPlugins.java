@@ -30,6 +30,10 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 public enum SupportedJavaScriptPlugins {
 
   /**
+   * JQuery itself
+   */
+  jquery,
+  /**
    * JQuery plugin to print out tooltips.
    */
   qtip,

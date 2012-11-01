@@ -184,4 +184,11 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(sivlerpeasCalendar);
     return xhtml;
   }
+  
+  public static ElementContainer includeJQuery(final ElementContainer xhtml) {
+    script jquery = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
+        + GraphicElementFactory.JQUERY_JS);
+    xhtml.addElement(jquery);
+    return xhtml;
+  }
 }
