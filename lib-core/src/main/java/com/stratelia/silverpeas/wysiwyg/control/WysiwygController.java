@@ -978,8 +978,8 @@ public class WysiwygController {
 
   private static String replaceInternalImageId(String wysiwygContent, String oldAttachmentId,
       String newAttachmentId) {
-    return wysiwygContent.replaceAll("attachmentId=" + oldAttachmentId + "\"", "attachmentId="
-        + newAttachmentId + "\"");
+    return wysiwygContent.replaceAll("/attachmentId/" + oldAttachmentId + "/", "/attachmentId/" +
+        newAttachmentId + "/");
   }
 
   /**
