@@ -40,31 +40,32 @@ public class ExtendedDocumentFormatRegistry extends DefaultDocumentFormatRegistr
         new DocumentFormat("Microsoft Word", DocumentFamily.TEXT, MimeTypes.WORD_2007_MIME_TYPE,
             "docx");
     docx.setExportFilter(DocumentFamily.TEXT, "MS Word 2007");
-    addDocumentFormat(docx);
+    if (getFormatByFileExtension(docx.getFileExtension()) == null) {
+      addDocumentFormat(docx);
+    }
 
     final DocumentFormat xlsx =
         new DocumentFormat("Microsoft Excel", DocumentFamily.SPREADSHEET,
             MimeTypes.EXCEL_2007_MIME_TYPE, "xlsx");
     xlsx.setExportFilter(DocumentFamily.SPREADSHEET, "MS Excel 2007");
-    addDocumentFormat(xlsx);
+    if (getFormatByFileExtension(xlsx.getFileExtension()) == null) {
+      addDocumentFormat(xlsx);
+    }
 
     final DocumentFormat pptx =
         new DocumentFormat("Microsoft PowerPoint", DocumentFamily.PRESENTATION,
             MimeTypes.POWERPOINT_2007_MIME_TYPE, "pptx");
     pptx.setExportFilter(DocumentFamily.PRESENTATION, "MS PowerPoint 2007");
-    addDocumentFormat(pptx);
+    if (getFormatByFileExtension(pptx.getFileExtension()) == null) {
+      addDocumentFormat(pptx);
+    }
 
     final DocumentFormat sql =
         new DocumentFormat("Plain Text", DocumentFamily.TEXT, "text/plain", "sql");
     sql.setImportOption("FilterName", "Text");
     sql.setExportFilter(DocumentFamily.TEXT, "Text");
-    addDocumentFormat(sql);
-  }
-
-  @Override
-  public void addDocumentFormat(final DocumentFormat documentFormat) {
-    if (getFormatByFileExtension(documentFormat.getFileExtension()) == null) {
-      super.addDocumentFormat(documentFormat);
+    if (getFormatByFileExtension(sql.getFileExtension()) == null) {
+      addDocumentFormat(sql);
     }
   }
 }
