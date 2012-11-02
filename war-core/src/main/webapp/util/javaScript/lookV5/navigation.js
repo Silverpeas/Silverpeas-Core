@@ -248,6 +248,9 @@ function openComponent(componentId, componentLevel, componentURL) {
   if (componentId != currentComponentId) {
     closeCurrentComponent();
   }
+  
+  //Remove active class on subtree
+  $("#"+componentId).parent().find(".spaceOn").removeClass("spaceOn");
 
   currentAxisId = "-1";
   currentValuePath = "-1";
