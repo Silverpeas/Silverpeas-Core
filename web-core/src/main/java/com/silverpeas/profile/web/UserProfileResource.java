@@ -24,11 +24,10 @@
 package com.silverpeas.profile.web;
 
 import com.silverpeas.annotation.Authenticated;
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
@@ -45,8 +44,10 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.SearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -161,6 +162,12 @@ public class UserProfileResource extends RESTWebService {
    * to.
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
+   * @param roles the name of the roles the users must play either for the component instance or
+   * for a given resource of the component instance.
+   * @param resource the unique identifier of the resource in the component instance the users to get
+   * must have enough rights to access. This query filter is coupled with the <code>roles</code> one.
+   * If it is not set, by default the resource refered is the whole component instance. As for 
+   * component instance identifier, a resource one is defined by its type followed by its identifier.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -176,10 +183,12 @@ public class UserProfileResource extends RESTWebService {
           @PathParam("instanceId") String instanceId,
           @QueryParam("group") String groupId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
-            : null);
+    String[] rolesIds = (isDefined(roles) ?
+        profileService.getRoleIds(instanceId, resource, roles.split(","))
+        : null);
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUP)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -214,10 +223,11 @@ public class UserProfileResource extends RESTWebService {
   public Response getUserContacts(@PathParam("userId") String userId,
           @QueryParam("application") String instanceId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
     UserDetail theUser = getUserDetailMatching(userId);
-    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, roles.split(","))
+    String[] rolesIds = (isDefined(roles) ? profileService.getRoleIds(instanceId, resource, roles.split(","))
             : null);
     String[] contactIds = getContactIds(theUser.getId());
     UserDetail[] contacts;
