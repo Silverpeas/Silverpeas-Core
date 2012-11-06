@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,11 +25,12 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class Group implements Serializable, Comparable<Group> {
 
@@ -44,6 +45,7 @@ public class Group implements Serializable, Comparable<Group> {
   private String[] userIds = ArrayUtil.EMPTY_STRING_ARRAY;
 
   private int nbUsers = -1;
+  private int nbTotalUsers = -1;
   
   /**
    * Gets the group with the specified unique identifier.
@@ -246,11 +248,18 @@ public class Group implements Serializable, Comparable<Group> {
    * @return the total number of users.
    */
   public int getTotalNbUsers() {
-    return getOrganizationController().getAllSubUsersNumber(getId());
+    if (nbTotalUsers < 0) {
+      nbTotalUsers = getOrganizationController().getAllSubUsersNumber(getId());
+    }
+    return nbTotalUsers;
   }
 
   public void setNbUsers(int nbUsers) {
     this.nbUsers = nbUsers;
+  }
+
+  public void setTotalNbUsers(int count) {
+    this.nbTotalUsers = count;
   }
 
   protected static OrganizationController getOrganizationController() {

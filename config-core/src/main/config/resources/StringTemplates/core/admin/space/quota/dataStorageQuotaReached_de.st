@@ -1,0 +1,2 @@
+The disk space allocated to $quota.maxCount$ mb is reached.
+$if(fromSpaceId)$<br/>It is defined at level of space called <a href="javascript:parent.jumpToSpace('$fromSpaceId$')">$fromSpaceName$</a>.$endif$

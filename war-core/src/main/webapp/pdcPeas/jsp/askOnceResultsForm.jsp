@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.Locale"%>
+<%@ page import="java.util.List"%>
 <%@ page import="xtrim.data.Domain"%>
 <%@ page import="xtrim.data.Result"%>
 <%@ include file="checkAdvancedSearch.jsp"%>
@@ -49,8 +50,8 @@
 	}
 %>
 <%
-//r�cup�ration des donn�es pour l'espace de recherche   
-   Vector searchDomains = (Vector) request.getAttribute("searchDomains");
+//recuperation des donnees pour l'espace de recherche   
+   List<String[]> searchDomains = (List<String[]>) request.getAttribute("searchDomains");
    String currentSearchDomainId = (String) request.getAttribute("currentSearchDomainId");
    currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
 
@@ -98,12 +99,7 @@ function openURL(url)
 	Frame frameResults=gef.getFrame();
 
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
-
 	out.println(window.printBefore());
-//	out.flush();
-
-//	getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/searchDomainSelection.jsp").include(request, response);
-
 	out.println(frame.printBefore());
 
 	// Retrieve domains available in Ask'Once
@@ -119,25 +115,22 @@ function openURL(url)
 		<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
 		<tr> 
 			<td align="center"><!--TABLE SAISIE-->
+              <form name="queryForm" action="askOnceResultsForm" method="POST">
 				<table border="0" cellspacing="0" cellpadding="5" class="intfdcolor4" width="100%">
-				<FORM name="queryForm" action="askOnceResultsForm" method="POST">
-				<tr>
-					<!--<form name="searchDomainChoice" method="POST" action="..." onSubmit="calculateAction()">-->
-		<TD class="txtlibform" nowrap><%=resource.getString("pdcPeas.searchDomain")%> :&nbsp;</td>
-
-				<td align="left"> 
-							<span class="selectNS"> 
-							<select name="searchDomainId" onChange="calculateAction()">
+                  <tr>
+                    <td class="txtlibform" nowrap><%=resource.getString("pdcPeas.searchDomain")%> :&nbsp;</td>
+                    <td align="left"> 
+                      <span class="selectNS"> 
+                        <select name="searchDomainId" onChange="calculateAction()">
 							   <% for (int i=0; searchDomains!=null && i<searchDomains.size() ; i++) 
 								  {
-									  String[] domain = (String[]) searchDomains.get(i);%>
+									  String[] domain = searchDomains.get(i);%>
 								   <option <%=currentSearchDomainId.equals(domain[2])?"selected":""%> 	value="<%=domain[2]%>"><%=domain[0]%></option>
 								<% } %>
-							</select>
-							</span>
-						</td>
-					<!--</form>-->
-				</tr>
+						</select>
+                      </span>
+                    </td>
+                  </tr>
                 <tr>
 					<td valign="top" nowrap align="left">
 						<span class="txtlibform"><%=resource.getString("pdcPeas.SearchFind")%></span>
@@ -170,9 +163,9 @@ function openURL(url)
 %>
 	</table>
 					</td>
-                </tr>
-				</FORM>
+                </tr>				
 				</table>
+              </form>
 			</td>
 		</tr>
 		</table>	
@@ -185,7 +178,7 @@ function openURL(url)
   out.println("<br><CENTER>");
 
   ButtonPane buttonPane = gef.getButtonPane();
-  Button validateButton = (Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:document.queryForm.submit()", false);
+  Button validateButton = gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:document.queryForm.submit()", false);
   buttonPane.addButton(validateButton);
   buttonPane.setHorizontalPosition();
   out.println(buttonPane.print());

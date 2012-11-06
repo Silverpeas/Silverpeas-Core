@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,9 +28,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.fileupload.FileItem;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
 
 public class I18NHelper {
 
@@ -287,10 +288,9 @@ public class I18NHelper {
     list += "</SELECT>";
 
     if (bean != null) {
-      String path = GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("ApplicationURL");
-      String text = GeneralPropertiesManager.getGeneralMultilang(userLanguage)
-          .getString("GML.translationRemove");
+      String path = URLManager.getApplicationURL();
+      String text = GeneralPropertiesManager.getGeneralMultilang(userLanguage).getString(
+          "GML.translationRemove");
 
       list += "&nbsp;<span id=\"delTranslationLink\">";
       if (bean.getTranslations().size() >= 2) {

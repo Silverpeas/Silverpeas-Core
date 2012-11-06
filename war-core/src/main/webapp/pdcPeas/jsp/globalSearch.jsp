@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,8 +31,9 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.pdcSubscription.model.PDCSubscription"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="java.util.List"%>
 <%@ page import="com.stratelia.silverpeas.pdcPeas.vo.SearchTypeConfigurationVO"%>
-<%@ page import="com.stratelia.webactiv.searchEngine.model.WAIndexSearcher"%>
+<%@ page import="org.silverpeas.search.searchEngine.model.WAIndexSearcher"%>
 <%@ page import="org.apache.lucene.queryParser.QueryParser"%>
 
 <%@ include file="checkAdvancedSearch.jsp"%>
@@ -266,7 +267,7 @@ if (updateBeforeDate == null) {
 String itemType = (String) request.getAttribute("ItemType");
 
 // Retrieve data search space
-Vector searchDomains			= (Vector) request.getAttribute("searchDomains");
+List<String[]> searchDomains			= (List<String[]>) request.getAttribute("searchDomains");
 String currentSearchDomainId	= (String) request.getAttribute("currentSearchDomainId");
 currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
 
@@ -619,8 +620,8 @@ if (!isPDCSubscription) {
 		}
 	}
 	if (expertSearchVisible) {
-	  	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
-		tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
+	tabs.addTab(resource.getString("pdcPeas.SearchSimple"), "ChangeSearchTypeToAdvanced", searchType==1);
+	tabs.addTab(resource.getString("pdcPeas.SearchAdvanced"), "ChangeSearchTypeToExpert", searchType==2);
 	} else {
 	  	tabs.addTab(resource.getString("pdcPeas.SearchPage"), "ChangeSearchTypeToAdvanced", searchType==1);
 	}

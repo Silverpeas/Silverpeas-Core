@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,6 @@
 package com.silverpeas.profile.web;
 
 import com.stratelia.webactiv.beans.admin.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -61,7 +58,8 @@ class UserProfileService {
     if (theGroup == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } else {
-      if (user.isDomainRestricted() && !user.getDomainId().equals(theGroup.getDomainId())) {
+      if (user.isDomainRestricted() && (theGroup.getDomainId() != null
+              && !user.getDomainId().equals(theGroup.getDomainId()))) {
         Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
                 + "authorized to access the group with id {1}", new Object[]{user.getId(),
                   groupId});
@@ -69,27 +67,6 @@ class UserProfileService {
       }
     }
     return theGroup;
-  }
-
-  /**
-   * Gets the unique identifier of all of the specified role names for a given component instance.
-   *
-   * @param instanceId the unique identifier of the component instance for which the roles are
-   * defined.
-   * @param roleNames the name of the roles for which the identifier is asked.
-   * @return an array of role identifiers.
-   */
-  public String[] getRoleIds(String instanceId, String[] roleNames) {
-    List<String> roleIds = new ArrayList<String>();
-    List<String> listOfRoleNames = Arrays.asList(roleNames);
-    ComponentInst instance = getOrganizationController().getComponentInst(instanceId);
-    List<ProfileInst> profiles = instance.getAllProfilesInst();
-    for (ProfileInst aProfile : profiles) {
-      if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
-        roleIds.add(aProfile.getId());
-      }
-    }
-    return roleIds.toArray(new String[roleIds.size()]);
   }
 
   private OrganizationController getOrganizationController() {

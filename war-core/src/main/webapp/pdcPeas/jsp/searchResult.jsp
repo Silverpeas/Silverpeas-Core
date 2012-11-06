@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.silverpeas.thesaurus.model.*"%>
@@ -37,7 +36,7 @@
 String displaySynonymsValue(Boolean activeThesaurus, Jargon jargon, String idTree, String idTerm) throws ThesaurusException {
 		String synonyms = "";
 		boolean first = true;
-		if (jargon != null && activeThesaurus.booleanValue()) {//activ�
+		if (jargon != null && activeThesaurus.booleanValue()) {//active
 			//synonymes du terme
 			String idUser = jargon.getIdUser();
 			ThesaurusManager thesaurus = new ThesaurusManager();
@@ -72,14 +71,14 @@ boolean isEmptySearchContext = true;
 int nbPositions = 0; // le nombre de documents pour un axe
 SearchAxis searchAxis = null;
 SearchCriteria searchCriteria = null;
-ArrayList criteriaList = new ArrayList();
-ArrayList axisCriteriaList = new ArrayList();
+List criteriaList = new ArrayList();
+List axisCriteriaList = new ArrayList();
 
 // l'objet SearchContext n'est pas vide
 if ( (searchContext != null) && (searchContext.getCriterias().size() > 0) ){
-	// on r�cup�re tous les contextes
+	// on recupere tous les contextes
 	criteriaList = searchContext.getCriterias();
-	// et on r�cup�re dans une liste tous les axes que ne doivent pas apparaitre
+	// et on recupere dans une liste tous les axes que ne doivent pas apparaitre
 	// dans le primaire ou secondaire
 	for (int i=0;i<criteriaList.size() ;i++ ){
 		searchCriteria = (SearchCriteria) criteriaList.get(i);
@@ -112,9 +111,6 @@ List alSilverContents = containerWorkspace.getSilverContents();
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
-
-	// IE / Netscape compliant
-
 	// this method opens a pop-up which warns the user
 	function areYouSure(){
 		return confirm("<%=resource.getString("pdcPeas.confirmDeleteAxis")%>");
@@ -150,7 +146,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 	}
 
 	function modifySearchContext(axisIdAndValueId){
-		// on recupere les donn�es li�es � la s�lection
+		// on recupere les donees liees a la selection
 		document.searchContext.AxisId.value = axisIdAndValueId.split('-')[0];
 		document.searchContext.ValueId.value = axisIdAndValueId.split('-')[1];
 
@@ -176,14 +172,14 @@ List alSilverContents = containerWorkspace.getSilverContents();
 %>
 <CENTER>
 <form name="searchContext" action="ViewContext" method="post">
-  <!-- champs cach� pour voir ou non les axes secondaires -->
+  <!-- champs cache pour voir ou non les axes secondaires -->
   <input type="hidden" name="AxisId">
   <input type="hidden" name="ValueId">
   <input type="hidden" name="Ids">
 
   <table width="98%" border="0" cellspacing="0" cellpadding="3" class=intfdcolor>
     <tr> 
-      <td> <span class="txtGrandBlanc">&nbsp;<%=resource.getString("pdcPeas.mySearchContext")%></span> <br>
+      <td> <span class="txtGrandBlanc">&nbsp;<%=resource.getString("pdcPeas.mySearchContext")%></span> <br/>
         <!--<table width="100%" border="0" cellspacing="1" cellpadding="4" bgcolor="#000000">
           <tr> 
             <td width="100%" class="intfdcolor51"><img src="<%=resource.getIcon("pdcPeas.icoAxisFromContext")%>" align="absmiddle"><span class="txtnav">&nbsp;Syst&egrave;me 
@@ -213,39 +209,12 @@ List alSilverContents = containerWorkspace.getSilverContents();
 						sc = (SearchCriteria) criteriaList.get(k);
 						id = new Integer(sc.getAxisId()).toString();
 						valueId = (sc.getValue());
-						// calcul du nombre de document !
-						/*SearchAxis sa = null;
-						boolean searchSecondAxis = true;
-						for (int i=0;i<primaryAxis.size(); i++){
-							sa = (SearchAxis)primaryAxis.get(i);
-							axisId = new Integer(sa.getAxisId()).toString();
-							if (axisId.equals(id)){
-								nbPositions = sa.getNbObjects();
-								searchSecondAxis = false;
-								break;
-							}
-						}
-						if ( (secondaryAxis != null) && (searchSecondAxis) ){
-							for (int i=0;i<secondaryAxis.size(); i++){
-								sa = (SearchAxis)secondaryAxis.get(i);
-								axisId = new Integer(sa.getAxisId()).toString();
-								if (axisId.equals(id)){
-									nbPositions = sa.getNbObjects();
-									break;
-								}
-							}							
-						}*/
-
 			%>
 					
 					  <tr> 
 						<td width="100%" class="txtnav" bgcolor="EDEDED"><a href="javascript:modifySearchContext('<%=id%>-<%=valueId%>')"><img src="<%=resource.getIcon("pdcPeas.icoAxisFromContext")%>" align="absmiddle" border="0"></a>
 						&nbsp;<%=completPath%>
 						<%
-						//prend le dernier element de la liste
-						/*ArrayList term = (ArrayList) list.get(list.size() - 1);
-						String termId = (String) term.get(1);
-						String treeId = (String) term.get(2);*/
 						Value term = (Value) list.get(list.size() - 1);
 						String termId = term.getPK().getId();
 						String treeId = term.getTreeId();
@@ -261,14 +230,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
 					  </tr>
 		   <%
 					} // fin du for
-			%>
-					  <!--<tr> 
-						<td width="100%" align="right" bgcolor="EDEDED"><font color="#FF6600"><b></b></font> 
-						  <span class="textePetitBold">Nombre de documents : </span></td>
-						<td bgcolor="#CCCCCC" align="right" class="textePetitBold"><font color="#FF6600"><b><font face="Verdana, Arial, Helvetica, sans-serif" size="5" color="#666666"><%=nbPositions%></font></b></font> 
-						</td>
-					  </tr>-->
-			<%	} // fin du if
+				} // fin du if
 			} else {
 			%>
 				<tr>
@@ -283,7 +245,7 @@ List alSilverContents = containerWorkspace.getSilverContents();
   </table>
   <%
     out.println(separator);
-	// Affichage des r�sultats de la recherche
+	// Affichage des resultats de la recherche
 	
 	// Publication du contenu
 

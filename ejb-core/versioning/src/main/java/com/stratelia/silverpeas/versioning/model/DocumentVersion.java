@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,9 +32,9 @@ import java.io.File;
 import java.util.Date;
 
 import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -240,7 +240,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
       jcrPath.append(getDocumentPK().getId()).append('/');
     }
     jcrPath.append(majorNumber).append(".").append(minorNumber).append('/');
-    jcrPath.append(StringUtil.escapeQuote(getLogicalName()));
+    jcrPath.append(ConverterUtil.escapeIllegalJcrChars(getLogicalName()));
     return jcrPath.toString();
   }
 

@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
@@ -42,8 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
-    HttpServlet {
+public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends HttpServlet {
 
   private static final long serialVersionUID = -8055016885655445663L;
   private static final SilverpeasWebUtil webUtil = new SilverpeasWebUtil();
@@ -52,6 +47,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   /**
    * This method has to be implemented in the component request Router class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   *
    * @return the name of the session controller.
    */
   public abstract String getSessionControlBeanName();
@@ -59,6 +55,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   /**
    * This method has to be implemented by the component request Router it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp", when accessing
    * "http://localhost/webactiv/Ralmanach/jsp/Main.jsp")
    * @param componentSC The component Session Controller, build and initialised.
@@ -75,11 +72,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   public void doPost(HttpServletRequest SPrequest, HttpServletResponse response) {
 
     String destination = computeDestination(SPrequest, response);
-    SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE",
-        "response = " + response);
+    SilverTrace.debug("peasCore", "RR", "root.MSG_GEN_PARAM_VALUE", "response = " + response);
     if (!StringUtil.isDefined(destination)) {
-      destination = GeneralPropertiesManager.getGeneralResourceLocator()
-          .getString("sessionTimeout");
+      destination = GeneralPropertiesManager.getString("sessionTimeout");
     }
     redirectService(SPrequest, response, destination);
 
@@ -100,7 +95,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (mainSessionCtrl == null) {
       SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+      return GeneralPropertiesManager.getString("sessionTimeout");
     }
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
@@ -108,10 +103,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         + String.valueOf(mainSessionCtrl.isAppInMaintenance()));
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "type User = " + mainSessionCtrl.getUserAccessLevel());
-    if (mainSessionCtrl.isAppInMaintenance() &&
-        !mainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "redirectAppInMaintenance");
+    if (mainSessionCtrl.isAppInMaintenance() && !mainSessionCtrl.getCurrentUserDetail().
+        isAccessAdmin()) {
+      return GeneralPropertiesManager.getString("redirectAppInMaintenance");
     }
 
     // Get the space id and the component id required by the user
@@ -145,8 +139,8 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
             "peasCore.MSG_USER_NOT_ALLOWED", "User=" + mainSessionCtrl.getUserId()
             + " | componentId=" + componentId + " | spaceId=" + spaceId);
-        destination = GeneralPropertiesManager.getGeneralResourceLocator()
-            .getString("accessForbidden", "/admin/jsp/accessForbidden.jsp");
+        destination = GeneralPropertiesManager.getString("accessForbidden",
+            "/admin/jsp/accessForbidden.jsp");
         return destination;
       }
       component = setComponentSessionController(session, mainSessionCtrl,
@@ -156,15 +150,15 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     ResourcesWrapper resources = new ResourcesWrapper(component.getMultilang(),
         component.getIcon(), component.getSettings(), component.getLanguage());
     request.setAttribute("resources", resources);
-    request.setAttribute("browseContext", new String[] {
-        component.getSpaceLabel(), component.getComponentLabel(),
-        component.getSpaceId(), component.getComponentId(),
-        component.getComponentUrl() });
-    request.setAttribute("myComponentURL", URLManager.getApplicationURL() +
-        component.getComponentUrl());
+    request.setAttribute("browseContext", new String[]{
+          component.getSpaceLabel(), component.getComponentLabel(),
+          component.getSpaceId(), component.getComponentId(),
+          component.getComponentUrl()});
+    request.setAttribute("myComponentURL", URLManager.getApplicationURL() + component.
+        getComponentUrl());
 
-    if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function) &&
-        !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
+    if (!"Idle.jsp".equals(function) && !"IdleSilverpeasV5.jsp".equals(function)
+        && !"ChangeSearchTypeToExpert".equals(function) && !"markAsRead".equals(function)) {
       GraphicElementFactory gef =
           (GraphicElementFactory) session
           .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
@@ -183,21 +177,21 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       }
     }
     
-    if (selectionProcessor.isSelectionDone(request)) {
+    if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
       if (StringUtil.isDefined(destination)) {
         return destination;
       }
     }
-    
+
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
     destination = getDestination(function, component, request);
-    
+
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
     }
-    
+
     SilverTrace.info("couverture",
         "ComponentRequestRouter.computeDestination()", "couverture.MSG_RR_JSP",
         "destination = '" + destination + "'");
@@ -335,6 +329,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
   /**
    * Set GEF and look helper space identifier
+   *
    * @param req current HttpServletRequest
    * @param componentId the component identifier
    */

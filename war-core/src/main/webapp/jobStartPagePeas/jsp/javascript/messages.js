@@ -11,7 +11,7 @@
  * Software ("FLOSS") applications as described in Silverpeas's FLOSS exception.
  * You should have received a copy of the text describing the FLOSS exception,
  * and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -54,17 +54,18 @@ messageTriggers = {
             }).prev().change(function(event) {
               if (event.target.type == "checkbox") {
                 if (event.target.checked) {
-                  event.target.checked = false;
                   event.stopPropagation();
+                  event.target.checked = false;
                   $('#warning-' + event.target.name).popup('confirmation', {
                     callback : function() {
                       event.target.checked = true;
                       return true;
                     }
                   });
+                  return false;
                 }
               }
-              return false;
+              return true;
             });
     $warnings.trigger('addConfirmationMessageEnds');
   }

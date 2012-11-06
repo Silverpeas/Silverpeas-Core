@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -50,6 +50,7 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
+  public static boolean COMPONENT_SPACE_QUOTA_ACTIVATED = false;
   public static boolean DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
   public static long DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
   public static long DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT;
@@ -72,6 +73,7 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
+    COMPONENT_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.component.quota.activated", false);
     DATA_STORAGE_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.storage.quota.activated", false);
     DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT =
         rs.getLong("space.storage.quota.default.maxCount", 0);

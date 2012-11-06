@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -101,20 +101,20 @@
 
           arrayLine = arrayPane.addArrayLine();
           arrayLine.addArrayCellText(
-              "<div align=right><img src=\"" + icoMonitor + "\" border=0></div>");
+              "<div align=\"right\"><img src=\"" + icoMonitor + "\" border=\"0\"/></div>");
           arrayLine.addArrayCellText(item.getUserDetail().getDisplayedName());
           if (settings.getBoolean("displayColumnLanguage", false)) {
             arrayLine.addArrayCellText(preferences.getLanguage());
           }
 
           arrayLine.addArrayCellText("<div align=left><a href=#><img alt=\"" + resources.getString(
-              "notifyUser") + "\" src=\"" + icoNotify + "\" border=0 onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></A></div>");
+              "notifyUser") + "\" src=\"" + icoNotify + "\" border=\"0\" onclick=\"javascript:enterPopup('" + item.getUserDetail().getId() + "')\"></a></div>");
         }
       }
       out.println(arrayPane.print());
     }
     out.println(resources.getString("refreshedTime") + "&nbsp;" + settings.getString(
-        "refreshList") + "&nbsp;" + resources.getString("seconds") + "<BR>");
+        "refreshList") + "&nbsp;" + resources.getString("seconds") + "<br/>");
   %>
 </CENTER>
 <%

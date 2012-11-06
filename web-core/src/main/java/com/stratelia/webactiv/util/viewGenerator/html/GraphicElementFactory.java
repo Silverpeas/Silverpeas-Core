@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -96,8 +96,8 @@ public class GraphicElementFactory {
       "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
       "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
-  private final static String iconsPath = URLManager.getApplicationURL() + settings.getString(
-      "IconsPath");
+  private final static String iconsPath = (URLManager.getApplicationURL() + settings
+      .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
   private String currentLookName = null;
   private String externalStylesheet = null;
@@ -106,7 +106,7 @@ public class GraphicElementFactory {
   private String spaceId = null;
   private boolean componentMainPage = false;
   public static final String defaultLookName = "Initial";
-  private static final String JQUERY_JS = "jquery-1.7.1.min.js";
+  protected static final String JQUERY_JS = "jquery-1.7.1.min.js";
   private static final String JQUERY_INCLUDE_JS = "jquery-include.js";
   private static final String JQUERYUI_JS = "jquery-ui-1.8.16.custom.min.js";
   private static final String JQUERYUI_CSS = "ui-lightness/jquery-ui-1.8.16.custom.css";
@@ -911,7 +911,8 @@ public class GraphicElementFactory {
     HttpSession session = request.getSession(true);
     mainSessionController =
         (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-    componentMainPage = request.getRequestURI().endsWith("/Main");
+    componentMainPage =
+        request.getRequestURI().endsWith("/Main") && !request.getRequestURI().endsWith("/jsp/Main");
   }
 
   public boolean isComponentMainPage() {

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,6 +36,9 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.ejb.RemoveException;
+
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.versioning.notification.VersioningNotificationService;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -887,9 +890,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     initEJB();
     versioning_bm.deleteDocument(documentPK);
-    CallBackManager callBackManager = CallBackManager.get();
-    callBackManager.invoke(CallBackManager.ACTION_VERSIONING_REMOVE, doc.getOwnerId(), doc.
-        getForeignKey().getInstanceId(), doc);
+    VersioningNotificationService notificationService = VersioningNotificationService.getService();
+    notificationService.notifyOnDeletionOf(doc);
   }
 
   /**

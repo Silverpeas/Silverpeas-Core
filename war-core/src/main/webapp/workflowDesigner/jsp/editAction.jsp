@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -70,10 +70,18 @@
     {
         var errorMsg = "";
         var errorNb = 0;
+        
+        var actionName = document.actionForm.name.value;
+        var formName = document.actionForm.form.value;
 
-        if ( isWhitespace(document.actionForm.name.value) ) 
+        if ( isWhitespace(actionName) ) 
         {
             errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+            errorNb++;
+        }
+        
+        if (actionName.toLowerCase() == formName.toLowerCase()) {
+        	errorMsg+="  - <%=resource.getString("workflowDesigner.action.js.different")%>\n";
             errorNb++;
         }
          

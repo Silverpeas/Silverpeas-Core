@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
@@ -86,7 +87,8 @@ public class MetadataExtractor {
     }
     parser.setParsers(parsers);
     Tika tika = new Tika(configuration);
-    tika.parse(inputStream, metadata);
+    Reader reader = tika.parse(inputStream, metadata);
+    reader.close();
     return new MetaData(metadata);
   }
 

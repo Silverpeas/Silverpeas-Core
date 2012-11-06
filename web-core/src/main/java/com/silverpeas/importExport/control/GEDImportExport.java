@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -68,7 +68,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -401,9 +401,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
       data.setId(pubId);
     }
 
-    List<XMLField> xmlFields = xmlModel.getFields();
+    PagesContext formContext = new PagesContext();
+    formContext.setComponentId(getCurrentComponentId());
+    formContext.setObjectId(pubId);
 
-    for (XMLField xmlField : xmlFields) {
+    for (XMLField xmlField : xmlModel.getFields()) {
       String xmlFieldName = xmlField.getName();
       String xmlFieldValue = xmlField.getValue();
       String fieldValue = null;
@@ -448,7 +450,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
               fieldValue = xmlFieldValue;
             }
 
-            fieldDisplayer.update(fieldValue, field, fieldTemplate, new PagesContext());
+            fieldDisplayer.update(fieldValue, field, fieldTemplate, formContext);
           }
         }
       } catch (Exception e) {

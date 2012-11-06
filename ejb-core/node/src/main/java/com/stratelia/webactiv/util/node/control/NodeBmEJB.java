@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -34,6 +34,10 @@ import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 
@@ -48,9 +52,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
-import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.ejb.Node;
 import com.stratelia.webactiv.util.node.ejb.NodeDAO;
 import com.stratelia.webactiv.util.node.ejb.NodeHome;
@@ -591,6 +592,27 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       DBUtil.close(con);
     }
   }
+  
+  /**
+  * Get the header of each child of the node, order by sorting
+  *
+  * @return a NodeDetail collection
+  * @see com.stratelia.webactiv.util.node.model.NodeDetail
+  * @since 1.0
+  */
+    @Override
+    public Collection<NodeDetail> getChildrenDetails(NodePK pk, String sorting) throws RemoteException {
+      Connection con = DBUtil.makeConnection(dbName);
+      try {
+        return NodeDAO.getChildrenDetails(con, pk, sorting);
+      } catch (Exception re) {
+        throw new NodeRuntimeException("NodeBmEJB.getChildrenDetails()",
+            SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_SONS_FAILED",
+            "nodeId = " + pk.getId(), re);
+      } finally {
+        DBUtil.close(con);
+      }
+    }
 
   /**
    * Get the header of each child of the node this method is to be used on frequently asked nodes

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,9 +30,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -91,15 +90,12 @@ public class JobSearchPeasRequestRouter extends
         request.setAttribute("Category", jobSearchPeasSC.getCategory());
         request.setAttribute("ListResult", jobSearchPeasSC.getListResult());
         destination = "/jobSearchPeas/jsp/jobSearchResult.jsp";
-      } else if (function.equals("SearchResult")) {
+      } else if ("SearchResult".equals(function)) {
         String searchField = request.getParameter("SearchField");
-        searchField = searchField.trim();// supprime les espaces avant et après la chaine
-        while (searchField.length() >= 1 &&
-            (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {// supprime les * et ?
-          // en début de chaine :
-          // non supportés par
-          // Lucène
-          if (searchField.length() == 1) {
+        searchField = searchField.trim();//supprime les espaces avant et après la chaine
+        while(searchField.length()>=1 && (searchField.charAt(0) == '*' || searchField.charAt(0) == '?')) {
+          //supprime les * et ? en début de chaine : non supportés par Lucène
+          if(searchField.length() == 1) {
             searchField = "";
           } else {
             searchField = searchField.substring(1);

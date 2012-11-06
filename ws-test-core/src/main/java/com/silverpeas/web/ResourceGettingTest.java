@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
 * Open Source Software ("FLOSS") applications as described in Silverpeas's
 * FLOSS exception. You should have recieved a copy of the text describing
 * the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,27 +52,27 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
   /**
    * Gets the web resource at the specified URI as an instance of the specified class.
    * The state of the resource sent back by the web resource is expected to be in JSON.
-   * @param <T> the type of the resource to return.
+   * @param <C> the type of the resource to return.
    * @param uri the URI identifying uniquely the resource. the uri can be compound of a query
    * string (starts at ?).
    * @param c the class of which the returned resource should be an instance.
    * @return the web entity representing the resource at the specified URI.
    */
-  public <T> T getAt(String uri, Class<T> c) {
+  public <C> C getAt(String uri, Class<C> c) {
     return getAt(uri, MediaType.APPLICATION_JSON_TYPE, c);
   }
   
   /**
    * Gets the web resource at the specified URI as an instance of the specified class in the way
    * it is sent back by the web resource in the specified media type.
-   * @param <T> the type of the resource to return.
+   * @param <C> the type of the resource to return.
    * @param uri the URI identifying uniquely the resource. the uri can be compound of a query
    * string (starts at ?).
    * @param mediaType the expected media type in which the returned resource state is encoded.
    * @param c the class of which the returned resource should be an instance.
    * @return the web entity representing the resource at the specified URI.
    */
-  public <T> T getAt(String uri, MediaType mediaType, Class<T> c) {
+  public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
     String thePath = uri;
     WebResource resource = resource();
     if (thePath.contains("?")) {

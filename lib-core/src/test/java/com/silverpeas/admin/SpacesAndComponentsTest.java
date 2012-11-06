@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.quota.exception.QuotaException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -262,7 +263,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     String subSpaceIdWithoutInheritance = "WA5";
     String subSpaceIdWithInheritance = "WA6";
 
-    // force space to block inheritance 
+    // force space to block inheritance
     SpaceInst spaceWithoutInheritance = ac.getSpaceInstById(subSpaceIdWithoutInheritance);
     spaceWithoutInheritance.setInheritanceBlocked(true);
     ac.updateSpaceInst(spaceWithoutInheritance);
@@ -321,7 +322,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
 
     sub1 = ac.getSpaceInstById(sub1Id);
 
-    // by default, inheritance is active, checking it 
+    // by default, inheritance is active, checking it
     assertEquals(false, sub1.isInheritanceBlocked());
 
     // blocking inheritance
@@ -359,7 +360,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     profile.addUser("2");
     ac.updateSpaceProfileInst(profile, userId);
 
-    // checking first child have no active profiles 
+    // checking first child have no active profiles
     sub1 = ac.getSpaceInstById(sub1Id);
     assertEquals(0, sub1.getAllSpaceProfilesInst().size());
 
@@ -399,7 +400,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testCopyAndPasteComponent() throws AdminException {
+  public void testCopyAndPasteComponent() throws AdminException, QuotaException {
     AdminController ac = getAdminController();
 
     WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
@@ -424,7 +425,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testCopyAndPasteRootSpace() throws AdminException {
+  public void testCopyAndPasteRootSpace() throws AdminException, QuotaException {
     AdminController ac = getAdminController();
 
     WAComponent waComponent = Instanciateur.getWAComponents().get("kmelia");
@@ -468,7 +469,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testCopyAndPasteSubSpaceInSpace() throws AdminException {
+  public void testCopyAndPasteSubSpaceInSpace() throws AdminException, QuotaException {
     AdminController ac = getAdminController();
 
     WAComponent waComponent = Instanciateur.getWAComponents().get("almanach");
@@ -506,7 +507,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   }
 
   @Test
-  public void testCopyAndPasteSpaceInItsSubSpace() throws AdminException {
+  public void testCopyAndPasteSpaceInItsSubSpace() throws AdminException, QuotaException {
     AdminController ac = getAdminController();
 
     String copiedSpaceId = "WA1";

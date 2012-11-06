@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -81,61 +81,63 @@
   }
   
   function prepareInvitationPopup() {
-    $('<div>', {
-      'id': 'invitationDialog'
-    }).append($('<form>').append($('<table>').append($('<tr>').
-      append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
-      append($('<td>').append($('<textarea>', {
-        'name': 'textMessage', 
-        'id': 'invitation-message', 
-        'cols': '60', 
-        'rows': '8'
-      })))))).appendTo($(document.body));
+    if ($("#invitationDialog").length == 0) {
+      $('<div>', {
+        'id': 'invitationDialog'
+      }).append($('<form>').append($('<table>').append($('<tr>').
+        append($('<td>').addClass('txtlibform').append($.i18n.prop('GML.notification.message') + '&nbsp;:')).
+        append($('<td>').append($('<textarea>', {
+          'name': 'textMessage',
+          'id': 'invitation-message',
+          'cols': '60',
+          'rows': '8'
+        })))))).appendTo($(document.body));
       
-    $("#invitationDialog").dialog({
-      autoOpen: false,
-      resizable: false,
-      modal: true,
-      height: "auto",
-      width: 550,
-      buttons: [
-      {
-        text: $.i18n.prop('GML.ok'),
-        click: function() {
-          var message = $("#invitation-message").val();
-          $.ajax({
-            url: webContext + '/InvitationJSON',
-            type: 'GET',
-            data: {
-              Action: 'SendInvitation',
-              Message: message,
-              TargetUserId: $.invitMe.userId
-            },
-            dataType: 'json',
-            cache: false,
-            success: function(data, status, jqXHR) {
-              closeInvitationPopup();
-              try {
-                $.invitMe.currentElement.hide('slow');
-              } catch (e) {
-              //do nothing
-              //As fragment is externalized, class invitation can be missing 
+      $("#invitationDialog").dialog({
+        autoOpen: false,
+        resizable: false,
+        modal: true,
+        height: "auto",
+        width: 550,
+        buttons: [
+        {
+          text: $.i18n.prop('GML.ok'),
+          click: function() {
+            var message = $("#invitation-message").val();
+            $.ajax({
+              url: webContext + '/InvitationJSON',
+              type: 'GET',
+              data: {
+                Action: 'SendInvitation',
+                Message: message,
+                TargetUserId: $.invitMe.userId
+              },
+              dataType: 'json',
+              cache: false,
+              success: function(data, status, jqXHR) {
+                closeInvitationPopup();
+                try {
+                  $.invitMe.currentElement.hide('slow');
+                } catch (e) {
+                //do nothing
+                //As fragment is externalized, class invitation can be missing
+                }
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
               }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-              alert(errorThrown);
-            }
-          });
+            });
+          }
+        },
+        {
+          text: $.i18n.prop('GML.cancel'),
+          click: function() {
+            closeInvitationPopup();
+          }
         }
-      },
-      {
-        text: $.i18n.prop('GML.cancel'),
-        click: function() {
-          closeInvitationPopup();
-        }
-      }
-      ]
-    });
+        ]
+      });
+    }
   }
 })( jQuery );
 

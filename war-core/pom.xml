@@ -36,6 +36,7 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -169,6 +170,31 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>aspectjrt</artifactId>
+      <groupId>org.aspectj</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>aspectjweaver</artifactId>
+      <groupId>org.aspectj</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>commons-httpclient</artifactId>
+      <groupId>commons-httpclient</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>commons-codec</artifactId>
+      <groupId>commons-codec</groupId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>rome</artifactId>
+      <groupId>rome</groupId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,22 +29,22 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp" %>
 <%@ page import="com.silverpeas.util.EncodeHelper" %>
 <%@ page import="com.stratelia.webactiv.util.DateUtil" %>
-<%@page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@ page import="com.stratelia.webactiv.util.FileServerUtils" %>
+<%@ page import="org.silverpeas.viewer.ViewerFactory"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="checkVersion.jsp" %>
 
 <view:includePlugin name="qtip"/>
-<script type="text/javascript"
-        src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript"
-        src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
+<script type="text/javascript" src="<%=m_context%>/util/yui/yahoo-dom-event/yahoo-dom-event.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/animation/animation-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/menu/menu-min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/util/yui/menu/assets/menu.css"/>
-<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js"
-        type="text/javascript"></script>
+<script src="<%=m_context%>/versioningPeas/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 <script src="<%=m_context%>/util/javaScript/upload_applet.js" type="text/javascript"></script>
 
 <%!
@@ -346,7 +346,7 @@
     out.println("<div class=\"attachments bgDegradeGris\">");
     out.println(
         "<div class=\"bgDegradeGris  header\"><h4 class=\"clean\">"+attResources.getString("GML.attachments")+"</h4></div>");
-  
+
     out.println("<ul id=\"attachmentList\">");
     while (iterator.hasNext()) {
       document = (Document) iterator.next();
@@ -368,7 +368,7 @@
           }
 %>
 <li id="attachment_<%=document.getPk().getId()%>" class="attachmentListItem" <%=iconStyle%> >
-				  <% 
+				  <%
 				  	if (contextualMenuEnabled) {
 				    displayActions(document, versioning_util.getLastVersion(document.getPk()), profile, false,
 				        useFileSharing, webdavEditingEnable, Integer.parseInt(versioningSC.getUserId()),
@@ -376,12 +376,12 @@
 				  }
 				  %>
 											<span class="lineMain">
-											
+
 												<% if (contextualMenuEnabled && !useContextualMenu) { %>
 				          							<img id="edit_<%=document.getPk().getId() %>"
 				                             src="<%=m_context %>/util/icons/arrow/menuAttachment.gif" class="moreActions"/>
 				          						 <% } %>
-											
+
 					                             <img id="img_<%=document.getPk().getId() %>" alt=""
 				                                    src="<%=versioning_util.getDocumentVersionIconPath(document_version.getPhysicalName())%>"
 				                                    class="icon"/>
@@ -390,16 +390,16 @@
 				                         </a>
 								                 &nbsp;<span class="version-number"
 				                                     id="version_<%=document.getPk().getId() %>">v<%=document_version.getMajorNumber()%>.<%=document_version.getMinorNumber()%></span>
-								                 
+
 												</span>
-												
+
 												<span class="lineSize">
 													<a href="<%=URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId())%>"
 				                     target="_blank"><img src="<%=m_context%>/util/icons/link.gif" border="0"
 				                                          valign="absmiddle"
 				                                          alt="<%=attResources.getString("versioning.CopyLink") %>"
 				                                          title="<%=attResources.getString("versioning.CopyLink") %>"></a>
-												<% if (showFileSize && showDownloadEstimation) { %>								  
+												<% if (showFileSize && showDownloadEstimation) { %>
 													<%= FileRepositoryManager.formatFileSize(
 				                      document_version.getSize()) %> / <%= versioning_util.getDownloadEstimation(
 				                    document_version.getSize()) %>
@@ -409,13 +409,25 @@
 													<%= versioning_util.getDownloadEstimation(document_version.getSize()) %>
 												<% } %>
 												 - <%= resources.getOutputDate(document_version.getCreationDate())%>
+								  <% if (ViewerFactory.getPreviewService().isPreviewable(new File(document_version.getDocumentPath()))) { %>
+          						<img onclick='javascript:preview(this, <%=document_version.getPk().getId()%>);'
+                           class="preview-file" src="<%=m_context%>/util/icons/preview.png"
+                           alt="<%=attMessages.getString("GML.preview") %>"
+                           title="<%=attMessages.getString("GML.preview") %>"/>
+          				<% }
+                     if (ViewerFactory.getViewService().isViewable(new File(document_version.getDocumentPath()))) { %>
+                      <img onclick='javascript:view(this, <%=document_version.getPk().getId()%>);'
+                           class="view-file" src="<%=m_context%>/util/icons/view.png"
+                           alt="<%=attMessages.getString("GML.view") %>"
+                           title="<%=attMessages.getString("GML.view") %>"/>
+                  <% } %>
 												</span>
-				
+
 				  <% if (StringUtil.isDefined(document.getDescription()) && showInfo) { %>
 				  <span class="description"><%= EncodeHelper.javaStringToHtmlParagraphe(
 				      document.getDescription()) %></span>
 				  <% } %>
-				
+
 				  <% if (document_version.isSpinfireDocument() && spinfireViewerEnable) { %>
 				  <div id="switchView" name="switchView" style="display: none">
 				    <a href="#" onClick="changeView3d(<%=document_version.getPk().getId()%>)"><img name="iconeView"
@@ -489,13 +501,13 @@
 
     <div>
     	<div  class="dragNdrop">
-        	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>        	
+        	<a href="javascript:showDnD()"id="dNdActionLabel"><%=resources.getString("GML.DragNDropExpand")%></a>
     	</div>
 		<div id="DragAndDrop"> </div>
         <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
     </div>
-    
-       
+
+
 <% } %>
 <% if (contextualMenuEnabled && !dragAndDropEnable) { %>
 
@@ -593,7 +605,7 @@ $(document).ready(function() {
       }
     })
   });
-  
+
   //function to transform insecable string into secable one
   $(".lineMain a").html(function() {
       var newLibelle = ""
@@ -607,7 +619,7 @@ $(document).ready(function() {
           }
           chainesInsecables[i] = chainesSecables+chainesInsecables[i];
           newLibelle = newLibelle + chainesInsecables[i];
-      }       
+      }
       $(this).html(newLibelle);
   });
 });
@@ -814,4 +826,22 @@ function ShareAttachment(id) {
   SP_openWindow(url, "NewTicket", "700", "300", "scrollbars=no, resizable, alwaysRaised");
 }
 <% } %>
+
+function preview(target, attachmentId) {
+   $(target).preview("previewAttachment", {
+     componentInstanceId: "<%=componentId%>",
+     attachmentId: attachmentId,
+     versioned: true
+   });
+   return false;
+}
+
+function view(target, attachmentId) {
+   $(target).view("viewAttachment", {
+     componentInstanceId: "<%=componentId%>",
+     attachmentId: attachmentId,
+     versioned: true
+   });
+   return false;
+}
 </script>

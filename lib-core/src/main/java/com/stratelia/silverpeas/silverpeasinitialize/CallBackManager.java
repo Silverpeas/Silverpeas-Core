@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,10 +54,8 @@ public class CallBackManager {
   public final static int ACTION_ON_WYSIWYG = 8;
   public final static int ACTION_ATTACHMENT_ADD = 9;
   public final static int ACTION_ATTACHMENT_UPDATE = 10;
-  public final static int ACTION_ATTACHMENT_REMOVE = 11;
   public final static int ACTION_VERSIONING_ADD = 12;
   public final static int ACTION_VERSIONING_UPDATE = 13;
-  public final static int ACTION_VERSIONING_REMOVE = 14;
   public final static int ACTION_COMMENT_ADD = 15;
   public final static int ACTION_COMMENT_REMOVE = 16;
   public final static int ACTION_CUTANDPASTE = 17;
@@ -181,17 +179,11 @@ public class CallBackManager {
       case ACTION_ATTACHMENT_UPDATE:
         sb.append("ACTION_ATTACHMENT_UPDATE");
         break;
-      case ACTION_ATTACHMENT_REMOVE:
-        sb.append("ACTION_ATTACHMENT_REMOVE");
-        break;
       case ACTION_VERSIONING_ADD:
         sb.append("ACTION_VERSIONING_ADD");
         break;
       case ACTION_VERSIONING_UPDATE:
         sb.append("ACTION_VERSIONING_UPDATE");
-        break;
-      case ACTION_VERSIONING_REMOVE:
-        sb.append("ACTION_VERSIONING_REMOVE");
         break;
       case ACTION_COMMENT_ADD:
         sb.append("ACTION_COMMENT_ADD");

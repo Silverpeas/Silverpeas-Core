@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -160,6 +160,8 @@ public class RoleDAO {
     }
     if (StringUtil.isDefined(objectType)) {
       queryAllAvailableComponentIds += " and r.objectType = '" + objectType + "'";
+    } else {
+      queryAllAvailableComponentIds += " and r.objectType is null";
     }
     queryAllAvailableComponentIds += " and r.instanceId = " + instanceId
         + " and gr.groupId IN (" + list2String(groupIds) + ")";
@@ -236,6 +238,7 @@ public class RoleDAO {
       + " from st_userrole r, st_userrole_user_rel ur"
       + " where r.id=ur.userroleid"
       + " and r.instanceId = ? "
+      + " and r.objecttype is null "
       + " and ur.userId = ? ";
 
   private static List<UserRoleRow> getRoles(Connection con, int instanceId, int userId)

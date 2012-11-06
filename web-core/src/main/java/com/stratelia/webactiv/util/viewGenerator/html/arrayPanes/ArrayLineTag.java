@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,10 +35,21 @@ public class ArrayLineTag extends TagSupport {
 
   private static final long serialVersionUID = -5323133574049569236L;
   public static final String ARRAY_LINE_PAGE_ATT = "pageContextArrayLine";
+  
+  private String id = null;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   @Override
   public int doStartTag() throws JspException {
     ArrayLine arrayLine = getArrayPane().addArrayLine();
+    arrayLine.setId(getId());
     pageContext.setAttribute(ARRAY_LINE_PAGE_ATT, arrayLine);
     return EVAL_BODY_INCLUDE;
   }

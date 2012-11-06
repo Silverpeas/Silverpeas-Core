@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -43,8 +43,8 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
 
 import com.silverpeas.jcrutil.JcrConstants;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
@@ -207,8 +207,8 @@ public class JcrAttachmentDaoImpl implements JcrAttachmentDao {
    */
   protected Node addFile(Node folder, AttachmentDetail attachment,
       String language) throws RepositoryException, IOException {
-    String escapedName = StringUtil.escapeQuote(attachment
-        .getLogicalName(getLanguage(language)));
+    String escapedName =
+        ConverterUtil.escapeIllegalJcrChars(attachment.getLogicalName(getLanguage(language)));
     if (folder.hasNode(escapedName)) {
       folder.getNode(escapedName).remove();
     }

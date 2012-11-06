@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -107,28 +107,33 @@ public abstract class AbstractForm implements Form {
   public void displayScripts(final JspWriter jw, final PagesContext pagesContext) {
     try {
       String language = pagesContext.getLanguage();
-      PagesContext pc = null;
       StringWriter sw = new StringWriter();
       PrintWriter out = new PrintWriter(sw, true);
 
-      if (!fieldTemplates.isEmpty()) {
-        FieldTemplate fieldTemplate = fieldTemplates.get(0);
-        if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
-          out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
-              .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
-        } else if (StringUtil.isDefined(pagesContext.getComponentId()) &&
-            StringUtil.isDefined(getName())) {
-          ComponentInstLight component =
-              new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
-          if (component != null) {
-            out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
-                .append(component.getName()).append("/").append(getName())
-                .append(".js\"></script>\n");
+      boolean jsAdded = false;
+      if (StringUtil.isDefined(pagesContext.getComponentId()) && StringUtil.isDefined(getName())) {
+        ComponentInstLight component =
+            new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
+        if (component != null && component.isWorkflow()) {
+          out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
+              .append(component.getName()).append("/").append(getName())
+              .append(".js\"></script>\n");
+          jsAdded = true;
+        }
+      }
+      
+      if (!jsAdded) {
+        if (!fieldTemplates.isEmpty()) {
+          FieldTemplate fieldTemplate = fieldTemplates.get(0);
+          if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
+            out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
+                .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
           }
         }
-        pc = new PagesContext(pagesContext);
-        pc.incCurrentFieldIndex(1);
       }
+
+      PagesContext pc = new PagesContext(pagesContext);
+      pc.incCurrentFieldIndex(1);
 
       out.append(Util.getJavascriptIncludes(language))
           .append("\n<script type=\"text/javascript\">\n")

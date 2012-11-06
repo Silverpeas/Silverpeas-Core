@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,9 +33,6 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.util.List;
 
 public class PdcUtilizationSessionController extends AbstractComponentSessionController {
@@ -66,12 +63,6 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
           this.context.setCurrentComponentId(componentId);
         }
       }
-      OrganizationController orga = getOrganizationController();
-      ComponentInst componentInst = orga.getComponentInst(componentId);
-      this.context.setCurrentComponentLabel(componentInst.getLabel());
-      this.context.setCurrentSpaceId(componentInst.getDomainFatherId());
-      SpaceInst spaceInst = orga.getSpaceInstById(getSpaceId());
-      this.context.setCurrentSpaceName(spaceInst.getName());
     }
   }
 

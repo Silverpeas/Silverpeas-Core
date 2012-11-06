@@ -1,28 +1,41 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdcPeas.servlets;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileItem;
+
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.ScoreComparator;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -36,6 +49,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.containerManager.ContainerInterface;
 import com.stratelia.silverpeas.containerManager.ContainerManager;
 import com.stratelia.silverpeas.containerManager.ContainerManagerException;
@@ -71,24 +85,9 @@ import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
-import com.stratelia.webactiv.searchEngine.model.ScoreComparator;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
-import java.util.Vector;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
@@ -124,6 +123,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
+   *
    * @param function The entering request function (ex : "Main.jsp")
    * @param pdcSC The component Session Control, build and initialised.
    * @param request The entering request. The request rooter need it to get parameters
@@ -191,9 +191,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // we search all silverContent ids according to the search context and the component
         // instance list
-        List<Integer> alSilverContentIds =
-            containerInterface.findSilverContentIdByPosition(pdcSC.getContainerPosition(),
-            alComponentIds);
+        List<Integer> alSilverContentIds = containerInterface.findSilverContentIdByPosition(
+            pdcSC.getContainerPosition(), alComponentIds);
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "SearchView",
             "alSilverContentIds = " + alSilverContentIds.toString());
 
@@ -228,18 +227,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = request.getParameter("contentURL");
 
         // Compute the URL to forward to the content
-        String sURLContent =
-            URLManager.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC.getSpaceId(), pdcSC
-            .
-            getComponentId());
+        String sURLContent = URLManager.getURL(contentPeasPDC.getSessionControlBeanName(), pdcSC
+            .getSpaceId(), pdcSC.getComponentId());
         destination = sURLContent + destination;
         SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getDestination", "",
             "Container forwarding to: " + destination);
 
         // Put the containerContext in the request
-        String sURLContainer =
-            URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC.getSpaceId(),
-            pdcSC.getComponentId());
+        String sURLContainer = URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), pdcSC
+            .getSpaceId(), pdcSC.getComponentId());
         ContainerContextImpl containerContext = new ContainerContextImpl();
         containerContext.setContainerInstanceId(containerManager.getContainerInstanceId(pdcSC.
             getComponentId()));
@@ -281,10 +277,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
         // Put the containerContext in the request
         String sURLContainer =
-            URLManager.getURL(containerPeasPDC.getSessionControlBeanName(), spaceId, componentId);
+            URLManager.
+            getURL(containerPeasPDC.getSessionControlBeanName(), spaceId, componentId);
         ContainerContextImpl containerContext = new ContainerContextImpl();
-        containerContext.setContainerInstanceId(containerManager
-            .getContainerInstanceId(componentId));
+        containerContext.
+            setContainerInstanceId(containerManager.getContainerInstanceId(componentId));
         containerContext.setReturnURL(sURLContainer + containerPeasPDC.getReturnURL());
         containerContext.setClassifyURLIcone(containerPeasPDC.getClassifyURLIcone());
         containerContext.setContainerPositionInterface(pdcSC.getContainerPosition());
@@ -549,10 +546,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         boolean pdcUsedDuringSearch = false;
         // recupere les parametres (Only for a global search in advanced mode)
         String icId = request.getParameter("icId");
-        QueryParameters searchParameters = null;
+        QueryParameters searchParameters;
         if (icId != null) {
           searchParameters =
-              PdcSearchRequestRouterHelper.saveFavoriteRequestAndSetPdcInfo(pdcSC, request, icId);
+              PdcSearchRequestRouterHelper.
+              saveFavoriteRequestAndSetPdcInfo(pdcSC, request, icId);
         } else {
           searchParameters =
               PdcSearchRequestRouterHelper.saveUserChoicesAndSetPdcInfo(pdcSC, request, false);
@@ -589,7 +587,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
             || pdcSC.isDataTypeDefined()) {
           // We have to search objects from classical search and merge it eventually with result
           // from PDC
-          MatchingIndexEntry[] ie = pdcSC.search(); // launch the classical research
+          MatchingIndexEntry[] ie;
+          try {
+            ie = pdcSC.search(); // launch the classical research
+          } catch (org.silverpeas.search.searchEngine.model.ParseException pex) {
+            ie = new MatchingIndexEntry[0];
+            request.setAttribute("parseException", pex.getMessage());
+          }
 
           if (pdcUsedDuringSearch) {
             pdcSC.setSearchScope(PdcSearchSessionController.SEARCH_MIXED);
@@ -625,8 +629,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         } else {
           setDefaultDataToNavigation(request, pdcSC);
         }
-
-        // destination = "/pdcPeas/jsp/globalResult.jsp";
         destination = getDestinationForResults(pdcSC);
       } else if (function.equals("LastResults")) {
 
@@ -670,16 +672,12 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         String templateFileName = template.getFileName();
         String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
         String[] fieldNames = searchTemplate.getFieldNames();
-        String fieldValue = "";
-        String fieldName = "";
-        String fieldQuery = "";
-        Field field = null;
         for (int f = 0; f < fieldNames.length; f++) {
-          fieldName = fieldNames[f];
-          field = data.getField(fieldName);
-          fieldValue = field.getStringValue();
+          String fieldName = fieldNames[f];
+          Field field = data.getField(fieldName);
+          String fieldValue = field.getStringValue();
           if (fieldValue != null && fieldValue.trim().length() > 0) {
-            fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
+            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
             pdcSC.getQueryParameters().addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
           }
         }
@@ -729,8 +727,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function + "=> destination="
-            + destination);
+            "root.MSG_GEN_PARAM_VALUE", "ToUserPanel: function = " + function
+            + "=> destination=" + destination);
       } else if (function.startsWith("FromUserPanel")) {// récupération des valeurs de userPanel
         // par userPanelPeas
         SilverTrace.debug("pdcPeas", "PdcPeasRequestRouter.getDestination()",
@@ -785,10 +783,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         destination = "/pdcPeas/jsp/blank.html";
       } else if (function.startsWith("CustomLookSearch")) {
         // Specific search which handle FULLTEXT and PDC search
-
         // Retrieve all request parameters
         String query = request.getParameter("query");
-
         // TODO implements keywords search instead of full text search
         String mode = request.getParameter("mode");
         if ("clear".equals(mode)) {
@@ -798,10 +794,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           pdcSC.resetSearchPage();
           pdcSC.resetSearchPageId();
         }
-
         pdcSC.setResultPage(request.getParameter("ResultPage"));
         pdcSC.setResultPageId(request.getParameter("ResultPageId"));
-
         String searchType = request.getParameter("searchType");
         if (searchType != null && !"".equals(searchType)) {
           if ("Normal".equals(searchType)) {
@@ -825,9 +819,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           // Initialize search context
           String[] arrayAxis = listAxis.split(",\\s*");
           for (String curAxis : arrayAxis) {
-            pdcSC.getSearchContext().addCriteria(
-                new SearchCriteria(Integer.parseInt(curAxis.substring("Axis".length(), curAxis.
-                indexOf('='))), curAxis.substring(curAxis.indexOf('=') + 1)));
+            pdcSC.getSearchContext().addCriteria(new SearchCriteria(Integer.parseInt(curAxis
+                .substring("Axis".length(), curAxis.indexOf('='))), curAxis.substring(curAxis
+                .indexOf('=') + 1)));
           }
         }
 
@@ -920,6 +914,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   /**
    * Initialize search result filter object from request
+   *
    * @param request the HTTPServletRequest
    * @param pdcSC the pdcSearchSessionController
    * @return a new ResultFilterVO which contains data information
@@ -929,7 +924,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String userId = request.getParameter("authorFilter");
     String instanceId = request.getParameter("componentFilter");
     String datatype = request.getParameter("datatypeFilter");
-    
+
     ResultFilterVO filter = new ResultFilterVO();
 
     // Check filter values
@@ -942,18 +937,18 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if (StringUtil.isDefined(datatype)) {
       filter.setDatatype(datatype);
     }
-    
+
     // check form field facets
     for (String facetId : pdcSC.getFieldFacets().keySet()) {
-      String param = request.getParameter(facetId+"Filter");
+      String param = request.getParameter(facetId + "Filter");
       if (StringUtil.isDefined(param)) {
         filter.addFormFieldSelectedFacetEntry(facetId, param);
       }
     }
-    
+
     pdcSC.setIndexOfFirstResultToDisplay("0");
     pdcSC.setSelectedFacetEntries(filter);
-    
+
     return filter;
   }
 
@@ -988,8 +983,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   }
 
   private String doGlobalView(PdcSearchSessionController pdcSC, HttpServletRequest request,
-      boolean saveUserChoice, boolean setAdvancedSearchItems)
-      throws Exception, PdcException, ContentManagerException {
+      boolean saveUserChoice, boolean setAdvancedSearchItems) throws Exception, PdcException,
+      ContentManagerException {
     this.initContainerContentInfo(pdcSC, true, null);
     pdcSC.setContainerPeas(containerPeasPDC);
 
@@ -1014,9 +1009,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // Context is different of PDC frame, always process PDC axis
         initializePdcAxis(pdcSC, request);
       } else {
-        if (helper.isDisplayPDCInHomePage() ||
-            (!helper.isDisplayPDCInHomePage() && StringUtil.isDefined(pdcSC.getQueryParameters()
-            .getSpaceId()))) {
+
+        if (helper.isDisplayPDCInHomePage() || (!helper.isDisplayPDCInHomePage() && StringUtil.
+            isDefined(pdcSC.getQueryParameters().getSpaceId()))) {
           initializePdcAxis(pdcSC, request);
         }
       }
@@ -1059,14 +1054,14 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   /**
    * Return the url corresponding to the given domain Id
+   *
    * @param searchDomains the domains defined in domains.properties
    * @param domainId the search domain id
    * @return the destination page url
    */
-  private String getDomainSearchPage(Vector<String[]> searchDomains, String domainId) {
-    String[] domainDetails = null;
+  private String getDomainSearchPage(List<String[]> searchDomains, String domainId) {
     for (int i = 0; searchDomains != null && i < searchDomains.size(); i++) {
-      domainDetails = searchDomains.get(i);
+      String[] domainDetails = searchDomains.get(i);
       if (domainDetails[2].equals(domainId)) {
         return domainDetails[1];
       }
@@ -1254,6 +1249,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   /**
    * Builds a list of daughters value to see an arborescence and set it into the request.
+   *
    * @param pdcSC - the PdcSearchSessionController object
    * @param request - the HttpServletRequest object
    * @param axisId - the id of the axis
@@ -1282,17 +1278,18 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   /**
    * Cette méthode permet de mettre dans la request et dans le sessionController les données utiles
    * à la navigation. permettra de naviguer à l'aide des boutons précédent et suivant
+   *
    * @param request - HttpServletRequest pour donner l'information à la globalResult.jsp
    */
   private void setDefaultDataToNavigation(HttpServletRequest request,
       PdcSearchSessionController pdcSC) throws Exception {
-    
+
     ResultFilterVO filter = pdcSC.getSelectedFacetEntries();
 
     request.setAttribute("Keywords", pdcSC.getQueryParameters().getKeywords());
 
-    request.setAttribute("IndexOfFirstResult", Integer.valueOf(pdcSC
-        .getIndexOfFirstResultToDisplay()));
+    request.setAttribute("IndexOfFirstResult", Integer.valueOf(pdcSC.
+        getIndexOfFirstResultToDisplay()));
     request.setAttribute("ExportEnabled", Boolean.valueOf(pdcSC.isExportEnabled()));
     request.setAttribute("RefreshEnabled", Boolean.valueOf(pdcSC.isRefreshEnabled()));
     request.setAttribute("ExternalSearchEnabled", Boolean.valueOf(pdcSC.isEnableExternalSearch()));
@@ -1320,12 +1317,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     request.setAttribute("ResultPageId", pdcSC.getResultPageId());
     request.setAttribute("XmlFormSortValue", pdcSC.getXmlFormSortValue());
     request.setAttribute("sortImp", pdcSC.getSortImplemtor());
-    
+
     setTabsInfoIntoRequest(pdcSC, request);
   }
 
   /**
    * Cette methode retourne uniquement la liste contenant les silvercontent (Recherche PDC pure)
+   *
    * @param alSilverContentIds - la liste de silvercontentId
    * @return la liste des silvercontents
    */
@@ -1342,8 +1340,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // la recherche PDC à des résultats. La liste qui contient les silverContentId n'est pas vide
     // recherche des componentId a partir de silverContentId
     // attention cette methode ne fonctionne que si l'on classe un document dans son instance.
-    ContentPeas contentP = null;
-    String instanceId = "";
     List<String> alInstanceIds = new ArrayList<String>();
     // on récupère la liste de instance contenant tous les documents
     alInstanceIds = contentManager.getInstanceId(alSilverContentIds);
@@ -1354,14 +1350,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // SilverContentIds
     // propre à chaque instanceId.
     // Pb si entre temps, un utilisateur dé-instancie un job'Peas
-    List<Integer> allSilverContentIds = new ArrayList<Integer>();
 
     for (int j = 0; j < alInstanceIds.size(); j++) {
-      instanceId = alInstanceIds.get(j);
-      contentP = contentManager.getContentPeas(instanceId);
+      String instanceId = alInstanceIds.get(j);
+      ContentPeas contentP = contentManager.getContentPeas(instanceId);
 
       // On récupère tous les silverContentId d'un instanceId
-      allSilverContentIds = contentManager.getSilverContentIdByInstanceId(instanceId);
+      List<Integer> allSilverContentIds = contentManager.getSilverContentIdByInstanceId(instanceId);
       SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.pdcSearchOnly",
           "root.MSG_GEN_PARAM_VALUE", "allSilverContentIds = " + allSilverContentIds
           + " in instance " + instanceId);
@@ -1370,12 +1365,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       // dans la liste résultat (alSilverContentIds).
       allSilverContentIds.retainAll(alSilverContentIds);
 
-      List<SilverContentInterface> silverContentTempo = null;
       if (contentP != null) {
         // we are going to search only SilverContent of this instanceId
         ContentInterface contentInterface = contentP.getContentInterface();
-        silverContentTempo = contentInterface.getSilverContentById(allSilverContentIds, instanceId,
-            pdcSC.getUserId(), contentP.getUserRoles());
+        List<SilverContentInterface> silverContentTempo = contentInterface.getSilverContentById(
+            allSilverContentIds, instanceId, pdcSC.getUserId(), contentP.getUserRoles());
 
         if (silverContentTempo != null) {
           alSilverContents.addAll(transformSilverContentsToGlobalSilverContents(silverContentTempo,
@@ -1395,10 +1389,8 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       List<SilverContentInterface> silverContentTempo, String instanceId,
       PdcSearchSessionController pdcSC)
       throws Exception {
-    List<GlobalSilverContent> alSilverContents = new ArrayList<GlobalSilverContent>();
-    SilverContentInterface sci = null;
-    UserDetail creatorDetail = null;
-    GlobalSilverContent gsc = null;
+    List<GlobalSilverContent> alSilverContents =
+        new ArrayList<GlobalSilverContent>(silverContentTempo.size());
     String contentProcessorId = "default";
     if (instanceId.startsWith("gallery")) {
       contentProcessorId = "gallery";
@@ -1406,11 +1398,11 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     IGlobalSilverContentProcessor processor =
         (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
 
-    for (int i = 0; i < silverContentTempo.size(); i++) {
-      sci = silverContentTempo.get(i);
-      creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
+    for (SilverContentInterface sci : silverContentTempo) {
+      UserDetail creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
 
-      gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(instanceId, pdcSC));
+      GlobalSilverContent gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(
+          instanceId, pdcSC));
 
       alSilverContents.add(gsc);
     }
@@ -1423,6 +1415,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
    * trouvant positionnés dans le PDC de ie. Puis elle ne garde, que les elements communs entre les
    * deux listes - celle créée et celle des silvercontentid. Ensuite, elle récupère les
    * MatchinIndexEntry correspondant aux résultats du tri des listes.
+   *
    * @param ie - le tableau de MatchingIndexEntry trouvé par la recherche classique
    * @return le nouveau tableau de MatchingIndexEntry.
    */
@@ -1431,12 +1424,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
     // On créait une liste triée d'indexEntry
     SortedSet<Integer> basicSearchList = new TreeSet<Integer>();
-    String instanceId = "";
-    String objectId = "";
     List<String> docFeature = new ArrayList<String>();
     for (int i = 0; ie != null && i < ie.length; i++) {
-      instanceId = ie[i].getComponent(); // recupere l'instanceId
-      objectId = ie[i].getObjectId(); // recupere l'id du document
+      String instanceId = ie[i].getComponent(); // recupere l'instanceId
+      String objectId = ie[i].getObjectId(); // recupere l'id du document
       docFeature.add(objectId);
       docFeature.add(instanceId);
     }
@@ -1444,8 +1435,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       // on récupère le silverContentId à partir de la recherche classique
       basicSearchList = contentManager.getSilverContentId(docFeature);
     } catch (Exception e) {
-      SilverTrace
-          .info("pdcPeas", "PdcSearchRequestRouteur.mixedSearch", "root.MSG_GEN_EXIT_METHOD");
+      SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.mixedSearch", "root.MSG_GEN_EXIT_METHOD");
     }
 
     // ne garde que les objets communs aux 2 listes basicSearchList - alSilverContentIds
@@ -1464,16 +1454,13 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     if (basicSearchList != null && basicSearchList.size() > 0) {
       // la liste contient bien des résultats
       Iterator<Integer> it = basicSearchList.iterator();
-      int contentId;
-      MatchingIndexEntry mie = null;
-      String internalContentId = "";
       for (; it.hasNext();) {
-        contentId = it.next().intValue(); // on récupère le silverContentId de la
+        int contentId = it.next().intValue(); // on récupère le silverContentId de la
         // liste
         // on récupère l'internalContentId car nous en avons besoin pour la construction d'un
         // matchingIndexEntry
-        internalContentId = contentManager.getInternalContentId(contentId);
-        mie = getMatchingIndexEntry(ie, internalContentId);
+        String internalContentId = contentManager.getInternalContentId(contentId);
+        MatchingIndexEntry mie = getMatchingIndexEntry(ie, internalContentId);
         if (mie != null) {
           result.add(mie);
         }
@@ -1514,6 +1501,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
   /**
    * Retourne l'emplacement du document "PDC"
+   *
    * @param instanceId - l'id de l'instance
    * @return l'emplacement du document
    */
@@ -1692,19 +1680,15 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         // All axis and all values must be shown
         component_id = "";
 
-        List<AxisHeader> axisHeaders = null;
+        List<AxisHeader> axisHeaders;
         if (pdcSC.showAllAxisInGlossary()) {
           axisHeaders = pdcSC.getAllAxis();
         } else {
           axisHeaders = pdcSC.getPrimaryAxis();
         }
 
-        AxisHeader axisHeader = null;
-        Axis axis = null;
-        for (int i = 0; i < axisHeaders.size(); i++) {
-          axisHeader = axisHeaders.get(i);
-          axis = pdcSC.getAxisDetail(axisHeader.getPK().getId());
-          allAxis.add(axis);
+        for (AxisHeader axisHeader : axisHeaders) {
+          allAxis.add(pdcSC.getAxisDetail(axisHeader.getPK().getId()));
         }
       }
 
@@ -1743,24 +1727,20 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           MatchingIndexEntry[] ie = pdcSC.glossarySearch(query);
           // get results from searchEngine
           // for each result, get corresponding AxisValue
-          String valueIdAndTreeId = null;
-          int indexOfDelimiter = -1;
-          String valueId = null;
-          String treeId = null;
           List<Value> values = new ArrayList<Value>();
-          Value value = null;
           List<String> usedTreeIds = null;
           for (int i = 0; i < ie.length; i++) {
             MatchingIndexEntry oneResult = ie[i];
-            valueIdAndTreeId = oneResult.getObjectId();
-            indexOfDelimiter = valueIdAndTreeId.indexOf('_');
+            String valueIdAndTreeId = oneResult.getObjectId();
+            int indexOfDelimiter = valueIdAndTreeId.indexOf('_');
             if (indexOfDelimiter != -1) {
-              valueId = valueIdAndTreeId.substring(0, indexOfDelimiter);
-              treeId = valueIdAndTreeId.substring(indexOfDelimiter + 1, valueIdAndTreeId.length());
+              String valueId = valueIdAndTreeId.substring(0, indexOfDelimiter);
+              String treeId = valueIdAndTreeId.substring(indexOfDelimiter + 1, valueIdAndTreeId
+                  .length());
               SilverTrace.info("pdcPeas", "PdcSearchRequestRouteur.searchResult",
                   "root.MSG_GEN_PARAM_VALUE", "valueId = " + valueId + ", treeId = " + treeId);
               // get the value and its path from root to value
-              value = pdcSC.getAxisValueAndFullPath(valueId, treeId);
+              Value value = pdcSC.getAxisValueAndFullPath(valueId, treeId);
               if (component_id != null && !"".equals(component_id)) {
                 // check if this value belongs to an axis which is used by the instance
                 if (i == 0) {
@@ -1868,7 +1848,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
 
       String instanceId = request.getParameter("componentSearch");
       pdcSC.getQueryParameters().setInstanceId(instanceId);
-      
+
       if (pdcSC.isPlatformUsesPDC()) {
         pdcSC.setSearchType(PdcSearchSessionController.SEARCH_EXPERT);
       } else {
@@ -1889,7 +1869,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       HttpServletRequest request) {
     pdcSC.setSearchPage(request.getParameter("SearchPage"));
     pdcSC.setSearchPageId(request.getParameter("SearchPageId"));
-    
+
     setTabsInfoIntoRequest(pdcSC, request);
 
     if (pdcSC.getSearchType() == PdcSearchSessionController.SEARCH_XML) {
@@ -1901,7 +1881,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
       } else {
         // put search type
         request.setAttribute("SearchType", Integer.valueOf(pdcSC.getSearchType()));
-        
+
         // Add component search type
         request.setAttribute("ComponentSearchType", pdcSC.getSearchTypeConfig());
         return "/pdcPeas/jsp/globalSearch.jsp";
@@ -1912,11 +1892,10 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
   private String getDestinationForResults(PdcSearchSessionController pdcSC) {
     if (StringUtil.isDefined(pdcSC.getResultPage())) {
       return "/pdcPeas/jsp/" + pdcSC.getResultPage();
-    } else {
-      return "/pdcPeas/jsp/globalResult.jsp";
     }
+    return "/pdcPeas/jsp/globalResult.jsp";
   }
-  
+
   private void setTabsInfoIntoRequest(PdcSearchSessionController pdcSC, HttpServletRequest request) {
     request.setAttribute("XmlSearchVisible", Boolean.valueOf(pdcSC.isXmlSearchVisible()));
     request.setAttribute("WebTabs", GoogleTabsUtil.getTabs());

@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*i
@@ -27,13 +24,29 @@
  *
  * Created on 17 novembre 2000, 13:44
  */
-
 package com.stratelia.webactiv.util;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.apache.xerces.parsers.DOMParser;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.EntityReference;
@@ -44,50 +57,40 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Vector;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * This object implements and extends the ConfigurationStore interface for XML files. As a
  * ConfigurationStore, it imposes a standard structure on the grove that can be mapped 1-1 with
- * properties, but it offers all necessary methods to handle arbitrary XML structures as well.
- * <p>
- * The standard structure is the following:<br>
- * &lt;param&gt;<br>
- * &lt;param-name&gt;<br>
- * <i> parameter name </i><br>
- * &lt;/param-name&gt;<br>
- * &lt;param-value&gt;<br>
- * <i> parameter value </i><br>
- * &lt;/param-value&gt;<br>
- * &lt;param-description&gt;<br>
- * <i> parameter description </i><br>
- * &lt;/param-description&gt;<br>
- * <p>
- * The parameter description is any arbitrary string that could be used for instance as a tooltip
- * text or a as a label for a configuration tool that should display the use of the given parameter.
- * <p>
- * Note that symbold such as <strong>&lt;</strong> or <strong>&amp;</strong> must be escaped
- * properly when included in the parameter name, value or description.
+ * properties, but it offers all necessary methods to handle arbitrary XML structures as well. <p>
+ * The standard structure is the following:<br> &lt;param&gt;<br> &lt;param-name&gt;<br> <i>
+ * parameter name </i><br> &lt;/param-name&gt;<br> &lt;param-value&gt;<br> <i> parameter value
+ * </i><br> &lt;/param-value&gt;<br> &lt;param-description&gt;<br> <i> parameter description
+ * </i><br> &lt;/param-description&gt;<br> <p> The parameter description is any arbitrary string
+ * that could be used for instance as a tooltip text or a as a label for a configuration tool that
+ * should display the use of the given parameter. <p> Note that symbold such as
+ * <strong>&lt;</strong> or <strong>&amp;</strong> must be escaped properly when included in the
+ * parameter name, value or description.
+ *
  * @author jpouyadou
  * @version
  */
 public class XMLConfigurationStore implements ConfigurationStore {
+
   /**
    * XML document root
    */
-  private org.w3c.dom.Node m_RootNode = null;
-  private Document m_XMLConfig = null;
-  String m_ConfigFileName = null;
+  private org.w3c.dom.Node rootNode = null;
+  private Document xmlConfigDOMDoc = null;
+  String configFileName = null;
 
-  /** Creates new XMLConfigurationStore */
-  public XMLConfigurationStore(String configFileName,
-      InputStream configFileInputStream, String rootString) throws Exception {
+  /**
+   * Creates new XMLConfigurationStore
+   */
+  public XMLConfigurationStore(String configFileName, InputStream configFileInputStream,
+      String rootString) throws Exception {
     load(configFileName, configFileInputStream, rootString);
   }
 
@@ -97,9 +100,8 @@ public class XMLConfigurationStore implements ConfigurationStore {
 
   public XMLConfigurationStore() throws Exception {
     try {
-      javax.xml.parsers.DocumentBuilderFactory dbf = DocumentBuilderFactory
-          .newInstance();
-      m_XMLConfig = dbf.newDocumentBuilder().newDocument();
+      javax.xml.parsers.DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      xmlConfigDOMDoc = dbf.newDocumentBuilder().newDocument();
     } catch (javax.xml.parsers.ParserConfigurationException e) {
       throw new Exception(e.getMessage());
     }
@@ -109,21 +111,34 @@ public class XMLConfigurationStore implements ConfigurationStore {
     if (rootString == null) {
       return (null);
     }
-    Element el = m_XMLConfig.getDocumentElement();
-    Node n = m_XMLConfig.createElement(rootString);
+    Element el = xmlConfigDOMDoc.getDocumentElement();
+    Node n = xmlConfigDOMDoc.createElement(rootString);
     if (el == null) {
-      m_XMLConfig.appendChild(n);
+      xmlConfigDOMDoc.appendChild(n);
     } else {
       el.appendChild(n);
     }
     return (n);
   }
 
+  @Override
   public void serialize() throws FileNotFoundException, IOException {
-    FileOutputStream out = new FileOutputStream(new File(m_ConfigFileName));
-    XMLSerializer ser = new XMLSerializer(out, new OutputFormat("xml", "UTF-8", false));
-    ser.serialize(m_XMLConfig);
-    out.close();
+    FileOutputStream out = new FileOutputStream(new File(configFileName));
+    StreamResult streamResult = new StreamResult(out);
+    TransformerFactory tf = TransformerFactory.newInstance();
+    Transformer serializer;
+    try {
+      serializer = tf.newTransformer();
+      serializer.setOutputProperty(OutputKeys.ENCODING, CharEncoding.UTF_8);
+      serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+      serializer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      DOMSource domSource = new DOMSource(xmlConfigDOMDoc);
+      serializer.transform(domSource, streamResult);
+    } catch (TransformerException ex) {
+      Logger.getLogger(XMLConfigurationStore.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      IOUtils.closeQuietly(out);
+    }
   }
 
   /**
@@ -131,33 +146,33 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * empty, so that is has no associated file.
    */
   public void setConfigFileName(String configfilename) {
-    m_ConfigFileName = configfilename;
+    configFileName = configfilename;
   }
 
   private void loadFromFile(File file, String rootString) throws Exception {
-    m_ConfigFileName = file.getAbsolutePath();
-    load(m_ConfigFileName, null, rootString);
+    configFileName = file.getAbsolutePath();
+    load(configFileName, null, rootString);
   }
 
   private void doLoad(String rootString) throws Exception, SAXParseException,
       IOException {
-    if (m_XMLConfig == null) {
+    if (xmlConfigDOMDoc == null) {
       throw new Exception(
           "E6000-0025:Cannot create XML document from the configuration file '"
-          + m_ConfigFileName + "'");
+          + configFileName + "'");
     }
     // m_XMLConfig.getDocumentElement().normalize();
-    m_XMLConfig.normalize();
-    m_RootNode = findNode(m_XMLConfig, rootString);
-    if (m_RootNode == null) {
+    xmlConfigDOMDoc.normalize();
+    rootNode = findNode(xmlConfigDOMDoc, rootString);
+    if (rootNode == null) {
       throw new Exception("E6000-0023:Invalid configuration file '"
-          + m_ConfigFileName + "': " + "Cannot find node '" + rootString + "j'");
+          + configFileName + "': " + "Cannot find node '" + rootString + "j'");
     }
   }
 
   private void load(String configFileName, InputStream configFileInputStream,
       String rootString) throws Exception {
-    m_ConfigFileName = configFileName;
+    this.configFileName = configFileName;
     try {
       // if config file was found by the resource locator, it is an input
       // stream,
@@ -191,7 +206,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
         parser.parse(ins);
       }
 
-      m_XMLConfig = parser.getDocument();
+      xmlConfigDOMDoc = parser.getDocument();
       doLoad(rootString);
     } catch (IOException e) {
       throw new Exception("E6000-0020:Cannot open configuration file '"
@@ -213,22 +228,21 @@ public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * This method returns the value of the node <strong>entry</strong>, starting from the node
    * <strong>n</strong>. It may consist of the concatenation of various text en entity reference
-   * child nodes.
-   * <p>
-   * This method returns null if the node wasn't found
+   * child nodes. <p> This method returns null if the node wasn't found
    */
   public String getXMLParamValue(Node n, String entry, String key) {
     String res = null;
 
     if (n == null) {
-      n = m_RootNode;
+      n = rootNode;
     }
     // find the node, starting from the current node
     Node paramNode = findNode(n, entry);
 
     // node not found
-    if (paramNode == null)
+    if (paramNode == null) {
       return (null);
+    }
 
     // get all node descendants, and concatenate all their string values. --TODO
     // What about sublevels?
@@ -262,12 +276,12 @@ public class XMLConfigurationStore implements ConfigurationStore {
             }
           }
         }
-      }
-      // standard text, concatenate the value with other values
+      } // standard text, concatenate the value with other values
       else if (psn instanceof Text) {
         String v;
-        if ((v = psn.getNodeValue()) == null)
+        if ((v = psn.getNodeValue()) == null) {
           return (null);
+        }
         if (key != null) {
           if (v.trim().equalsIgnoreCase(key)) {
             return (key);
@@ -298,20 +312,19 @@ public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * This method returns the values of the node <strong>entry</strong>, starting from the node
    * <strong>n</strong>. Each value may consist of the concatenation of various text en entity
-   * reference child nodes.
-   * <p>
-   * This method returns null if the node wasn't found
+   * reference child nodes. <p> This method returns null if the node wasn't found
    */
   public String[] getXMLParamValues(Node n, String entry, String key) {
     String res = null;
-    Vector vres = new Vector(10);
+    List<String> vres = new ArrayList<String>(10);
 
     // find the node, starting from the current node
     Node paramNodes[] = findNodes(n, entry);
 
     // node not found
-    if (paramNodes == null)
+    if (paramNodes == null) {
       return (null);
+    }
 
     // get all node descendants, and concatenate all their string values. --TODO
     // What about sublevels?
@@ -346,38 +359,34 @@ public class XMLConfigurationStore implements ConfigurationStore {
               }
             }
           }
-        }
-        // standard text, concatenate the value with other values
+        } // standard text, concatenate the value with other values
         else if (psn instanceof Text) {
           String v;
           if ((v = psn.getNodeValue()) == null) {
-            return (null);
+            return null;
           }
           vres.add(v.trim());
         }
       }
     }
-    if (vres.size() != 0) {
-      String[] r = new String[vres.size()];
-      for (int i = 0; i < vres.size(); i++) {
-        r[i] = (String) (vres.get(i));
-      }
-      return (r);
+    if (!vres.isEmpty()) {
+      return vres.toArray(new String[vres.size()]);
     }
-    return (null);
+    return null;
   }
 
   public Node getXMLParamNode(String nodename) {
-    if (m_RootNode.hasChildNodes()) {
-      NodeList list = m_RootNode.getChildNodes();
+    if (rootNode.hasChildNodes()) {
+      NodeList list = rootNode.getChildNodes();
       int size = list.getLength();
       for (int i = 0; i < size; i++) {
         Node n = list.item(i);
         String name = n.getNodeName();
         if (name.equalsIgnoreCase("param")) {
           // param entry found, process it
-          if (getXMLParamValue(n, "param-name", nodename) != null)
+          if (getXMLParamValue(n, "param-name", nodename) != null) {
             return (n);
+          }
         }
       }
     }
@@ -387,6 +396,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * This method returns the value of an attribute of a given node. If the attribute cannot be found
    * of if the node is null, this method returns null.
+   *
    * @param n the node where the attribute is stored
    * @param attributeName the name of the attribute. Case sensitive.
    */
@@ -411,6 +421,7 @@ public class XMLConfigurationStore implements ConfigurationStore {
     put(key, value);
   }
 
+  @Override
   public void putProperty(String key, String value) {
     put(key, value);
   }
@@ -420,26 +431,27 @@ public class XMLConfigurationStore implements ConfigurationStore {
     if (entry != null) {
       n.removeChild(entry);
     }
-    Node newElement = m_XMLConfig.createElement(key);
-    Node newValue = m_XMLConfig.createTextNode(value);
+    Node newElement = xmlConfigDOMDoc.createElement(key);
+    Node newValue = xmlConfigDOMDoc.createTextNode(value);
     newElement.appendChild(newValue);
     n.appendChild(newElement);
   }
 
   public Node createElement(String key) {
-    return (m_XMLConfig.createElement(key));
+    return (xmlConfigDOMDoc.createElement(key));
   }
 
   public Node createTextNode(String value) {
-    return (m_XMLConfig.createTextNode(value));
+    return (xmlConfigDOMDoc.createTextNode(value));
   }
 
   public void appendChild(Node parent, Node child) {
     parent.appendChild(child);
   }
 
+  @Override
   public void put(String key, String value) {
-    String values[] = { value };
+    String values[] = {value};
     put(key, values);
   }
 
@@ -451,33 +463,35 @@ public class XMLConfigurationStore implements ConfigurationStore {
         paramNodeParent.removeChild(paramNode);
       }
     }
-    Element param = m_XMLConfig.createElement("param");
-    Node name = m_XMLConfig.createElement("param-name");
-    Node description = m_XMLConfig.createElement("param-description");
-    Node nameValue = m_XMLConfig.createTextNode(key);
+    Element param = xmlConfigDOMDoc.createElement("param");
+    Node name = xmlConfigDOMDoc.createElement("param-name");
+    Node description = xmlConfigDOMDoc.createElement("param-description");
+    Node nameValue = xmlConfigDOMDoc.createTextNode(key);
     for (String value : values) {
-      Node vValue = m_XMLConfig.createTextNode(value);
-      Node v = m_XMLConfig.createElement("param-value");
+      Node vValue = xmlConfigDOMDoc.createTextNode(value);
+      Node v = xmlConfigDOMDoc.createElement("param-value");
       param.appendChild(v);
       v.appendChild(vValue);
     }
-    m_RootNode.appendChild(param);
+    rootNode.appendChild(param);
     param.appendChild(name);
     name.appendChild(nameValue);
     param.appendChild(description);
-    m_XMLConfig.getDocumentElement().normalize();
+    xmlConfigDOMDoc.getDocumentElement().normalize();
   }
 
   /**
    * This method returns the value of a standard-format parameter, that is, it returns the text
    * value of the param-value element that goes with the param-name for the <strong>key</strong>
-   * element. See the description of standard XML resources for details <br>
-   * If the key os not found, the defaultValue string is returned instead.
+   * element. See the description of standard XML resources for details <br> If the key os not
+   * found, the defaultValue string is returned instead.
    */
+  @Override
   public String getProperty(String key, String defaultValue) {
     return (get(key, defaultValue));
   }
 
+  @Override
   public String getProperty(String key) {
     return (get(key, null));
   }
@@ -485,14 +499,16 @@ public class XMLConfigurationStore implements ConfigurationStore {
   /**
    * This method is for compatibility with the ResourceLocator
    */
+  @Override
   public String getString(String key) {
     return (get(key, null));
   }
 
+  @Override
   public String get(String key, String defaultValue) {
     String thisFunction = "XMLConfigurationStore.get";
-    if (m_RootNode.hasChildNodes()) {
-      NodeList list = m_RootNode.getChildNodes();
+    if (rootNode.hasChildNodes()) {
+      NodeList list = rootNode.getChildNodes();
       int size = list.getLength();
       if (size == 0) {
         SilverTrace.debug("util", thisFunction,
@@ -505,10 +521,11 @@ public class XMLConfigurationStore implements ConfigurationStore {
           // param entry found, process it
           if (getXMLParamValue(n, "param-name", key) != null) {
             String v = getXMLParamValue(n, "param-value", null);
-            if (v == null)
+            if (v == null) {
               return (defaultValue);
-            else
+            } else {
               return (v);
+            }
           }
         }
       }
@@ -563,8 +580,8 @@ public class XMLConfigurationStore implements ConfigurationStore {
    * This method returns all values for a multi-valued key
    */
   public String[] getValues(String key) {
-    if (m_RootNode.hasChildNodes()) {
-      NodeList list = m_RootNode.getChildNodes();
+    if (rootNode.hasChildNodes()) {
+      NodeList list = rootNode.getChildNodes();
       int size = list.getLength();
       for (int i = 0; i < size; i++) {
         Node n = list.item(i);
@@ -581,41 +598,41 @@ public class XMLConfigurationStore implements ConfigurationStore {
   }
 
   public Node findNode(Node node, String name) {
-    if (node.getNodeName().equals(name))
+    if (node.getNodeName().equals(name)) {
       return node;
+    }
     if (node.hasChildNodes()) {
       NodeList list = node.getChildNodes();
       int size = list.getLength();
       for (int i = 0; i < size; i++) {
         Node found = findNode(list.item(i), name);
-        if (found != null)
+        if (found != null) {
           return found;
+        }
       }
     }
     return null;
   }
 
   public Node[] findNodes(String name) {
-    return (findNodes(m_XMLConfig, name));
+    return (findNodes(xmlConfigDOMDoc, name));
   }
 
   /**
    * This method returns all children nodes (at any depth, that is, children, grazndchildren, and so
    * on) from the node <strong>node</strong> whose name matches the <strong>name</strong> string. If
-   * <strong>node</strong> is null, the method returns null<br>
-   * If <strong>name</strong> is null or empty, the method returns null<br>
-   * If no children of the node <strong>node</strong> match the <strong>name</strong> string, the
-   * method returns null<br>
+   * <strong>node</strong> is null, the method returns null<br> If <strong>name</strong> is null or
+   * empty, the method returns null<br> If no children of the node <strong>node</strong> match the
+   * <strong>name</strong> string, the method returns null<br>
    */
-
   public Node[] findNodes(Node node, String name) {
     if (node == null) {
       return (null);
     }
-    if (name == null || name.equals("") || name.trim().equals("")) {
+    if (!StringUtil.isDefined(name)) {
       return (null);
     }
-    Vector v = new Vector(10);
+    List<Node> v = new ArrayList<Node>(10);
     if (node.getNodeName().equals(name)) {
       Node[] res = new Node[1];
       res[0] = node;
@@ -631,79 +648,40 @@ public class XMLConfigurationStore implements ConfigurationStore {
         }
       }
     }
-    if (v.size() == 0) {
+    if (v.isEmpty()) {
       return (null);
     }
-    Node[] res = new Node[v.size()];
-    for (int i = 0; i < v.size(); i++) {
-      res[i] = (Node) (v.get(i));
-    }
-    return (res);
+    return v.toArray(new Node[v.size()]);
   }
 
   /**
    * Returns all first level names from the configuration file
    */
+  @Override
   public String[] getAllNames() {
-    Vector v = null;
-    if (m_RootNode.hasChildNodes() == false)
+    List<String> v = null;
+    if (rootNode.hasChildNodes() == false) {
       return (null);
-    NodeList list = m_RootNode.getChildNodes();
+    }
+    NodeList list = rootNode.getChildNodes();
     int size = list.getLength();
     if (size > 0) {
-      v = new Vector(size);
+      v = new ArrayList<String>(size);
       for (int i = 0; i < size; i++) {
         Node n = list.item(i);
         String name = n.getNodeName();
         if (name.equalsIgnoreCase("param")) {
-          String V = null;
-          if ((V = getXMLParamValue(n, "param-name", null)) != null) {
-            v.add(V);
+          String value;
+          if ((value = getXMLParamValue(n, "param-name", null)) != null) {
+            v.add(value);
           }
         }
       }
     }
-    if (v != null && v.size() > 0) {
-      String result[] = new String[v.size()];
-      for (int i = 0; i < v.size(); i++) {
-        result[i] = (String) v.get(i);
-      }
-      return (result);
-    } else
-      return (null);
-  }
-
-  public static void main(String args[]) {
-    XMLConfigurationStore C = null;
-    if (args.length != 1) {
-      System.err.println("ERROR:Invalid args count:" + args.length);
-      System.err.println("ERROR:usage is XMLConfigurationStore filename");
-      System.exit(1);
+    if (v != null && !v.isEmpty()) {
+      return v.toArray(new String[v.size()]);
     }
-    String filename = args[0];
-    try {
-      System.err.println("Processing XML file '" + filename);
-      C = new XMLConfigurationStore(new File(filename), "testroot");
-    } catch (Exception e) {
-      System.err.println("Error while processing XML file '" + filename + "':"
-          + e.getMessage());
-      System.exit(2);
-    }
-    if (C == null) {
-      System.err.println("could not created configuration from file '"
-          + filename + "'");
-      System.exit(2);
-    }
-    String names[] = C.getAllNames();
-    if (names == null || names.length == 0) {
-      System.out
-          .println("no names found. Maybe the root element isn't named testroot?");
-      System.exit(0);
-    }
-    System.out.println("Names found:");
-    for (String name : names) {
-      System.out.println(name);
-    }
+    return (null);
 
   }
 }

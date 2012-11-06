@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,17 +25,22 @@ package org.silverpeas.node.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.silverpeas.profile.web.UserProfileEntity;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 @XmlRootElement
 public class NodeAttrEntity {
-  
+
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(defaultValue = "")
@@ -44,26 +49,63 @@ public class NodeAttrEntity {
   private String componentId;
   @XmlElement(defaultValue = "")
   private URI childrenURI;
-  
+  @XmlElement(defaultValue = "")
+  private String rel = "folder";
+  @XmlElement(defaultValue = "")
+  private String nbItems;
+  @XmlElement(defaultValue = "")
+  private String status;
+  @XmlElement(defaultValue = "0")
+  private int order = 0;
+  @XmlElement(defaultValue = "")
+  private String role;
+  @XmlElement(defaultValue = "")
+  private String creatorId;
+  @XmlElement
+  private UserProfileEntity creator;
+  @XmlElement(defaultValue = "")
+  private String description;
+  @XmlElement(defaultValue = "")
+  private Date creationDate;
+
+  public NodeAttrEntity() {
+    
+  }
+ 
   /**
    * Creates a new node entity from the specified node.
    * @param node the node to entitify.
    * @return the entity representing the specified node.
    */
-  public static NodeAttrEntity fromNodeDetail(final NodeDetail node, URI uri) {
-    return new NodeAttrEntity(node, uri);
+  public static NodeAttrEntity fromNodeDetail(final NodeDetail node, URI uri, String lang) {
+    return new NodeAttrEntity(node, uri, lang);
   }
-  
-  public static NodeAttrEntity fromNodeDetail(final NodeDetail node, String uri) {
-    return fromNodeDetail(node, getURI(uri));
+
+  public static NodeAttrEntity fromNodeDetail(final NodeDetail node, String uri, String lang) {
+    return fromNodeDetail(node, getURI(uri), lang);
   }
-  
-  private NodeAttrEntity(final NodeDetail node, URI uri) {
+
+  private NodeAttrEntity(final NodeDetail node, URI uri, String lang) {
     this.setComponentId(node.getNodePK().getInstanceId());
     this.setId(node.getNodePK().getId());
     this.setUri(uri);
+    if (node.getNbObjects() != -1) {
+      this.setNbItems(String.valueOf(node.getNbObjects()));
+    }
+    this.setStatus(node.getStatus());
+    this.setRole(node.getUserRole());
+    this.setCreatorId(node.getCreatorId());
+    this.setDescription(node.getDescription(lang));
+    UserDetail user = UserDetail.getById(node.getCreatorId());
+    if (user != null) {
+      setCreator(UserProfileEntity.fromUser(user));
+    }
+    try {
+      this.setCreationDate(DateUtil.parse(node.getCreationDate()));
+    } catch (ParseException e) {
+    }
   }
-  
+
   private static URI getURI(String uri) {
     try {
       return new URI(uri);
@@ -103,5 +145,77 @@ public class NodeAttrEntity {
 
   public URI getChildrenURI() {
     return childrenURI;
+  }
+
+  public void setRel(String rel) {
+    this.rel = rel;
+  }
+
+  public String getRel() {
+    return rel;
+  }
+
+  public void setNbItems(String nbItems) {
+    this.nbItems = nbItems;
+  }
+
+  public String getNbItems() {
+    return nbItems;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+  
+  public void setOrder(int order) {
+    this.order = order;
+  }
+
+  public int getOrder() {
+    return order;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setCreatorId(String creatorId) {
+    this.creatorId = creatorId;
+  }
+
+  public String getCreatorId() {
+    return creatorId;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setCreator(UserProfileEntity creator) {
+    this.creator = creator;
+  }
+
+  public UserProfileEntity getCreator() {
+    return creator;
+  }
+
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Date getCreationDate() {
+    return creationDate;
   }
 }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,18 +24,17 @@
 
 package com.silverpeas.notification.jms.access;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.Topic;
-import javax.jms.TopicSubscriber;
+import javax.jms.*;
 
 /**
- * Decorator of a TopicSubscriber returned by the JMS system. It adds additional attributes in order
- * to facilitate the JMS sessions management.
+ * Decorator of a TopicSubscriber returned by the JMS system.
+ * In JMS, a subscriber represents a subscription to a given topic. So, a client can be mapped to
+ * several topic subscribers wether it has subscribed to more than one JMS topics.
+ * It adds additional attributes in order to facilitate the JMS sessions management.
  */
-class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> implements
-    TopicSubscriber {
+class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> implements TopicSubscriber {
+  
+  private String id;
 
   /**
    * Decorates the specified JMS topic subscriber.
@@ -44,6 +43,25 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
    */
   public static SilverpeasTopicSubscriber decorateTopicSubscriber(final TopicSubscriber subscriber) {
     return new SilverpeasTopicSubscriber(subscriber);
+  }
+
+  /**
+   * Gets the unique identifier of the topic subscription. A unique identifier is set only for
+   * durable subscription, otherwise null is returned.
+   * @return the unique subscriber identifier or null if the subscriber isn't a durable one.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Sets the unique identifier for this topic subscription in JMS.
+   * Only durable subscription are uniquely identified in JMS, the other subscriptions belongs only
+   * in the duration of the session life (and thus of the connexion life).
+   * @param id the unique identifier of the durable subscription.
+   */
+  public void setId(String id) {
+    this.id = id;
   }
 
   @Override

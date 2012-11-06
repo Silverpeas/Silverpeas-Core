@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
 * GNU Affero General Public License as published by the Free Software Foundation, either version 3
@@ -9,7 +9,7 @@
 * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
 * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
 * text describing the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
 * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -205,13 +205,15 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     StringBuilder script = new StringBuilder();
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");
+    String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
     if(look != null && StringUtil.isDefined(look.getMainFrame())) {
-      script.append(" top.location = \"").append(context).append(look.getMainFrame()).append(
-      "RedirectToSpaceId=\"+spaceId;");
-    }else {
-      script.append(" top.location = \"").append(context).append(
-            "/admin/jsp/MainFrameSilverpeasV5.jsp?RedirectToSpaceId=\"+spaceId;");
+      mainFrame = look.getMainFrame();
+      if (!mainFrame.startsWith("/")) {
+        mainFrame = "/admin/jsp/" + mainFrame;
+      }
     }
+    script.append(" top.location = \"").append(context).append(mainFrame)
+        .append("?RedirectToSpaceId=\"+spaceId;");
     script.append("}");
     script.append("</script>");
     return script.toString();

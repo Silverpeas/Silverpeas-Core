@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,14 +31,14 @@ import org.apache.ecs.xhtml.script;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
- * 
+ *
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
- * 
+ *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
-  
+
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
   private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
@@ -58,12 +58,16 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_INVITME = "silverpeas-invitme.js";
   private static final String SILVERPEAS_MESSAGEME = "silverpeas-messageme.js";
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
+  private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
+  private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
+  private static final String flexPaperPath = javascriptPath + "flexpaper/";
+  private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
   private static final String STYLESHEET_REL = "stylesheet";
-  
+
   public static ElementContainer includeQTip(final ElementContainer xhtml) {
     script qtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_QTIP);
     script silverpeasQtip = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
@@ -145,10 +149,25 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(wysiwyg);
     return xhtml;
   }
-  
+
   public static ElementContainer includePopup(final ElementContainer xhtml) {
-    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
-            + SILVERPEAS_POPUP);
+    script popupViewGeneratorIconPath =
+        new script().setType(JAVASCRIPT_TYPE).addElement(
+            new StringBuffer("var popupViewGeneratorIconPath='")
+                .append(GraphicElementFactory.getIconsPath()).append("';").toString());
+    xhtml.addElement(popupViewGeneratorIconPath);
+    script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_POPUP);
+    xhtml.addElement(popup);
+    return xhtml;
+  }
+
+  public static ElementContainer includePreview(final ElementContainer xhtml) {
+    script popup =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PREVIEW);
+    xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_VIEW);
+    xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
     xhtml.addElement(popup);
     return xhtml;
   }
@@ -163,6 +182,13 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(css);
     xhtml.addElement(jqueryCalendar);
     xhtml.addElement(sivlerpeasCalendar);
+    return xhtml;
+  }
+  
+  public static ElementContainer includeJQuery(final ElementContainer xhtml) {
+    script jquery = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
+        + GraphicElementFactory.JQUERY_JS);
+    xhtml.addElement(jquery);
     return xhtml;
   }
 }

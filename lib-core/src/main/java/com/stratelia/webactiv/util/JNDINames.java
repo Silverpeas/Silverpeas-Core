@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -159,6 +159,7 @@ public class JNDINames {
   public static final String JMS_FACTORY;
   public static final String JMS_QUEUE;
   public static final String JMS_HEADER_CHANNEL;
+  public static final String NOTIF_API_JMS;
 
   static {
     ResourceLocator rs = new ResourceLocator("com.stratelia.webactiv.util.jndi", "");
@@ -318,8 +319,10 @@ public class JNDINames {
         "java:comp/env/securityAdapterClassName");
     SEND_CONFIRMATION_MAIL = rs.getString("SEND_CONFIRMATION_MAIL",
         "java:comp/env/sendConfirmationMail");
-    JMS_FACTORY = rs.getString("JMS_FACTORY",
-        "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+    JMS_FACTORY =
+        rs.getString("JMS_FACTORY",
+            "com.stratelia.silverpeas.notificationserver.jms.QueueConnectionFactory");
+    NOTIF_API_JMS = rs.getString("NOTIF_API_JMS", JMS_FACTORY);
     JMS_QUEUE = rs.getString("JMS_QUEUE", "com.stratelia.silverpeas.notificationserver.jms.Queue");
     JMS_HEADER_CHANNEL = rs.getString("JMS_HEADER_CHANNEL", "CHANNEL");
   }

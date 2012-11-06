@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,66 +23,10 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath;
-import static org.apache.commons.io.FileUtils.sizeOfDirectory;
-import static org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey.from;
-
-import java.io.File;
-
-import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.service.AbstractQuotaService;
-
-import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
-public class DataStorageSpaceQuotaService extends AbstractQuotaService<DataStorageSpaceQuotaKey> {
+public interface DataStorageSpaceQuotaService extends SpaceQuotaService<DataStorageSpaceQuotaKey> {
 
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.AbstractQuotaService#get(org.silverpeas.quota.QuotaKey)
-   */
-  @Override
-  public Quota get(DataStorageSpaceQuotaKey key) throws QuotaException {
-    Quota quota = super.get(key);
-    if (key.isTraverseSpacePath()) {
-      while (!quota.exists() && key.isValid() && key.getSpace() != null && !key.getSpace().isRoot()) {
-        key =
-            from(OrganizationControllerFactory.getFactory().getOrganizationController()
-                .getSpaceInstById(key.getSpace().getDomainFatherId()), key.isTraverseSpacePath());
-        quota = super.get(key);
-      }
-    }
-    return quota;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
-   */
-  @Override
-  public long getCurrentCount(final DataStorageSpaceQuotaKey key) throws QuotaException {
-
-    // Initializing the counting result
-    int currentCount = 0;
-
-    // space could be null if user space is performed
-    if (key.getSpace() != null) {
-      File file;
-      for (final ComponentInst component : key.getSpace().getAllComponentsInst()) {
-        file = new File(getAbsolutePath(component.getId()));
-        if (file.exists()) {
-          currentCount += sizeOfDirectory(file);
-        }
-      }
-    }
-
-    // Result
-    return currentCount;
-  }
 }

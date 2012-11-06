@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,6 +32,7 @@
 	UsedAxis usedAxis = (UsedAxis) request.getAttribute("UsedAxis");
 	String error = (String) request.getAttribute("ErrorState");
 	String modificationNotAllowed = (String) request.getAttribute("ModificationNotAllowed");
+	String componentId = (String) request.getAttribute("ComponentId");
 
 	String baseValue = new Integer(usedAxis.getBaseValue()).toString();
 	String usedAxisId = usedAxis.getPK().getId();
@@ -69,16 +70,17 @@
 
 
 %>
-<html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-<script language="Javascript">
+<script type="text/javascript">
 function sendData() {
 	document.axisForm.submit();
 }
@@ -86,29 +88,24 @@ function goBack(){
 	document.goBack.submit();
 }
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body>
 <%	
-    browseBar.setDomainName("Plan de classement");
-    browseBar.setComponentName("Gestion");
+    browseBar.setComponentId(componentId);
 	browseBar.setPath(resource.getString("pdcPeas.axisUse")+" : "+axisName+"");
 
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
+<form action="<%=pdcUtilizationContext%>UtilizationUpdateAxis" name="axisForm" method="post">
+  <input type="hidden" name="Id" value="<%=usedAxisId%>"/>
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
-    <form action="<%=pdcUtilizationContext%>UtilizationUpdateAxis" name="axisForm" method="post">
-	<%
-	  if (errorMessage != null) {
-	%>
-		<tr><td colspan="2"><%=errorMessage%></span></td></tr>
-	<%
-	  }
-	%>
-		<input type="hidden" name="Id" value="<%=usedAxisId%>">
+	<% if (errorMessage != null) { %>
+		<tr><td colspan="2"><%=errorMessage%></td></tr>
+	<% } %>
       <tr> 
-        <td class="txtlibform" width="50%" nowrap><%=resource.getString("pdcPeas.baseValue")%>&nbsp;:</td>
+        <td class="txtlibform" width="50%" nowrap="nowrap"><%=resource.getString("pdcPeas.baseValue")%>&nbsp;:</td>
         <td width="50%" nowrap>
 			<select name="BaseValue">
 		<%
@@ -123,42 +120,42 @@ function goBack(){
 					increment += "&nbsp;&nbsp;";
 
 				if (baseValue.equals(valueId))
-					out.println("<option value="+valueId+" selected>"+increment+valueName+"</option>");
+					out.println("<option value=\""+valueId+"\" selected>"+increment+valueName+"</option>");
 				else
-					out.println("<option value="+valueId+">"+increment+valueName+"</option>");
+					out.println("<option value=\""+valueId+"\">"+increment+valueName+"</option>");
 			}
 		%>
 			</select>
 		</td>
       </tr>
       <tr> 
-        <td class="txtlibform" nowrap><%=resource.getString("pdcPeas.axisUse2")%>&nbsp;:</td>
-        <td nowrap>
-          <input type="radio" name="Mandatory" value="1" <%=mandatoryChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("GML.requiredField")%></span><br>
-          <input type="radio" name="Mandatory" value="0" <%=notMandatoryChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.optional")%></span></td>
+        <td class="txtlibform" nowrap="nowrap"><%=resource.getString("pdcPeas.axisUse2")%>&nbsp;:</td>
+        <td nowrap="nowrap">
+          <input type="radio" name="Mandatory" value="1" <%=mandatoryChecked%>/><span class="textePetitBold">&nbsp;<%=resource.getString("GML.requiredField")%></span><br>
+          <input type="radio" name="Mandatory" value="0" <%=notMandatoryChecked%>/><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.optional")%></span></td>
       </tr>
       <% if (isAxisInvarianceUsed) { %>
 	  <tr> 
         <td class="txtlibform" nowrap><%=resource.getString("pdcPeas.axisValue")%>&nbsp;:</td>
-        <td nowrap>
-          <input type="radio" name="Variant" value="1" <%=variantChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.variants")%></span><br>
-          <input type="radio" name="Variant" value="0" <%=notVariantChecked%>><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.notVariants")%></span></td>
+        <td nowrap="nowrap">
+          <input type="radio" name="Variant" value="1" <%=variantChecked%>/><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.variants")%></span><br>
+          <input type="radio" name="Variant" value="0" <%=notVariantChecked%>/><span class="textePetitBold">&nbsp;<%=resource.getString("pdcPeas.notVariants")%></span></td>
       </tr>		     
       <% } %>
-	</form>
   </table>
+  </form>
   <%
   	out.println(board.printAfter());
   
     ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:goBack()", false));
-	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
+    buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:sendData()", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:goBack()", false));
+	out.println("<br/>"+buttonPane.print());
   
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <form name="goBack" action="<%=pdcUtilizationContext%>Main" method="post">
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,19 @@
  */
 
 package com.silverpeas.workflowdesigner.servlets;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
@@ -37,6 +50,7 @@ import com.silverpeas.workflow.api.model.Consequence;
 import com.silverpeas.workflow.api.model.Consequences;
 import com.silverpeas.workflow.api.model.ContextualDesignation;
 import com.silverpeas.workflow.api.model.Form;
+import com.silverpeas.workflow.api.model.Forms;
 import com.silverpeas.workflow.api.model.Input;
 import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Parameter;
@@ -57,17 +71,6 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.apache.commons.fileupload.FileItem;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.StringTokenizer;
 
 public class WorkflowDesignerRequestRouter extends
     ComponentRequestRouter<WorkflowDesignerSessionController> {
@@ -117,7 +120,7 @@ public class WorkflowDesignerRequestRouter extends
 
     // Check access rights
     if (!workflowDesignerSC.getUserDetail().isAccessAdmin()) {
-      return GeneralPropertiesManager.getGeneralResourceLocator().getString("accessForbidden");
+      return GeneralPropertiesManager.getString("accessForbidden");
     }
 
     try {
@@ -968,8 +971,7 @@ public class WorkflowDesignerRequestRouter extends
             SilverpeasException.ERROR, "WorkflowEngine.EX_ERR_ACTION_NOT_FOUND_IN_MODEL"); //$NON-NLS-1$
       }
       request.setAttribute("Action", action);
-      request.setAttribute("FormNames", workflowDesignerSC
-          .retrieveFormNames(false));
+      request.setAttribute("FormNames", workflowDesignerSC.retrieveFormNames(true));
       request.setAttribute("KindValues", workflowDesignerSC
           .retrieveActionKindCodes());
 
@@ -988,8 +990,11 @@ public class WorkflowDesignerRequestRouter extends
       Action action = workflowDesignerSC.createAction();
 
       action.setName(request.getParameter("name"));
-      action.setForm(workflowDesignerSC.getProcessModel().getForms().getForm(
-          request.getParameter("form")));
+      
+      Forms forms = workflowDesignerSC.getProcessModel().getForms();
+      if (forms != null) {
+        action.setForm(forms.getForm(request.getParameter("form")));
+      }
       action.setKind(request.getParameter("kind"));
 
       workflowDesignerSC.updateAction(action, request
@@ -1288,17 +1293,14 @@ public class WorkflowDesignerRequestRouter extends
         strRoleOriginal = null;
       }
 
-      if (WorkflowDesignerSessionController.FORM_TYPE_ACTION
-          .equals(strFormType)) {
-        form.setHTMLFileName(null);
+      form.setHTMLFileName(strHTMLFileName);
+      if (WorkflowDesignerSessionController.FORM_TYPE_ACTION.equals(strFormType)) {
+        // ignore role
         form.setRole(null);
-      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION
-          .equals(strFormType)) {
+      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRESENTATION.equals(strFormType)) {
         form.setRole(strRole);
-        form.setHTMLFileName(null);
-      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRINT
-          .equals(strFormType)) {
-        form.setHTMLFileName(strHTMLFileName);
+      } else if (WorkflowDesignerSessionController.FORM_TYPE_PRINT.equals(strFormType)) {
+        // ignore role
         form.setRole(null);
       }
 

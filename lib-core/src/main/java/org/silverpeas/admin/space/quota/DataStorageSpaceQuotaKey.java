@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,11 +23,9 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.contant.QuotaType;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -36,24 +34,18 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 /**
  * @author Yohann Chastagnier
  */
-public class DataStorageSpaceQuotaKey implements QuotaKey {
+public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
-  private final SpaceInst space;
   private final UserDetail user;
-  private final boolean traverseSpacePath;
 
   public static DataStorageSpaceQuotaKey from(final UserDetail user) {
     return new DataStorageSpaceQuotaKey(
-        new PersonalSpaceController().getPersonalSpace(user.getId()), user, true);
+        new PersonalSpaceController().getPersonalSpace(user.getId()), user);
   }
 
   public static DataStorageSpaceQuotaKey from(final SpaceInst space) {
-    return from(space, false);
-  }
-
-  public static DataStorageSpaceQuotaKey from(final SpaceInst space, final boolean traverseSpacePath) {
     return new DataStorageSpaceQuotaKey(space, (space.isPersonalSpace()) ? space.getCreator()
-        : null, traverseSpacePath);
+        : null);
   }
 
   public static DataStorageSpaceQuotaKey from(final String componentInstanceId) {
@@ -65,20 +57,17 @@ public class DataStorageSpaceQuotaKey implements QuotaKey {
                 OrganizationControllerFactory.getFactory().getOrganizationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
     return new DataStorageSpaceQuotaKey(space, (space.isPersonalSpace()) ? space.getCreator()
-        : null, true);
+        : null);
   }
 
   /**
    * Default constructor
    * @param space
    * @param user
-   * @param traverseSpacePath TODO
    */
-  private DataStorageSpaceQuotaKey(final SpaceInst space, final UserDetail user,
-      final boolean traverseSpacePath) {
-    this.space = space;
+  private DataStorageSpaceQuotaKey(final SpaceInst space, final UserDetail user) {
+    super(space);
     this.user = user;
-    this.traverseSpacePath = traverseSpacePath;
   }
 
   /*
@@ -87,8 +76,7 @@ public class DataStorageSpaceQuotaKey implements QuotaKey {
    */
   @Override
   public boolean isValid() {
-    return (user != null && StringUtil.isDefined(user.getId())) ||
-        (space != null && StringUtil.isDefined(space.getId()));
+    return (user != null && StringUtil.isDefined(user.getId())) || super.isValid();
   }
 
   /*
@@ -106,20 +94,6 @@ public class DataStorageSpaceQuotaKey implements QuotaKey {
    */
   @Override
   public String getResourceId() {
-    return (user != null) ? user.getId() : space.getId().replaceFirst(Admin.SPACE_KEY_PREFIX, "");
-  }
-
-  /**
-   * @return the space
-   */
-  public SpaceInst getSpace() {
-    return space;
-  }
-
-  /**
-   * @return the traverseSpacePath
-   */
-  protected boolean isTraverseSpacePath() {
-    return traverseSpacePath;
+    return (user != null) ? user.getId() : super.getResourceId();
   }
 }

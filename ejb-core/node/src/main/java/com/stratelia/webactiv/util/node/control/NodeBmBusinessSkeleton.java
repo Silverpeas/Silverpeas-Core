@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -140,6 +140,14 @@ public interface NodeBmBusinessSkeleton {
    * @since 1.0
    */
   public Collection<NodeDetail> getChildrenDetails(NodePK pk) throws RemoteException;
+  
+  /**
+  * Get the header of each child of the node, order by sorting
+  * @return a NodeDetail collection
+  * @see com.stratelia.webactiv.util.node.model.NodeDetail
+  * @since 1.0
+  */
+    public Collection<NodeDetail> getChildrenDetails(NodePK pk, String sorting) throws RemoteException;
 
   /**
    * Get the header of each child of the node this function is to be used with frequently used nodes

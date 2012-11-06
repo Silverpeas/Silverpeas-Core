@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,55 +23,50 @@
  */
 
 (function ($) {
-	var dlg;
-    var Defaults = function () {};
-    $.extend(Defaults.prototype, {
-        msg1: "useless",
-		msg2: "useless too..."
-    });
-    
-    $.progressMessage = function (options, callback) {
-        // Pass the options and a callback to execute if affirmative user
-        // response.
-        var opts = new Defaults();
-        $.extend(opts, options);
+  var dlg ;
+  var Defaults = function () {};
+  $.extend(Defaults.prototype, {
+    msg1: "useless",
+    msg2: "useless too..."
+  });
 
-        dlg = $("#gef-progressMessage")
-		         .dialog({
-                    autoOpen: false,
-                    modal: true,
-                    draggable: false,
-            		resizable: false,
-            		height: 'auto',
-            		width: 300,
-					title: $("#gef-progressMessage #gef-progress-message1").text(),
-                    close: function () {
-                        // Clean up
-                        dlg.dialog('destroy').remove();
-                    },
-                    open: function(event, ui) { 
-        				$(".ui-dialog-titlebar-close").hide();
-        				//$(".ui-dialog-titlebar").hide();
-					}
-            });
-        
-        // Set options, open, and bind callback
-		//$("#modalDialog #message1").html(opts.msg1);
-		//$("#modalDialog #message2").html(opts.msg2);
-        dlg.dialog('open');
-    }
-    
-    $.closeProgressMessage = function (options, callback) {
-        // Pass the options and a callback to execute if affirmative user
-        // response.
-        var opts = new Defaults();
-        $.extend(opts, options);
-       
-        dlg.dialog('close');
-    }
-    
-    $.progressMessage.defaults = function (options) {
-        $.extend(Defaults.prototype, options);
-    }
-    
+  $.progressMessage = function (options, callback) {
+    // Pass the options and a callback to execute if affirmative user response.
+    var opts = new Defaults();
+    $.extend(opts, options);
+
+    dlg = $("#gef-progressMessage")
+          .dialog({
+            autoOpen: false,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            height: 'auto',
+            width: 300,
+            title: $("#gef-progressMessage #gef-progress-message1").text(),
+            close: function () {
+              // Clean up
+              dlg.dialog('destroy').remove();
+            },
+            open: function(event, ui) {
+              $(".ui-dialog-titlebar-close").hide();
+            }
+          });
+
+      // Set options, open, and bind callback
+      dlg.dialog('open');
+  }
+
+  $.closeProgressMessage = function (options, callback) {
+    // Pass the options and a callback to execute if affirmative user response.
+    var opts = new Defaults();
+    $.extend(opts, options);
+
+    dlg.dialog('close');
+  }
+
+  $.progressMessage.defaults = function (options) {
+    $.extend(Defaults.prototype, options);
+  }
+
 })(jQuery);

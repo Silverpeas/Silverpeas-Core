@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,6 +76,11 @@ function UserProfile(user) {
     usermgt.filter.component = component;
     return self;
   }
+
+  this.inDomain = function(domain) {
+    usermgt.filter.domain = domain;
+    return self;
+  }
   
   /**
    * Sets this user as playing the specified roles (a string of comma-separated list of roles)
@@ -94,7 +99,7 @@ function UserProfile(user) {
    * - optionally the page size in users count (by default it is set at CountPerPage). The page size
    *   cannot be set without passing the page number.
    * - optionally a boolean to force the loading of the relationships (reload or not them).
-   * - the callback operation to call once the users loaded.
+   * - the callback operation to call once the users are loaded.
    */
   this.onRelationships = function() {
     var arg = 0, name = null, page = null, pagesize = CountPerPage, toload = false;
@@ -172,6 +177,12 @@ function UserGroup(group) {
   this.inComponent = function(component) {
     subgroupmgt.filter.component = component;
     usermgt.filter.component = component;
+    return self;
+  }
+
+  this.inDomain = function(domain) {
+    subgroupmgt.filter.domain = domain;
+    usermgt.filter.domain = domain;
     return self;
   }
   
@@ -325,6 +336,7 @@ function UserProfileManagement(params) {
     group: null, // a user group unique identifier
     name: null, // a pattern about a user name (* is a wildcard)
     component: null, // a component instance identifier
+    domain: null, // an identifier of the user domain the user belongs to
     roles: null, // a string with a comma-separated role names
     pagination: null // pagination data in the form of 
   // { page: <number of the page>, count: <count of users to fetch> }
@@ -385,6 +397,10 @@ function UserProfileManagement(params) {
         separator = '&';
       }
     }
+    if (self.filter.domain) {
+      urlOfUsers += separator + 'domain=' + self.filter.domain;
+      separator = '&';
+    }
     if (self.filter.group) {
       urlOfUsers += separator + 'group=' + self.filter.group;
       separator = '&';
@@ -430,6 +446,7 @@ function UserGroupManagement(params) {
     // not, the filtering paramater name is always parsed.
     name: null, // a pattern about a group name (* is a wildcard)
     component: null, // a component instance identifier
+    domain: null, // a identifier of the user domain the group belongs to
     roles: null // a string with a comma-separated role names
   };
   
@@ -487,8 +504,12 @@ function UserGroupManagement(params) {
         separator = '&';
       }
     }
+    if (self.filter.domain) {
+      urlOfGroups += separator + "domain=" + self.filter.domain;
+      separator = '&';
+    }
     if (self.filter.id == null && self.filter.name && self.filter.name != '*') {
-      urlOfGroups += separator + "name=" + this.filter.name;
+      urlOfGroups += separator + "name=" + self.filter.name;
     }
     $.ajax({
       url: urlOfGroups,

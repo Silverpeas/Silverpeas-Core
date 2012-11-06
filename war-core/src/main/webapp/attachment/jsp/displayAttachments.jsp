@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.viewer.ViewerFactory"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -34,6 +35,8 @@
 <%@ include file="checkAttachment.jsp"%>
 
 <view:includePlugin name="qtip"/>
+<view:includePlugin name="popup"/>
+<view:includePlugin name="preview"/>
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
 <script type="text/javascript" src='<c:url value="/util/javaScript/upload_applet.js" />' ></script>
 
@@ -126,7 +129,7 @@
       Iterator itAttachments = attachments.iterator();
 
       if (itAttachments.hasNext() || (StringUtil.isDefined(profile) && !profile.equals("user"))) {
-        
+
 
         int nbAttachmentPerLine = 3;
 
@@ -140,7 +143,7 @@
 
 
         int a = 1;
-  
+
         out.println("<ul id=\"attachmentList\">");
         while (itAttachments.hasNext()) {
           String author = "";
@@ -160,19 +163,19 @@
             out.println(
                 "<li id=\"attachment_" + attachmentDetail.getPK().getId() + "\" class=\"attachmentListItem\" "+iconStyle+">");
           }
-          
+
           if (contextualMenuEnabled) {
             com.silverpeas.attachment.MenuHelper.displayActions(attachmentDetail, useXMLForm,
                 useFileSharing, webdavEditingEnable, userId, contentLanguage, attResources,
                 URLManager.getServerURL(request), showMenuNotif, useContextualMenu, out);
           }
-          
+
           out.print("<span class=\"lineMain\">");
-		  
+
 		  if (contextualMenuEnabled && !useContextualMenu) {
           	out.println("<img id=\"edit_"+attachmentDetail.getPK().getId()+"\" src=\""+m_Context + "/util/icons/arrow/menuAttachment.gif\" class=\"moreActions\"/>");
           }
-		  
+
           if (showIcon) {
             out.println(
                 "<img id=\"img_" + attachmentDetail.getPK().getId() + "\" src=\"" + attachmentDetail.
@@ -185,8 +188,6 @@
           }
 
           out.println("<a id=\"url" + attachmentDetail.getPK().getId() + "\" href=\"" + url + "\" target=\"_blank\">" + title + "</a>");
-			
-          
 
           out.print("</span>");
           out.println("<span class=\"lineSize\">");
@@ -207,7 +208,26 @@
             out.print(attachmentDetail.getAttachmentDownloadEstimation(contentLanguage));
           }
           out.println(" - " + attResources.getOutputDate(attachmentDetail.getCreationDate()));
+
+          if (ViewerFactory.getPreviewService().isPreviewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
+            %>
+            <img  onclick='javascript:preview(this, <%=attachmentDetail.getPK().getId()%>);'
+                  class="preview-file" src='<c:url value="/util/icons/preview.png"/>'
+                  alt="<%=attResources.getString("GML.preview") %>"
+                  title="<%=attResources.getString("GML.preview") %>"/>
+            <%
+          }
+
+          if (ViewerFactory.getViewService().isViewable(new File(attachmentDetail.getAttachmentPath(contentLanguage)))) {
+            %>
+            <img  onclick='javascript:view(this, <%=attachmentDetail.getPK().getId()%>);'
+                  class="view-file" src='<c:url value="/util/icons/view.png"/>'
+                  alt="<%=attResources.getString("GML.view") %>"
+                  title="<%=attResources.getString("GML.view") %>"/>
+            <%
+          }
           out.println("</span>");
+
           if (StringUtil.isDefined(attachmentDetail.getTitle(contentLanguage)) && showTitle) {
             out.println("<span class=\"fileName\">");
             out.println(attachmentDetail.getLogicalName(contentLanguage));
@@ -226,7 +246,7 @@
 <br/><a rel="<%=xmlURL%>" href="#" title="<%=title%>"><%=attResources.getString("attachment.xmlForm.View")%></a>
 <%
           }
-          
+
           if (contextualMenuEnabled) {
            	if (attachmentDetail.isReadOnly()) {
            	  %>
@@ -236,12 +256,12 @@
               </div>
             <% } else { %>
               <div class="workerInfo"  id="worker<%=attachmentDetail.getPK().getId() %>" style="visibility:hidden"> </div>
-            <% } 
+            <% }
           }
 
           if (attachmentDetail.isSpinfireDocument(contentLanguage) && spinfireViewerEnable) {
-			%>		
-					
+			%>
+
 					<div id="switchView" name="switchView" style="display: none">
 					  <a href="#" onClick="changeView3d(<%=attachmentDetail.getPK().getId()%>)"><img name="iconeView<%=attachmentDetail.getPK().getId()%>" valign="top" border="0" src="<%=URLManager.getApplicationURL()%>/util/icons/masque3D.gif"></a>
 					</div>
@@ -278,7 +298,7 @@
                 "<tr><td colspan=\"" + (2 * nbAttachmentPerLine - 1) + "\">&nbsp;</td></tr>");*/
           }
         }
-          
+
         author = "";
         if (a == 3) {
           a = 1;
@@ -374,7 +394,7 @@
         }
       })
     });
-    
+
     // function to transform insecable string into secable one
     $(".lineMain a").html(function() {
         var newLibelle = ""
@@ -388,7 +408,7 @@
             }
             chainesInsecables[i] = chainesSecables+chainesInsecables[i];
             newLibelle = newLibelle + chainesInsecables[i];
-        }       
+        }
         $(this).html(newLibelle);
     });
   });
@@ -396,7 +416,7 @@
   <% if (contextualMenuEnabled) {%>
 
   	var pageMustBeReloadingAfterSorting = false;
-  
+
     function checkout(id, webdav, edit, download)
     {
       if (id > 0) {
@@ -448,7 +468,7 @@
     }
 
     function checkin(id,webdav,forceRelease)
-    {	
+    {
     	//alert("checkin BEGIN");
         //alert("checkin :"+id+", "+webdav+", "+forceRelease);
       if (id > 0) {
@@ -497,11 +517,11 @@
   <% } else {%>
       oMenu.getItem(1,1).cfg.setProperty("disabled", false);
   <% }%>
-	
+
       $('#worker'+id).html("");
       $('#worker'+id).css({'visibility':'hidden'});
     }
-    
+
      function notifyAttachment(attachmentId)
     {
 		alertUsersAttachment(attachmentId); //dans publication.jsp
@@ -545,7 +565,7 @@
       }
 
       //alert("sLanguages = "+sLanguages);
-	
+
       $.get('<%=m_Context%>/Attachment', { id:attachmentId,Action:'Delete',languagesToDelete:sLanguages},
       function(data){
         data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
@@ -600,7 +620,7 @@
     function displayWarning(attachmentId) {
     	var url = "<%=m_Context%>/attachment/jsp/warning_locked.jsp?id=" + attachmentId;
         $("#attachmentModalDialog").dialog("open").load(url);
-    }  
+    }
 
     $(document).ready(function(){
       $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
@@ -615,7 +635,7 @@
 
     $('#attachmentList').bind('sortupdate', function(event, ui) {
       var reg=new RegExp("attachment", "g");
-	
+
       var data = $('#attachmentList').sortable('serialize');
       data += "#";
       var tableau=data.split(reg);
@@ -624,7 +644,7 @@
       {
         if (i != 0)
           param += ","
-				
+
         param += tableau[i].substring(3, tableau[i].length-1);
       }
       sortAttachments(param);
@@ -656,4 +676,20 @@
       SP_openWindow(url, "NewTicket", "700", "300","scrollbars=no, resizable, alwaysRaised");
     }
   <% }%>
+
+  function preview(target, attachmentId) {
+    $(target).preview("previewAttachment", {
+      componentInstanceId: "<%=componentId%>",
+      attachmentId: attachmentId
+    });
+    return false;
+  }
+
+  function view(target, attachmentId) {
+    $(target).view("viewAttachment", {
+      componentInstanceId: "<%=componentId%>",
+      attachmentId: attachmentId
+    });
+    return false;
+  }
 </script>

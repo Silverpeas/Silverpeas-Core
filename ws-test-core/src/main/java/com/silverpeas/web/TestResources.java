@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
 * Open Source Software ("FLOSS") applications as described in Silverpeas's
 * FLOSS exception. You should have recieved a copy of the text describing
 * the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@ import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.web.mock.*;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.silverpeas.web.mock.SpaceAccessControllerMock;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
@@ -74,6 +75,8 @@ public abstract class TestResources implements ApplicationContextAware {
   @Inject
   private OrganizationControllerMockWrapper organizationControllerMockWrapper;
   @Inject
+  private SpaceAccessControllerMock spaceAccessController;
+  @Inject
   private PersonalizationServiceMockWrapper personalizationServiceMockWrapper;
   private static ApplicationContext context;
   
@@ -88,6 +91,7 @@ public abstract class TestResources implements ApplicationContextAware {
     assertNotNull(context);
     TestResources resources = context.getBean(TEST_RESOURCES_NAME, TestResources.class);
     assertNotNull(resources.getAccessControllerMock());
+    assertNotNull(resources.getSpaceAccessControllerMock());
     assertNotNull(resources.getOrganizationControllerMock());
     assertNotNull(resources.getPersonalizationServiceMock());
     assertNotNull(resources.getSessionManagerMock());
@@ -109,6 +113,16 @@ public abstract class TestResources implements ApplicationContextAware {
 */
   public AccessControllerMock getAccessControllerMock() {
     return accessControllerMock;
+  }
+
+  /**
+   * Gets a mock of the SpaceAccessController. This mock is used to handle space authorization
+   * capabilities
+   * according to the test fixture.
+   * @return mock of the access controller used in the test case.
+   */
+  public SpaceAccessControllerMock getSpaceAccessControllerMock() {
+    return spaceAccessController;
   }
 
   /**

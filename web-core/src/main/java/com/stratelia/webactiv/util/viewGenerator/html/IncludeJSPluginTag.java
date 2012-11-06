@@ -11,7 +11,7 @@
 * Open Source Software ("FLOSS") applications as described in Silverpeas's
 * FLOSS exception. You should have recieved a copy of the text describing
 * the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +39,7 @@ import org.apache.ecs.ElementContainer;
 public class IncludeJSPluginTag extends SimpleTagSupport {
 
   private static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";
-  
+
   private String plugin;
 
   public String getName() {
@@ -73,6 +73,10 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includePopup(xhtml);
     } else if (calendar.name().equals(getName())) {
       includeCalendar(xhtml);
+    } else if (preview.name().equals(getName())) {
+      includePreview(xhtml);
+    } else if (jquery.name().equals(getName())) {
+      includeJQuery(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }

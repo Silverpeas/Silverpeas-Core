@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,22 +98,24 @@ public class MapTag extends TagSupport {
             if (!StringUtil.isDefined(label)) {
               label = componentInst.getName();
             }
-
-            if (URLManager.displayUniversalLinks()) {
-              result.append("&nbsp;<img src=\"").append(contextPath)
-                  .append("/util/icons/component/");
+            
+            // display component icon
+            result.append("&nbsp;<img src=\"").append(contextPath).append("/util/icons/component/");
+            if (componentInst.isWorkflow()) {
+              result.append("processManager");
+            } else {
               result.append(componentInst.getName());
-              result.append(
-                  "Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;<a href=\"");
+            }
+            result.append("Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;");
+
+            // display component link
+            if (URLManager.displayUniversalLinks()) {
+              result.append("<a href=\"");
               result
                   .append(URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId()));
               result.append("\" target=\"_top\">").append(label).append("</a>\n");
             } else {
-              result.append("&nbsp;<img src=\"").append(contextPath).append(
-                  "/util/icons/component/");
-              result.append(componentInst.getName());
-              result.append(
-                  "Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;<a href=\"");
+              result.append("<a href=\"");
               result.append(contextPath).append(
                   URLManager.getURL(componentInst.getName(), spaceId, componentInst.getId()));
               result.append("Main\" target=\"MyMain\" title=\"").append(

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -230,7 +230,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
     margin-right: 10px;
 }
 
-#spaces, #spacePerso {
+#spaces, #spacePerso, #spaceTransverse {
 	background-color: transparent;
 	background-image:none;
 	border: none;
@@ -259,14 +259,15 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	width:170px;
 	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
-#spacePerso .contentSpace, .spaceLevel1On .contentSpace{
+
+#spacePerso .contentSpace, 
+.spaceLevel1On .contentSpace {
 	margin-top:10px;
 	margin-left:0;
 }
 
 .contentSpace .contentSpace {
 	margin:2px 0 0 10px;
-
 }
 
 .contentSpace .contentSpace .browseSpace {
@@ -302,8 +303,6 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding:4px 0 8px;
 	position:relative;
 }
-#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL{
-	margin-left:19px;}
 
 .browseSpace {
 	position:relative;
@@ -320,17 +319,30 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding-top:12px;
 }
 
-#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL, #domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL, #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1 .spaceURL,
+#domainsBar #spaceMenuDivId #spaces .spaceLevel1On .spaceURL,
+#domainsBar #spaceTransverse .spaceLevel1 .spaceURL,
+#domainsBar #spaceTransverse .spaceLevel1On .spaceURL,
+#domainsBar #spaceMenuDivId #spacePerso .spaceURL {
+	margin-left:19px;
 	color: #444444;
 	font-size:14px;
 }
 #domainsBar #spaceMenuDivId #spacePerso .spaceURL {
-	font-size:14px;
 	margin-left:29px;
 }
 #basSpaces {
 	display: none;
 }
+
+#domainsBar #spaceTransverse {
+	background-color: inherit;
+}
+
+#domainsBar #basSpaceTransverse {
+	display: none;
+}
+
 .gaucheBoutonV5, .droiteBoutonV5, .gaucheOngletOn, .droiteOngletOn, .gaucheOngletOff, .droiteOngletOff {
 	display: none;
 }
@@ -716,7 +728,39 @@ td.milieuOngletOn {
 	border-color:#F1790F;
 }
 
+/* contextual menu jstree */
+div#vakata-contextmenu.jstree-default-context{
+	padding:6px 0;
+	background-color:#FFD5AF;
+	border:1px solid #F1790F;
+	border-radius:  8px 0 8px 8px;
+	-moz-border-radius: 8px 0 8px 8px;
+	-webkit-border-radius:  8px 0 8px 8px;
+	margin-top:-3px;
+    box-shadow:none;
+}
 
+div#vakata-contextmenu.jstree-default-context li ul {
+    background-color:#FFD5AF;
+    border: 1px solid #F1790F;
+    box-shadow:none;
+}
+div#vakata-contextmenu.jstree-default-context a {
+	font-weight:bold;
+}
+div#vakata-contextmenu.jstree-default-context a:hover, div#vakata-contextmenu.jstree-default-context .vakata-hover > a {
+    background: none repeat scroll 0 0 #F1790F;
+    border: 0;
+    border-radius:0;
+    color: #FFF;;
+    padding: 0;
+}
+
+div#vakata-contextmenu.jstree-default-context li.vakata-separator {
+    background: none;
+    border-top: 1px solid #F1790F;
+    margin: 0;
+}
 
 /* regroupement des styles mise en couleur*/
 #blog #titresTopics a , #blog #titresArchives a, #blog #titresLiens a , .titreCouleur{

@@ -17,6 +17,7 @@
 <c:set var="selection"         value="${requestScope.SELECTION}"/>
 <c:set var="multipleSelection" value="${selection.multiSelect}"/>
 <c:set var="instanceId"        value="${selection.extraParams.componentId}"/>
+<c:set var="domainId"          value="${selection.extraParams.domainId}"/>
 <c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
@@ -76,13 +77,16 @@
       
       rootUserGroup.name      = '<fmt:message key="selection.RootUserGroups"/>';
       rootUserGroup.inComponent('<c:out value="${instanceId}"/>').withRoles('<c:out value="${roles}"/>');
+      rootUserGroup.inDomain('<c:out value="${domainId}"/>');
       
       var allUsers = new UserProfileManagement({
         component: '<c:out value="${instanceId}"/>',
-        roles: '<c:out value="${roles}"/>'
+        roles: '<c:out value="${roles}"/>',
+        domain: '<c:out value="${domainId}"/>'
       });
       
       var me = new UserProfile({id: '<c:out value="${currentUserId}"/>'}).
+        inDomain('<c:out value="${domainId}"/>').
         inComponent('<c:out value="${instanceId}"/>').
         withRoles('<c:out value="${roles}"/>');      
       var nameInUserSearch = null; // required for the pagination with the results of a search (as at each page, the users are loaded for that page, so
@@ -178,7 +182,7 @@
         // selection panel
         function loadPreselectionOfUsers() {
           if (preselectedUsers && preselectedUsers.length > 0) {
-            for(var i in preselectedUsers) {
+            for(var i = 0; i < preselectedUsers.length; i++) {
               new UserProfile({id: preselectedUsers[i]}).load(userSelection.add);
             }
           }
@@ -191,7 +195,7 @@
         // selection panel
         function loadPreselectionOfGroups() {
           if (preselectedUserGroups && preselectedUserGroups.length > 0) {
-            for(var i in preselectedUserGroups) {
+            for(var i = 0; i < preselectedUserGroups.length; i++) {
               new UserGroup({id: preselectedUserGroups[i]}).load(groupSelection.add);
             }
           }
@@ -229,11 +233,11 @@
                   $('#filter_groups').remove();
                   $('.groups_results_userPanel').remove();
                   $('.groups_selected_userPanel').remove();
-                  self.onAllUsers();
                 } else {
                   renderUserGroups(groups);
-                  renderUsersOfGroup(rootUserGroup);
                 }
+                self.onAllUsers();
+                highlightFilter($('#filter_users'));
               });
             });
           }

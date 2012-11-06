@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2000 - 2011 Silverpeas
+* Copyright (C) 2000 - 2012 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
 * Open Source Software ("FLOSS") applications as described in Silverpeas's
 * FLOSS exception. You should have received a copy of the text describing
 * the FLOSS exception, and it is also available here:
-* "http://repository.silverpeas.com/legal/licensing"
+* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,6 @@
 package com.silverpeas.lookV5;
 
 import com.silverpeas.admin.components.Instanciateur;
-import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -103,6 +102,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     String pdc = request.getParameter("Pdc");
     boolean displayContextualPDC = helper.displayContextualPDC();
     boolean displayPDC = "true".equalsIgnoreCase(request.getParameter("GetPDC"));
+    boolean restrictedPath = helper.getSettings("restrictedPathForSpaceTransverse", false);
 
     // User favorite space DAO
     List<UserFavoriteSpaceVO> listUserFS = new ArrayList<UserFavoriteSpaceVO>();
@@ -159,7 +159,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         // space transverse
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
                 defaultLook, displayPDC, true, orgaController, helper, writer, listUserFS,
-                displayMode);
+                displayMode, restrictedPath);
 
         // other spaces
         displayTree(userId, componentId, spaceIdsPath, preferences.getLanguage(),
@@ -190,7 +190,7 @@ public class AjaxServletLookV5 extends HttpServlet {
         List<String> spaceIdsPath = getSpaceIdsPath(spaceId, componentId, orgaController);
         displaySpace(spaceId, componentId, spaceIdsPath, userId, preferences.getLanguage(),
                 defaultLook, displayPDC, false, orgaController, helper, writer, listUserFS,
-                displayMode);
+                displayMode,restrictedPath);
         displayPDC(displayPDC, spaceId, componentId, userId, mainSessionController, writer);
       }
     } else if (StringUtil.isDefined(componentId)) {
@@ -292,7 +292,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           String userId, String language, String defaultLook,
           boolean displayPDC, boolean displayTransverse,
           OrganizationController orgaController, LookHelper helper, Writer writer,
-          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
+          List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode, boolean restrictedPath)
       throws IOException {
     boolean isTransverse = false;
     int i = 0;
@@ -307,7 +307,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     }
 
     boolean open = (spacePath != null && spacePath.contains(spaceId));
-    if (open) {
+    if ((open) && (!restrictedPath)) {
       spaceId = spacePath.remove(0);
     }
 
@@ -390,7 +390,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       if (loadCurSpace && isSpaceVisible(userId, spaceId, orgaController, helper)) {
         displaySpace(spaceId, targetComponentId, spacePath, userId, language,
                 defaultLook, false, false, orgaController, helper, out, listUFS,
-            userMenuDisplayMode);
+            userMenuDisplayMode, false);
       }
       loadCurSpace = false;
     }
@@ -547,9 +547,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           url = URLManager.getURL(component.getName(), null, component.getId()) + "Main";
 
           kind = component.getName();
-          WAComponent descriptor = Instanciateur.getWAComponent(component.getName());
-          if (descriptor != null
-                  && "RprocessManager".equalsIgnoreCase(descriptor.getRouter())) {
+          if (component.isWorkflow()) {
             kind = "processManager";
           }
 

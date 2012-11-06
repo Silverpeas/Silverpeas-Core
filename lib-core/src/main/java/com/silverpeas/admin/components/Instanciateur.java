@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -123,9 +123,8 @@ public class Instanciateur {
     WAComponent waComponent = getWAComponent(componentName);
     if (waComponent == null) {
       // load dynamically new component descriptor (not loaded on startup)
-      String fullPath = null;
       try {
-        fullPath = getDescriptorFullPath(componentName);
+        String fullPath = getDescriptorFullPath(componentName);
         waComponent = loadComponent(fullPath);
       } catch (IOException e) {
         throw new InstanciationException("Instanciateur.instantiateComponentName",
@@ -163,9 +162,8 @@ public class Instanciateur {
   }
 
   public void unInstantiateComponentName(String componentName) throws InstanciationException {
-    String fullPath = null;
     try {
-      fullPath = getDescriptorFullPath(componentName);
+      String fullPath = getDescriptorFullPath(componentName);
       unInstantiateComponent(loadComponent(fullPath));
     } catch (IOException e) {
       throw new InstanciationException("Instanciateur.unInstantiateComponentName",
@@ -202,6 +200,14 @@ public class Instanciateur {
 
   public synchronized static WAComponent getWAComponent(String componentName) {
     return WAComponents.get(componentName);
+  }
+  
+  public static boolean isWorkflow(String componentName) {
+    WAComponent descriptor = getWAComponent(componentName);
+    if (descriptor != null && "RprocessManager".equalsIgnoreCase(descriptor.getRouter())) {
+      return true;
+    }
+    return false;
   }
 
   public synchronized static Map<String, WAComponent> getWAComponents() {

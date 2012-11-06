@@ -9,7 +9,7 @@
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -32,7 +32,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-
+import org.silverpeas.search.indexEngine.IndexFileManager;
 import static java.io.File.separatorChar;
 
 /**
@@ -43,16 +43,15 @@ public class FileRepositoryManager {
 
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
-  final static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
       + File.separatorChar + "avatar");
   static String tempPath = "";
   static String domainPropertiesFolderPath;
   static String domainAuthenticationPropertiesFolderPath;
   final static ResourceLocator uploadSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.uploads.uploadSettings", "");
-  static final ResourceLocator utilMessages =
-      new ResourceLocator("com.silverpeas.util.multilang.util", "");
+      "org.silverpeas.util.uploads.uploadSettings", "");
+  static final ResourceLocator utilMessages = new ResourceLocator(
+      "org.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
   static final long ko = 1024;
@@ -173,17 +172,6 @@ public class FileRepositoryManager {
     return getAbsolutePath(sComponentId) + "Temp" + File.separator;
   }
 
-  public static String getAbsoluteIndexPath(String particularSpace, String componentId) {
-    SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
-        "particularSpace = " + particularSpace + " sComponentId= " + componentId);
-    if (particularSpace != null && (particularSpace.startsWith("user@") || "transverse".equals(
-        particularSpace))) {
-      return indexUpLoadPath + separatorChar + particularSpace + separatorChar + componentId
-          + separatorChar + "index";
-    }
-    return indexUpLoadPath + separatorChar + componentId + separatorChar + "index";
-  }
-
   /**
    * @param sSpaceId
    * @param sComponentId
@@ -220,7 +208,8 @@ public class FileRepositoryManager {
   }
 
   public static void createAbsoluteIndexPath(String particularSpace, String componentId) {
-    FileFolderManager.createFolder(getAbsoluteIndexPath(particularSpace, componentId));
+    FileFolderManager.createFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
+        componentId));
   }
 
   public static void deleteAbsolutePath(String sSpaceId, String sComponentId,
@@ -236,7 +225,7 @@ public class FileRepositoryManager {
 
   public static void deleteAbsoluteIndexPath(String particularSpace,
       String sComponentId) {
-    FileFolderManager.deleteFolder(getAbsoluteIndexPath(particularSpace,
+    FileFolderManager.deleteFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
 
@@ -397,15 +386,6 @@ public class FileRepositoryManager {
       k++;
     }
     return context;
-  }
-
-  /**
-   * get the base directory of index upload path
-   *
-   * @return
-   */
-  public static String getIndexUpLoadPath() {
-    return indexUpLoadPath + File.separator;
   }
 
   /**

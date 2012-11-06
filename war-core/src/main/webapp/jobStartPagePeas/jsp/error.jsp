@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,24 +35,22 @@ String spaceId = (String) request.getAttribute("CurrentSpaceId");
 browseBar.setSpaceId(spaceId);
 
 String messageTitle = resource.getString("JSPP.ErrorComponentCreation");
-String message = resource.getString("JSPP.ErrorComponentMessage");
+String message = (String) request.getAttribute("ErrorMessage");
+if (!StringUtil.isDefined(message)) {
+  message = resource.getString("JSPP.ErrorComponentMessage");
+}
 browseBar.setPath(resource.getString("JSPP.creationInstance"));
-if (when.equals("ComponentUpdate"))
-{
-	messageTitle = resource.getString("JSPP.ErrorComponentUpdate");
-	browseBar.setPath(resource.getString("GML.modify"));
-}
-else if (when.equals("SpaceCreation"))
-{
-	messageTitle = resource.getString("JSPP.ErrorSpaceCreation");
-	message = resource.getString("JSPP.ErrorSpaceMessage");
-	browseBar.setPath(resource.getString("JSPP.creationSpace"));
-}
-else if (when.equals("SpaceUpdate"))
-{
-	messageTitle = resource.getString("JSPP.ErrorSpaceUpdate");
-	message = resource.getString("JSPP.ErrorSpaceMessage");
-	browseBar.setPath(resource.getString("JSPP.updateSpace"));
+if (when.equals("ComponentUpdate")) {
+  messageTitle = resource.getString("JSPP.ErrorComponentUpdate");
+  browseBar.setPath(resource.getString("GML.modify"));
+} else if (when.equals("SpaceCreation")) {
+  messageTitle = resource.getString("JSPP.ErrorSpaceCreation");
+  message = resource.getString("JSPP.ErrorSpaceMessage");
+  browseBar.setPath(resource.getString("JSPP.creationSpace"));
+} else if (when.equals("SpaceUpdate")) {
+  messageTitle = resource.getString("JSPP.ErrorSpaceUpdate");
+  message = resource.getString("JSPP.ErrorSpaceMessage");
+  browseBar.setPath(resource.getString("JSPP.updateSpace"));
 }
 %>
 

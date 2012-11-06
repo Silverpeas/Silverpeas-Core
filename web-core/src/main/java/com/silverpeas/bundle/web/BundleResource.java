@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,17 +38,17 @@ import org.springframework.stereotype.Service;
 
 /**
  * The bundle resource represents an i18n bundle of translated messages.
- * 
+ *
  * This WEB service is an entry point to access the different bundles in use in Silverpeas. It can
  * be accessed only by authenticated users so that is is easy to know the language of the bundle to
  * sent back. Yet, ony the i18n properties can be accessed, no application settings or icons.
  *
  * The i18n bundled is refered in the URI by its absolute location in the classpath of the Silverpeas
  * portal with as well / or . as path separators, and it can be or not suffixed with properties. The
- * language can be indicated with the resource bundle name, otherwise the language of the current 
+ * language can be indicated with the resource bundle name, otherwise the language of the current
  * user underlying at the HTTP request is taken. If the specified language isn't supported by
  * Silverpeas, then the default language in Silverpeas (yet the French), is taken.
- * 
+ *
  * In order to add some flexibility, particularly with client-side scripts, the language of the user
  * can be explictly indicated with the resource bundle name, whatever it is and without knowing it,
  * by using the wildcard $$ as language code; this wildcard means whatever the language
@@ -69,23 +69,23 @@ public class BundleResource extends RESTWebService {
    * Asks for an i18n resource bundle either in the language of the current user in the session or
    * in the specified language. The returned bundle is a merge of both the asked i18n properties and
    * the general Silverpeas i18n texts.
-   * 
+   *
    * The resource bundle is specified by its absolute path in the classpath of the WEB service.
-   * 
+   *
    * If the language is specified with the name of the bundle, it will be considered in place of
    * the language of the current user in the underlying WEB session. For doing, the langage has to be
    * indicated as expected with localized resource bundles. If the language isn't supported by
    * Silverpeas, the default language will be taken. In order to work with some javascript plugins
    * in charge of i18n texts, the method accepts also the particular wildcard $$ to specify explicitly
    * the language of the current user.
-   * 
+   *
    * @see java.util.ResourceBundle
    * @param bundle the absolute path of the resource bundle in the classpath of Silverpeas.
    * @return an HTTP response with the asked properties or an HTTP error.
    * @throws IOException if an error occurs while accessing the resource bundle.
    */
   @GET
-  @Path("{bundle: com/[a-zA-Z0-9/._$]+}")
+  @Path("{bundle: (com|org)/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getBundle(@PathParam("bundle") final String bundle) throws IOException {
     String language = getUserPreferences().getLanguage();

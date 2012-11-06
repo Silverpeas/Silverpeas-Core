@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,6 +25,8 @@
 package com.silverpeas.converter;
 
 import java.io.File;
+
+import com.silverpeas.converter.option.FilterOption;
 
 /**
  * This interface defines the ability to convert a document in a given format into a specified
@@ -40,9 +42,22 @@ public interface DocumentFormatConversion {
    * DocumentFormatConversionException is thrown.
    * @param source the document to convert.
    * @param inFormat the format into which the document has to be converted.
+   * @param options additional options such as "PageRange"
    * @return the file with the converted document.
    */
-  File convert(final File source, final DocumentFormat inFormat);
+  File convert(File source, DocumentFormat inFormat, FilterOption ... options);
+
+  /**
+   * Converts the specified document in the specified format. The format should be supported by the
+   * converter. If an error occurs while converting the specified file, then a runtime exception
+   * DocumentFormatConversionException is thrown.
+   * @param source the document to convert.
+   * @param destination the converted document.
+   * @param inFormat the format into which the document has to be converted.
+   * @return the destination file.
+   */
+  File convert(File source, File destination, DocumentFormat inFormat, FilterOption ... options);
+
 
   /**
    * Gets the formats of documents supported by the converter.

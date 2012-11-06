@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,9 @@
 
 package org.silverpeas.search;
 
-import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-
-import java.rmi.RemoteException;
 import java.util.Set;
+import org.silverpeas.search.searchEngine.model.ParseException;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 /**
  * A SearchEngine search the web'activ index and give access to the retrieved index entries.
@@ -36,16 +35,13 @@ public interface SearchEngine {
   /**
    * Search the index for the required documents.
    */
-  PlainSearchResult search(QueryDescription query) throws RemoteException;
-
+  PlainSearchResult search(QueryDescription query) throws ParseException;
 
   /**
    * gets a list of suggestion from a partial String
    * @param keywordFragment string to execute the search
    * @return a set of result sorted by alphabetic order
    */
-  Set<String> suggestKeywords(String keywordFragment) throws RemoteException;
-
-
+  Set<String> suggestKeywords(String keywordFragment);
 
 }

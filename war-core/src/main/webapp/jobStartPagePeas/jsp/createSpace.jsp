@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,32 +33,28 @@ String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
 Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
+boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
 long    defaultDataStorageQuota = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
-boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
 
 	browseBar.setSpaceId(spaceId);
-	browseBar.setClickable(false);
 	if (m_SousEspace == null)
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));
 	else
 		browseBar.setPath(resource.getString("JSPP.creationSubSpace"));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-
-<script language="JavaScript">
-
-function B_ANNULER_ONCLICK() {
-	window.close();
-}
-
+<script type="text/javascript">
 /*****************************************************************************/
 function B_VALIDER_ONCLICK() {
 	if (isCorrectForm()) {
@@ -85,6 +81,14 @@ function isCorrectForm() {
       errorNb++;
     }
 
+    <% if (isComponentSpaceQuotaActivated) { %>
+     var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
+     if (isWhitespace(componentSpaceQuota)) {
+       errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
+       errorNb++;
+     }
+    <% } %>
+
     <% if (isDataStorageQuotaActivated) { %>
       var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
       if (isWhitespace(dataStorageQuota)) {
@@ -92,6 +96,7 @@ function isCorrectForm() {
         errorNb++;
       }
     <% } %>
+
 
      switch(errorNb)
      {
@@ -113,10 +118,10 @@ function isCorrectForm() {
 
 }
 </script>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" onLoad="document.infoSpace.NameObject.focus();">
-<FORM NAME="infoSpace" action = "SetSpaceTemplateProfile" METHOD="POST">
-<input type="hidden" name="SousEspace" value="<%=m_SousEspace%>">
+</head>
+<body onload="document.infoSpace.NameObject.focus();">
+<form name="infoSpace" action="SetSpaceTemplateProfile" method="post">
+<input type="hidden" name="SousEspace" value="<%=m_SousEspace%>"/>
 
 <%
 out.println(window.printBefore());
@@ -128,7 +133,7 @@ out.println(board.printBefore());
 			<%=I18NHelper.getFormLine(resource)%>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.name")%> :</td>
-				<td><input type="text" name="NameObject" size="60" maxlength="60" value="">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"></td>
+				<td><input type="text" name="NameObject" size="60" maxlength="60" value=""/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/></td>
 			</tr>
 			<tr>
 				<td class="txtlibform" valign="top"><%=resource.getString("GML.description")%> :</td>
@@ -137,35 +142,38 @@ out.println(board.printBefore());
 			<tr>
 				<td class="txtlibform"><%=resource.getString("JSPP.SpacePlace")%> :</td>
 				<td valign="top">
-                    <SELECT name="SpaceBefore" id="SpaceBefore">
+                    <select name="SpaceBefore" id="SpaceBefore">
                         <%
-                            for (int i = 0; i < brothers.length; i++)
-                            {
-                                out.println("<OPTION value=\"" + brothers[i].getId() + "\">" + brothers[i].getName() + "</OPTION>");
+                            for (int i = 0; i < brothers.length; i++) {
+                                out.println("<option value=\"" + brothers[i].getId() + "\">" + brothers[i].getName() + "</option>");
                             }
                         %>
-                        <OPTION value="-1" selected><%=resource.getString("JSPP.PlaceLast")%></OPTION>
-                    </SELECT>
+                        <option value="-1" selected="selected"><%=resource.getString("JSPP.PlaceLast")%></option>
+                    </select>
 				</td>
 			</tr>
             <tr>
 				<td class="txtlibform"><%=resource.getString("JSPP.SpaceTemplate")%> :</td>
 				<td>
-                    <SELECT name="SpaceTemplate" id="SpaceTemplate">
-                        <OPTION value=""><%=resource.getString("JSPP.NoTemplate")%></OPTION>
+                    <select name="SpaceTemplate" id="SpaceTemplate">
+                        <option value=""><%=resource.getString("JSPP.NoTemplate")%></option>
                         <%
-                            Iterator it = m_SpaceTemplates.keySet().iterator();
-
-                            while (it.hasNext())
-                            {
-                                String theKey = (String)it.next();
+                            Iterator<String> it = m_SpaceTemplates.keySet().iterator();
+                            while (it.hasNext()) {
+                                String theKey = it.next();
                                 SpaceTemplate st = (SpaceTemplate)m_SpaceTemplates.get(theKey);
-                                out.println("<OPTION value=\"" + theKey + "\">" + st.getDefaultName() + "</OPTION>");
+                                out.println("<option value=\"" + theKey + "\">" + st.getDefaultName() + "</option>");
                             }
                         %>
-                    </SELECT>
+                    </select>
 				</td>
 			</tr>
+      <% if (isComponentSpaceQuotaActivated) { %>
+        <tr>
+          <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
+          <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="0"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+        </tr>
+      <% } %>
       <% if (isDataStorageQuotaActivated) { %>
         <tr>
           <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
@@ -173,7 +181,7 @@ out.println(board.printBefore());
         </tr>
       <% } %>
 			<tr align=left>
-				<td colspan="2">(<img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+				<td colspan="2"><img border="0" src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%></td>
 			</tr>
 		</table>
 
@@ -181,13 +189,13 @@ out.println(board.printBefore());
 		out.println(board.printAfter());
 
 		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+		buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back()", false));
 		out.println("<br/><center>"+buttonPane.print()+"</center>");
 
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
 %>
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

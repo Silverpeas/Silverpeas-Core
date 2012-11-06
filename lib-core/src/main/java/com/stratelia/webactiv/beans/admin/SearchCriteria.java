@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,136 +23,76 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Criteria for searching users profiles or user groups.
+/** 
+ * Criteria to use in a search of resources in the administration console (like user profiles or
+ * user groups).
  */
-public class SearchCriteria {
-  public static final String ANY_GROUP = "any";
-  
-  private static final String GROUP_ID = "groupId";
-  private static final String USER_IDS = "userIds";
-  private static final String ROLE_IDS = "roleIds";
-  private static final String DOMAIN_ID = "domainId";
-  private static final String INSTANCE_ID = "instanceId";
-  private static final String NAME = "name";
-  
-  private Map<String, Object> criteria = new HashMap<String, Object>();
+public interface SearchCriteria {
 
-  public SearchCriteria onName(String name) {
-    if (isDefined(name)) {
-      criteria.put(NAME, name);
-    }
-    return this;
-  }
+  /**
+   * The whatever value to be used as criterion value if you don't care of a given criterion.
+   */
+  static final String[] ANY = null;
 
-  public SearchCriteria onComponentInstanceId(String instanceId) {
-    if (isDefined(instanceId)) {
-      criteria.put(INSTANCE_ID, instanceId);
-    }
-    return this;
-  }
+  /**
+   * Appends a criteria conjonction.
+   * @return the criteria enriched with a conjonction. The conjonction will be applied with the last
+   * added criterion and the next one.
+   */
+  SearchCriteria and();
 
-  public SearchCriteria onRoleIds(String[] roleIds) {
-    if (roleIds != null && roleIds.length > 0) {
-      criteria.put(ROLE_IDS, roleIds);
-    }
-    return this;
-  }
+  /**
+   * Appends a criterion on the component instance the resources to fetch have to satisfy.
+   * @param instanceId the unique identifier of the component instance.
+   * @return the criteria enriched with a criterion on the component instance.
+   */
+  SearchCriteria onComponentInstanceId(String instanceId);
 
-  public SearchCriteria onGroupId(String group) {
-    if (isDefined(group)) {
-      criteria.put(GROUP_ID, group);
-    }
-    return this;
-  }
+  /**
+   * Appends a criterion on the domain the resources to fetch have to satisfy.
+   * @param domainId the unique identifier of the domain.
+   * @return the criteria enriched with a criterion on the domain.
+   */
+  SearchCriteria onDomainId(String domainId);
 
-  public SearchCriteria onDomainId(String domainId) {
-    if (isDefined(domainId)) {
-      criteria.put(DOMAIN_ID, domainId);
-    }
-    return this;
-  }
+  /**
+   * Appends a criterion on the user groups the resources to fetch have to satisfy.
+   * @param groupIds the unique identifiers of the groups.
+   * @return the criteria enriched with a criterion on the user groups.
+   */
+  SearchCriteria onGroupIds(String... groupIds);
 
-  public SearchCriteria onUserIds(String[] userIds) {
-    if (userIds != null && userIds.length > 0) {
-      criteria.put(USER_IDS, userIds);
-    }
-    return this;
-  }
+  /**
+   * Appends a criterion on the name the resources to fetch have to match.
+   * @param name a pattern on name.
+   * @return the criteria enriched with a criterion on the user name.
+   */
+  SearchCriteria onName(String name);
 
-  public boolean isCriterionOnRoleIdsSet() {
-    return criteria.containsKey(ROLE_IDS);
-  }
+  /**
+   * Appends a criterion on the roles the resources to fetch have to satisfy.
+   * @param roleIds the unique identifiers of the roles
+   * @return the criteria enriched with a criterion on the role identifiers.
+   */
+  SearchCriteria onRoleIds(String... roleIds);
 
-  public boolean isCriterionOnComponentInstanceIdSet() {
-    return criteria.containsKey(INSTANCE_ID);
-  }
+  /**
+   * Appends a criteria on the user profiles the resources to fetch have to satisfy.
+   * @param userIds the user identifiers.
+   * @return the criteria enriched with a criterion on the user identifiers.
+   */
+  SearchCriteria onUserIds(String... userIds);
 
-  public boolean isCriterionOnUserIdsSet() {
-    return criteria.containsKey(USER_IDS);
-  }
+  /**
+   * Appends a criteria disjonction.
+   * @return the criteria enriched with a disjonction. The disjonction will be applied with the last
+   * added criterion and the next one.
+   */
+  SearchCriteria or();
 
-  public boolean isCriterionOnGroupIdSet() {
-    return criteria.containsKey(GROUP_ID);
-  }
-
-  public boolean isCriterionOnDomainIdSet() {
-    return criteria.containsKey(DOMAIN_ID);
-  }
-
-  public boolean isCriterionOnNameSet() {
-    return criteria.containsKey(NAME);
-  }
-  
-  public String[] getCriterionOnRoleIds() {
-    return (String[]) criteria.get(ROLE_IDS);
-  }
-
-  public String getCriterionOnComponentInstanceId() {
-    return (String) criteria.get(INSTANCE_ID);
-  }
-  
-  public String[] getCriterionOnUserIds() {
-    return (String[]) criteria.get(USER_IDS);
-  }
-
-  public String getCriterionOnGroupId() {
-    return (String) criteria.get(GROUP_ID);
-  }
-
-  public String getCriterionOnDomainId() {
-    return (String) criteria.get(DOMAIN_ID);
-  }
-
-  public String getCriterionOnName() {
-    return (String) criteria.get(NAME);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final SearchCriteria other = (SearchCriteria) obj;
-    if (this.criteria != other.criteria &&
-            (this.criteria == null || !this.criteria.equals(other.criteria))) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 5;
-    hash = 53 * hash + (this.criteria != null ? this.criteria.hashCode() : 0);
-    return hash;
-  }
-  
+  /**
+   * Is this criteria empty?
+   * @return true if this criteria has no criterion, false otherwise.
+   */
+  boolean isEmpty();
 }

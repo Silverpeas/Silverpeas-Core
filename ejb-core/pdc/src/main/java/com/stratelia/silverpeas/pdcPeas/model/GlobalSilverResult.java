@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,16 +24,15 @@
 
 package com.stratelia.silverpeas.pdcPeas.model;
 
-import java.io.File;
-import java.util.Hashtable;
-import java.util.List;
-
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
-import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,
@@ -46,6 +45,10 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private String downloadLink = null;
   private String creatorName = null;
   private boolean exportable = false;
+  private boolean viewable = false;
+  private boolean previewable = false;
+  private String attachmentId = null;
+  private boolean versioned = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
   private boolean hasRead = false; // marks a result as redden
@@ -58,7 +61,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    */
   private List<String> embeddedFileIds;
   
-  private Hashtable<String, String> formFieldsForFacets;
+  private Map<String, String> formFieldsForFacets;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
     super(gsc.getName(), gsc.getDescription(), gsc.getId(), gsc.getSpaceId(),
@@ -79,11 +82,10 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setType(mie.getObjectType());
     super.setScore(mie.getScore());
     this.embeddedFileIds = mie.getEmbeddedFileIds();
-    this.setFormFieldsForFacets(mie.getXMLFormFieldsForFacets());
+    this.formFieldsForFacets = mie.getXMLFormFieldsForFacets();
 
     if (mie.getThumbnail() != null) {
-      String[] dimensions = null;
-      File image = null;
+      File image;
       if (mie.getThumbnail().startsWith("/")) {
         // case of a thumbnail picked up in a gallery
         super.setThumbnailURL(mie.getThumbnail());
@@ -113,7 +115,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
         image = new File(FileRepositoryManager.getAbsolutePath(mie.getComponent(), directory)
             + mie.getThumbnail());
       }
-      dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
+      String[] dimensions = ImageUtil.getWidthAndHeightByWidth(image, 60);
       if (!StringUtil.isDefined(dimensions[0])) {
         dimensions[0] = "60";
         dimensions[1] = "45";
@@ -219,12 +221,48 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     this.externalUrl = externalUrl;
   }
 
-  public void setFormFieldsForFacets(Hashtable<String, String> formFieldsForFacets) {
+  public void setFormFieldsForFacets(Map<String, String> formFieldsForFacets) {
     this.formFieldsForFacets = formFieldsForFacets;
   }
 
-  public Hashtable<String, String> getFormFieldsForFacets() {
+  public Map<String, String> getFormFieldsForFacets() {
     return formFieldsForFacets;
+  }
+  
+  public void setViewable(boolean viewable) {
+    this.viewable = viewable;
+  }
+
+  public boolean isViewable() {
+    return viewable;
+  }
+
+  public void setPreviewable(boolean previewable) {
+    this.previewable = previewable;
+  }
+
+  public boolean isPreviewable() {
+    return previewable;
+  }
+  
+  public void setAttachmentId(String attachmentId) {
+    this.attachmentId = attachmentId;
+  }
+
+  public String getAttachmentId() {
+    return attachmentId;
+  }
+
+  public void setVersioned(boolean versioned) {
+    this.versioned = versioned;
+  }
+
+  public boolean isVersioned() {
+    return versioned;
+  }
+  
+  public boolean isAttachment() {
+    return StringUtil.isDefined(getAttachmentId());
   }
 
   @Override
@@ -243,4 +281,5 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     hash = 29 * hash + (this.getInstanceId() != null ? this.getInstanceId().hashCode() : 0);
     return hash;
   }
+
 }

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -104,7 +104,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
             psc.addComponent(helper.getUserId(), componentName, getComponentLabel(componentName,
             helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
-      } catch (AdminException e) {
+      } catch (Exception e) {
         writer.write(getResult(componentName, null, e, helper).toString());
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.doPost.AddComponent",
             "root.EX_NO_MESSAGE", e);

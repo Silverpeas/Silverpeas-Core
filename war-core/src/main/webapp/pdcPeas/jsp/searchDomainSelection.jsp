@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@page import="java.util.List"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
@@ -31,7 +31,7 @@
 
 <%
    ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-   Vector searchDomains = (Vector) request.getAttribute("searchDomains");
+   List<String[]> searchDomains = (List<String[]>) request.getAttribute("searchDomains");
    String currentSearchDomainId = (String) request.getAttribute("currentSearchDomainId");
    currentSearchDomainId = (currentSearchDomainId==null) ? "SILVERPEAS" : currentSearchDomainId;
 %>
@@ -57,23 +57,23 @@
 	<TR>
 		<TD class="textePetitBold" nowrap><%=resource.getString("pdcPeas.searchDomain")%> :&nbsp;</td>
 		<td>
+          <form name="searchDomainChoice" method="POST" action="..." onSubmit="calculateAction()">
 			<table cellpadding=2 cellspacing=1 border=0 width="100%"  bgcolor=000000>
 				<tr>
-					<form name="searchDomainChoice" method="POST" action="..." onSubmit="calculateAction()">
-						<td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-							<span class="selectNS"> 
-							<select name="searchDomainId" onChange="calculateAction()">
+                  <td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
+                    <span class="selectNS">
+                      <select name="searchDomainId" onChange="calculateAction()">
 							   <% for (int i=0; searchDomains!=null && i<searchDomains.size() ; i++) 
 								  {
-									  String[] domain = (String[]) searchDomains.get(i);%>
+									  String[] domain = searchDomains.get(i);%>
 								   <option <%=currentSearchDomainId.equals(domain[2])?"selected":""%> 	value="<%=domain[2]%>"><%=domain[0]%></option>
 								<% } %>
-							</select>
-							</span>
-						</td>
-					</form>
+                      </select>
+                    </span>
+                  </td>					
 				</tr>
 			</table>
+          </form>
 		</td>
 		<td width="100%"> 
 		&nbsp;
@@ -81,3 +81,4 @@
 	</tr>
 </table>
 <br>
+>>>>>>> upgrade_lucene

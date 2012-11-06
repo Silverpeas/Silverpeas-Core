@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,10 +24,9 @@
 package org.silverpeas.admin.space;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.quota.service.QuotaService;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService;
 
 /**
  * @author Yohann Chastagnier
@@ -37,14 +36,16 @@ public class SpaceServiceFactory {
   private static final SpaceServiceFactory instance = new SpaceServiceFactory();
 
   @Inject
-  @Named("dataStorageSpaceQuotaService")
-  private QuotaService<DataStorageSpaceQuotaKey> dataStorageSpaceQuotaService;
+  private ComponentSpaceQuotaService componentSpaceQuotaService;
+
+  @Inject
+  private DataStorageSpaceQuotaService dataStorageSpaceQuotaService;
 
   /**
-   * @return the dataStorageSpaceQuotaService
+   * @return the componentSpaceQuotaService
    */
-  public static QuotaService<DataStorageSpaceQuotaKey> getDataStorageSpaceQuotaService() {
-    return getInstance().dataStorageSpaceQuotaService;
+  public static ComponentSpaceQuotaService getComponentSpaceQuotaService() {
+    return getInstance().componentSpaceQuotaService;
   }
 
   /**
@@ -53,5 +54,12 @@ public class SpaceServiceFactory {
    */
   private static SpaceServiceFactory getInstance() {
     return instance;
+  }
+
+  /**
+   * @return the dataStorageSpaceQuotaService
+   */
+  public static DataStorageSpaceQuotaService getDataStorageSpaceQuotaService() {
+    return getInstance().dataStorageSpaceQuotaService;
   }
 }

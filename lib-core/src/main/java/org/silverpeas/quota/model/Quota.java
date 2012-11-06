@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,7 +51,7 @@ import org.silverpeas.quota.exception.QuotaException;
  */
 @Entity
 @Table(name = "st_quota")
-public class Quota implements Serializable {
+public class Quota implements Serializable, Cloneable {
   private static final long serialVersionUID = 6564633879921455848L;
 
   @Id
@@ -297,5 +297,21 @@ public class Quota implements Serializable {
    */
   public void setSaveDate(final Date saveDate) {
     this.saveDate = saveDate;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#clone()
+   */
+  @Override
+  public Quota clone() {
+    Quota quota;
+    try {
+      quota = (Quota) super.clone();
+      quota.setId(null);
+    } catch (final CloneNotSupportedException e) {
+      quota = null;
+    }
+    return quota;
   }
 }

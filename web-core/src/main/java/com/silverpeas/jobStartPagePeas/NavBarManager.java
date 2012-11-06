@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -495,8 +495,12 @@ public class NavBarManager {
         for (int j = 0; j < ds.deep - 1; j++) {
           componentsSpaces.append("&nbsp;&nbsp;");
         }
+        String componentIcon = ci.getName();
+        if (ci.isWorkflow()) {
+          componentIcon = "processManager";
+        }
         ds.htmlLine = componentsSpaces.toString()
-            + urlFactory(link, "element" + m_elmtCounter++, ci.getName(),
+            + urlFactory(link, "element" + m_elmtCounter++, componentIcon,
             label, COMPONENT, objType, m_sContext,
             "startPageContent", ds);
       } else {
@@ -524,13 +528,13 @@ public class NavBarManager {
         break;
       case COMPONENT:
         if ((target != null) && (target.length() > 0)) {
-          target = "TARGET=\"" + target + "\"";
+          target = "target=\"" + target + "\"";
         }
         boldStart = "";
         boldEnd = "";
         break;
       case COMPONENTPOPUP:
-        target = "TARGET=\"_blank\"";
+        target = "target=\"_blank\"";
         boldStart = "";
         boldEnd = "";
         break;
@@ -542,12 +546,12 @@ public class NavBarManager {
       case SPACE_COLLAPSE:
         result.append("<a href=\"").append(link).append("\"").append(target)
             .append("><img src=\"").append(m_sContext).append(
-            "/util/icons/plusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/plusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""
             + m_sContext
-            + "/util/icons/colorPix/1px.gif\" width=1 height=1 border=0 align=\"absmiddle\">";
+            + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
         break;
       case SPACE_EXPANDED:
         result
@@ -558,29 +562,29 @@ public class NavBarManager {
             .append("><img src=\"")
             .append(m_sContext)
             .append(
-            "/util/icons/minusTree.gif\" border=0 align=\"absmiddle\"></a>");
+            "/util/icons/minusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\""
             + elementLabel
             + "\" src=\""
             + m_sContext
-            + "/util/icons/colorPix/1px.gif\" width=1 height=1 border=0 align=\"absmiddle\">";
+            + "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" align=\"absmiddle\">";
         break;
       case SPACE_COMPONENT:
         break;
       case SUBSPACE_COMPONENT:
         result.append("<img src=\"").append(m_sContext).append(
-            "/util/icons/minusTreeT.gif\" border=0 align=\"absmiddle\">");
+            "/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
         break;
       case SUBSPACE_LAST_COMPONENT:
         result.append("<img src=\"").append(m_sContext).append(
-            "/util/icons/minusTreeL.gif\" border=0 align=\"absmiddle\">");
+            "/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
         break;
     }
     result.append("<a href=\"").append(link).append("\" ").append(target)
         .append(">").append(imageLinked).append("&nbsp</a>");
     result.append("<a href=\"").append(link).append("\" ").append(target)
         .append(">").append(boldStart).append(labelLinked).append(boldEnd)
-        .append("</a><br>");
+        .append("</a><br/>");
     return result.toString();
   }
 

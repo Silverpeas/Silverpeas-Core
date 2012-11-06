@@ -12,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/legal/licensing"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +29,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<c:set var="componentId" value="${requestScope.componentId}" />
 <c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
 <c:set var="from" value="${param.from}" />
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
@@ -41,13 +40,12 @@
       response.setHeader("Pragma", "no-cache"); //HTTP 1.0
       response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-  <head>
-    <title>___/ Silverpeas - Corporate Portal Organizer
-      \________________________________________________________________________</title>
-      <view:looknfeel />
+<head>
+<title><fmt:message key="GML.popupTitle"/></title>
+<view:looknfeel/>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
-
     <script type="text/javascript" >
       function deleteMessage( notifId )
       {
@@ -71,31 +69,28 @@
         }
     </script>
   </head>
-  <body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5">
+  <body>
     <fmt:message key="silverMail" var="browseLabel" />
-    <view:browseBar>
-      <view:browseBarElt link="" label="${browseLabel}" />
-      <view:browseBarElt link="" label="${notif.title}" />
+    <view:browseBar clickable="false">
+      <view:browseBarElt link="#" label="${browseLabel}" />
+      <view:browseBarElt link="#" label="${notif.title}" />
     </view:browseBar>
     <view:window>
       <view:frame>
-        <center>
-          <table cellpadding="2" cellspacing="0" border="0" width="98%" class="intfdcolor">
-            <tr>
-              <td class="intfdcolor4" NOWRAP>
-                <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-                  <form name="silvermailForm" Action="" Method="POST">
+        <view:board>
+              	<form name="silvermailForm" action="" method="post">
+                <table cellpadding="5" cellspacing="0" border="0" width="100%">
                     <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="date"/>:&nbsp;</td>
-                      <td align=left valign="baseline"><fmt:formatDate value="${notif.notifDate}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
+                      <td class="txtlibform"><fmt:message key="date"/></td>
+                      <td><fmt:formatDate value="${notif.notifDate}" pattern="dd/MM/yyyy HH:mm:ss" /></td>
                     </tr>
                     <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="source"/>:&nbsp;</td>
-                      <td align=left valign="baseline"><c:out value="${notif.source}" /></td>
+                      <td class="txtlibform"><fmt:message key="source"/></td>
+                      <td><c:out value="${notif.source}" /></td>
                     </tr>
                     <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="url"/>:&nbsp;</td>
-                      <td align=left valign="baseline">
+                      <td class="txtlibform"><fmt:message key="url"/></td>
+                      <td>
                         <c:if test="${!empty notif.link}">
                           <fmt:message key="silvermail.link" bundle="${icons}" var="icon_url" />
                           <a href="javaScript:goTo();"><img src="<c:url value="${icon_url}"/>" border="0"/></a>
@@ -103,26 +98,24 @@
                       </td>
                     </tr>
                     <tr>
-                      <td valign="baseline" align=left class="txtlibform"><fmt:message key="title"/>:&nbsp;</td>
-                      <td align=left valign="baseline"><c:out value="${notif.title}" /></td>
+                      <td class="txtlibform"><fmt:message key="title"/></td>
+                      <td><c:out value="${notif.title}" /></td>
                     </tr>
                     <tr>
-                      <td valign="baseline" align=left class="txtlibform"></td>
-                      <td align=left valign="baseline"><c:out value="${notif.body}" /></td>
+                      <td class="txtlibform"></td>
+                      <td><c:out value="${notif.body}" escapeXml="false"/></td>
                     </tr>
-                  </form>
                 </table>
-              </td>
-            </tr>
-          </table>
-          <table cellpadding="2" cellspacing="0" border="0"><tr><td><img src="<c:url value="/util/icons/colorPix/1px.gif" />"/></td></tr></table>
-                <fmt:message var="closeLabel" key="close" />
-                <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
-          <fmt:message var="deleteLabel" key="delete" />
-          <table cellpadding="2" cellspacing="0" border="0"><tr><td>
-                <view:button label="${deleteLabel}" action="${deleteAction}"/></td>
-              <td><view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/></td></tr></table>
-        </center>
+                </form>
+           </view:board>
+           <view:buttonPane>
+                <fmt:message var="deleteLabel" key="delete" />
+                <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
+           		<view:button label="${deleteLabel}" action="${deleteAction}"/>
+           		
+           		<fmt:message var="closeLabel" key="close" />
+           		<view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
+           </view:buttonPane>
       </view:frame>
     </view:window>
   </body>

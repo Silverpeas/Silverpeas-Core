@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,43 +38,48 @@ public class GeneralPropertiesManager {
   public static final int DVIS_ALL = 0;
   public static final int DVIS_ONE = 1;
   public static final int DVIS_EACH = 2;
-  public static final String GENERAL_PROPERTIES_FILE =
-      "com.stratelia.webactiv.multilang.generalMultilang";
-  static final ResourceLocator s_GeneralProperties = new ResourceLocator(
-      "com.stratelia.webactiv.general", "");
-  static int dvis = Integer.parseInt(s_GeneralProperties.getString("domainVisibility", "0"));
+  public static final String GENERAL_PROPERTIES_FILE = "org.silverpeas.multilang.generalMultilang";
+  static final ResourceLocator generalProperties = new ResourceLocator("org.silverpeas.general", "");
+  static int dvis = Integer.parseInt(generalProperties.getString("domainVisibility", "0"));
   static final Map<String, Collection<String>> listProperties = new HashMap<String, Collection<String>>();
 
-  static public ResourceLocator getGeneralResourceLocator() {
-    return s_GeneralProperties;
+
+  /**
+   * You can access the data directly.
+   * @return
+   * @deprecated
+   */
+  @Deprecated
+  public static ResourceLocator getGeneralResourceLocator() {
+    return generalProperties;
   }
 
-  static public int getInteger(String property, int defaultValue) {
-    return s_GeneralProperties.getInteger(property, defaultValue);
+  public static int getInteger(String property, int defaultValue) {
+    return generalProperties.getInteger(property, defaultValue);
   }
 
-  static public String getString(String property, String defaultValue) {
-    return s_GeneralProperties.getString(property, defaultValue);
+  public static String getString(String property, String defaultValue) {
+    return generalProperties.getString(property, defaultValue);
   }
 
-  static public String getString(String property) {
-    return s_GeneralProperties.getString(property);
+  public static String getString(String property) {
+    return generalProperties.getString(property);
   }
 
-  static public boolean getBoolean(String property, boolean defaultValue) {
-    return s_GeneralProperties.getBoolean(property, defaultValue);
+  public static boolean getBoolean(String property, boolean defaultValue) {
+    return generalProperties.getBoolean(property, defaultValue);
   }
 
-  static public Collection<String> getStringCollection(String property) {
+  public static Collection<String> getStringCollection(String property) {
     return getStringCollection(property,"[ ,;]");
   }
 
-  static public Collection<String> getStringCollection(String property, String regexValueSeparator) {
+  public static Collection<String> getStringCollection(String property, String regexValueSeparator) {
     Collection<String> propertyValues = listProperties.get(property);
     if (propertyValues == null) {
       propertyValues = new LinkedHashSet<String>();
       listProperties.put(property, propertyValues);
-      final String stringValues = s_GeneralProperties.getString(property, null);
+      final String stringValues = generalProperties.getString(property, null);
       if (stringValues != null && !"".equals(stringValues.trim())) {
         for (String value : stringValues.split(regexValueSeparator)) {
           if (value != null && !"".equals(value.trim())) {
@@ -86,11 +91,11 @@ public class GeneralPropertiesManager {
     return propertyValues;
   }
 
-  static public int getDomainVisibility() {
+  public static int getDomainVisibility() {
     return dvis;
   }
 
-  static public ResourceLocator getGeneralMultilang(String language) {
+  public static ResourceLocator getGeneralMultilang(String language) {
     return new ResourceLocator(GENERAL_PROPERTIES_FILE, language);
   }
 

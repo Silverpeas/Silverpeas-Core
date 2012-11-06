@@ -45,7 +45,7 @@ public class QuotaTest {
 
     quota = initializeQuota();
     quota.setResourceId(" ");
-    assertValidate(quota, true);
+    assertValidate(quota, false);
 
     quota = initializeQuota();
     quota.setMinCount(-1);
