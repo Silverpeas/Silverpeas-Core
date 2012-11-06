@@ -23,6 +23,10 @@
  */
 package org.silverpeas.attachment.web;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -42,6 +46,8 @@ import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -72,7 +78,9 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
+   * @param context
    * @return
+   * @throws IOException
    */
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -86,13 +94,19 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("foreignId") String foreignId,
       final @FormDataParam("indexIt") String indexIt,
       final @FormDataParam("versionType") String type,
-      final @FormDataParam("context") String context) {
+      final @FormDataParam("context") String context) throws IOException {
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
         getFileName())) {
       String lang = I18NHelper.checkLanguage(language);
       String title = fileTitle;
       if (!StringUtil.isDefined(fileTitle)) {
         title = fileDetail.getFileName();
+      }
+      DocumentType attachmentContext;
+      if(!StringUtil.isDefined(context)) {
+        attachmentContext = DocumentType.attachment;
+      } else {
+        attachmentContext = DocumentType.valueOf(context);
       }
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       String userId = getUserDetail().getId();
@@ -108,26 +122,29 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
           document = new HistorisedDocument(pk, foreignId, 0, userId,
               new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
               FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
+          document.setDocumentType(attachmentContext);
         }
         document.setPublicDocument(publicDocument);
       } else {
         document = new SimpleDocument(pk, foreignId, 0, false, null,
             new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
             FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
-      }
-      if (needCreation && StringUtil.isDefined(context)) {
-        document.setDocumentType(DocumentType.valueOf(context));
+        document.setDocumentType(attachmentContext);
       }
       document.setLanguage(language);
       document.setTitle(title);
       document.setDescription(description);
+      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
+      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+      document.setSize(tempFile.length());
+      InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (needCreation) {
         document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-            uploadedInputStream, StringUtil.getBooleanValue(indexIt), publicDocument);
+            content, StringUtil.getBooleanValue(indexIt), publicDocument);
       } else {
         document.edit(userId);
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, language);
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, uploadedInputStream,
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content,
             StringUtil.getBooleanValue(indexIt), publicDocument);
         UnlockContext unlockContext = new UnlockContext(document.getId(), userId, language);
         unlockContext.addOption(UnlockOption.UPLOAD);
@@ -136,6 +153,8 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         }
         AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
       }
+      content.close();
+      FileUtils.deleteQuietly(tempFile);
       URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();
       return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);

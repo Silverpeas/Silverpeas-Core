@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -19,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.attachment.importExport;
 
 import com.silverpeas.form.AbstractForm;
@@ -31,6 +29,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
@@ -56,6 +55,9 @@ import java.util.List;
  */
 public class AttachmentImportExport {
 
+  private final ResourceLocator resources = new ResourceLocator(
+      "org.silverpeas.importExport.settings.importSettings", "");
+
   // Methodes
   /**
    * Methode utilisee par l'import massive du moteur d'importExport de silverpeaseffectuant la copie
@@ -68,33 +70,27 @@ public class AttachmentImportExport {
    * importe et a sa liaison avec la publication
    * @param indexIt
    */
-  public void importAttachment(String pubId, String componentId, AttachmentDetail attachmentDetail,
-      InputStream file, boolean indexIt) {
-    importAttachment(pubId, componentId, attachmentDetail, file, indexIt, true);
-  }
-
   public void importAttachment(String pubId, String componentId,
       AttachmentDetail attachmentDetail, InputStream file, boolean indexIt,
       boolean updateLogicalName) {
-    this.copyFile(componentId, attachmentDetail, updateLogicalName);
+    //copyFile(componentId, attachmentDetail, updateLogicalName);
     if (attachmentDetail.getSize() > 0) {
-      this.addAttachmentToPublication(pubId, componentId, attachmentDetail, file, indexIt);
+      addAttachmentToPublication(pubId, componentId, attachmentDetail, file, indexIt);
     }
   }
 
   /* TODO : à reprendre pour feature_82
    * 
    * public AttachmentDetail importWysiwygAttachment(String pubId,
-      String componentId, AttachmentDetail attachmentDetail, String context) {
-    AttachmentDetail a_detail = null;
-    this.copyFileWysiwyg(componentId, attachmentDetail, context);
-    if (attachmentDetail.getSize() > 0) {
-      a_detail = this.addAttachmentToPublication(pubId, componentId, attachmentDetail, context,
-          false);
-    }
-    return a_detail;
-  }*/
-  
+   String componentId, AttachmentDetail attachmentDetail, String context) {
+   AttachmentDetail a_detail = null;
+   this.copyFileWysiwyg(componentId, attachmentDetail, context);
+   if (attachmentDetail.getSize() > 0) {
+   a_detail = this.addAttachmentToPublication(pubId, componentId, attachmentDetail, context,
+   false);
+   }
+   return a_detail;
+   }*/
   @Deprecated
   public AttachmentDetail importWysiwygAttachment(String pubId,
       String componentId, AttachmentDetail attachmentDetail, String context) {
@@ -102,16 +98,12 @@ public class AttachmentImportExport {
   }
 
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
-      List<AttachmentDetail> attachments, String userId) {
-    return importAttachments(pubId, componentId, attachments, userId, false);
-  }
-
-  public List<AttachmentDetail> importAttachments(String pubId, String componentId,
       List<AttachmentDetail> attachments, String userId, boolean indexIt) {
-    List<AttachmentDetail> copiedAttachments = copyFiles(componentId, attachments);
+    //List<AttachmentDetail> copiedAttachments = copyFiles(componentId, attachments);
     FormTemplateImportExport xmlIE = null;
-    for (AttachmentDetail attDetail : copiedAttachments) {
+    for (AttachmentDetail attDetail : attachments) {
       attDetail.setAuthor(userId);
+      attDetail.setInstanceId(componentId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();
       if (xmlContent != null) {
         attDetail.setXmlForm(xmlContent.getName());
@@ -119,19 +111,17 @@ public class AttachmentImportExport {
       InputStream input = null;
       // Store xml content
       try {
-        input = new FileInputStream(attDetail.getAttachmentPath(null));
+        input = getAttachmentContent(attDetail);
         this.addAttachmentToPublication(pubId, componentId, attDetail, input, indexIt);
         if (xmlContent != null) {
           if (xmlIE == null) {
             xmlIE = new FormTemplateImportExport();
           }
           ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
-          xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent,
-              attDetail.getAuthor());
+          xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent, attDetail.getAuthor());
         }
       } catch (Exception e) {
-        SilverTrace.error("attachment",
-            "AttachmentImportExport.importAttachments()",
+        SilverTrace.error("attachment", "AttachmentImportExport.importAttachments()",
             "root.MSG_GEN_PARAM_VALUE", e);
       } finally {
         IOUtils.closeQuietly(input);
@@ -146,7 +136,7 @@ public class AttachmentImportExport {
         }
       }
     }
-    return copiedAttachments;
+    return attachments;
   }
 
   private AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail,
@@ -170,7 +160,7 @@ public class AttachmentImportExport {
       String path) {
     List<AttachmentDetail> copiedAttachments = new ArrayList<AttachmentDetail>();
     for (AttachmentDetail attDetail : attachments) {
-      this.copyFile(componentId, attDetail, path);
+      copyFile(componentId, attDetail, path);
       if (attDetail.getSize() != 0) {
         copiedAttachments.add(attDetail);
       }
@@ -206,8 +196,7 @@ public class AttachmentImportExport {
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
       SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "fileToCreate already exists=" + fileToCreate.getAbsolutePath());
+          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists=" + fileToCreate.getAbsolutePath());
 
       // To prevent overwriting
       physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
@@ -243,24 +232,26 @@ public class AttachmentImportExport {
    * Methode utilisee par la methode importAttachement(String,String,AttachmentDetail) pour creer un
    * attachement sur la publication creee dans la methode citee.
    *
+   *
    * @param pubId - id de la publication dans laquelle creer l'attachment
    * @param componentId - id du composant contenant la publication
-   * @param a_Detail - obejt contenant les informations necessaire e la creation de l'attachment
+   * @param attachment
    * @return AttachmentDetail cree
    */
   private SimpleDocument addAttachmentToPublication(String pubId, String componentId,
-      AttachmentDetail a_Detail, InputStream input, boolean indexIt) {
-
-    int incrementSuffixe = 0;
+      AttachmentDetail attachment, InputStream input, boolean indexIt) {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
-    AttachmentPK foreignKey = new AttachmentPK(pubId, componentId);
-    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-    int i = 0;
+    ForeignPK foreignKey = new ForeignPK(pubId, componentId);
+    List<SimpleDocument> existingAttachments = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment,
+        attachment.getLanguage());
 
-    String logicalName = a_Detail.getLogicalName();
-    String userId = a_Detail.getAuthor();
-    String updateRule = a_Detail.getImportUpdateRule();
+    String logicalName = attachment.getLogicalName();
+    if (!StringUtil.isDefined(logicalName)) {
+      logicalName = FileUtil.getFilename(attachment.getPhysicalName());
+    }
+    String userId = attachment.getAuthor();
+    String updateRule = attachment.getImportUpdateRule();
     if (!StringUtil.isDefined(updateRule) || "null".equalsIgnoreCase(updateRule)) {
       updateRule = AttachmentDetail.IMPORT_UPDATE_RULE_ADD;
     }
@@ -270,41 +261,48 @@ public class AttachmentImportExport {
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
     // d'un suffixe au nouveau fichier
-    SimpleDocument ad_toCreate;
-    while (i < attachments.size()) {
-      ad_toCreate = attachments.get(i);
-      if (ad_toCreate.getFilename().equals(logicalName)) {
-        if ((ad_toCreate.getSize() != a_Detail.getSize())
+    logicalName = computeUniqueName(attachment, 0, existingAttachments, logicalName,
+        updateRule);
+    attachment.setLogicalName(logicalName);
+
+    // On instancie l'objet attachment e creer
+    SimpleDocument ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
+        new SimpleAttachment(attachment.getLogicalName(), attachment.getLanguage(), attachment.
+        getTitle(), attachment.getInfo(), attachment.getSize(),
+        FileUtil.getMimeType(attachment.getPhysicalName()), userId, new Date(), attachment.
+        getXmlForm()));
+    return AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input,
+        indexIt);
+  }
+
+  private String computeUniqueName(AttachmentDetail attachment, int increment,
+      List<SimpleDocument> existingAttachments,
+      String logicalName, String updateRule) {
+    String uniqueName = logicalName;
+    int incrementSuffixe = increment;
+    for (SimpleDocument ad_toCreate : existingAttachments) {
+      if (ad_toCreate.getFilename().equals(uniqueName)) {
+        if ((ad_toCreate.getSize() != attachment.getSize())
             && AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
-          logicalName = a_Detail.getLogicalName();
+          uniqueName = attachment.getLogicalName();
           int extPosition = logicalName.lastIndexOf('.');
           if (extPosition != -1) {
-            logicalName = logicalName.substring(0, extPosition) + "_" + (++incrementSuffixe)
-                + logicalName.substring(extPosition, logicalName.length());
+            uniqueName = uniqueName.substring(0, extPosition) + '_' + (++incrementSuffixe)
+                + uniqueName.substring(extPosition, uniqueName.length());
           } else {
-            logicalName += "_" + (++incrementSuffixe);
+            uniqueName += '_' + (++incrementSuffixe);
           }
           // On reprend la boucle au debut pour verifier que le nom
           // genere n est pas lui meme un autre nom d'attachment de la publication
-          i = 0;
+          return computeUniqueName(attachment, incrementSuffixe, existingAttachments, uniqueName,
+              updateRule);
         } else {// on efface l'ancien fichier joint et on stoppe la boucle
           AttachmentServiceFactory.getAttachmentService().deleteAttachment(ad_toCreate);
-          break;
+          return uniqueName;
         }
-      } else {
-        i++;
       }
     }
-    a_Detail.setLogicalName(logicalName);
-
-    // On instancie l'objet attachment e creer
-    ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false, new SimpleAttachment(a_Detail.
-        getLogicalName(),
-        null, a_Detail.getTitle(), a_Detail.getInfo(), a_Detail.getSize(), a_Detail.getType(),
-        userId, new Date(), a_Detail.getXmlForm()));
-    AttachmentServiceFactory.getAttachmentService().createAttachment(ad_toCreate, input, indexIt);
-
-    return ad_toCreate;
+    return logicalName;
   }
 
   /**
@@ -320,52 +318,37 @@ public class AttachmentImportExport {
       String relativeExportPath, String extensionFilter) {
 
     // Recuperation des attachments
-    Collection<AttachmentDetail> listAttachment =
-        AttachmentController.searchAttachmentByCustomerPK(
-        pk);
-    List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>();
-    if (listAttachment != null && listAttachment.isEmpty()) {
-      listAttachment = null;
-    }
-    if (listAttachment != null) {
+    Collection<SimpleDocument> listAttachment = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKey(pk, null);
+    List<AttachmentDetail> listToReturn = new ArrayList<AttachmentDetail>(listAttachment.size());
+    if (!listAttachment.isEmpty()) {
       // Pour chaque attachment trouve, on copie le fichier dans le dossier
       // d'exportation
-      for (AttachmentDetail attDetail : listAttachment) {
-        if (!attDetail.getContext().equals(AbstractForm.CONTEXT_FORM_FILE)) {
+      for (SimpleDocument attachment : listAttachment) {
+        if (attachment.getDocumentType() != DocumentType.attachment) {
           // ce n est pas un fichier joint mais un fichier appartenant surement
           // au wysiwyg si le context
           // est different de images et ce quelque soit le type du fichier
           continue;// on ne copie pas le fichier
         }
 
-        if (extensionFilter == null) {
+        if (extensionFilter == null || FileRepositoryManager.getFileExtension(attachment.
+            getFilename()).equalsIgnoreCase(extensionFilter)) {
           try {
-            copyAttachment(attDetail, pk, exportPath);
-
-            // Le nom physique correspond maintenant au fichier copie
-            attDetail.setPhysicalName(relativeExportPath + File.separator
-                + FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
-
+            copyAttachment(attachment, exportPath);
+            String physicalName = relativeExportPath + File.separator + FileServerUtils.
+                replaceAccentChars(attachment.getFilename());
+            AttachmentDetail attachDetail =
+                new AttachmentDetail(new AttachmentPK(attachment.getId(),
+                attachment.getInstanceId()), physicalName, attachment.getFilename(), attachment.
+                getDescription(), attachment.getContentType(),
+                attachment.getSize(), attachment.getDocumentType().toString(), attachment.
+                getCreated(), new ForeignPK(attachment.getForeignId(), attachment.getInstanceId()));
+            listToReturn.add(attachDetail);
           } catch (IOException ex) {
             // TODO: gerer ou ne pas gerer telle est la question
             ex.printStackTrace();
           }
-
-          listToReturn.add(attDetail);
-
-        } else if (attDetail.getExtension().equalsIgnoreCase(extensionFilter)) {
-          try {
-            copyAttachment(attDetail, pk, exportPath);
-            // Le nom physique correspond maintenant au fichier copi
-            attDetail
-                .setLogicalName(FileServerUtils.replaceAccentChars(attDetail.getLogicalName()));
-
-          } catch (Exception ex) {
-            // TODO: gerer ou ne pas gerer telle est la question
-            ex.printStackTrace();
-          }
-
-          listToReturn.add(attDetail);
         }
       }
     }
@@ -373,14 +356,12 @@ public class AttachmentImportExport {
     return listToReturn;
   }
 
-  private void copyAttachment(AttachmentDetail attDetail, WAPrimaryKey pk, String exportPath) throws
-      FileNotFoundException, IOException {
-    String fichierJoint = AttachmentController.createPath(pk.getInstanceId(),
-        attDetail.getContext()) + File.separator + attDetail.getPhysicalName();
-
-    String fichierJointExport = exportPath + File.separator + FileServerUtils.replaceAccentChars(
-        attDetail.getLogicalName());
-    FileRepositoryManager.copyFile(fichierJoint, fichierJointExport);
+  private void copyAttachment(SimpleDocument attDetail, String exportPath) throws IOException {
+    String fichierJointExport = exportPath + File.separatorChar + FileServerUtils.
+        replaceAccentChars(
+        attDetail.getFilename());
+    AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
+        attDetail.getPk(), null);
   }
 
   /**
@@ -403,5 +384,21 @@ public class AttachmentImportExport {
     SilverTrace.info("attachment", "AttachmentImportExport.getPath()", "root.MSG_GEN_PARAM_VALUE",
         "path=" + path);
     return path;
+  }
+
+  InputStream getAttachmentContent(AttachmentDetail attachment) throws FileNotFoundException {
+    File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath(null)));
+    if (file == null || !file.exists() || !file.isFile()) {
+      String baseDir = resources.getString("importRepository");
+      file = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar + attachment.
+          getPhysicalName()));
+    }
+    attachment.setSize(file.length());
+    attachment.setType(FileUtil.getMimeType(file.getName()));
+    if (!StringUtil.isDefined(attachment.getLogicalName())) {
+      attachment.setLogicalName(file.getName());
+    }
+    attachment.setSize(file.length());
+    return new FileInputStream(file);
   }
 }

@@ -45,23 +45,16 @@ import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.sql.*;
+import java.util.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * A ProcessInstanceManager implementation
@@ -442,35 +435,25 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance
-        .getModelId());
+    ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance.getModelId());
 
     // delete attachments
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = " + foreignPK);
-    AttachmentController.deleteAttachmentByCustomerPK(foreignPK);
-
-    // delete versioning
-    SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
-        "root.MSG_GEN_PARAM_VALUE", "Delete versiong foreignPK = " + foreignPK);
-    try {
-      getVersioningBm().deleteDocumentsByForeignPK(foreignPK);
-    } catch (Exception e) {
-      throw new WorkflowException(
-          "ProcessInstanceManagerImpl.removeProcessInstanceData",
-          "EX_ERR_CANT_REMOVE_VERSIONNING_FILES", e);
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
+        .listDocumentsByForeignKey(foreignPK, null);
+    for(SimpleDocument attachment : attachments) {
+      AttachmentServiceFactory.getAttachmentService().deleteAttachment(attachment);
     }
 
     // delete folder
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstanceData()",
         "root.MSG_GEN_PARAM_VALUE", "Delete folder");
     try {
-      RecordSet folderRecordSet = instance.getProcessModel()
-          .getFolderRecordSet();
+      RecordSet folderRecordSet = instance.getProcessModel().getFolderRecordSet();
       folderRecordSet.delete(instance.getFolder());
     } catch (FormException e) {
-      throw new WorkflowException(
-          "ProcessInstanceManagerImpl.removeProcessInstanceData",
+      throw new WorkflowException("ProcessInstanceManagerImpl.removeProcessInstanceData",
           "EX_ERR_CANT_REMOVE_FOLDER", e);
     }
 

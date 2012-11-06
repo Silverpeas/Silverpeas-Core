@@ -160,7 +160,7 @@
         <c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
     </c:when>
     <c:otherwise>
-      <c:set var="Silverpeas_Attachment_Context" value="attachments" scope="session" />
+      <c:set var="Silverpeas_Attachment_Context" value="attachment" scope="session" />
     </c:otherwise>
   </c:choose>
   <c:set var="Silverpeas_Attachment_Profile" value="${userProfile}" scope="session" />
@@ -181,7 +181,7 @@
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")), 
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
-            %>
+%>
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
     <ul id="attachmentList">

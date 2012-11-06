@@ -165,8 +165,7 @@ public class FileServerUtils {
         "root.MSG_GEN_PARAM_VALUE", "language = " + language);
     String newLogicalName = replaceSpecialChars(logicalName);
     url.append("/attached_file/").append("componentId/").append(componentId).append(
-        "/attachmentId/").
-        append(attachmentId).append("/lang/").append(language).append("/name/").
+        "/attachmentId/"). append(attachmentId).append("/lang/").append(language).append("/name/").
         append(newLogicalName);
     return url.toString();
   }

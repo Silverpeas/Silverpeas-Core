@@ -137,7 +137,7 @@ function returnHtmlEditor() {
 	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
 		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/uploadWebsiteFile.jsp?Path="+path+"&Language="+language).include(request, response);
 	} else {
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+objectId+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true&SimpleReload=true").include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+objectId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true&SimpleReload=true").include(request, response);
 	}
   out.println(frame.printMiddle());
   out.println(frame.printAfter());

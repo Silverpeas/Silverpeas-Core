@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -101,6 +97,7 @@ import java.util.List;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
+ *
  * @author sDevolder.
  */
 public abstract class GEDImportExport extends ComponentImportExport {
@@ -114,6 +111,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Constructeur public de la classe
+   *
    * @param curentUserDetail - informations sur l'utilisateur faisant appel au moteur d'importExport
    * @param currentComponentId - composant silverpeas cible
    */
@@ -187,6 +185,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * repository du * moteur d'importExport. Cas particulier: si une publication de meme nom existe
    * deja  dans le composant, alors une nouvelle publication ne sera creee que si le premier node a 
    * lier ne contient pas la publication de meme nom.
+   *
    * @param pubDetailToCreate - publication a  creer ou a  mettre a  jour.
    * @return l'objet PublicationDetail contenant les informations de la publication creee ou mise a 
    * jour.
@@ -336,6 +335,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de creation du contenu d une publication importee
+   *
    * @param unitReport
    * @param pubId - id de la publication pour laquelle on importe un contenu
    * @param pubContent - object de mapping castor contenant les informations d importation du
@@ -478,7 +478,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
     AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType,
         size, context, new Date(), foreignKey);
     ad.setAuthor(userId);
-
     return ad;
   }
 
@@ -524,6 +523,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode preparant les dataModels pour la creation en base d un contenu DBModel, cette methode
    * se charge egalement de la copie des fichiers du contenu sur le serveur
+   *
    * @param dbModelType - objet de mapping castor contenant les informations de contenu de type
    * DBModel
    * @return
@@ -578,30 +578,32 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de creation d'un contenu de type wysiwyg
+   *
    * @param pubId - id de la publication pour laquelle on cree le contenu wysiwyg
    * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
    * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType,
-      String userId, String webContext) throws UtilException, WysiwygException,
-      ImportExportException {
+      WysiwygContentType wysiwygType, String userId, String webContext)
+      throws UtilException, WysiwygException, ImportExportException {
 
-    String wysiwygFileName =
-        WysiwygController.getWysiwygFileName(java.lang.Integer.toString(pubId));
-    String wysiwygPath = AttachmentController.createPath(getCurrentComponentId(), "wysiwyg");
-
+    String wysiwygFileName = WysiwygController.getWysiwygFileName(String.valueOf(pubId));
     // Recuperation du nouveau contenu wysiwyg
-    File f = null;
+    File wysiwygFile = null;
     String wysiwygText = "";
     try {
-      f = new File(wysiwygType.getPath());
-      wysiwygText = FileFolderManager.getCode(f.getParent(), f.getName());
+      wysiwygFile = new File(FileUtil.convertPathToServerOS(wysiwygType.getPath()));
+      if (!wysiwygFile.exists() && !wysiwygFile.isFile()) {
+        String baseDir = resources.getString("importRepository");
+        wysiwygFile = new File(FileUtil.convertPathToServerOS(baseDir + File.separatorChar
+            + wysiwygType.getPath()));
+      }
+      wysiwygText = FileFolderManager.getCode(wysiwygFile.getParent(), wysiwygFile.getName());
     } catch (UtilException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      if (f != null) {
+      if (wysiwygFile != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + f.getPath(), ex);
+            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath(), ex);
       } else {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
             "importExport.EX_CANT_CREATE_CONTENT", "file = null", ex);
@@ -609,32 +611,29 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     if (wysiwygText == null) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      if (f != null) {
+      if (wysiwygFile != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + f.getPath());
+            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath());
       }
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), java.lang.Integer.
-        toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId))) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(),
             java.lang.Integer.toString(pubId));
       } catch (WysiwygException ex) {/*
-                                      * TODO: gerer l exception
-                                      */
+         * TODO: gerer l exception
+         */
 
       }
-      File file = new File(wysiwygPath + File.separator + wysiwygFileName);
-      file.delete();
     }
 
     // Creation du fichier de contenu wysiwyg sur les serveur
-    String imagesContext = WysiwygController.getImagesFileName(java.lang.Integer.toString(pubId));
-    String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, f.getParent(),
-        wysiwygText, imagesContext, webContext);
+    String imagesContext = WysiwygController.getImagesFileName(String.valueOf(pubId));
+    String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, wysiwygFile.
+        getParent(), wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
     WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName,
@@ -644,6 +643,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode chargee de copier les fichiers images references par le contenu wysiwyg sur le serveur
    * et de mettre a  jour le contenu wysiwyg avec ces nouveaux liens
+   *
    * @param wysiwygText - contenu wysiwyg passe en parametre
    * @return - le contenu wysiwyg mis a  jour
    */
@@ -724,6 +724,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode chargee de remplacer une classe Css par une autre
+   *
    * @param wysiwygText - contenu wysiwyg passe en parametre
    * @param oldCssClass - la classe CSS a  remplacer
    * @param newCssClass - la nouvelle classe CSS a  utiliser
@@ -790,6 +791,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode copiant les images du contenu DBModel a  creer
+   *
    * @param componentId - id du composant de la publication dans laquelle on va creer le contenu
    * DBModel
    * @param listInfoImageDetail - liste des InfoImageDetails correspondant aux images du contenu
@@ -826,6 +828,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode de copie des images DBModel d'un contenu dans le dossier d'exportation d'une
    * publication
+   *
    * @param exportPublicationPath - dossier d'exportation de la publication
    * @param listImageParts - liste des images du contenu DBModel
    * @param exportPublicationRelativePath
@@ -856,6 +859,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode copiant les images contenues dans le dossier d'exportation de la publication. Cette
    * methode met a  jour le fichier wysiwyg avec les nouveaux chemins d'images avant de le copier
    * dans l'exportation
+   *
    * @param pubId - id de la publication a  exporter
    * @param componentId - id du composant contenant la publication a  exporter
    * @param exportPublicationPath - dossier d'exportation de la publication
@@ -901,8 +905,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
                 getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
           } catch (Exception e) {
             SilverTrace.info("importExport", "GEDImportExport.getExistingTopics",
-                "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" +
-                node.getExplicitPath() + "' does not exist");
+                "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '"
+                + node.getExplicitPath() + "' does not exist");
           }
           if (existingNode != null) {
             // topic exists
@@ -919,8 +923,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
               newNodePK = getNodeBm().createNode(newNode);
             } catch (Exception e) {
               SilverTrace.error("importExport", "GEDImportExport.getExistingTopics",
-                  "root.MSG_GEN_PARAM_VALUE", "Can't create node named '" + name + "' in path '" +
-                  node.getExplicitPath() + "'", e);
+                  "root.MSG_GEN_PARAM_VALUE", "Can't create node named '" + name + "' in path '"
+                  + node.getExplicitPath() + "'", e);
               return new ArrayList<NodePositionType>();
             }
             parentId = newNodePK.getId();
@@ -947,6 +951,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode ajoutant un theme a  un theme deja existant. Si le theme a  ajouter existe lui aussi
    * (par exemple avec un meme ID), il n'est pas modifie et la methode ne fait rien et ne leve
    * aucune exception.
+   *
    * @param nodeDetail le detail du noeud a  ajouter.
    * @param topicId l'identifiant du noeud parent, ou 0 pour designer le noeud racine.
    * @param unitReport le rapport d'import unitaire.
@@ -962,6 +967,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode ajoutant un theme a  un theme deja existant. Si le theme a  ajouter existe lui aussi
    * (par exemple avec un meme ID), il n'est pas modifie et la methode ne fait rien et ne leve
    * aucune exception.
+   *
    * @param nodeDetail l'objet node correspondant au theme a  creer.
    * @param topicId l'ID du theme dans lequel creer le nouveau theme.
    * @param massiveReport
@@ -976,6 +982,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Ajoute un sous-noeud a  un noeud existant a  partir d'un repertoire du systeme de fichiers. Le
    * nom de ce repertoire represente le noeud a  creer. Utile pour les imports massifs de noeuds et
    * de publications a  partir d'une hierarchie de dossiers et de fichiers.
+   *
    * @param unitReport le rapport d'import unitaire.
    * @param nodeDetail le detail du noeud a  creer.
    * @param parentTopicId l'identifiant du noeud parent, ou 0 pour designer le noeud racine.
@@ -1003,6 +1010,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode de creation d'une publication dans le cas d'une importation unitaire avec meta-donnees
    * definies dans le fichier xml d'importation.
+   *
    * @param unitReport
    * @param userDetail
    * @param pubDetail
@@ -1019,6 +1027,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de creation d'une publication dans le cas d'une importation massive
+   *
    * @param unitReport
    * @param userDetail
    * @param pubDetail
@@ -1044,6 +1053,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Ajoute un sous-noeud a  un noeud existant a  partir d'un repertoire du systeme de fichiers. Le
    * nom de ce repertoire represente le noeud a  creer. Utile pour les imports massifs de noeuds et
    * de publications a  partir d'une hierarchie de dossiers et de fichiers.
+   *
    * @param directory le repertoire dont le nom represente le nouveau noeud.
    * @param topicId l'identifiant du noeud parent.
    * @param massiveReport le rapprt d'import.
@@ -1069,6 +1079,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode recuperant le silverObjectId d'un objet d'id id
+   *
    * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id
    * @throws Exception
@@ -1077,6 +1088,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de recuperation de la publication complete utilisee pour l'exportation
+   *
    * @param pubId
    * @param componentId
    * @return
@@ -1165,6 +1177,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode renvoyant la liste des topics de la publication sous forme de NodePK
+   *
    * @param pubId - id de la publication dont on veut les topics
    * @param componentId
    * @return - liste des nodesPk de la publication
@@ -1225,6 +1238,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Specific Kmax: Create publication with no nodeFather
+   *
    * @param pubDetail
    * @return pubDetail
    */

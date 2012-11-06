@@ -35,8 +35,4 @@ public class RepositoryHelper {
   public static JcrAttachmentService getJcrAttachmentService() {
     return (JcrAttachmentService) BasicDaoFactory.getBean(JRC_ATTACHMENT_SERVICE);
   }
-
-  public static AttachmentBm getAttachmentService() {
-    return (AttachmentBm) BasicDaoFactory.getBean(ATTACHMENT_SERVICE);
-  }
 }

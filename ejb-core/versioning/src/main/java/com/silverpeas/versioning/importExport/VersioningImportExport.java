@@ -21,23 +21,6 @@
  */
 package com.silverpeas.versioning.importExport;
 
-import java.io.*;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
@@ -45,13 +28,27 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.versioning.VersioningIndexer;
-
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.*;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.silverpeas.versioning.model.Document;
+import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.*;
+
+import java.io.*;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author neysseri
@@ -59,14 +56,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 public class VersioningImportExport {
 
   private VersioningIndexer indexer = new VersioningIndexer();
-  private static int BUFFER_SIZE = 1024;
-
-  public int importDocuments(String objectId, String componentId,
-      List<AttachmentDetail> attachments, int userId, boolean indexIt, String topicId)
-      throws RemoteException {
-    return importDocuments(objectId, componentId, attachments, userId,
-        DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, topicId);
-  }
 
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
       int userId, boolean indexIt) throws RemoteException {

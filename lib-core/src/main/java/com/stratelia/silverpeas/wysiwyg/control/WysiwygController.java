@@ -473,7 +473,7 @@ public class WysiwygController {
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
           new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
     } else {
-    createFileAndAttachment(textHtml, fileName, componentId, context, objectId, userId, indexIt);
+      createFileAndAttachment(textHtml, fileName, componentId, context, objectId, userId, indexIt);
     }
   }
 
@@ -549,18 +549,14 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
-      String objectId) throws WysiwygException /* , FinderException, NamingException, SQLException */ {
+      String objectId) throws WysiwygException {
     try {
-      // delete all the attachments
-      AttachmentPK foreignKey = new AttachmentPK(objectId, spaceId, componentId);
-
-      AttachmentController.deleteWysiwygAttachmentByCustomerPK(foreignKey);
-      // delete the images directory
-      String path =
-          AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
-          objectId));
-
-      FileFolderManager.deleteFolder(path);
+      List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId),
+          DocumentType.wysiwyg, null);
+      for (SimpleDocument wysiwygAttachment : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(wysiwygAttachment);
+      }
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
           SilverpeasException.ERROR, "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
@@ -700,7 +696,7 @@ public class WysiwygController {
   public static boolean haveGotWysiwyg(String componentId, String objectId) {
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
         .listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId),
-            DocumentType.wysiwyg, null);
+        DocumentType.wysiwyg, null);
     return !docs.isEmpty();
   }
 
@@ -819,7 +815,7 @@ public class WysiwygController {
    * @see
    */
   public static void copy(String oldComponentId, String oldObjectId,
-                          String componentId, String objectId, String userId) {
+      String componentId, String objectId, String userId) {
     SilverTrace.info("wysiwyg", "WysiwygController.copy()", "root.MSG_GEN_ENTER_METHOD");
     // copy the wysiwyg
     ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
@@ -955,17 +951,13 @@ public class WysiwygController {
   }
 
   public static List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = null;
-    String[] compoIds = ORGANIZATION_CONTROLLER.getCompoId("gallery");
-    for (String compoId : compoIds) {
+    String[] galleryIds = ORGANIZATION_CONTROLLER.getCompoId("gallery");
+    List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>(galleryIds.length);
+    for (String componentId : galleryIds) {
       if (StringUtil.getBooleanValue(ORGANIZATION_CONTROLLER.getComponentParameterValue("gallery"
-          + compoId, "viewInWysiwyg"))) {
-        if (galleries == null) {
-          galleries = new ArrayList<ComponentInstLight>();
-        }
-        ComponentInstLight gallery = ORGANIZATION_CONTROLLER.getComponentInstLight("gallery"
-            + compoId);
-        galleries.add(gallery);
+          + componentId, "viewInWysiwyg"))) {
+        galleries.add(ORGANIZATION_CONTROLLER.getComponentInstLight("gallery"
+            + componentId));
       }
     }
     return galleries;
@@ -1001,10 +993,11 @@ public class WysiwygController {
    * @param embeddedAttachmentIds embedded linked files ids
    */
   public static void indexEmbeddedLinkedFiles(FullIndexEntry indexEntry,
-                                              List<String> embeddedAttachmentIds) {
+      List<String> embeddedAttachmentIds) {
     for (String attachmentId : embeddedAttachmentIds) {
       try {
-        SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
+            searchDocumentById(
             new SimpleDocumentPK(attachmentId), null);
         if (attachment != null) {
           indexEntry.addLinkedFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,

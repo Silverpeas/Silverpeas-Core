@@ -36,7 +36,7 @@ import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.util.*;
 
-public class FileUtil implements MimeTypes {
+public class FileUtil implements MimeTypes  {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "org.silverpeas.util.attachment.mime_types", "");

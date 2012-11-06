@@ -20,11 +20,7 @@
  */
 package com.silverpeas.form.displayers;
 
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.Util;
+import com.silverpeas.form.*;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
@@ -32,23 +28,21 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.img;
 import org.apache.ecs.xhtml.input;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * A displayer of a video. The underlying video player is FlowPlayer
@@ -221,9 +215,9 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
       if (attachmentId.startsWith("/")) {
         videoURL = attachmentId;
       } else {
-        AttachmentDetail attachment =
-            AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentId,
-            pageContext.getComponentId()));
+        SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService()
+            .searchDocumentById(new SimpleDocumentPK(attachmentId, pageContext.getComponentId()),
+                pageContext.getContentLanguage());
         if (attachment != null) {
           String webContext = FileServerUtils.getApplicationContext();
           videoURL = webContext + attachment.getAttachmentURL();
@@ -239,7 +233,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
    * @param videoPlayer the video player to display.
    * @param attachmentId the identifier of the attached file containing the video to display.
    * @param template the template of the field to which is mapped the video.
-   * @param xhtmlcontainer the XMLHTML container into which the video is displayed.
+   * @param xhtmlContainer the XMLHTML container into which the video is displayed.
    */
   private void displayVideo(final VideoPlayer videoPlayer, final String attachmentId,
       final FieldTemplate template, final ElementContainer xhtmlContainer,
