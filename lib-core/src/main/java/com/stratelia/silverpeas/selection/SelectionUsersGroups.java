@@ -29,7 +29,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +42,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
 
   String domainId = null;
   String componentId = null;
+  String objectId = null;
   List<String> profileIds = null;
   List<String> profileNames = null;
 
@@ -84,6 +84,14 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     this.profileIds = profileIds;
   }
 
+  /**
+   * Add the identifier of the role the users must play.
+   * @param profileId the unique identifier of a user role.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void addProfileId(String profileId) {
     if (profileIds == null) {
       profileIds = new ArrayList<String>();
@@ -91,11 +99,37 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     profileIds.add(profileId);
   }
 
+  /**
+   * Adds the identifiers of the roles the users must play.
+   * @param profileIds the user role identifiers.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void addProfileIds(List<String> profileIds) {
     if (this.profileIds == null) {
       this.profileIds = new ArrayList<String>();
     }
     profileIds.addAll(profileIds);
+  }
+
+  /**
+   * Gets the identifier of the object in the component instance for which the users must have
+   * enough right to access.
+   * @return the unique identifier of the object, made up of its type followed by its identifier.
+   */
+  public String getObjectId() {
+    return objectId;
+  }
+
+  /**
+   * Sets the object in the component instance for which the users must have enough right to access.
+   * @param objectId the unique identifier of the object in Silverpeas. It must be made up of its
+   * type followed by its identifier.
+   */
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
   }
 
   public String getComponentId() {
@@ -114,6 +148,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     this.domainId = domainId;
   }
 
+  @Override
   public String getParameter(String name) {
     return null;
   }

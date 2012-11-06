@@ -105,7 +105,7 @@ public class UserProfileResource extends RESTWebService {
    * this parameter is computed the part of users to sent back: those between ((page number - 1) *
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
-   * @param domain the unique identifier of the domain the groups has to be related.
+   * @param domain the unique identifier of the domain the users have to be related.
    * @return the JSON serialization of the array with the user profiles that matches the query.
    */
   @GET
@@ -166,6 +166,12 @@ public class UserProfileResource extends RESTWebService {
    * to.
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
+   * @param roles the name of the roles the users must play either for the component instance or
+   * for a given resource of the component instance.
+   * @param resource the unique identifier of the resource in the component instance the users to get
+   * must have enough rights to access. This query filter is coupled with the <code>roles</code> one.
+   * If it is not set, by default the resource refered is the whole component instance. As for 
+   * component instance identifier, a resource one is defined by its type followed by its identifier.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
    * @param page the pagination parameters formatted as "page number;item count in the page". From
@@ -181,6 +187,7 @@ public class UserProfileResource extends RESTWebService {
           @PathParam("instanceId") String instanceId,
           @QueryParam("group") String groupId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name,
           @QueryParam("page") String page) {
     String[] rolesIds = (isDefined(roles) ? roles.split(","):null);
@@ -213,6 +220,21 @@ public class UserProfileResource extends RESTWebService {
    *
    * @param userId the unique identifier of the user or <i>me</i> to refers the current user at the
    * origin of the request.
+   * @param instanceId the unique identifier of the component instance the users should have access
+   * to.
+   * @param roles the name of the roles the users must play either for the component instance or
+   * for a given resource of the component instance.
+   * @param resource the unique identifier of the resource in the component instance the users to get
+   * must have enough rights to access. This query filter is coupled with the <code>roles</code> one.
+   * If it is not set, by default the resource refered is the whole component instance. As for
+   * component instance identifier, a resource one is defined by its type followed by its identifier.
+   * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
+   * string of characters.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of users to sent back: those between ((page number - 1) *
+   * item count in the page) and ((page number - 1) * item count in the page + item count in the
+   * page).
+   * @param domain the unique identifier of the domain the users have to be related.
    * @return the profile of the user in a JSON representation.
    */
   @GET
@@ -221,6 +243,7 @@ public class UserProfileResource extends RESTWebService {
   public Response getUserContacts(@PathParam("userId") String userId,
           @QueryParam("application") String instanceId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name,
           @QueryParam("page") String page,
           @QueryParam("domain") String domain) {

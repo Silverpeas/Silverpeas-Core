@@ -103,6 +103,10 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param instanceId the unique identifier of the Silverpeas application instance.
    * @param roles the roles the groups must play. Null if no specific roles have to be played by the
    * groups.
+   * @param resource the unique identifier of the resource in the component instance the groups to get
+   * must have enough rights to access. This query filter is coupled with the <code>roles</code> one.
+   * If it is not set, by default the resource refered is the whole component instance. As for
+   * component instance identifier, a resource one is defined by its type followed by its identifier.
    * @param name the pattern on the name the groups name must match. Null if all groups for the
    * specified application have to be fetched.
    * @param domain the unique identifier of the domain the groups has to be related.
@@ -115,6 +119,7 @@ public class UserGroupProfileResource extends RESTWebService {
   public UserGroupProfileEntity[] getGroupsInApplication(
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name,
           @QueryParam("domain") String domain) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
