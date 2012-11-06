@@ -106,9 +106,10 @@ public class UserGroupProfileResource extends RESTWebService {
   public UserGroupProfileEntity[] getGroupsInApplication(
           @PathParam("instanceId") String instanceId,
           @QueryParam("roles") String roles,
+          @QueryParam("resource") String resource,
           @QueryParam("name") String name) {
     String[] roleNames = (isDefined(roles) ? roles.split(","):new String[0]);
-    String[] roleIds = profileService.getRoleIds(instanceId, roleNames);
+    String[] roleIds = profileService.getRoleIds(instanceId, resource, roleNames);
     String[] groupIds = getOrganizationController().searchGroupsIds(false, null, roleIds,
             aFilteringModel(name, null));
     Group[] groups = getOrganizationController().getGroups(groupIds);
