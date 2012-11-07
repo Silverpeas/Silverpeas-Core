@@ -402,7 +402,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
     assertThat(session.exists(), is(false));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(4));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));
@@ -428,7 +428,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
     assertThat(real.exists(), is(true));
     assertThat(listFiles(session, null, true).size(), is(0));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(11));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(9));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));

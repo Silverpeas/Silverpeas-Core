@@ -35,16 +35,23 @@ import org.silverpeas.quota.model.Quota;
 import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.quota.repository.QuotaRepository;
+import org.silverpeas.quota.service.dao.QuotaDAO;
+import org.silverpeas.quota.service.dao.jdbc.JDBCQuotaDAO;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Yohann Chastagnier
  */
-@Transactional
 public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaService<T> {
 
   @Inject
   private QuotaRepository quotaRepository;
+
+  // This QuotaDAO is a workaround in the aim to deal with different transaction systems.
+  // That is why there is no injection at this level and just an Quota DAO Class instantiation.
+  // By this way, no Spring specification file is impacted.
+  private static QuotaDAO quotaDAO = new JDBCQuotaDAO();
 
   /*
    * (non-Javadoc)
@@ -60,12 +67,13 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * @see org.silverpeas.quota.service.QuotaService#initialize(org.silverpeas.quota.QuotaKey, int,
    * int)
    */
+  @Transactional(propagation = Propagation.REQUIRED)
   @Override
   public Quota initialize(final T key, final long minCount, final long maxCount)
       throws QuotaException {
 
     // Checking that it does not exist a quota with same key
-    final Quota quota = getByQuotaKey(key);
+    final Quota quota = getByQuotaKey(key, false);
     if (!quota.exists()) {
 
       // If quota does not exist and maxCount is zero : stop
@@ -100,9 +108,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * (non-Javadoc)
    * @see org.silverpeas.quota.service.QuotaService#get(org.silverpeas.quota.QuotaKey)
    */
+  @Transactional(propagation = Propagation.REQUIRED)
   @Override
   public Quota get(final T key) throws QuotaException {
-    final Quota quota = getByQuotaKey(key);
+    final Quota quota = getByQuotaKey(key, false);
     if (quota.exists()) {
       final long currentCount = getCurrentCount(key);
       if (quota.getCount() != currentCount) {
@@ -116,13 +125,18 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   /**
    * Private method to retrieve a Quota
    * @param key
+   * @param jpaBypass
    * @return
    */
-  private Quota getByQuotaKey(final T key) {
+  private Quota getByQuotaKey(final T key, final boolean jpaBypass) {
     Quota quota = null;
     if (key.isValid()) {
-      quota =
-          quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+      if (jpaBypass) {
+        quota = quotaDAO.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+      } else {
+        quota =
+            quotaRepository.getByTypeAndResourceId(key.getQuotaType().name(), key.getResourceId());
+      }
     }
     if (quota == null) {
       quota = new Quota();
@@ -146,9 +160,9 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   @Override
   public Quota verify(final T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
-    final Quota quota = get(key);
+    final Quota quota = getByQuotaKey(key, true);
     if (quota.exists()) {
-      quota.setCount(quota.getCount() + countingOffset.getOffset());
+      quota.setCount(getCurrentCount(key) + countingOffset.getOffset());
       final QuotaLoad quotaLoad = quota.getLoad();
       if (QuotaLoad.OUT_OF_BOUNDS.equals(quotaLoad)) {
         throw new QuotaOutOfBoundsException(quota);
@@ -167,9 +181,10 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
    * (non-Javadoc)
    * @see org.silverpeas.quota.service.QuotaService#remove(org.silverpeas.quota.QuotaKey)
    */
+  @Transactional(propagation = Propagation.REQUIRED)
   @Override
   public void remove(final T key) {
-    final Quota quota = getByQuotaKey(key);
+    final Quota quota = getByQuotaKey(key, false);
     if (quota.exists()) {
       quotaRepository.delete(quota);
     }

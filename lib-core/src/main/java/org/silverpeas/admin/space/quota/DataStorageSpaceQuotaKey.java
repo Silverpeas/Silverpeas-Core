@@ -56,8 +56,7 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
             .getSpaceInstById(
                 OrganizationControllerFactory.getFactory().getOrganizationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
-    return new DataStorageSpaceQuotaKey(space, (space.isPersonalSpace()) ? space.getCreator()
-        : null);
+    return from(space);
   }
 
   /**
@@ -95,5 +94,12 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
   @Override
   public String getResourceId() {
     return (user != null) ? user.getId() : super.getResourceId();
+  }
+
+  /**
+   * @return the user
+   */
+  public UserDetail getUser() {
+    return user;
   }
 }

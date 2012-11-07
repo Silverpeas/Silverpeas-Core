@@ -34,6 +34,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.dbunit.database.DatabaseConnection;
@@ -42,6 +43,7 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +57,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
@@ -80,19 +85,29 @@ public class AbstractQuotaServiceTest {
     dataSet.addReplacementObject("[NULL]", null);
   }
 
+  @Before
+  public void setUp() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.SILVERPEAS_DATASOURCE, dataSource);
+    final IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    DBUtil.getInstanceForTest(connection.getConnection());
+    quotaService.setCount(100);
+  }
+
+  @After
+  public void tearDown() {
+    DBUtil.clearTestInstance();
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+  }
+
   @Inject
   private TestQuotaServiceWithAdditionalTools quotaService;
 
   @Inject
   @Named("jpaDataSource")
   private DataSource dataSource;
-
-  @Before
-  public void generalSetUp() throws Exception {
-    final IDatabaseConnection myConnection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(myConnection, dataSet);
-    quotaService.setCount(100);
-  }
 
   @Test
   public void testGet() throws QuotaException {
@@ -201,6 +216,7 @@ public class AbstractQuotaServiceTest {
     assertThat(quota.exists(), is(false));
     quota = quotaService.verify(existingKey);
     assertThat(quota, notNullValue());
+    assertThat(quota.exists(), is(true));
 
     assertVerifyException(QuotaOutOfBoundsException.class, existingKey, 1000);
     assertVerifyException(QuotaNotEnoughException.class, existingKey, 1);

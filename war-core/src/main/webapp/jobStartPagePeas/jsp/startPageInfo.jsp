@@ -61,13 +61,16 @@
   // Data storage quota
   boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
   boolean isDataStorageQuotaFull = isDataStorageQuotaActivated && space.isDataStorageQuotaReached();
+  String dataStorageQuotaCount = "";
   String dataStorageQuotaMaxCount = "";
   if (isDataStorageQuotaActivated) {
     if (QuotaLoad.UNLIMITED.equals(space.getDataStorageQuota().getLoad())) {
       isDataStorageQuotaActivated = false;
     } else {
-      dataStorageQuotaMaxCount = String.valueOf(UnitUtil.convertTo(space.getDataStorageQuota().getMaxCount(),
-          UnitUtil.memUnit.B, UnitUtil.memUnit.MB));
+      dataStorageQuotaCount = UnitUtil.formatValue(space.getDataStorageQuota().getCount(),
+          UnitUtil.memUnit.MB);
+      dataStorageQuotaMaxCount = UnitUtil.formatValue(space.getDataStorageQuota().getMaxCount(),
+          UnitUtil.memUnit.MB);
     }
   }
 
@@ -266,7 +269,7 @@ out.println(tabbedPane.print());
     </tr>
     <tr>
       <td class="txtlibform"><%=resource.getString("JSPP.dataStorageUsed")%> :</td>
-      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %</td>
+      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=dataStorageQuotaCount%> (<%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %)</td>
     </tr>
   <% } %>
 	<% if (space.getCreateDate() != null) { %>

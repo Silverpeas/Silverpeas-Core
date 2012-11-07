@@ -21,59 +21,61 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.space.quota;
+package org.silverpeas.admin.space.quota.process.check;
 
-import static com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath;
-import static org.apache.commons.io.FileUtils.sizeOfDirectory;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
-import java.io.File;
-
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
  * @author Yohann Chastagnier
  */
-@Service
-public class DefaultDataStorageSpaceQuotaService extends
-    AbstractSpaceQuotaService<DataStorageSpaceQuotaKey> implements DataStorageSpaceQuotaService {
+public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOffset {
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * org.silverpeas.admin.space.quota.AbstractSpaceQuotaService#createKeyFrom(com.stratelia.webactiv
-   * .beans.admin.SpaceInst)
+  private final SpaceInst space;
+  private final FileHandler fileHandler;
+
+  /**
+   * Gets an instance from a SpaceInst and a FileHandler
+   * @param space
+   * @param fileHandler
+   * @return
    */
-  @Override
-  protected DataStorageSpaceQuotaKey createKeyFrom(final SpaceInst space) {
-    return DataStorageSpaceQuotaKey.from(space);
+  public static SpaceDataStorageQuotaCountingOffset from(final SpaceInst space,
+      final FileHandler fileHandler) {
+    return new SpaceDataStorageQuotaCountingOffset(space, fileHandler);
+  }
+
+  /**
+   * Default hidden constructor
+   * @param space
+   * @param fileHandler
+   */
+  private SpaceDataStorageQuotaCountingOffset(final SpaceInst space, final FileHandler fileHandler) {
+    this.space = space;
+    this.fileHandler = fileHandler;
   }
 
   /*
    * (non-Javadoc)
-   * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
+   * @see org.silverpeas.quota.offset.AbstractQuotaCountingOffset#getOffset()
    */
   @Override
-  public long getCurrentCount(final DataStorageSpaceQuotaKey key) throws QuotaException {
+  public long getOffset() {
 
     // Initializing the counting result
-    long currentCount = 0;
+    long currentCountOffset = 0;
 
     // space could be null if user space is performed
-    if (key.getSpace() != null) {
-      File file;
-      for (final ComponentInst component : key.getSpace().getAllComponentsInst()) {
-        file = new File(getAbsolutePath(component.getId()));
-        if (file.exists()) {
-          currentCount += sizeOfDirectory(file);
-        }
+    if (space != null) {
+      for (final ComponentInst component : space.getAllComponentsInst()) {
+        currentCountOffset += fileHandler.sizeOfSessionWorkingPath(component.getId());
       }
     }
 
     // Result
-    return currentCount;
+    return currentCountOffset;
   }
 }

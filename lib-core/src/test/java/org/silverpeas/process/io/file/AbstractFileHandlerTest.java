@@ -83,7 +83,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testMarkToDelete_fileNotExists() {
+  public void testMarkToDelete_fileNotExists() throws Exception {
     final File test = getFile(realPath, "file");
     assertThat(fileHandler.markToDelete(BASE_PATH_TEST, test), is(false));
     assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_ONLY));

@@ -208,6 +208,13 @@ public class Quota implements Serializable, Cloneable {
   }
 
   /**
+   * @param type the type to set
+   */
+  public void setType(final String type) {
+    this.type = type;
+  }
+
+  /**
    * @return the resourceId
    */
   public String getResourceId() {

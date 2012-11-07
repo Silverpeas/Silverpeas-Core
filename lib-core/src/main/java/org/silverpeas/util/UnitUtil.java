@@ -23,7 +23,11 @@
  */
 package org.silverpeas.util;
 
+import static org.apache.commons.lang3.StringUtils.capitalize;
+
 import java.math.BigDecimal;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Unit values handling tools
@@ -31,9 +35,22 @@ import java.math.BigDecimal;
  */
 public class UnitUtil {
 
+  private static final ResourceLocator utilMessages = new ResourceLocator(
+      "org.silverpeas.util.multilang.util", "");
+
   /* Byte, Kilo-Byte, Mega-Byte, ... */
   public static enum memUnit {
-    B, KB, MB, GB, TB;
+    B("o"), KB("ko"), MB("mo"), GB("go"), TB("to");
+
+    private final String bundleKey;
+
+    private memUnit(final String bundleKey) {
+      this.bundleKey = bundleKey;
+    }
+
+    protected String getBundleKey() {
+      return bundleKey;
+    }
   };
 
   private static BigDecimal byteMultiplier = new BigDecimal(String.valueOf(1024));
@@ -85,5 +102,55 @@ public class UnitUtil {
       i++;
     }
     return i;
+  }
+
+  /**
+   * Format a byte memory value
+   * @param byteValue
+   * @param to
+   * @return
+   */
+  public static String formatValue(final long byteValue, final memUnit to) {
+    return formatValue(new BigDecimal(String.valueOf(convertTo(byteValue, memUnit.B, to))), to, to);
+  }
+
+  /**
+   * Format a byte memory value
+   * @param byteValue
+   * @param to
+   * @return
+   */
+  public static String formatValue(final BigDecimal byteValue, final memUnit to) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(convertTo(byteValue, memUnit.B, to));
+    sb.append(" ");
+    sb.append(utilMessages.getString(to.getBundleKey(), capitalize(to.name().toLowerCase())));
+    return sb.toString();
+  }
+
+  /**
+   * Format a memory value
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static String formatValue(final long value, final memUnit from, final memUnit to) {
+    return formatValue(new BigDecimal(String.valueOf(convertTo(value, from, to))), to, to);
+  }
+
+  /**
+   * Format a memory value
+   * @param value
+   * @param from
+   * @param to
+   * @return
+   */
+  public static String formatValue(final BigDecimal value, final memUnit from, final memUnit to) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(convertTo(value, from, to));
+    sb.append(" ");
+    sb.append(utilMessages.getString(to.getBundleKey(), capitalize(to.name().toLowerCase())));
+    return sb.toString();
   }
 }

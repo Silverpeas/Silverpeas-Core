@@ -36,6 +36,7 @@ import static org.apache.commons.io.IOUtils.LINE_SEPARATOR_UNIX;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -49,6 +50,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -101,8 +103,8 @@ public class FileHandlerTest extends AbstractHandledFileTest {
 
   @Test
   public void test_getHandledTemporaryFile() throws Exception {
-    File test = fileHandler.getSessionTemporaryFile("tmpFile");
-    File expected = getFile(sessionRootPath, currentSession.getId(), "@#@work@#@", "tmpfile");
+    final File test = fileHandler.getSessionTemporaryFile("tmpFile");
+    final File expected = getFile(sessionRootPath, currentSession.getId(), "@#@work@#@", "tmpfile");
     assertFileNames(test, expected);
     assertThat(expected.exists(), is(false));
   }
@@ -502,7 +504,7 @@ public class FileHandlerTest extends AbstractHandledFileTest {
    */
 
   @Test(expected = FileHandlerException.class)
-  public void test_delete_onFailure_1() {
+  public void test_delete_onFailure_1() throws Exception {
     fileHandler.delete(BASE_PATH_TEST, otherFile);
   }
 
@@ -593,7 +595,7 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     assertThat(session.exists(), is(false));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(4));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));
@@ -619,7 +621,7 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     assertThat(real.exists(), is(true));
     assertThat(listFiles(session, null, true).size(), is(0));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(11));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(9));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));
@@ -1306,6 +1308,15 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     assertThat(test, is(false));
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, time);
     assertThat(test, is(false));
+  }
+
+  @Test
+  public void test_getSessionHandledRootPathNames() throws Exception {
+    buildCommonPathStructure();
+    final Collection<String> test =
+        new TreeSet<String>(fileHandler.getSessionHandledRootPathNames());
+    assertThat(test.size(), is(1));
+    assertThat(test, contains("componentInstanceId"));
   }
 
   private abstract class RunnableTest<R> implements Runnable {
