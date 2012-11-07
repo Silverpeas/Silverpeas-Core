@@ -257,8 +257,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
           urlIcalendar = importSettings.getUrlIcalendar();
           loginIcalendar = importSettings.getLoginIcalendar();
           if (StringUtil.isDefined(importSettings.getPwdIcalendar())) {
-            pwdIcalendar = StringUtils.decodePassword(importSettings
-                .getPwdIcalendar());
+            pwdIcalendar = StringUtils.decodePassword(importSettings.getPwdIcalendar());
           }
           charset = importSettings.getCharset();
         }
@@ -268,8 +267,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
         request.setAttribute("Charset", charset);
         destination = "/agenda/jsp/synchroIcal.jsp";
       } else if (function.equals("SynchroIcal")) {
-        ImportIcalManager.charset = scc.getSettings().getString(
-            "defaultCharset");
+        ImportIcalManager.charset = scc.getSettings().getString("defaultCharset");
         // get updated imports settings for user
         boolean newSettings = false;
         boolean authNeeded = false;
