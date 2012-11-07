@@ -36,6 +36,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import static com.silverpeas.web.UserPriviledgeValidation.*;
 
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
  * the web services in Silverpeas like the user priviledge checking.

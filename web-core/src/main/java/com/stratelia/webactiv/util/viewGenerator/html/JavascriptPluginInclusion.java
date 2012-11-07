@@ -62,6 +62,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
+  private static final String FLEXPAPER_HANDLERS = "flexpaper_handlers.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -169,6 +170,8 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(popup);
     popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
     xhtml.addElement(popup);
+    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_HANDLERS);
+    xhtml.addElement(popup);
     return xhtml;
   }
 
@@ -182,6 +185,13 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(css);
     xhtml.addElement(jqueryCalendar);
     xhtml.addElement(sivlerpeasCalendar);
+    return xhtml;
+  }
+
+  public static ElementContainer includeJQuery(final ElementContainer xhtml) {
+    script jquery = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
+        + GraphicElementFactory.JQUERY_JS);
+    xhtml.addElement(jquery);
     return xhtml;
   }
 }

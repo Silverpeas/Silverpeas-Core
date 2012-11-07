@@ -24,16 +24,25 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import com.google.common.base.Objects;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.silverpeas.admin.space.SpaceServiceFactory;
+import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.quota.model.Quota;
+
+import com.google.common.base.Objects;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -99,6 +108,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   private int level = 0;
   private boolean displaySpaceFirst = true;
   private boolean isPersonalSpace = false;
+
+  /**
+   * This data is not used in equals and hashcode process as it is an extra information.
+   */
+  private Quota componentSpaceQuota = null;
+  private Quota componentSpaceQuotaReached = null;
 
   /**
    * Constructor
@@ -595,6 +610,72 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
 
   public boolean isPersonalSpace() {
     return isPersonalSpace;
+  }
+
+  /**
+   * @return the componentSpaceQuota
+   */
+  public Quota getComponentSpaceQuota() {
+    if (componentSpaceQuota == null) {
+      loadComponentSpaceQuota();
+    }
+    return componentSpaceQuota;
+  }
+
+  /**
+   * Sets the max count of component space of the space
+   */
+  public void setComponentSpaceQuotaMaxCount(final long componentSpaceQuotaMaxCount)
+      throws QuotaException {
+    loadComponentSpaceQuota();
+    componentSpaceQuota.setMaxCount((int) componentSpaceQuotaMaxCount);
+    componentSpaceQuota.validateBounds();
+  }
+
+  /**
+   * Indicates if the quota of the space or of a parent space is reached.
+   * @return
+   */
+  public boolean isComponentSpaceQuotaReached() {
+    componentSpaceQuotaReached = SpaceServiceFactory.getComponentSpaceQuotaService()
+        .getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey.from(this));
+    return componentSpaceQuotaReached.isReached();
+  }
+
+  /**
+   * Gets the error message about component space quota reached.
+   * @param language
+   * @return
+   */
+  public String getComponentSpaceQuotaReachedErrorMessage(String language) {
+    SpaceInstLight space =
+        OrganizationControllerFactory.getFactory().getOrganizationController()
+            .getSpaceInstLightById(componentSpaceQuotaReached.getResourceId());
+    final SilverpeasTemplate template =
+        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
+    template.setAttribute("quota", componentSpaceQuotaReached);
+    if (!space.getShortId().equals(new SpaceInstLight(this).getShortId())) {
+      template.setAttribute("fromSpaceId", space.getShortId());
+      template.setAttribute("fromSpaceName", space.getName());
+    }
+    if (!StringUtil.isDefined(language)) {
+      language = I18NHelper.defaultLanguage;
+    }
+    return template.applyFileTemplate("componentSpaceQuotaReached_" + language);
+  }
+
+  /**
+   * Centralizes the component space quota loading
+   */
+  private void loadComponentSpaceQuota() {
+    try {
+      componentSpaceQuota =
+          SpaceServiceFactory.getComponentSpaceQuotaService()
+              .get(ComponentSpaceQuotaKey.from(this));
+    } catch (final QuotaException qe) {
+      throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
+          "root.EX_CANT_GET_COMPONENT_SPACE_QUOTA", qe);
+    }
   }
 
   @Override

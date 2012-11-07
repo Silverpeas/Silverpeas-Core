@@ -27,6 +27,7 @@ import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.contant.QuotaType;
 import org.silverpeas.quota.model.Quota;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
@@ -86,6 +87,15 @@ public class UserDomainQuotaKey implements QuotaKey {
    */
   private UserDomainQuotaKey(final Domain domain) {
     resourceId = domain.getId();
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see org.silverpeas.quota.QuotaKey#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return StringUtil.isDefined(resourceId);
   }
 
   /*

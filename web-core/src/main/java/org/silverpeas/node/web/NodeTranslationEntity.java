@@ -40,6 +40,9 @@ public class NodeTranslationEntity {
   @XmlElement(defaultValue = "")
   private String language;
 
+  public NodeTranslationEntity() {
+  }
+  
   public NodeTranslationEntity(int id, String language, NodeDetail node) {
     this.setId(Integer.toString(id));
     this.setLanguage(language);

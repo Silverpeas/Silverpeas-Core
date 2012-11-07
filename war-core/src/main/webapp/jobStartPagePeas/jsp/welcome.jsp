@@ -52,11 +52,6 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
 <!--
-function openPopup() {
-	windowName = "actionWindow";
-	windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-	actionWindow = SP_openWindow("CreateSpace", windowName, 750, 400, windowParams, false);
-}
 function clipboardPaste() {
 	$.progressMessage();
 	location.href="paste";
@@ -73,7 +68,7 @@ function recoverRights() {
 <c:if test="${isUserAdmin}">
 <view:operationPane>
 	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
-    <view:operation altText="${spaceAdd}" icon="" action="javascript:onClick=openPopup();"></view:operation>
+    <view:operation altText="${spaceAdd}" icon="" action="CreateSpace"></view:operation>
     
     <c:if test="${clipboardNotEmpty}">
     	<fmt:message var="paste" key="GML.paste" />

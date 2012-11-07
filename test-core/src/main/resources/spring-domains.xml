@@ -50,14 +50,15 @@
   <jpa:repositories base-package="com.silverpeas.domains.silverpeasdriver" transaction-manager-ref="jpaTransactionManager" query-lookup-strategy="use-declared-query"/>
 
   <import resource="spring-jpa.xml"/>
-  
+
+  <import resource="spring-silverpeas-quota.xml"/>
   <import resource="spring-silverpeas.xml"/>
-  
+
    <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
         depends-on="schedulerFactory" />
-        
+
   <util:list id="entities">
     <value>com.silverpeas.domains</value>
   </util:list>

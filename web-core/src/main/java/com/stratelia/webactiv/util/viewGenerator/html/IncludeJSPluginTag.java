@@ -75,6 +75,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includeCalendar(xhtml);
     } else if (preview.name().equals(getName())) {
       includePreview(xhtml);
+    } else if (jquery.name().equals(getName())) {
+      includeJQuery(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }

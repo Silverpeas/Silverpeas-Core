@@ -25,21 +25,19 @@
 package com.stratelia.webactiv.beans.admin;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.quota.contant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
+  public static final String MIXED_DOMAIN_ID = "-1";
   private String id;
   private String name;
   private String description;
@@ -170,17 +168,12 @@ public class Domain implements Serializable {
   }
 
   /**
-   * Updates quota data
+   * Centralizes the user in domain quota loading
    */
-  public void refreshUserDomainQuota() {
+  private void loadUserDomainQuota() {
     try {
-      if (StringUtil.isDefined(getId())) {
-        userDomainQuota =
-            DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
-      }
-      if (userDomainQuota == null) {
-        userDomainQuota = new Quota();
-      }
+      userDomainQuota =
+          DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
     } catch (final QuotaException qe) {
       throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
           "root.EX_CANT_GET_QUOTA", qe);
@@ -192,18 +185,7 @@ public class Domain implements Serializable {
    */
   public Quota getUserDomainQuota() {
     if (userDomainQuota == null) {
-      try {
-        if (StringUtil.isDefined(getId())) {
-          userDomainQuota =
-              DomainServiceFactory.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
-        }
-        if (userDomainQuota == null) {
-          userDomainQuota = new Quota();
-        }
-      } catch (final QuotaException qe) {
-        throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR,
-            "root.EX_CANT_GET_QUOTA", qe);
-      }
+      loadUserDomainQuota();
     }
     return userDomainQuota;
   }
@@ -212,14 +194,14 @@ public class Domain implements Serializable {
    * Sets the max count of users of the domain
    */
   public void setUserDomainQuotaMaxCount(final String userDomainQuotaMaxCount) throws QuotaException {
-    getUserDomainQuota().setMaxCount(userDomainQuotaMaxCount);
-    getUserDomainQuota().validateBounds();
+    loadUserDomainQuota();
+    userDomainQuota.setMaxCount(userDomainQuotaMaxCount);
+    userDomainQuota.validateBounds();
   }
-  
+
   public boolean isQuotaReached() {
-    return getUserDomainQuota().exists() &&
-        EnumSet.of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS)
-            .contains(getUserDomainQuota().getLoad());
+    loadUserDomainQuota();
+    return userDomainQuota.isReached();
   }
 
   @Override

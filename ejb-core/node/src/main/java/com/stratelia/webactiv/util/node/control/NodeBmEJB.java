@@ -592,6 +592,27 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       DBUtil.close(con);
     }
   }
+  
+  /**
+  * Get the header of each child of the node, order by sorting
+  *
+  * @return a NodeDetail collection
+  * @see com.stratelia.webactiv.util.node.model.NodeDetail
+  * @since 1.0
+  */
+    @Override
+    public Collection<NodeDetail> getChildrenDetails(NodePK pk, String sorting) throws RemoteException {
+      Connection con = DBUtil.makeConnection(dbName);
+      try {
+        return NodeDAO.getChildrenDetails(con, pk, sorting);
+      } catch (Exception re) {
+        throw new NodeRuntimeException("NodeBmEJB.getChildrenDetails()",
+            SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_SONS_FAILED",
+            "nodeId = " + pk.getId(), re);
+      } finally {
+        DBUtil.close(con);
+      }
+    }
 
   /**
    * Get the header of each child of the node this method is to be used on frequently asked nodes

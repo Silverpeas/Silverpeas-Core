@@ -7,7 +7,7 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * the GPL, you may redistribute this Program in connection with Writer Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
@@ -23,8 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import static com.silverpeas.profile.web.UserProfileTestResources.*;
-import static com.silverpeas.profile.web.matchers.UserGroupsMatcher.contains;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -33,13 +31,16 @@ import com.stratelia.webactiv.util.GeneralPropertiesManagerHelper;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import java.util.List;
 import javax.ws.rs.core.Response;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static com.silverpeas.profile.web.UserProfileTestResources.*;
+import static com.silverpeas.profile.web.matchers.UserGroupsMatcher.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * Unit tests on the operations published by the UserGroupProfileResource REST service.
@@ -60,56 +61,103 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     sessionKey = authenticate(currentUser);
   }
 
+  /**
+   * With no domain isolation, a user can see the user groups of another domain.
+   */
   @Test
-  public void gettingAllRootGroupsWhateverTheDomain() {
+  public void getAllRootGroupsWhateverTheDomainWithNoDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
-    getTestResources().whenSearchGroupsThenReturn(expectedGroups);
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
+    currentUser.setDomainId(currentUser.getDomainId() + "0");
 
     UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
 
+  /**
+   * With a semi domain isolation, only a user in the Silverpeas domain can see the user groups of
+   * another domain.
+   */
   @Test
-  public void getAllRootGroupsInItsOwnsDomain() {
+  public void getAllRootGroupsWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+    Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
+
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualGroups.length, is(expectedGroups.length));
+    assertThat(actualGroups, contains(expectedGroups));
+  }
+
+  /**
+   * With a full domain isolation, a user in the Silverpeas domain can see only the user groups of
+   * its own domain.
+   */
+  @Test
+  public void getAllGroupsInItsOwnDomainWhenInSilverpeasDomainAndWithFullDomainIsolation() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+    Group[] expectedGroups = getTestResources().getAllExistingRootGroupsInDomain(currentUser.getDomainId());
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
+
+    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
+    assertThat(actualGroups.length, is(expectedGroups.length));
+    assertThat(actualGroups, contains(expectedGroups));
+  }
+
+  /**
+   * With a semi domain isolation, a user can see only the user groups of its own domain.
+   */
+  @Test
+  public void getAllRootGroupsInItsOwnsDomainWithSemiDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((0));
     currentUser.setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
-    getTestResources().whenSearchGroupsThenReturn(expectedGroups);
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
 
     UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
 
+  /**
+   * With a full domain isolation, a user can see only the user groups of its own domain.
+   */
   @Test
-  public void getAllRootGroupsWhateverTheDomainWhenInSilverpeasDomain() {
-    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
-    Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
-    getTestResources().whenSearchGroupsThenReturn(expectedGroups);
-
-    UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
-    assertThat(actualGroups.length, is(expectedGroups.length));
-    assertThat(actualGroups, contains(expectedGroups));
-  }
-
-  @Test
-  public void getAllRootGroupsInItsOwnDomainWhenNotInSilverpeasDomain() {
+  public void getAllRootGroupsInItsOwnDomainWithFullDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
     String domainId = getTestResources().getAllDomainIdsExceptedSilverpeasOne().get((1));
     currentUser.setDomainId(domainId);
     Group[] expectedGroups = getTestResources().getAllRootGroupsAccessibleFromDomain(domainId);
-    getTestResources().whenSearchGroupsThenReturn(expectedGroups);
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
 
     UserGroupProfileEntity[] actualGroups = getAt(aResourceURI(), getWebEntityClass());
     assertThat(actualGroups.length, is(expectedGroups.length));
     assertThat(actualGroups, contains(expectedGroups));
   }
 
+  /**
+   * With no domain isolation, a user can access a given user group, whatever the domain.
+   */
   @Test
-  public void getAGivenAccessibleGroupWhateverTheDomain() {
+  public void getAGivenAccessibleGroupWhateverTheDomainWithNoDomainIsolation() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    currentUser.setDomainId(currentUser.getDomainId() + "0");
+    Group actualGroup = getTestResources().anExistingGroup();
+    String path = buildURIPathOf(actualGroup);
+    UserGroupProfileEntity expectedGroup = getAt(path, UserGroupProfileEntity.class);
+    assertThat(expectedGroup, notNullValue());
+    assertThat(expectedGroup.getId(), is(actualGroup.getId()));
+  }
+
+  /**
+   * With a semi domain isolation, only a user in the Silverpeas domain can access a user group of
+   * another domain.
+   */
+  @Test
+  public void getAGivenAccessibleGroupWhateverTheDomainWhenInSilverpeasDomainAndWithSemiDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup);
@@ -118,8 +166,12 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     assertThat(expectedGroup.getId(), is(actualGroup.getId()));
   }
 
+
+  /**
+   * With full domain isolation, a user can access only a user group of its own domain.
+   */
   @Test
-  public void getAGivenAccessibleGroupOnlyInItsOwnDomain() {
+  public void getAGivenAccessibleGroupOnlyInItsOwnDomainWithFullDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(actualGroup.getDomainId());
@@ -129,8 +181,12 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     assertThat(expectedGroup.getId(), is(actualGroup.getId()));
   }
 
+  /**
+   * With semi domain isolation, a user that is not in the Silverpeas domain cannot access a user
+   * group of another domain.
+   */
   @Test
-  public void getAGivenUnaccessibleGroupInAnotherDomain() {
+  public void getAGivenUnaccessibleGroupInAnotherDomainWithSemiDomainIsolation() {
     try {
       GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
       Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
@@ -145,35 +201,102 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     }
   }
 
+  /**
+   * With full domain isolation, a user cannot access a user group of another domain.
+   */
   @Test
-  public void getTheSubGroupsOfAGivenAccessibleGroupWhateverTheDomain() {
+  public void getAGivenUnaccessibleGroupInAnotherDomainWithFullDomainIsolation() {
+    try {
+      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_EACH);
+      Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
+      currentUser.setDomainId(actualGroup.getDomainId() + "0");
+      String path = buildURIPathOf(actualGroup);
+      getAt(path, UserGroupProfileEntity.class);
+      fail("The group shouldn't be get as it is unaccessible");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
+  /**
+   * With no isolation domain, a user can access the subgroups of a user group whatever their
+   * domain.
+   */
+  @Test
+  public void getTheSubGroupsOfAGivenAccessibleGroupWhateverTheDomainWithNoDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
     Group actualGroup = getTestResources().anExistingGroup();
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
-    getTestResources().whenSearchGroupsThenReturn(actualSubGroups.toArray(new Group[actualSubGroups.
-            size()]));
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(actualSubGroups.toArray(
+            new Group[actualSubGroups.size()]));
 
     UserGroupProfileEntity[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));
   }
 
+  /**
+   * With semi isolation domain, a user can access the subgroups of a user group of its own domain.
+   */
   @Test
-  public void getTheSubGroupsOfAGivenAccessibleGroupOnlyInItsOwnDomain() {
+  public void getTheSubGroupsOfAGivenAccessibleGroupOnlyInItsOwnDomainWithSemiDomainIsolation() {
     GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
     Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
     currentUser.setDomainId(actualGroup.getDomainId());
     String path = buildURIPathOf(actualGroup) + "/groups";
     List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
-    getTestResources().whenSearchGroupsThenReturn(actualSubGroups.toArray(new Group[actualSubGroups.
-            size()]));
-    
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(actualSubGroups.toArray(
+            new Group[actualSubGroups.size()]));
+
     UserGroupProfileEntity[] expectedSubGroups = getAt(path, getWebEntityClass());
     assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
     assertThat(expectedSubGroups, contains(actualSubGroups));
   }
 
+  /**
+   * With full isolation domain, a user can access the subgroups of a user group of its own domain.
+   */
+  @Test
+  public void getTheSubGroupsOfAGivenAccessibleGroupOnlyInItsOwnDomainWithFullDomainIsolation() {
+    GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ALL);
+    Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
+    currentUser.setDomainId(actualGroup.getDomainId());
+    String path = buildURIPathOf(actualGroup) + "/groups";
+    List<? extends Group> actualSubGroups = actualGroup.getSubGroups();
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(actualSubGroups.toArray(
+            new Group[actualSubGroups.size()]));
+
+    UserGroupProfileEntity[] expectedSubGroups = getAt(path, getWebEntityClass());
+    assertThat(actualSubGroups.size(), is(expectedSubGroups.length));
+    assertThat(expectedSubGroups, contains(actualSubGroups));
+  }
+
+  /**
+   * With semi domain isolation, a user, not in the Silverpeas domain, cannot access the subgroups
+   * of a group in another domain.
+   */
+  @Test
+  public void getTheSubGroupsOfAGivenUnaccessibleGroupInAnotherDomainWithSemiDomainIsolation() {
+    try {
+      GeneralPropertiesManagerHelper.setDomainVisibility(GeneralPropertiesManager.DVIS_ONE);
+      Group actualGroup = getTestResources().getAGroupNotInAnInternalDomain();
+      currentUser.setDomainId(actualGroup.getDomainId() + "0");
+      String path = buildURIPathOf(actualGroup) + "/groups";
+      getAt(path, getWebEntityClass());
+      fail("The group shouldn't be get as it is unaccessible");
+    } catch (UniformInterfaceException ex) {
+      int receivedStatus = ex.getResponse().getStatus();
+      int forbidden = Response.Status.FORBIDDEN.getStatusCode();
+      assertThat(receivedStatus, is(forbidden));
+    }
+  }
+
+  /**
+   * With full domain isolation, a user cannot access the subgroups of a group in another domain.
+   */
   @Test
   public void getTheSubGroupsOfAGivenUnaccessibleGroupInAnotherDomain() {
     try {
@@ -190,11 +313,14 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     }
   }
 
+  /**
+   * A user can access a user group by its name.
+   */
   @Test
   public void getAGroupByItsName() {
     Group expectedGroup = getTestResources().anExistingRootGroup();
-    getTestResources().whenSearchGroupsThenReturn(new Group[] { expectedGroup });
-    
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(new Group[]{expectedGroup});
+
     UserGroupProfileEntity[] actualGroups = getAt(aResourceURI() + "?name="
             + expectedGroup.getName(),
             getWebEntityClass());
@@ -202,11 +328,14 @@ public class UserGroupProfileResourceTest extends ResourceGettingTest<UserProfil
     assertThat(actualGroups[0].getId(), is(expectedGroup.getId()));
   }
 
+  /**
+   * A user can access a user group by a pattern on its name.
+   */
   @Test
   public void getAGroupByTheFirstCharactersOfItsName() {
     Group[] expectedGroups = getTestResources().getAllExistingRootGroups();
-    getTestResources().whenSearchGroupsThenReturn(expectedGroups);
-    
+    getTestResources().whenSearchGroupsByCriteriaThenReturn(expectedGroups);
+
     UserGroupProfileEntity[] actualGroups = getAt(aResourceURI() + "?name=" + expectedGroups[0].
             getName().substring(
             0, 2) + "*",

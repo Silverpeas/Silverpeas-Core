@@ -140,6 +140,14 @@ public interface NodeBmBusinessSkeleton {
    * @since 1.0
    */
   public Collection<NodeDetail> getChildrenDetails(NodePK pk) throws RemoteException;
+  
+  /**
+  * Get the header of each child of the node, order by sorting
+  * @return a NodeDetail collection
+  * @see com.stratelia.webactiv.util.node.model.NodeDetail
+  * @since 1.0
+  */
+    public Collection<NodeDetail> getChildrenDetails(NodePK pk, String sorting) throws RemoteException;
 
   /**
    * Get the header of each child of the node this function is to be used with frequently used nodes
