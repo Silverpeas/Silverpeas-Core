@@ -69,14 +69,17 @@ function UserProfile(user) {
   }
   
   /**
-   * Sets this user as belonging to the specified component instance (the unique identifier
-   * of the component instance).
+   * Sets this user as having access priviledges in the specified component instance
+   * (the unique identifier of the component instance).
    */
   this.inComponent = function(component) {
     usermgt.filter.component = component;
     return self;
   }
 
+  /**
+   * Sets this user group as belonging to the specified user domain in Silverpeas.
+   */
   this.inDomain = function(domain) {
     usermgt.filter.domain = domain;
     return self;
@@ -87,6 +90,15 @@ function UserProfile(user) {
    */
   this.withRoles = function(roles) {
     usermgt.filter.roles = roles;
+    return self;
+  }
+
+  /**
+   * Sets this user as having access priviledges for the specified resource within a given component
+   * instance. The component instance must be set.
+   */
+  this.forResource = function(resource) {
+    usermgt.filter.resource = resource;
     return self;
   }
   
@@ -171,8 +183,8 @@ function UserGroup(group) {
       this[prop] = group[prop];
   
   /**
-   * Sets this user group as belonging to the specified component instance (the unique identifier
-   * of the component instance).
+   * Sets this user group as having access priviledges in the specified component instance
+   * (the unique identifier of the component instance).
    */
   this.inComponent = function(component) {
     subgroupmgt.filter.component = component;
@@ -180,6 +192,9 @@ function UserGroup(group) {
     return self;
   }
 
+  /**
+   * Sets this user group as belonging to the specified user domain in Silverpeas.
+   */
   this.inDomain = function(domain) {
     subgroupmgt.filter.domain = domain;
     usermgt.filter.domain = domain;
@@ -192,6 +207,15 @@ function UserGroup(group) {
   this.withRoles = function(roles) {
     subgroupmgt.filter.roles = roles;
     usermgt.filter.roles = roles;
+    return self;
+  }
+
+  /**
+   * Sets this user group as having access priviledges for the specified resource within a given
+   * component instance. The component instance must be set.
+   */
+  this.forResource = function(resource) {
+    subgroupmgt.filter.resource = resource;
     return self;
   }
   
@@ -337,6 +361,8 @@ function UserProfileManagement(params) {
     name: null, // a pattern about a user name (* is a wildcard)
     component: null, // a component instance identifier
     domain: null, // an identifier of the user domain the user belongs to
+    resource: null, // an identifier of a resource belonging to a component instance (the identifier
+                    // must be set the resource type following by resource identifier in Silverpeas).
     roles: null, // a string with a comma-separated role names
     pagination: null // pagination data in the form of 
   // { page: <number of the page>, count: <count of users to fetch> }
@@ -396,6 +422,10 @@ function UserProfileManagement(params) {
         urlOfUsers += separator + 'roles=' + self.filter.roles;
         separator = '&';
       }
+      if (self.filter.resource) {
+        urlOfUsers += separator + 'resource=' + self.filter.resource;
+        separator = '&';
+      }
     }
     if (self.filter.domain) {
       urlOfUsers += separator + 'domain=' + self.filter.domain;
@@ -447,7 +477,9 @@ function UserGroupManagement(params) {
     name: null, // a pattern about a group name (* is a wildcard)
     component: null, // a component instance identifier
     domain: null, // a identifier of the user domain the group belongs to
-    roles: null // a string with a comma-separated role names
+    roles: null, // a string with a comma-separated role names
+    resource: null // an identifier of a resource belonging to a component instance (the identifier
+                   // must be set the resource type following by resource identifier in Silverpeas).
   };
   
   /**
@@ -501,6 +533,10 @@ function UserGroupManagement(params) {
       urlOfGroups += '/application/' + self.filter.component;
       if (self.filter.roles) {
         urlOfGroups += separator + 'roles=' + self.filter.roles;
+        separator = '&';
+      }
+      if (self.filter.resource) {
+        urlOfGroups += separator + 'resource=' + self.filter.resource;
         separator = '&';
       }
     }
