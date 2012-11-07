@@ -46,6 +46,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
   List<String> profileIds = null;
   List<String> profileNames = null;
 
+  @Deprecated
   public String[] getProfileIds() {
     if (profileIds != null) {
       return profileIds.toArray(new String[profileIds.size()]);
@@ -80,6 +81,14 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
   }
 
+  /**
+   * Sets the identifier of the roles the users must play.
+   * @param profileIds the unique identifier of the user roles.
+   * @deprecated Use instead either both the setObjectId() and setProfileNames() methods to set the roles
+   * for a given object in the component instance or the setProfileNames() method to set the roles
+   * for the whole component instance.
+   */
+  @Deprecated
   public void setProfileIds(List<String> profileIds) {
     this.profileIds = profileIds;
   }

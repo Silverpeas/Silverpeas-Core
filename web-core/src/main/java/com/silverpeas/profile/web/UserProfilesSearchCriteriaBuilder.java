@@ -52,10 +52,17 @@ public class UserProfilesSearchCriteriaBuilder {
     }
     return this;
   }
+
+  public UserProfilesSearchCriteriaBuilder withResourceId(String resourceId) {
+    if (isDefined(resourceId)) {
+      searchCriteria.onResourceId(resourceId);
+    }
+    return this;
+  }
   
   public UserProfilesSearchCriteriaBuilder withRoles(String[] roleIds) {
     if (roleIds != null && roleIds.length > 0) {
-      searchCriteria.onRoleIds(roleIds);
+      searchCriteria.onRoleNames(roleIds);
     }
     return this;
   }

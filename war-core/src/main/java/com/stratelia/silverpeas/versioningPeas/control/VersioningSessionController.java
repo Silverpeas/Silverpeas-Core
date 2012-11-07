@@ -1187,9 +1187,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     List<String> profileNames = new ArrayList<String>();
     if (!StringUtil.isDefined(getNodeId())) {
       // Selectable users and groups are component's ones.
-      profileNames.add(ADMIN);
-      profileNames.add(PUBLISHER);
-      profileNames.add(role);
+      profileNames.addAll(Arrays.asList(ADMIN, PUBLISHER, role));
       if (READER.equals(role)) {
         profileNames.add(WRITER);
       }
