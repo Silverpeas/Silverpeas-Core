@@ -187,8 +187,15 @@ $(function () {
 			ul = "<ul class=\"attachments\">";
 			for (i = 0; i<attachments.length; i++) {
 				var attachment = attachments[i];
-				ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+attachment.logicalName+"</a>";
+				var label = attachment.logicalName;
+				if (attachment.title) {
+					label = attachment.title;
+				}
+				ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+label+"</a>";
 				ul += "<span class=\"size\">"+bytesToSize(attachment.size, 0)+"</span>";
+				if (attachment.info) {
+					ul += "<span class=\"description\">"+attachment.info+"</span>";
+				}
 				ul += "</li>";
 			}
 			ul += "</ul>";
