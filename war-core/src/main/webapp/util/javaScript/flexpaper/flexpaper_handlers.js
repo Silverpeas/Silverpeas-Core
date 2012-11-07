@@ -28,7 +28,7 @@ $(function() {
      * @param String link
      */
     jQuery('#documentViewer').bind('onExternalLinkClicked',function(e,link){
-
+      window.location.href = link;
     });
 
     /**
