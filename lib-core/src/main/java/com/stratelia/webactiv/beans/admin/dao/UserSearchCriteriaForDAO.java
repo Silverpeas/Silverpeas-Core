@@ -178,12 +178,17 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onRoleIds(String... roleIds) {
+  public SearchCriteria onRoleNames(String... roleIds) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public SearchCriteria onComponentInstanceId(String instanceId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public SearchCriteria onResourceId(String resourceId) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

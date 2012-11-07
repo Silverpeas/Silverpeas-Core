@@ -55,10 +55,17 @@ public class UserGroupsSearchCriteriaBuilder {
     }
     return this;
   }
+
+  public UserGroupsSearchCriteriaBuilder withResourceId(String resourceId) {
+    if (isDefined(resourceId)) {
+      searchCriteria.onResourceId(resourceId);
+    }
+    return this;
+  }
   
   public UserGroupsSearchCriteriaBuilder withRoles(String[] roleIds) {
     if (roleIds != null && roleIds.length > 0) {
-      searchCriteria.onRoleIds(roleIds);
+      searchCriteria.onRoleNames(roleIds);
     }
     return this;
   }

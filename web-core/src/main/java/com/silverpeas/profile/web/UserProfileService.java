@@ -53,7 +53,7 @@ class UserProfileService {
    * accessible to the specified user.
    */
   public Group getGroupAccessibleToUser(String groupId, final UserDetail user) throws
-          WebApplicationException {
+      WebApplicationException {
     Group theGroup = Group.getById(groupId);
     if (theGroup == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -61,8 +61,8 @@ class UserProfileService {
       if (user.isDomainRestricted() && (theGroup.getDomainId() != null
               && !user.getDomainId().equals(theGroup.getDomainId()))) {
         Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
-                + "authorized to access the group with id {1}", new Object[]{user.getId(),
-                  groupId});
+            + "authorized to access the group with id {1}", new Object[]{user.getId(),
+              groupId});
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
     }
