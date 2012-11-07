@@ -72,6 +72,7 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
+import com.stratelia.webactiv.util.attachment.process.AttachmentDeleteFileAndIndexProcess;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
@@ -705,6 +706,30 @@ public class AttachmentController {
    * @version 1.0
    * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
+  public static void deleteFileAndIndex(AttachmentDetail attachDetail) {
+    try {
+      ProcessFactory.getProcessManagement().execute(
+          AttachmentDeleteFileAndIndexProcess.getInstance(attachDetail),
+          new ProcessExecutionContext(attachDetail.getPK().getInstanceId()));
+    } catch (AttachmentRuntimeException are) {
+      throw are;
+    } catch (Exception fe) {
+      throw new AttachmentRuntimeException(
+          "AttachmentController.deleteFileAndIndex(AttachmentDetail attachDetail)",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_DELETED_FAILED", fe);
+    }
+  }
+
+  /**
+   * to delete one file attached.
+   * @param attachDetail : the attachmentDetail object to deleted
+   * @param fileHandler
+   * @return void
+   * @throws AttachmentRuntimeException when is impossible to delete
+   * @author Jean-Claude Groccia
+   * @version 1.0
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   */
   public static void deleteFileAndIndex(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
     try {
@@ -726,7 +751,7 @@ public class AttachmentController {
       }
     } catch (Exception fe) {
       throw new AttachmentRuntimeException(
-          "AttachmentController.deleteAttachment(Attachment attach, AttachmentDetail attachDetail)",
+          "AttachmentController.deleteFileAndIndex(AttachmentDetail attachDetail, FileHandler fileHandler)",
           SilverpeasRuntimeException.ERROR, "root.EX_RECORD_DELETED_FAILED", fe);
     }
   }
