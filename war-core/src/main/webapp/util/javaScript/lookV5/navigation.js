@@ -268,6 +268,10 @@ function openComponent(componentId, componentLevel, componentURL) {
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0',
       'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId);
 
+  // Remove active class on subtree
+  $("#" + componentId).parent().find(".spaceOn").removeClass('spaceOn');
+
+
   refreshPDCFrame();
   refreshTopFrame();
 
