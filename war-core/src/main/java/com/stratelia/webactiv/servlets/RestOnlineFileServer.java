@@ -9,27 +9,22 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.servlets;
 
-import com.silverpeas.accesscontrol.AttachmentAccessController;
-import com.silverpeas.accesscontrol.ComponentAccessController;
-import com.silverpeas.accesscontrol.DocumentVersionAccessController;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -40,6 +35,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
+
+import com.silverpeas.accesscontrol.AttachmentAccessController;
+import com.silverpeas.accesscontrol.ComponentAccessController;
+import com.silverpeas.accesscontrol.DocumentVersionAccessController;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.RestRequest;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -53,7 +53,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Class declaration
@@ -68,7 +67,8 @@ public class RestOnlineFileServer extends HttpServlet {
     try {
       super.init(config);
     } catch (ServletException se) {
-      SilverTrace.fatal("peasUtil", "FileServer.init", "peasUtil.CANNOT_ACCESS_SUPERCLASS");
+      SilverTrace.fatal("peasUtil", "RestOnlineFileServer.init",
+          "peasUtil.CANNOT_ACCESS_SUPERCLASS");
     }
   }
 
@@ -76,7 +76,7 @@ public class RestOnlineFileServer extends HttpServlet {
   public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(req, "");
-    SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("peasUtil", "RestOnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
       OnlineFile file = getWantedFile(restRequest);
       if (file != null) {
@@ -112,7 +112,7 @@ public class RestOnlineFileServer extends HttpServlet {
         if (isUserAuthorized(restRequest, componentId, attachment)) {
           file = new OnlineFile(attachment.getType(language), attachment.getPhysicalName(language),
               FileRepositoryManager.getRelativePath(FileRepositoryManager.getAttachmentContext(
-              attachment.getContext())));
+                  attachment.getContext())));
           file.setComponentId(componentId);
         } else {
           throw new IllegalAccessException(
@@ -159,37 +159,23 @@ public class RestOnlineFileServer extends HttpServlet {
   private void display(HttpServletResponse res, OnlineFile file) throws IOException {
     String filePath = FileRepositoryManager.getAbsolutePath(file.getComponentId())
         + file.getDirectory() + File.separator + file.getSourceFile();
-
     File realFile = new File(filePath);
     if (!realFile.exists() && !realFile.isFile()) {
       displayWarningHtmlCode(res);
       return;
     }
-    OutputStream out2 = res.getOutputStream();
-    BufferedInputStream input = null; // for the html document generated
-    SilverTrace.info("peasUtil", "OnlineFileServer.display()",
-        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + filePath);
     try {
+      OutputStream out = res.getOutputStream();
+      SilverTrace.info("peasUtil", "RestOnlineFileServer.display()", "root.MSG_GEN_ENTER_METHOD",
+          " htmlFilePath " + filePath);
       res.setContentType(file.getMimeType());
-      input = new BufferedInputStream(new FileInputStream(realFile));
-      IOUtils.copy(input, out2);
-    } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "OnlineFileServer.doPost",
-          "root.EX_CANT_READ_FILE", "file name=" + filePath);
+      res.setHeader("Content-Length", String.valueOf(realFile.length()));
+      FileUtils.copyFile(realFile, out);
+      out.flush();
+    } catch (IOException e) {
+      SilverTrace.warn("peasUtil", "RestOnlineFileServer.display()", "root.EX_CANT_READ_FILE",
+          "file name=" + filePath, e);
       displayWarningHtmlCode(res);
-    } finally {
-      SilverTrace.info("peasUtil", "OnlineFileServer.display()", "",
-          " finally ");
-      // we must close the in and out streams
-      try {
-        if (input != null) {
-          input.close();
-        }
-        out2.close();
-      } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "OnlineFileServer.display", "root.EX_CANT_READ_FILE",
-            "close failed");
-      }
     }
   }
 
@@ -205,13 +191,13 @@ public class RestOnlineFileServer extends HttpServlet {
     try {
       read = sr.read();
       while (read != -1) {
-        SilverTrace.info("peasUtil", "OnlineFileServer.displayHtmlCode()",
+        SilverTrace.info("peasUtil", "RestOnlineFileServer.displayHtmlCode()",
             "root.MSG_GEN_ENTER_METHOD", " StringReader read " + read);
         out2.write(read); // writes bytes into the response
         read = sr.read();
       }
     } catch (Exception e) {
-      SilverTrace.warn("peasUtil", "OnlineFileServer.displayWarningHtmlCode",
+      SilverTrace.warn("peasUtil", "RestOnlineFileServer.displayWarningHtmlCode",
           "root.EX_CANT_READ_FILE", "warning properties");
     } finally {
       try {
@@ -220,14 +206,14 @@ public class RestOnlineFileServer extends HttpServlet {
         }
         out2.close();
       } catch (Exception e) {
-        SilverTrace.warn("peasUtil", "OnlineFileServer.displayHtmlCode", "root.EX_CANT_READ_FILE",
+        SilverTrace.warn("peasUtil", "RestOnlineFileServer.displayHtmlCode",
+            "root.EX_CANT_READ_FILE",
             "close failed");
       }
     }
   }
 
-  private boolean isUserAuthorized(RestRequest request, String componentId, Object object)
-      throws Exception {
+  private boolean isUserAuthorized(RestRequest request, String componentId, Object object) {
     SilverpeasWebUtil util = new SilverpeasWebUtil();
     MainSessionController controller = util.getMainSessionController(request.getWebRequest());
     ComponentAccessController componentAccessController = new ComponentAccessController();
@@ -246,14 +232,12 @@ public class RestOnlineFileServer extends HttpServlet {
     return false;
   }
 
-  private boolean isAttachmentAuthorized(String userId, AttachmentDetail attachment) throws
-      Exception {
+  private boolean isAttachmentAuthorized(String userId, AttachmentDetail attachment) {
     AttachmentAccessController accessController = new AttachmentAccessController();
     return accessController.isUserAuthorized(userId, attachment);
   }
 
-  private boolean isDocumentVersionAuthorized(String userId, DocumentVersion version) throws
-      Exception {
+  private boolean isDocumentVersionAuthorized(String userId, DocumentVersion version) {
     DocumentVersionAccessController accessController = new DocumentVersionAccessController();
     return accessController.isUserAuthorized(userId, version);
   }
