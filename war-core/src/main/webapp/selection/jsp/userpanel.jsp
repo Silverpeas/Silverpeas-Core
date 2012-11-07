@@ -608,9 +608,16 @@
       
         // cancel the selection and go back to the caller.
         function cancelSelection() {
-          $('input[name="UserOrGroupSelection"]').val('false');
-          $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
-          $("#selection").submit();
+        	<c:choose>
+        		<c:when test="${hotSetting}">
+        			window.close();
+        		</c:when>
+      			<c:otherwise>
+          			$('input[name="UserOrGroupSelection"]').val('false');
+          			$("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
+          			$("#selection").submit();
+          		</c:otherwise>
+			</c:choose>
         }
         
         function highlightFilter($this) {
