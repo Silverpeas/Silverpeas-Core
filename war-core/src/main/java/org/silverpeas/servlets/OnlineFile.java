@@ -62,6 +62,15 @@ public class OnlineFile {
     return componentId;
   }
 
+  public long getContentLength() throws FileNotFoundException {
+    String filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory
+        + File.separator + sourceFile;
+    File realFile = new File(filePath);
+    if (!realFile.exists() && !realFile.isFile()) {
+      throw new FileNotFoundException("File " + filePath + "not found!");
+    }
+    return realFile.length();
+  }
 
   public void write(OutputStream out) throws IOException {
     String filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory
@@ -76,6 +85,7 @@ public class OnlineFile {
     try {
       input = new BufferedInputStream(new FileInputStream(filePath));
       IOUtils.copy(input, out);
+      out.flush();
     } finally {
       IOUtils.closeQuietly(input);
     }

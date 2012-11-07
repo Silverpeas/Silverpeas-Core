@@ -43,6 +43,11 @@ public class OnlineAttachment extends OnlineFile {
         getInstanceId());
     this.document = document;
   }
+  
+  @Override
+  public long getContentLength() {
+    return this.document.getSize();
+  }
 
   @Override
   public void write(OutputStream out) throws IOException {

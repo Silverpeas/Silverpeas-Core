@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -20,7 +19,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.servlets;
-
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -88,20 +86,16 @@ public class OnlineFileServer extends HttpServlet {
       VersioningUtil versioning = new VersioningUtil();
       DocumentVersionPK versionPK = new DocumentVersionPK(Integer.parseInt(versionId), "useless",
           componentId);
-
       DocumentVersion version = versioning.getDocumentVersion(versionPK);
 
       if (version != null) {
-        mimeType = version.getMimeType();
-        sourceFile = version.getPhysicalName();
-        String[] path = new String[1];
-        path[0] = "Versioning";
-        directory = FileRepositoryManager.getRelativePath(path);
-        onlineFile = new OnlineFile(mimeType, sourceFile, directory, componentId);
+        onlineFile = new OnlineFile(version.getMimeType(), version.getPhysicalName(),
+            FileRepositoryManager.getRelativePath(new String[]{"Versioning"}), componentId);
       }
     }
-    res.setContentType(mimeType);
-    display(res, onlineFile);
+    res.setContentLength((int) onlineFile.getContentLength());
+    res.setContentType(onlineFile.getMimeType());
+    sendFile(res, onlineFile);
   }
 
   /**
@@ -112,7 +106,7 @@ public class OnlineFileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void display(HttpServletResponse res, OnlineFile onlineFile) throws IOException {
+  private void sendFile(HttpServletResponse res, OnlineFile onlineFile) throws IOException {
     OutputStream output = res.getOutputStream();
     SilverTrace.info("peasUtil", "OnlineFileServer.display()",
         "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + onlineFile.getSourceFile());
