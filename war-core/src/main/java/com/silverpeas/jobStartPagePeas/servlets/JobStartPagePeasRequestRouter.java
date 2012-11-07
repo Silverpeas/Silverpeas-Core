@@ -646,7 +646,7 @@ public class JobStartPagePeasRequestRouter extends
         request.setAttribute("Profile", profile);
       }
 
-      // liste des groupes et user qui sont manager de l'espace courant
+      // get groups and users which manage current space
       List<Group> groupes = jobStartPageSC.getAllCurrentGroupSpace(role);
       List<UserDetail> users = jobStartPageSC.getAllCurrentUserSpace(role);
       request.setAttribute("listGroupSpace", groupes);
@@ -656,19 +656,24 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("ProfileEditable", jobStartPageSC.isProfileEditable());
       request.setAttribute("Role", role);
 
-      // Profile hérité, liste des groupes et user du role hérité courant
-      SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
-      if (inheritedProfile != null) {
-        request.setAttribute("InheritedProfile", inheritedProfile);
-        request.setAttribute("listInheritedGroups", jobStartPageSC.groupIds2groups(inheritedProfile
-            .
-            getAllGroups()));
-        request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
-            getAllUsers()));
+      if ("Manager".equals(role)) {
+        request.setAttribute("InheritedProfile", "Manager");
+        // get groups and users which manage space parent
+        request.setAttribute("listInheritedGroups", jobStartPageSC.getGroupsManagerOfParentSpace());
+        request.setAttribute("listInheritedUsers", jobStartPageSC.getUsersManagerOfParentSpace());
+        request.setAttribute("IsInheritanceEnable", true);
+      } else {
+        // get inherited profile
+        SpaceProfileInst inheritedProfile = spaceint1.getInheritedSpaceProfileInst(role);
+        if (inheritedProfile != null) {
+          request.setAttribute("InheritedProfile", inheritedProfile);
+          request.setAttribute("listInheritedGroups",
+              jobStartPageSC.groupIds2groups(inheritedProfile.getAllGroups()));
+          request.setAttribute("listInheritedUsers", jobStartPageSC.userIds2users(inheritedProfile.
+              getAllUsers()));
+        }
+        request.setAttribute("IsInheritanceEnable", JobStartPagePeasSettings.isInheritanceEnable);
       }
-
-      request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
-          JobStartPagePeasSettings.isInheritanceEnable));
 
       destination = "/jobStartPagePeas/jsp/spaceManager.jsp";
     } else if (function.equals("SelectUsersGroupsSpace")) {

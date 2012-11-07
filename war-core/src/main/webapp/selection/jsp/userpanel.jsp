@@ -18,6 +18,7 @@
 <c:set var="multipleSelection" value="${selection.multiSelect}"/>
 <c:set var="instanceId"        value="${selection.extraParams.componentId}"/>
 <c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
+<c:set var="resourceId"        value="${selection.extraParams.objectId}"/>
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
 <c:set var="hotSetting"        value="${selection.hotSetting}"/>
@@ -75,16 +76,18 @@
       var MaximizedPageSize   = 10;
       
       rootUserGroup.name      = '<fmt:message key="selection.RootUserGroups"/>';
-      rootUserGroup.inComponent('<c:out value="${instanceId}"/>').withRoles('<c:out value="${roles}"/>');
+      rootUserGroup.inComponent('${instanceId}').withRoles('${roles}').forResource('${resourceId}');
       
       var allUsers = new UserProfileManagement({
-        component: '<c:out value="${instanceId}"/>',
-        roles: '<c:out value="${roles}"/>'
+        component: '${instanceId}',
+        resource: '${resourceId}',
+        roles: '${roles}'
       });
       
-      var me = new UserProfile({id: '<c:out value="${currentUserId}"/>'}).
-        inComponent('<c:out value="${instanceId}"/>').
-        withRoles('<c:out value="${roles}"/>');      
+      var me = new UserProfile({id: '${currentUserId}'}).
+        inComponent('${instanceId}').
+        withRoles('${roles}').
+        forResource('${resourceId}');
       var nameInUserSearch = null; // required for the pagination with the results of a search (as at each page, the users are loaded for that page, so
       // we have to remind the name on which users are filtered if any)
       

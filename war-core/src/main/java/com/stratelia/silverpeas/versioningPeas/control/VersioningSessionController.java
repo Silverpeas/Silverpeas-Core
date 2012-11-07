@@ -24,22 +24,6 @@
 
 package com.stratelia.silverpeas.versioningPeas.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-
-import javax.ejb.RemoveException;
-
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.versioning.notification.VersioningNotificationService;
-
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -81,6 +65,19 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import javax.ejb.RemoveException;
+import org.silverpeas.versioning.notification.VersioningNotificationService;
 
 /**
  * @author Michael Nikolaenko
@@ -444,14 +441,14 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         document.getForeignKey().getComponentName());
 
     HashMap<String, Reader> mapRead = new HashMap<String, Reader>();
-    ProfileInst profileInst = null;
+    ProfileInst profileInst;
 
     // Get profile instance for given profile
     profileInst = componentInst.getProfileInst(nameProfile);
     if (profileInst != null) {
       ArrayList<String> groupIds = new ArrayList<String>();
       ArrayList<String> userIds = new ArrayList<String>();
-      Reader ru = null;
+      Reader ru;
       groupIds.addAll(profileInst.getAllGroups());
       userIds.addAll(profileInst.getAllUsers());
 
@@ -577,7 +574,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     OrganizationController orgCntr = getOrganizationController();
     ComponentInst componentInst = orgCntr.getComponentInst(getComponentId());
     Map<String, Reader> mapRead = new HashMap<String, Reader>();
-    ProfileInst profileInst = null;
+    ProfileInst profileInst;
     // Get profile instance for "user" profile
     profileInst = componentInst.getProfileInst("user");
     if (profileInst != null) {
@@ -667,7 +664,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @version 1.0
    */
   public DocumentVersion addNewDocumentVersion(DocumentVersion newVersion) throws RemoteException {
-    DocumentVersion version = null;
+    DocumentVersion version;
     initEJB();
     DocumentPK document_pk = newVersion.getDocumentPK();
     Document doc = versioning_bm.getDocument(document_pk);
@@ -752,7 +749,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public DocumentVersion getLastPublicVersion(DocumentPK documentPK)
       throws RemoteException {
-    DocumentVersion version = null;
+    DocumentVersion version;
     initEJB();
     version = versioning_bm.getLastPublicDocumentVersion(documentPK);
     return version;
@@ -767,7 +764,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public DocumentVersion getLastVersion(DocumentPK documentPK)
       throws RemoteException {
-    DocumentVersion version = null;
+    DocumentVersion version;
     initEJB();
     version = versioning_bm.getLastDocumentVersion(documentPK);
     return version;
@@ -880,7 +877,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
     ProfileInst profile = getDocumentProfile(VersioningSessionController.WRITER);
     if (profile != null) {
-      if (ObjectType.DOCUMENT.equals(profile.getObjectType())
+      if (ObjectType.DOCUMENT.getCode().equals(profile.getObjectType())
           && profile.getObjectId() == Integer.parseInt(doc.getPk().getId())) {
         profile.removeAllGroups();
         profile.removeAllUsers();
@@ -979,7 +976,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (!useRights()) {
       return true;
     }
-    ProfileInst profile = null;
+    ProfileInst profile;
     setEditingDocument(document);
     boolean isReader = false;
     if (isWriter(document, userId)) {
@@ -1095,7 +1092,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    */
   public boolean isWriter(Document document, String userId)
       throws RemoteException {
-    boolean isWriter = false;
+    boolean isWriter;
     setEditingDocument(document);
 
     if (VER_USE_NONE.equals(fileRightsMode) || VER_USE_READERS.equals(fileRightsMode)) {
@@ -1187,9 +1184,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
 
+    List<String> profileNames = new ArrayList<String>();
     if (!StringUtil.isDefined(getNodeId())) {
       // Selectable users and groups are component's ones.
-      ArrayList<String> profileNames = new ArrayList<String>();
       profileNames.add(ADMIN);
       profileNames.add(PUBLISHER);
       profileNames.add(role);
@@ -1198,31 +1195,14 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       }
       sug.setProfileNames(profileNames);
     } else {
+      profileNames.addAll(Arrays.asList(ADMIN, PUBLISHER, WRITER));
+        if (role.equals(READER)) {
+          profileNames.add(READER);
+        }
       NodeDetail node = getNodeBm().getHeader(new NodePK(getNodeId(), getComponentId()));
-      if (node.haveLocalRights()) {
+      if (node.haveRights()) {
         // Selectable users and groups are topic's ones.
-        ProfileInst topicProfile = getTopicProfile(ADMIN, getNodeId());
-        sug.addProfileId(topicProfile.getId());
-        topicProfile = getTopicProfile(PUBLISHER, getNodeId());
-        sug.addProfileId(topicProfile.getId());
-        topicProfile = getTopicProfile(WRITER, getNodeId());
-        sug.addProfileId(topicProfile.getId());
-        if (role.equals(READER)) {
-          topicProfile = getTopicProfile(READER, getNodeId());
-          sug.addProfileId(topicProfile.getId());
-        }
-      } else {
-        // Selectable users and groups are topic's ones.
-        ProfileInst topicProfile = getInheritedProfile(ADMIN);
-        sug.addProfileId(topicProfile.getId());
-        topicProfile = getInheritedProfile(PUBLISHER);
-        sug.addProfileId(topicProfile.getId());
-        topicProfile = getInheritedProfile(WRITER);
-        sug.addProfileId(topicProfile.getId());
-        if (role.equals(READER)) {
-          topicProfile = getInheritedProfile(READER);
-          sug.addProfileId(topicProfile.getId());
-        }
+        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
       }
     }
     sel.setExtraParams(sug);
@@ -1457,7 +1437,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   public ProfileInst getInheritedProfile(String role) throws RemoteException {
-    ProfileInst profileInst = null;
+    ProfileInst profileInst;
     // Rights of the node
     if (isTopicRightsEnabled()) {
       NodeDetail nodeDetail = getNodeBm().getDetail(
@@ -1675,7 +1655,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     TreeMap<String, Worker> mapWorkers = new TreeMap<String, Worker>();
     TreeMap<String, Worker> mapCurrentWorkers = new TreeMap<String, Worker>();
 
-    UserDetail userDetail = null;
+    UserDetail userDetail;
 
     ArrayList<Worker> newListWorkers = new ArrayList<Worker>();
 
@@ -1693,7 +1673,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     boolean isUsed = true;
     boolean isSaved = false;
     int lastOrder = workers.size();
-    Worker worker = null;
+    Worker worker;
     for (String userId : usersIds) {
       userDetail = getOrganizationController().getUserDetail(userId);
       if (!mapCurrentWorkers.containsKey(SET_TYPE_USER + userDetail.getId())) {
@@ -1729,8 +1709,8 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     newListWorkers.addAll(mapCurrentWorkers.values());
 
-    Worker worker = null;
-    Group groupDetail = null;
+    Worker worker;
+    Group groupDetail;
 
     // Add new workers (groups) from groupIds
     boolean isUsed = true;
@@ -1770,7 +1750,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         UserDetail[] usersFromGroup = getOrganizationController().getAllUsersOfGroup(Integer.
             toString(worker.getId()));
         int i = 0;
-        Integer userId = null;
+        Integer userId;
         while (i < usersFromGroup.length) {
           userId = Integer.getInteger(usersFromGroup[i].getId());
           if (!mapWork.containsKey(userId)) {
