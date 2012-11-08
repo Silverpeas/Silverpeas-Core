@@ -26,15 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Map;
 import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.microsoft.OfficeParser;
-import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
-import org.apache.tika.parser.odf.OpenDocumentParser;
 import org.silverpeas.search.indexEngine.parser.Parser;
 
 /**
@@ -46,24 +38,7 @@ public class TikaParser implements Parser {
   private final Tika tika = initTika();
 
   private Tika initTika() {
-    TikaConfig configuration = TikaConfig.getDefaultConfig();
-    ParseContext context = new ParseContext();
-    CompositeParser parser = ((CompositeParser) configuration.getParser());
-    org.apache.tika.parser.Parser openOfficeParser = new OpenDocumentParser();
-    Map<MediaType, org.apache.tika.parser.Parser> parsers = parser.getParsers(context);
-    for (MediaType type : openOfficeParser.getSupportedTypes(context)) {
-      parsers.put(type, openOfficeParser);
-    }
-    org.apache.tika.parser.Parser officeParser = new OfficeParser();
-    for (MediaType type : officeParser.getSupportedTypes(context)) {
-      parsers.put(type, officeParser);
-    }
-    org.apache.tika.parser.Parser ooxmlParser = new OOXMLParser();
-    for (MediaType type : ooxmlParser.getSupportedTypes(context)) {
-      parsers.put(type, ooxmlParser);
-    }
-    parser.setParsers(parsers);
-    return new Tika(configuration);
+    return new Tika();
   }
 
   @Override

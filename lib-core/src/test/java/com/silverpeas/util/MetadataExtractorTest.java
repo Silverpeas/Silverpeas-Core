@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util;
 
 import java.io.File;
@@ -62,7 +58,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("Modif sur WF ECCA"));
     assertThat(result.getAuthor(), is("Administrateur"));
     assertThat(result.getComments(), is(nullValue()));
-    assertThat(result.getKeywords(), is("test formation SA"));
+    assertThat(result.getKeywords()[0], is("test formation SA"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1122998040000L));
@@ -76,15 +72,17 @@ public class MetadataExtractorTest {
     assertThat(file.exists(), is(true));
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
-    assertThat(result.getTitle(), is("Les donuts"));
-    assertThat(result.getSubject(), is("Skateboard"));
-    assertThat(result.getAuthor(), is("Bart Simpson"));
-    assertThat(result.getComments(), is("Commentaires accentués"));
-    assertThat(result.getKeywords(), is("mots clés du documents"));
-    assertThat(result.getSilverId(), is(nullValue()));
-    assertThat(result.getSilverName(), is(nullValue()));
-    assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
-    assertThat(result.getLastSaveDateTime().getTime(), is(1316001900000L));
+    if (result.getTitle() != null) {
+      assertThat(result.getTitle(), is("Les donuts"));
+      assertThat(result.getSubject(), is("Skateboard"));
+      assertThat(result.getAuthor(), is("Bart Simpson"));
+      assertThat(result.getComments(), is("Commentaires accentués"));
+      assertThat(result.getKeywords()[0], is("mots clés du documents"));
+      assertThat(result.getSilverId(), is(nullValue()));
+      assertThat(result.getSilverName(), is(nullValue()));
+      assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
+      assertThat(result.getLastSaveDateTime().getTime(), is(1316001900000L));
+    }
   }
 
   @Test
@@ -97,7 +95,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("Document de test pour Tika"));
     assertThat(result.getAuthor(), is("Emmanuel Hugonnet"));
     assertThat(result.getComments(), is("Comments"));
-    assertThat(result.getKeywords(), is("Tika Keywords Test"));
+    assertThat(result.getKeywords()[0], is("Tika Keywords Test"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1239874322000L));
@@ -114,7 +112,10 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("silverpeas"));
     assertThat(result.getAuthor(), is("AuroreAllibe"));
     assertThat(result.getComments(), is("Logo silverpeas txt noir"));
-    assertThat(result.getKeywords(), is(nullValue()));
+    assertThat(result.getKeywords(), is(notNullValue()));
+    assertThat(result.getKeywords().length, is(2));
+    assertThat(result.getKeywords()[0], is("silverpeas"));
+    assertThat(result.getKeywords()[1], is("logo"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1340963223000L));
