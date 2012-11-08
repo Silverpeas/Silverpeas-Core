@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -146,7 +143,10 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
   }
 
   public Date getCreationDate() {
-    return new Date(creationDate.getTime());
+    if (creationDate != null) {
+      return new Date(creationDate.getTime());
+    }
+    return null;
   }
 
   public void setCreationDate(Date creationDate) {
@@ -223,6 +223,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Return if a document is an Office file
+   *
    * @return true or false
    * @deprecated Use isOpenOfficeCompatibleDocument instead as Ms office is no longer a special
    * case.
@@ -259,6 +260,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * If 3d document
+   *
    * @return true or false
    */
   public boolean isSpinfireDocument() {
@@ -270,6 +272,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * If 3d document
+   *
    * @return true or false
    */
   public boolean isOpenOfficeCompatibleDocument() {
@@ -285,6 +288,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Overriden toString method for debug/trace purposes
+   *
    * @return the String representation of this document.
    */
   @Override
@@ -300,6 +304,7 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Support Cloneable Interface
+   *
    * @return the clone
    */
   @Override
@@ -313,11 +318,12 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
 
   /**
    * Return the path to the document file.
+   *
    * @return the path to the document file.
    */
   public String getDocumentPath() {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-        new String[] { CONTEXT });
+        new String[]{CONTEXT});
     if (!directory.endsWith(File.separator)) {
       directory += File.separator;
     }

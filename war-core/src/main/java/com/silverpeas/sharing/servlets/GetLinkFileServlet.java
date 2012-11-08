@@ -26,22 +26,22 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.silverpeas.util.web.servlet.RestRequest;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Date;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
 
 import static com.silverpeas.sharing.servlets.FileSharingConstants.PARAM_KEYFILE;
 
@@ -87,7 +87,7 @@ public class GetLinkFileServlet extends HttpServlet {
       try {
         response.setContentType(fileType);
         response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
-        response.setContentLength((int) fileSize);
+        response.setHeader( "Content-Length", String.valueOf(fileSize));
         input = new BufferedInputStream(FileUtils.openInputStream(realFile));
         IOUtils.copy(input, out);
         DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());

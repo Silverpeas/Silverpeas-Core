@@ -79,6 +79,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.attachment.model.SimpleDocument;
 import static java.io.File.separator;
 
 /**
@@ -736,17 +737,17 @@ public class PublicationsTypeManager {
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
                   // Mode versioning
                   // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-                  copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
+                  /*copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
                       getVersioningPath(componentId));
                   if (copiedAttachments.size() != attachments.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-                  }
-                  versioningIE.importDocuments(pubDetail.getId(), componentId, copiedAttachments,
+                  }*/
+                  copiedAttachments = attachments;
+                  versioningIE.importDocuments(pubDetail.getId(), componentId, attachments,
                       Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
                 } else {
                   // Ajout des attachments
-                  copiedAttachments =
-                      attachmentIE.importAttachments(pubDetail.getId(), componentId,
+                  copiedAttachments = attachmentIE.importAttachments(pubDetail.getId(), componentId,
                       attachments, userDetail.getId(), pubDetail.isIndexable());
                   if (copiedAttachments.size() != attachments.size()) {
                     unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
@@ -769,19 +770,16 @@ public class PublicationsTypeManager {
                 }
 
                 // Copy files on disk, set info on each version
-                List<DocumentVersion> copiedFiles = versioningIE.copyFiles(componentId, documents,
-                    versioningIE.getVersioningPath(componentId));
+               List<SimpleDocument> copiedFiles = versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
+                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(pubDetail));
                 ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
                 ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
                 // Create documents and versions in DB
-                versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
-                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper
-                    .isIndexable(
-                    pubDetail));
+                
 
                 // On additionne la taille des fichiers importés au niveau du rapport
-                for (DocumentVersion version : copiedFiles) {
+                for (SimpleDocument version : copiedFiles) {
                   ImportReportManager.addImportedFileSize(version.getSize(), componentId);
                 }
               }

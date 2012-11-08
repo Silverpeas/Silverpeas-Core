@@ -44,8 +44,26 @@ import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
 import org.apache.tika.parser.odf.OpenDocumentParser;
 
 public class MetadataExtractor {
-
+  private Tika tika;
   public MetadataExtractor() {
+    TikaConfig configuration = TikaConfig.getDefaultConfig();
+    ParseContext context = new ParseContext();
+    CompositeParser parser = ((CompositeParser) configuration.getParser());
+    Parser openOfficeParser = new OpenDocumentParser();
+    Map<MediaType, Parser> parsers = parser.getParsers(context);
+    for (MediaType type : openOfficeParser.getSupportedTypes(context)) {
+      parsers.put(type, openOfficeParser);
+    }
+    Parser officeParser = new OfficeParser();
+    for (MediaType type : officeParser.getSupportedTypes(context)) {
+      parsers.put(type, officeParser);
+    }
+    Parser ooxmlParser = new OOXMLParser();
+    for (MediaType type : ooxmlParser.getSupportedTypes(context)) {
+      parsers.put(type, ooxmlParser);
+    }
+    parser.setParsers(parsers);
+    tika = new Tika(configuration);
   }
 
   /**
@@ -68,25 +86,7 @@ public class MetadataExtractor {
   }
 
   private MetaData getMetadata(InputStream inputStream) throws IOException {
-    Metadata metadata = new Metadata();
-    TikaConfig configuration = TikaConfig.getDefaultConfig();
-    ParseContext context = new ParseContext();
-    CompositeParser parser = ((CompositeParser) configuration.getParser());
-    Parser openOfficeParser = new OpenDocumentParser();
-    Map<MediaType, Parser> parsers = parser.getParsers(context);
-    for (MediaType type : openOfficeParser.getSupportedTypes(context)) {
-      parsers.put(type, openOfficeParser);
-    }
-    Parser officeParser = new OfficeParser();
-    for (MediaType type : officeParser.getSupportedTypes(context)) {
-      parsers.put(type, officeParser);
-    }
-    Parser ooxmlParser = new OOXMLParser();
-    for (MediaType type : ooxmlParser.getSupportedTypes(context)) {
-      parsers.put(type, ooxmlParser);
-    }
-    parser.setParsers(parsers);
-    Tika tika = new Tika(configuration);
+    Metadata metadata = new Metadata();    
     Reader reader = tika.parse(inputStream, metadata);
     reader.close();
     return new MetaData(metadata);

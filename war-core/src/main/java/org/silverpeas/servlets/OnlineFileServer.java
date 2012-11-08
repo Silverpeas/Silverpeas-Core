@@ -61,7 +61,7 @@ public class OnlineFileServer extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
+  public void doPost(HttpServletRequest req, HttpServletResponse response)
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     String mimeType = req.getParameter("MimeType");
@@ -93,9 +93,9 @@ public class OnlineFileServer extends HttpServlet {
             FileRepositoryManager.getRelativePath(new String[]{"Versioning"}), componentId);
       }
     }
-    res.setContentLength((int) onlineFile.getContentLength());
-    res.setContentType(onlineFile.getMimeType());
-    sendFile(res, onlineFile);
+    response.setHeader( "Content-Length", String.valueOf(onlineFile.getContentLength()));
+    response.setContentType(onlineFile.getMimeType());
+    sendFile(response, onlineFile);
   }
 
   /**
