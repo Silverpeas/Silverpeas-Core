@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import org.junit.Test;
 
+import org.silverpeas.util.Charsets;
+
 /**
  * Test class for TestDynamicValueReplacement
  */
@@ -79,9 +81,9 @@ public class TestDynamicValueReplacement extends AbstractBaseDynamicValue {
    * @throws IOException
    */
   private String getContentFromFile(String fileName) throws IOException {
-    StringBuilder contents = new StringBuilder();
+    StringBuilder contents = new StringBuilder(1024);
     BufferedReader input = new BufferedReader(new InputStreamReader(TestDynamicValueReplacement.class
-        .getResourceAsStream(fileName)));
+        .getResourceAsStream(fileName), Charsets.UTF_8));
     try {
       String line = null;
       while ((line = input.readLine()) != null) {

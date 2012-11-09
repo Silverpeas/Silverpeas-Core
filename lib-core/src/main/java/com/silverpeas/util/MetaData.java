@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.Property;
+import org.apache.tika.metadata.TikaCoreProperties;
 
 import com.stratelia.webactiv.util.DateUtil;
 
@@ -55,7 +56,7 @@ public class MetaData {
    * @return String
    */
   public String getTitle() {
-    return metadata.get(Metadata.TITLE);
+    return metadata.get(TikaCoreProperties.TITLE);
   }
 
   /**
@@ -107,8 +108,8 @@ public class MetaData {
    *
    * @return String
    */
-  public String getKeywords() {
-    return metadata.get(Metadata.KEYWORDS);
+  public String[] getKeywords() {
+    return metadata.getValues(Metadata.KEYWORDS);
   }
 
   /**
@@ -141,9 +142,9 @@ public class MetaData {
    * Return CreateDateTime of an Office document
    */
   public Date getCreationDate() {
-    Date result = getDate(Metadata.CREATION_DATE);
+    Date result = getDate(TikaCoreProperties.CREATED);
     if (result == null) {
-      result = metadata.getDate(Metadata.DATE_CREATED);
+      result = metadata.getDate(TikaCoreProperties.CREATED);
     }
     if (result == null) {
       result = metadata.getDate(Metadata.DATE);
