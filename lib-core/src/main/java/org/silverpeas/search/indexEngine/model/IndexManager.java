@@ -131,8 +131,7 @@ public class IndexManager {
       Entry<String, IndexWriter> writerEntry = writerPaths.next();
       String writerPath = writerEntry.getKey();
       SilverTrace.debug("indexEngine", "IndexManager",
-          "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = "
-          + writerPath);
+          "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = " + writerPath);
 
       if (writerPath != null) {
         IndexWriter writer = writerEntry.getValue();

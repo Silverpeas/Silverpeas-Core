@@ -24,15 +24,10 @@
 package org.silverpeas.search.indexEngine.model;
 
 import java.io.File;
-import java.util.Date;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.silverpeas.search.indexEngine.model.RepositoryIndexer.IndexerAction;
 import com.silverpeas.util.PathTestUtil;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -40,11 +35,10 @@ import static org.junit.Assert.*;
  */
 public class RepositoryIndexerTest {
 
-  private static final  RepositoryIndexer instance = new RepositoryIndexer("", "kmelia18");
+  private static final RepositoryIndexer instance = new RepositoryIndexer("", "kmelia18");
+
   public RepositoryIndexerTest() {
   }
-
- 
 
   /**
    * Test of pathIndexer method, of class RepositoryIndexer.
@@ -55,8 +49,8 @@ public class RepositoryIndexerTest {
         + "large";
     String creationDate = "";
     String creatorId = "";
-   
-    instance.pathIndexer(path, creationDate, creatorId, RepositoryIndexer.ADD_ACTION);
+
+    instance.pathIndexer(path, creationDate, creatorId, IndexerAction.add);
   }
 
   /**
@@ -64,20 +58,20 @@ public class RepositoryIndexerTest {
    */
   @Test
   public void testIndexTifFile() {
-    String action = RepositoryIndexer.ADD_ACTION;
+    IndexerAction action = IndexerAction.add;
     String creationDate = "";
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
         + File.separatorChar + "large", "fond tableau calque.tif");
     instance.indexFile(action, creationDate, creatorId, file);
   }
-  
-   /**
+
+  /**
    * Test of indexFile method, of class RepositoryIndexer.
    */
   @Test
   public void testIndexTextFile() {
-    String action = RepositoryIndexer.ADD_ACTION;
+    IndexerAction action = IndexerAction.add;
     String creationDate = "";
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
@@ -89,13 +83,12 @@ public class RepositoryIndexerTest {
    * Test of indexFile method, of class RepositoryIndexer.
    */
   @Test
-  public void testIndexFileNotClosingIndex() {
-     String action = RepositoryIndexer.ADD_ACTION;
+  public void testIndexPsdFile() {
+    IndexerAction action = IndexerAction.add;
     String creationDate = "";
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
-        + File.separatorChar + "large", "fond tableau calque.tif");
-    instance.indexFile(action, creationDate, creatorId, file, false); 
-    instance.indexFile(action, creationDate, creatorId, file, true);
+        + File.separatorChar + "large", "xza2_seul.psd");
+    instance.indexFile(action, creationDate, creatorId, file);
   }
 }
