@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.lookV5;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -57,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PersonalSpaceJSONServlet extends HttpServlet {
+
   private static final long serialVersionUID = 8565616592829678418L;
 
   @Override
@@ -71,8 +68,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     SilverTrace.info("lookSilverpeasV5", "JSONServlet.doPost", "root.MSG_GEN_ENTER_METHOD");
 
     HttpSession session = req.getSession(true);
-    MainSessionController m_MainSessionCtrl =
-        (MainSessionController) session
+    MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
     OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
@@ -100,9 +96,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
       try {
-        String componentId =
-            psc.addComponent(helper.getUserId(), componentName, getComponentLabel(componentName,
-            helper));
+        String componentId = psc.addComponent(helper.getUserId(), componentName, 
+            getComponentLabel(componentName, helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (Exception e) {
         writer.write(getResult(componentName, null, e, helper).toString());
@@ -178,9 +173,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     jsonObject.put("description", component.getDescription());
     jsonObject.put("label", getComponentLabel(component.getName(), helper));
     jsonObject.put("id", component.getId());
-    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName() +
-        component.getId()) +
-        "Main");
+    jsonObject.put("url", URLManager.getURL(component.getName(), "useless", component.getName()
+        + component.getId()) + "Main");
 
     return jsonObject;
   }
@@ -222,32 +216,28 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   }
 
   private String getToolsAsJSONArray(LookHelper helper) {
-    ResourceLocator message =
-        new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", helper
-        .getLanguage());
+    ResourceLocator message = new ResourceLocator(
+        "org.silverpeas.homePage.multilang.homePageBundle", helper.getLanguage());
     JSONArray jsonArray = new JSONArray();
     if (!helper.isAnonymousAccess() && helper.getSettings("personnalSpaceVisible", true)) {
       addTool(jsonArray, helper, "agendaVisible", "agenda", message.getString("Diary"), URLManager
-          .getURL(URLManager.CMP_AGENDA) +
-          "Main");
+          . getURL(URLManager.CMP_AGENDA, null, null) + "Main");
       addTool(jsonArray, helper, "todoVisible", "todo", message.getString("ToDo"), URLManager
-          .getURL(URLManager.CMP_TODO) +
-          "todo.jsp");
+          .getURL(URLManager.CMP_TODO, null, null) + "todo.jsp");
       addNotificationsAsTool(jsonArray, helper, message);
-      addTool(jsonArray, helper, "interestVisible", "subscriptions", message
-          .getString("MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION) +
-          "subscriptionList.jsp");
+      addTool(jsonArray, helper, "interestVisible", "subscriptions", message.getString(
+          "MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null) 
+          + "subscriptionList.jsp");
       addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"),
-          URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS) + "iCenterList.jsp");
+          URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null) + "iCenterList.jsp");
       addTool(jsonArray, helper, "linksVisible", "links", message.getString("FavLinks"), URLManager
-          .getURL(URLManager.CMP_MYLINKSPEAS) +
-          "Main");
+          .getURL(URLManager.CMP_MYLINKSPEAS, null, null) + "Main");
       addFileSharingAsTool(jsonArray, helper, message);
       addWebConnectionsAsTool(jsonArray, helper, message);
-      addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent", message
-          .getString("ScheduleEvent"), URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT) + "Main");
-      addTool(jsonArray, helper, "customVisible", "personalize", message
-          .getString("Personalization"), URLManager.getURL(URLManager.CMP_MYPROFILE) + "MyInfos");
+      addTool(jsonArray, helper, "scheduleEventVisible", "scheduleevent", message.getString(
+          "ScheduleEvent"), URLManager.getURL(URLManager.CMP_SCHEDULE_EVENT, null, null) + "Main");
+      addTool(jsonArray, helper, "customVisible", "personalize", message.getString(
+          "Personalization"), URLManager.getURL(URLManager.CMP_MYPROFILE, null, null) + "MyInfos");
       addTool(jsonArray, helper, "mailVisible", "notifAdmins", message.getString("Feedback"),
           "javascript:notifyAdministrators()");
       addTool(jsonArray, helper, "clipboardVisible", "clipboard", message.getString("Clipboard"),
@@ -299,8 +289,8 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       try {
         if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
-              message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING) +
-              "Main");
+              message.getString("FileSharing"), URLManager.getURL(URLManager.CMP_FILESHARING)
+              + "Main");
         }
       } catch (Exception e) {
         SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
@@ -326,5 +316,4 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
       }
     }
   }
-
 }
