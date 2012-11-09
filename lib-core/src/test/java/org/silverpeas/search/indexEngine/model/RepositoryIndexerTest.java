@@ -63,12 +63,25 @@ public class RepositoryIndexerTest {
    * Test of indexFile method, of class RepositoryIndexer.
    */
   @Test
-  public void testIndexFile() {
+  public void testIndexTifFile() {
     String action = RepositoryIndexer.ADD_ACTION;
     String creationDate = "";
     String creatorId = "";
     File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
         + File.separatorChar + "large", "fond tableau calque.tif");
+    instance.indexFile(action, creationDate, creatorId, file);
+  }
+  
+   /**
+   * Test of indexFile method, of class RepositoryIndexer.
+   */
+  @Test
+  public void testIndexTextFile() {
+    String action = RepositoryIndexer.ADD_ACTION;
+    String creationDate = "";
+    String creatorId = "";
+    File file = new File(PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes"
+        + File.separatorChar + "large", "silverpeas-jcr.txt");
     instance.indexFile(action, creationDate, creatorId, file);
   }
 
