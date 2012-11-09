@@ -187,11 +187,11 @@ function loadPdC( uri, onSuccess, onError ) {
  *   status: the error status,
  *   message: the error message
  * }
- * 
+ *
  * The classification is an object of type:
  * {
  *   uri: the URI of the classification in the Web,
- *   modifiable: a property indicating if this classification can be edited, 
+ *   modifiable: a property indicating if this classification can be edited,
  *   positions: [ the positions on the PdC ]
  * }
  * Each position on the PdC in a classification is an object of type:
@@ -210,7 +210,7 @@ function loadPdC( uri, onSuccess, onError ) {
  *  meaning: the meaning vehiculed by the value. It is either a path of terms in a hierarchic
  *           sementic tree or a single term (for a single value),
  *  synonyms: [ the synonyms of the value term as strings ]
- * }      
+ * }
  */
 function loadClassification( uri, onSuccess, onError ) {
   $.ajax({
@@ -223,10 +223,10 @@ function loadClassification( uri, onSuccess, onError ) {
     },
     error: function(jqXHR, textStatus, errorThrown) {
       onError({
-        uri: uri, 
+        uri: uri,
         positions: []
       }, {
-        status: jqXHR.status, 
+        status: jqXHR.status,
         message: errorThrown
       });
     }
@@ -269,7 +269,7 @@ function deletePosition( uri, position, confirmationMsg, onSuccess, onError ) {
           alert(errorThrown);
         else
           onError({
-            status: jqXHR.status, 
+            status: jqXHR.status,
             message: errorThrown
           });
       }
@@ -306,7 +306,7 @@ function postPosition( uri, position, onSuccess, onError ) {
         alert(errorThrown);
       else
         onError({
-          status: jqXHR.status, 
+          status: jqXHR.status,
           message: errorThrown
         });
     }
@@ -344,7 +344,7 @@ function updatePosition( uri, position, onSuccess, onError ) {
         alert(errorThrown);
       else
         onError({
-          status: jqXHR.status, 
+          status: jqXHR.status,
           message: errorThrown
         });
     }
@@ -356,6 +356,9 @@ function updatePosition( uri, position, onSuccess, onError ) {
 /**
  * Finds in the specifieds array of positions a position having the specified values on the axis of
  * the PdC.
+ * It is expected the values in each position are correctly sorted (that is sorted by the identifier
+ * of the axis they belong to), so two positions are equals if they have the same values at same
+ * positions.
  * If no such position exists in the array, then returns null. Otherwise is returned an object of
  * type:
  * {
@@ -368,11 +371,12 @@ function findPosition( withValues, inSomePositions ) {
   for (var p = 0; p < inSomePositions.length; p++) {
     if (inSomePositions[p].values.length == withValues.length) {
       position = {
-        index: p, 
+        index: p,
         position: inSomePositions[p]
       };
       for (var v = 0; v < withValues.length; v++) {
-        if (withValues[v].id != inSomePositions[p].values[v].id) {
+        if (withValues[v].axisId != inSomePositions[p].values[v].axisId ||
+          withValues[v].id != inSomePositions[p].values[v].id) {
           position = null;
           break;
         }
@@ -503,7 +507,7 @@ function removePosition( position, positions ) {
           icon     : webContext + '/util/icons/delete.gif', /* text to render with the deletion button */
           title    : 'Supprimer la position' /* the icon representing the position deletion */
         },
-        onAddition         : function() {}, /* the function to invoke when the adding of a new position is asked. 
+        onAddition         : function() {}, /* the function to invoke when the adding of a new position is asked.
                                                     This function can the use the widget to select some values from the PdC's axis in order to create a new position */
         onDeletion         : function(position) {}, /* the function to invoke when a position is deleted */
         onUpdate           : function(position) {} /* the function to invoke when a position is updated */
@@ -533,7 +537,7 @@ function removePosition( position, positions ) {
         var $thisPdcPositions = $(this), settings = $thisPdcPositions.data('PdcPositionSettings');
         settings.positions = positions;
         if (optionalParameter != null) {
-          if (optionalParameter.title != null && optionalParameter.title.length > 0) 
+          if (optionalParameter.title != null && optionalParameter.title.length > 0)
             $('label[for="' + settings.id + '_allpositions"]').html(optionalParameter.title);
           if(optionalParameter.update == true || optionalParameter.update == false)
             settings.update.activated = optionalParameter.update;
@@ -555,7 +559,7 @@ function removePosition( position, positions ) {
       return methods.init.apply( this, arguments );
     } else {
       $.error( 'Method ' +  method + ' does not exist on jQuery.pdcPositions' );
-    }    
+    }
   }
   
   function renderPositionsFrame( $thisPdcPositions, settings ) {
@@ -589,11 +593,11 @@ function removePosition( position, positions ) {
         if (settings.update.activated) {
           positionLabel.append(
             $('<a>',{
-              href: '#', 
+              href: '#',
               title: settings.update.title + ' ' + (posindex + 1)
             }).addClass('edit').
             append($('<img>', {
-              src: settings.update.icon,  
+              src: settings.update.icon,
               alt: settings.update.title
             }).click(function () {
               settings.onUpdate(aPosition);
@@ -602,11 +606,11 @@ function removePosition( position, positions ) {
          
         if (settings.deletion.activated) {
           positionLabel.append($('<a>', {
-            href: '#', 
+            href: '#',
             title: settings.deletion.title + ' ' + (posindex + 1)
           }).addClass('delete').
             append($('<img>', {
-              src: settings.deletion.icon,  
+              src: settings.deletion.icon,
               alt: settings.deletion.title
             }).click(function () {
               settings.onDeletion(aPosition);
@@ -634,7 +638,7 @@ function removePosition( position, positions ) {
 
 /**
  * A Widget to render a preview of the positions on the PdC of a resource.
- * This widget is a more simple one that the above as the positions cannot be edited and as 
+ * This widget is a more simple one that the above as the positions cannot be edited and as
  * the rendering is more simple.
  */
 (function( $ ){
@@ -705,8 +709,8 @@ function removePosition( position, positions ) {
   
   function aPositionValueFrom( anAxisValue ) {
     return {
-      id: anAxisValue.id, 
-      axisId: anAxisValue.axisId, 
+      id: anAxisValue.id,
+      axisId: anAxisValue.axisId,
       treeId: anAxisValue.treeId,
       meaning: anAxisValue.meaning,
       synonyms: anAxisValue.synonyms
@@ -758,7 +762,7 @@ function removePosition( position, positions ) {
             var ok = true;
             for (var ival = 0; ival < position.values.length && ok; ival++) {
               if (position.values[ival].axisId != positions[ipos].values[ival].axisId ||
-                  position.values[ival].id != positions[ipos].values[ival].id)
+                position.values[ival].id != positions[ipos].values[ival].id)
                 ok = false;
             }
             if (ok)
@@ -767,29 +771,49 @@ function removePosition( position, positions ) {
         return false;
       }
 
-      positions[0] = {values: []};
-      for (var axisId in this.matrix[0]) {
-        if (this.matrix[0][axisId] != null)
-          positions[0].values.push(aPositionValueFrom(this.matrix[0][axisId]))
+      function addNewPosition(values) {
+        if (values.length > 0) {
+          var position = {
+            values: values
+          }
+          sortValues(position);
+          if (!contains(position))
+            positions.push(position);
+        }
       }
-      sortValues(positions[0].values);
-      for (var i = 1; i < this.matrix.length; i++) {
-        for (axisId in this.matrix[i]) {
-          if (this.matrix[i][axisId] != null) {
-            var lastpos = positions.length;
-            for (var pos = 0; pos < lastpos; pos++) {
-              var newPosition = {values: [ aPositionValueFrom(this.matrix[i][axisId]) ]};
-              for (var val = 0; val < positions[pos].values.length; val++) {
-                if (positions[pos].values[val].axisId != axisId.substring(axisprefix.length))
-                  newPosition.values.push(positions[pos].values[val]);
-              }
-              sortValues(newPosition.values);
-              if (!contains(newPosition)) {
-                positions.push(newPosition);
+
+      if (this.matrix.length > 0) {
+        var firstidx = 0
+        if (!this.matrix[0] || this.matrix[0].length == 0) {
+          // the index 0 has a specific meaning: if left empty, it means no values to permit the
+          // generation of positions with one single value when combining the different selected
+          // axis values. So, in a such case, to simplify the positions generation, a virtual
+          // position is created with no values; as it is virtual, don't forget to remove it after
+          // the positions generation.
+          positions.push({values: []});
+          firstidx++;
+        }
+        for(var i = firstidx; i < this.matrix.length; i++) {
+          var values = [];
+          for (var axis in this.matrix[i]) {
+            if (this.matrix[i][axis]) {
+              if (positions.length == 0)
+                values.push(aPositionValueFrom(this.matrix[i][axis]));
+              var maxpos = positions.length - 1;
+              for (var pos = 0; pos <= maxpos; pos++) {
+                var anothervalues = [aPositionValueFrom(this.matrix[i][axis])];
+                for (var val = 0; val < positions[pos].values.length; val++) {
+                  if (positions[pos].values[val].axisId != axis.substring(axisprefix.length))
+                    anothervalues.push(positions[pos].values[val]);
+                }
+                addNewPosition(anothervalues);
               }
             }
           }
+          addNewPosition(values);
         }
+        if (firstidx > 0)
+          positions = positions.slice(firstidx, positions.length);
       }
       return positions;
     }
@@ -857,14 +881,14 @@ function removePosition( position, positions ) {
   }
   
   /**
-   * Renders the specified axis as an XHMLT select element. Each option represents a value of the
-   * axis.
-   * If a value is set among the first selected position, then the corresponding option is preselected.
-   * If the axis is already rendered through an XHTML select element, then renders another occurrence
-   * of the select element just below the previous one. Several XHML select elements for the same
-   * axis is the way to select multiple values of the given axis; each of them generating then a
-   * different position.
-   */
+* Renders the specified axis as an XHMLT select element. Each option represents a value of the
+* axis.
+* If a value is set among the first selected position, then the corresponding option is preselected.
+* If the axis is already rendered through an XHTML select element, then renders another occurrence
+* of the select element just below the previous one. Several XHML select elements for the same
+* axis is the way to select multiple values of the given axis; each of them generating then a
+* different position.
+*/
   function renderAxis( $axisDiv, settings, selectedPositions, anAxis ) {
     var mandatoryField = '', idPrefix = settings.id + '_' + anAxis.id + '_', i = 0;
     if (anAxis.mandatory)
@@ -878,7 +902,7 @@ function removePosition( position, positions ) {
     
     // render the select with the values of the specified axis
     var axisValuesSelection = $('<select>', {
-      'id': idPrefix + i,  
+      'id': idPrefix + i,
       'name': anAxis.name
     }).addClass(mandatoryField).appendTo($axisDiv).change( function() {
       // take care of the change of the option selection (axis value selection)
@@ -915,7 +939,7 @@ function removePosition( position, positions ) {
       }).addClass('another-value').click(function () {
         duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
       }).append($('<img>', {
-        src: settings.anotherValueIcon, 
+        src: settings.anotherValueIcon,
         alt: settings.anotherValueLegend
       })).appendTo($axisDiv);
     }
@@ -968,14 +992,14 @@ function removePosition( position, positions ) {
       option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
       $('<img>', {
         src: settings.mandatoryAxisIcon,
-        alt: settings.mandatoryAxisLegend, 
+        alt: settings.mandatoryAxisLegend,
         width: '5px',
         height: '5px'
       }).appendTo($axisDiv.append(' '));
     }
     if (anAxis.invariant) {
       $('<img>', {
-        src: settings.invariantAxisIcon, 
+        src: settings.invariantAxisIcon,
         alt: settings.invariantAxisLegend,
         width: '10px',
         height: '10px'
@@ -1052,7 +1076,7 @@ function removePosition( position, positions ) {
         var legende = $('<p>').addClass('legende');
         if (hasMandatoryAxis) {
           legende.append($('<img>', {
-            src: settings.mandatoryAxisIcon, 
+            src: settings.mandatoryAxisIcon,
             alt: settings.mandatoryAxisLegend,
             width: '5px',
             height: '5px'
@@ -1061,7 +1085,7 @@ function removePosition( position, positions ) {
         if (hasInvariantAxis) {
           legende.append(
             $('<img>', {
-              src: settings.invariantAxisIcon, 
+              src: settings.invariantAxisIcon,
               alt: settings.invariantAxisLegend,
               width: '10px',
               height: '10px'
