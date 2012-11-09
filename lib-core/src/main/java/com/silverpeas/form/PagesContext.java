@@ -24,6 +24,10 @@
 
 package com.silverpeas.form;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+
 /**
  * The page context where a form is displayed.
  */
@@ -54,6 +58,7 @@ public class PagesContext {
   int updatePolicy = ON_UPDATE_REPLACE_EMPTY_VALUES;
   String encoding = "UTF-8";
   boolean creation = false;
+  String serverURL;
 
   public PagesContext() {
   }
@@ -314,5 +319,13 @@ public class PagesContext {
   
   public void setCreation(boolean creation) {
     this.creation = creation;
+  }
+  
+  public String getServerURL() {
+    return serverURL;
+  }
+  
+  public void setRequest(HttpServletRequest request) {
+    this.serverURL = URLManager.getServerURL(request);
   }
 }
