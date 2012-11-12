@@ -24,20 +24,8 @@
 
 package com.stratelia.webactiv.servlets;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
@@ -47,6 +35,15 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * Class declaration
@@ -83,15 +80,14 @@ public class FileUploader extends HttpServlet {
       throws ServletException, IOException {
     SilverTrace.info("peasUtil", "FileUploader.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
-      DiskFileUpload dfu = new DiskFileUpload();
-      List<FileItem> items = dfu.parseRequest(req);
-      FileItem file = getUploadedFile(items, "FileField");
-      String userId = getParameterValue(items, "UserId");
-      String attachmentId = getParameterValue(items, "FileId");
-      String contentLanguage = getParameterValue(items, "FileLang");
+      List<FileItem> items = FileUploadUtil.parseRequest(req);
+      FileItem file = FileUploadUtil.getFile(items, "FileField");
+      String userId = FileUploadUtil.getParameter(items, "UserId");
+      String attachmentId = FileUploadUtil.getParameter(items, "FileId");
+      String contentLanguage = FileUploadUtil.getParameter(items, "FileLang");
       // in case of versioning
-      String privateOrPublic = getParameterValue(items, "Version");
-      String comments = getParameterValue(items, "Comment");
+      String privateOrPublic = FileUploadUtil.getParameter(items, "Version");
+      String comments = FileUploadUtil.getParameter(items, "Comment");
 
       if (StringUtil.isDefined(privateOrPublic)) {
         int versionType = ("publique".equals(privateOrPublic) ? DocumentVersion.TYPE_PUBLIC_VERSION
@@ -135,24 +131,6 @@ public class FileUploader extends HttpServlet {
     File uploadFile = new File(newVersionFile);
     file.write(uploadFile);
     versioningUtil.checkinFile(documentId, versionType, comment, userId, newPhysicalName);
-  }
-
-  private FileItem getUploadedFile(List<FileItem> items, String parameterName) {
-    for (FileItem item : items) {
-      if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
-
-  private String getParameterValue(List<FileItem> items, String parameterName) {
-    for (FileItem item : items) {
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
   }
 
   private String getUserId(HttpServletRequest request) {
