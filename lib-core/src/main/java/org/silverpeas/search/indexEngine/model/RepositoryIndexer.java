@@ -20,21 +20,23 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * An RepositoryIndexer allow to index files in a whole repository except the directories
  */
 public class RepositoryIndexer {
 
-  public static final String ADD_ACTION = "add";
-  public static final String REMOVE_ACTION = "remove";
+  public enum IndexerAction {
+
+    add, remove;
+  }
   private String spaceId = null;
   private String componentId = null;
   private int count = 0;
@@ -56,7 +58,7 @@ public class RepositoryIndexer {
     return componentId;
   }
 
-  public void pathIndexer(String path, String creationDate, String creatorId, String action) {
+  public void pathIndexer(String path, String creationDate, String creatorId, IndexerAction action) {
     SilverTrace.debug("indexEngine", "RepositoryIndexer.pathIndexer()", "root.MSG_GEN_ENTER_METHOD",
         "path=" + path);
     separator = path.charAt(0);
@@ -77,29 +79,21 @@ public class RepositoryIndexer {
   /**
    * Recursive function which covers directories. For each file, the file is indexed.
    *
-   * @param fileList an array which contains directories and files
-   * @param path the current path
-   * @param currentDirectoryName the current directory name
-   * @param massiveReport the report to enrich by each upload
    * @return a MassiveReport
    */
-  private void processFileList(File dir, String creationDate, String creatorId, String action) {
+  private void processFileList(File dir, String creationDate, String creatorId, IndexerAction action) {
     if (count % 10000 == 0) {
       SilverTrace.info("indexEngine", "RepositoryIndexer.processFileList()",
           "root.MSG_GEN_PARAM_VALUE", "# of indexed documents =" + count);
     }
-
     File[] dirs = dir.listFiles(DirectorySPFilter.getInstance());
     File[] files = dir.listFiles(FileSPFilter.getInstance());
-
     List<File> dirList = Arrays.asList(dirs);
     Collections.sort(dirList, FilenameComparator.comparator);
-
     List<File> fileList = Arrays.asList(files);
     Collections.sort(fileList, FilenameComparator.comparator);
-
     for (File currentFile : fileList) {
-      indexFile(action, creationDate, creatorId, currentFile, false);
+      indexFile(action, creationDate, creatorId, currentFile);
     }
     for (File currentDir : dirList) {
       indexDirectory(action, creationDate, creatorId, currentDir);
@@ -108,64 +102,58 @@ public class RepositoryIndexer {
     }
   }
 
-  private void indexDirectory(String action, String creationDate, String creatorId, File directory) {
-    if (ADD_ACTION.equals(action)) {
-      // indexer le répertoire
-      FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(), "LinkedDir",
-          directory.getPath());
-      fullIndexEntry.setTitle(directory.getName());
-      fullIndexEntry.setCreationDate(creationDate);
-      fullIndexEntry.setCreationUser(creatorId);
-      indexManager.addIndexEntry(fullIndexEntry);
-      count++;
-    } else if (REMOVE_ACTION.equals(action)) {
-      IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedDir", directory.getPath());
-      indexManager.removeIndexEntry(indexEntry);
+  private void indexDirectory(IndexerAction action, String creationDate, String creatorId,
+      File directory) {
+    switch ((action)) {
+      case add:
+        // indexer le répertoire
+        FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(), "LinkedDir",
+            directory.getPath());
+        fullIndexEntry.setTitle(directory.getName());
+        fullIndexEntry.setCreationDate(creationDate);
+        fullIndexEntry.setCreationUser(creatorId);
+        indexManager.addIndexEntry(fullIndexEntry);
+        count++;
+        break;
+      case remove:
+        IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedDir", directory.
+            getPath());
+        indexManager.removeIndexEntry(indexEntry);
+        break;
     }
   }
 
-  public void indexFile(String action, String creationDate, String creatorId, File file) {
-    indexFile(action, creationDate, creatorId, file, true);
-  }
-
-  public void indexFile(String action, String creationDate, String creatorId, File file,
-      boolean closeIndex) {
-    // String path = currentPath + separator + fileName;
-
+  public void indexFile(IndexerAction action, String creationDate, String creatorId, File file) {
     String filePath = file.getPath();
 
-    if (ADD_ACTION.equals(action)) {
-      String fileName = file.getName();
+    switch (action) {
+      case add:
+        String fileName = file.getName();
+        // Add file in index
+        FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(), "LinkedFile", filePath);
+        fullIndexEntry.setTitle(fileName);
 
-      // Add file in index
-      FullIndexEntry fullIndexEntry = new FullIndexEntry(getComponentId(), "LinkedFile", filePath);
-      fullIndexEntry.setTitle(fileName);
+        boolean haveGotExtension = (fileName.lastIndexOf('.') != -1);
 
-      boolean haveGotExtension = (fileName.lastIndexOf('.') != -1);
-
-      if (haveGotExtension) {
-        fullIndexEntry.setPreView(fileName.substring(0, fileName.lastIndexOf('.')));
-      } else {
-        fullIndexEntry.setPreView(fileName);
-      }
-
-      fullIndexEntry.setCreationDate(creationDate);
-      fullIndexEntry.setCreationUser(creatorId);
-
-      if (haveGotExtension && !fileName.startsWith("~")) {
-        String format = FileUtil.getMimeType(fileName);
-        String lang = "fr";
-        fullIndexEntry.addFileContent(filePath, null, format, lang);
-      }
-      indexManager.addIndexEntry(fullIndexEntry);
-      count++;
-    } else if (REMOVE_ACTION.equals(action)) { // Remove file from index
-      IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedFile", filePath);
-      indexManager.removeIndexEntry(indexEntry);
-    }
-
-    if (closeIndex) {
-      indexManager.optimize();
+        if (haveGotExtension) {
+          fullIndexEntry.setPreView(fileName.substring(0, fileName.lastIndexOf('.')));
+        } else {
+          fullIndexEntry.setPreView(fileName);
+        }
+        fullIndexEntry.setCreationDate(creationDate);
+        fullIndexEntry.setCreationUser(creatorId);
+        if (haveGotExtension && !fileName.startsWith("~")) {
+          String format = FileUtil.getMimeType(fileName);
+          String lang = "fr";
+          fullIndexEntry.addFileContent(filePath, null, format, lang);
+        }
+        indexManager.addIndexEntry(fullIndexEntry);
+        count++;
+        break;
+      case remove:
+        IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "LinkedFile", filePath);
+        indexManager.removeIndexEntry(indexEntry);
+        break;
     }
   }
 }
