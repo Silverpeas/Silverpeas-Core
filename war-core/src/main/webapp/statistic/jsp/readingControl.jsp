@@ -35,6 +35,7 @@
 
 <%
     //initialisation des variables
+    String currentUserId = m_MainSessionCtrl.getUserId();
     String id 			= request.getParameter("id");
     String userId 		= request.getParameter("userId");
     String url 			= request.getParameter("url");
@@ -71,7 +72,7 @@
     	ArrayLine ligne = arrayPane.addArrayLine();
     	
     	HistoryByUser historyByUser = (HistoryByUser) it.next();
-    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), "unknown"));
+    	ligne.addArrayCellText(UserNameGenerator.toString(historyByUser.getUser(), currentUserId));
     	Date haveRead = historyByUser.getLastAccess();
     	String readingDate = "";
         if (haveRead == null) {

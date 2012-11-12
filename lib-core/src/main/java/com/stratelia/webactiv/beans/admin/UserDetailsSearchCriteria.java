@@ -37,17 +37,13 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
-  private static final String ROLE_IDS = "roleIds";
+  private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
+  private static final String RESOURCE_ID = "resourceId";
   private static final String INSTANCE_ID = "instanceId";
   private static final String NAME = "name";
   private Map<String, Object> criteria = new HashMap<String, Object>();
 
-  /**
-   * The users fistname or lastname must matchs the specified pattern on the name.
-   * @param name a pattern on the name.
-   * @return itself.
-   */
   @Override
   public UserDetailsSearchCriteria onName(String name) {
     if (isDefined(name)) {
@@ -56,11 +52,6 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The users must have access the specified component instance.
-   * @param instanceId the unique identifier of the component instance.
-   * @return itself.
-   */
   @Override
   public UserDetailsSearchCriteria onComponentInstanceId(String instanceId) {
     if (isDefined(instanceId)) {
@@ -69,35 +60,20 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The users must play at least one of the specified roles.
-   * @param roleIds the unique identifiers of the roles.
-   * @return itself.
-   */
   @Override
-  public UserDetailsSearchCriteria onRoleIds(String[] roleIds) {
+  public UserDetailsSearchCriteria onRoleNames(String[] roleIds) {
     if (roleIds != null && roleIds.length > 0) {
-      criteria.put(ROLE_IDS, roleIds);
+      criteria.put(ROLE_NAMES, roleIds);
     }
     return this;
   }
 
-  /**
-   * The users must belong at least to one of the specified groups.
-   * @param groupIds the unique identifiers of the groups.
-   * @return itself.
-   */
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
     criteria.put(GROUP_IDS, groupIds);
     return this;
   }
 
-  /**
-   * The users must belong to the specified user domain.
-   * @param domainId the unique identifier of the user domain.
-   * @return itself.
-   */
   @Override
   public UserDetailsSearchCriteria onDomainId(String domainId) {
     if (isDefined(domainId)) {
@@ -106,11 +82,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The users must be one of the specified ones.
-   * @param userIds the unique identifiers of the users to fetch.
-   * @return itself.
-   */
+  @Override
+  public UserDetailsSearchCriteria onResourceId(String resourceId) {
+    if (isDefined(resourceId)) {
+      criteria.put(RESOURCE_ID, resourceId);
+    }
+    return this;
+  }
+
   @Override
   public UserDetailsSearchCriteria onUserIds(String[] userIds) {
     if (userIds != null && userIds.length > 0) {
@@ -119,8 +98,12 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  public boolean isCriterionOnRoleIdsSet() {
-    return criteria.containsKey(ROLE_IDS);
+  public boolean isCriterionOnRoleNamesSet() {
+    return criteria.containsKey(ROLE_NAMES);
+  }
+
+  public boolean isCriterionOnResourceIdSet() {
+    return criteria.containsKey(RESOURCE_ID);
   }
 
   public boolean isCriterionOnComponentInstanceIdSet() {
@@ -144,11 +127,19 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the disjonction on the role identifiers.
+   * Gets the disjonction on the role names.
    * @return an array with each element of the disjonction.
    */
-  public String[] getCriterionOnRoleIds() {
-    return (String[]) criteria.get(ROLE_IDS);
+  public String[] getCriterionOnRoleNames() {
+    return (String[]) criteria.get(ROLE_NAMES);
+  }
+
+  /**
+   * Gets the resource in the component instance the user or the group must have priviledge to access.
+   * @return the unique identifier of the resource in a component instance.
+   */
+  public String getCriterionOnResourceId() {
+    return (String) criteria.get(RESOURCE_ID);
   }
 
   /**

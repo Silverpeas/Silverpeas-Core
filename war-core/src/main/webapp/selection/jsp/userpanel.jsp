@@ -19,6 +19,7 @@
 <c:set var="instanceId"        value="${selection.extraParams.componentId}"/>
 <c:set var="domainId"          value="${selection.extraParams.domainId}"/>
 <c:set var="roles"             value="${selection.extraParams.joinedProfileNames}"/>
+<c:set var="resourceId"        value="${selection.extraParams.objectId}"/>
 <c:set var="validationURL"     value="${selection.goBackURL}"/>
 <c:set var="cancelationURL"    value="${selection.cancelURL}"/>
 <c:set var="hotSetting"        value="${selection.hotSetting}"/>
@@ -76,19 +77,24 @@
       var MaximizedPageSize   = 10;
       
       rootUserGroup.name      = '<fmt:message key="selection.RootUserGroups"/>';
-      rootUserGroup.inComponent('<c:out value="${instanceId}"/>').withRoles('<c:out value="${roles}"/>');
-      rootUserGroup.inDomain('<c:out value="${domainId}"/>');
+      rootUserGroup.inDomain('${domainId}').
+        inComponent('${instanceId}').
+        withRoles('${roles}').
+        forResource('${resourceId}');
       
       var allUsers = new UserProfileManagement({
-        component: '<c:out value="${instanceId}"/>',
-        roles: '<c:out value="${roles}"/>',
-        domain: '<c:out value="${domainId}"/>'
+        component: '${instanceId}',
+        resource: '${resourceId}',
+        roles: '${roles}',
+        domain: '${domainId}'
       });
       
-      var me = new UserProfile({id: '<c:out value="${currentUserId}"/>'}).
+      var me = new UserProfile({id: '${currentUserId}'}).
         inDomain('<c:out value="${domainId}"/>').
-        inComponent('<c:out value="${instanceId}"/>').
-        withRoles('<c:out value="${roles}"/>');      
+        inComponent('${instanceId}').
+        withRoles('${roles}').
+        forResource('${resourceId}');
+
       var nameInUserSearch = null; // required for the pagination with the results of a search (as at each page, the users are loaded for that page, so
       // we have to remind the name on which users are filtered if any)
       
@@ -609,9 +615,16 @@
       
         // cancel the selection and go back to the caller.
         function cancelSelection() {
+      <c:choose>
+        <c:when test="${hotSetting}">
+          window.close();
+        </c:when>
+        <c:otherwise>
           $('input[name="UserOrGroupSelection"]').val('false');
           $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
           $("#selection").submit();
+        </c:otherwise>
+      </c:choose>
         }
         
         function highlightFilter($this) {

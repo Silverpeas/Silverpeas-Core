@@ -103,8 +103,8 @@ public class FileHandlerTest extends AbstractHandledFileTest {
 
   @Test
   public void test_getHandledTemporaryFile() throws Exception {
-    final File test = fileHandler.getSessionTemporaryFile("tmpFile");
-    final File expected = getFile(sessionRootPath, currentSession.getId(), "@#@work@#@", "tmpfile");
+    File test = fileHandler.getSessionTemporaryFile("tmpFile");
+    File expected = getFile(sessionRootPath, currentSession.getId(), "@#@work@#@", "tmpFile");
     assertFileNames(test, expected);
     assertThat(expected.exists(), is(false));
   }
@@ -1228,16 +1228,16 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(10);
+    Thread.sleep(1000);
     touch(file2);
     boolean test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(false));
-    Thread.sleep(10);
+    Thread.sleep(1000);
     writeStringToFile(file1, "toto");
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(true));
 
-    Thread.sleep(10);
+    Thread.sleep(1000);
     final Date date = new Date();
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
     assertThat(test, is(false));
@@ -1246,7 +1246,7 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, time);
     assertThat(test, is(false));
 
-    Thread.sleep(10);
+    Thread.sleep(1000);
     writeStringToFile(file1, "titi");
     test = fileHandler.isFileNewer(BASE_PATH_TEST, real1, date);
     assertThat(test, is(true));
@@ -1284,16 +1284,16 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
     touch(file1);
-    Thread.sleep(10);
+    Thread.sleep(1000);
     touch(file2);
     boolean test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(true));
-    Thread.sleep(10);
+    Thread.sleep(1000);
     writeStringToFile(file1, "toto");
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, file2);
     assertThat(test, is(false));
 
-    Thread.sleep(10);
+    Thread.sleep(1000);
     final Date date = new Date();
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
     assertThat(test, is(true));
@@ -1302,7 +1302,7 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, time);
     assertThat(test, is(true));
 
-    Thread.sleep(10);
+    Thread.sleep(1000);
     writeStringToFile(file1, "titi");
     test = fileHandler.isFileOlder(BASE_PATH_TEST, real1, date);
     assertThat(test, is(false));

@@ -35,18 +35,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   private static final String GROUP_ID = "groupId";
   private static final String SUPERGROUP_ID = "parentId";
-  private static final String ROLE_IDS = "roleIds";
+  private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
   private static final String INSTANCE_ID = "instanceId";
+  private static final String RESOURCE_ID = "resourceId";
   private static final String ROOT_GROUP = "mustBeRoot";
   private static final String NAME = "name";
   private Map<String, Object> criteria = new HashMap<String, Object>();
 
-  /**
-   * The groups name must satisfy the specified pattern.
-   * @param name a pattern on the group name.
-   * @return itself.
-   */
   @Override
   public GroupsSearchCriteria onName(String name) {
     if (isDefined(name)) {
@@ -55,11 +51,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The groups of users must have the right to access the specified component instance.
-   * @param instanceId the unique identifier of the component instance.
-   * @return itself.
-   */
   @Override
   public GroupsSearchCriteria onComponentInstanceId(String instanceId) {
     if (isDefined(instanceId)) {
@@ -68,26 +59,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The groups must play one of the specified role names.
-   * @param roleIds the role names. Warning, theses aren't role unique identifiers but names and
-   * they belong to a given component. So, with the roles, a criterion on the component instance
-   * must be also defined.
-   * @return itself.
-   */
   @Override
-  public GroupsSearchCriteria onRoleIds(String[] roleIds) {
+  public GroupsSearchCriteria onRoleNames(String[] roleIds) {
     if (roleIds != null && roleIds.length > 0) {
-      criteria.put(ROLE_IDS, roleIds);
+      criteria.put(ROLE_NAMES, roleIds);
     }
     return this;
   }
 
-  /**
-   * The groups must be one of the specified ones.
-   * @param groupIds the unique identifiers of some groups.
-   * @return itself.
-   */
   @Override
   public GroupsSearchCriteria onGroupIds(String... groupIds) {
     if (groupIds != null && groupIds.length > 0) {
@@ -117,11 +96,6 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  /**
-   * The groups must belong to the specified domain.
-   * @param domainId the unique identifier of the domain.
-   * @return itself.
-   */
   @Override
   public GroupsSearchCriteria onDomainId(String domainId) {
     if (isDefined(domainId)) {
@@ -144,8 +118,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
-  public boolean isCriterionOnRoleIdsSet() {
-    return criteria.containsKey(ROLE_IDS);
+  public boolean isCriterionOnRoleNamesSet() {
+    return criteria.containsKey(ROLE_NAMES);
+  }
+
+  public boolean isCriterionOnResourceIdSet() {
+    return criteria.containsKey(RESOURCE_ID);
   }
 
   public boolean isCriterionOnComponentInstanceIdSet() {
@@ -183,12 +161,21 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   /**
-   * Gets the conjonction on the role identifiers.
+   * Gets the conjonction on the role names.
    *
    * @return an array with each element of the conjonction.
    */
-  public String[] getCriterionOnRoleIds() {
-    return (String[]) criteria.get(ROLE_IDS);
+  public String[] getCriterionOnRoleNames() {
+    return (String[]) criteria.get(ROLE_NAMES);
+  }
+
+  /**
+   * Gets the resource for which the user or the group must have access rights.
+   *
+   * @return the unique identifier of the resource in a component instance.
+   */
+  public String getCriterionOnResourceId() {
+    return (String) criteria.get(RESOURCE_ID);
   }
 
   /**
@@ -298,6 +285,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   @Override
   public SearchCriteria onUserIds(String... userIds) {
+    return this;
+  }
+
+  @Override
+  public SearchCriteria onResourceId(String resourceId) {
+    if (isDefined(resourceId)) {
+      criteria.put(RESOURCE_ID, resourceId);
+    }
     return this;
   }
 }

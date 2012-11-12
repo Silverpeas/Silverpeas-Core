@@ -157,15 +157,15 @@ public class UserProfileTestResources extends TestResources {
                 && !passedCriteria.isCriterionOnNameSet())) {
           return emptyUsers;
         }
-        if (criteria.isCriterionOnRoleIdsSet() && passedCriteria.isCriterionOnRoleIdsSet()) {
-          List<String> roles = Arrays.asList(criteria.getCriterionOnRoleIds());
-          List<String> passedRoles = Arrays.asList(passedCriteria.getCriterionOnRoleIds());
+        if (criteria.isCriterionOnRoleNamesSet() && passedCriteria.isCriterionOnRoleNamesSet()) {
+          List<String> roles = Arrays.asList(criteria.getCriterionOnRoleNames());
+          List<String> passedRoles = Arrays.asList(passedCriteria.getCriterionOnRoleNames());
           if (roles.size() != passedRoles.size() || !roles.containsAll(passedRoles)) {
             return emptyUsers;
           }
-        } else if ((!criteria.isCriterionOnRoleIdsSet()
-                && passedCriteria.isCriterionOnRoleIdsSet()) || (criteria.isCriterionOnRoleIdsSet()
-                && !passedCriteria.isCriterionOnRoleIdsSet())) {
+        } else if ((!criteria.isCriterionOnRoleNamesSet()
+                && passedCriteria.isCriterionOnRoleNamesSet()) || (criteria.isCriterionOnRoleNamesSet()
+                && !passedCriteria.isCriterionOnRoleNamesSet())) {
           return emptyUsers;
         }
         if (criteria.isCriterionOnUserIdsSet() && passedCriteria.isCriterionOnUserIdsSet()) {

@@ -124,7 +124,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onRoleIds(String... roleIds) {
+  public SearchCriteria onRoleNames(String... roleIds) {
     if (roleIds != null && roleIds.length > 0) {
       tables.add("st_group");
       tables.add("st_userrole_group_rel");
@@ -224,6 +224,11 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onComponentInstanceId(String instanceId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public SearchCriteria onResourceId(String resourceId) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

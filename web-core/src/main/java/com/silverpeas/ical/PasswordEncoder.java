@@ -24,6 +24,8 @@
 
 package com.silverpeas.ical;
 
+import org.silverpeas.util.Charsets;
+
 /**
  * Simple password encoder. Note, this is not meant to keep your password secure. Created: Jan 03,
  * 2007 12:50:56 PM
@@ -31,8 +33,8 @@ package com.silverpeas.ical;
  */
 public final class PasswordEncoder {
 
-  public static final String encodePassword(String password) throws Exception {
-    byte[] bytes = StringUtils.encodeString(password, StringUtils.UTF_8);
+  public static String encodePassword(String password) throws Exception {
+    byte[] bytes = StringUtils.encodeString(password, Charsets.UTF_8);
     String base64 = StringUtils.encodeBASE64(bytes);
     StringBuilder buffer = new StringBuilder(base64);
     String seed = Long.toString(System.currentTimeMillis());

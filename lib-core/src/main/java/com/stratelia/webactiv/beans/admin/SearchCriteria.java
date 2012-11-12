@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-/** 
- * Criteria to use in a search of resources in the administration console (like user profiles or
+/**
+ * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
  * user groups).
  */
 public interface SearchCriteria {
@@ -36,48 +36,74 @@ public interface SearchCriteria {
 
   /**
    * Appends a criteria conjonction.
+   *
    * @return the criteria enriched with a conjonction. The conjonction will be applied with the last
    * added criterion and the next one.
    */
   SearchCriteria and();
 
   /**
-   * Appends a criterion on the component instance the resources to fetch have to satisfy.
+   * Appends a criterion on the component instance for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
    * @param instanceId the unique identifier of the component instance.
    * @return the criteria enriched with a criterion on the component instance.
    */
   SearchCriteria onComponentInstanceId(String instanceId);
 
   /**
-   * Appends a criterion on the domain the resources to fetch have to satisfy.
-   * @param domainId the unique identifier of the domain.
-   * @return the criteria enriched with a criterion on the domain.
+   * Appends a criterion on a given component instance's resource for which the search must be
+   * constrained to. This criterion has a meaning only when coupled with the criterion on the
+   * component instance. The properties of the resources to fetch have to satisfy both the criterion
+   * on the component instance and this one.
+   *
+   * @param resourceId the unique identifier of the resource managed in the component instance. As
+   * each resource is particular to a given Silverpeas component, the unique identifier is made up
+   * of the resource type and of the resource identifier.
+   * @return the criteria enriched with a criterion on the resource in the component instance.
+   */
+  SearchCriteria onResourceId(String resourceId);
+
+  /**
+   * Appends a criterion on the user domain for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
+   * @param domainId the unique identifier of the user domain.
+   * @return the criteria enriched with a criterion on the user domain.
    */
   SearchCriteria onDomainId(String domainId);
 
   /**
-   * Appends a criterion on the user groups the resources to fetch have to satisfy.
+   * Appends a criterion on the user groups for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
    * @param groupIds the unique identifiers of the groups.
    * @return the criteria enriched with a criterion on the user groups.
    */
   SearchCriteria onGroupIds(String... groupIds);
 
   /**
-   * Appends a criterion on the name the resources to fetch have to match.
-   * @param name a pattern on name.
+   * Appends a criterion on the resources name for which the search must be constrained to. The name
+   * of the resources to fetch have to satisfy this criterion.
+   *
+   * @param name a pattern on the name the resources to fetch must have.
    * @return the criteria enriched with a criterion on the user name.
    */
   SearchCriteria onName(String name);
 
   /**
-   * Appends a criterion on the roles the resources to fetch have to satisfy.
-   * @param roleIds the unique identifiers of the roles
-   * @return the criteria enriched with a criterion on the role identifiers.
+   * Appends a criterion on the user roles for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
+   * @param roleNames the name of the user roles on which the criterion has to be built.
+   * @return the criteria enriched with a criterion on the role names.
    */
-  SearchCriteria onRoleIds(String... roleIds);
+  SearchCriteria onRoleNames(String... roleNames);
 
   /**
-   * Appends a criteria on the user profiles the resources to fetch have to satisfy.
+   * Appends a criteria on the user profiles for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
    * @param userIds the user identifiers.
    * @return the criteria enriched with a criterion on the user identifiers.
    */
@@ -85,6 +111,7 @@ public interface SearchCriteria {
 
   /**
    * Appends a criteria disjonction.
+   *
    * @return the criteria enriched with a disjonction. The disjonction will be applied with the last
    * added criterion and the next one.
    */
@@ -92,6 +119,7 @@ public interface SearchCriteria {
 
   /**
    * Is this criteria empty?
+   *
    * @return true if this criteria has no criterion, false otherwise.
    */
   boolean isEmpty();

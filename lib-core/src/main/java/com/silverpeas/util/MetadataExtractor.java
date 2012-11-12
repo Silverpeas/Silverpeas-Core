@@ -30,18 +30,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
-import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.parser.CompositeParser;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.Parser;
-import org.apache.tika.parser.microsoft.OfficeParser;
-import org.apache.tika.parser.microsoft.ooxml.OOXMLParser;
-import org.apache.tika.parser.odf.OpenDocumentParser;
 
 public class MetadataExtractor {
 
@@ -69,24 +60,7 @@ public class MetadataExtractor {
 
   private MetaData getMetadata(InputStream inputStream) throws IOException {
     Metadata metadata = new Metadata();
-    TikaConfig configuration = TikaConfig.getDefaultConfig();
-    ParseContext context = new ParseContext();
-    CompositeParser parser = ((CompositeParser) configuration.getParser());
-    Parser openOfficeParser = new OpenDocumentParser();
-    Map<MediaType, Parser> parsers = parser.getParsers(context);
-    for (MediaType type : openOfficeParser.getSupportedTypes(context)) {
-      parsers.put(type, openOfficeParser);
-    }
-    Parser officeParser = new OfficeParser();
-    for (MediaType type : officeParser.getSupportedTypes(context)) {
-      parsers.put(type, officeParser);
-    }
-    Parser ooxmlParser = new OOXMLParser();
-    for (MediaType type : ooxmlParser.getSupportedTypes(context)) {
-      parsers.put(type, ooxmlParser);
-    }
-    parser.setParsers(parsers);
-    Tika tika = new Tika(configuration);
+    Tika tika = new Tika();
     Reader reader = tika.parse(inputStream, metadata);
     reader.close();
     return new MetaData(metadata);

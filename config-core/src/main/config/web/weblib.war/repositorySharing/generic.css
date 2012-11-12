@@ -170,7 +170,8 @@ ul, li, p, h1, h2 {
 #publications .attachment a {
 }
 
-#publications .attachment .size {
+#publications .attachment .size,
+#publications .attachment .description {
 	color:#333;
 	display:list-item;
 }
