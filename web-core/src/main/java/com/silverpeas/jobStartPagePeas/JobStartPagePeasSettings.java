@@ -50,6 +50,7 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
+  public static boolean COMPONENT_SPACE_QUOTA_ACTIVATED = false;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -69,5 +70,6 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
+    COMPONENT_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.component.quota.activated", false);
   }
 }

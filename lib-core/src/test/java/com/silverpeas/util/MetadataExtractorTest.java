@@ -58,7 +58,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("Modif sur WF ECCA"));
     assertThat(result.getAuthor(), is("Administrateur"));
     assertThat(result.getComments(), is(nullValue()));
-    assertThat(result.getKeywords(), is("test formation SA"));
+    assertThat(result.getKeywords()[0], is("test formation SA"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1122998040000L));
@@ -77,7 +77,7 @@ public class MetadataExtractorTest {
       assertThat(result.getSubject(), is("Skateboard"));
       assertThat(result.getAuthor(), is("Bart Simpson"));
       assertThat(result.getComments(), is("Commentaires accentués"));
-      assertThat(result.getKeywords(), is("mots clés du documents"));
+      assertThat(result.getKeywords()[0], is("mots clés du documents"));
       assertThat(result.getSilverId(), is(nullValue()));
       assertThat(result.getSilverName(), is(nullValue()));
       assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
@@ -97,7 +97,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("Document de test pour Tika"));
     assertThat(result.getAuthor(), is("Emmanuel Hugonnet"));
     assertThat(result.getComments(), is("Comments"));
-    assertThat(result.getKeywords(), is("Tika Keywords Test"));
+    assertThat(result.getKeywords()[0], is("Tika Keywords Test"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1239874322000L));
@@ -114,7 +114,10 @@ public class MetadataExtractorTest {
     assertThat(result.getSubject(), is("silverpeas"));
     assertThat(result.getAuthor(), is("AuroreAllibe"));
     assertThat(result.getComments(), is("Logo silverpeas txt noir"));
-    assertThat(result.getKeywords(), is(nullValue()));
+    assertThat(result.getKeywords(), is(notNullValue()));
+    assertThat(result.getKeywords().length, is(2));
+    assertThat(result.getKeywords()[0], is("silverpeas"));
+    assertThat(result.getKeywords()[1], is("logo"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1340963223000L));

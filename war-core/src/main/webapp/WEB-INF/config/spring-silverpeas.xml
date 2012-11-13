@@ -56,14 +56,17 @@
   <ctx:component-scan base-package="com.silverpeas.converter"/>
   <ctx:component-scan base-package="com.silverpeas.subscribe"/>
   <ctx:component-scan base-package="com.silverpeas.admin.notification"/>
-  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control" />
+  <ctx:component-scan base-package="com.stratelia.silverpeas.silverstatistics.control"/>
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
+  <ctx:component-scan base-package="org.silverpeas.admin.web"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
   <ctx:component-scan base-package="com.silverpeas.bundle.web" />
-  <ctx:component-scan base-package="org.silverpeas.attachment" />
   <ctx:component-scan base-package="org.silverpeas.accesscontrol" />  
+  <ctx:component-scan base-package="org.silverpeas.admin.space"/>
+  <ctx:component-scan base-package="org.silverpeas.attachment"/>
+  <ctx:component-scan base-package="org.silverpeas.look"/>
   <ctx:component-scan base-package="org.silverpeas.viewer"/>
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
 
@@ -140,6 +143,11 @@
 
   <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
         factory-method="getFactory"/>
+
+  <!-- the factory of space services.
+        It wraps and provides an access to different service instances relative to space handling -->
+  <bean id="spaceServiceFactory" class="org.silverpeas.admin.space.SpaceServiceFactory"
+      factory-method="getInstance"/>
 
   <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
   <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>

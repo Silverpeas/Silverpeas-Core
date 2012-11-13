@@ -24,6 +24,7 @@
 package org.silverpeas.quota.model;
 
 import static com.silverpeas.util.StringUtil.isDefined;
+import static java.util.EnumSet.of;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -139,12 +140,20 @@ public class Quota implements Serializable {
   }
 
   /**
+   * Indicates if the quota is reached or not
+   * @return
+   */
+  public boolean isReached() {
+    return exists() && of(QuotaLoad.FULL, QuotaLoad.OUT_OF_BOUNDS).contains(getLoad());
+  }
+
+  /**
    * Calculates the load rate of the quota without rounded rounded at 20 decimals
    * @return
    */
   public BigDecimal getLoadRate() {
     final BigDecimal loadRate;
-    if (!QuotaLoad.UNLIMITED.equals(getLoad()) && !QuotaLoad.OUT_OF_BOUNDS.equals(getLoad())) {
+    if (!QuotaLoad.UNLIMITED.equals(getLoad())) {
       loadRate =
           new BigDecimal(String.valueOf(getCount())).divide(
               new BigDecimal(String.valueOf(getMaxCount())), 20, BigDecimal.ROUND_HALF_DOWN);

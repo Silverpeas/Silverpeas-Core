@@ -36,16 +36,11 @@ import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.model.property.Url;
-import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.*;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.silverpeas.util.Charsets;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
@@ -91,7 +86,7 @@ public final class FeedUtilities {
     if (StringUtil.isDefined(username)) {
       // Set username/password
       byte[] auth = StringUtils.encodeString(username + ':'
-          + StringUtils.decodePassword(password), StringUtils.UTF_8);
+          + StringUtils.decodePassword(password), Charsets.UTF_8);
       get.addRequestHeader("Authorization", "Basic "
           + StringUtils.encodeBASE64(auth));
 

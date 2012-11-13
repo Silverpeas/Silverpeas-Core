@@ -4177,6 +4177,10 @@ span.csv {
   border-color: #CE6F6F;
 }
 
+.inlineMessage-nok a {
+  text-decoration: underline;
+}
+
 table.pdcPositionsField {
   border-spacing: 0;
   padding: 0;

@@ -68,8 +68,13 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(SearchCriteria criteria) {
+  public UserDetail[] searchUsers(UserDetailsSearchCriteria criteria) {
     return mock.searchUsers(criteria);
+  }
+
+  @Override
+  public Group[] searchGroups(GroupsSearchCriteria criteria) {
+    return mock.searchGroups(criteria);
   }
 
   @Override

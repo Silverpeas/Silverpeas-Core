@@ -21,11 +21,11 @@
  */
 package com.stratelia.silverpeas.versioningPeas.control;
 
-import com.silverpeas.form.*;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
+
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -45,19 +45,26 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.WebdavServiceFactory;
 import org.silverpeas.attachment.model.*;
 
 import javax.ejb.CreateException;
+import java.io.InputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
 
 /**
  * @author Michael Nikolaenko
@@ -589,6 +596,20 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc, true);
   }
 
+
+  /**
+   * to refuse document
+   * @exception RemoteException
+   * @author Michael Nikolaenko
+   * @version 1.0
+   */
+ /*TODO FEATURE 82 : refuse public void refuseDocument(DocumentPK documentPK, int validatorID, String comment,
+      Date validationDate) throws RemoteException {
+    initEJB();
+    Document doc = versioning_bm.getDocument(documentPK);
+    versioning_bm.refuseDocument(doc, validatorID, comment, validationDate);
+  }*/
+
   /**
    * Store in controller the current edited document.
    *
@@ -946,6 +967,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
           + File.separatorChar + document.getFilename());
       AttachmentServiceFactory.getAttachmentService().getBinaryContent(destFile, document
           .getPk(), document.getLanguage());
+
     }
   }
 

@@ -70,7 +70,7 @@ public class RestOnlineFileServer extends HttpServlet {
   public void service(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     RestRequest restRequest = new RestRequest(req, "");
-    SilverTrace.info("peasUtil", "OnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("peasUtil", "RestOnlineFileServer.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
       OnlineFile file = getWantedFile(restRequest);
       if (file != null) {
@@ -145,6 +145,7 @@ public class RestOnlineFileServer extends HttpServlet {
    */
   private void display(HttpServletResponse res, OnlineFile onlineFile) throws IOException {
     res.setContentType(onlineFile.getMimeType());
+    res.setHeader("Content-Length", String.valueOf(onlineFile.getContentLength()));
     OutputStream output = res.getOutputStream();
     SilverTrace.info("peasUtil", "OnlineFileServer.display()", "root.MSG_GEN_ENTER_METHOD",
         " htmlFilePath " + onlineFile.getSourceFile());

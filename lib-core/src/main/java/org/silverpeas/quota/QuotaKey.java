@@ -30,6 +30,8 @@ import org.silverpeas.quota.contant.QuotaType;
  */
 public interface QuotaKey {
 
+  boolean isValid();
+
   QuotaType getQuotaType();
 
   String getResourceId();

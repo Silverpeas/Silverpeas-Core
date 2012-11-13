@@ -6,9 +6,9 @@ En tant qu'<b>administrateur de la plateforme</b>, vous pouvez gérer à tout mo
 
 <div id="txt_evolutivite">
 <h3>Faire évoluer la structure de votre plateforme est un jeu d'enfant !</h3>
-<p>Vous pouvez rapidement créer un espace de premier niveau en <a class="txtnav" href="javascript:onclick=openPopup()">cliquant ici</a> ou en choisissant l'opération <b class="yuimenu"> Créer un espace </b> du menu <b>Que&nbsp;voulez-vous&nbsp;faire&nbsp;?</b>.</p>
+<p>Vous pouvez rapidement créer un espace de premier niveau en <a class="txtnav" href="CreateSpace">cliquant ici</a> ou en choisissant l'opération <b class="yuimenu"> Créer un espace </b> du menu <b>Que&nbsp;voulez-vous&nbsp;faire&nbsp;?</b>.</p>
 <p>Tous les espaces de premier niveau sont accessibles dans la liste déroulante située à gauche. Pour modifier, supprimer ou enrichir un espace, il suffit de le sélectionner dans cette liste.<br />
-Le contenu de l'espace sélectionné apparait alors sous cette liste déroulante. Toutes les opérations disponiblessur l'espace sélectionné sont accessibles via le menu <b>Que&nbsp;voulez-vous&nbsp;faire&nbsp;?</b>.<br/>
+Le contenu de l'espace sélectionné apparait alors sous cette liste déroulante. Toutes les opérations disponibles sur l'espace sélectionné sont accessibles via le menu <b>Que&nbsp;voulez-vous&nbsp;faire&nbsp;?</b>.<br/>
 Vous pouvez notamment :</p>
 <ul>
 <li>ajouter, modifier, supprimer des applications,</li>

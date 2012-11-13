@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -1086,7 +1087,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (!componentId.startsWith("webPages")) {
             try {
               downloadLink =
-                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent());
+                  getAttachmentUrl(indexEntry.getObjectType(), indexEntry.getComponent(), result);
             } catch (Exception e) {
               SilverTrace.warn("pdcPeas",
                   "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1118,7 +1119,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           }
         } else if (resultType.startsWith("Versioning")) {
           try {
-            downloadLink = getVersioningUrl(resultType.substring(10), componentId);
+            downloadLink = getVersioningUrl(resultType.substring(10), componentId, result);
           } catch (Exception e) {
             SilverTrace.error("pdcPeas",
                 "searchEngineSessionController.setExtraInfoToResultsToDisplay()",
@@ -1199,6 +1200,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     }
   }
+  
+  
 
   /**
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
@@ -1555,7 +1558,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return "";
   }
 
-  private String getAttachmentUrl(String objectType, String componentId) throws Exception {
+  private String getAttachmentUrl(String objectType, String componentId, GlobalSilverResult gsr)
+      throws Exception {
     String id = objectType.substring(10); // object type is Attachment1245 or
     // Attachment1245_en
     String language = I18NHelper.defaultLanguage;
@@ -1568,6 +1572,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
         .searchDocumentById(documentPk, language);
+
+    
+    // check if attachment is previewable and viewable
+    File attachmentFile = new File(document.getAttachmentPath());
+    boolean previewable = ViewerFactory.getPreviewService().isPreviewable(attachmentFile);
+    boolean viewable = ViewerFactory.getViewService().isViewable(attachmentFile);
+    
+    gsr.setPreviewable(previewable);
+    gsr.setViewable(viewable);
+    gsr.setAttachmentId(id);
+    gsr.setVersioned(false);
 
     String urlAttachment = document.getAttachmentURL();
 
@@ -1594,7 +1609,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return FileServerUtils.getApplicationContext() + urlAttachment;
   }
 
-  private String getVersioningUrl(String documentId, String componentId) throws Exception {
+  private String getVersioningUrl(String documentId, String componentId, GlobalSilverResult gsr)
+      throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
         "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
@@ -1602,8 +1618,18 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SimpleDocument version = document.getLastPublicVersion();
 
     if (version != null) {
-      String urlVersioning = version.getAttachmentURL();
-      return URLManager.getApplicationURL() + urlVersioning;
+      // check if attachment is previewable and viewable
+      File file = new File(version.getAttachmentPath());
+      boolean previewable = ViewerFactory.getPreviewService().isPreviewable(file);
+      boolean viewable = ViewerFactory.getViewService().isViewable(file);
+      
+      gsr.setPreviewable(previewable);
+      gsr.setViewable(viewable);
+      gsr.setAttachmentId(documentId);
+      gsr.setVersioned(true);
+      
+      // process download link
+      return FileServerUtils.getApplicationContext() + document.getAttachmentURL();
     }
     return null;
   }
@@ -1941,11 +1967,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (!word.isEmpty()) {
             // Check that it's not a determiner or a lucene specific characters
             if (!isKeyword(word)
-                && !(word.indexOf("*") >= 0 || word.indexOf("?") >= 0 || word.indexOf(":") >= 0
-                || word.indexOf("+") >= 0 || word.indexOf("-") >= 0)) {
-              if (word.indexOf(":") != -1) {
-                header = word.substring(0, word.indexOf(":") + 1);
-                word = word.substring(word.indexOf(":") + 1, word.length());
+                && !(word.indexOf('*') >= 0 || word.indexOf('?') >= 0 || word.indexOf(':') >= 0
+                || word.indexOf('+') >= 0 || word.indexOf('-') >= 0)) {
+              if (word.indexOf(':') != -1) {
+                header = word.substring(0, word.indexOf(':') + 1);
+                word = word.substring(word.indexOf(':') + 1, word.length());
               }
 
               synonymsString.append("(\"").append(word).append("\"");
@@ -1954,8 +1980,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 synonymsString.append(" OR " + "\"").append(synonym).append("\"");
               }
               synonymsString.append(")");
-            } else // and or
-            {
+            } else {
               synonymsString.append(word);
             }
           }
@@ -2578,7 +2603,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   private PdcBm pdcBm = null; // To retrieve items from PDC
-  private SearchEngine searchEngine = null; // To retrieve items using
 
   // searchEngine
   private PdcBm getPdcBm() {

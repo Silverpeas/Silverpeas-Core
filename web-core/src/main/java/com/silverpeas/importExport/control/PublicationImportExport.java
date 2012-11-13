@@ -37,9 +37,13 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 
 import java.io.File;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.ejb.CreateException;
+import org.apache.commons.lang.StringUtils;
 
 public class PublicationImportExport {
 
@@ -76,8 +80,10 @@ public class PublicationImportExport {
         if (StringUtil.isDefined(metaData.getSubject())) {
           description = metaData.getSubject();
         }
-        if (StringUtil.isDefined(metaData.getKeywords())) {
-          motsClefs = metaData.getKeywords();
+        if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
+          motsClefs = StringUtils.join(metaData.getKeywords(), ';');
+        } else {
+          motsClefs = "";
         }
         content = "fichier(s) importé(s)";
       } catch (Exception ex) {
@@ -104,7 +110,7 @@ public class PublicationImportExport {
       for (Integer coordinateId : nodes) {
         getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
       }
-    } catch (Exception e) {
+    } catch (RemoteException e) {
       throw new PublicationRuntimeException("CoordinateImportExport.addNodesToPublication()",
           SilverpeasRuntimeException.ERROR,
           "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
@@ -120,7 +126,10 @@ public class PublicationImportExport {
       PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       return publicationBmHome.create();
-    } catch (Exception e) {
+    } catch (RemoteException e) {
+     throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    } catch (CreateException e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
@@ -134,11 +143,11 @@ public class PublicationImportExport {
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
     try {
-      return new ArrayList<PublicationDetail>(getPublicationBm().
-          getOrphanPublications(new PublicationPK("useless", componentId)));
-    } catch (Exception e) {
+      return new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
+          new PublicationPK("useless", componentId)));
+    } catch (RemoteException e) {
       throw new PublicationRuntimeException("CoordinateImportExport.getUnbalancedPublications()",
-          SilverpeasRuntimeException.ERROR,
+          SilverpeasRuntimeException.ERROR, 
           "importExport.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES", e);
     }
   }

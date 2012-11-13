@@ -103,6 +103,8 @@ public class ComponentInstLight extends AbstractI18NBean implements Serializable
     updatedBy = compo.updatedBy;
     removedBy = compo.removedBy;
 
+    orderNum = compo.orderNum;
+
     isInheritanceBlocked = compo.inheritanceBlocked == 1;
   }
 

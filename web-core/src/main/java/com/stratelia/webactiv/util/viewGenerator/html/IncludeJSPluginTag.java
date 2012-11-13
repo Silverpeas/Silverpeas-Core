@@ -91,6 +91,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case preview:
           includePreview(xhtml);
           break;
+        case jquery:
+          includeJQuery(xhtml);
+          break;
       }
     } catch (IllegalArgumentException ex) {
       //ignore
@@ -107,10 +110,12 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
     return language;
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getRequestAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.REQUEST_SCOPE);
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getSessionAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
   }

@@ -20,7 +20,31 @@
  */
 package com.silverpeas.form.displayers;
 
-import com.silverpeas.form.*;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.process.management.AbstractFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.viewer.ViewerFactory;
+
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldDisplayer;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
@@ -28,6 +52,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -46,6 +71,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.silverpeas.attachment.model.DocumentType;
+
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -272,9 +298,10 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   @Override
-  public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws FormException {
-    String itemName = template.getFieldName();
+  public List<String> update(final List<FileItem> items, final FileField field, final FieldTemplate template,
+      final PagesContext pageContext) throws FormException {
+    final List<String> result = new ArrayList<String>();
+    final String itemName = template.getFieldName();
     try {
       String value = processUploadedFile(items, itemName, pageContext);
       String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);

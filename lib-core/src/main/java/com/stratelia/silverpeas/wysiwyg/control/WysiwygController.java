@@ -831,7 +831,7 @@ public class WysiwygController {
       AttachmentServiceFactory.getAttachmentService().copyDocument(image, targetPk);
     }
   }
-
+  
   /**
    * Usefull to maintain forward compatibility (old URLs to images)
    *
