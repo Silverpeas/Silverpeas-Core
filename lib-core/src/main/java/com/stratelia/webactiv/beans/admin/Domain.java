@@ -29,6 +29,7 @@ import java.io.Serializable;
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
+  public static final String MIXED_DOMAIN_ID = "-1";
   private String id;
   private String name;
   private String description;
@@ -151,6 +152,10 @@ public class Domain implements Serializable {
    */
   public void setSilverpeasServerURL(String silverpeasServerURL) {
     this.silverpeasServerURL = silverpeasServerURL;
+  }
+ 
+  public boolean isMixedOne() {
+    return MIXED_DOMAIN_ID.equals(getId());
   }
 
   @Override
