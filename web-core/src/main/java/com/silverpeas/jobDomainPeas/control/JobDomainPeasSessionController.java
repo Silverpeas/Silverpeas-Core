@@ -87,6 +87,7 @@ import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -1542,73 +1543,61 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return 0;
   }
 
-  public String[][] getAllDomains() {
-    String[][] valret = null;
+  public List<Domain> getAllDomains() {
+    List<Domain> domains = new ArrayList<Domain>();
     UserDetail ud = getUserDetail();
 
     if (ud.isAccessDomainManager()) {
-      Domain userDomain = m_AdminCtrl.getDomain(ud.getDomainId());
-
-      valret = new String[1][3];
-      valret[0][0] = ud.getDomainId();
-      valret[0][1] = EncodeHelper.javaStringToHtmlString(userDomain.getName());
-      if (targetDomainId.equals(userDomain.getId())) {
-        valret[0][2] = "selected";
-      } else {
-        valret[0][2] = "";
-      }
+      // return only domain of user
+      domains.add(m_AdminCtrl.getDomain(ud.getDomainId()));
     } else if (ud.isAccessAdmin()) {
-      Domain[] allDomains = m_AdminCtrl.getAllDomains();
+      // return mixed domain...
+      domains.add(m_AdminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
+      
+      // and all classic domains
+      domains.addAll(Arrays.asList(m_AdminCtrl.getAllDomains()));
+    } else if (isCommunityManager()) {
+      // return mixed domain...
+      domains.add(m_AdminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
 
-      valret = new String[allDomains.length + 1][3];
-
-      // Domaine mixte
-      valret[0][0] = "-1";
-      valret[0][1] = getString("JDP.domainMixt");
-      if (targetDomainId.equals("-1")) {
-        valret[0][2] = "selected";
-      } else {
-        valret[0][2] = "";
-      }
-
-      // Tous les domaines
-      for (int i = 1; i < valret.length; i++) {
-        valret[i][0] = allDomains[i - 1].getId();
-        valret[i][1] = EncodeHelper.javaStringToHtmlString(allDomains[i - 1].getName());
-        if (targetDomainId.equals(allDomains[i - 1].getId())) {
-          valret[i][2] = "selected";
-        } else {
-          valret[i][2] = "";
-        }
-      }
+      // domain of user...
+      domains.add(m_AdminCtrl.getDomain(ud.getDomainId()));
+      
+      // and default domain
+      domains.add(m_AdminCtrl.getDomain("0"));
     } else if (isOnlyGroupManager()) {
-      // Domaine mixte
-      valret = new String[2][3];
-      valret[0][0] = "-1";
-      valret[0][1] = getString("JDP.domainMixt");
-      if (targetDomainId.equals("-1")) {
-        valret[0][2] = "selected";
-      } else {
-        valret[0][2] = "";
-      }
+      // return mixed domain...
+      domains.add(m_AdminCtrl.getDomain(Domain.MIXED_DOMAIN_ID));
 
-      // Domaine de l'utilisateur
-      Domain userDomain = m_AdminCtrl.getDomain(ud.getDomainId());
-
-      valret[1][0] = userDomain.getId();
-      valret[1][1] = EncodeHelper.javaStringToHtmlString(userDomain.getName());
-      if (targetDomainId.equals(userDomain.getId())) {
-        valret[1][2] = "selected";
-      } else {
-        valret[1][2] = "";
-      }
+      // and domain of user
+      domains.add(m_AdminCtrl.getDomain(ud.getDomainId()));
     }
-    return valret;
+    return domains;
   }
 
   public boolean isOnlyGroupManager() {
     return isGroupManager() && !getUserDetail().isAccessAdmin()
         && !getUserDetail().isAccessDomainManager();
+  }
+  
+  public boolean isCommunityManager() {
+    if (!JobDomainSettings.m_UseCommunityManagement) {
+      return false;
+    }
+    
+    // check if user is able to manage at least one space and its corresponding group
+    List<Group> groups = getUserManageableGroups();
+    List<String> spaceIds = Arrays.asList(getUserManageableSpaceIds());
+    List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
+    for (String spaceId : spaceIds) {
+      SpaceInstLight space = getOrganizationController().getSpaceInstLightById(spaceId);
+      for (Group group : groups) {
+        if (space.getName().equalsIgnoreCase(group.getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public boolean isGroupManagerOnCurrentGroup() throws JobDomainPeasException {
