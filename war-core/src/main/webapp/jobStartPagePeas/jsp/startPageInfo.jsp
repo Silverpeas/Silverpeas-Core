@@ -49,7 +49,7 @@
   boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
   SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
-  boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+  boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
   boolean isComponentSpaceQuotaFull = isComponentSpaceQuotaActivated && space.isComponentSpaceQuotaReached();
   if (isComponentSpaceQuotaActivated && QuotaLoad.UNLIMITED.equals(space.getComponentSpaceQuota().getLoad())) {
     isComponentSpaceQuotaActivated = false;

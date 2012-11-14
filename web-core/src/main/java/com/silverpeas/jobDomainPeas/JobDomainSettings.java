@@ -45,7 +45,7 @@ public class JobDomainSettings {
   public static boolean m_BlanksAllowedInPwd = true;
   public static boolean m_UserAddingAllowedForGroupManagers = false;
   public static boolean m_UseCommunityManagement = false;
-  public static boolean userQuotaEnabled = false;
+  public static boolean usersInDomainQuotaActivated = false;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -58,7 +58,7 @@ public class JobDomainSettings {
     m_BlanksAllowedInPwd = rs.getBoolean("BlanksAllowedInPwd", true);
     m_UserAddingAllowedForGroupManagers = rs.getBoolean("UserAddingAllowedForGroupManagers", false);
     m_UseCommunityManagement = rs.getBoolean("UseCommunityManagement", false);
-    userQuotaEnabled = rs.getBoolean("quota.users.enable", false);
+    usersInDomainQuotaActivated = rs.getBoolean("quota.domain.users.activated", false);
   }
 
   static public void sortGroups(Group[] toSort) {
