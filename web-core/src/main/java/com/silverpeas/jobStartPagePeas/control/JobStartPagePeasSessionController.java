@@ -480,7 +480,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
 
     // Data storage quota
-    if (isUserAdmin() && JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED &&
+    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated &&
         StringUtil.isDefined(m_dataStorageQuotaMaxCount)) {
       try {
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
@@ -588,7 +588,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @param space
    */
   public void initializeDataStorageQuota(final SpaceInst space) {
-    if (isUserAdmin() && JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED) {
+    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
       try {
         SpaceServiceFactory.getDataStorageSpaceQuotaService().initialize(
             DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());

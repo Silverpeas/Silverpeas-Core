@@ -51,9 +51,9 @@ public class JobStartPagePeasSettings {
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
   public static boolean COMPONENT_SPACE_QUOTA_ACTIVATED = false;
-  public static boolean DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
-  public static long DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
-  public static long DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT;
+  public static boolean dataStorageInSpaceQuotaActivated;
+  public static long dataStorageInSpaceQuotaDefaultMaxCount;
+  public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -74,16 +74,16 @@ public class JobStartPagePeasSettings {
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
     COMPONENT_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.component.quota.activated", false);
-    DATA_STORAGE_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.storage.quota.activated", false);
-    DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT =
-        rs.getLong("space.storage.quota.default.maxCount", 0);
-    if (DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT < 0) {
-      DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT = 0;
+    dataStorageInSpaceQuotaActivated = rs.getBoolean("quota.space.datastorage.activated", false);
+    dataStorageInSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.space.datastorage.default.maxCount", 0);
+    if (dataStorageInSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInSpaceQuotaDefaultMaxCount = 0;
     }
-    DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT =
-        rs.getLong("user.space.storage.quota.default.maxCount", 0);
-    if (DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT < 0) {
-      DATA_STORAGE_USER_SPACE_QUOTA_DEFAULT_MAXCOUNT = 0;
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
     }
   }
 }

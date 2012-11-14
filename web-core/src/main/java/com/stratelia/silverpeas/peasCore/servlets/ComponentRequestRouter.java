@@ -20,23 +20,35 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.util.StringUtil;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-import com.stratelia.silverpeas.peasCore.*;
-import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
 import java.util.Date;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+
+import com.silverpeas.look.LookHelper;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.PeasCoreException;
+import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
+import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends HttpServlet {
 
@@ -176,7 +188,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
             component.getSpaceId(), component.getComponentId());
       }
     }
-    
+
     if (selectionProcessor.isComeFromSelectionPanel(request)) {
       destination = selectionProcessor.processSelection(mainSessionCtrl.getSelection(), request);
       if (StringUtil.isDefined(destination)) {
@@ -186,7 +198,18 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    destination = getDestination(function, component, request);
+    try {
+      destination = getDestination(function, component, request);
+
+      // Check existence of a Data Storage Quota Exception
+      QuotaErrorManager.checkQuotaErrorFromRequest(request);
+
+    } catch (DataStorageQuotaException dsqe) {
+
+      // Data Storage Quota Exception : language is required
+      dsqe.setLanguage(component.getLanguage());
+      throw dsqe;
+    }
 
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);

@@ -21,21 +21,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota.exception;
+package org.silverpeas.admin.space.quota.process.check.exception;
 
 import org.silverpeas.quota.model.Quota;
+
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
  * @author Yohann Chastagnier
  */
-public class QuotaOutOfBoundsException extends QuotaException {
-  private static final long serialVersionUID = 5239722256092865697L;
+public class DataStorageQuotaException extends RuntimeException {
+  private static final long serialVersionUID = 1663450786546676632L;
+
+  private final Quota quota;
+  private final SpaceInst space;
+  private String language;
+
+  public DataStorageQuotaException(final Quota quota, final SpaceInst space) {
+    this.quota = quota;
+    this.space = space;
+  }
 
   /**
-   * Default constructor
-   * @param quota
+   * @return the quota
    */
-  public QuotaOutOfBoundsException(final Quota quota) {
-    super(quota, "EX_COUNT_IS_OUT_OF_BOUNDS");
+  public Quota getQuota() {
+    return quota;
+  }
+
+  /**
+   * @return the space
+   */
+  public SpaceInst getSpace() {
+    return space;
+  }
+
+  /**
+   * @return the language
+   */
+  public String getLanguage() {
+    return language;
+  }
+
+  /**
+   * @param language the language to set
+   */
+  public void setLanguage(String language) {
+    this.language = language;
   }
 }

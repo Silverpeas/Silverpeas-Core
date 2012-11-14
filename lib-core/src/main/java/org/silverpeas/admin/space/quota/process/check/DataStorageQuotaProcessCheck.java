@@ -33,10 +33,12 @@ import javax.inject.Named;
 
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcessCheck;
 import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -64,9 +66,13 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
 
       // Checking data storage quota on each space detected
       for (final SpaceInst space : indentifyHandledSpaces(processExecutionProcess, fileHandler)) {
-        SpaceServiceFactory.getDataStorageSpaceQuotaService().verify(
-            DataStorageSpaceQuotaKey.from(space),
-            SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
+        try {
+          SpaceServiceFactory.getDataStorageSpaceQuotaService().verify(
+              DataStorageSpaceQuotaKey.from(space),
+              SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
+        } catch (final QuotaException quotaException) {
+          throw new DataStorageQuotaException(quotaException.getQuota(), space);
+        }
       }
     }
   }

@@ -35,8 +35,8 @@ SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
-long    defaultDataStorageQuota = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_DEFAULT_MAXCOUNT;
-boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
+long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
 
 	browseBar.setSpaceId(spaceId);
 	if (m_SousEspace == null)
@@ -177,7 +177,7 @@ out.println(board.printBefore());
       <% if (isDataStorageQuotaActivated) { %>
         <tr>
           <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
-          <td><input type="text" name="DataStorageQuota" size="60" maxlength="60" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
+          <td><input type="text" name="DataStorageQuota" size="9" maxlength="10" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
         </tr>
       <% } %>
 			<tr align=left>

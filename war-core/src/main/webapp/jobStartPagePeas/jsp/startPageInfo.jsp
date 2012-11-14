@@ -59,7 +59,7 @@
   }
 
   // Data storage quota
-  boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
+  boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
   boolean isDataStorageQuotaFull = isDataStorageQuotaActivated && space.isDataStorageQuotaReached();
   String dataStorageQuotaCount = "";
   String dataStorageQuotaMaxCount = "";

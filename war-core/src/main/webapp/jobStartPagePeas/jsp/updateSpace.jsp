@@ -43,7 +43,7 @@ if (isComponentSpaceQuotaActivated) {
 }
 
 // Data storage quota
-boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
 String dataStorageQuotaMaxCount = "";
 if (isDataStorageQuotaActivated) {
   dataStorageQuotaMaxCount = String.valueOf(UnitUtil.convertTo(space.getDataStorageQuota().getMaxCount(),
@@ -171,7 +171,7 @@ function removeTranslation() {
     <% if (isDataStorageQuotaActivated) { %>
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
-        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="60" maxlength="60" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
+        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
       </tr>
     <% } %>
 		<% if (isInHeritanceEnable && !space.isRoot()) { %>

@@ -1081,7 +1081,7 @@ public class JobStartPagePeasRequestRouter extends
 
     // Data storage quota
     if (jobStartPageSC.isUserAdmin() &&
-        JobStartPagePeasSettings.DATA_STORAGE_SPACE_QUOTA_ACTIVATED &&
+        JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated &&
         StringUtil.isDefined(dataStorageQuotaMaxCount)) {
       try {
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(

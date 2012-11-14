@@ -29,10 +29,13 @@ import static org.apache.commons.io.FileUtils.sizeOfDirectory;
 import java.io.File;
 
 import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.quota.model.Quota;
+import org.silverpeas.quota.offset.AbstractQuotaCountingOffset;
 
 import com.silverpeas.annotation.Service;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author Yohann Chastagnier
@@ -40,6 +43,16 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 @Service
 public class DefaultDataStorageSpaceQuotaService extends
     AbstractSpaceQuotaService<DataStorageSpaceQuotaKey> implements DataStorageSpaceQuotaService {
+  private static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
+  static {
+    final ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasSettings", "");
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
+        settings.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
+    }
+  }
 
   /*
    * (non-Javadoc)
@@ -75,5 +88,31 @@ public class DefaultDataStorageSpaceQuotaService extends
 
     // Result
     return currentCount;
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see
+   * org.silverpeas.admin.space.quota.AbstractSpaceQuotaService#verify(org.silverpeas.admin.space
+   * .quota.AbstractSpaceQuotaKey, org.silverpeas.quota.offset.AbstractQuotaCountingOffset)
+   */
+  @Override
+  public Quota verify(final DataStorageSpaceQuotaKey key,
+      final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
+    Quota quota = new Quota();
+    if (key.isValid()) {
+      if (key.getSpace().isPersonalSpace()) {
+        // Setting a dummy id
+        quota.setId(-1L);
+        // Setting the max count
+        quota.setMaxCount(dataStorageInPersonalSpaceQuotaDefaultMaxCount);
+        // Verifying
+        quota = super.verify(key, quota, countingOffset);
+      } else {
+        // Default verifying
+        quota = super.verify(key, countingOffset);
+      }
+    }
+    return quota;
   }
 }

@@ -1000,7 +1000,7 @@
     </attribute>
     <attribute>
       <description>
-        The name of the variabl containing the bundle.
+        The name of the variable containing the bundle.
       </description>
       <name>var</name>
       <required>false</required>
@@ -1323,7 +1323,7 @@
     </attribute>
   </tag>
   <tag>
-    <description>Obtain the value of the parmaeter for the specified component instance.</description>
+    <description>Obtain the value of the parameter for the specified component instance.</description>
     <name>componentParam</name>
     <tag-class>org.silverpeas.jstl.ComponentParameterTag</tag-class>
     <body-content>JSP</body-content>
@@ -1384,6 +1384,54 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <tag>
+    <description>Tag that display a StringTemplate content.</description>
+    <name>applyTemplate</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.template.StringTemplateTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        The base of the location of the template. It is separated into two parts by a colon character.
+        First part corresponds at the namespace. If it is defined "core" then template location base starts from
+        the CORE root path of templates. Otherwise, the name of a component instance has to be defined and template
+        location base starts from the COMPONENT root path of templates (for example "kmelia:publication/content"
+        indicates that the COMPONENT root path of templates is used and that the location base after parsing
+        is "COMPONENT_ROOT_PATH/kmelia/publication/content"). Second part represents the base of templates
+        location, from the CORE or the COMPONENT starting node, into which templates are performed.
+      </description>
+      <name>locationBase</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name of the template to apply (without the language suffix).</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Parameter of a StringTemplate Tag. This parameter represents a StringTemplate attribute.</description>
+    <name>templateParam</name>
+    <tag-class>com.stratelia.webactiv.util.viewGenerator.html.template.StringTemplateParamTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Name of the parameter.</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Value of the parameter.</description>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>
+  </tag>
 
   <tag>
     <description>
@@ -1420,7 +1468,7 @@
       java.lang.Object getValue( java.lang.String )
     </function-signature>
   </function>
-  
+
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>

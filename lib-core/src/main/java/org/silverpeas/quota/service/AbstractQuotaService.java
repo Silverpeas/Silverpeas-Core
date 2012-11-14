@@ -160,7 +160,15 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   @Override
   public Quota verify(final T key, final AbstractQuotaCountingOffset countingOffset)
       throws QuotaException {
-    final Quota quota = getByQuotaKey(key, true);
+    // Returning the quota used by this verify process
+    return verify(key, getByQuotaKey(key, true), countingOffset);
+  }
+
+  /**
+   * Verify from a given quota
+   */
+  protected Quota verify(final T key, final Quota quota,
+      final AbstractQuotaCountingOffset countingOffset) throws QuotaException {
     if (quota.exists()) {
       quota.setCount(getCurrentCount(key) + countingOffset.getOffset());
       final QuotaLoad quotaLoad = quota.getLoad();
@@ -172,8 +180,6 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
         throw new QuotaNotEnoughException(quota);
       }
     }
-
-    // Returning the quota used by this verify process
     return quota;
   }
 
