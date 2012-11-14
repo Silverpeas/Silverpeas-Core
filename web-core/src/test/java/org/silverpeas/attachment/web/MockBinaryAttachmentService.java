@@ -91,7 +91,8 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, InputStream content) throws AttachmentException {
+  public SimpleDocument createAttachment(SimpleDocument document, InputStream content) throws
+      AttachmentException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -108,7 +109,8 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument createAttachment(SimpleDocument document, File content) throws AttachmentException {
+  public SimpleDocument createAttachment(SimpleDocument document, File content) throws
+      AttachmentException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -161,7 +163,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
   public SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang) {
-    SimpleDocument doc =  new SimpleDocument();
+    SimpleDocument doc = new SimpleDocument();
     doc.setFile(new SimpleAttachment());
     doc.setFilename("Test.pdf");
     doc.setSize("Ceci est un test et ca marche".length());
@@ -227,13 +229,17 @@ public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-                                                               DocumentType type, String lang) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      DocumentType type, String lang) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet.");
   }
-  
+
+  @Override
+  public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

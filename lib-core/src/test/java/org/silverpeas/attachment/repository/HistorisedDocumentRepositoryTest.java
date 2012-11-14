@@ -491,7 +491,7 @@ public class HistorisedDocumentRepositoryTest {
       documentRepository.lock(session, docOwn10_2, docOwn10_2.getEditedBy());
       documentRepository.lock(session, docOwn25_1, docOwn25_1.getEditedBy());
       session.save();
-      NodeIterator nodes = documentRepository.selectDocumentsByOwnerId(session, instanceId, "10");
+      NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session, instanceId, "10");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docOwn10_1.getId()));
@@ -641,7 +641,7 @@ public class HistorisedDocumentRepositoryTest {
       documentRepository.lock(session, docOwn25_2, docOwn25_2.getEditedBy());
       session.save();
       List<SimpleDocument> docs = documentRepository
-          .listDocumentsByOwner(session, instanceId, owner, "fr");
+          .listComponentDocumentsByOwner(session, instanceId, owner, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, containsInAnyOrder(docOwn25_1, docOwn25_2));

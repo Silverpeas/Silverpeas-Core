@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -18,11 +17,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * Created on 31 janv. 2005
- *
  */
 package com.silverpeas.importExport.control;
 
@@ -78,12 +72,11 @@ public class RepositoriesTypeManager {
    */
   public void processImport(UserDetail userDetail, RepositoriesType repositoriesType,
       boolean isPOIUsed) {
-
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
     OrganizationController orgaController = null;
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     PdcImportExport pdcIE = new PdcImportExport();
 
     while (itListRep_Type.hasNext()) {
@@ -117,8 +110,7 @@ public class RepositoriesTypeManager {
           boolean isVersioningUsed = ImportExportHelper.isVersioningUsed(componentInst);
           boolean isDraftUsed = ImportExportHelper.isDraftUsed(componentInst);
 
-          GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(
-              userDetail, componentId);
+          GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
           Iterator<File> itListcontenuPath = getPathContent(path);
           while (itListcontenuPath.hasNext()) {
@@ -133,10 +125,9 @@ public class RepositoriesTypeManager {
                   break;
                 case RepositoryType.RECURSIVE_NOREPLICATE:
                   // traitement récursif spécifique
-                  processImportRecursiveNoReplicate(massiveReport, userDetail,
-                      file, gedIE, attachmentIE, versioningIE, pdcIE,
-                      componentId, topicId, isPOIUsed, isVersioningUsed,
-                      isDraftUsed);
+                  processImportRecursiveNoReplicate(massiveReport, userDetail, file, gedIE,
+                      attachmentIE, versioningIE, pdcIE, componentId, topicId, isPOIUsed,
+                      isVersioningUsed, isDraftUsed);
                   break;
                 case RepositoryType.RECURSIVE_REPLICATE:
                   try {
@@ -144,10 +135,9 @@ public class RepositoriesTypeManager {
                         topicId, massiveReport);
                     // massiveReport.addOneTopicCreated();
                     // Traitement récursif spécifique
-                    processImportRecursiveReplicate(massiveReport, userDetail,
-                        file, gedIE, attachmentIE, versioningIE, pdcIE,
-                        componentId, Integer.parseInt(nodeDetail.getNodePK().getId()), isPOIUsed,
-                        isVersioningUsed, isDraftUsed);
+                    processImportRecursiveReplicate(massiveReport, userDetail, file, gedIE,
+                        attachmentIE, versioningIE, pdcIE, componentId, Integer.parseInt(nodeDetail.
+                        getNodePK().getId()), isPOIUsed, isVersioningUsed, isDraftUsed);
                   } catch (ImportExportException ex) {
                     massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
                   }
@@ -213,7 +203,7 @@ public class RepositoriesTypeManager {
       document.setFile(new SimpleAttachment());
       document.setFilename(file.getName());
       document.setSize(file.length());
-      document.getFile().setCreatedBy(userDetail.getId());  
+      document.getFile().setCreatedBy(userDetail.getId());
       document.setCreated(new Date());
       document.setForeignId(pubDetailToCreate.getPK().getId());
       document.setTitle(file.getName());

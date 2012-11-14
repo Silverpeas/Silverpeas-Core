@@ -428,7 +428,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (document.isOpenOfficeCompatible() && finalDocument.isReadOnly()) {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
-      repository.duplicateContent(session, document, finalDocument);
+      repository.duplicateContent(document, finalDocument);
       String userId = finalDocument.getCreatedBy();
       if (StringUtil.isDefined(userId) && invokeCallback && finalDocument.isPublic()) {
         CallBackManager callBackManager = CallBackManager.get();
@@ -469,7 +469,7 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocument finalDocument = document;
       if (requireLock) {
         finalDocument = repository.unlock(session, document, false);
-        repository.duplicateContent(session, document, finalDocument);
+        repository.duplicateContent(document, finalDocument);
       }
       finalDocument.setLanguage(lang);
       FileUtils.deleteQuietly(new File(finalDocument.getAttachmentPath()));
@@ -752,7 +752,7 @@ public class SimpleDocumentService implements AttachmentService {
       } else {
         File file = new File(finalDocument.getAttachmentPath());
         if (!file.exists() && !context.isForce()) {
-          repository.duplicateContent(session, document, finalDocument);
+          repository.duplicateContent(document, finalDocument);
         }
       }
       session.save();
@@ -873,6 +873,19 @@ public class SimpleDocumentService implements AttachmentService {
       session = BasicDaoFactory.getSystemSession();
       return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
           getId(), type, lang);
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  @Override
+  public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
+     Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      return repository.listDocumentsLockedByUser(session, usedId, language);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {

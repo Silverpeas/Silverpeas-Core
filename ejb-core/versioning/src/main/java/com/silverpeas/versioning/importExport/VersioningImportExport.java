@@ -34,7 +34,6 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.versioning.VersioningIndexer;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
@@ -61,25 +60,33 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 
+import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author neysseri
  */
 public class VersioningImportExport {
-  
+
+  private UserDetail user;
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
   
+  public VersioningImportExport(UserDetail user) {
+    this.user = user;
+  }
+
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      int userId, boolean indexIt) throws RemoteException {
+      int userId, boolean indexIt) throws RemoteException, IOException {
     return importDocuments(objectId, componentId, attachments, userId,
         DocumentVersion.TYPE_PUBLIC_VERSION, indexIt, null);
   }
-  
+
   public int importDocuments(String objectId, String componentId,
       List<AttachmentDetail> attachments, int userId, int versionType, boolean indexIt)
-      throws RemoteException {
+      throws RemoteException, IOException {
     return importDocuments(objectId, componentId, attachments, userId, versionType, indexIt, null);
   }
 
@@ -95,34 +102,45 @@ public class VersioningImportExport {
    * @throws RemoteException
    */
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
-      int userId, int versionType, boolean indexIt, String topicId) throws RemoteException {
+      int userId, int versionType, boolean indexIt, String topicId) throws RemoteException,
+      IOException {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
     int nbFilesProcessed = 0;
-    
+    AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPK, null);
     for (AttachmentDetail attachment : attachments) {
+      InputStream content = attachmentImportExport.getAttachmentContent(attachment);
+      if(!StringUtil.isDefined(attachment.getAuthor())) {
+        attachment.setAuthor(user.getId());
+      }
       SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
-        // Un document portant le même nom existe déjà. On ajoute une nouvelle version au document
-        AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
-            new File(attachment.getPhysicalName()), indexIt, indexIt);
+        document.edit(attachment.getAuthor());
+        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), attachment.getAuthor(), null);
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, indexIt,
+            true);
+        AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
+            attachment.getAuthor(), null));
       } else {
-        HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null,
-            componentId), objectId, -1, new SimpleAttachment(attachment.getLogicalName(),
+        if (attachment.getCreationDate() == null) {
+          attachment.setCreationDate(new Date());
+        }
+        HistorisedDocument version = new HistorisedDocument(new SimpleDocumentPK(null, componentId),
+            objectId, -1, attachment.getAuthor(), new SimpleAttachment(attachment.getLogicalName(),
             attachment.getLanguage(), attachment.getTitle(), attachment.getInfo(), attachment.
             getSize(), attachment.getType(), "" + userId, attachment.getCreationDate(), attachment.
             getXmlForm()));
         version.setPublicDocument((versionType == DocumentVersion.TYPE_PUBLIC_VERSION));
         version.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-        AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-            new File(attachment.getPhysicalName()), indexIt);
+        AttachmentServiceFactory.getAttachmentService().createAttachment(version,
+            content, indexIt);
       }
-      
+
       if (attachment.isRemoveAfterImport()) {
         boolean removed = FileUtils.deleteQuietly(new File(attachment.getOriginalPath()));
         if (!removed) {
@@ -147,13 +165,13 @@ public class VersioningImportExport {
    */
   public List<AttachmentDetail> exportDocuments(WAPrimaryKey pk, String exportPath,
       String relativeExportPath, String extensionFilter) throws RemoteException {
-    List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
+
     String componentId = pk.getInstanceId();
     ForeignPK pubPK = new ForeignPK(pk.getId(), componentId);
     // get existing documents of object
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(pubPK, null);
-
+    List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>(documents.size());
     // retrieve last public versions of each document
     for (SimpleDocument document : documents) {
       SimpleDocument lastVersion = document.getLastPublicVersion();
@@ -162,13 +180,13 @@ public class VersioningImportExport {
         attachments.add(copyAttachment(document, exportPath, relativeExportPath));
       }
     }
-    
+
     if (attachments.isEmpty()) {
       return null;
     }
     return attachments;
   }
-  
+
   private AttachmentDetail copyAttachment(SimpleDocument document, String exportPath,
       String relativeExportPath) {
     AttachmentDetail attachmentCopy = getAttachmentDetail(document);
@@ -184,7 +202,7 @@ public class VersioningImportExport {
         replaceAccentChars(attachmentCopy.getLogicalName()));
     return attachmentCopy;
   }
-  
+
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, AttachmentDetail attachment) {
     String documentName = attachment.getTitle();
     if (!StringUtil.isDefined(documentName)) {
@@ -197,7 +215,7 @@ public class VersioningImportExport {
     }
     return null;
   }
-  
+
   private AttachmentDetail getAttachmentDetail(SimpleDocument version) {
     AttachmentPK pk = new AttachmentPK("useless", "useless", version.getPk().getInstanceId());
     AttachmentDetail attachment = new AttachmentDetail(pk, version.getAttachmentPath(), version.
@@ -207,14 +225,14 @@ public class VersioningImportExport {
     attachment.setTitle(version.getTitle());
     return attachment;
   }
-  
+
   public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
       int userId, boolean indexIt) throws RemoteException, FileNotFoundException {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", objectPK.toString());
     boolean launchCallback = false;
     int userIdCallback = -1;
-    
+
     List<SimpleDocument> importedDocs = new ArrayList<SimpleDocument>(documents.size());
 
     // get existing documents of object
@@ -231,10 +249,11 @@ public class VersioningImportExport {
       if (existingDocument == null) {
         existingDocument = isDocumentExist(existingDocuments, document.getName());
         if (existingDocument != null) {
-          document.getPk().setId("" + existingDocument.getPk().getOldSilverpeasId());
+          document.setPk(new DocumentPK((int) existingDocument.getPk().getOldSilverpeasId(),
+              objectPK.getInstanceId()));
         }
       }
-      
+
       if (existingDocument != null && existingDocument.isVersioned()) {
         List<DocumentVersion> versions = document.getVersionsType().getListVersions();
         for (DocumentVersion version : versions) {
@@ -282,7 +301,7 @@ public class VersioningImportExport {
                 getLogicalName(), I18NHelper.defaultLanguage,
                 document.getName(), document.getDescription(), version.getSize(), version.
                 getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
-            
+
             simpleDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
             boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
             if (isPublic) {
@@ -326,9 +345,9 @@ public class VersioningImportExport {
     }
     return importedDocs;
   }
-  
+
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, String name) {
-    if (name != null) {      
+    if (name != null) {
       for (SimpleDocument document : documents) {
         if (name.equalsIgnoreCase(document.getFilename()) || name.equalsIgnoreCase(document.
             getTitle())) {
@@ -338,9 +357,9 @@ public class VersioningImportExport {
     }
     return null;
   }
-  
+
   public List<DocumentVersion> copyFiles(String componentId, List<Document> documents, String path) {
-    List<DocumentVersion> copiedAttachments = new ArrayList<DocumentVersion>();
+    List<DocumentVersion> copiedAttachments = new ArrayList<DocumentVersion>(documents.size());
     for (Document document : documents) {
       List<DocumentVersion> versions = document.getVersionsType().getListVersions();
       for (DocumentVersion version : versions) {
@@ -352,7 +371,7 @@ public class VersioningImportExport {
     }
     return copiedAttachments;
   }
-  
+
   private void copyFile(String componentId, DocumentVersion version, String path) {
     String fileToUpload = version.getPhysicalName();
     // Préparation des paramètres du fichier à creer
@@ -360,7 +379,7 @@ public class VersioningImportExport {
     String type = FileRepositoryManager.getFileExtension(logicalName);
     String mimeType = FileUtil.getMimeType(logicalName);
     String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
-    
+
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
       SilverTrace.info("versioning", "VersioningImportExport.copyFile()",
@@ -373,7 +392,7 @@ public class VersioningImportExport {
     }
     SilverTrace.info("versioning", "VersioningImportExport.copyFile()",
         "root.MSG_GEN_PARAM_VALUE", "fileName=" + logicalName);
-    
+
     long size = 0;
     try {
       // Copie du fichier dans silverpeas
@@ -389,11 +408,11 @@ public class VersioningImportExport {
     version.setPhysicalName(physicalName);
     version.setLogicalName(logicalName);
     version.setInstanceId(componentId);
-    
+
     DocumentVersionPK pk = new DocumentVersionPK(-1, "useless", componentId);
     version.setPk(pk);
   }
-  
+
   private long copyFileToDisk(String from, File to) throws IOException {
     OutputStream out = new BufferedOutputStream(new FileOutputStream(to));
     try {
@@ -402,7 +421,7 @@ public class VersioningImportExport {
       IOUtils.closeQuietly(out);
     }
   }
-  
+
   protected SimpleDocument addVersion(DocumentVersion version, SimpleDocument existingDocument,
       int userId, boolean indexIt) throws FileNotFoundException {
     boolean isPublic = (version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION);
@@ -425,7 +444,7 @@ public class VersioningImportExport {
     return AttachmentServiceFactory.getAttachmentService().searchDocumentById(existingDocument.
         getPk(), existingDocument.getLanguage());
   }
-  
+
   InputStream getVersionContent(DocumentVersion version) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(version.getDocumentPath()));
     if (file == null || !file.exists() || !file.isFile()) {

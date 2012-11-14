@@ -123,7 +123,7 @@ import static java.io.File.separator;
 public class ImportExport {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.importExport.settings.mapping", "");
+      "org.silverpeas.importExport.settings.mapping", "");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
 

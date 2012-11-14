@@ -23,6 +23,25 @@
  */
 package org.silverpeas.attachment.repository;
 
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.model.*;
+
+import javax.inject.Named;
+import javax.jcr.*;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.qom.*;
+import javax.jcr.version.Version;
+import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
+import javax.jcr.version.VersionManager;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,43 +49,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.inject.Named;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.ChildNode;
-import javax.jcr.query.qom.Comparison;
-import javax.jcr.query.qom.DescendantNode;
-import javax.jcr.query.qom.Ordering;
-import javax.jcr.query.qom.QueryObjectModel;
-import javax.jcr.query.qom.QueryObjectModelFactory;
-import javax.jcr.query.qom.Selector;
-import javax.jcr.version.Version;
-import javax.jcr.version.VersionHistory;
-import javax.jcr.version.VersionIterator;
-import javax.jcr.version.VersionManager;
-
-import org.apache.commons.io.FileUtils;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
@@ -78,7 +60,9 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 @Named("documentRepository")
 public class DocumentRepository {
 
-  DocumentConverter converter = new DocumentConverter();
+  private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";
+
+  final DocumentConverter converter = new DocumentConverter();
 
   public void prepareComponentAttachments(String instanceId, String folder) throws
       RepositoryException {
@@ -105,14 +89,13 @@ public class DocumentRepository {
    *
    * @param session
    * @param document
-   * @param content
    * @return
    * @throws RepositoryException
    */
   public SimpleDocumentPK createDocument(Session session, SimpleDocument document) throws
       RepositoryException {
     SimpleDocument last = findLast(session, document.getInstanceId(), document.getForeignId());
-    if (last != null && document.getOrder() <= 0) {
+    if ((null != last) && (0 >= document.getOrder())) {
       document.setOrder(last.getOrder() + 1);
     }
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId(), document.
@@ -275,7 +258,7 @@ public class DocumentRepository {
   }
 
   private void deleteDocumentNode(Node documentNode) throws RepositoryException {
-    if (documentNode != null) {
+    if (null != documentNode) {
       if (converter.isVersioned(documentNode)) {
         removeHistory(documentNode);
       }
@@ -316,14 +299,13 @@ public class DocumentRepository {
       long oldSilverpeasId, boolean versioned, String lang) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
         + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
-    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(alias,
+    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(oldSilverpeasId)));
-    Comparison versionedComparison = factory.comparison(factory.propertyValue(alias,
+    Comparison versionedComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_VERSIONED), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(versioned)));
 
@@ -372,10 +354,10 @@ public class DocumentRepository {
   public List<SimpleDocument> listDocumentsByForeignId(Session session, String instanceId,
       String foreignId, String language) throws RepositoryException {
     NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId,
-        DocumentType.attachment);        
+        DocumentType.attachment);
     return converter.convertNodeIterator(iter, language);
   }
-  
+
   /**
    * Search all the documents in an instance with the specified foreignId.
    *
@@ -388,7 +370,7 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsByForeignIdAndType(Session session, String instanceId,
       String foreignId, DocumentType type, String language) throws RepositoryException {
-    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId, type);        
+    NodeIterator iter = selectDocumentsByForeignIdAndType(session, instanceId, foreignId, type);
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -402,9 +384,15 @@ public class DocumentRepository {
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  public List<SimpleDocument> listDocumentsByOwner(Session session, String instanceId,
+  public List<SimpleDocument> listComponentDocumentsByOwner(Session session, String instanceId,
       String owner, String language) throws RepositoryException {
-    NodeIterator iter = selectDocumentsByOwnerId(session, instanceId, owner);    
+    NodeIterator iter = selectDocumentsByOwnerIdAndComponentId(session, instanceId, owner);
+    return converter.convertNodeIterator(iter, language);
+  }
+
+  public List<SimpleDocument> listDocumentsLockedByUser(Session session, String usedId, String language) throws
+      RepositoryException {
+    NodeIterator iter = selectAllDocumentsByOwnerId(session, usedId);
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -421,15 +409,14 @@ public class DocumentRepository {
       throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    DescendantNode descendantdNodeConstraint = factory.descendantNode(alias, session.getRootNode().
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath()
         + instanceId);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -449,14 +436,13 @@ public class DocumentRepository {
       String foreignId, DocumentType type) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
         + instanceId + '/' + type.getForlderName());
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -475,7 +461,7 @@ public class DocumentRepository {
   public List<SimpleDocument> listExpiringDocuments(Session session, Date expiryDate,
       String language) throws RepositoryException {
     NodeIterator iter = selectExpiringDocuments(session, DateUtil.getBeginOfDay(
-        expiryDate));    
+        expiryDate));
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -491,7 +477,7 @@ public class DocumentRepository {
   public List<SimpleDocument> listDocumentsRequiringWarning(Session session, Date alertDate,
       String language) throws RepositoryException {
     NodeIterator iter = selectWarningDocuments(session, DateUtil.getBeginOfDay(
-        alertDate));    
+        alertDate));
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -506,14 +492,13 @@ public class DocumentRepository {
   NodeIterator selectExpiringDocuments(Session session, Date expiryDate) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -531,7 +516,7 @@ public class DocumentRepository {
    */
   public List<SimpleDocument> listDocumentsToUnlock(Session session, Date expiryDate,
       String language) throws RepositoryException {
-    NodeIterator iter = selectDocumentsRequiringUnlocking(session, expiryDate);    
+    NodeIterator iter = selectDocumentsRequiringUnlocking(session, expiryDate);
     return converter.convertNodeIterator(iter, language);
   }
 
@@ -547,14 +532,13 @@ public class DocumentRepository {
       RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
     Calendar expiry = Calendar.getInstance();
     expiry.setTime(DateUtil.getBeginOfDay(expiryDate));
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_LESS_THAN, factory.
         literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -572,14 +556,13 @@ public class DocumentRepository {
   NodeIterator selectWarningDocuments(Session session, Date alertDate) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
     Calendar alert = Calendar.getInstance();
     alert.setTime(DateUtil.getBeginOfDay(alertDate));
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(alias,
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ALERT_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(alert)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -587,28 +570,50 @@ public class DocumentRepository {
   }
 
   /**
-   * Search all the documents in an instance with the specified foreignId.
+   * Search all the documents in an instance with the specified owner.
    *
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
-   * @param foreignId the id of the container owning the documents.
+   * @param owner the id of the user owning the documents.
    * @return an ordered list of the documents.
    * @throws RepositoryException
    */
-  NodeIterator selectDocumentsByOwnerId(Session session, String instanceId,
+  NodeIterator selectDocumentsByOwnerIdAndComponentId(Session session, String instanceId,
       String owner) throws RepositoryException {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
-    final String alias = "SimpleDocuments";
-    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, alias);
-    ChildNode childNodeConstraint = factory.childNode(alias, session.getRootNode().getPath()
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
         + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
-    Comparison ownerComparison = factory.comparison(factory.propertyValue(alias,
+    Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
-    Ordering order = factory.ascending(factory.propertyValue(alias, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         ownerComparison), new Ordering[]{order}, null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents with the specified owner.
+   *
+   * @param session the current JCR session.
+   * @param owner the id of the user owning the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectAllDocumentsByOwnerId(Session session, String owner) throws
+      RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
+        getValueFactory().createValue(owner)));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, ownerComparison, new Ordering[]{order},
+        null);
     QueryResult result = query.execute();
     return result.getNodes();
   }
@@ -619,7 +624,6 @@ public class DocumentRepository {
    * @param session the current JCR session.
    * @param documentPk the document which content is to be added.
    * @param attachment the attachment metadata.
-   * @param content the attachment binary content.
    * @throws RepositoryException
    */
   public void addContent(Session session, SimpleDocumentPK documentPk, SimpleAttachment attachment)
@@ -725,7 +729,7 @@ public class DocumentRepository {
         while (iter.hasNext()) {
           lastVersion = iter.nextVersion();
         }
-        if (lastVersion != null) {
+        if (null != lastVersion) {
           session.getWorkspace().getVersionManager().restore(lastVersion, true);
           return converter.convertNode(lastVersion.getFrozenNode(), document.getLanguage());
         }
@@ -841,14 +845,14 @@ public class DocumentRepository {
     return file.length();
   }
 
-  public void duplicateContent(Session session, SimpleDocument origin, SimpleDocument document)
+  public void duplicateContent(SimpleDocument origin, SimpleDocument document)
       throws IOException, RepositoryException {
     String originDir = origin.getDirectoryPath(null);
-    String targetDir = document.getDirectoryPath(null);;
+    String targetDir = document.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
     File source = new File(originDir).getParentFile();
-    if (!source.exists() && !source.isDirectory()) {
+    if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
     }
     if (!target.exists()) {

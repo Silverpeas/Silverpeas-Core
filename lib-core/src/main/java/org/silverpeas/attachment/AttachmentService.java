@@ -307,11 +307,11 @@ public interface AttachmentService {
   List<SimpleDocument> listDocumentsToUnlock(Date expiryDate, String language);
 
   /**
-   * Checkout a file to be updated by user
+   * Checkout a file to be updated by user.
    *
-   * @param attachmentId
-   * @param userId
-   * @param language
+   * @param attachmentId the id of the attachemnt to be locked.
+   * @param userId : the user locking and modifying the attachment.
+   * @param language the language of the attachment.
    * @return false if the attachment is already checkout - true if the attachment was successfully
    * checked out.
    */
@@ -347,4 +347,13 @@ public interface AttachmentService {
    */
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang);
+  
+  /**
+   * Search all the documents locked by a specific user.
+   *
+   * @param usedId the id of the user.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   */
+  List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language);
 }

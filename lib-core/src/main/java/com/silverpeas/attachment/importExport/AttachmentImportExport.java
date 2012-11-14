@@ -48,15 +48,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
- *
- * @author sdevolder
  */
 public class AttachmentImportExport {
-
+  private UserDetail user;
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
+  
+  public AttachmentImportExport(UserDetail user) {
+    this.user = user;
+  }
 
   // Methodes
   /**
@@ -386,7 +390,7 @@ public class AttachmentImportExport {
     return path;
   }
 
-  InputStream getAttachmentContent(AttachmentDetail attachment) throws FileNotFoundException {
+  public InputStream getAttachmentContent(AttachmentDetail attachment) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath(null)));
     if (file == null || !file.exists() || !file.isFile()) {
       String baseDir = resources.getString("importRepository");

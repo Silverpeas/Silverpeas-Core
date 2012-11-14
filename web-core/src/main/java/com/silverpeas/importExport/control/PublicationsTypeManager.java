@@ -106,8 +106,8 @@ public class PublicationsTypeManager {
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
       boolean bExportPublicationPath) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
     PdcImportExport pdc_impExp = new PdcImportExport();
@@ -430,8 +430,8 @@ public class PublicationsTypeManager {
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath)
       throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     OrganizationController orgaController = new OrganizationController();
 
     // Parcours des publications à exporter
@@ -449,12 +449,10 @@ public class PublicationsTypeManager {
     }
   }
 
-  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
-      UserDetail userDetail,
-      List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
+  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
       throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     OrganizationController orgaController = new OrganizationController();
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
@@ -574,9 +572,9 @@ public class PublicationsTypeManager {
       String targetComponentId, boolean isPOIUsed) {
     GEDImportExport gedIE =
         ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
-    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     PdcImportExport pdcIE = new PdcImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport();
+    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     CoordinateImportExport coordinateIE = new CoordinateImportExport();
 
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();

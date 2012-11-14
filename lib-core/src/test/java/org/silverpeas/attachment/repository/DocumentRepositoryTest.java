@@ -493,7 +493,8 @@ public class DocumentRepositoryTest {
       documentRepository.createDocument(session, docOwn25_1);
       documentRepository.storeContent(session, docOwn25_1, content);
       session.save();
-      NodeIterator nodes = documentRepository.selectDocumentsByOwnerId(session, instanceId, "10");
+      NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session,
+          instanceId, "10");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docOwn10_1.getId()));
@@ -599,7 +600,7 @@ public class DocumentRepositoryTest {
    * Test of listDocumentsByOwner method, of class DocumentRepository.
    */
   @Test
-  public void testListDocumentsByOwner() throws Exception {
+  public void testListComponentDocumentsByOwner() throws Exception {
     Session session = BasicDaoFactory.getSystemSession();
     try {
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
@@ -632,8 +633,54 @@ public class DocumentRepositoryTest {
       documentRepository.createDocument(session, docOwn25_2);
       documentRepository.storeContent(session, docOwn25_2, content);
       session.save();
-      List<SimpleDocument> docs = documentRepository.
-          listDocumentsByOwner(session, instanceId, owner, "fr");
+      List<SimpleDocument> docs = documentRepository.listComponentDocumentsByOwner(session,
+          instanceId, owner, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(2));
+      assertThat(docs, containsInAnyOrder(docOwn25_1, docOwn25_2));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+  
+  /**
+   * Test of listDocumentsByOwner method, of class DocumentRepository.
+   */
+  @Test
+  public void testListDocumentsLockedByUser() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      String owner = "10";
+      SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
+          attachment);
+      documentRepository.createDocument(session, docOwn10_1);
+      documentRepository.storeContent(session, docOwn10_1, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docOwn10_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
+          attachment);
+      documentRepository.createDocument(session, docOwn10_2);
+      documentRepository.storeContent(session, docOwn10_2, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      owner = "25";
+      attachment = createEnglishSimpleAttachment();
+      SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
+          attachment);
+      documentRepository.createDocument(session, docOwn25_1);
+      documentRepository.storeContent(session, docOwn25_1, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docOwn25_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
+          attachment);
+      documentRepository.createDocument(session, docOwn25_2);
+      documentRepository.storeContent(session, docOwn25_2, content);
+      session.save();
+      List<SimpleDocument> docs = documentRepository.listDocumentsLockedByUser(session, owner, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, containsInAnyOrder(docOwn25_1, docOwn25_2));
@@ -1012,7 +1059,8 @@ public class DocumentRepositoryTest {
       emptyId.setOldSilverpeasId(236L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument versionedDocument = new SimpleDocument(emptyId, foreignId, 0, true, attachment);
-      versionedDocument.setNodeName(SimpleDocument.VERSION_PREFIX + versionedDocument.getOldSilverpeasId());
+      versionedDocument.setNodeName(SimpleDocument.VERSION_PREFIX + versionedDocument.
+          getOldSilverpeasId());
       documentRepository.createDocument(session, versionedDocument);
       documentRepository.storeContent(session, document, content);
       session.save();

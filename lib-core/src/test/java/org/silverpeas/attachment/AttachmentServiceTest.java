@@ -122,7 +122,7 @@ public class AttachmentServiceTest {
   public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
     if (!registred) {
       Reader reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
-            getResourceAsStream("silverpeas-jcr.txt"));
+          getResourceAsStream("silverpeas-jcr.txt"));
       try {
         SilverpeasRegister.registerNodeTypes(reader);
       } finally {
@@ -157,7 +157,7 @@ public class AttachmentServiceTest {
             MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
         existingEnDoc = documentRepository.createDocument(session, document);
-        document.setPK(existingEnDoc);        
+        document.setPK(existingEnDoc);
         documentRepository.storeContent(session, document, content);
       }
       session.save();
@@ -173,7 +173,7 @@ public class AttachmentServiceTest {
 
   @After
   public void cleanRepository() throws RepositoryException {
-     Session session = null;
+    Session session = null;
     try {
       session = getRepository().login(new SilverpeasSystemCredentials());
       if (session.getRootNode().hasNodes()) {
@@ -524,9 +524,10 @@ public class AttachmentServiceTest {
 
   /**
    * Test of reorderAttachments method, of class AttachmentService.
-   * @throws LoginException 
-   * @throws RepositoryException 
-   * @throws IOException 
+   *
+   * @throws LoginException
+   * @throws RepositoryException
+   * @throws IOException
    */
   @Test
   public void testReorderAttachments() throws LoginException, RepositoryException,
@@ -544,9 +545,9 @@ public class AttachmentServiceTest {
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      SimpleDocumentPK id = documentRepository.createDocument(session, document1); 
+      SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
-      documentRepository.storeContent(session, document1, content);     
+      documentRepository.storeContent(session, document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false,
@@ -554,7 +555,7 @@ public class AttachmentServiceTest {
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = documentRepository.createDocument(session, document2);      
+      id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(session, document2, content);
 
@@ -564,7 +565,7 @@ public class AttachmentServiceTest {
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-      id = documentRepository.createDocument(session, document3);      
+      id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
       documentRepository.storeContent(session, document3, content);
 
@@ -575,7 +576,7 @@ public class AttachmentServiceTest {
           "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      id = documentRepository.createDocument(session, document4);      
+      id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(session, document4, content);
       session.save();
@@ -633,7 +634,7 @@ public class AttachmentServiceTest {
     WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
     Session session = null;
     try {
-       DocumentRepository documentRepository = new DocumentRepository();
+      DocumentRepository documentRepository = new DocumentRepository();
       session = getRepository().login(new SilverpeasSystemCredentials());
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -652,17 +653,17 @@ public class AttachmentServiceTest {
           new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));      
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
       documentRepository.storeContent(session, document2, content);
-      
+
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 3",
           "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));            
+      content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
       documentRepository.storeContent(session, document3, content);
@@ -673,11 +674,11 @@ public class AttachmentServiceTest {
           new SimpleAttachment("test.docx", "en", "My test document 4",
           "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
-      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));      
+      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
       documentRepository.storeContent(session, document4, content);
-      
+
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
@@ -865,6 +866,56 @@ public class AttachmentServiceTest {
     docToLeaveLocked4.setExpiry(beforeDate.getTime());
     instance.createAttachment(docToLeaveLocked4, content);
     List<SimpleDocument> docs = instance.listDocumentsToUnlock(today.getTime(), "fr");
+    assertThat(docs, is(notNullValue()));
+    assertThat(docs.size(), is(2));
+    assertThat(docs, contains(docToUnlock2, docToUnlock3));
+  }
+
+  /**
+   * Test of listDocumentsToUnlock method, of class AttachmentService.
+   */
+  @Test
+  public void testListDocumentLockedByUser() {
+    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+        Charsets.UTF_8));
+    SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+    String otherInstanceId = "kmelia38";
+    String otherOwner = "25";
+    String foreignId = "node18";
+    String owner = "10";
+    Calendar today = Calendar.getInstance();
+    DateUtil.setAtBeginOfDay(today);
+    SimpleDocument docToLeaveLocked1 = new SimpleDocument(emptyId, foreignId, 10, false, otherOwner,
+        new SimpleAttachment("test.pdf", "en", "My test document",
+        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    docToLeaveLocked1.setExpiry(today.getTime());
+    instance.createAttachment(docToLeaveLocked1, content);
+    emptyId = new SimpleDocumentPK("-1", otherInstanceId);
+    SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
+        "5"));
+    docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    instance.createAttachment(docToUnlock2, content);
+    emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
+        new SimpleAttachment("test.pdf", "en", "My test document",
+        "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.PDF_MIME_TYPE, "0", RandomGenerator.getRandomCalendar().getTime(), "18"));
+    docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
+    instance.createAttachment(docToUnlock3, content);
+    emptyId = new SimpleDocumentPK("-1", otherInstanceId);
+    SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, otherOwner,
+        new SimpleAttachment("test.odp", "fr", "Mon document de test",
+        "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+        MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", RandomGenerator.getRandomCalendar().getTime(),
+        "5"));
+    Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
+    docToLeaveLocked4.setExpiry(beforeDate.getTime());
+    instance.createAttachment(docToLeaveLocked4, content);
+    List<SimpleDocument> docs = instance.listDocumentsLockedByUser(owner, "fr");
     assertThat(docs, is(notNullValue()));
     assertThat(docs.size(), is(2));
     assertThat(docs, contains(docToUnlock2, docToUnlock3));

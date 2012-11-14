@@ -107,7 +107,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
-  private AttachmentImportExport attachmentIE = new AttachmentImportExport();
+  private AttachmentImportExport attachmentIE;
 
   /**
    * Constructeur public de la classe
@@ -117,6 +117,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
+     attachmentIE = new AttachmentImportExport(curentUserDetail);
   }
 
   /**

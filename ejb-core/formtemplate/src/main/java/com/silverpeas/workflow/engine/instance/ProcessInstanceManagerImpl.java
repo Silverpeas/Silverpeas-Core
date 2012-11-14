@@ -1,28 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-// TODO : reporter dans CVS (done)
 package com.silverpeas.workflow.engine.instance;
 
 import com.silverpeas.form.FormException;
@@ -39,11 +34,8 @@ import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
@@ -60,33 +52,23 @@ import java.util.Date;
  * A ProcessInstanceManager implementation
  */
 public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
+
   private String dbName = JNDINames.WORKFLOW_DATASOURCE;
   private static String COLUMNS =
       " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
 
-  /**
-   * @return the DB connection
-   */
-  private Connection getConnection() throws WorkflowException {
-    try {
-      Connection con = DBUtil.makeConnection(dbName);
-      return con;
-    } catch (Exception e) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getConnection()",
-          "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role) throws WorkflowException {
+  @Override
+  public ProcessInstance[] getProcessInstances(String peasId, User user, String role) throws
+      WorkflowException {
     return getProcessInstances(peasId, user, role, null, null);
   }
 
-  public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role, String[] userRoles, String[] userGroupIds) throws WorkflowException {
+  @Override
+  public ProcessInstance[] getProcessInstances(String peasId, User user, String role,
+      String[] userRoles, String[] userGroupIds) throws WorkflowException {
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.getProcessInstances()",
-        "root.MSG_GEN_ENTER_METHOD", "peasId = " + peasId + ", user = " + user.getUserId() +
-        ", role = " + role);
+        "root.MSG_GEN_ENTER_METHOD", "peasId = " + peasId + ", user = " + user.getUserId()
+        + ", role = " + role);
     Connection con = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -95,19 +77,18 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     try {
       // Need first to make a SQL query to find all concerned instances ids
       // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
-      con = this.getConnection();
+      con = DBUtil.makeConnection(dbName);
 
       if (role.equals("supervisor")) {
-        selectQuery.append("select * from SB_Workflow_ProcessInstance instance where modelId = ?");
+        selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
       } else {
-        selectQuery.append("select ").append(COLUMNS)
-            .append(" from SB_Workflow_ProcessInstance I ");
+        selectQuery.append("select ").append(COLUMNS).append(" from SB_Workflow_ProcessInstance I ");
         selectQuery.append("where I.modelId = ? ");
         selectQuery.append("and exists (");
-        selectQuery
-            .append(
+        selectQuery.
+            append(
             "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = intUser.instanceId and (");
         selectQuery.append("intUser.userId = ? ");
         if ((userRoles != null) && (userRoles.length > 0)) {
@@ -123,8 +104,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         }
         selectQuery.append(") and intUser.role = ? ");
         selectQuery.append("union ");
-        selectQuery
-            .append(
+        selectQuery.
+            append(
             "select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = wkUser.instanceId and (");
         selectQuery.append("wkUser.userId = ? ");
         if ((userRoles != null) && (userRoles.length > 0)) {
@@ -177,7 +158,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
       // getHistory
       prepStmt = con
-              .prepareStatement("select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
+          .prepareStatement(
+          "select * from SB_Workflow_HistoryStep where instanceId = ? order by id asc");
 
       for (ProcessInstanceImpl instance : instances) {
         prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
@@ -197,7 +179,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           instance.addHistoryStep(historyStep);
         }
       }
-      prepStmt = con.prepareStatement("select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
+      prepStmt = con.prepareStatement(
+          "select * from SB_Workflow_ActiveState where instanceId = ? order by id asc");
 
       for (ProcessInstanceImpl instance : instances) {
         prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
@@ -222,14 +205,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
           "EX_ERR_CASTOR_GET_INSTANCES", "sql query : " + selectQuery, se);
     } finally {
-      try {
-        DBUtil.close(rs, prepStmt);
-        if (con != null)
-          con.close();
-      } catch (SQLException se) {
-        SilverTrace.error("workflowEngine", "ProcessInstanceManagerImpl.getProcessInstances",
-            "root.EX_RESOURCE_CLOSE_FAILED", se);
-      }
+      DBUtil.close(rs, prepStmt);
+      DBUtil.close(con);
     }
   }
 
@@ -248,6 +225,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   /**
    * Get the list of process instances for a given peas Id, that have the given state activated and
+   *
    * @param peasId id of processManager instance
    * @param state activated state
    * @return an array of ProcessInstance objects
@@ -271,7 +249,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       // Need first to make a SQL query to find all concerned instances ids
       // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL
       // translator
-      con = this.getConnection();
+      con = DBUtil.makeConnection(dbName);
 
       selectQuery = "SELECT DISTINCT instance.instanceId ";
       selectQuery +=
@@ -288,8 +266,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       rs = prepStmt.executeQuery();
 
       StringBuffer queryBuf = new StringBuffer();
-      queryBuf
-          .append("SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
+      queryBuf.
+          append(
+          "SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
       queryBuf.append(" WHERE instanceId IN LIST(");
 
       while (rs.next()) {
@@ -331,26 +310,20 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           "EX_ERR_CASTOR_GET_INSTANCES_IN_STATE", pe);
     } finally {
       WorkflowJDOManager.closeDatabase(db);
-
-      try {
-        DBUtil.close(rs, prepStmt);
-        if (con != null)
-          con.close();
-      } catch (SQLException se) {
-        SilverTrace.error("workflowEngine",
-            "ProcessInstanceManagerImpl.getProcessInstancesInState",
-            "root.EX_RESOURCE_CLOSE_FAILED", se);
-      }
+      DBUtil.close(rs, prepStmt);
+      DBUtil.close(con);
     }
   }
 
   /**
    * Get the process instances for a given instance id
+   *
    * @param instanceId id of searched instance
    * @return the searched process instance
+   * @throws WorkflowException
    */
-  public ProcessInstance getProcessInstance(String instanceId)
-      throws WorkflowException {
+  @Override
+  public ProcessInstance getProcessInstance(String instanceId) throws WorkflowException {
     ProcessInstanceImpl instance;
 
     Database db = null;
@@ -374,22 +347,26 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   /**
    * Creates a new process instance
+   *
    * @param modelId model id
    * @return the new ProcessInstance object
+   * @throws WorkflowException
    */
-  public ProcessInstance createProcessInstance(String modelId)
-      throws WorkflowException {
+  @Override
+  public ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
     instance.create();
-
     return (ProcessInstance) instance;
   }
 
   /**
    * Removes a new process instance
+   *
    * @param instanceId instance id
+   * @throws WorkflowException
    */
+  @Override
   public void removeProcessInstance(String instanceId) throws WorkflowException {
     SilverTrace.info("worflowEngine", "ProcessInstanceManagerImpl.removeProcessInstance()",
         "root.MSG_GEN_ENTER_METHOD", "InstanceId=" + instanceId);
@@ -421,6 +398,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   /**
    * Delete forms data associated with this instance
+   *
    * @param instanceId instance id
    */
   private void removeProcessInstanceData(String instanceId)
@@ -442,7 +420,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         "root.MSG_GEN_PARAM_VALUE", "Delete attachments foreignPK = " + foreignPK);
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService()
         .listDocumentsByForeignKey(foreignPK, null);
-    for(SimpleDocument attachment : attachments) {
+    for (SimpleDocument attachment : attachments) {
       AttachmentServiceFactory.getAttachmentService().deleteAttachment(attachment);
     }
 
@@ -463,8 +441,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     HistoryStep[] steps = instance.getHistorySteps();
     for (int i = 0; steps != null && i < steps.length; i++) {
       if (!steps[i].getAction().equals("#question#")
-          && !steps[i].getAction().equals("#response#"))
+          && !steps[i].getAction().equals("#response#")) {
         steps[i].deleteActionRecord();
+      }
     }
 
     // delete associated todos
@@ -480,6 +459,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   /**
    * Locks this instance for the given instance and state
+   *
    * @param state state that have to be locked
    * @param user the locking user
    */
@@ -520,6 +500,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   /**
    * unlocks this instance for the given instance and state
+   *
    * @param state state that have to be locked
    * @param user the locking user
    */
@@ -559,38 +540,33 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   }
 
   /**
-   * Build a new HistoryStep Return an object implementing HistoryStep interface
+   * Build a new HistoryStep.
+   * @return an object implementing HistoryStep interface.
    */
+  @Override
   public HistoryStep createHistoryStep() {
     return (HistoryStep) new HistoryStepImpl();
   }
 
   /**
    * Builds an actor from a user and a role.
+   * @param user
+   * @param roleName
+   * @param state
+   * @return 
    */
+  @Override
   public Actor createActor(User user, String roleName, State state) {
     return new ActorImpl(user, roleName, state);
   }
 
-  public VersioningBm getVersioningBm() throws WorkflowException {
-    VersioningBm versioningBm = null;
-    try {
-      VersioningBmHome versioningBmHome = (VersioningBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
-      versioningBm = versioningBmHome.create();
-    } catch (Exception e) {
-      throw new WorkflowException(
-          "ProcessInstanceManagerImpl.getVersioningBm()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return versioningBm;
-  }
-
   /**
    * Get the list of process instances for which timeout date is over
+   *
    * @return an array of ProcessInstance objects
    * @throws WorkflowException
    */
+  @Override
   public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException {
     Database db = null;
     Connection con = null;
@@ -606,20 +582,18 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       db.begin();
 
       // Need first to make a SQL query to find all concerned instances ids
-      con = this.getConnection();
+      con = DBUtil.makeConnection(dbName);
 
-      selectQuery = "SELECT DISTINCT activeState.instanceId ";
-      selectQuery +=
-          "FROM SB_Workflow_ActiveState activeState ";
-      selectQuery += "WHERE activeState.timeoutDate < ? ";
+      selectQuery =
+          "SELECT DISTINCT activeState.instanceId FROM SB_Workflow_ActiveState activeState WHERE activeState.timeoutDate < ? ";
 
       prepStmt = con.prepareStatement(selectQuery);
       prepStmt.setTimestamp(1, new Timestamp((new Date()).getTime()));
       rs = prepStmt.executeQuery();
 
       StringBuffer queryBuf = new StringBuffer();
-      queryBuf
-          .append("SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
+      queryBuf.append(
+          "SELECT distinct instance FROM com.silverpeas.workflow.engine.instance.ProcessInstanceImpl instance");
       queryBuf.append(" WHERE instanceId IN LIST(");
 
       while (rs.next()) {
@@ -646,30 +620,18 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         SilverTrace.warn("workflowEngine", "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
             "workflowEngine.EX_PROBLEM_GETTING_INSTANCES", ex);
       }
-
       db.commit();
-
       return instances.toArray(new ProcessInstance[instances.size()]);
     } catch (SQLException se) {
-      throw new WorkflowException(
-          "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+      throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
           "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", "sql query : " + selectQuery, se);
     } catch (PersistenceException pe) {
-      throw new WorkflowException(
-          "ProcessInstanceManagerImpl.getTimeOutProcessInstances",
+      throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
           "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", pe);
     } finally {
       WorkflowJDOManager.closeDatabase(db);
-
-      try {
-        DBUtil.close(rs, prepStmt);
-        if (con != null)
-          con.close();
-      } catch (SQLException se) {
-        SilverTrace.error("workflowEngine", "ProcessInstanceManagerImpl" +
-            ".getTimeOutProcessInstances", "root.EX_RESOURCE_CLOSE_FAILED", se);
-      }
+      DBUtil.close(rs, prepStmt);
+      DBUtil.close(con);
     }
   }
-
 }

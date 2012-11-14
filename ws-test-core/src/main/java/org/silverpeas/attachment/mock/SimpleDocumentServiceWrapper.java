@@ -46,10 +46,6 @@ import com.silverpeas.util.ForeignPK;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-/**
- *
- * @author ehugonnet
- */
 @Default
 @Service
 @Named("simpleDocumentService")
@@ -239,12 +235,17 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey,
-                                                               DocumentType type, String lang) {
+      DocumentType type, String lang) {
     return realService.listDocumentsByForeignKeyAndType(foreignKey, type, lang);
   }
 
   @Override
   public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return realService.copyDocument(original, targetPk);
+  }
+
+  @Override
+  public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
+    return realService.listDocumentsLockedByUser(usedId, language);
   }
 }
