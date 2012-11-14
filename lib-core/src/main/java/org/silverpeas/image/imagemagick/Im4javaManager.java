@@ -23,17 +23,14 @@
  */
 package org.silverpeas.image.imagemagick;
 
+import com.silverpeas.util.StringUtil;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
-
-import com.silverpeas.util.StringUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -61,8 +58,11 @@ public class Im4javaManager {
    * @param path
    * @return
    */
-  private boolean verify(final String path) {
+  private boolean verify(String path) {
     boolean verified = true;
+    if (path == null) {
+      path = "";
+    }
     try {
       final ConvertCmd cmd = new ConvertCmd();
       cmd.setSearchPath(path);
