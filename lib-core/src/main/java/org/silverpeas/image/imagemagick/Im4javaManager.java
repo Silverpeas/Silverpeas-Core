@@ -46,18 +46,34 @@ public class Im4javaManager {
   public void initialize() throws Exception {
 
     // Im4java settings
-    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-      if ("path".equals(entry.getKey().toLowerCase())) {
-        try {
-          final ConvertCmd cmd = new ConvertCmd();
-          cmd.setSearchPath(entry.getValue());
-          cmd.run(new IMOperation().version());
-          ProcessStarter.setGlobalSearchPath(entry.getValue());
-        } catch (final Exception e) {
-          // ImageMagick is not installed
+    if (!verify(ProcessStarter.getGlobalSearchPath())) {
+      for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+        if ("path".equals(entry.getKey().toLowerCase())) {
+          verify(entry.getValue());
+          break;
         }
       }
     }
+  }
+
+  /**
+   * Verify the ImageMagick existence from a given path
+   * @param path
+   * @return
+   */
+  private boolean verify(final String path) {
+    boolean verified = true;
+    try {
+      final ConvertCmd cmd = new ConvertCmd();
+      cmd.setSearchPath(path);
+      cmd.run(new IMOperation().version());
+      ProcessStarter.setGlobalSearchPath(path);
+    } catch (final Exception e) {
+      // ImageMagick is not installed
+      ProcessStarter.setGlobalSearchPath(null);
+      verified = false;
+    }
+    return verified;
   }
 
   /**

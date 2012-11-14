@@ -1731,14 +1731,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
 
       // Getting quota filled
-      if (JobDomainSettings.userQuotaEnabled) {
+      if (JobDomainSettings.usersInDomainQuotaActivated) {
         domainToCreate.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
 
       domainId = DomainServiceFactory.getDomainService(DomainType.SQL).createDomain(domainToCreate);
       domainToCreate.setId(domainId);
 
-      if (JobDomainSettings.userQuotaEnabled) {
+      if (JobDomainSettings.usersInDomainQuotaActivated) {
         // Registering "users in domain" quota
         DomainServiceFactory.getUserDomainQuotaService().initialize(
             UserDomainQuotaKey.from(domainToCreate),
@@ -1853,7 +1853,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     try {
 
-      if (JobDomainSettings.userQuotaEnabled) {
+      if (JobDomainSettings.usersInDomainQuotaActivated) {
         // Getting quota filled
         theNewDomain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
@@ -1864,7 +1864,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
             SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN");
       }
 
-      if (JobDomainSettings.userQuotaEnabled) {
+      if (JobDomainSettings.usersInDomainQuotaActivated) {
         // Registering "users in domain" quota
         DomainServiceFactory.getUserDomainQuotaService().initialize(
             UserDomainQuotaKey.from(theNewDomain), theNewDomain.getUserDomainQuota().getMaxCount());
