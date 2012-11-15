@@ -100,7 +100,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @XmlElement(defaultValue="false")
   private boolean anonymous = false;
 
-  private UserProfileEntity(UserDetail user) {
+  protected UserProfileEntity(UserDetail user) {
     this.user = user;
     UserPreferences prefs = getUserPreferences();
     if (prefs != null) {
@@ -112,7 +112,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
               getName();
     } catch (Exception e) {
-      // Potential errors during getting domain should not break service  
+      // Potential errors during getting domain should not break service
       SilverTrace.warn("util", "UserProfileEntity.constructor", "root.EX_IGNORED", e);
     }
     this.fullName = user.getDisplayedName();
@@ -121,7 +121,6 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     this.webPage = getUserProfileWebPageURI();
     this.tchatPage = getTchatWebPageURI();
     this.anonymous = user.isAnonymous();
-    
   }
 
   @Override
@@ -167,7 +166,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   public String getLanguage() {
     return language;
   }
-  
+
   @Override
   public void setAccessLevel(String sAccessLevel) {
     this.user.setAccessLevel(sAccessLevel);
@@ -203,7 +202,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     }
     return avatar;
   }
-  
+
   /**
    * Gets the URL of the WEB page in which is presented the profile of this user.
    * @return the URL of the user profile WEB page.
@@ -214,7 +213,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     }
     return webPage;
   }
-  
+
   /**
    * Gets the URL of the tchat WEB page opened to discuss with this user.
    * @return the URL of the user tchat page.
@@ -233,7 +232,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   public String getFullName() {
     return fullName;
   }
-  
+
   /**
    * Is this user connected to Silverpeas?
    * @return true if the user is connected, false otherwise.
@@ -270,15 +269,15 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   public String getStatus() {
     return user.getStatus();
   }
-  
+
   public void setStatus(String newStatus) {
-    
+
   }
 
   public String getDomainName() {
     return this.domainName;
   }
-  
+
   @Override
   public boolean isAnonymous() {
     return this.anonymous;
@@ -320,7 +319,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   public URI getURI() {
     return this.uri;
   }
-  
+
   private String getAvatarURI() {
     String avatarURI = this.user.getAvatar();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
@@ -329,7 +328,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     }
     return avatarURI;
   }
-  
+
   private String getUserProfileWebPageURI() {
     String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();
@@ -340,7 +339,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     }
     return pageUri;
   }
-  
+
   private String getTchatWebPageURI() {
     String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
     WebApplicationContext context = ContextLoaderListener.getCurrentWebApplicationContext();

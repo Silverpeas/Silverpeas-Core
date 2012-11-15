@@ -26,7 +26,6 @@ package com.silverpeas.profile.web;
 import com.stratelia.webactiv.beans.admin.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -38,9 +37,6 @@ import javax.ws.rs.core.Response;
  */
 @Named
 class UserProfileService {
-
-  @Inject
-  private OrganizationController organizationController;
 
   /**
    * Gets the group with the specified unique identifier and that is accessible to the specified
@@ -67,9 +63,5 @@ class UserProfileService {
       }
     }
     return theGroup;
-  }
-
-  private OrganizationController getOrganizationController() {
-    return organizationController;
   }
 }
