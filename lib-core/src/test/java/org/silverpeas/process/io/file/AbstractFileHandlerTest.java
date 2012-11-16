@@ -38,8 +38,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
-import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.process.session.DefaultProcessSession;
+import org.silverpeas.process.session.ProcessSession;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
@@ -62,6 +62,7 @@ public class AbstractFileHandlerTest {
 
   @Before
   public void beforeTest() throws Exception {
+    cleanTest();
     componentInstanceId =
         "component" + String.valueOf(System.identityHashCode(this)).substring(0, 2);
     currentSession = createSessionTest();
@@ -77,20 +78,27 @@ public class AbstractFileHandlerTest {
 
   @After
   public void afterTest() throws Exception {
+    cleanTest();
+  }
+
+  /**
+   * Cleaning files handled by a test
+   */
+  private void cleanTest() {
     deleteQuietly(sessionRootPath);
     deleteQuietly(realRootPath);
     deleteQuietly(otherFile);
   }
 
   @Test
-  public void testMarkToDelete_fileNotExists() throws Exception {
+  public void testMarkToDeleteWhenNoFileExistsInRealPathAndSessionPath() throws Exception {
     final File test = getFile(realPath, "file");
     assertThat(fileHandler.markToDelete(BASE_PATH_TEST, test), is(false));
     assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_ONLY));
   }
 
   @Test
-  public void testMarkToDelete_fileExists_session() throws Exception {
+  public void testMarkToDeleteWhenFileExistsOnlyInSessionPath() throws Exception {
     final File test = getFile(fileHandler.getRootPathForTest(), "file");
     touch(test);
     assertThat(fileHandler.markToDelete(BASE_PATH_TEST, test), is(false));
@@ -98,7 +106,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testMarkToDelete_fileExists_real() throws Exception {
+  public void testMarkToDeleteWhenFileExistsOnlyInRealPath() throws Exception {
     final File test = getFile(realPath, "file");
     touch(test);
     assertThat(fileHandler.markToDelete(BASE_PATH_TEST, test), is(true));
@@ -107,7 +115,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testMarkToDelete_fileExists_real_bis() throws Exception {
+  public void testMarkToDeleteWhenFileExistsOnlyInRealPath2TimesFollowing() throws Exception {
     final File test = getFile(fileHandler.getRootPathForTest(), "file");
     touch(getFile(realPath, "file"));
     assertThat(fileHandler.markToDelete(BASE_PATH_TEST, test), is(true));
@@ -116,14 +124,14 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testIsMarkedToDelete_fileNotExists() {
+  public void testIsMarkedToDeleteWhenNoFileExistsInRealPathAndSessionPath() {
     final File test = getFile(realPath, "file");
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, test), is(false));
     assertThat(fileHandler.getIoAccess(), is(IOAccess.READ_ONLY));
   }
 
   @Test
-  public void testIsMarkedToDelete_fileExists_session() throws Exception {
+  public void testIsMarkedToDeleteWhenFileExistsOnlyInSessionPath() throws Exception {
     final File test = getFile(fileHandler.getRootPathForTest(), "file");
     touch(test);
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, test), is(false));
@@ -131,7 +139,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testIsMarkedToDelete_fileExists_real() throws Exception {
+  public void testIsMarkedToDeleteWhenFileExistsOnlyInRealPath() throws Exception {
     final File test = getFile(realPath, "file");
     touch(test);
     fileHandler.markToDelete(BASE_PATH_TEST, test);
@@ -140,7 +148,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testIsMarkedToDelete_fileExists_real_deeper() throws Exception {
+  public void testIsMarkedToDeleteWhenFileExistsOnlyInSubdirectoriedOfRealPath() throws Exception {
     final File directory = getFile(realPath, "directoryDeleted");
     final File test = getFile(realPath, "directoryDeleted", "file");
     touch(test);
@@ -150,38 +158,50 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testTranslateToRealPath() {
-    File test =
+  public void testTranslateToRealPathFromSessionBasePath() {
+    final File test =
         fileHandler.translateToRealPath(BASE_PATH_TEST, fileHandler.getSessionPath(BASE_PATH_TEST));
-    File expected = realRootPath;
-    assertFileNames(test, expected);
-
-    test =
-        fileHandler.translateToRealPath(BASE_PATH_TEST,
-            getFile(fileHandler.getRootPathForTest(), "file"));
-    expected = getFile(realPath, "file");
-    assertFileNames(test, expected);
-
-    test = fileHandler.translateToRealPath(BASE_PATH_TEST, getFile(realPath, "file"));
-    expected = getFile(realPath, "file");
+    final File expected = realRootPath;
     assertFileNames(test, expected);
   }
 
   @Test
-  public void testTranslateToSessionPath() {
-    File test = fileHandler.translateToSessionPath(BASE_PATH_TEST, realRootPath);
-    File expected =
+  public void testTranslateToRealPathFromSessionFile() {
+    final File test =
+        fileHandler.translateToRealPath(BASE_PATH_TEST,
+            getFile(fileHandler.getRootPathForTest(), "file"));
+    final File expected = getFile(realPath, "file");
+    assertFileNames(test, expected);
+  }
+
+  @Test
+  public void testTranslateToRealPathFromRealFile() {
+    final File test = fileHandler.translateToRealPath(BASE_PATH_TEST, getFile(realPath, "file"));
+    final File expected = getFile(realPath, "file");
+    assertFileNames(test, expected);
+  }
+
+  @Test
+  public void testTranslateToSessionPathFromRealBasePath() {
+    final File test = fileHandler.translateToSessionPath(BASE_PATH_TEST, realRootPath);
+    final File expected =
         getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName());
     assertFileNames(test, expected);
+  }
 
-    test = fileHandler.translateToSessionPath(BASE_PATH_TEST, getFile(realPath, "file"));
-    expected = getFile(sessionPath, "file");
+  @Test
+  public void testTranslateToSessionPathFromRealFile() {
+    final File test = fileHandler.translateToSessionPath(BASE_PATH_TEST, getFile(realPath, "file"));
+    final File expected = getFile(sessionPath, "file");
     assertFileNames(test, expected);
+  }
 
-    test =
+  @Test
+  public void testTranslateToSessionPathFromSessionFile() {
+    final File test =
         fileHandler.translateToSessionPath(BASE_PATH_TEST,
             getFile(fileHandler.getRootPathForTest(), "file"));
-    expected = getFile(sessionPath, "file");
+    final File expected = getFile(sessionPath, "file");
     assertFileNames(test, expected);
   }
 
@@ -296,7 +316,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testCheckinSessionWorkingPath_1() throws Exception {
+  public void testCheckinSessionWorkingPathSimpleCase() throws Exception {
     assertThat(otherFile.exists(), is(true));
     assertThat(sessionPath.exists(), is(true));
     assertThat(sessionRootPath.exists(), is(true));
@@ -309,7 +329,7 @@ public class AbstractFileHandlerTest {
   }
 
   @Test
-  public void testCheckinSessionWorkingPath_2() throws Exception {
+  public void testCheckinSessionWorkingPathComplexCase() throws Exception {
     final File tmpFile = getFile(fileHandler.getSessionTemporaryPath(), "tempFile.file");
     writeStringToFile(tmpFile,
         "This is a session temporary file. It is not taken in account in checkin operations.");

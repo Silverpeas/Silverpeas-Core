@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.silverpeas.admin.space.SpaceServiceFactory;
@@ -42,7 +43,8 @@ import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
@@ -50,6 +52,9 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
  */
 @Named
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
+
+  @Inject
+  private OrganizationController organizationController;
 
   /*
    * (non-Javadoc)
@@ -71,7 +76,16 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
               DataStorageSpaceQuotaKey.from(space),
               SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {
-          throw new DataStorageQuotaException(quotaException.getQuota(), space);
+
+          // Loading the component from which a user action has generated a quota exception
+          ComponentInstLight fromComponent = null;
+          final String fromComponentInstanceId = processExecutionProcess.getComponentInstanceId();
+          if (StringUtil.isDefined(fromComponentInstanceId)) {
+            fromComponent = organizationController.getComponentInstLight(fromComponentInstanceId);
+          }
+
+          // Throwing the data storage exception
+          throw new DataStorageQuotaException(quotaException.getQuota(), space, fromComponent);
         }
       }
     }
@@ -99,9 +113,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     // Space ids
     ComponentInst component;
     for (final String componentInstanceId : componentInstanceIds) {
-      component =
-          OrganizationControllerFactory.getFactory().getOrganizationController()
-              .getComponentInst(componentInstanceId);
+      component = organizationController.getComponentInst(componentInstanceId);
       if (component != null) {
         spaceIds.add(component.getDomainFatherId());
       }
@@ -110,8 +122,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     // Loading all SpaceInst detected
     final List<SpaceInst> spaces = new ArrayList<SpaceInst>();
     for (final String spaceId : spaceIds) {
-      spaces.add(OrganizationControllerFactory.getFactory().getOrganizationController()
-          .getSpaceInstById(spaceId));
+      spaces.add(organizationController.getSpaceInstById(spaceId));
     }
     return spaces;
   }

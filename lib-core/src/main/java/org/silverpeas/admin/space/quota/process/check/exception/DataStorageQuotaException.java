@@ -23,8 +23,12 @@
  */
 package org.silverpeas.admin.space.quota.process.check.exception;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import org.silverpeas.quota.model.Quota;
 
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
@@ -36,10 +40,19 @@ public class DataStorageQuotaException extends RuntimeException {
   private final Quota quota;
   private final SpaceInst space;
   private String language;
+  private final ComponentInstLight fromComponent;
 
-  public DataStorageQuotaException(final Quota quota, final SpaceInst space) {
+  /**
+   * Default constructor
+   * @param quota
+   * @param space
+   * @param fromComponent
+   */
+  public DataStorageQuotaException(final Quota quota, final SpaceInst space,
+      final ComponentInstLight fromComponent) {
     this.quota = quota;
     this.space = space;
+    this.fromComponent = (fromComponent != null) ? fromComponent : new ComponentInstLight();
   }
 
   /**
@@ -66,7 +79,23 @@ public class DataStorageQuotaException extends RuntimeException {
   /**
    * @param language the language to set
    */
-  public void setLanguage(String language) {
+  public void setLanguage(final String language) {
     this.language = language;
+  }
+
+  /**
+   * @return the fromComponent
+   */
+  public ComponentInstLight getFromComponent() {
+    return fromComponent;
+  }
+
+  /**
+   * @return the fromComponentURL
+   */
+  public String getFromComponentUrl() {
+    return (isDefined(fromComponent.getId())) ? new StringBuilder(URLManager.getApplicationURL())
+        .append(URLManager.getURL(fromComponent.getName(), null, fromComponent.getId()))
+        .append("Main").toString() : "";
   }
 }

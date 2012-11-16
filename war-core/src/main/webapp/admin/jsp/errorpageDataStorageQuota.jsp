@@ -64,6 +64,8 @@
             <view:applyTemplate locationBase="${templateLocationBase}" name="${messageTemplate}">
               <view:templateParam name="spaceName" value="${exception.space.name}" />
               <view:templateParam name="isPersonalSpace" value="${exception.space.personalSpace}" />
+              <view:templateParam name="fromComponentName" value="${exception.fromComponent.label}" />
+              <view:templateParam name="fromComponentUrl" value="${exception.fromComponentUrl}" />
             </view:applyTemplate>
           </div>
         </div>
