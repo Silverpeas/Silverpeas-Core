@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -50,7 +49,6 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -73,6 +71,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -99,6 +98,7 @@ public class PublicationsTypeManager {
    * exporter
    * @param exportPath - cible de l'exportation
    * @param useNameForFolders
+   * @param bExportPublicationPath
    * @return
    * @throws ImportExportException
    * @throws IOException
@@ -135,8 +135,8 @@ public class PublicationsTypeManager {
       listPubType.add(publicationType);
 
       // Récupération des topics (il y en a au moins un)
-      String exportPublicationRelativePath = null;
-      String exportPublicationPath = null;
+      String exportPublicationRelativePath;
+      String exportPublicationPath;
       if (gedIE.isKmax()) {
         publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
         exportPublicationRelativePath = createPathDirectoryForKmaxPublicationExport(exportPath,
@@ -284,11 +284,11 @@ public class PublicationsTypeManager {
         attachments = attachmentIE.getAttachments(publicationPK,
             exportPublicationPath, exportPublicationRelativePath, null);
       }
-      if (attachments != null && ! attachments.isEmpty() && publicationType != null) {
+      if (attachments != null && !attachments.isEmpty() && publicationType != null) {
         publicationType.setAttachmentsType(new AttachmentsType());
         publicationType.getAttachmentsType().setListAttachmentDetail(attachments);
       }
-    } catch (Exception ex) {
+    } catch (RemoteException ex) {
       // En cas d"objet non trouvé: pas d'exception gérée par le système
       throw new ImportExportException("importExport",
           "importExport.EX_CANT_GET_ATTACHMENTS", ex);
@@ -449,7 +449,8 @@ public class PublicationsTypeManager {
     }
   }
 
-  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
+  public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport, UserDetail userDetail,
+      List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders)
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
@@ -552,9 +553,8 @@ public class PublicationsTypeManager {
     return relativeExportPathAscii;
   }
 
-  public void processImport(UserDetail userDetail,
-      PublicationsType publicationsType, String targetComponentId)
-      throws ImportExportException {
+  public void processImport(UserDetail userDetail, PublicationsType publicationsType,
+      String targetComponentId) throws ImportExportException {
     processImport(userDetail, publicationsType, targetComponentId, true);
   }
 
@@ -733,13 +733,6 @@ public class PublicationsTypeManager {
               if (attachments != null) {
                 List<AttachmentDetail> copiedAttachments;
                 if (ImportExportHelper.isVersioningUsed(componentInst)) {
-                  // Mode versioning
-                  // copie des fichiers sur le serveur et enrichissement des AttachmentDetail
-                  /*copiedAttachments = attachmentIE.copyFiles(componentId, attachments, versioningIE.
-                      getVersioningPath(componentId));
-                  if (copiedAttachments.size() != attachments.size()) {
-                    unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE);
-                  }*/
                   copiedAttachments = attachments;
                   versioningIE.importDocuments(pubDetail.getId(), componentId, attachments,
                       Integer.parseInt(userDetail.getId()), pubDetail.isIndexable());
@@ -768,13 +761,15 @@ public class PublicationsTypeManager {
                 }
 
                 // Copy files on disk, set info on each version
-               List<SimpleDocument> copiedFiles = versioningIE.importDocuments(new ForeignPK(pubDetail.getId(), componentId),
-                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(pubDetail));
+                List<SimpleDocument> copiedFiles = versioningIE.
+                    importDocuments(new ForeignPK(pubDetail.getId(), componentId),
+                    documents, Integer.parseInt(userDetail.getId()), ImportExportHelper.isIndexable(
+                    pubDetail));
                 ImportReportManager.addNumberOfFilesProcessed(copiedFiles.size());
                 ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
                 // Create documents and versions in DB
-                
+
 
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (SimpleDocument version : copiedFiles) {
@@ -822,17 +817,12 @@ public class PublicationsTypeManager {
     }
   }
 
-  private void checkPublication(PublicationDetail publication,
-      UserDetail userDetail) {
+  private void checkPublication(PublicationDetail publication, UserDetail userDetail) {
     if (publication.getCreationDate() == null) {
       publication.setCreationDate(new Date());
     }
-    if (publication.getCreatorId() == null) {
-      publication.setCreatorId(userDetail.getId());
-    }
-    if (publication.getUpdaterId() == null) {
-      publication.setUpdaterId(userDetail.getId());
-    }
+    publication.setCreatorId(ImportExportHelper.checkUserId(publication.getCreatorId(), userDetail));
+    publication.setUpdaterId(ImportExportHelper.checkUserId(publication.getUpdaterId(), userDetail));
     if (publication.getImportance() == 0) {
       publication.setImportance(5);
     }

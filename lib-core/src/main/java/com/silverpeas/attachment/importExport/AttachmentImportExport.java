@@ -103,9 +103,9 @@ public class AttachmentImportExport {
 
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
       List<AttachmentDetail> attachments, String userId, boolean indexIt) {
-    //List<AttachmentDetail> copiedAttachments = copyFiles(componentId, attachments);
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
+      //TODO check user id
       attDetail.setAuthor(userId);
       attDetail.setInstanceId(componentId);
       XMLModelContentType xmlContent = attDetail.getXMLModelContentType();

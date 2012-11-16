@@ -89,7 +89,7 @@ public class VersioningUtil {
   public static final String WRITER = writer.toString();
 
   private final static ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.Attachment", "");
+      "org.silverpeas.util.attachment.Attachment", "");
 
   public VersioningUtil() {
   }
