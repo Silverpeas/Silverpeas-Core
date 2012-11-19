@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 
@@ -103,7 +103,7 @@ public class UploadServlet extends HttpServlet {
 
     HttpSession session = AdminUtils.getClearedSession(request);
 
-    DiskFileItemFactory factory = new DiskFileItemFactory();
+    SilverpeasDiskFileItemFactory factory = new SilverpeasDiskFileItemFactory();
     ServletFileUpload upload = new ServletFileUpload(factory);
     upload.setSizeMax(maxUploadSize);
 

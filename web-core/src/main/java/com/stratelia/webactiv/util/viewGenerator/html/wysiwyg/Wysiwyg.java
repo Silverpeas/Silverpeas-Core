@@ -13,6 +13,7 @@ public class Wysiwyg {
   private String toolbar = "Default";
   private boolean toolbarStartExpanded = true;
   private String imageBrowserURL;
+  private String serverURL;
   
   ResourceLocator wysiwygSettings = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
   
@@ -28,7 +29,8 @@ public class Wysiwyg {
     builder.append("width : '").append(getWidth()).append("',\n");
     builder.append("height : ").append(getHeight()).append(",\n");
     builder.append("language : '").append(getLanguage()).append("',\n");
-    builder.append("baseHref : '").append(URLManager.getApplicationURL()).append("/wysiwyg/jsp/ckeditor/").append("',\n");
+    String basehref = wysiwygSettings.getString("baseHref", getServerURL());
+    builder.append("baseHref : '").append(basehref).append("',\n");
     if (StringUtil.isDefined(getImageBrowserURL())) {
       builder.append("filebrowserImageBrowseUrl : '").append(getImageBrowserURL()).append("',\n");
     }
@@ -95,8 +97,13 @@ public class Wysiwyg {
   public void setImageBrowserURL(String imageBrowserURL) {
     this.imageBrowserURL = imageBrowserURL;
   }
-  
-  
-  
+
+  public void setServerURL(String serverURL) {
+    this.serverURL = serverURL;
+  }
+
+  public String getServerURL() {
+    return serverURL;
+  }
   
 }

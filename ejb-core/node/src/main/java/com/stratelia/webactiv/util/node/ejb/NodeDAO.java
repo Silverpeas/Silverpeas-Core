@@ -1160,23 +1160,17 @@ public class NodeDAO {
   }
 
   public static void sortNodes(Connection con, List<NodePK> nodePKs) throws SQLException {
-    NodePK nodePK = new NodePK("useless");
-    StringBuilder updateQuery = new StringBuilder();
-    updateQuery.append("update ").append(nodePK.getTableName());
-    updateQuery.append(" set orderNumber = ? ");
-    updateQuery.append(" where nodeId = ? ");
-    String query = updateQuery.toString();
+    String query = "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? ";
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(query);
-      for (int i = 0; i < nodePKs.size(); i++) {
-        nodePK = nodePKs.get(i);
+      int i = 0;
+      for (NodePK nodePK : nodePKs) {
         prepStmt.setInt(1, i);
         prepStmt.setInt(2, Integer.parseInt(nodePK.getId()));
-
         prepStmt.executeUpdate();
+        i++;
       }
-
     } finally {
       DBUtil.close(prepStmt);
     }

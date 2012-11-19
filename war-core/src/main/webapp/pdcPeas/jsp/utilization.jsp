@@ -103,7 +103,7 @@ Icon aspiIcon = null;
 	browseBar.setComponentId(componentId);
 	browseBar.setPath(resource.getString("pdcPeas.paramUsedAxis"));
 
-	operationPane.addOperationOfCreation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
+	operationPane.addOperation(resource.getIcon("pdcPeas.icoCreateParamAxis"),resource.getString("pdcPeas.paramChooseAxis"), pdcUtilizationContext+"UtilizationViewAxis");
 	if (axisList != null && axisList.size() != 0) // do not show this icone if no axes
 		operationPane.addOperation(resource.getIcon("pdcPeas.icoDeleteParamAxis"),resource.getString("pdcPeas.deleteAxis"), "javascript:getSelectedItems()");
 
