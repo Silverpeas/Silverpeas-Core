@@ -165,6 +165,7 @@ public class DocumentRepository {
     Node copy = session.getNode(targetDoc.getFullJcrPath());
     copy.setProperty(SLV_PROPERTY_OLD_ID, targetDoc.getOldSilverpeasId());
     copy.setProperty(SLV_PROPERTY_FOREIGN_KEY, destination.getId());
+    copy.setProperty(SLV_PROPERTY_INSTANCEID, destination.getInstanceId());
     pk.setId(copy.getIdentifier());
     return pk;
   }
@@ -249,7 +250,9 @@ public class DocumentRepository {
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
-        checkinNode(documentNode, I18NHelper.defaultLanguage, true);
+        VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
+        documentNode.getSession().save();
+        Version lastVersion = versionManager.checkin(documentNode.getPath());
       }
 
     } catch (ItemNotFoundException infex) {
@@ -836,7 +839,7 @@ public class DocumentRepository {
     }
   }
 
-  public long storeContent(Session session, SimpleDocument document, InputStream in) throws
+  public long storeContent(SimpleDocument document, InputStream in) throws
       RepositoryException, IOException {
     File file = new File(document.getAttachmentPath());
     SilverTrace.debug("attachment", "DocumentRepository", "Storing file for document in "
@@ -873,5 +876,17 @@ public class DocumentRepository {
     if (documentDirectory.exists() && documentDirectory.isDirectory()) {
       FileUtils.deleteQuietly(documentDirectory);
     }
+  }
+
+  public void copyMultilangContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
+   String originDir = origin.getDirectoryPath(null);
+    String targetDir = copy.getDirectoryPath(null);
+    targetDir = targetDir.replace('/', File.separatorChar);
+    File target = new File(targetDir).getParentFile();
+    File source = new File(originDir).getParentFile();
+    if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
+      return;
+    }
+    FileUtils.copyDirectory(source, target);
   }
 }

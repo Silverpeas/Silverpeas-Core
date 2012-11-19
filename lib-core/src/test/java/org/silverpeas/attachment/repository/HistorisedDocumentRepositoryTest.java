@@ -524,7 +524,7 @@ public class HistorisedDocumentRepositoryTest {
       document.setPK(result);
       documentRepository.lock(session, document, document.getEditedBy());
       documentRepository.addContent(session, result, attachment);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       documentRepository.unlock(session, document, false);
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
@@ -558,7 +558,7 @@ public class HistorisedDocumentRepositoryTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       documentRepository.lock(session, document, document.getEditedBy());
       documentRepository.addContent(session, result, attachment);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       documentRepository.unlock(session, document, false);
       documentRepository.lock(session, document, document.getEditedBy());
@@ -893,7 +893,7 @@ public class HistorisedDocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, docToLeaveLocked4);
-      documentRepository.storeContent(session, docToLeaveLocked4, content);
+      documentRepository.storeContent(docToLeaveLocked4, content);
       documentRepository.lock(session, docToLeaveLocked4, owner);
       documentRepository.updateDocument(session, docToLeaveLocked4);
       session.save();
@@ -930,7 +930,7 @@ public class HistorisedDocumentRepositoryTest {
           attachment);
       warningDoc1.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc1);
-      documentRepository.storeContent(session, warningDoc1, content);
+      documentRepository.storeContent(warningDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
@@ -944,7 +944,7 @@ public class HistorisedDocumentRepositoryTest {
           attachment);
       warningDoc3.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc3);
-      documentRepository.storeContent(session, warningDoc3, content);
+      documentRepository.storeContent(warningDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchVersionnedAttachment();
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
@@ -1059,7 +1059,7 @@ public class HistorisedDocumentRepositoryTest {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);      
       document.setNodeName(SimpleDocument.ATTACHMENT_PREFIX + document.getOldSilverpeasId());
       documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(1024L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
@@ -1219,7 +1219,7 @@ public class HistorisedDocumentRepositoryTest {
   private SimpleDocumentPK createVersionedDocument(Session session, SimpleDocument document,
       InputStream content) throws RepositoryException, IOException {
     SimpleDocumentPK result = documentRepository.createDocument(session, document);
-    documentRepository.storeContent(session, document, content);
+    documentRepository.storeContent(document, content);
     document.setPK(result);
     documentRepository.unlock(session, document, false);
     return result;

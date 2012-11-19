@@ -188,7 +188,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
@@ -217,7 +217,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, language);
@@ -249,7 +249,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       SimpleDocument doc = documentRepository.findDocumentById(session, expResult, "en");
@@ -276,7 +276,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       long oldSilverpeasId = document.getOldSilverpeasId();
@@ -286,7 +286,7 @@ public class DocumentRepositoryTest {
       foreignId = "node18";
       document = new SimpleDocument(emptyId, foreignId, 5, false, attachment);
       result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       session.save();
@@ -312,7 +312,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       attachment = createFrenchSimpleAttachment();
@@ -346,7 +346,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       attachment = createFrenchSimpleAttachment();
@@ -368,7 +368,7 @@ public class DocumentRepositoryTest {
       assertThat(historisedDocument.getSize(), is(28L));
       assertThat(historisedDocument.getHistory(), is(notNullValue()));
       assertThat(historisedDocument.getHistory(), hasSize(0));
-      assertThat(historisedDocument.getMajorVersion(), is(2));
+      assertThat(historisedDocument.getMajorVersion(), is(1));
       assertThat(historisedDocument.getMinorVersion(), is(0));
       assertThat(historisedDocument.isVersioned(), is(true));
     } finally {
@@ -390,23 +390,23 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode18_1);
-      documentRepository.storeContent(session, docNode18_1, content);
+      documentRepository.storeContent(docNode18_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode18_2);
-      documentRepository.storeContent(session, docNode18_2, content);
+      documentRepository.storeContent(docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       foreignId = "node25";
       SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode25_1);
-      documentRepository.storeContent(session, docNode25_1, content);
+      documentRepository.storeContent(docNode25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode25_2);
-      documentRepository.storeContent(session, docNode25_2, content);
+      documentRepository.storeContent(docNode25_2, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsByForeignId(session, instanceId,
           "node18", "fr");
@@ -432,23 +432,23 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode18_1);
-      documentRepository.storeContent(session, docNode18_1, content);
+      documentRepository.storeContent(docNode18_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode18_2);
-      documentRepository.storeContent(session, docNode18_2, content);
+      documentRepository.storeContent(docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       foreignId = "node25";
       SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode25_1);
-      documentRepository.storeContent(session, docNode25_1, content);
+      documentRepository.storeContent(docNode25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode25_2);
-      documentRepository.storeContent(session, docNode25_2, content);
+      documentRepository.storeContent(docNode25_2, content);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsByForeignIdAndType(session, instanceId,
           "node18", DocumentType.attachment);
@@ -478,20 +478,20 @@ public class DocumentRepositoryTest {
       SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_1);
-      documentRepository.storeContent(session, docOwn10_1, content);
+      documentRepository.storeContent(docOwn10_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docOwn10_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_2);
-      documentRepository.storeContent(session, docOwn10_2, content);
+      documentRepository.storeContent(docOwn10_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
       attachment = createEnglishSimpleAttachment();
       SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn25_1);
-      documentRepository.storeContent(session, docOwn25_1, content);
+      documentRepository.storeContent(docOwn25_1, content);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session,
           instanceId, "10");
@@ -518,14 +518,14 @@ public class DocumentRepositoryTest {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       attachment = createFrenchSimpleAttachment();
       documentRepository.addContent(session, result, attachment);
       document.setLanguage(attachment.getLanguage());
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       checkFrenchSimpleDocument(doc);
@@ -549,14 +549,14 @@ public class DocumentRepositoryTest {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
       InputStream content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK result = documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       assertThat(result, is(expResult));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       attachment = createFrenchSimpleAttachment();
       documentRepository.addContent(session, result, attachment);
       document.setLanguage(attachment.getLanguage());
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       documentRepository.removeContent(session, result, "fr");
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
@@ -612,26 +612,26 @@ public class DocumentRepositoryTest {
       SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_1);
-      documentRepository.storeContent(session, docOwn10_1, content);
+      documentRepository.storeContent(docOwn10_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docOwn10_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_2);
-      documentRepository.storeContent(session, docOwn10_2, content);
+      documentRepository.storeContent(docOwn10_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
       attachment = createEnglishSimpleAttachment();
       SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn25_1);
-      documentRepository.storeContent(session, docOwn25_1, content);
+      documentRepository.storeContent(docOwn25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docOwn25_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn25_2);
-      documentRepository.storeContent(session, docOwn25_2, content);
+      documentRepository.storeContent(docOwn25_2, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listComponentDocumentsByOwner(session,
           instanceId, owner, "fr");
@@ -642,7 +642,7 @@ public class DocumentRepositoryTest {
       BasicDaoFactory.logout(session);
     }
   }
-  
+
   /**
    * Test of listDocumentsByOwner method, of class DocumentRepository.
    */
@@ -659,26 +659,26 @@ public class DocumentRepositoryTest {
       SimpleDocument docOwn10_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_1);
-      documentRepository.storeContent(session, docOwn10_1, content);
+      documentRepository.storeContent(docOwn10_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docOwn10_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn10_2);
-      documentRepository.storeContent(session, docOwn10_2, content);
+      documentRepository.storeContent(docOwn10_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       owner = "25";
       attachment = createEnglishSimpleAttachment();
       SimpleDocument docOwn25_1 = new SimpleDocument(emptyId, foreignId, 10, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn25_1);
-      documentRepository.storeContent(session, docOwn25_1, content);
+      documentRepository.storeContent(docOwn25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docOwn25_2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       documentRepository.createDocument(session, docOwn25_2);
-      documentRepository.storeContent(session, docOwn25_2, content);
+      documentRepository.storeContent(docOwn25_2, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsLockedByUser(session, owner, "fr");
       assertThat(docs, is(notNullValue()));
@@ -708,21 +708,21 @@ public class DocumentRepositoryTest {
           attachment);
       expiringDoc1.setExpiry(today.getTime());
       documentRepository.createDocument(session, expiringDoc1);
-      documentRepository.storeContent(session, expiringDoc1, content);
+      documentRepository.storeContent(expiringDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notExpiringDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       documentRepository.createDocument(session, notExpiringDoc2);
-      documentRepository.storeContent(session, notExpiringDoc2, content);
+      documentRepository.storeContent(notExpiringDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument expiringDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       expiringDoc3.setExpiry(today.getTime());
       documentRepository.createDocument(session, expiringDoc3);
-      documentRepository.storeContent(session, expiringDoc3, content);
+      documentRepository.storeContent(expiringDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notExpiringDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -730,7 +730,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, notExpiringDoc4);
-      documentRepository.storeContent(session, notExpiringDoc4, content);
+      documentRepository.storeContent(notExpiringDoc4, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listExpiringDocuments(session, today.getTime(),
           "fr");
@@ -761,21 +761,21 @@ public class DocumentRepositoryTest {
           attachment);
       expiringDoc1.setExpiry(today.getTime());
       documentRepository.createDocument(session, expiringDoc1);
-      documentRepository.storeContent(session, expiringDoc1, content);
+      documentRepository.storeContent(expiringDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notExpiringDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       notExpiringDoc2.setExpiry(RandomGenerator.getCalendarAfter(today).getTime());
       documentRepository.createDocument(session, notExpiringDoc2);
-      documentRepository.storeContent(session, notExpiringDoc2, content);
+      documentRepository.storeContent(notExpiringDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument expiringDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       expiringDoc3.setExpiry(today.getTime());
       documentRepository.createDocument(session, expiringDoc3);
-      documentRepository.storeContent(session, expiringDoc3, content);
+      documentRepository.storeContent(expiringDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notExpiringDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -783,7 +783,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
       notExpiringDoc4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, notExpiringDoc4);
-      documentRepository.storeContent(session, notExpiringDoc4, content);
+      documentRepository.storeContent(notExpiringDoc4, content);
       session.save();
       NodeIterator nodes = documentRepository.selectExpiringDocuments(session, today.getTime());
       assertThat(nodes, is(notNullValue()));
@@ -815,21 +815,21 @@ public class DocumentRepositoryTest {
           attachment);
       docToLeaveLocked1.setExpiry(today.getTime());
       documentRepository.createDocument(session, docToLeaveLocked1);
-      documentRepository.storeContent(session, docToLeaveLocked1, content);
+      documentRepository.storeContent(docToLeaveLocked1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       documentRepository.createDocument(session, docToUnlock2);
-      documentRepository.storeContent(session, docToUnlock2, content);
+      documentRepository.storeContent(docToUnlock2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       documentRepository.createDocument(session, docToUnlock3);
-      documentRepository.storeContent(session, docToUnlock3, content);
+      documentRepository.storeContent(docToUnlock3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -837,7 +837,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, docToLeaveLocked4);
-      documentRepository.storeContent(session, docToLeaveLocked4, content);
+      documentRepository.storeContent(docToLeaveLocked4, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsToUnlock(session, today.getTime(),
           "fr");
@@ -868,21 +868,21 @@ public class DocumentRepositoryTest {
           attachment);
       docToLeaveLocked1.setExpiry(today.getTime());
       documentRepository.createDocument(session, docToLeaveLocked1);
-      documentRepository.storeContent(session, docToLeaveLocked1, content);
+      documentRepository.storeContent(docToLeaveLocked1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docToUnlock2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       docToUnlock2.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       documentRepository.createDocument(session, docToUnlock2);
-      documentRepository.storeContent(session, docToUnlock2, content);
+      documentRepository.storeContent(docToUnlock2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument docToUnlock3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       docToUnlock3.setExpiry(RandomGenerator.getCalendarBefore(today).getTime());
       documentRepository.createDocument(session, docToUnlock3);
-      documentRepository.storeContent(session, docToUnlock3, content);
+      documentRepository.storeContent(docToUnlock3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument docToLeaveLocked4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -890,7 +890,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarAfter(today);
       docToLeaveLocked4.setExpiry(beforeDate.getTime());
       documentRepository.createDocument(session, docToLeaveLocked4);
-      documentRepository.storeContent(session, docToLeaveLocked4, content);
+      documentRepository.storeContent(docToLeaveLocked4, content);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsRequiringUnlocking(session, today.
           getTime());
@@ -923,21 +923,21 @@ public class DocumentRepositoryTest {
           attachment);
       warningDoc1.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc1);
-      documentRepository.storeContent(session, warningDoc1, content);
+      documentRepository.storeContent(warningDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notWarningDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       documentRepository.createDocument(session, notWarningDoc2);
-      documentRepository.storeContent(session, notWarningDoc2, content);
+      documentRepository.storeContent(notWarningDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       warningDoc3.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc3);
-      documentRepository.storeContent(session, warningDoc3, content);
+      documentRepository.storeContent(warningDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notWarningDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -945,7 +945,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
       notWarningDoc4.setAlert(beforeDate.getTime());
       documentRepository.createDocument(session, notWarningDoc4);
-      documentRepository.storeContent(session, notWarningDoc4, content);
+      documentRepository.storeContent(notWarningDoc4, content);
       session.save();
       NodeIterator nodes = documentRepository.selectWarningDocuments(session, today.getTime());
       assertThat(nodes, is(notNullValue()));
@@ -974,7 +974,7 @@ public class DocumentRepositoryTest {
       String foreignId = "node18";
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       foreignId = "kmelia36";
       SimpleDocumentPK result = documentRepository.moveDocument(session, document, new ForeignPK(
           "45", foreignId));
@@ -1008,7 +1008,7 @@ public class DocumentRepositoryTest {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       foreignId = "node36";
       SimpleDocumentPK result = documentRepository.copyDocument(session, document, new ForeignPK(
@@ -1048,13 +1048,13 @@ public class DocumentRepositoryTest {
       SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setNodeName(SimpleDocument.ATTACHMENT_PREFIX + document.getOldSilverpeasId());
       documentRepository.createDocument(session, document);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(512L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument otherDocument = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       documentRepository.createDocument(session, otherDocument);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(236L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
@@ -1062,7 +1062,7 @@ public class DocumentRepositoryTest {
       versionedDocument.setNodeName(SimpleDocument.VERSION_PREFIX + versionedDocument.
           getOldSilverpeasId());
       documentRepository.createDocument(session, versionedDocument);
-      documentRepository.storeContent(session, document, content);
+      documentRepository.storeContent(document, content);
       session.save();
       SimpleDocument doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId,
           oldSilverpeasId, false, language);
@@ -1102,21 +1102,21 @@ public class DocumentRepositoryTest {
           attachment);
       warningDoc1.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc1);
-      documentRepository.storeContent(session, warningDoc1, content);
+      documentRepository.storeContent(warningDoc1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notWarningDoc2 = new SimpleDocument(emptyId, foreignId, 15, false, owner,
           attachment);
       notWarningDoc2.setAlert(RandomGenerator.getCalendarAfter(today).getTime());
       documentRepository.createDocument(session, notWarningDoc2);
-      documentRepository.storeContent(session, notWarningDoc2, content);
+      documentRepository.storeContent(notWarningDoc2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
       SimpleDocument warningDoc3 = new SimpleDocument(emptyId, foreignId, 20, false, owner,
           attachment);
       warningDoc3.setAlert(today.getTime());
       documentRepository.createDocument(session, warningDoc3);
-      documentRepository.storeContent(session, warningDoc3, content);
+      documentRepository.storeContent(warningDoc3, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
       SimpleDocument notWarningDoc4 = new SimpleDocument(emptyId, foreignId, 25, false, owner,
@@ -1124,7 +1124,7 @@ public class DocumentRepositoryTest {
       Calendar beforeDate = RandomGenerator.getCalendarBefore(today);
       notWarningDoc4.setAlert(beforeDate.getTime());
       documentRepository.createDocument(session, notWarningDoc4);
-      documentRepository.storeContent(session, notWarningDoc4, content);
+      documentRepository.storeContent(notWarningDoc4, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsRequiringWarning(session, today.
           getTime(),
@@ -1135,5 +1135,75 @@ public class DocumentRepositoryTest {
     } finally {
       BasicDaoFactory.logout(session);
     }
+  }
+
+  @Test
+  public void testStoreContent() throws RepositoryException, IOException {
+    SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleAttachment attachment = createEnglishSimpleAttachment();
+    String foreignId = "node18";
+    String owner = "10";
+    Calendar today = Calendar.getInstance();
+    DateUtil.setAtBeginOfDay(today);
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, owner,
+        attachment);
+    document.setExpiry(today.getTime());    
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      documentRepository.createDocument(session, document);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+        Charsets.UTF_8));
+    documentRepository.storeContent(document, content);
+    content.close();
+    assertThat(document.getAttachmentPath(), is(notNullValue()));
+    File contentFile = new File(document.getAttachmentPath());
+    assertThat(contentFile.exists(), is(true));
+    assertThat(contentFile.isFile(), is(true));
+    assertThat(document.getAttachmentPath(), is(notNullValue()));
+    String storedContent = FileUtils.readFileToString(contentFile, Charsets.UTF_8);
+    assertThat(storedContent, is("This is a test"));
+  }
+  
+  @Test
+  public void testCopyMultilangContent() throws RepositoryException, IOException {
+    SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+    SimpleAttachment attachment = createEnglishSimpleAttachment();
+    String foreignId = "node18";
+    String owner = "10";
+    Calendar today = Calendar.getInstance();
+    DateUtil.setAtBeginOfDay(today);
+    SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, owner,
+        attachment);
+    document.setExpiry(today.getTime());    
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      documentRepository.createDocument(session, document);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+    ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+        Charsets.UTF_8));
+    documentRepository.storeContent(document, content);
+    document.setLanguage("fr");
+    content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+    documentRepository.storeContent(document, content);
+    content.close();
+    assertThat(document.getAttachmentPath(), is(notNullValue()));
+    File contentFile = new File(document.getAttachmentPath());
+    assertThat(contentFile.exists(), is(true));
+    assertThat(contentFile.isFile(), is(true));
+    assertThat(document.getAttachmentPath(), is(notNullValue()));
+    String storedContent = FileUtils.readFileToString(contentFile, Charsets.UTF_8);
+    assertThat(storedContent, is("Ceci est un test"));
+    document.setLanguage("en");
+    contentFile = new File(document.getAttachmentPath());
+    assertThat(contentFile.exists(), is(true));
+    assertThat(contentFile.isFile(), is(true));
+    assertThat(document.getAttachmentPath(), is(notNullValue()));
+    storedContent = FileUtils.readFileToString(contentFile, Charsets.UTF_8);
+    assertThat(storedContent, is("This is a test"));
   }
 }

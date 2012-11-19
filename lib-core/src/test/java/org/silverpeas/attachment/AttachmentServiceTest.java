@@ -147,7 +147,7 @@ public class AttachmentServiceTest {
         InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
         existingFrDoc = new DocumentRepository().createDocument(session, document);
         document.setPK(existingFrDoc);
-        documentRepository.storeContent(session, document, content);
+        documentRepository.storeContent(document, content);
 
         emptyId = new SimpleDocumentPK("-1", instanceId);
         foreignId = "node19";
@@ -158,7 +158,7 @@ public class AttachmentServiceTest {
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
         existingEnDoc = documentRepository.createDocument(session, document);
         document.setPK(existingEnDoc);
-        documentRepository.storeContent(session, document, content);
+        documentRepository.storeContent(document, content);
       }
       session.save();
     } finally {
@@ -547,7 +547,7 @@ public class AttachmentServiceTest {
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
-      documentRepository.storeContent(session, document1, content);
+      documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false,
@@ -557,7 +557,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
-      documentRepository.storeContent(session, document2, content);
+      documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
@@ -567,7 +567,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
-      documentRepository.storeContent(session, document3, content);
+      documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -578,7 +578,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
-      documentRepository.storeContent(session, document4, content);
+      documentRepository.storeContent(document4, content);
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
       assertThat(result, is(notNullValue()));
@@ -646,7 +646,7 @@ public class AttachmentServiceTest {
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
-      documentRepository.storeContent(session, document1, content);
+      documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new SimpleDocument(emptyId, foreignId, 5, false,
@@ -656,7 +656,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document2);
       document2.setPK(id);
-      documentRepository.storeContent(session, document2, content);
+      documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new SimpleDocument(emptyId, foreignId, 100, false,
@@ -666,7 +666,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document3);
       document3.setPK(id);
-      documentRepository.storeContent(session, document3, content);
+      documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -677,7 +677,7 @@ public class AttachmentServiceTest {
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = documentRepository.createDocument(session, document4);
       document4.setPK(id);
-      documentRepository.storeContent(session, document4, content);
+      documentRepository.storeContent(document4, content);
 
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");

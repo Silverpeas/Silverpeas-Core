@@ -148,7 +148,7 @@ public class HistorisedAttachmentServiceTest {
         InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
         existingFrDoc = documentRepository.createDocument(session, document);
         document = documentRepository.findDocumentById(session, emptyId, document.getLanguage());
-        documentRepository.storeContent(session, document, content);
+        documentRepository.storeContent(document, content);
         content.close();
         document.setPK(existingFrDoc);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -165,7 +165,7 @@ public class HistorisedAttachmentServiceTest {
             MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
         existingEnDoc = documentRepository.createDocument(session, document);
-        documentRepository.storeContent(session, document, content);
+        documentRepository.storeContent(document, content);
         document.setPK(existingEnDoc);
         content.close();
         out = new ByteArrayOutputStream();
@@ -563,7 +563,7 @@ public class HistorisedAttachmentServiceTest {
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = documentRepository.createDocument(session, document1);
       document1.setPK(id);
-      documentRepository.storeContent(session, document1, content);
+      documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
@@ -573,7 +573,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document2);
       document2.setPK(id);
-      documentRepository.storeContent(session, document2, content);
+      documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
@@ -583,7 +583,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document3);
       document3.setPK(id);
-      documentRepository.storeContent(session, document3, content);
+      documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -594,7 +594,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document4);
       document4.setPK(id);
-      documentRepository.storeContent(session, document4, content);
+      documentRepository.storeContent(document4, content);
 
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
@@ -662,7 +662,7 @@ public class HistorisedAttachmentServiceTest {
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = new DocumentRepository().createDocument(session, document1);
       document1.setPK(id);
-      documentRepository.storeContent(session, document1, content);
+      documentRepository.storeContent(document1, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
@@ -672,7 +672,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document2);
       document2.setPK(id);
-      documentRepository.storeContent(session, document2, content);
+      documentRepository.storeContent(document2, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
@@ -682,7 +682,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document3);
       document3.setPK(id);
-      documentRepository.storeContent(session, document3, content);
+      documentRepository.storeContent(document3, content);
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -693,7 +693,7 @@ public class HistorisedAttachmentServiceTest {
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = new DocumentRepository().createDocument(session, document4);
       document4.setPK(id);
-      documentRepository.storeContent(session, document4, content);
+      documentRepository.storeContent(document4, content);
 
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");

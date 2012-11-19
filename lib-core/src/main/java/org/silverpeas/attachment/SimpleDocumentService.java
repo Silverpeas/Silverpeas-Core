@@ -275,7 +275,7 @@ public class SimpleDocumentService implements AttachmentService {
           getLanguage());
       createdDocument.setPublicDocument(document.isPublic());
       SimpleDocument finalDocument = repository.unlock(session, createdDocument, false);
-      repository.storeContent(session, finalDocument, content);
+      repository.storeContent(finalDocument, content);
       if (indexIt) {
         createIndex(finalDocument);
       }
@@ -424,7 +424,7 @@ public class SimpleDocumentService implements AttachmentService {
       if (checkinRequired) {
         finalDocument = repository.unlock(session, document, false);
       }
-      repository.storeContent(session, finalDocument, in);
+      repository.storeContent(finalDocument, in);
       if (document.isOpenOfficeCompatible() && finalDocument.isReadOnly()) {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
@@ -501,7 +501,7 @@ public class SimpleDocumentService implements AttachmentService {
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
       original.setCloneId(clonePk.getId());
       repository.updateDocument(session, original);
-      repository.storeContent(session, clone, in);
+      repository.storeContent(clone, in);
       session.save();
       return clonePk;
     } catch (RepositoryException ex) {
@@ -524,21 +524,18 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
     Session session = null;
-    InputStream in = null;
     try {
-      in = new FileInputStream(original.getAttachmentPath());
       session = BasicDaoFactory.getSystemSession();
-      SimpleDocumentPK clonePk = repository.copyDocument(session, original, targetPk);
-      SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
-      repository.storeContent(session, clone, in);
+      SimpleDocumentPK copyPk = repository.copyDocument(session, original, targetPk);
+      SimpleDocument copy = repository.findDocumentById(session, copyPk, null);
+      repository.copyMultilangContent(original, copy);
       session.save();
-      return clonePk;
+      return copyPk;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
-      IOUtils.closeQuietly(in);
       BasicDaoFactory.logout(session);
     }
   }
