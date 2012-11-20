@@ -141,8 +141,12 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
 	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
 	    </tr>
-    <% }
-
+    <% } %>
+      <tr id="token">
+            <td class="txtlibform"><%=resource.getString("myProfile.Token")%> :</td>
+      <td><%=userFull.getToken()%></td>
+      </tr>
+    <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
         String userLoginAnswer = userFull.getLoginAnswer();
