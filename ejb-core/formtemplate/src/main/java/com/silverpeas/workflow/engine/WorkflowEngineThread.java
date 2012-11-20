@@ -1087,8 +1087,8 @@ class WorkflowTools {
         getName();
     boolean backStatus = (event.getResolvedState() == null) ? false : instance.isStateInBackStatus(
         resolvedStateName);
-    Hashtable oldActiveStates = new Hashtable();
-    Hashtable eligibleStates = new Hashtable();
+    Hashtable<String, String> oldActiveStates = new Hashtable<String, String>();
+    Hashtable<String, String> eligibleStates = new Hashtable<String, String>();
 
     // Check for actions "redone"
     for (int i = 0; backStatus && i < states.length; i++) {
@@ -1269,7 +1269,7 @@ class WorkflowTools {
    * @param event the task done event
    */
   public static void computeStates(UpdatableProcessInstance instance,
-      GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates)
+      GenericEvent event, Hashtable<String, String> eligibleStates, Hashtable<String, String> oldActiveStates)
       throws WorkflowException {
     // Get the process model associated to this event
     ProcessModel model = instance.getProcessModel();
