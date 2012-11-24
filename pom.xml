@@ -79,7 +79,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>core</artifactId>
-  <version>5.11</version>
+  <version>5.11.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Core</name>
 
@@ -239,8 +239,8 @@
   </modules>
 
   <properties>
-    <installer_stable_version>5.10.2</installer_stable_version>
-    <installer_version>5.11-SNAPSHOT</installer_version>
+    <installer_stable_version>5.11</installer_stable_version>
+    <installer_version>5.11</installer_version>
   </properties>
 
 </project>
