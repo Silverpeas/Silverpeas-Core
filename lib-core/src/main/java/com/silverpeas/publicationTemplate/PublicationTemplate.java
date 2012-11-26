@@ -73,8 +73,6 @@ public interface PublicationTemplate {
 
   public void setExternalId(String externalId);
 
-  public Form getEditForm(String name) throws PublicationTemplateException;
-
   public String getExternalId();
 
   public String getName();

@@ -110,8 +110,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private Form updateForm = null;
   private Form viewForm = null;
   private Form searchResultForm = null;
-  // private Form searchForm = null;
-  private ArrayList<TemplateFile> templateFiles = new ArrayList<TemplateFile>();
 
   /**
    * Return the RecordTemplate of the publication data item.
@@ -235,29 +233,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     }
     // }
     return searchForm;
-  }
-
-  /**
-   * Returns the Form witch name is name parameter the records built from this template.
-   */
-  @Override
-  public Form getEditForm(String name) throws PublicationTemplateException {
-    SilverTrace.info("form", "PublicationTemplateImpl.getEditForm",
-        "root.MSG_GEN_PARAM_VALUE", "name=" + name);
-    Form form = null;
-    if (templateFiles != null) {
-      for (TemplateFile file : templateFiles) {
-        if (file.getName().compareToIgnoreCase(name) == 0) {
-          form = getForm(file.getFileName(), file.getTypeName());
-          return form;
-        }
-      }
-    }
-    if (form == null) {
-      throw new PublicationTemplateException("PublicationTemplateImpl.getEditForm",
-          "form.EX_CANT_GET_FORM", "name=" + name, null);
-    }
-    return form;
   }
 
   private Form getForm(String fileName, String fileType) throws PublicationTemplateException {
@@ -412,17 +387,6 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public String getExternalId() {
     return externalId;
-  }
-
-  public void setTemplatesObj(ArrayList<TemplateFile> templatesObj) {
-    this.templateFiles = templatesObj;
-  }
-
-  /**
-   *
-   */
-  public ArrayList<TemplateFile> getTemplatesObj() {
-    return templateFiles;
   }
 
   /**
