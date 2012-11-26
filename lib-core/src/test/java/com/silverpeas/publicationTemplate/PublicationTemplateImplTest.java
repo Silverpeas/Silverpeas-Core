@@ -56,8 +56,6 @@ public class PublicationTemplateImplTest {
   public static void setUpClass() throws Exception {
         PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH +
             SEPARATOR + "templateMapping.xml";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = MAPPINGS_PATH +
-            SEPARATOR + "templateFilesMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 

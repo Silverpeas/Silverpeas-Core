@@ -25,11 +25,6 @@
 package com.silverpeas.publicationTemplate;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,13 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -74,10 +66,10 @@ public class PublicationTemplateManager {
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private final Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
-  public static String mappingPublicationTemplateFilePath = null;
   public static String mappingRecordTemplateFilePath = null;
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
+  private static JAXBContext JAXB_CONTEXT = null;
 
   static {
     ResourceLocator templateSettings =
@@ -89,11 +81,15 @@ public class PublicationTemplateManager {
     defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
 
     String mappingDir = mappingSettings.getString("mappingDir");
-    String mappingPublicationTemplateFileName = mappingSettings.getString("templateFilesMapping");
     String mappingRecordTemplateFileName = mappingSettings.getString("templateMapping");
 
-    mappingPublicationTemplateFilePath = makePath(mappingDir, mappingPublicationTemplateFileName);
     mappingRecordTemplateFilePath = makePath(mappingDir, mappingRecordTemplateFileName);
+    
+    try {
+      JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
+    } catch (JAXBException e) {
+      SilverTrace.fatal("form", "PublicationTemplateManager.init", "CANT_GET_JAXB_CONTEXT", e);
+    }
   }
 
   private PublicationTemplateManager() {
@@ -212,37 +208,19 @@ public class PublicationTemplateManager {
         xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
         xmlFile = new File(xmlFilePath);
       }
-
-      // Load mapping and instantiate a Marshaller
-      Mapping mapping = new Mapping();
-      mapping.loadMapping(mappingPublicationTemplateFilePath);
-      Unmarshaller unmar = new Unmarshaller(mapping);
-
-      // Unmarshall the process model
-      publicationTemplate = (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
-          new FileInputStream(xmlFile)));
+      
+      Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
+      publicationTemplate = (PublicationTemplateImpl) unmarshaller.unmarshal(xmlFile);
       publicationTemplate.setFileName(xmlFileName);
 
       templates.put(xmlFileName, publicationTemplate);
 
       return publicationTemplate.basicClone();
-    } catch (MappingException me) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName,
-          me);
-    } catch (MarshalException me) {
+    } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, me);
-    } catch (ValidationException ve) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
-          "Publication Template FileName : " + xmlFileName, ve);
-    } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, ioe);
-    }
+          + xmlFileName, e);
+    } 
   }
 
   /**
@@ -255,55 +233,21 @@ public class PublicationTemplateManager {
     SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
 
-    FileWriter writer = null;
     String xmlFileName = template.getFileName();
 
     try {
       // Format these url
       String xmlFilePath = makePath(templateDir, xmlFileName);
-
-      // Load mapping and instantiate a Marshaller
-      Mapping mapping = new Mapping();
-      mapping.loadMapping(mappingPublicationTemplateFilePath);
-
-      String encoding = "UTF-8";
-
-      FileOutputStream fos = new FileOutputStream(xmlFilePath);
-      OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-
-      // writer = new FileWriter(xmlFilePath);
-      // Marshaller mar = new Marshaller(writer);
-      Marshaller mar = new Marshaller(osw);
-
-      mar.setEncoding(encoding);
-      mar.setMapping(mapping);
-
-      // Marshall the template
-      mar.marshal(template);
-    } catch (MappingException me) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName,
-          me);
-    } catch (MarshalException me) {
+      
+      Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.marshal(template, new File(xmlFilePath));
+      
+    } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, me);
-    } catch (ValidationException ve) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
-          "Publication Template FileName : " + xmlFileName, ve);
-    } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, ioe);
-    } finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        } catch (IOException e) {
-          // do nothing
-        }
-      }
+          + xmlFileName, e);
     }
   }
 

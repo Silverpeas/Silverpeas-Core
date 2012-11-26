@@ -32,6 +32,11 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
 import org.exolab.castor.xml.MarshalException;
@@ -69,18 +74,31 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
  * <li>a view Form used to show the publications.</li>
  * </ol>
  */
+@XmlRootElement(name="publicationTemplate")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PublicationTemplateImpl implements PublicationTemplate {
+  @XmlElement(required=true)
   private String name = "";
+  @XmlElement
   private String description = "";
+  @XmlElement(name="image")
   private String thumbnail = "";
-  private String fileName = "";
+  @XmlElement(required=true,defaultValue="false")
   private boolean visible = false;
+  @XmlElement
   private String viewFileName = "";
+  @XmlElement
   private String updateFileName = "";
+  @XmlElement
   private String searchFileName = "";
+  @XmlElement
   private String dataFileName = "";
+  @XmlElement
   private String viewTypeFile = "";
+  @XmlElement
   private String updateTypeFile = "";
+  
+  private String fileName = "";
   private String externalId = "";
   private String searchResultFileName = "";
   private RecordTemplate template = null;
