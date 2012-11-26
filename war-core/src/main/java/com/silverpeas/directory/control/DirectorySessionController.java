@@ -32,6 +32,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
@@ -59,10 +63,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import org.silverpeas.search.SearchEngineFactory;
 
 /**
 * @author Nabil Bensalem
@@ -118,10 +119,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-* get All Users
-* @see
-*/
-  public List<UserDetail> getAllUsers() {
+   * get All Users
+   * @throws DirectoryException
+   * @see
+   */
+  public List<UserDetail> getAllUsers() throws DirectoryException {
+    return getAllUsers(null);
+  }
+  
+  public List<UserDetail> getAllUsers(String query) throws DirectoryException {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
@@ -143,6 +149,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         } else {
           lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
         }
+    }
+    
+    if (StringUtil.isDefined(query)) {
+      return getUsersByQuery(query);
     }
 
     lastListUsersCalled = lastAlllistUsersCalled;
@@ -207,21 +217,31 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       throw new DirectoryException(this.getClass().getSimpleName(), "directory.EX_CANT_SEARCH", e);
     }
     return lastListUsersCalled;
-
   }
 
   /**
-*get all User of the Group who has Id="groupId"
-* @param groupId:the ID of group
-* @see
-*/
-  public List<UserDetail> getAllUsersByGroup(String groupId) {
+   * get all User of the Group who has Id="groupId"
+   * @param groupId:the ID of group
+   * @throws DirectoryException
+   * @see
+   */
+  public List<UserDetail> getAllUsersByGroup(String groupId) throws DirectoryException {
+    return getAllUsersByGroup(groupId, null);
+  }
+  
+  public List<UserDetail> getAllUsersByGroup(String groupId, String query)
+      throws DirectoryException {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
     currentGroup = getOrganizationController().getGroup(groupId);
     lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
+
+    if (StringUtil.isDefined(query)) {
+      return getUsersByQuery(query);
+    }
+
     return lastAlllistUsersCalled;
   }
 
@@ -245,23 +265,31 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*return All users of Space who has Id="spaceId"
-* @param spaceId:the ID of Space
-* @see
-*/
-  public List<UserDetail> getAllUsersBySpace(String spaceId) {
+   * return All users of Space who has Id="spaceId"
+   * @param spaceId:the ID of Space
+   * @throws DirectoryException
+   * @see
+   */
+  public List<UserDetail> getAllUsersBySpace(String spaceId) throws DirectoryException {
+    return getAllUsersBySpace(spaceId, null);
+  }
+  
+  public List<UserDetail> getAllUsersBySpace(String spaceId, String query) throws DirectoryException {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
     currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
-    List<String> lus = new ArrayList<String>();
-    lus = getAllUsersBySpace(lus, spaceId);
+    List<String> lus = getAllUsersBySpace(new ArrayList<String>(), spaceId);
     lastAlllistUsersCalled =
             Arrays.asList(
             getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+    
+    if (StringUtil.isDefined(query)) {
+      return getUsersByQuery(query);
+    }
+    
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
-
   }
 
   private List<String> getAllUsersBySpace(List<String> lus, String spaceId) {
@@ -272,7 +300,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (ComponentInst ciVar : si.getAllComponentsInst()) {
       for (ProfileInst piVar : ciVar.getAllProfilesInst()) {
         lus = fillList(lus, piVar.getAllUsers());
-
       }
     }
     return lus;
@@ -289,18 +316,25 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*return All user of Domaine who has Id="domainId"
-* @param domainId:the ID of Domaine
-* @see
-*/
-  public List<UserDetail> getAllUsersByDomain(String domainId) {
+   * return All user of Domaine who has Id="domainId"
+   * @param domainId:the ID of Domaine
+   * @throws DirectoryException
+   * @see
+   */
+  public List<UserDetail> getAllUsersByDomain(String domainId) throws DirectoryException {
+    return getAllUsersByDomain(domainId, null);
+  }
+  
+  public List<UserDetail> getAllUsersByDomain(String domainId, String query)
+      throws DirectoryException {
     List<String> domainIds = new ArrayList<String>();
     domainIds.add(domainId);
-    return getAllUsersByDomains(domainIds);
+    return getAllUsersByDomains(domainIds, query);
   }
 
-  public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
-    getAllUsers();// recuperer tous les users
+  public List<UserDetail> getAllUsersByDomains(List<String> domainIds, String query)
+      throws DirectoryException {
+    getAllUsers(null);
     setCurrentDirectory(DIRECTORY_DOMAIN);
     setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
@@ -314,6 +348,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
     }
     lastAlllistUsersCalled = lastListUsersCalled;
+
+    if (StringUtil.isDefined(query)) {
+      return getUsersByQuery(query);
+    }
+
     return lastAlllistUsersCalled;
   }
 
@@ -407,8 +446,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
+    
+    if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
+      // all connected users must be filtered according to directory scope
+      for (UserDetail connectedUser : connectedUsers) {
+        if (lastAlllistUsersCalled.contains(connectedUser)) {
+          lastListUsersCalled.add(connectedUser);
+        }
+      }
+    } else {
+      lastListUsersCalled = connectedUsers;
+    }
 
-    lastListUsersCalled = connectedUsers;
     return lastListUsersCalled;
   }
 

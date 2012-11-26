@@ -77,24 +77,21 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String domainId = request.getParameter("DomainId");
         String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
+        String query = request.getParameter("Query");
 
         if (StringUtil.isDefined(groupId)) {
-          users = directorySC.getAllUsersByGroup(groupId);
+          users = directorySC.getAllUsersByGroup(groupId, query);
         } else if (StringUtil.isDefined(spaceId)) {
-          users = directorySC.getAllUsersBySpace(spaceId);
+          users = directorySC.getAllUsersBySpace(spaceId, query);
         } else if (StringUtil.isDefined(domainId)) {
-          users = directorySC.getAllUsersByDomain(domainId);
+          users = directorySC.getAllUsersByDomain(domainId, query);
         } else if (StringUtil.isDefined(domainIds)) {
-          List<String> lDomainIds = new ArrayList<String>();
-          StringTokenizer tokenizer = new StringTokenizer(domainIds, ",");
-          while (tokenizer.hasMoreTokens()) {
-            lDomainIds.add(tokenizer.nextToken());
-          }
-          users = directorySC.getAllUsersByDomains(lDomainIds);
+          List<String> lDomainIds = getParameterValues(domainIds, ",");
+          users = directorySC.getAllUsersByDomains(lDomainIds, query);
         } else if (StringUtil.isDefined(userId)) {
           users = directorySC.getAllContactsOfUser(userId);
         } else {
-          users = directorySC.getAllUsers();
+          users = directorySC.getAllUsers(query);
         }
 
         destination = doPagination(request, users, directorySC);
@@ -235,5 +232,14 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         break;
     }
     request.setAttribute("BreadCrumb", breadCrumb);
+  }
+  
+  private List<String> getParameterValues(String parameter, String delimiter) {
+    List<String> values = new ArrayList<String>();
+    StringTokenizer tokenizer = new StringTokenizer(parameter, delimiter);
+    while (tokenizer.hasMoreTokens()) {
+      values.add(tokenizer.nextToken());
+    }
+    return values;
   }
 }
