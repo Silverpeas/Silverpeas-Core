@@ -1069,7 +1069,7 @@ public class JobStartPagePeasRequestRouter extends
     I18NHelper.setI18NInfo(spaceInst, request);
 
     // Component space quota
-    if (jobStartPageSC.isUserAdmin() && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED &&
+    if (jobStartPageSC.isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated &&
         StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
       try {
         spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(componentSpaceQuotaMaxCount));

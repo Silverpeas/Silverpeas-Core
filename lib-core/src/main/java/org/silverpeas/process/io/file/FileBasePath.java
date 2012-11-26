@@ -25,7 +25,7 @@ package org.silverpeas.process.io.file;
 
 import java.io.File;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
  * This enumeration represents all root pathes that are handled by Silverpeas.
@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  * @author Yohann Chastagnier
  */
 public enum FileBasePath {
-  UPLOAD_PATH(GeneralPropertiesManager.getString("uploadsPath"), "~uploads~");
+  UPLOAD_PATH(FileRepositoryManager.getUploadPath(), "~uploads~");
 
   private String path;
   private String handledNodeName;

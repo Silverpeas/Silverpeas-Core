@@ -52,7 +52,7 @@
   SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
 
   // Component space quota
-  boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+  boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
   boolean isComponentSpaceQuotaFull = isComponentSpaceQuotaActivated && space.isComponentSpaceQuotaReached();
   if (isComponentSpaceQuotaActivated && QuotaLoad.UNLIMITED.equals(space.getComponentSpaceQuota().getLoad())) {
     isComponentSpaceQuotaActivated = false;

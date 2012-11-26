@@ -44,7 +44,7 @@ import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.management.ProcessManagement;
 import org.silverpeas.process.session.ProcessSession;
 
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 
 /**
  * Bases of file handler functionnalities whose a lot of these are protected and only usable by
@@ -61,7 +61,7 @@ public abstract class AbstractFileHandler {
 
   private final String SESSION_TEMP_NODE = "@#@work@#@";
 
-  private final File sessionRootPath = new File(GeneralPropertiesManager.getString("tempPath"));
+  private final File sessionRootPath = new File(FileRepositoryManager.getTemporaryPath());
   private final ProcessSession session;
   private final Map<FileBasePath, Set<File>> toDelete = new HashMap<FileBasePath, Set<File>>();
   private IOAccess ioAccess = IOAccess.READ_ONLY;

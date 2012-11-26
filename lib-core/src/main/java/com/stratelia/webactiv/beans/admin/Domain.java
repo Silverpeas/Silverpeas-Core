@@ -203,6 +203,10 @@ public class Domain implements Serializable {
     loadUserDomainQuota();
     return userDomainQuota.isReached();
   }
+  
+  public boolean isMixedOne() {
+    return MIXED_DOMAIN_ID.equals(getId());
+  }
 
   @Override
   public String toString() {

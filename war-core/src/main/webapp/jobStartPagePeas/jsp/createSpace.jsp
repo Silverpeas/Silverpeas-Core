@@ -34,7 +34,7 @@ Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
 boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
 

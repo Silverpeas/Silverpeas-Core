@@ -36,7 +36,7 @@ boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnab
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
 
 // Component space quota
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 String componentSpaceQuotaMaxCount = "";
 if (isComponentSpaceQuotaActivated) {
   componentSpaceQuotaMaxCount = String.valueOf(space.getComponentSpaceQuota().getMaxCount());

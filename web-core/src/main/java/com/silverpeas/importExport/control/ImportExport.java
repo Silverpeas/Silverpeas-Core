@@ -452,8 +452,6 @@ public class ImportExport {
     ExportReport exportReport = new ExportReport();
 
     try {
-      // Purge le répertoire Temp de Silverpeas
-      TempDirectoryManager.purgeTempDir();
       // Stockage de la date de démarage de l'export dans l'objet rapport
       exportReport.setDateDebut(new Date());
       // Création du dossier d'export
@@ -551,8 +549,6 @@ public class ImportExport {
       }
       // Création du zip
       createZipFile(fileExportDir, exportReport);
-    } catch (IOException e1) {
-      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     } catch (NodeRuntimeException ex) {
       throw new ImportExportException("importExport", "ImportExport.processExport()", ex);
     } catch (PdcException ex) {
@@ -817,9 +813,6 @@ public class ImportExport {
     OrganizationController orgController = new OrganizationController();
 
     try {
-      // Purge le répertoire Temp de Silverpeas
-      TempDirectoryManager.purgeTempDir();
-
       // Stockage de la date de démarage de l'export dans l'objet rapport
       exportReport.setDateDebut(new Date());
       // Création du dossier d'export
@@ -1222,9 +1215,6 @@ public class ImportExport {
   }
 
   private File createExportDir(UserDetail userDetail) throws ImportExportException, IOException {
-    // Purge le répertoire Temp de Silverpeas
-    TempDirectoryManager.purgeTempDir();
-
     String thisExportDir = generateExportDirName(userDetail, "export");
     String tempDir = FileRepositoryManager.getTemporaryPath();
     File fileExportDir = new File(tempDir + thisExportDir);

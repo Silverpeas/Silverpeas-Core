@@ -50,7 +50,7 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
-  public static boolean COMPONENT_SPACE_QUOTA_ACTIVATED = false;
+  public static boolean componentsInSpaceQuotaActivated = false;
   public static boolean dataStorageInSpaceQuotaActivated;
   public static long dataStorageInSpaceQuotaDefaultMaxCount;
   public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
@@ -73,7 +73,7 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
-    COMPONENT_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.component.quota.activated", false);
+    componentsInSpaceQuotaActivated = rs.getBoolean("quota.space.components.activated", false);
     dataStorageInSpaceQuotaActivated = rs.getBoolean("quota.space.datastorage.activated", false);
     dataStorageInSpaceQuotaDefaultMaxCount =
         rs.getLong("quota.space.datastorage.default.maxCount", 0);
