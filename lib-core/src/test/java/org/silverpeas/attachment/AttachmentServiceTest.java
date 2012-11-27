@@ -368,6 +368,27 @@ public class AttachmentServiceTest {
   }
 
   /**
+   * Test of cloneDocument method, of class AttachmentService.
+   */
+  @Test
+  public void testMoveDocument() throws IOException {
+    String language = "fr";
+    String foreignInstanceId = "kmelia38";
+    String foreignId = "73";
+    SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
+    SimpleDocumentPK pk = instance.moveDocument(original, new ForeignPK(foreignId, 
+        foreignInstanceId));
+    SimpleDocument movedDocument = instance.searchDocumentById(pk, language);
+    original.setForeignId(foreignId);
+    original.setPK(pk);
+    assertThat(movedDocument, SimpleDocumentMatcher.matches(original));
+    File originalContent = new File(original.getAttachmentPath());
+    assertThat(originalContent.exists(), is(false));
+    File movedContent = new File(movedDocument.getAttachmentPath());
+    assertThat(movedContent.exists(), is(true));
+  }
+
+  /**
    * Test of createAttachment method, of class AttachmentService.
    */
   @Test

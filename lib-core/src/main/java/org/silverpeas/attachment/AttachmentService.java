@@ -86,6 +86,15 @@ public interface AttachmentService {
    * @return
    */
   SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk);
+  
+  /**
+   * Move the attachment.
+   *
+   * @param document to be moved.
+   * @param destination the foreign id to be moved to.
+   * @return the new document id.
+   */
+  SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination);
 
   /**
    * Create file attached to an object who is identified by the foreignId.

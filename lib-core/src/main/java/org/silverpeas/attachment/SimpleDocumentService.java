@@ -527,9 +527,9 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocumentPK copyPk = repository.copyDocument(session, original, targetPk);
+      session.save();
       SimpleDocument copy = repository.findDocumentById(session, copyPk, null);
       repository.copyMultilangContent(original, copy);
-      session.save();
       return copyPk;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -842,6 +842,8 @@ public class SimpleDocumentService implements AttachmentService {
       session.save();
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
     }
@@ -868,7 +870,8 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(), foreignKey.
+      return repository.listDocumentsByForeignIdAndType(session, foreignKey.getInstanceId(),
+          foreignKey.
           getId(), type, lang);
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -879,11 +882,30 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
-     Session session = null;
+    Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
       return repository.listDocumentsLockedByUser(session, usedId, language);
     } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
+
+  @Override
+  public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
+      SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
+      repository.moveMultilangContent(document, moveDoc);
+      session.save();
+      return pk;
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);

@@ -30,14 +30,29 @@ package org.silverpeas.attachment.model;
 public enum DocumentType {
 
   attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images");
-  
   private String forlderName;
-  
+
   private DocumentType(String folder) {
     this.forlderName = folder;
   }
 
   public String getForlderName() {
     return forlderName;
+  }
+
+  public static DocumentType fromFolderName(String folder) {
+    if (attachment.forlderName.equals(folder)) {
+      return attachment;
+    }
+    if (form.forlderName.equals(folder)) {
+      return form;
+    }
+    if (wysiwyg.forlderName.equals(folder)) {
+      return wysiwyg;
+    }
+    if (image.forlderName.equals(folder)) {
+      return image;
+    }
+    return attachment;
   }
 }

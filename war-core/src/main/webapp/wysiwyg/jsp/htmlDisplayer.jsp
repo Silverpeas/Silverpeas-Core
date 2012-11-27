@@ -23,10 +23,12 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@page import="java.util.Iterator"%>
 <%@page import="com.silverpeas.util.i18n.I18NHelper"%>
+<%@page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%
   response.setHeader("Cache-Control", "no-store");
   //HTTP 1.1
@@ -53,10 +55,10 @@ try {
   if (StringUtil.isDefined(language)) {
 	//if content not found in specified language, check other ones
 	if (!StringUtil.isDefined(content)) {
-	  Iterator languages = I18NHelper.getLanguages();
+	  Iterator<String> languages = I18NHelper.getLanguages();
 	  if (languages != null) {
 		while (languages.hasNext() && !StringUtil.isDefined(content)) {
-		  language = (String) languages.next();
+		  language = languages.next();
 		  content = WysiwygController.load(componentId, objectId, language);
 		}
 	  }
@@ -74,5 +76,7 @@ try {
 	}
   }
   out.println(content);
-} catch (WysiwygException exc) {}
+} catch (WysiwygException exc) {
+   SilverTrace.info("wysiwyg", "WysiwygDisplayerServlet", "Wysiwy error", exc);
+}
 %>

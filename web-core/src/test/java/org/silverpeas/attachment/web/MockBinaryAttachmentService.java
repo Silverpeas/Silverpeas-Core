@@ -242,4 +242,9 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

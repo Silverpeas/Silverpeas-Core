@@ -37,6 +37,7 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
 
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -155,6 +156,7 @@ class DocumentConverter extends AbstractJcrConverter {
     doc.setMajorVersion(getIntProperty(node, SLV_PROPERTY_MAJOR));
     doc.setMinorVersion(getIntProperty(node, SLV_PROPERTY_MINOR));
     doc.setStatus(getStringProperty(node, SLV_PROPERTY_STATUS));
+    doc.setDocumentType(DocumentType.fromFolderName(node.getParent().getName()));
     String nodeName = node.getName();
     if ("jcr:frozenNode".equals(nodeName)) {
       nodeName = doc.computeNodeName();

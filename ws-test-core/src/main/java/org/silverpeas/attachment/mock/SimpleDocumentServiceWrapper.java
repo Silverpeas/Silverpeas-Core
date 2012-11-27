@@ -248,4 +248,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language) {
     return realService.listDocumentsLockedByUser(usedId, language);
   }
+
+  @Override
+  public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
+    return realService.moveDocument(document, destination);
+  }
 }

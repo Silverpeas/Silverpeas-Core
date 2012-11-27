@@ -61,7 +61,6 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 public class DocumentRepository {
 
   private static final String SIMPLE_DOCUMENT_ALIAS = "SimpleDocuments";
-
   final DocumentConverter converter = new DocumentConverter();
 
   public void prepareComponentAttachments(String instanceId, String folder) throws
@@ -134,6 +133,8 @@ public class DocumentRepository {
     session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
+    converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
+        getInstanceId());
     pk.setId(targetDocumentNode.getIdentifier());
     return pk;
   }
@@ -152,7 +153,7 @@ public class DocumentRepository {
     prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
     SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
     SimpleDocument targetDoc;
-    if (document.isVersioned()) {
+    if (document.isVersioned() && document.getDocumentType() == DocumentType.attachment) {
       targetDoc = new HistorisedDocument();
     } else {
       targetDoc = new SimpleDocument();
@@ -233,9 +234,10 @@ public class DocumentRepository {
    * @param session
    * @param documentPk the id of the document.
    * @throws RepositoryException
+   * @throws IOException
    */
   public void changeVersionState(Session session, SimpleDocumentPK documentPk) throws
-      RepositoryException {
+      RepositoryException, IOException {
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
       if (!documentNode.isCheckedOut()) {
@@ -246,15 +248,17 @@ public class DocumentRepository {
         documentNode.removeMixin(MIX_SIMPLE_VERSIONABLE);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, false);
       } else {
+        SimpleDocument origin = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
         documentNode.setProperty(SLV_PROPERTY_VERSIONED, true);
         documentNode.setProperty(SLV_PROPERTY_MAJOR, 1);
         documentNode.setProperty(SLV_PROPERTY_MINOR, 0);
         documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
+        SimpleDocument target = converter.fillDocument(documentNode, I18NHelper.defaultLanguage);
         VersionManager versionManager = documentNode.getSession().getWorkspace().getVersionManager();
         documentNode.getSession().save();
-        Version lastVersion = versionManager.checkin(documentNode.getPath());
+        moveMultilangContent(origin, target);
+        versionManager.checkin(documentNode.getPath());
       }
-
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.deleteDocument()", "", infex);
     }
@@ -303,9 +307,11 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+        getPath()
         + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
-    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+    Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(
+        SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(oldSilverpeasId)));
     Comparison versionedComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
@@ -367,6 +373,7 @@ public class DocumentRepository {
    * @param session the current JCR session.
    * @param instanceId the component id containing the documents.
    * @param foreignId the id of the container owning the documents.
+   * @param type thetype of required documents.
    * @param language the language in which the documents are required.
    * @return an ordered list of the documents.
    * @throws RepositoryException
@@ -393,7 +400,8 @@ public class DocumentRepository {
     return converter.convertNodeIterator(iter, language);
   }
 
-  public List<SimpleDocument> listDocumentsLockedByUser(Session session, String usedId, String language) throws
+  public List<SimpleDocument> listDocumentsLockedByUser(Session session, String usedId,
+      String language) throws
       RepositoryException {
     NodeIterator iter = selectAllDocumentsByOwnerId(session, usedId);
     return converter.convertNodeIterator(iter, language);
@@ -413,13 +421,15 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+    DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().
         getPath()
         + instanceId);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -440,12 +450,14 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+        getPath()
         + instanceId + '/' + type.getForlderName());
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -501,7 +513,8 @@ public class DocumentRepository {
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -541,7 +554,8 @@ public class DocumentRepository {
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_EXPIRY_DATE), QueryObjectModelFactory.JCR_OPERATOR_LESS_THAN, factory.
         literal(session.getValueFactory().createValue(expiry)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -565,7 +579,8 @@ public class DocumentRepository {
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ALERT_DATE), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(alert)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, foreignIdComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -586,12 +601,14 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().getPath()
+    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
+        getPath()
         + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
     Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
         ownerComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
@@ -614,7 +631,8 @@ public class DocumentRepository {
     Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));
-    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS, SLV_PROPERTY_ORDER));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, ownerComparison, new Ordering[]{order},
         null);
     QueryResult result = query.execute();
@@ -879,7 +897,19 @@ public class DocumentRepository {
   }
 
   public void copyMultilangContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
-   String originDir = origin.getDirectoryPath(null);
+    String originDir = origin.getDirectoryPath(null);
+    String targetDir = copy.getDirectoryPath(null);
+    targetDir = targetDir.replace('/', File.separatorChar);
+    File target = new File(targetDir).getParentFile();
+    File source = new File(originDir).getParentFile();
+    if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
+      return;
+    }
+    FileUtils.copyDirectory(source, target);
+  }
+
+  public void moveMultilangContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
+    String originDir = origin.getDirectoryPath(null);
     String targetDir = copy.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
