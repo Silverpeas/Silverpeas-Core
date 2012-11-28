@@ -7,11 +7,11 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "http://www.silverpeas.org/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,28 +21,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.accesscontrol;
+package com.stratelia.webactiv.util.node.model;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import java.util.Comparator;
 
 /**
- * Check the access to a space for a user.
- * @author Yohann Chastagnier
+ *
+ * @author ehugonnet
  */
-@Named
-public class SpaceAccessController implements AccessController<String> {
-
-  @Inject
-  private OrganizationController organizationController;
-
-  public SpaceAccessController() {
-  }
+public class NodeOrderComparator implements Comparator<NodeDetail> {
 
   @Override
-  public boolean isUserAuthorized(final String userId, final String spaceId) {
-    return organizationController.isSpaceAvailable(spaceId, userId);
+  public int compare(NodeDetail nodeDetail1, NodeDetail nodeDetail2) {
+    if(nodeDetail1 == null) {
+      if(nodeDetail2 == null) {
+        return 0;
+      }
+      return -1;
+    }
+    if(nodeDetail2 == null) {
+      return 1;
+    }
+    if(nodeDetail1.getOrder() == nodeDetail2.getOrder()) {
+      return nodeDetail1.getName().compareTo(nodeDetail2.getName());
+    }
+    return nodeDetail1.getOrder() - nodeDetail2.getOrder();
   }
+  
 }

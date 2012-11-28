@@ -206,6 +206,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // facets entry selected by the user
   private ResultFilterVO selectedFacetEntries = null;
   private boolean platformUsesPDC = false;
+  private boolean includeUsers = false;
 
   public PdcSearchSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
@@ -233,6 +234,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     } catch (PdcException e) {
       SilverTrace.info("pdcPeas", "PdcSearchSessionController()", "root.MSG_GEN_ERROR", e);
     }
+    
+    includeUsers = getSettings().getBoolean("search.users.included", false);
   }
 
   /**
@@ -433,7 +436,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           // pour retrouver les espaces et les composants
           query.addSpaceComponentPair(null, "Spaces");
           query.addSpaceComponentPair(null, "Components");
-          query.addSpaceComponentPair(null, "users");
+          if (includeUsers) {
+            query.addSpaceComponentPair(null, "users");
+          }
         } else if (getQueryParameters().getSpaceId() != null) {
           // used for search by space without keywords
           query.setSearchBySpace(true);
@@ -1572,8 +1577,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
         .searchDocumentById(documentPk, language);
-
-    
     // check if attachment is previewable and viewable
     File attachmentFile = new File(document.getAttachmentPath());
     boolean previewable = ViewerFactory.getPreviewService().isPreviewable(attachmentFile);
@@ -3033,4 +3036,5 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public boolean isPlatformUsesPDC() {
     return platformUsesPDC;
   }
+ 
 }

@@ -23,17 +23,14 @@
  */
 package org.silverpeas.image.imagemagick;
 
+import com.silverpeas.util.StringUtil;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IMOperation;
 import org.im4java.process.ProcessStarter;
-
-import com.silverpeas.util.StringUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -46,18 +43,37 @@ public class Im4javaManager {
   public void initialize() throws Exception {
 
     // Im4java settings
-    for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
-      if ("path".equals(entry.getKey().toLowerCase())) {
-        try {
-          final ConvertCmd cmd = new ConvertCmd();
-          cmd.setSearchPath(entry.getValue());
-          cmd.run(new IMOperation().version());
-          ProcessStarter.setGlobalSearchPath(entry.getValue());
-        } catch (final Exception e) {
-          // ImageMagick is not installed
+    if (!verify(ProcessStarter.getGlobalSearchPath())) {
+      for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
+        if ("path".equals(entry.getKey().toLowerCase())) {
+          verify(entry.getValue());
+          break;
         }
       }
     }
+  }
+
+  /**
+   * Verify the ImageMagick existence from a given path
+   * @param path
+   * @return
+   */
+  private boolean verify(String path) {
+    boolean verified = true;
+    if (path == null) {
+      path = "";
+    }
+    try {
+      final ConvertCmd cmd = new ConvertCmd();
+      cmd.setSearchPath(path);
+      cmd.run(new IMOperation().version());
+      ProcessStarter.setGlobalSearchPath(path);
+    } catch (final Exception e) {
+      // ImageMagick is not installed
+      ProcessStarter.setGlobalSearchPath(null);
+      verified = false;
+    }
+    return verified;
   }
 
   /**

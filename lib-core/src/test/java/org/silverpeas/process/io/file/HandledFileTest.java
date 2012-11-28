@@ -120,7 +120,6 @@ public class HandledFileTest extends AbstractHandledFileTest {
 
   @Test
   public void testOpenInputStreamOnHandledFile() throws Exception {
-
     // File exists in real path only
     HandledFile file = getHandledFile(realComponentPath, "file");
     touch(getFile(realComponentPath, "file"));

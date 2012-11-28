@@ -147,31 +147,33 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 	resource = new ResourcesWrapper(pdcSC.getMultilang(), pdcSC.getIcon(), pdcSC.getSettings(), pdcSC.getLanguage());
 	
 	pdcSC.buildComponentListWhereToSearch("dummy", componentId);
-	
-	SearchAxis axis = null;
 
 	// we get primary and eventually secondary axis
-    List searchAxis	= pdcSC.getAxis("P");
-    for (int p=0; p<searchAxis.size(); p++)
-    {
-    	axis = (SearchAxis) searchAxis.get(p);
-    	axis.setValues(pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0"));
+    List<SearchAxis> searchAxis	= pdcSC.getAxis("P");
+	List<SearchAxis> pertinentAxis = new ArrayList<SearchAxis>();
+    for (SearchAxis axis : searchAxis) {
+      	List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
+      	if (values != null && !values.isEmpty()) {
+        	axis.setValues(values);
+        	pertinentAxis.add(axis);
+      	}
     }
-	if (searchAxis.size()>0)
-	{
+	if (!pertinentAxis.isEmpty()) {
     	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
-		displayAxisByType(false, "", searchAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
+		displayAxisByType(false, "", pertinentAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
 	}
 	
 	searchAxis	= pdcSC.getAxis("S");
-    for (int p=0; p<searchAxis.size(); p++)
-    {
-    	axis = (SearchAxis) searchAxis.get(p);
-    	axis.setValues(pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0"));
-    }
-    if (searchAxis.size()>0)
-    {
+	pertinentAxis.clear();
+	for (SearchAxis axis : searchAxis) {
+	  	List<Value> values = pdcSC.getDaughterValues(Integer.toString(axis.getAxisId()), "0");
+	  	if (values != null && !values.isEmpty()) {
+	    	axis.setValues(values);
+	    	pertinentAxis.add(axis);
+	  	}
+	}
+	if (!pertinentAxis.isEmpty()) {
     	String axisIcon = resource.getIcon("pdcPeas.icoSecondaryAxis");
-    	displayAxisByType(false, "", searchAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
+    	displayAxisByType(false, "", pertinentAxis, searchContext, Boolean.FALSE, null, resource, axisIcon, out);
     }
 %>

@@ -34,7 +34,8 @@ Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
+
 
 	browseBar.setSpaceId(spaceId);
 	if (m_SousEspace == null)
@@ -68,8 +69,7 @@ function isCorrectForm() {
 
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
 		var desc = document.infoSpace.Description;
-
-        if (isWhitespace(name)) {
+    if (isWhitespace(name)) {
 			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
 			errorNb++;
 		}

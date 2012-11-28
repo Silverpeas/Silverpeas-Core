@@ -594,6 +594,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     SimpleDocument doc = getDocument(documentPK);
     setEditingDocument(doc);
     AttachmentServiceFactory.getAttachmentService().deleteAttachment(doc, true);
+
   }
 
 
@@ -967,7 +968,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
           + File.separatorChar + document.getFilename());
       AttachmentServiceFactory.getAttachmentService().getBinaryContent(destFile, document
           .getPk(), document.getLanguage());
-
     }
   }
 

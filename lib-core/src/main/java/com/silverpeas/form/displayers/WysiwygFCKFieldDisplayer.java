@@ -254,14 +254,14 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       builder.append("width : '").append(editorWidth).append("',\n");
       builder.append("height : ").append(editorHeight).append(",\n");
       builder.append("language : '").append(pageContext.getLanguage()).append("',\n");
-
       String basehref = settings.getString("baseHref", pageContext.getServerURL());
       if (StringUtil.isDefined(basehref)) {
         builder.append("baseHref : '").append(basehref).append("',\n");
       }
-      builder.append("filebrowserImageBrowseUrl : '").append(Util.getPath()
-          + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" + pageContext.getComponentId() + "&ObjectId="
-          + pageContext.getObjectId() + "&Context=" + fieldName).append("',\n");
+      builder.append("filebrowserImageBrowseUrl : '").append(Util.getPath()).append(
+          "/wysiwyg/jsp/uploadFile.jsp?ComponentId=").append(pageContext.getComponentId()).
+          append("&ObjectId=").append(pageContext.getObjectId()).append("&Context=").append(
+          fieldName).append("',\n");
       builder.append("toolbarStartupExpanded : ").append("false").append(",\n");
       builder.append("customConfig : '").append(configFile).append("',\n");
       builder.append("toolbar : '").append("XMLForm").append("'\n");

@@ -20,13 +20,11 @@
  */
 package com.silverpeas.wysiwyg.dynamicvalue;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.dbunit.JdbcBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -62,7 +60,9 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
       try {
         statement.executeUpdate("DROP TABLE val_dyn1");
       } catch (SQLException e) {
-        e.printStackTrace();
+        if(!"ERROR: table \"val_dyn1\" does not exist".equals(e.getMessage())) {
+          e.printStackTrace();
+        }
       }
 
       String sql = "CREATE TABLE val_dyn1 ( \"value\" character varying(256) NOT NULL,"
@@ -78,8 +78,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
   }
 
   /**
-   * Returns the password for the connection.<br> Subclasses may override this method to provide a
-   * custom password.<br> Default implementations returns null.
+   * Returns the password for the connection.<br/> Subclasses may override this method to provide a
+   * custom password.<br/> Default implementations returns null.
    */
   @Override
   protected String getPassword() {
@@ -87,8 +87,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
   }
 
   /**
-   * Returns the username for the connection.<br> Subclasses may override this method to provide a
-   * custom username.<br> Default implementations returns null.
+   * Returns the username for the connection.<br/> Subclasses may override this method to provide a
+   * custom username.<br/> Default implementations returns null.
    */
   @Override
   protected String getUsername() {

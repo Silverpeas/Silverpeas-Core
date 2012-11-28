@@ -696,15 +696,16 @@ public class JobDomainPeasRequestRouter extends
         SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(
             configuration);
 
-        // création de la liste des domaines
-        String[][] allDomains = jobDomainSC.getAllDomains();
-        String[] domainsByList = new String[allDomains.length - 1];
-        for (int n = 1; n < allDomains.length; n++) {
-          domainsByList[n - 1] = allDomains[n][1];
+        // setting domains to welcome template
+        List<Domain> allDomains = jobDomainSC.getAllDomains();
+        // do not return mixed domain
+        String[] domainsByList = new String[allDomains.size() - 1];
+        for (int n = 1; n < allDomains.size(); n++) {
+          domainsByList[n - 1] = allDomains.get(n).getName();
         }
         template.setAttribute("listDomains", domainsByList);
-        request.setAttribute("Content", template.applyFileTemplate("register_"
-            + jobDomainSC.getLanguage()));
+        request.setAttribute("Content",
+            template.applyFileTemplate("register_" + jobDomainSC.getLanguage()));
 
         destination = "welcome.jsp";
       } else if (function.equals("Pagination")) {
@@ -790,12 +791,13 @@ public class JobDomainPeasRequestRouter extends
         }
         request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
       } else if (destination.equals("domainNavigation.jsp")) {
-        String[][] domains = jobDomainSC.getAllDomains();
-        if (domains.length == 1) {
-          jobDomainSC.setTargetDomain(domains[0][0]);
+        List<Domain> domains = jobDomainSC.getAllDomains();
+        if (domains.size() == 1) {
+          jobDomainSC.setTargetDomain(domains.get(0).getId());
         }
-        request.setAttribute("allDomains", jobDomainSC.getAllDomains());
+        request.setAttribute("allDomains", domains);
         request.setAttribute("allRootGroups", jobDomainSC.getAllRootGroups());
+        request.setAttribute("CurrentDomain", jobDomainSC.getTargetDomain());
         if (jobDomainSC.getTargetDomain() != null) {
           request.setAttribute("URLForContent", "domainContent");
         } else {

@@ -21,22 +21,11 @@
 package com.silverpeas.form.displayers;
 
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
 import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.viewer.ViewerFactory;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -47,17 +36,13 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.viewer.ViewerFactory;
@@ -66,11 +51,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+
 import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+
+import com.silverpeas.util.FileUtil;
+
 
 
 /**
@@ -303,34 +296,41 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     final List<String> result = new ArrayList<String>();
     final String itemName = template.getFieldName();
     try {
-      String value = processUploadedFile(items, itemName, pageContext);
-      String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-      if (param != null) {
-        if (param.startsWith("remove_") && !pageContext.isCreation()) {
-          // Il faut supprimer le fichier
-          String attachmentId = param.substring("remove_".length());
-          deleteAttachment(attachmentId, pageContext);
-        } else if (value != null && StringUtil.isInteger(param)) {
-          // Y'avait-il un déjà un fichier ?  Il faut remplacer le fichier donc supprimer l'ancien
-          deleteAttachment(param, pageContext);
-        } else if (value == null) {
-          // pas de nouveau fichier, ni de suppression le champ ne doit pas être mis à jour
-          return Collections.emptyList();
-        }
-      }
-      if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-          && !StringUtil.isDefined(value)) {
-        return Collections.emptyList();
-      }
-      return update(value, field, template, pageContext);
-    } catch (IOException e) {
+      // TODO - MODIFYING THIS PROCESSES EXECUTION AFTER NEW ATTACHMENT HANDLING INTEGRATION
+      ProcessFactory.getProcessManagement().execute(
+          new AbstractFileProcess<ProcessExecutionContext>() {
+            @Override
+            public void processFiles(ProcessExecutionContext processExecutionProcess,
+                ProcessSession session, FileHandler fileHandler) throws Exception {
+
+              String value = processUploadedFile(items, itemName, pageContext, fileHandler);
+              String param = FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
+              if (param != null) {
+                if (param.startsWith("remove_") && !pageContext.isCreation()) {
+                  // Il faut supprimer le fichier
+                  String attachmentId = param.substring("remove_".length());
+                  deleteAttachment(attachmentId, pageContext);
+                } else if (value != null && StringUtil.isInteger(param)) {
+                  // Y'avait-il un déjà un fichier ?
+                  // Il faut remplacer le fichier donc supprimer l'ancien
+                  deleteAttachment(param, pageContext);
+                }
+              }
+              if (pageContext.getUpdatePolicy() != PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES ||
+                  StringUtil.isDefined(value)) {
+                result.addAll(update(value, field, template, pageContext));
+              }
+            }
+          }, new ProcessExecutionContext(pageContext.getComponentId()));
+    } catch (Exception e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
-    return Collections.emptyList();
+    return result;
   }
 
   private String processUploadedFile(List<FileItem> items, String parameterName,
-      PagesContext pagesContext) throws IOException {
+      PagesContext pagesContext, FileHandler fileHandler)
+      throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
     if (!item.isFormField()) {
@@ -347,8 +347,8 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
               fileName, userId, pagesContext.isVersioningUsed());
           return document.getId();
         }
-      }
-    }
+          }
+        }
     return attachmentId;
   }
 

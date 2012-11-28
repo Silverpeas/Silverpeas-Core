@@ -56,8 +56,8 @@ import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**

@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * JobStartPagePeasSettings.java
- */
-
 package com.silverpeas.jobStartPagePeas;
 
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -50,7 +46,7 @@ public class JobStartPagePeasSettings {
   public static boolean recoverRightsEnable;
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
-  public static boolean COMPONENT_SPACE_QUOTA_ACTIVATED = false;
+  public static boolean componentsInSpaceQuotaActivated = false;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -70,6 +66,6 @@ public class JobStartPagePeasSettings {
     recoverRightsEnable = rs.getBoolean("EnableRecoverRightsOperation", false);
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
-    COMPONENT_SPACE_QUOTA_ACTIVATED = rs.getBoolean("space.component.quota.activated", false);
+    componentsInSpaceQuotaActivated = rs.getBoolean("quota.space.components.activated", false);
   }
 }

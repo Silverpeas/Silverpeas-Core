@@ -52,7 +52,7 @@
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
   // Initializing users in domain quota
-  boolean isUserDomainQuotaFull = JobDomainSettings.userQuotaEnabled && domObject.isQuotaReached();
+  boolean isUserDomainQuotaFull = JobDomainSettings.usersInDomainQuotaActivated && domObject.isQuotaReached();
 
   // Domain operations
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
@@ -169,7 +169,7 @@ out.println(window.printBefore());
 <div class="principalContent">
 	<div id="principal-content-domainContent">
 		<h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
-		<% if (JobDomainSettings.userQuotaEnabled && domObject.getUserDomainQuota().exists()) { %>
+		<% if (JobDomainSettings.usersInDomainQuotaActivated && domObject.getUserDomainQuota().exists()) { %>
 			<div class="tag-presentation limited-number-user">
 				<div class="tag-presentation-content"><span><%=resource.getStringWithParam("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
 			</div>
@@ -187,6 +187,7 @@ out.println(window.printBefore());
 </div>
 <% if (isUserDomainQuotaFull) { %>
 	<div class="inlineMessage-nok"><fmt:message key="JDP.userDomainQuotaFull" /></div>
+  <br clear="all" />
 <% } %>
 <br/>
 <view:areaOfOperationOfCreation/>
@@ -241,7 +242,7 @@ out.println(window.printBefore());
 
 	  if (subUsers != null) {
 	      for(int i=0; i<subUsers.length; i++){
-	          //cr�ation des ligne de l'arrayPane
+	          //creation des ligne de l'arrayPane
 	          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
 	          IconPane iconPane1User = gef.getIconPane();
 	          Icon userIcon = iconPane1User.addIcon();

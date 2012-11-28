@@ -33,7 +33,7 @@ SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
 String		translation 		= (String) request.getParameter("Translation");
 boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
-boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.COMPONENT_SPACE_QUOTA_ACTIVATED;
+boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 String componentSpaceQuotaMaxCount = "";
 if (isComponentSpaceQuotaActivated) {
   componentSpaceQuotaMaxCount = String.valueOf(space.getComponentSpaceQuota().getMaxCount());
@@ -67,7 +67,7 @@ function isCorrectForm() {
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
 		var desc = document.infoSpace.Description;
 
-        if (isWhitespace(name)) {
+    if (isWhitespace(name)) {
 			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
 			errorNb++;
 		}

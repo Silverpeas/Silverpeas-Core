@@ -26,6 +26,15 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%
+List<Domain> allDomains = (List<Domain>)request.getAttribute("allDomains");
+Domain currentDomain = (Domain) request.getAttribute("CurrentDomain");
+String currentDomainId = "";
+if (currentDomain != null) {
+  currentDomainId = currentDomain.getId();
+}
+%>
+
 <%@ include file="check.jsp" %>
 <html>
 <head>
@@ -106,36 +115,33 @@ function viewDomain()
             <td width="100%"><span class="txtnote">
 						<table cellpadding=0 cellspacing=0 border=0 width=100%>
 						<tr><td> 
-            <%
-                String[][] allDomains = (String[][])request.getAttribute("allDomains");
-            	if (allDomains.length > 1)
-            	{
-            		%>
+            	<% if (allDomains.size() > 1) { %>
             		<form name="domainsNamesForm" Action="domainNavigation" Method="POST">	
 	                    <span class="selectNS"> 
-	                    <select name="Iddomain" size="1" onChange="javascript:document.domainsNamesForm.submit()">
+	                    <select name="Iddomain" size="1" onchange="javascript:document.domainsNamesForm.submit()">
 	                    <option value=""><%=resource.getString("GML.select")%></option>
 	                    <option value="">-----------------</option>
-	                    <option value="<%=allDomains[0][0]%>" <%=allDomains[0][2]%>><%=allDomains[0][1]%></option>
-	                    <%
-	                        for(int n = 1; n < allDomains.length; n++)
-	                        {
-	                        	if (n == 1)
+	                    <% for(int n = 0; n < allDomains.size(); n++) {
+	                      		Domain domain = allDomains.get(n);
+	                      		String domainName = domain.getName();
+	                      		if (domain.isMixedOne()) {
+	                      		  domainName = resource.getString("JDP.domainMixt");
+	                      		}
+	                      		String selected = "";
+	                      		if (domain.getId().equals(currentDomainId)) {
+	                      		  selected = " selected=\"selected\"";
+	                      		}
+	                        	if (n == 1) {
 	                        		out.println("<option value=\"\">-----------------</option>");
-	                            out.println("<option value=" + allDomains[n][0] + " " + allDomains[n][2] + ">" + allDomains[n][1] + "</option>");
+	                        	}
+	                            out.println("<option value=\"" + domain.getId() + "\" " + selected + ">" + domainName + "</option>");
 	                        }
 	                    %>
 	                    </select></span>
                     </form>
-            		<%
-            	}
-            	else
-            	{
-            		%>
-            		<span class="txtlibform"><%=allDomains[0][1]%></span>
-            		<%           		
-            	}
-            %>
+            	<% } else { %>
+            		<span class="txtlibform"><%=allDomains.get(0).getName()%></span>
+            	<% } %>
 					</td></tr>
 					</table>
               </span></td>
@@ -170,14 +176,12 @@ function viewDomain()
 						<tr><td> 
 						<%
                             Group[] allRootGroups = (Group[])request.getAttribute("allRootGroups");
-							Group group = null;
 							String icon = null;
-							for (int i=0; i < allRootGroups.length; i++) 
-							{
-								group = allRootGroups[i];
+							for (Group group : allRootGroups) {
 								icon = resource.getIcon("JDP.group");
-								if (group.isSynchronized())
+								if (group.isSynchronized()) {
 									icon = resource.getIcon("JDP.groupSynchronized");
+								}
 								%>
 								<img src="<%=resource.getIcon("JDP.px")%>" align="absmiddle" height="2"><br><img src="<%=icon%>" align=absmiddle  alt="<%=resource.getString("GML.groupe")%>" title="<%=resource.getString("GML.groupe")%>">&nbsp;<a href="javascript:viewGroup('<%=group.getId()%>')"><%=EncodeHelper.javaStringToHtmlString(group.getName())%></a><br>
 								<%

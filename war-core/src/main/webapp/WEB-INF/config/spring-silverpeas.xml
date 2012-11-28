@@ -69,6 +69,7 @@
   <ctx:component-scan base-package="org.silverpeas.look"/>
   <ctx:component-scan base-package="org.silverpeas.viewer"/>
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
+  <ctx:component-scan base-package="org.silverpeas.util.data"/>
 
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
 

@@ -23,6 +23,28 @@
  */
 package com.silverpeas.profile.web;
 
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
+
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -33,21 +55,7 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -140,14 +148,20 @@ public class UserProfileResource extends RESTWebService {
    * user of the session within which the request is received.
    *
    * @param userId the unique identifier of the user.
+   * @param extended more user details (full details).
    * @return the profile of the user in a JSON representation.
    */
   @GET
   @Path("{userId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserProfileEntity getUser(@PathParam("userId") String userId) {
-    UserDetail theUser = getUserDetailMatching(userId);
-    return asWebEntity(theUser, identifiedBy(getUriInfo().getAbsolutePath()));
+  public UserProfileEntity getUser(@PathParam("userId") String userId,
+      @QueryParam("extended") boolean extended) {
+    final URI uri = identifiedBy(getUriInfo().getAbsolutePath());
+    if (extended) {
+      return asWebEntity(getUserFullMatching(userId), uri);
+    } else {
+      return asWebEntity(getUserDetailMatching(userId), uri);
+    }
   }
 
   /**
@@ -298,8 +312,23 @@ public class UserProfileResource extends RESTWebService {
     return UserProfileEntity.fromUser(user).withAsUri(userUri);
   }
 
+  private UserProfileExtendedEntity asWebEntity(final UserFull user, final URI userUri) {
+    return UserProfileExtendedEntity.fromUser(user).withAsUri(userUri);
+  }
+
   private UserDetail getUserDetailById(String userId) {
     UserDetail theUser = UserDetail.getById(userId);
+    checkUser(userId, theUser);
+    return theUser;
+  }
+
+  private UserFull getUserFullById(String userId) {
+    UserFull theUser = UserFull.getById(userId);
+    checkUser(userId, theUser);
+    return theUser;
+  }
+
+  private void checkUser(String userId, UserDetail theUser) {
     if (theUser == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
@@ -310,7 +339,6 @@ public class UserProfileResource extends RESTWebService {
             userId});
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-    return theUser;
   }
 
   private String[] getContactIds(String userId) {
@@ -371,6 +399,22 @@ public class UserProfileResource extends RESTWebService {
       return getUserDetail();
     } else {
       return getUserDetailById(identifier);
+    }
+  }
+
+  /**
+   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
+   * @param identifier an identifier.
+   * @return the detail about a user.
+   */
+  private UserFull getUserFullMatching(String identifier) {
+    if (identifier.equals("me")) {
+      return getUserFullById(getUserDetail().getId());
+    } else {
+      return getUserFullById(identifier);
     }
   }
 }
