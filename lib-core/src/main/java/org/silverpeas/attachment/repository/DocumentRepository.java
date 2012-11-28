@@ -160,6 +160,7 @@ public class DocumentRepository {
     }
     targetDoc.setNodeName(null);
     targetDoc.setPK(pk);
+    targetDoc.setDocumentType(document.getDocumentType());
     targetDoc.setForeignId(destination.getId());
     targetDoc.computeNodeName();
     session.getWorkspace().copy(document.getFullJcrPath(), targetDoc.getFullJcrPath());
