@@ -25,13 +25,15 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
-import static com.stratelia.webactiv.util.viewGenerator.html.SupportedJavaScriptPlugins.*;
-import java.io.IOException;
+import org.apache.ecs.ElementContainer;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
-import org.apache.ecs.ElementContainer;
+import java.io.IOException;
+
+import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
+import static com.stratelia.webactiv.util.viewGenerator.html.SupportedJavaScriptPlugins.*;
 
 /**
 * This tag is for including javascript plugins with their stylesheets.
@@ -75,6 +77,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includeCalendar(xhtml);
     } else if (preview.name().equals(getName())) {
       includePreview(xhtml);
+    } else if (notifier.name().equals(getName())) {
+      includeNotifier(xhtml);
     } else if (jquery.name().equals(getName())) {
       includeJQuery(xhtml);
     }
