@@ -26,20 +26,20 @@ package com.silverpeas.web;
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import static com.silverpeas.web.UserPriviledgeValidation.*;
+import java.util.Collection;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.personalization.UserPreferences;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -56,6 +56,7 @@ public abstract class RESTWebService {
   @Context
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
+  private Collection<SilverpeasRole> userRoles = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -157,6 +158,18 @@ public abstract class RESTWebService {
   protected UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
             getUserDetail().getId());
+  }
+
+  /**
+   * Gets roles of the authenticated user.
+   * @return
+   */
+  protected Collection<SilverpeasRole> getUserRoles() {
+    if (userRoles == null) {
+      userRoles = SilverpeasRole
+          .from(organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
+    }
+    return userRoles;
   }
 
   /**
