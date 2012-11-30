@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -75,8 +76,7 @@ public class DocumentRepository {
   }
 
   protected Node prepareComponentAttachments(Session session, String instanceId, String folder)
-      throws
-      RepositoryException {
+      throws RepositoryException {
     Node targetInstanceNode = converter.getFolder(session.getRootNode(), instanceId);
     return converter.getFolder(targetInstanceNode, folder);
   }
@@ -173,6 +173,41 @@ public class DocumentRepository {
   }
 
   /**
+   * Copy the document to another attached object.
+   *
+   * @param session
+   * @param document
+   * @param destination the foreingId holding reference to the copy.
+   * @return
+   * @throws RepositoryException
+   */
+  public SimpleDocumentPK copyDocument(Session session, HistorisedDocument document,
+      WAPrimaryKey destination) throws RepositoryException, IOException {
+    prepareComponentAttachments(destination.getInstanceId(), document.getFolder());
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, destination.getInstanceId());
+    List<SimpleDocument> history = document.getHistory();
+    history.add(document);
+    Collections.reverseOrder();
+    SimpleDocument targetDoc = new HistorisedDocument(history.remove(0));
+    targetDoc.setNodeName(null);
+    targetDoc.setPK(pk);
+    targetDoc.setDocumentType(document.getDocumentType());
+    targetDoc.setForeignId(destination.getId());
+    targetDoc.computeNodeName();
+    pk = createDocument(session, targetDoc);
+    unlock(session, targetDoc, false);
+    for (SimpleDocument doc : history) {
+      lock(session, targetDoc, document.getUpdatedBy());
+      targetDoc = new HistorisedDocument(doc);
+      targetDoc.setPK(pk);
+      targetDoc.setForeignId(destination.getId());
+      updateDocument(session, targetDoc);
+      unlock(session, targetDoc, false);
+    }
+    return pk;
+  }
+
+  /**
    * Create file attached to an object who is identified by "PK" SimpleDocument object contains an
    * attribute who identifie the link by a foreign key.
    *
@@ -184,12 +219,32 @@ public class DocumentRepository {
   public void updateDocument(Session session, SimpleDocument document) throws
       RepositoryException, IOException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    String owner = document.getEditedBy();
-    if (!StringUtil.isDefined(owner)) {
-      owner = document.getUpdatedBy();
+    if (StringUtil.isDefined(document.getEditedBy())) {
+      document.setUpdatedBy(document.getEditedBy());
     }
-    document.setUpdatedBy(owner);
     converter.fillNode(document, documentNode);
+  }
+
+  /**
+   * Add the document's clone id to the document even if it is locked.
+   *
+   * @param session the JCR session.
+   * @param original the original document to be cloned.
+   * @param clone the cone of the original document.
+   * @throws RepositoryException
+   */
+  public void setClone(Session session, SimpleDocument original, SimpleDocument clone) throws
+      RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(original.getPk().getId());
+    boolean checkedin = !documentNode.isCheckedOut();
+    if (checkedin) {
+      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
+    }
+    documentNode.setProperty(SLV_PROPERTY_CLONE, clone.getId());
+    if (checkedin) {
+      session.save();
+      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
+    }
   }
 
   /**
@@ -200,10 +255,18 @@ public class DocumentRepository {
    * @param document
    * @throws RepositoryException
    */
-  public void updateDocumentOrder(Session session, SimpleDocument document) throws
+  public void setOrder(Session session, SimpleDocument document) throws
       RepositoryException {
     Node documentNode = session.getNodeByIdentifier(document.getPk().getId());
-    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
+    boolean checkedin = !documentNode.isCheckedOut();
+    if (checkedin) {
+      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
+    }
+    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());    
+    if (checkedin) {
+      session.save();
+      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
+    }
   }
 
   /**
@@ -369,6 +432,22 @@ public class DocumentRepository {
   }
 
   /**
+   * Search all the documents of any type in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @param language the language in which the documents are required.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  public List<SimpleDocument> listAllDocumentsByForeignId(Session session, String instanceId,
+      String foreignId, String language) throws RepositoryException {
+    NodeIterator iter = selectDocumentsByForeignId(session, instanceId, foreignId);
+    return converter.convertNodeIterator(iter, language);
+  }
+
+  /**
    * Search all the documents in an instance with the specified foreignId.
    *
    * @param session the current JCR session.
@@ -460,6 +539,33 @@ public class DocumentRepository {
     Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_ORDER));
     QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
+        foreignIdComparison), new Ordering[]{order}, null);
+    QueryResult result = query.execute();
+    return result.getNodes();
+  }
+
+  /**
+   * Search all the documents of tany type in an instance with the specified foreignId.
+   *
+   * @param session the current JCR session.
+   * @param instanceId the component id containing the documents.
+   * @param foreignId the id of the container owning the documents.
+   * @return an ordered list of the documents.
+   * @throws RepositoryException
+   */
+  NodeIterator selectDocumentsByForeignId(Session session, String instanceId, String foreignId)
+      throws RepositoryException {
+    QueryManager manager = session.getWorkspace().getQueryManager();
+    QueryObjectModelFactory factory = manager.getQOMFactory();
+    Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
+    DescendantNode descendantNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS, session.
+        getRootNode().getPath() + instanceId + '/');
+    Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
+        literal(session.getValueFactory().createValue(foreignId)));
+    Ordering order = factory.ascending(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
+        SLV_PROPERTY_ORDER));
+    QueryObjectModel query = factory.createQuery(source, factory.and(descendantNodeConstraint,
         foreignIdComparison), new Ordering[]{order}, null);
     QueryResult result = query.execute();
     return result.getNodes();
@@ -903,6 +1009,18 @@ public class DocumentRepository {
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
     File source = new File(originDir).getParentFile();
+    if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
+      return;
+    }
+    FileUtils.copyDirectory(source, target);
+  }
+  
+  public void copyFullContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
+    String originDir = origin.getDirectoryPath(null);
+    String targetDir = copy.getDirectoryPath(null);
+    targetDir = targetDir.replace('/', File.separatorChar);
+    File target = new File(targetDir).getParentFile().getParentFile();
+    File source = new File(originDir).getParentFile().getParentFile();
     if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
     }

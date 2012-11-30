@@ -497,13 +497,17 @@ public class SimpleDocument implements Serializable {
   /**
    * Path to the directory where the file is to be stored.
    *
-   * @param lang the language of the document.
+   * @param language the language of the document.
    * @return the path to the directory where the file is to be stored.
    */
-  public String getDirectoryPath(String lang) {
+  public String getDirectoryPath(String language) {
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId());
     directory = directory.replace('/', separatorChar);
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
+    String lang = language;
+    if(!StringUtil.isDefined(lang)) {
+      lang = I18NHelper.defaultLanguage;
+    }
     return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
         + separatorChar;
   }

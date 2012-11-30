@@ -247,4 +247,9 @@ public class MockBinaryAttachmentService implements AttachmentService {
   public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 }

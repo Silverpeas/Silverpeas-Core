@@ -232,14 +232,25 @@ public interface AttachmentService {
   SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang);
 
   /**
-   * Search all file attached to a foreign object.
+   * Search all files attached to a foreign object.
    *
    * @param foreignKey : the primary key of foreign object.
-   * @param lang the lang for the documents.
+   * @param lang the language of the documents.
    * @return the list of attached documents.
    * @throws AttachmentRuntimeException when is impossible to search
    */
   List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
+  
+  
+  /**
+   * Search all documents (files, xmlform content, wysiwyg) attached to a foreign object.
+   *
+   * @param foreignKey : the primary key of foreign object.
+   * @param lang the language of the documents.
+   * @return the list of attached documents.
+   * @throws AttachmentRuntimeException when is impossible to search
+   */
+  List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
 
   /**
    * Search all file attached to a foreign object.

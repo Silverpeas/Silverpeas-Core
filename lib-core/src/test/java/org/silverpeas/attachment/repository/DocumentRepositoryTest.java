@@ -241,7 +241,6 @@ public class DocumentRepositoryTest {
     Session session = BasicDaoFactory.getSystemSession();
     try {
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-      String creatorId = "0";
       ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
           Charsets.UTF_8));
       SimpleAttachment attachment = createEnglishSimpleAttachment();
@@ -417,6 +416,63 @@ public class DocumentRepositoryTest {
       BasicDaoFactory.logout(session);
     }
   }
+  
+  /**
+   * Test of listDocumentsByForeignId method, of class DocumentRepository.
+   */
+  @Test
+  public void testListDocumentsByForeignIdAndType() throws Exception {
+    Session session = BasicDaoFactory.getSystemSession();
+    try {
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      documentRepository.createDocument(session, docNode18_1);
+      documentRepository.storeContent(docNode18_1, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docNode18_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      documentRepository.createDocument(session, docNode18_2);
+      documentRepository.storeContent(docNode18_2, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createEnglishSimpleAttachment();
+      SimpleDocument docNode18_3 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      docNode18_3.setDocumentType(DocumentType.wysiwyg);
+      documentRepository.createDocument(session, docNode18_3);
+      documentRepository.storeContent(docNode18_3, content);
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      attachment = createFrenchSimpleAttachment();
+      SimpleDocument docNode18_4 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);      
+      docNode18_4.setDocumentType(DocumentType.image);
+      documentRepository.createDocument(session, docNode18_4);
+      documentRepository.storeContent(docNode18_4, content);
+      session.save();
+      List<SimpleDocument> docs = documentRepository.listDocumentsByForeignIdAndType(session, instanceId,
+          foreignId, DocumentType.attachment, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(2));
+      assertThat(docs, containsInAnyOrder(docNode18_1, docNode18_2));
+      docs = documentRepository.listDocumentsByForeignIdAndType(session, instanceId,
+          foreignId, DocumentType.wysiwyg, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(1));
+      assertThat(docs, containsInAnyOrder(docNode18_3));
+      docs = documentRepository.listDocumentsByForeignIdAndType(session, instanceId,
+          foreignId, DocumentType.image, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(1));
+      assertThat(docs, containsInAnyOrder(docNode18_4));
+      docs = documentRepository.listAllDocumentsByForeignId(session, instanceId, foreignId, "fr");
+      assertThat(docs, is(notNullValue()));
+      assertThat(docs.size(), is(4));
+      assertThat(docs, containsInAnyOrder(docNode18_1, docNode18_2, docNode18_3, docNode18_4));
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+  }
 
   /**
    * Test of selectDocumentsByForeignId method, of class DocumentRepository.
@@ -450,8 +506,7 @@ public class DocumentRepositoryTest {
       documentRepository.createDocument(session, docNode25_2);
       documentRepository.storeContent(docNode25_2, content);
       session.save();
-      NodeIterator nodes = documentRepository.selectDocumentsByForeignIdAndType(session, instanceId,
-          "node18", DocumentType.attachment);
+      NodeIterator nodes = documentRepository.selectDocumentsByForeignId(session, instanceId, "node18");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docNode18_1.getId()));

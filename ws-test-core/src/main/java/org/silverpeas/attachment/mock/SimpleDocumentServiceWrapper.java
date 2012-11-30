@@ -253,4 +253,9 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
     return realService.moveDocument(document, destination);
   }
+
+  @Override
+  public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
+    return realService.listAllDocumentsByForeignKey(foreignKey, lang);
+  }
 }

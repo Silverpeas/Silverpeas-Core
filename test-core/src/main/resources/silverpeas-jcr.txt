@@ -25,7 +25,7 @@
   - slv:alertDate (DATE)
   - slv:reservationDate (DATE)
   - slv:status (STRING)
-  - slv:clone (STRING)
+  - slv:clone (STRING) IGNORE
   - slv:major (LONG) = '0'
   - slv:minor (LONG) = '0'
   + slv:simpleAttachment PRIMARY
