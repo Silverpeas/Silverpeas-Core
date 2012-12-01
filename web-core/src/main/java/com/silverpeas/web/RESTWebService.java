@@ -23,9 +23,13 @@
  */
 package com.silverpeas.web;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import javax.inject.Inject;
@@ -56,6 +60,7 @@ public abstract class RESTWebService {
   @Context
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
+  private Collection<SilverpeasRole> userRoles = null;
 
   /**
    * Gets the identifier of the component instance to which the requested resource belongs to.
@@ -157,6 +162,24 @@ public abstract class RESTWebService {
   protected UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(
             getUserDetail().getId());
+  }
+
+  /**
+   * Gets roles of the authenticated user.
+   * @return
+   */
+  protected Collection<SilverpeasRole> getUserRoles() {
+    if (userRoles == null) {
+      userRoles = new ArrayList<SilverpeasRole>();
+      final String[] arrayOfUserRoles =
+          organizationController.getUserProfiles(getUserDetail().getId(), getComponentId());
+      if (arrayOfUserRoles != null) {
+        for (final String role : arrayOfUserRoles) {
+          userRoles.add(SilverpeasRole.valueOf(role));
+        }
+      }
+    }
+    return userRoles;
   }
 
   /**
