@@ -24,6 +24,7 @@
 package org.silverpeas.look.web;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.silverpeas.look.web.delegate.LookWebDelegate;
@@ -52,11 +53,32 @@ public abstract class AbstractLookResource extends RESTWebService {
    * @return
    */
   protected LookWebDelegate getLookDelegate() {
+    verifyUserAuthorizedToAccessLookContext();
+    return lookDelegate;
+  }
+
+  /**
+   * Verifies the requester user is authorized to access the given space
+   * @param spaceId
+   */
+  protected void verifyUserAuthorizedToAccessLookContext() {
+    // If the look helper is not accessible, then the user is not authorized
+    if (!isUserAuthorizedToAccessLookContext()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
+   * Indicates if the requester user is authorized to access the given space
+   * @param spaceId
+   */
+  protected boolean isUserAuthorizedToAccessLookContext() {
+    // If the look helper is not accessible, then the user is not authorized
     if (lookDelegate == null) {
       lookDelegate =
           LookWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
               getHttpServletRequest());
     }
-    return lookDelegate;
+    return (lookDelegate != null && lookDelegate.getHelper() != null);
   }
 }
