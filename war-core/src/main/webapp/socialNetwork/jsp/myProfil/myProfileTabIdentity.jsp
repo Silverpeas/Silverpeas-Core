@@ -62,8 +62,14 @@ boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
 boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 %>
 
+<style type="text/css">
+.txtlibform {
+	width: 230px;
+}
+</style>
+
 <div class="sousNavBulle">
-	<p><fmt:message key="profil.subnav.display" /> : <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
+	<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
 <% if (StringUtil.isDefined(messageOK)) { %>
@@ -78,6 +84,8 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 
 <div id="identity">
 <form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
+<fieldset id="identity-main" class="skinFieldset">
+<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.main" /></legend>
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
@@ -115,13 +123,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
     </tr>
 	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td>
-			<input type="radio" name="userAccessLevel" value=A" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("A"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.admin") %><br/>
-			<input type="radio" name="userAccessLevel" value=D" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("D"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
-			<input type="radio" name="userAccessLevel" value=K" <% if ((userFull.getAccessLevel() != null) && (userFull.getAccessLevel().equalsIgnoreCase("K"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
-			<input type="radio" name="userAccessLevel" value=U" <% if ((userFull.getAccessLevel() == null) || (userFull.getAccessLevel().equalsIgnoreCase("U"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
-			<input type="radio" name="userAccessLevel" value=G" <% if ((userFull.getAccessLevel() == null) || (userFull.getAccessLevel().equalsIgnoreCase("G"))) out.print("checked"); %> <% out.println("disabled"); %>/>&nbsp;<%=resource.getString("GML.guest") %>
-		</td>
+		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel()) %></td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
 		<tr id="oldPassword">
@@ -171,21 +173,23 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         </tr><%
     }
 %>
+</table>
+</fieldset>
 
+<fieldset id="identity-extra" class="skinFieldset">
+<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" /></legend>
+<table border="0" cellspacing="0" cellpadding="5" width="100%">
 	<%//rajout des champs LDAP complémentaires
 	 if (displayInfosLDAP || action.equals("userModify")) {
 		//rajout des champs Silverpeas custom complémentaires
 		String[] properties = userFull.getPropertiesNames();
-		String propertyName = null;
-		for (int p=0; p<properties.length; p++) {
-			propertyName = (String) properties[p];
+		for (String propertyName : properties) {
 			DomainProperty property=userFull.getProperty(propertyName);
-
 			if (!propertyName.startsWith("password")) {
 			%>
 			<tr id="<%=propertyName%>">
 				<td class="txtlibform"><%=userFull.getSpecificLabel(resource.getLanguage(), propertyName) %> :</td>
-				<% if ( (userFull.isPropertyUpdatableByUser(propertyName)) || (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName)) ) { %>
+				<% if (userFull.isPropertyUpdatableByUser(propertyName) || (isAdmin && userFull.isPropertyUpdatableByAdmin(propertyName)) ) { %>
 					<td><input type="text" name="prop_<%=propertyName%>" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%>"></td>
 				<% } else { %>
 					<td><%=EncodeHelper.javaStringToHtmlString(userFull.getValue(propertyName))%></td>
@@ -196,9 +200,11 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 		}
 	}
 	%>
-  </table>
+ </table>
+ </fieldset>
  </form>
  </div>
+ <br clear="all"/>
  <%
 		ButtonPane buttonPane = gef.getButtonPane();
 		if (updateIsAllowed) {
@@ -207,12 +213,11 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 		}
 		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=history.back();", false);
 		buttonPane.addButton(cancelButton);
-		out.println("<br/><center>"+buttonPane.print()+"</center>");
+		out.println(buttonPane.print());
 %>
 
 <script type="text/javascript">
-	function submitForm()
-	{
+	function submitForm() {
 		var errorMsg = "";
 		<% if (updateLastNameIsAllowed) { %>
 			var namefld = document.UserForm.userLastName.value;
