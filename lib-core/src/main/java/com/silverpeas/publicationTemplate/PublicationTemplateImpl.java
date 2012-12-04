@@ -35,6 +35,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.exolab.castor.mapping.Mapping;
@@ -85,6 +86,17 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String thumbnail = "";
   @XmlElement(required=true,defaultValue="false")
   private boolean visible = false;
+
+  @XmlElementWrapper(name = "spaces")
+  @XmlElement(name = "space")
+  private List<String> spaces;
+  @XmlElementWrapper(name = "applications")
+  @XmlElement(name = "application")
+  private List<String> applications;
+  @XmlElementWrapper(name = "instances")
+  @XmlElement(name = "instance")
+  private List<String> instances;
+  
   @XmlElement
   private String viewFileName = "";
   @XmlElement
@@ -635,6 +647,9 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setUpdateTypeFile(getUpdateTypeFile());
     cloneTemplate.setExternalId(getExternalId());
     cloneTemplate.setSearchResultFileName(getSearchResultFileName());
+    cloneTemplate.setSpaces(getSpaces());
+    cloneTemplate.setApplications(getApplications());
+    cloneTemplate.setInstances(getInstances());
     return cloneTemplate;
   }
 
@@ -667,5 +682,47 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       SilverTrace.warn("form", "PublicationTemplateImpl.getFieldsForFacets", "form.CANT_GET_FIELDS_FOR_FACETS", e);
     }
     return fieldNames;
+  }
+  
+  public List<String> getSpaces() {
+    return spaces;
+  }
+  
+  public boolean isRestrictedVisibilityToSpace() {
+    return getSpaces() != null && !getSpaces().isEmpty();
+  }
+  
+  public boolean isRestrictedVisibilityToApplication() {
+    return getApplications() != null && !getApplications().isEmpty();
+  }
+  
+  public boolean isRestrictedVisibilityToInstance() {
+    return getInstances() != null && !getInstances().isEmpty();
+  }
+
+  public void setSpaces(List<String> spaces) {
+    this.spaces = spaces;
+  }
+
+  public List<String> getApplications() {
+    return applications;
+  }
+
+  public void setApplications(List<String> applications) {
+    this.applications= applications;
+  }
+
+  public List<String> getInstances() {
+    return instances;
+  }
+
+  public void setInstances(List<String> instances) {
+    this.instances = instances;
+  }
+  
+  public boolean isRestrictedVisibility() {
+    return isRestrictedVisibilityToSpace() ||
+        isRestrictedVisibilityToApplication() ||
+        isRestrictedVisibilityToInstance();
   }
 }

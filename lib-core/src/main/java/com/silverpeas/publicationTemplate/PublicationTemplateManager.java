@@ -28,7 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +35,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -45,6 +46,11 @@ import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -301,6 +307,96 @@ public class PublicationTemplateManager {
       throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
+  
+  /**
+   * @param globalContext componentName It can be null. It is usefull when componentId is not defined.
+   * @return
+   * @throws PublicationTemplateException
+   */
+  public List<PublicationTemplate> getPublicationTemplates(GlobalContext globalContext)
+      throws PublicationTemplateException {
+    List<PublicationTemplate> templates = getPublicationTemplates(true);
+    if (globalContext == null) {
+      return templates;
+    }
+    List<PublicationTemplate> allowedTemplates = new ArrayList<PublicationTemplate>();
+    for (PublicationTemplate template : templates) {
+      if (isPublicationTemplateVisible(template, globalContext)) {
+        allowedTemplates.add(template);
+      }
+    }
+    return allowedTemplates;
+  }
+  
+  public boolean isPublicationTemplateVisible(String templateName, GlobalContext globalContext)
+      throws PublicationTemplateException {
+    PublicationTemplate template = loadPublicationTemplate(templateName);
+    return isPublicationTemplateVisible(template, globalContext);
+  }
+  
+  private boolean isPublicationTemplateVisible(PublicationTemplate template, GlobalContext globalContext) {
+    if (!template.isRestrictedVisibility()) {
+      return true;
+    } else {
+      // template is restricted
+      // check it according to current space and component
+      if (template.isRestrictedVisibilityToInstance()) {
+        if (isTemplateVisibleAccordingToInstance(template, globalContext)) {
+          return true;
+        }
+      } else {
+        OrganizationController oc =
+          OrganizationControllerFactory.getFactory().getOrganizationController();
+        boolean allowed = true;
+        if (template.isRestrictedVisibilityToApplication()) {
+          if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
+            allowed = false;
+          }
+        }
+        if (allowed) {
+          if (!template.isRestrictedVisibilityToSpace()) {
+            return true;
+          } else {
+            if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  private boolean isTemplateVisibleAccordingToInstance(PublicationTemplate template, GlobalContext context) {
+    List<String> restrictedInstanceIds = template.getInstances();
+    return restrictedInstanceIds.contains(context.getComponentId());
+  }
+  
+  private boolean isTemplateVisibleAccordingToApplication(PublicationTemplate template,
+      GlobalContext context, OrganizationController oc) {
+    List<String> restrictedApplications = template.getApplications();
+    String componentName = context.getComponentName();
+    if (StringUtil.isDefined(context.getComponentId())) {
+      ComponentInstLight component = oc.getComponentInstLight(context.getComponentId());
+      componentName = component.getName();
+    }
+    return restrictedApplications.contains(componentName);
+  }
+  
+  private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template, GlobalContext context, OrganizationController oc) {
+    List<String> restrictedSpaceIds = template.getSpaces();
+    List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
+    for (SpaceInst space : spacePath) {
+      String spaceId = space.getId();
+      if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+        spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
+      }
+      if (restrictedSpaceIds.contains(spaceId)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * @return the list of PublicationTemplate which contains a search form
@@ -311,10 +407,7 @@ public class PublicationTemplateManager {
     List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
 
     List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
-    Iterator<PublicationTemplate> iterator = publicationTemplates.iterator();
-    PublicationTemplate template = null;
-    while (iterator.hasNext()) {
-      template = iterator.next();
+    for (PublicationTemplate template : publicationTemplates) {
       try {
         if (template.getSearchForm() != null) {
           searchableTemplates.add(template);

@@ -54,7 +54,8 @@ a:hover {
   color: #666699;
 }
 
-input {
+input,
+ul.tagit {
 	background-color: #FFFFFF;
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px;
@@ -5302,4 +5303,23 @@ input.search:focus {
 	vertical-align:middle;
 	margin:0;
 	border:0;
+}
+
+/*******************************/
+/** Tagit **/
+/*******************************/
+ul.tagit {
+    padding: 1px;
+}
+
+ul.tagit li {
+    margin: 1px 5px 1px 0px;
+}
+
+ul.tagit li.tagit-choice {
+	padding: 1px 15px 1px 4px;
+}
+
+ul.tagit li.tagit-choice a.tagit-close {
+    padding: 0px 0px 2px 3px;
 }
