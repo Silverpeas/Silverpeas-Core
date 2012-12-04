@@ -61,6 +61,14 @@ public class SpaceResourceMock extends org.silverpeas.admin.web.SpaceResource {
   AdminPersonalWebDelegate adminPersonalWebDelegateMock = null;
   LookWebDelegate lookWebServiceMock = null;
 
+  /* (non-Javadoc)
+   * @see org.silverpeas.admin.web.AbstractAdminResource#isUserAuthorizedToAccessLookContext()
+   */
+  @Override
+  protected boolean isUserAuthorizedToAccessLookContext() {
+    return true;
+  }
+
   /*
    * (non-Javadoc)
    * @see org.silverpeas.admin.web.AbstractAdminResource#getLookServices()

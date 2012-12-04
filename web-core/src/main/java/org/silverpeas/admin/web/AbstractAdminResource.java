@@ -186,9 +186,15 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected SpaceEntity asWebEntity(final SpaceInstLight space, final boolean forceGettingFavorite) {
     checkNotFoundStatus(space);
+    final StringBuilder userFavoriteSpace = new StringBuilder();
+    if (isUserAuthorizedToAccessLookContext()) {
+      // The user space favorite information is retrieved in the only case where Look context is
+      // accessible. At this level, no user access to Look context is nonblocking
+      userFavoriteSpace.append(getLookDelegate().getUserFavorite(space, forceGettingFavorite));
+    }
     return SpaceEntity.createFrom(space, getUserPreferences().getLanguage())
         .withURI(buildURIOfSpace(space, getUriInfo()))
-        .addUserFavorites(getLookDelegate().getUserFavorite(space, forceGettingFavorite));
+        .addUserFavorites(userFavoriteSpace.toString());
   }
 
   /**
@@ -289,13 +295,38 @@ public abstract class AbstractAdminResource extends RESTWebService {
   }
 
   /**
-   * Checks if the requester user is authorized to access the given space
+   * Verifies the requester user is authorized to access the given space
    * @param spaceId
    */
-  protected void isUserAuthorizedToAccessSpace(final String spaceId) {
+  protected void verifyUserAuthorizedToAccessSpace(final String spaceId) {
     if (!spaceAccessController.isUserAuthorized(getUserDetail().getId(), spaceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
+  }
+
+  /**
+   * Verifies the requester user is authorized to access the given space
+   * @param spaceId
+   */
+  protected void verifyUserAuthorizedToAccessLookContext() {
+    // If the look helper is not accessible, then the user is not authorized
+    if (!isUserAuthorizedToAccessLookContext()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  /**
+   * Indicates if the requester user is authorized to access the given space
+   * @param spaceId
+   */
+  protected boolean isUserAuthorizedToAccessLookContext() {
+    // If the look helper is not accessible, then the user is not authorized
+    if (lookDelegate == null) {
+      lookDelegate =
+          LookWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
+              getHttpServletRequest());
+    }
+    return (lookDelegate != null && lookDelegate.getHelper() != null);
   }
 
   /**
@@ -303,11 +334,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @return
    */
   protected LookWebDelegate getLookDelegate() {
-    if (lookDelegate == null) {
-      lookDelegate =
-          LookWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
-              getHttpServletRequest());
-    }
+    verifyUserAuthorizedToAccessLookContext();
     return lookDelegate;
   }
 }
