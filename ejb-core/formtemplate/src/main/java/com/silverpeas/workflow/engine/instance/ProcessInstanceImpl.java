@@ -207,7 +207,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Default constructor
    */
   public ProcessInstanceImpl() {
-    historySteps = new Vector();
+    historySteps = new Vector<HistoryStep>();
     questions = new Vector<Question>();
     interestedUsers = new Vector<InterestedUser>();
     workingUsers = new Vector<WorkingUser>();
@@ -409,7 +409,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       ActiveState activeState = activeStates.get(i);
       if (activeState.getState().equals(state.getName())) {
         found = true;
-        activeState.setTimeoutStatus(activeState.getTimeoutStatus() + 1);
+        TimeOutAction[] timeouts = state.getTimeOutActions();
+        // Check if another timeout has been defined, else if don't change timeoutStatus
+        if (timeouts != null && timeouts.length > activeState.getTimeoutStatus() + 1) {
+          activeState.setTimeoutStatus(activeState.getTimeoutStatus() + 1);
+        }
         Date nextTimeOutDate = computeTimeOutDate(state, activeState.getTimeoutStatus() + 1);
         activeState.setTimeoutDate(nextTimeOutDate);
         this.setTimeoutStatus(true);
@@ -2227,7 +2231,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Set the instance history steps
    * @param historySteps history steps
    */
-  public void castor_setHistorySteps(Vector historySteps) {
+  public void castor_setHistorySteps(Vector<HistoryStep> historySteps) {
     this.historySteps = historySteps;
   }
 
@@ -2235,7 +2239,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Get the instance history steps
    * @return history steps as a Vector
    */
-  public Vector castor_getHistorySteps() {
+  public Vector<HistoryStep> castor_getHistorySteps() {
     return historySteps;
   }
 

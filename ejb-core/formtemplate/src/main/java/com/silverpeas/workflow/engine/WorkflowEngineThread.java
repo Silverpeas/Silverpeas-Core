@@ -721,7 +721,7 @@ class QuestionRequest implements Request {
     }
     State state =
         instance.addQuestion(question, event.getStepId(), event.getResolvedState(), event.
-        getUser());
+            getUser());
 
     // add the state that is discussed in the list of active states
     instance.addActiveState(state);
@@ -1087,8 +1087,8 @@ class WorkflowTools {
         getName();
     boolean backStatus = (event.getResolvedState() == null) ? false : instance.isStateInBackStatus(
         resolvedStateName);
-    Hashtable oldActiveStates = new Hashtable();
-    Hashtable eligibleStates = new Hashtable();
+    Hashtable<String, String> oldActiveStates = new Hashtable<String, String>();
+    Hashtable<String, String> eligibleStates = new Hashtable<String, String>();
 
     // Check for actions "redone"
     for (int i = 0; backStatus && i < states.length; i++) {
@@ -1203,9 +1203,9 @@ class WorkflowTools {
             } catch (WorkflowException we) {
               SilverTrace.info("workflowEngine",
                   "WorkflowEngineThread.processAction(" + event.getActionName()
-                  + ")", "root.EX_ERR_PROCESS_EVENT",
+                      + ")", "root.EX_ERR_PROCESS_EVENT",
                   "Impossible de trouver l'expediteur avec le user id : "
-                  + senderId);
+                      + senderId);
             }
           }
 
@@ -1253,11 +1253,9 @@ class WorkflowTools {
             externalAction.setTrigger(trigger);
             externalAction.execute();
           } catch (Exception e) {
-            SilverTrace.error("workflowEngine",
-                "WorkflowEngineThread.processTriggers()",
-                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION", "action = "
-                + event.getActionName() + ", trigger = "
-                + trigger.getName(), e);
+            SilverTrace.error("workflowEngine", "WorkflowEngineThread.processTriggers()",
+                "workflowEngine.ERROR_DURING_TRIGGER_EXECUTION",
+                "action = " + event.getActionName() + ", trigger = " + trigger.getName(), e);
           }
         }
       }
@@ -1269,7 +1267,8 @@ class WorkflowTools {
    * @param event the task done event
    */
   public static void computeStates(UpdatableProcessInstance instance,
-      GenericEvent event, Hashtable eligibleStates, Hashtable oldActiveStates)
+      GenericEvent event, Hashtable<String, String> eligibleStates,
+      Hashtable<String, String> oldActiveStates)
       throws WorkflowException {
     // Get the process model associated to this event
     ProcessModel model = instance.getProcessModel();
