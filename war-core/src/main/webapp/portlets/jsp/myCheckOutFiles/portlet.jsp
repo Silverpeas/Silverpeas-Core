@@ -24,12 +24,10 @@
 
 --%>
 
-<%@page import="org.postgresql.jdbc2.optional.SimpleDataSource"%>
 <%@page import="org.silverpeas.attachment.model.SimpleDocument"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="com.stratelia.silverpeas.versioning.model.Document"%>
 
 <%@ include file="../portletImport.jsp"%>
 
@@ -62,8 +60,6 @@ RenderRequest 	pReq 		= (RenderRequest)request.getAttribute("javax.portlet.reque
 Iterator<SimpleDocument> attachments	= (Iterator<SimpleDocument>) pReq.getAttribute("Attachments");
 
 ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
-boolean full = false;
-
 	if ((attachments != null && attachments.hasNext())) {
     	// convertir la date du jour
         Calendar today = Calendar.getInstance();

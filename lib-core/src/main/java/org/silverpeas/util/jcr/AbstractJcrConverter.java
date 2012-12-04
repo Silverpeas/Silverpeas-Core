@@ -384,11 +384,11 @@ public abstract class AbstractJcrConverter {
   }
 
   /**
-   *
-   * @param fileNode
-   * @param content
-   * @param mimeType
-   * @throws RepositoryExceptio
+   * Add binary content to the specified node.
+   * @param fileNode the node.
+   * @param content the binary content.
+   * @param mimeType the mime type of the content.
+   * @throws RepositoryException
    */
   public void setContent(Node fileNode, byte[] content, String mimeType) throws RepositoryException {
     ByteArrayInputStream in = new ByteArrayInputStream(content);

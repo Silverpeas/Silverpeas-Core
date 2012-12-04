@@ -76,17 +76,16 @@ public interface AttachmentService {
    * @return
    */
   SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId);
-  
-  
+
   /**
    * Copy the attachment.
    *
    * @param original
-   * @param targetPk 
+   * @param targetPk
    * @return
    */
   SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk);
-  
+
   /**
    * Move the attachment.
    *
@@ -240,8 +239,7 @@ public interface AttachmentService {
    * @throws AttachmentRuntimeException when is impossible to search
    */
   List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
-  
-  
+
   /**
    * Search all documents (files, xmlform content, wysiwyg) attached to a foreign object.
    *
@@ -262,7 +260,7 @@ public interface AttachmentService {
    * @throws AttachmentRuntimeException when is impossible to search
    */
   List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey, DocumentType type,
-                                                        String lang);
+      String lang);
 
   void unindexAttachmentsOfExternalObject(WAPrimaryKey foreignKey);
 
@@ -367,7 +365,7 @@ public interface AttachmentService {
    */
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang);
-  
+
   /**
    * Search all the documents locked by a specific user.
    *

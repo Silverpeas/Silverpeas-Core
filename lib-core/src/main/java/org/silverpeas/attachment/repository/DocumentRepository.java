@@ -372,8 +372,7 @@ public class DocumentRepository {
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath()
-        + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
+        getPath() + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
     Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(
         SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
@@ -851,8 +850,7 @@ public class DocumentRepository {
     if (document.isVersioned() && documentNode.isCheckedOut()) {
       if (restore) {
         VersionIterator iter = session.getWorkspace().getVersionManager().
-            getVersionHistory(document.
-            getFullJcrPath()).getAllVersions();
+            getVersionHistory(document.getFullJcrPath()).getAllVersions();
         Version lastVersion = null;
         while (iter.hasNext()) {
           lastVersion = iter.nextVersion();
