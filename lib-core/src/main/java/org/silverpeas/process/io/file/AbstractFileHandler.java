@@ -27,14 +27,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.management.ProcessManagement;
@@ -54,6 +58,8 @@ public abstract class AbstractFileHandler {
   static {
     handledBasePath.add(FileBasePath.UPLOAD_PATH);
   }
+
+  private final String SESSION_TEMP_NODE = "@#@work@#@";
 
   private final File sessionRootPath = new File(FileRepositoryManager.getTemporaryPath());
   private final ProcessSession session;
@@ -82,14 +88,38 @@ public abstract class AbstractFileHandler {
    * @return true if the file exists and when it is the first time that it is registred to be
    * deleted
    */
-  protected boolean markToDelete(final FileBasePath basePath, File file) {
+  protected boolean markToDelete(final FileBasePath basePath, File file) throws Exception {
     if (isHandledPath(basePath)) {
       file = translateToRealPath(basePath, file);
       if (file.exists()) {
         if (getIoAccess().equals(IOAccess.READ_ONLY)) {
           setIoAccess(IOAccess.DELETE_ONLY);
         }
-        return getMarkedToDelete(basePath).add(file);
+        final Set<File> filesMarkedToBeDeleted = getMarkedToDelete(basePath);
+        boolean markedToDelete = false;
+        if (file.isFile()) {
+          boolean addOk = true;
+          for (final File curFile : filesMarkedToBeDeleted) {
+            if (curFile.isDirectory() && FileUtils.directoryContains(curFile, file)) {
+              addOk = false;
+              break;
+            }
+          }
+          if (addOk) {
+            markedToDelete = filesMarkedToBeDeleted.add(file);
+          }
+        } else {
+          File curFile;
+          final Iterator<File> it = filesMarkedToBeDeleted.iterator();
+          while (it.hasNext()) {
+            curFile = it.next();
+            if (FileUtils.directoryContains(file, curFile)) {
+              it.remove();
+            }
+          }
+          markedToDelete = filesMarkedToBeDeleted.add(file);
+        }
+        return markedToDelete;
       }
     }
     return false;
@@ -228,7 +258,7 @@ public abstract class AbstractFileHandler {
    * @return
    */
   File getSessionTemporaryPath() {
-    return FileUtils.getFile(sessionRootPath, getSession().getId(), "@#@work@#@");
+    return FileUtils.getFile(sessionRootPath, getSession().getId(), SESSION_TEMP_NODE);
   }
 
   /**
@@ -275,6 +305,68 @@ public abstract class AbstractFileHandler {
       }
     }
     return size;
+  }
+
+  /**
+   * Gets handled root directories from the session. (reads, writes, deletes)
+   * @return
+   */
+  public Collection<String> getSessionHandledRootPathNames() {
+    return getSessionHandledRootPathNames(false);
+  }
+
+  /**
+   * Gets handled root directories from the session. (reads, writes, deletes)
+   * @param skipDeleted
+   * @return
+   */
+  public Collection<String> getSessionHandledRootPathNames(final boolean skipDeleted) {
+    final Set<String> rootPathNames = new HashSet<String>();
+    for (final FileBasePath basePath : handledBasePath) {
+      rootPathNames.addAll(getSessionHandledRootPathNames(basePath, skipDeleted));
+    }
+    return rootPathNames;
+  }
+
+  /**
+   * Gets handled root directories of a base path from the session. (reads, writes, deletes)
+   * @param basePath
+   * @param skipDeleted
+   * @return
+   */
+  protected Collection<String> getSessionHandledRootPathNames(final FileBasePath basePath,
+      final boolean skipDeleted) {
+    final Set<String> rootPathNames = new HashSet<String>();
+    if (isHandledPath(basePath)) {
+
+      // reads and writes
+      final String[] directories = getSessionPath(basePath).list(DirectoryFileFilter.DIRECTORY);
+      if (directories != null) {
+        rootPathNames.addAll(Arrays.asList(directories));
+      }
+
+      // deletes
+      if (!skipDeleted) {
+        String[] deletedFileNameParts;
+        for (final File deleted : getMarkedToDelete(basePath)) {
+          if (deleted.getPath().startsWith(basePath.getPath())) {
+            deletedFileNameParts =
+                FilenameUtils
+                    .separatorsToUnix(deleted.getPath().substring(basePath.getPath().length()))
+                    .replaceAll("^/", "").split("/");
+            if (deletedFileNameParts != null && deletedFileNameParts.length > 0) {
+              rootPathNames.add(deletedFileNameParts[0]);
+            }
+          }
+        }
+      }
+
+      // Potential items to remove
+      rootPathNames.remove(SESSION_TEMP_NODE);
+      rootPathNames.remove(null);
+      rootPathNames.remove("");
+    }
+    return rootPathNames;
   }
 
   /**
