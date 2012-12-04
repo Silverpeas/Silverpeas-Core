@@ -24,7 +24,20 @@
 
 package com.silverpeas.workflow.engine;
 
-import com.silverpeas.workflow.api.*;
+import com.silverpeas.workflow.api.ErrorManager;
+import com.silverpeas.workflow.api.ProcessInstanceManager;
+import com.silverpeas.workflow.api.ProcessModelManager;
+import com.silverpeas.workflow.api.TaskManager;
+import com.silverpeas.workflow.api.TimeoutManager;
+import com.silverpeas.workflow.api.UserManager;
+import com.silverpeas.workflow.api.WorkflowEngine;
+import com.silverpeas.workflow.api.WorkflowException;
+import com.silverpeas.workflow.engine.error.ErrorManagerImpl;
+import com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl;
+import com.silverpeas.workflow.engine.model.ProcessModelManagerImpl;
+import com.silverpeas.workflow.engine.task.TaskManagerImpl;
+import com.silverpeas.workflow.engine.timeout.TimeoutManagerImpl;
+import com.silverpeas.workflow.engine.user.UserManagerImpl;
 
 /**
  * The workflowHub manages all the workflow components implementations. This singleton builds the
@@ -34,75 +47,50 @@ public class WorkflowHub {
   /**
    * @return the TimeoutManager
    */
-  static public final TimeoutManager getTimeoutManager()
-      throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.timeoutManager;
+  static public final TimeoutManager getTimeoutManager() throws WorkflowException {
+    return createInstance().timeoutManager;
   }
 
   /**
    * @return the ProcessModelManager
    */
-  static public final ProcessModelManager getProcessModelManager()
-      throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.processModelManager;
+  static public final ProcessModelManager getProcessModelManager() throws WorkflowException {
+    return createInstance().processModelManager;
   }
 
   /**
    * @return the ProcessInstanceManager
    */
-  static public final ProcessInstanceManager getProcessInstanceManager()
-      throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.processInstanceManager;
+  static public final ProcessInstanceManager getProcessInstanceManager() throws WorkflowException {
+    return createInstance().processInstanceManager;
   }
 
   /**
    * @return the UserManager
    */
   static public final UserManager getUserManager() throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.userManager;
+    return createInstance().userManager;
   }
 
   /**
    * @return the WorkflowEngine
    */
-  static public final WorkflowEngine getWorkflowEngine()
-      throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.workflowEngine;
+  static public final WorkflowEngine getWorkflowEngine() throws WorkflowException {
+    return createInstance().workflowEngine;
   }
 
   /**
    * @return the TaskManager
    */
   static public final TaskManager getTaskManager() throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.taskManager;
+    return createInstance().taskManager;
   }
 
   /**
    * @return the ErrorManager
    */
   static public final ErrorManager getErrorManager() throws WorkflowException {
-    if (instance == null) {
-      instance = createInstance();
-    }
-    return instance.errorManager;
+    return createInstance().errorManager;
   }
 
   /**
@@ -135,13 +123,12 @@ public class WorkflowHub {
    * Builds the differents components.
    */
   private void init() throws WorkflowException {
-    timeoutManager = new com.silverpeas.workflow.engine.timeout.TimeoutManagerImpl();
-    errorManager = new com.silverpeas.workflow.engine.error.ErrorManagerImpl();
-    userManager = new com.silverpeas.workflow.engine.user.UserManagerImpl();
-    taskManager = new com.silverpeas.workflow.engine.task.TaskManagerImpl();
-    processModelManager = new com.silverpeas.workflow.engine.model.ProcessModelManagerImpl();
-    processInstanceManager =
-        new com.silverpeas.workflow.engine.instance.ProcessInstanceManagerImpl();
+    timeoutManager = new TimeoutManagerImpl();
+    errorManager = new ErrorManagerImpl();
+    userManager = new UserManagerImpl();
+    taskManager = new TaskManagerImpl();
+    processModelManager = new ProcessModelManagerImpl();
+    processInstanceManager = new ProcessInstanceManagerImpl();
     workflowEngine = new WorkflowEngineImpl();
   }
 
@@ -184,4 +171,5 @@ public class WorkflowHub {
    * the ErrorManager
    */
   private ErrorManager errorManager = null;
+  
 }
