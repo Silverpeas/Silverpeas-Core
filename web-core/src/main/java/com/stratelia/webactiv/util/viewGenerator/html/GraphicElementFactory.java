@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -91,14 +90,14 @@ public class GraphicElementFactory {
   public static final String RESOURCES_KEY = "resources";
   public static final String GE_FACTORY_SESSION_ATT = "SessionGraphicElementFactory";
   private final static ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.util.viewGenerator.settings.graphicElementFactorySettings", "");
+      "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings", "");
   private ResourceLocator lookSettings = null;
   private ResourceLocator silverpeasLookSettings = null;
   private ResourceLocator favoriteLookSettings = null;
   private final static String defaultLook =
-      "com.stratelia.webactiv.util.viewGenerator.settings.Initial";
+      "org.silverpeas.util.viewGenerator.settings.Initial";
   private final static ResourceLocator generalSettings = new ResourceLocator(
-      "com.stratelia.webactiv.general", I18NHelper.defaultLanguage);
+      "org.silverpeas.general", I18NHelper.defaultLanguage);
   private final static String iconsPath = (URLManager.getApplicationURL() + settings
       .getString("IconsPath")).replaceAll("/$", "");
   private ResourceLocator multilang = null;
@@ -139,8 +138,7 @@ public class GraphicElementFactory {
     if (multilang == null) {
       String language = getLanguage();
       multilang = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.multilang.graphicElementFactoryBundle",
-          language);
+          "org.silverpeas.util.viewGenerator.multilang.graphicElementFactoryBundle", language);
     }
     return multilang;
   }
@@ -174,14 +172,12 @@ public class GraphicElementFactory {
         "root.MSG_GEN_ENTER_METHOD");
     if (lookSettings == null) {
       ResourceLocator silverpeasSettings = getSilverpeasLookSettings();
-      SilverTrace.info("viewgenerator",
-          "GraphicElementFactory.getLookSettings()",
+      SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookSettings()",
           "root.MSG_GEN_EXIT_METHOD", "lookSettings == null");
       // get the customer lookSettings
       try {
         lookSettings =
-            new ResourceLocator(
-            "com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "",
+            new ResourceLocator("org.silverpeas.util.viewGenerator.settings.lookSettings", "",
             silverpeasSettings);
       } catch (java.util.MissingResourceException e) {
         // the customer lookSettings is undefined get the default silverpeas looks
@@ -200,12 +196,11 @@ public class GraphicElementFactory {
    * @see
    */
   public ResourceLocator getSilverpeasLookSettings() {
-    SilverTrace.info("viewgenerator",
-        "GraphicElementFactory.getSilverpeasLookSettings()",
+    SilverTrace.info("viewgenerator", "GraphicElementFactory.getSilverpeasLookSettings()",
         "root.MSG_GEN_ENTER_METHOD");
     if (silverpeasLookSettings == null) {
       silverpeasLookSettings = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "");
+          "org.silverpeas.util.viewGenerator.settings.defaultLookSettings", "");
     }
     return silverpeasLookSettings;
   }
@@ -692,8 +687,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
@@ -719,8 +713,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
@@ -748,8 +741,7 @@ public class GraphicElementFactory {
     try {
       arrayPane = (ArrayPane) Class.forName(arrayPaneClassName).newInstance();
     } catch (Exception e) {
-      SilverTrace.error("viewgenerator",
-          "GraphicElementFactory.getArrayPane()",
+      SilverTrace.error("viewgenerator", "GraphicElementFactory.getArrayPane()",
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
