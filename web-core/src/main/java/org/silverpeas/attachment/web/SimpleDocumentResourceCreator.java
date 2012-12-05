@@ -27,6 +27,30 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Date;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.model.UnlockOption;
+
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
@@ -35,19 +59,8 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
+
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.*;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -145,7 +158,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         document.edit(userId);
         AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, language);
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content,
-            StringUtil.getBooleanValue(indexIt), publicDocument);
+            StringUtil.getBooleanValue(indexIt), true);
         UnlockContext unlockContext = new UnlockContext(document.getId(), userId, language);
         unlockContext.addOption(UnlockOption.UPLOAD);
         if (!publicDocument) {

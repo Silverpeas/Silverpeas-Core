@@ -42,6 +42,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
@@ -501,7 +502,7 @@ public class IndexManager {
       }
     }
 
-    AttachmentController.updateIndexEntryWithAttachments(indexEntry);
+    AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
 
     List<FileDescription> list2 = indexEntry.getFileContentList();
     for (FileDescription f : list2) {

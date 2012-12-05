@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
@@ -69,7 +70,7 @@ public class FileRepositoryManager {
       tempPath = tempPath + File.separatorChar;
     }
 
-    StringBuilder path = new StringBuilder();
+    StringBuilder path = new StringBuilder(512);
     path.append(System.getenv("SILVERPEAS_HOME")).append(separatorChar).append("properties");
     path.append(separatorChar).append("org").append(separatorChar).append("silverpeas").append(
         separatorChar);
@@ -115,9 +116,9 @@ public class FileRepositoryManager {
   /**
    * Add by Jean-Claude Groccia
    *
-   * @param: sSpaceId: type String: the name of the space
-   * @param: sComponentId: type String: the name of the componentId
-   * @param: sDirectoryName: type Array of String: the name of sub directory. this parameter
+   * @param: spaceId: type String: the name of the space
+   * @param: componentId: type String: the name of the componentId
+   * @param: directoryName: type Array of String: the name of sub directory. this parameter
    * represents the context of component
    * @deprecated
    */
@@ -127,7 +128,6 @@ public class FileRepositoryManager {
   }
 
   /**
-   * @param sSpaceId
    * @param componentId
    * @param directoryName
    * @return path
@@ -177,7 +177,6 @@ public class FileRepositoryManager {
    * @param spaceId
    * @param componentId
    * @param directoryName
-   * @throws Exception
    * @deprecated
    */
   @Deprecated
@@ -193,7 +192,6 @@ public class FileRepositoryManager {
    * @param spaceId
    * @param componentId
    * @param directoryName
-   * @throws Exception
    * @deprecated
    */
   @Deprecated
@@ -214,19 +212,15 @@ public class FileRepositoryManager {
         componentId));
   }
 
-  public static void deleteAbsolutePath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
-    FileFolderManager.deleteFolder(getAbsolutePath(sComponentId)
-        + sDirectoryName);
+  public static void deleteAbsolutePath(String sSpaceId, String sComponentId, String sDirectoryName) {
+    FileFolderManager.deleteFolder(getAbsolutePath(sComponentId) + sDirectoryName);
   }
 
-  public static void deleteTempPath(String sSpaceId, String sComponentId,
-      String sDirectoryName) {
+  public static void deleteTempPath(String sSpaceId, String sComponentId, String sDirectoryName) {
     FileFolderManager.deleteFolder(getAbsolutePath(sComponentId));
   }
 
-  public static void deleteAbsoluteIndexPath(String particularSpace,
-      String sComponentId) {
+  public static void deleteAbsoluteIndexPath(String particularSpace, String sComponentId) {
     FileFolderManager.deleteFolder(IndexFileManager.getAbsoluteIndexPath(particularSpace,
         sComponentId));
   }
@@ -250,10 +244,13 @@ public class FileRepositoryManager {
     return getFileIcon(false, extension, isReadOnly);
   }
 
-  public static String getFileIcon(boolean small, String extension, boolean isReadOnly) {
+  public static String getFileIcon(boolean small, String filename, boolean isReadOnly) {
     String path = URLManager.getApplicationURL() + uploadSettings.getString("FileIconsPath");
-
-    String fileIcon = uploadSettings.getString(extension.toLowerCase());
+    String extension = FilenameUtils.getExtension(filename);
+    if (!StringUtil.isDefined(extension)) {
+      extension = filename;
+    }
+    String fileIcon = uploadSettings.getString(extension.toLowerCase(Locale.getDefault()));
     if (fileIcon == null) {
       fileIcon = unknownFileIcon;
     } else {
@@ -286,7 +283,7 @@ public class FileRepositoryManager {
     String sKo = utilMessages.getString("ko", "Kb");
     String o = utilMessages.getString("o", "bytes");
 
-    float size = new Long(lSize).floatValue();
+    float size = Long.valueOf(lSize).floatValue();
 
     if (size < ko) {// inférieur à 1 ko (1024 octets)
       return Integer.toString(Math.round(size)).concat(" ").concat(o);
@@ -342,7 +339,6 @@ public class FileRepositoryManager {
    * @author Seb
    * @param from The name of the source file, the one to copy.
    * @param to The name of the destination file, where to paste data.
-   * @throws FileNotFoundException
    * @throws IOException
    */
   public static void copyFile(String from, String to) throws IOException {
@@ -367,7 +363,7 @@ public class FileRepositoryManager {
    * stored.
    *
    * @param str : type String: the string of repertories
-   * @return  
+   * @return
    */
   public static String[] getAttachmentContext(String str) {
 
@@ -402,5 +398,8 @@ public class FileRepositoryManager {
       path += "/";
     }
     return path;
+  }
+
+  private FileRepositoryManager() {
   }
 }

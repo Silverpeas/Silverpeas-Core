@@ -23,39 +23,6 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -66,7 +33,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -74,6 +40,24 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.model.*;
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -182,21 +166,6 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
-    }
-  }
-
-  @Override
-  public void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
-    if (resources.getBoolean("attachment.index.incorporated", true)) {
-      if (!indexEntry.getObjectType().startsWith("Attachment")) {
-        WAPrimaryKey pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
-        List<SimpleDocument> attachments = listDocumentsByForeignKey(pk, indexEntry.
-            getLang());
-        for (SimpleDocument attachment : attachments) {
-          indexEntry.addFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
-              attachment.getContentType(), indexEntry.getLang());
-        }
-      }
     }
   }
 
@@ -511,9 +480,10 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       in = new FileInputStream(original.getAttachmentPath());
       session = BasicDaoFactory.getSystemSession();
-      SimpleDocument clone = new SimpleDocument(new SimpleDocumentPK(null, original.getInstanceId()),
+      SimpleDocument clone =
+          new SimpleDocument(new SimpleDocumentPK(null, original.getInstanceId()),
           foreignCloneId, original.getOrder(), original.isVersioned(), original.getFile());
-      SimpleDocumentPK clonePk = repository.createDocument(session, clone);      
+      SimpleDocumentPK clonePk = repository.createDocument(session, clone);
       clone = repository.findDocumentById(session, clonePk, null);
       repository.storeContent(clone, in);
       repository.setClone(session, original, clone);
@@ -554,7 +524,7 @@ public class SimpleDocumentService implements AttachmentService {
       } else {
         repository.copyMultilangContent(original, copy);
       }
-      
+
       return copyPk;
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
@@ -934,6 +904,30 @@ public class SimpleDocumentService implements AttachmentService {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     } finally {
       BasicDaoFactory.logout(session);
+    }
+  }
+
+  @Override
+  public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
+    if (resources.getBoolean("attachment.index.incorporated", true)) {
+      ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+      List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
+      for (SimpleDocument currentDocument : documents) {
+        SimpleDocument version = currentDocument.getLastPublicVersion();
+        if (version != null) {
+          indexEntry.addFileContent(version.getAttachmentPath(), CharEncoding.UTF_8, version.
+              getContentType(), indexEntry.getLang());
+        }
+      }
+    }
+  }
+
+  @Override
+  public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
+    List<SimpleDocument> documents = listAllDocumentsByForeignKey(fk, null);
+    for (SimpleDocument currentDocument : documents) {
+      createIndex(currentDocument, startOfVisibilityPeriod, endOfVisibilityPeriod);
     }
   }
 }

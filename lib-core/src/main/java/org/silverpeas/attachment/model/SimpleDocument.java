@@ -505,7 +505,7 @@ public class SimpleDocument implements Serializable {
     directory = directory.replace('/', separatorChar);
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
     String lang = language;
-    if(!StringUtil.isDefined(lang)) {
+    if (!StringUtil.isDefined(lang)) {
       lang = I18NHelper.defaultLanguage;
     }
     return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
@@ -590,11 +590,12 @@ public class SimpleDocument implements Serializable {
   public String getWebdavUrl() {
     StringBuilder url = new StringBuilder(500);
     String webAppContext = URLManager.getApplicationURL();
+    url.append(webAppContext);
     if (!webAppContext.endsWith("/")) {
-      webAppContext = webAppContext + '/';
+      url.append('/');
     }
-    url.append(webAppContext).append(GeneralPropertiesManager.getString("webdav.respository")).
-        append('/').append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
+    url.append(GeneralPropertiesManager.getString("webdav.respository")).append('/').
+        append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
         append(getWebdavJcrPath());
     return url.toString();
   }

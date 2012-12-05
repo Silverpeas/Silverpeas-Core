@@ -23,14 +23,10 @@
  */
 package org.silverpeas.attachment.mock;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Named;
-
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.Default;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.mockito.Mockito;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
@@ -40,11 +36,12 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.Default;
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import javax.inject.Named;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
 
 @Default
 @Service
@@ -160,8 +157,8 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   }
 
   @Override
-  public void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
-    realService.updateIndexEntryWithAttachments(indexEntry);
+  public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
+    realService.updateIndexEntryWithDocuments(indexEntry);
   }
 
   @Override
@@ -257,5 +254,11 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
     return realService.listAllDocumentsByForeignKey(foreignKey, lang);
+  }
+
+  @Override
+  public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
+    realService.indexAllDocuments(fk, startOfVisibilityPeriod, endOfVisibilityPeriod);
   }
 }

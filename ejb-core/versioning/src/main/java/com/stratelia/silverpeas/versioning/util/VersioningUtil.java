@@ -334,24 +334,7 @@ public class VersioningUtil {
     }
   }
 
-  public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
-    if (resources.getBoolean("attachment.index.incorporated", true)) {
-      ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
-      try {
-        List<Document> documents = getVersioningBm().getDocuments(pk);
-        for (Document currentDocument : documents) {
-          DocumentVersion version = getVersioningBm().getLastPublicDocumentVersion(currentDocument.getPk());
-          if(version != null) {
-            indexEntry.addFileContent(version.getDocumentPath(), null, version.getMimeType(), null);
-          }
-        }
-      } catch (RemoteException e) {
-        SilverTrace.error("versioning", "VersioningUtil.updateIndexEntryWithDocuments",
-            "versioning.CANT_INDEX_DOCUMENTS", "objectId = " + pk.getId() + ", component = " 
-            + pk.getInstanceId(), e);
-      }
-    }
-  }
+  
 
   public void unindexDocumentsByForeignKey(ForeignPK foreignPK)
       throws RemoteException {

@@ -39,10 +39,6 @@ import org.silverpeas.attachment.web.OnlineAttachment;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
@@ -83,14 +79,12 @@ public class OnlineFileServer extends HttpServlet {
     String documentId = req.getParameter("DocumentId");
     if (StringUtil.isDefined(documentId)) {
       String versionId = req.getParameter("VersionId");
-      VersioningUtil versioning = new VersioningUtil();
-      DocumentVersionPK versionPK = new DocumentVersionPK(Integer.parseInt(versionId), "useless",
-          componentId);
-      DocumentVersion version = versioning.getDocumentVersion(versionPK);
+      SimpleDocumentPK versionPK = new SimpleDocumentPK(versionId, componentId);
+      SimpleDocument version = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+          versionPK, language);
 
       if (version != null) {
-        onlineFile = new OnlineFile(version.getMimeType(), version.getPhysicalName(),
-            FileRepositoryManager.getRelativePath(new String[]{"Versioning"}), componentId);
+         onlineFile = new OnlineAttachment(version);
       }
     }
     response.setHeader( "Content-Length", String.valueOf(onlineFile.getContentLength()));

@@ -187,7 +187,7 @@ public class MockBinaryAttachmentService implements AttachmentService {
   }
 
   @Override
-  public void updateIndexEntryWithAttachments(FullIndexEntry indexEntry) {
+  public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
@@ -250,6 +250,12 @@ public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
   public List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod,
+      Date endOfVisibilityPeriod) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

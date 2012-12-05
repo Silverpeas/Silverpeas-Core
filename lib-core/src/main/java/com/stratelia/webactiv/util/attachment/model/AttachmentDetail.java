@@ -727,62 +727,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     return valret;
   }
 
-  /**
-   * Retourne l'URL de l'attachment afin que le téléchargement soit enregistré. Cette URL est
-   * construite a partir des autres informations
-   *
-   * @see
-   */
-  public String getAttachmentURLToMemorize(String userId, String fatherId) {
-    String valret = "";
-    int attGr = getAttachmentGroup();
-
-    if (attGr == GROUP_HTML_LINK) {
-      valret = physicalName;
-    } else {
-      if ((attGr == GROUP_FILE) || (attGr == GROUP_DIR)) {
-        String theContext =
-            FileRepositoryManager.getRelativePath(
-            FileRepositoryManager.getAttachmentContext(context));
-        int nodeId = 0;
-        if (fatherId == null) {
-          nodeId = Integer.parseInt(fatherId);
-        }
-        valret = FileServerUtils.getUrl(pk.getSpace(), pk.getComponentName(),
-            userId, logicalName, physicalName, type, true, Integer.parseInt(
-            foreignKey.getId()), nodeId, theContext);
-        SilverTrace.info("attachment",
-            "AttachmentDetail.getAttachmentURLToMemorize",
-            "root.MSG_GEN_PARAM_VALUE",
-            "(attGr == GROUP_FILE) || (attGr == GROUP_DIR) : url = " + valret);
-      } else {
-        valret = FileServerUtils.getUrl(logicalName, physicalName, type);
-        SilverTrace.info("attachment",
-            "AttachmentDetail.getAttachmentURLToMemorize",
-            "root.MSG_GEN_PARAM_VALUE",
-            "(attGr != GROUP_FILE) && (attGr != GROUP_DIR) : url = " + valret);
-      }
-    }
-    SilverTrace.info("attachment",
-        "AttachmentDetail.getAttachmentURLToMemorize",
-        "root.MSG_GEN_PARAM_VALUE", "physicalName = " + physicalName);
-
-    valret += "&attachmentId=" + pk.getId();
-
-    if (physicalName != null) {
-      String extension = FileRepositoryManager.getFileExtension(physicalName);
-      if ("exe".equalsIgnoreCase(extension)
-          || "pdf".equalsIgnoreCase(extension)) {
-        valret += "&logicalName="
-            + FileServerUtils.replaceSpecialChars(logicalName);
-      }
-    }
-
-    SilverTrace.info("attachment",
-        "AttachmentDetail.getAttachmentURLToMemorize",
-        "root.MSG_GEN_PARAM_VALUE", "valret = " + valret);
-    return valret;
-  }
+  
 
   /**
    * Retourne l'extension de l'icone de l'attachment.
@@ -792,8 +737,7 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
   public String getAttachmentIcon(String language) {
     String valret = "";
     if (getPhysicalName(language).lastIndexOf('.') >= 0) {
-      String fileType = FileRepositoryManager.getFileExtension(getPhysicalName(language));
-      valret = FileRepositoryManager.getFileIcon(fileType);
+      valret = FileRepositoryManager.getFileIcon(getPhysicalName(language));
     } else {
       if (getAttachmentGroup() == GROUP_HTML_LINK || getAttachmentGroup() == GROUP_DUMMY) {
         valret = FileRepositoryManager.getFileIcon("html");

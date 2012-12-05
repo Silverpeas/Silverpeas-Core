@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
@@ -37,6 +33,12 @@ import java.util.StringTokenizer;
 
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
@@ -56,8 +58,8 @@ import com.silverpeas.tagcloud.model.TagCloudUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -75,10 +77,6 @@ import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -107,6 +105,7 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkeleton {
@@ -145,9 +144,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       return pub.getDetail();
     } catch (Exception re) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetail()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATION_HEADER_FAILED", "pubId = "
-          + pubPK.getId(), re);
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_HEADER_FAILED", "pubId = " + pubPK.getId(), re);
     }
   }
 
@@ -159,8 +156,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       List translations = PublicationI18NDAO.getTranslations(con, publi.getPK());
       publi.setTranslations(translations);
     } catch (SQLException e) {
-      throw new PublicationRuntimeException(
-          "PublicationBmEJB.setTranslations()",
+      throw new PublicationRuntimeException("PublicationBmEJB.setTranslations()",
           SilverpeasRuntimeException.ERROR,
           "publication.GETTING_TRANSLATIONS_FAILED", "pubId = "
           + publi.getPK().getId(), e);
@@ -984,6 +980,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Removes links between publications and the specified publication
+   *
    * @param pubPK
    * @param links list of links to remove
    * @throws RemoteException
@@ -1268,6 +1265,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   // internal methods
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -1288,6 +1286,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @return
    * @see
@@ -1335,6 +1334,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -1351,6 +1351,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @param con
    * @see
    */
@@ -1384,6 +1385,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @param indexEntry
    * @param infoDetail
    * @return
@@ -1509,29 +1511,22 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
           "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
       try {
         CompletePublication completePublication = getCompletePublication(pubPK);
-        FullIndexEntry indexEntry = null;
-        PublicationDetail pubDetail = null;
-        InfoDetail infoDetail = null;
-
         if (completePublication != null) {
-          pubDetail = completePublication.getPublicationDetail();
+          PublicationDetail pubDetail = completePublication.getPublicationDetail();
           if (pubDetail != null) {
             // Index the Publication Header
-            indexEntry = getFullIndexEntry(pubDetail);
+            FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
 
             // Index the Publication Content
-            infoDetail = completePublication.getInfoDetail();
+            InfoDetail infoDetail = completePublication.getInfoDetail();
             updateIndexEntryWithInfoDetail(indexEntry, infoDetail);
 
             if (processWysiwygContent) {
               updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
               updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
             }
-
-            // add versioning documents to publication's index
-            // Note : attachments are added directly from indexing layer (IndexManager)
-            new VersioningUtil().updateIndexEntryWithDocuments(indexEntry);
-
+            AttachmentServiceFactory.getAttachmentService().
+                updateIndexEntryWithDocuments(indexEntry);
             IndexEngineProxy.addIndexEntry(indexEntry);
           }
         }
@@ -1631,6 +1626,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @return
    * @throws RemoteException
@@ -1749,6 +1745,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * "Kmax" method
+   *
    * @return
    */
   public CoordinatesBm getCoordinatesBm() {
@@ -1781,6 +1778,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Create the tagclouds corresponding to the publication detail.
+   *
    * @param pubDetail The detail of the publication.
    * @throws RemoteException
    */
@@ -1810,6 +1808,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Delete the tagclouds corresponding to the publication key.
+   *
    * @param pubPK The primary key of the publication.
    * @throws RemoteException
    */
@@ -1821,6 +1820,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Update the tagclouds corresponding to the publication detail.
+   *
    * @param pubDetail The detail of the publication.
    * @throws RemoteException
    */
@@ -1853,6 +1853,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Recupere les coordonnees de la publication (collection de nodePK)
+   *
    * @param pubId
    * @param componentId
    * @return
@@ -1904,6 +1905,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Updates the publication links
+   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    * @throws RemoteException
@@ -1935,6 +1937,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Constructor declaration
+   *
    * @see
    */
   public PublicationBmEJB() {
@@ -1942,6 +1945,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @see
    */
   public void ejbCreate() {
@@ -1949,6 +1953,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @see
    */
   public void ejbRemove() {
@@ -1956,6 +1961,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @see
    */
   public void ejbActivate() {
@@ -1963,6 +1969,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @see
    */
   public void ejbPassivate() {
@@ -1970,6 +1977,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   /**
    * Method declaration
+   *
    * @param sc
    * @see
    */
@@ -1979,6 +1987,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   /**
    * get my list of SocialInformationPublication according to options and number of Item and the
    * first Index
+   *
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds
@@ -2007,6 +2016,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   /**
    * get list of SocialInformationPublication of my contacts according to options and number of Item
    * and the first Index
+   *
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds

@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,19 +20,17 @@
  */
 package org.silverpeas.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.ComponentSecurity;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class GoToDocument extends GoTo {
 
@@ -42,23 +39,22 @@ public class GoToDocument extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    // Check first if document exists
-    VersioningUtil versioningUtil = new VersioningUtil();
-    DocumentVersion version =
-        versioningUtil.getLastPublicVersion(new DocumentPK(Integer.parseInt(objectId)));
-    if (version == null) {
-      return null;
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        new SimpleDocumentPK(objectId), null);
+    if (document != null) {
+      SimpleDocument version = document.getLastPublicVersion();
+      if (version != null) {
+        return redirectToFile(version, req, res);
+      }
     }
-    return redirectToFile(version, req, res);
+    return null;
   }
 
-  public String redirectToFile(DocumentVersion version, HttpServletRequest req,
+  public String redirectToFile(SimpleDocument version, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     boolean isLoggedIn = isUserLogin(req);
     String componentId = version.getInstanceId();
-    VersioningUtil versioningUtil = new VersioningUtil();
-    Document document = versioningUtil.getDocument(version.getDocumentPK());
-    String foreignId = document.getForeignKey().getId();
+    String foreignId = version.getForeignId();
     if (StringUtil.isDefined(componentId)) {
       setGefSpaceId(req, componentId);
     }
@@ -80,13 +76,11 @@ public class GoToDocument extends GoTo {
         }
 
         if (isAccessAuthorized) {
-          return URLManager.getFullApplicationURL(req) + new VersioningUtil().getDocumentVersionURL(
-              componentId, version.getLogicalName(), version.getDocumentPK().getId(), version.
-              getPk().getId());
+          return URLManager.getFullApplicationURL(req) + version.getUniversalURL();
         }
       }
     }
-    return "ComponentId=" + componentId + "&AttachmentId=" + version.getPk().getId()
+    return "ComponentId=" + componentId + "&AttachmentId=" + version.getId()
         + "&Mapping=Version&ForeignId=" + foreignId;
   }
 }

@@ -38,6 +38,7 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -93,7 +94,7 @@ public class FormTemplateImportExport {
             String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
                 imagePath.length());
             String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
-            String imageMimeType = AttachmentController.getMimeType(imagePath);
+            String imageMimeType = FileUtil.getMimeType(imagePath);
 
             String physicalName = String.valueOf(System.currentTimeMillis()) + "." + imageExtension;
 

@@ -23,20 +23,22 @@
  */
 package org.silverpeas.attachment;
 
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
+import com.silverpeas.util.ForeignPK;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 
 /**
  *
@@ -295,8 +297,6 @@ public interface AttachmentService {
   void updateAttachment(SimpleDocument document, InputStream content, boolean indexIt,
       boolean invokeCallback);
 
-  void updateIndexEntryWithAttachments(FullIndexEntry indexEntry);
-
   /**
    * Search all the documents in an instance which are locked at the alert date.
    *
@@ -358,7 +358,7 @@ public interface AttachmentService {
    * Find documents with the same name attached to the specified foreign id.
    *
    * @param fileName the name of the file.
-   * @param pk thie id of the document.
+   * @param pk the id of the document.
    * @param lang the language of the document.
    * @param foreign the id of the container of the document.
    * @return a document with the same filename - null if none is found.
@@ -374,4 +374,18 @@ public interface AttachmentService {
    * @return an ordered list of the documents.
    */
   List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language);
+  
+  /**
+   * Add the documents to the index.
+   * @param indexEntry the entry to be updated with the document indexes.
+   */
+  void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
+  
+  /**
+   * Indexes all the documents (whatever their type) of a container.
+   * @param fk the id of the container of the document.
+   * @param startOfVisibilityPeriod can be null.
+   * @param endOfVisibilityPeriod can be null.
+   */
+  void indexAllDocuments(WAPrimaryKey fk, Date startOfVisibilityPeriod, Date endOfVisibilityPeriod);
 }

@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -443,8 +442,8 @@ public class WysiwygController {
    * @param id for example, the id of the publication.
    */
   public static void index(String componentId, String id) {
-    AttachmentPK foreignPK = new AttachmentPK(id, componentId);
-    AttachmentController.attachmentIndexer(foreignPK);
+    ForeignPK foreignPK = new ForeignPK(id, componentId);
+    AttachmentServiceFactory.getAttachmentService().indexAllDocuments(foreignPK, null, null);
   }
 
   /**
@@ -831,7 +830,7 @@ public class WysiwygController {
       AttachmentServiceFactory.getAttachmentService().copyDocument(image, targetPk);
     }
   }
-  
+
   /**
    * Usefull to maintain forward compatibility (old URLs to images)
    *
