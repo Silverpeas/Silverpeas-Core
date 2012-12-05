@@ -91,6 +91,10 @@ fieldset.skinFieldset {
 	padding-left:36px;
 	margin-left:5px;
 }
+
+.skinFieldset legend.without-img {
+	padding: 0px 10px;
+}
  
 .champs {
 	margin-left:180px;
