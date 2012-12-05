@@ -331,7 +331,7 @@ public class FileHandler extends AbstractFileHandler {
   /**
    * @see FileUtils
    */
-  protected boolean delete(final FileBasePath basePath, final File file) {
+  protected boolean delete(final FileBasePath basePath, final File file) throws Exception {
     verify(basePath, file);
     final boolean isFirstTimeMarkedToBeDeleted = markToDelete(basePath, file);
     final boolean isDeletedInSession =

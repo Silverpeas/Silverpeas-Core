@@ -23,84 +23,28 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-import static org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey.from;
-
-import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.service.AbstractQuotaService;
 
 import com.silverpeas.annotation.Service;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
  * @author Yohann Chastagnier
  */
 @Service
-public class DefaultComponentSpaceQuotaService extends AbstractQuotaService<ComponentSpaceQuotaKey>
-    implements ComponentSpaceQuotaService {
+public class DefaultComponentSpaceQuotaService extends
+    AbstractSpaceQuotaService<ComponentSpaceQuotaKey> implements ComponentSpaceQuotaService {
 
   /*
    * (non-Javadoc)
    * @see
-   * org.silverpeas.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
-   * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
+   * org.silverpeas.admin.space.quota.AbstractSpaceQuotaService#createKeyFrom(com.stratelia.webactiv
+   * .beans.admin.SpaceInst)
    */
   @Override
-  public Quota getQuotaReachedFromSpacePath(final ComponentSpaceQuotaKey key) {
-    Quota componentSpaceQuotaReached = new Quota();
-    if (key.isValid()) {
-      try {
-        componentSpaceQuotaReached = get(key);
-        SpaceInstLight fromSpaceComponentSpaceQuotaReached =
-            getAdminService().getSpaceInstLightById(key.getResourceId());
-
-        while (!componentSpaceQuotaReached.isReached() &&
-            !fromSpaceComponentSpaceQuotaReached.isRoot()) {
-
-          // Parent space
-          fromSpaceComponentSpaceQuotaReached =
-              getAdminService().getSpaceInstLightById(
-                  fromSpaceComponentSpaceQuotaReached.getFatherId());
-
-          // Parent quota
-          componentSpaceQuotaReached =
-              SpaceServiceFactory.getComponentSpaceQuotaService().get(
-                  ComponentSpaceQuotaKey.from(fromSpaceComponentSpaceQuotaReached));
-        }
-      } catch (final AdminException e) {
-        SilverTrace.error("quota", "ComponentSpaceQuotaService.getQuotaReachedRecursively",
-            "quota.MSG_ERR_GET_SPACE", e);
-      } catch (final QuotaException qe) {
-        SilverTrace.error("quota", "ComponentSpaceQuotaService.getQuotaReachedRecursively",
-            "quota.EX_CANT_GET_COMPONENT_SPACE_QUOTA", qe);
-      }
-
-      if (!componentSpaceQuotaReached.isReached()) {
-        componentSpaceQuotaReached = new Quota();
-      }
-    }
-    return componentSpaceQuotaReached;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.service.AbstractQuotaService#verify(org.silverpeas.quota.QuotaKey)
-   */
-  @Override
-  public Quota verify(ComponentSpaceQuotaKey key) throws QuotaException {
-    Quota quota = super.verify(key);
-    while (key.isValid() && !key.getSpace().isRoot()) {
-      key =
-          from(OrganizationControllerFactory.getFactory().getOrganizationController()
-              .getSpaceInstById(key.getSpace().getDomainFatherId()));
-      quota = super.verify(key);
-    }
-    return quota;
+  protected ComponentSpaceQuotaKey createKeyFrom(final SpaceInst space) {
+    return ComponentSpaceQuotaKey.from(space);
   }
 
   /*
@@ -108,10 +52,10 @@ public class DefaultComponentSpaceQuotaService extends AbstractQuotaService<Comp
    * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
    */
   @Override
-  public int getCurrentCount(final ComponentSpaceQuotaKey key) throws QuotaException {
+  public long getCurrentCount(final ComponentSpaceQuotaKey key) throws QuotaException {
 
     // Initializing the counting result
-    int currentCount = 0;
+    long currentCount = 0;
 
     // space could be null if user space is performed
     if (key.getSpace() != null) {

@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
@@ -564,7 +565,8 @@ public class JobStartPagePeasRequestRouter extends
             request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedLanguage(
             request),
             request.getParameter("SelectedLook"),
-            request.getParameter("ComponentSpaceQuota"));
+            request.getParameter("ComponentSpaceQuota"),
+            request.getParameter("DataStorageQuota"));
       }
 
       destination = getDestinationSpace("EffectiveCreateSpace", jobStartPageSC, request);
@@ -1049,6 +1051,7 @@ public class JobStartPagePeasRequestRouter extends
     String name = request.getParameter("NameObject");
     String desc = request.getParameter("Description");
     String componentSpaceQuotaMaxCount = request.getParameter("ComponentSpaceQuota");
+    String dataStorageQuotaMaxCount = request.getParameter("DataStorageQuota");
     String pInheritance = request.getParameter("InheritanceBlocked");
     String look = request.getParameter("SelectedLook");
     if (desc == null) {
@@ -1070,6 +1073,19 @@ public class JobStartPagePeasRequestRouter extends
         StringUtil.isDefined(componentSpaceQuotaMaxCount)) {
       try {
         spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(componentSpaceQuotaMaxCount));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
+
+    // Data storage quota
+    if (jobStartPageSC.isUserAdmin() &&
+        JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated &&
+        StringUtil.isDefined(dataStorageQuotaMaxCount)) {
+      try {
+        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
+            Long.valueOf(dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);
