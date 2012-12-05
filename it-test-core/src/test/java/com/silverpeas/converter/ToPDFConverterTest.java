@@ -83,7 +83,6 @@ public class ToPDFConverterTest {
 
   @After
   public void tearDown() throws Exception {
-    FileUtils.cleanDirectory(new File(FileRepositoryManager.getTemporaryPath()));
   }
 
   @Test
