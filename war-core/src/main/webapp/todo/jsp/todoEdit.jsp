@@ -27,35 +27,25 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.homepage.HomePageUtil"%>
-<%@ page import="com.stratelia.webactiv.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.todo.control.TodoUserException"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Attendee" %>
+<%@ page import="com.stratelia.webactiv.calendar.model.Classification" %>
+<%@ page import="com.stratelia.webactiv.calendar.model.Priority"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader" %>
+<%@ page import="com.stratelia.webactiv.todo.control.TodoUserException" %>
+<%@ page import="com.stratelia.webactiv.util.DBUtil" %>
+<%@ page import="com.stratelia.webactiv.util.DateUtil" %>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Iterator" %>
 
 <%@ include file="checkTodo.jsp" %>
 
@@ -91,73 +81,49 @@ function gotoToDo()
 }
 
 function isCorrectForm() {
-        var errorMsg = "";
-        var errorNb = 0;
-        var beginDate = document.todoEditForm.StartDate.value;
-        var endDate = document.todoEditForm.EndDate.value;
-        var yearBegin = extractYear(beginDate, '<%=todo.getLanguage()%>');
-        var monthBegin = extractMonth(beginDate, '<%=todo.getLanguage()%>');
-                var dayBegin = extractDay(beginDate, '<%=todo.getLanguage()%>');
-                
-                var yearEnd = extractYear(endDate, '<%=todo.getLanguage()%>'); 
-                var monthEnd = extractMonth(endDate, '<%=todo.getLanguage()%>');
-                var dayEnd = extractDay(endDate, '<%=todo.getLanguage()%>'); 
-                
-                var beginDateOK = false;
-                var endDateOK = false;
-                
-                if (isWhitespace(document.todoEditForm.Name.value)) {
-                   errorMsg+="  - '<%=todo.getString("nomToDo")%>' <%=todo.getString("MustContainsText")%>\n";
-                   errorNb++; 
-            }
+  var errorMsg = "";
+  var errorNb = 0;
 
-                if (!isValidTextArea(document.todoEditForm.Description)) {
-                        errorMsg+="  - '<%=todo.getString("descriptionToDo")%>' <%=todo.getString("ContainsTooLargeText")+todo.getString("NbMaxTextArea")+todo.getString("Characters")%>\n";
-                        errorNb++;              
-                }           
-       
-        if (! isWhitespace(beginDate)) {
-                if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-                        errorMsg+="  - '<%=todo.getString("dateDebutToDo")%>' <%=todo.getString("MustContainsCorrectDate")%>\n";
-                        errorNb++;
-                }
-                else beginDateOK = true;
-        }
-              
-        if (! isWhitespace(endDate)) {
-                if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                        errorMsg+="  - '<%=todo.getString("dateFinToDo")%>' <%=todo.getString("MustContainsCorrectDate")%>\n";
-                        errorNb++;
-                }
-                else endDateOK = true;
-        }
-        
-        if (beginDateOK && endDateOK) {
-                        if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
-                                errorMsg+="  - '<%=todo.getString("dateFinToDo")%>' <%=todo.getString("MustContainsPostDateToBeginDate")%>\n";
-                    errorNb++;  
-                        }
-        }    
-              
-        
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=todo.getString("ThisFormContains")%> 1 <%=todo.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=todo.getString("ThisFormContains")%> " + errorNb + " <%=todo.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;     
-     
+  if (isWhitespace(document.todoEditForm.Name.value)) {
+    errorMsg += "  - '<%=todo.getString("nomToDo")%>' <%=todo.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+
+  if (!isValidTextArea(document.todoEditForm.Description)) {
+    errorMsg +=
+        "  - '<%=todo.getString("descriptionToDo")%>' <%=todo.getString("ContainsTooLargeText")+todo.getString("NbMaxTextArea")+todo.getString("Characters")%>\n";
+    errorNb++;
+  }
+
+  var dateErrors = isDateAfterAnother({
+    date : document.todoEditForm.EndDate.value,
+    label : "'<%=todo.getString("dateFinToDo")%>'"}, {
+    date : document.todoEditForm.StartDate.value,
+    label : "'<%=todo.getString("dateDebutToDo")%>'"});
+  $(dateErrors).each(function(index, error) {
+    errorMsg += "  - " + error.message + "\n";
+    errorNb++;
+  });
+
+  var result;
+  switch (errorNb) {
+    case 0 :
+      result = true;
+      break;
+    case 1 :
+      errorMsg =
+          "<%=todo.getString("ThisFormContains")%> 1 <%=todo.getString("Error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+    default :
+      errorMsg = "<%=todo.getString("ThisFormContains")%> " + errorNb +
+          " <%=todo.getString("Errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
 }
 
 
