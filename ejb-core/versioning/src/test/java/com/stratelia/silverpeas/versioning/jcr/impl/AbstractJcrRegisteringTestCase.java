@@ -25,45 +25,48 @@
 package com.stratelia.silverpeas.versioning.jcr.impl;
 
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import org.apache.jackrabbit.commons.cnd.ParseException;
 
 import javax.annotation.Resource;
 import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import java.io.IOException;
+
+import org.junit.AfterClass;
+import org.junit.Before;
 
 public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 
   private static boolean registred = false;
+  @Resource
+  private Repository repository;
 
   public static boolean isRegistred() {
     return registred;
   }
 
-  public static void setRegistred(boolean registred) {
-    AbstractJcrRegisteringTestCase.registred = registred;
+  public Repository getRepository() {
+    return this.repository;
   }
-  
-  @Resource
-  private Repository repository;
 
   public AbstractJcrRegisteringTestCase() {
     super();
   }
 
-  public Repository getRepository() {
-    return repository;
-  }
-
-  public void registerSilverpeasNodeTypes() throws RepositoryException, ParseException,
-        IOException {
-    if (registred) {
-      return;
+  @Before
+  public void registerSilverpeasNodeTypes() throws Exception {
+    System.out.print("Register Silverpeas Node Types");
+    if (!registred) {
+      String cndFileName = AbstractJcrRegisteringTestCase.class.getClassLoader().getResource(
+          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
+      SilverpeasRegister.registerNodeTypes(cndFileName);
+      registred = true;
+      System.out.println(" -> node types registered");
+    } else {
+      System.out.println(" -> node types already registered!");
     }
-    String cndFileName = this.getClass().getClassLoader().getResource(
-        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-    SilverpeasRegister.registerNodeTypes(cndFileName);
-    registred = true;
   }
 
+  @AfterClass
+  public static void unregisterSilverpeasNodeTypes() throws Exception {
+    System.out.println("Unregister Silverpeas Node Types");
+    registred = false;
+  }
 }
