@@ -1463,7 +1463,7 @@
   <function>
     <description>Function that returns the value of a class constant.</description>
     <name>constantValue</name>
-    <function-class>org.silverpeas.jstl.constant.ClassConstantInspector</function-class>
+    <function-class>org.silverpeas.jstl.constant.reflect.ClassConstantInspector</function-class>
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
@@ -1483,6 +1483,14 @@
     <function-class>com.silverpeas.util.StringUtil</function-class>
     <function-signature>
       boolean isDefined( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that formats as memory size the given value.</description>
+    <name>formatMemSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
     </function-signature>
   </function>
 </taglib>

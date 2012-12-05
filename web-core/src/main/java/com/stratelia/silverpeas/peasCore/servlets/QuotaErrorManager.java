@@ -23,15 +23,17 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import java.rmi.RemoteException;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.exception.WithNested;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.quota.exception.QuotaException;
+import org.silverpeas.util.UnitUtil;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.quota.exception.QuotaException;
-
-import com.stratelia.webactiv.util.exception.WithNested;
+import java.rmi.RemoteException;
 
 /**
  * Provide methods to manage quota errors
@@ -43,8 +45,7 @@ public class QuotaErrorManager {
 
   /**
    * Checks if a DataStorageQuotaException is registred in the servlet request
-   * @param destination
-   * @param request
+   * @param request the http servlet request
    * @throws QuotaException
    */
   public static void checkQuotaErrorFromRequest(final HttpServletRequest request)
@@ -53,7 +54,7 @@ public class QuotaErrorManager {
         request.getAttribute(SERVLET_JSP_EXCEPTION_ATTRIBUTE);
     if (servletJspExceptionAttribute instanceof Throwable) {
       final DataStorageQuotaException dataStorageQuotaException =
-          retrieveDataStorageQuotaQuotaException((Throwable) servletJspExceptionAttribute);
+          retrieveDataStorageQuotaException((Throwable) servletJspExceptionAttribute);
       if (dataStorageQuotaException != null) {
         throw dataStorageQuotaException;
       }
@@ -61,11 +62,35 @@ public class QuotaErrorManager {
   }
 
   /**
-   * Retrieves a DataStorageQuotaException if any from a given throwable
-   * @param wn
+   * Retrieves a formated QuotaException message if any from a given throwable
+   * @param throwable
    * @return
    */
-  private static DataStorageQuotaException retrieveDataStorageQuotaQuotaException(
+  public static String performQuotaExceptionMessage(
+      Throwable throwable, String language) {
+    String message  = "";
+    final SilverpeasTemplate template;
+    final DataStorageQuotaException dsqe = retrieveDataStorageQuotaException(throwable);
+    if (dsqe != null) {
+      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
+      template
+          .setAttribute("maxCountFormated", UnitUtil.formatMemSize(dsqe.getQuota().getMaxCount()));
+      template.setAttribute("spaceName", dsqe.getSpace().getName());
+      template.setAttribute("isPersonalSpace", dsqe.getSpace().isPersonalSpace());
+      template.setAttribute("fromComponentName", dsqe.getFromComponent());
+      message =  EncodeHelper
+          .htmlStringToJavaString(
+              template.applyFileTemplate("dataStorageQuotaExceptionMessage_" + language));
+    }
+    return message.replaceAll("(</?b|</?i|</?p)[a-zA-Z=\"'${}\\.0-9]*>","");
+  }
+
+  /**
+   * Retrieves a DataStorageQuotaException if any from a given throwable
+   * @param throwable
+   * @return
+   */
+  private static DataStorageQuotaException retrieveDataStorageQuotaException(
       Throwable throwable) {
     if (throwable != null) {
       while (throwable != null) {
