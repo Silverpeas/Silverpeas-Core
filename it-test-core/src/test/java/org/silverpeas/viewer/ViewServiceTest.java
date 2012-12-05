@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,9 +27,14 @@ public class ViewServiceTest {
   @Inject
   private ViewService viewService;
 
+  @Before 
+  public void setup() throws Exception {
+    (new File(FileRepositoryManager.getTemporaryPath())).mkdirs();
+  }
+  
   @After
   public void tearDown() throws Exception {
-    FileUtils.cleanDirectory(new File(FileRepositoryManager.getTemporaryPath()));
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getTemporaryPath()));
   }
 
   @Test
