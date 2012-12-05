@@ -67,10 +67,8 @@
     if (QuotaLoad.UNLIMITED.equals(space.getDataStorageQuota().getLoad())) {
       isDataStorageQuotaActivated = false;
     } else {
-      dataStorageQuotaCount = UnitUtil.formatValue(space.getDataStorageQuota().getCount(),
-          UnitUtil.memUnit.MB);
-      dataStorageQuotaMaxCount = UnitUtil.formatValue(space.getDataStorageQuota().getMaxCount(),
-          UnitUtil.memUnit.MB);
+      dataStorageQuotaCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getCount());
+      dataStorageQuotaMaxCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getMaxCount());
     }
   }
 
@@ -264,12 +262,8 @@ out.println(tabbedPane.print());
   <% } %>
   <% if (isDataStorageQuotaActivated) { %>
     <tr>
-      <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
-      <td valign="top" width="100%" id="spaceDataStorageQuota"><%=dataStorageQuotaMaxCount%></td>
-    </tr>
-    <tr>
       <td class="txtlibform"><%=resource.getString("JSPP.dataStorageUsed")%> :</td>
-      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=dataStorageQuotaCount%> (<%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %)</td>
+      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=dataStorageQuotaCount + " / " + dataStorageQuotaMaxCount%> (<%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %)</td>
     </tr>
   <% } %>
 	<% if (space.getCreateDate() != null) { %>

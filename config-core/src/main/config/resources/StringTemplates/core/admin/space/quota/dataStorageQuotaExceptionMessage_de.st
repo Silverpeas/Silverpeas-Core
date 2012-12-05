@@ -1,3 +1,2 @@
-<br/><br/><br/>
-The disk space allocated for <i><b>$if(isPersonalSpace)$your personal space$else$$spaceName$$endif$</b></i> is fully utilized.
+The disk space allocated for <i><b>$if(isPersonalSpace)$your personal space$else$$spaceName$$endif$</b></i> ($maxCountFormated$) is fully utilized.
 $if(fromComponentUrl)$<br/>Back to homepage of application <a href="$fromComponentUrl$">$fromComponentName$</a>.$endif$
