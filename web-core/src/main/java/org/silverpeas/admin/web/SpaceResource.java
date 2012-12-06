@@ -109,7 +109,7 @@ public class SpaceResource extends AbstractAdminResource {
   public SpaceEntity get(@PathParam("spaceId") final String spaceId,
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
       return asWebEntity(loadSpace(spaceId), forceGettingFavorite);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -136,7 +136,7 @@ public class SpaceResource extends AbstractAdminResource {
   public SpaceEntity update(@PathParam("spaceId") final String spaceId,
       final SpaceEntity spaceEntity) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
 
       // Old space entity data
       final SpaceEntity oldSpaceEntity = get(spaceId, true);
@@ -177,7 +177,7 @@ public class SpaceResource extends AbstractAdminResource {
   public Collection<SpaceEntity> getSpaces(@PathParam("spaceId") final String spaceId,
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
       return asWebEntities(SpaceEntity.class,
           loadSpaces(getAdminServices().getAllSubSpaceIds(spaceId, getUserDetail().getId())),
           forceGettingFavorite);
@@ -203,7 +203,7 @@ public class SpaceResource extends AbstractAdminResource {
   @Produces(APPLICATION_JSON)
   public Collection<ComponentEntity> getComponents(@PathParam("spaceId") final String spaceId) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
       return asWebEntities(ComponentEntity.class, loadComponents(getAdminServices()
           .getAllComponentIds(spaceId, getUserDetail().getId())));
     } catch (final WebApplicationException ex) {
@@ -229,7 +229,7 @@ public class SpaceResource extends AbstractAdminResource {
   public Collection<AbstractTypeEntity> getContent(@PathParam("spaceId") final String spaceId,
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
       final Collection<AbstractTypeEntity> content = new ArrayList<AbstractTypeEntity>();
       content.addAll(getSpaces(spaceId, forceGettingFavorite));
       content.addAll(getComponents(spaceId));
@@ -256,7 +256,7 @@ public class SpaceResource extends AbstractAdminResource {
   @Produces(APPLICATION_JSON)
   public SpaceAppearanceEntity getAppearance(@PathParam("spaceId") final String spaceId) {
     try {
-      isUserAuthorizedToAccessSpace(spaceId);
+      verifyUserAuthorizedToAccessSpace(spaceId);
       final SpaceInstLight space = loadSpace(spaceId);
       return asWebEntity(space, getLookDelegate().getLook(space),
           getLookDelegate().getWallpaper(space));

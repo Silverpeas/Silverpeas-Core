@@ -24,19 +24,30 @@
 
 --%>
 
+<%@page import="org.silverpeas.util.UnitUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
 
 <%
-SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
+  SpaceInst	space				= (SpaceInst) request.getAttribute("Space");
 String		translation 		= (String) request.getParameter("Translation");
 boolean 	isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
+
+// Component space quota
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 String componentSpaceQuotaMaxCount = "";
 if (isComponentSpaceQuotaActivated) {
   componentSpaceQuotaMaxCount = String.valueOf(space.getComponentSpaceQuota().getMaxCount());
+}
+
+// Data storage quota
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
+String dataStorageQuotaMaxCount = "";
+if (isDataStorageQuotaActivated) {
+  dataStorageQuotaMaxCount = String.valueOf(UnitUtil.convertTo(space.getDataStorageQuota().getMaxCount(),
+      UnitUtil.memUnit.B, UnitUtil.memUnit.MB));
 }
 
 browseBar.setSpaceId(space.getId());
@@ -85,6 +96,14 @@ function isCorrectForm() {
        errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
        errorNb++;
      }
+    <% } %>
+
+    <% if (isDataStorageQuotaActivated) { %>
+      var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
+      if (isWhitespace(dataStorageQuota)) {
+        errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
+        errorNb++;
+      }
     <% } %>
 
      switch(errorNb)
@@ -147,6 +166,12 @@ function removeTranslation() {
       <tr>
         <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
         <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="<%=componentSpaceQuotaMaxCount%>"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+      </tr>
+    <% } %>
+    <% if (isDataStorageQuotaActivated) { %>
+      <tr>
+        <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
+        <td><input type="text" id="spaceDataStorageQuota" name="DataStorageQuota" size="9" maxlength="10" value="<%=dataStorageQuotaMaxCount%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
       </tr>
     <% } %>
 		<% if (isInHeritanceEnable && !space.isRoot()) { %>

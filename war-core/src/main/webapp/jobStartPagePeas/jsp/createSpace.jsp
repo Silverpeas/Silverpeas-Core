@@ -35,6 +35,8 @@ SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
 boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
+long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
+boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
 
 
 	browseBar.setSpaceId(spaceId);
@@ -68,18 +70,17 @@ function isCorrectForm() {
      	var errorNb = 0;
 
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
-		var desc = document.infoSpace.Description;
     if (isWhitespace(name)) {
-			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
-			errorNb++;
-		}
+      errorMsg += "  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
+      errorNb++;
+    }
 
 		var textAreaLength = 400;
-		var s = desc.value;
-		if (! (s.length <= textAreaLength)) {
-     		errorMsg+="  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
-           	errorNb++;
-		}
+		var s = document.infoSpace.Description.value;
+    if (! (s.length <= textAreaLength)) {
+      errorMsg += "  - '<%=resource.getString("GML.description")%>' <%=resource.getString("ContainsTooLargeText")+"400 "+resource.getString("Characters")%>\n";
+      errorNb++;
+    }
 
     <% if (isComponentSpaceQuotaActivated) { %>
      var componentSpaceQuota = document.infoSpace.ComponentSpaceQuota.value;
@@ -87,6 +88,14 @@ function isCorrectForm() {
        errorMsg += "  - '<%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%>' <%=resource.getString("MustContainsText")%>\n";
        errorNb++;
      }
+    <% } %>
+
+    <% if (isDataStorageQuotaActivated) { %>
+      var dataStorageQuota = document.infoSpace.DataStorageQuota.value;
+      if (isWhitespace(dataStorageQuota)) {
+        errorMsg += "  - '<%=resource.getString("JSPP.dataStorageQuota")%>' <%=resource.getString("MustContainsText")%>\n";
+        errorNb++;
+      }
     <% } %>
 
 
@@ -164,6 +173,12 @@ out.println(board.printBefore());
         <tr>
           <td class="txtlibform"><%=resource.getString("JSPP.componentSpaceQuotaMaxCount")%> :</td>
           <td><input type="text" name="ComponentSpaceQuota" size="5" maxlength="4" value="0"/>&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"/> <%=resource.getString("JSPP.componentSpaceQuotaMaxCountHelp")%></td>
+        </tr>
+      <% } %>
+      <% if (isDataStorageQuotaActivated) { %>
+        <tr>
+          <td class="txtlibform"><%=resource.getString("JSPP.dataStorageQuota")%> :</td>
+          <td><input type="text" name="DataStorageQuota" size="9" maxlength="10" value="<%=defaultDataStorageQuota%>">&nbsp;<img src="<%=resource.getIcon("mandatoryField")%>" width="5" height="5" border="0"> <%=resource.getString("JSPP.dataStorageQuotaHelp")%></td>
         </tr>
       <% } %>
 			<tr align=left>

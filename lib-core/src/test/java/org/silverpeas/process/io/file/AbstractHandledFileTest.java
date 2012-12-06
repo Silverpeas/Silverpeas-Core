@@ -61,7 +61,7 @@ public abstract class AbstractHandledFileTest {
 
   @Before
   public void beforeTest() throws Exception {
-    afterTest();
+    cleanTest();
     fileHandler = new FileHandler(currentSession);
     realComponentPath.mkdirs();
     sessionComponentPath.mkdirs();
@@ -70,6 +70,13 @@ public abstract class AbstractHandledFileTest {
 
   @After
   public void afterTest() throws Exception {
+    cleanTest();
+  }
+
+  /**
+   * Cleaning files handled by a test
+   */
+  private void cleanTest() {
     deleteQuietly(sessionRootPath);
     deleteQuietly(realRootPath);
     deleteQuietly(otherFile);

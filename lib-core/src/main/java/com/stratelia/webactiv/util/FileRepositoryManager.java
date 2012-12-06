@@ -21,9 +21,7 @@
 package com.stratelia.webactiv.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
@@ -31,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import org.silverpeas.search.indexEngine.IndexFileManager;
+import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.util.StringUtil;
 
@@ -55,14 +54,8 @@ public class FileRepositoryManager {
   static String domainAuthenticationPropertiesFolderPath;
   final static ResourceLocator uploadSettings = new ResourceLocator(
       "org.silverpeas.util.uploads.uploadSettings", "");
-  static final ResourceLocator utilMessages = new ResourceLocator(
-      "org.silverpeas.util.multilang.util", "");
   static final String unknownFileIcon = uploadSettings.getString("unknown");
   public static final String CONTEXT_TOKEN = ",";
-  static final long ko = 1024;
-  static final long mo = ko * 1024;
-  static final long go = mo * 1024;
-  static final long to = go * 1024;
 
   static {
     tempPath = GeneralPropertiesManager.getString("tempPath");
@@ -277,31 +270,7 @@ public class FileRepositoryManager {
    * @return String
    */
   public static String formatFileSize(long lSize) {
-    String sTo = utilMessages.getString("to", "Tb");
-    String sGo = utilMessages.getString("go", "Gb");
-    String sMo = utilMessages.getString("mo", "Mb");
-    String sKo = utilMessages.getString("ko", "Kb");
-    String o = utilMessages.getString("o", "bytes");
-
-    float size = Long.valueOf(lSize).floatValue();
-
-    if (size < ko) {// inférieur à 1 ko (1024 octets)
-      return Integer.toString(Math.round(size)).concat(" ").concat(o);
-    } else if (size < mo) {// inférieur à 1 mo (1024 * 1024 octets)
-      return Integer.toString(Math.round(size / ko)).concat(" ").concat(sKo);
-    } else if (size < go) {// inférieur à 1 Go
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / mo).concat(" ").concat(sMo);
-    } else if (size < to) {// inférieur à 1 To
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / go).concat(" ").concat(sGo);
-    } else {
-      DecimalFormat format = new DecimalFormat();
-      format.setMaximumFractionDigits(2);
-      return format.format(size / to).concat(" ").concat(sTo);
-    }
+    return UnitUtil.formatMemSize(lSize);
   }
 
   /**

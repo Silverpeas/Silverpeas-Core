@@ -23,19 +23,10 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.quota.model.Quota;
-import org.silverpeas.quota.service.QuotaService;
 
 /**
  * @author Yohann Chastagnier
- *
  */
-public interface ComponentSpaceQuotaService extends QuotaService<ComponentSpaceQuotaKey> {
+public interface ComponentSpaceQuotaService extends SpaceQuotaService<ComponentSpaceQuotaKey> {
 
-  /**
-   * Gets the quota reached of the resource from a given quota key in recursively way.
-   * @param key
-   * @return
-   */
-  Quota getQuotaReachedFromSpacePath(ComponentSpaceQuotaKey key);
 }

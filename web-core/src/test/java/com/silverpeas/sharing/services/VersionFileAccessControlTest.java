@@ -63,12 +63,16 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -77,48 +81,44 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-sharing-datasource.xml", "/spring-sharing-service.xml",
-  "/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class VersionFileAccessControlTest {
 
   public VersionFileAccessControlTest() {
   }
-  
-  
   private static ReplacementDataSet dataSet;
   private static final String instanceId = "kmelia2";
+  private static final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+      "/spring-sharing-datasource.xml", "/spring-sharing-service.xml", "/spring-pure-memory-jcr.xml");
+  private static final DataSource dataSource = context.getBean("jpaDataSource", DataSource.class);
+  private boolean registred = false;
+  private static Repository repository = context.getBean(Repository.class);
 
   @BeforeClass
   public static void prepareDataSet() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
-    FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    dataSet = new ReplacementDataSet(builder.build(JpaSharingTicketService.class.getClassLoader().
-        getResourceAsStream("com/silverpeas/sharing/services/sharing_security_dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    DBUtil.clearTestInstance();
+    InputStream in = JpaSharingTicketService.class.getClassLoader().
+        getResourceAsStream("com/silverpeas/sharing/services/sharing_security_dataset.xml");
+    try {
+      dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      DBUtil.clearTestInstance();
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
-  @Inject
-  @Named("jpaDataSource")
-  private DataSource dataSource;
-  private boolean registred = false;
-  @Resource
-  private Repository repository;
 
   public Connection getConnection() throws SQLException {
-    return this.dataSource.getConnection();
+    return dataSource.getConnection();
   }
 
   public Repository getRepository() {
-    return this.repository;
+    return repository;
   }
 
   @Before
   public void generalSetUp() throws Exception {
-    InitialContext context = new InitialContext();
-    context.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
+    InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
@@ -167,12 +167,14 @@ public class VersionFileAccessControlTest {
 
   @AfterClass
   public static void generalCleanUp() throws Exception {
-    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    ((JackrabbitRepository) repository).shutdown();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
+    context.close();    
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
-   /**
+  /**
    * Test of isReadable method, of class SimpleFileAccessControl.
    */
   @Test

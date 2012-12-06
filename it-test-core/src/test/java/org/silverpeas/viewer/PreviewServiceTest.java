@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,7 +20,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.junit.Ignore;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-viewer.xml")
@@ -28,9 +28,14 @@ public class PreviewServiceTest {
   @Inject
   private PreviewService previewService;
 
+  @Before
+  public void setup() throws Exception {
+    (new File(FileRepositoryManager.getTemporaryPath())).mkdirs();
+  }
+
   @After
   public void tearDown() throws Exception {
-    FileUtils.cleanDirectory(new File(FileRepositoryManager.getTemporaryPath()));
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getTemporaryPath()));
   }
 
   @Test

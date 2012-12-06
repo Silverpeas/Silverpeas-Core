@@ -99,6 +99,7 @@ import static org.junit.Assert.assertThat;
 public class AttachmentServiceTest {
 
   private static final String instanceId = "kmelia974";
+  private static final String foreignInstanceId = "kmelia38";
   private static EmbeddedDatabase dataSource;
   private boolean registred = false;
   private static BetterRepositoryFactoryBean shutdown;
@@ -178,6 +179,10 @@ public class AttachmentServiceTest {
       session = getRepository().login(new SilverpeasSystemCredentials());
       if (session.getRootNode().hasNodes()) {
         NodeIterator iter = session.getRootNode().getNodes(instanceId);
+        while (iter.hasNext()) {
+          iter.nextNode().remove();
+        }
+        iter = session.getRootNode().getNodes(foreignInstanceId);
         while (iter.hasNext()) {
           iter.nextNode().remove();
         }
@@ -373,11 +378,10 @@ public class AttachmentServiceTest {
   @Test
   public void testMoveDocument() throws IOException {
     String language = "fr";
-    String foreignInstanceId = "kmelia38";
     String foreignId = "73";
     SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
-    SimpleDocumentPK pk = instance.moveDocument(original, new ForeignPK(foreignId, 
-        foreignInstanceId));
+    SimpleDocumentPK pk = instance.moveDocument(original,
+        new ForeignPK(foreignId, foreignInstanceId));
     SimpleDocument movedDocument = instance.searchDocumentById(pk, language);
     original.setForeignId(foreignId);
     original.setPK(pk);

@@ -31,6 +31,8 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.stratelia.webactiv.util.DBUtil;
 
@@ -39,16 +41,18 @@ import com.stratelia.webactiv.util.DBUtil;
  */
 abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
 
+  final static Logger logger = LoggerFactory.getLogger(AbstractBaseDynamicValue.class);
   private Properties properties = null;
 
   /**
    * @throws java.lang.Exception
    */
-  @Before
   @Override
+  @Before
   public void setUp() throws Exception {
     properties = new Properties();
-    properties.load(TestDynamicValueDAO.class.getClassLoader().getResourceAsStream("jdbc.properties"));
+    properties.load(TestDynamicValueDAO.class.getClassLoader().
+        getResourceAsStream("jdbc.properties"));
     // create the table to execute the test
     Connection con = null;
     Statement statement = null;
@@ -60,11 +64,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
       try {
         statement.executeUpdate("DROP TABLE val_dyn1");
       } catch (SQLException e) {
-        if(!"ERROR: table \"val_dyn1\" does not exist".equals(e.getMessage())) {
-          e.printStackTrace();
-        }
+        logger.info("Couldn't drop the table val_dyn1", e);
       }
-
       String sql = "CREATE TABLE val_dyn1 ( \"value\" character varying(256) NOT NULL,"
           + "keyword character varying(100) NOT NULL, start_date date NOT NULL, end_date date )"
           + "WITH (OIDS=FALSE);"
@@ -129,7 +130,7 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
 
   @Override
   protected String getConnectionUrl() {
-   return properties.getProperty("jdbc.url", "jdbc:postgresql://localhost:5432/postgres");
+    return properties.getProperty("jdbc.url", "jdbc:postgresql://localhost:5432/postgres");
   }
 
   @Override

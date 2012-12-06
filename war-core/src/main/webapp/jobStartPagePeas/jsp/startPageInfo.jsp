@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.util.UnitUtil"%>
 <%@page import="org.silverpeas.quota.contant.QuotaLoad"%>
 <%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
 
@@ -49,11 +50,27 @@
   boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEnable")).booleanValue();
 
   SpaceInst 		space 				= (SpaceInst) request.getAttribute("Space");
+
+  // Component space quota
   boolean isComponentSpaceQuotaActivated = JobStartPagePeasSettings.componentsInSpaceQuotaActivated;
 
   boolean isComponentSpaceQuotaFull = isComponentSpaceQuotaActivated && space.isComponentSpaceQuotaReached();
   if (isComponentSpaceQuotaActivated && QuotaLoad.UNLIMITED.equals(space.getComponentSpaceQuota().getLoad())) {
     isComponentSpaceQuotaActivated = false;
+  }
+
+  // Data storage quota
+  boolean isDataStorageQuotaActivated = JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
+  boolean isDataStorageQuotaFull = isDataStorageQuotaActivated && space.isDataStorageQuotaReached();
+  String dataStorageQuotaCount = "";
+  String dataStorageQuotaMaxCount = "";
+  if (isDataStorageQuotaActivated) {
+    if (QuotaLoad.UNLIMITED.equals(space.getDataStorageQuota().getLoad())) {
+      isDataStorageQuotaActivated = false;
+    } else {
+      dataStorageQuotaCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getCount());
+      dataStorageQuotaMaxCount = UnitUtil.formatMemSize(space.getDataStorageQuota().getMaxCount());
+    }
   }
 
   String 			m_SpaceName 		= space.getName(resource.getLanguage());
@@ -142,7 +159,7 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-<!--
+//<!--
 var currentLanguage = "<%=space.getLanguage()%>";
 <%
 	for (String lang : space.getTranslations().keySet()) {
@@ -198,7 +215,7 @@ function recoverRights() {
 	$.progressMessage();
 	location.href = "RecoverSpaceRights?Id=<%=space.getId()%>";
 }
--->
+//-->
 </script>
 </head>
 <body>
@@ -215,6 +232,10 @@ out.println(tabbedPane.print());
 <% } %>
 <% if (isComponentSpaceQuotaFull) { %>
   <div class="inlineMessage-nok"><%=space.getComponentSpaceQuotaReachedErrorMessage(resource.getLanguage())%></div>
+  <br clear="all"/>
+<% } %>
+<% if (isDataStorageQuotaFull) { %>
+  <div class="inlineMessage-nok"><%=space.getDataStorageQuotaReachedErrorMessage(resource.getLanguage())%></div>
   <br clear="all"/>
 <% } %>
 <view:areaOfOperationOfCreation/>
@@ -238,6 +259,12 @@ out.println(tabbedPane.print());
       <td valign="top" width="100%" id="componentSpaceQuotaLoad">
         <fmt:message key="JSPP.componentSpaceQuotaCurrentCount"><fmt:param value="${space.componentSpaceQuota.count}"/></fmt:message>
       </td>
+    </tr>
+  <% } %>
+  <% if (isDataStorageQuotaActivated) { %>
+    <tr>
+      <td class="txtlibform"><%=resource.getString("JSPP.dataStorageUsed")%> :</td>
+      <td valign="top" width="100%" id="spaceDataStorageQuotaLoad"><%=dataStorageQuotaCount + " / " + dataStorageQuotaMaxCount%> (<%=space.getDataStorageQuota().getLoadPercentage().longValue()%> %)</td>
     </tr>
   <% } %>
 	<% if (space.getCreateDate() != null) { %>
