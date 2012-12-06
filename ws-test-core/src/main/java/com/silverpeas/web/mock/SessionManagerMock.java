@@ -39,6 +39,8 @@ import javax.inject.Named;
 @Named("sessionManager")
 public class SessionManagerMock implements SessionManagement {
 
+  private boolean noSession = false;
+
   private Map<String, SessionInfo> sessions = new HashMap<String, SessionInfo>();
 
   @Override
@@ -53,6 +55,9 @@ public class SessionManagerMock implements SessionManagement {
 
   @Override
   public SessionInfo getSessionInfo(String sessionKey) {
+    if (noSession) {
+      return null;
+    }
     return sessions.get(sessionKey);
   }
 
@@ -71,6 +76,9 @@ public class SessionManagerMock implements SessionManagement {
 
   @Override
   public boolean isUserConnected(UserDetail user) {
+    if (noSession) {
+      return false;
+    }
     for (SessionInfo session : sessions.values()) {
       if (user.getId().equals(session.getUserDetail().getId())) {
         return true;
@@ -79,4 +87,17 @@ public class SessionManagerMock implements SessionManagement {
     return false;
   }
 
+  /**
+   * @return the noSession
+   */
+  public boolean isNoSession() {
+    return noSession;
+  }
+
+  /**
+   * @param noSession the noSession to set
+   */
+  public void setNoSession(boolean noSession) {
+    this.noSession = noSession;
+  }
 }

@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-<parent>
+  <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>core</artifactId>
-    <version>5.11-SNAPSHOT</version>
+    <version>5.12-SNAPSHOT</version>
   </parent>
 
   <groupId>com.silverpeas.core</groupId>
   <artifactId>it-test-core</artifactId>
-  <version>5.11-SNAPSHOT</version>
+  <version>5.12-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Integration Test Core - ${project.version}</name>
   <description>
-     This module is aiming at gathering tests that take longer time to run. They are generally
-     tests about the integration of the different Silverpeas core components.
+    This module is aiming at gathering tests that take longer time to run. They are generally
+    tests about the integration of the different Silverpeas core components.
   </description>
 
   <dependencies>
@@ -22,11 +22,27 @@
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -56,8 +72,48 @@
             <filtering>true</filtering>
           </resource>
         </resources>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>true</filtering>
+            <excludes>
+              <exclude>**/*.doc</exclude>
+              <exclude>**/*.docx</exclude>
+              <exclude>**/*.jpEg</exclude>
+              <exclude>**/*.jpg</exclude>
+              <exclude>**/*.odp</exclude>
+              <exclude>**/*.ods</exclude>
+              <exclude>**/*.odt</exclude>
+              <exclude>**/*.pdf</exclude>
+              <exclude>**/*.ppt</exclude>
+              <exclude>**/*.pptx</exclude>
+              <exclude>**/*.txt</exclude>
+              <exclude>**/*.xls</exclude>
+              <exclude>**/*.xlsx</exclude>
+            </excludes>
+          </testResource>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>false</filtering>
+            <includes>
+              <include>**/*.doc</include>
+              <include>**/*.docx</include>
+              <include>**/*.jpEg</include>
+              <include>**/*.jpg</include>
+              <include>**/*.odp</include>
+              <include>**/*.ods</include>
+              <include>**/*.odt</include>
+              <include>**/*.pdf</include>
+              <include>**/*.ppt</include>
+              <include>**/*.pptx</include>
+              <include>**/*.txt</include>
+              <include>**/*.xls</include>
+              <include>**/*.xlsx</include>
+            </includes>
+          </testResource>
+        </testResources>
         <filters>
-          <filter>src/main/filters/filters.properties</filter>
+          <filter>src/test/filters/filters.properties</filter>
         </filters>
         <plugins>
           <plugin>

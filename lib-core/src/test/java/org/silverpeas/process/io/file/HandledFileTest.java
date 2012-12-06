@@ -62,7 +62,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_getHandledFile_getParentHandledFile_1() throws Exception {
+  public void testGetHandledFileAndGetParentHandledFile() throws Exception {
     buildCommonPathStructure();
     final File expected = getFile(sessionComponentPath, "file_1");
     final HandledFile test = getHandledFile(realComponentPath, "file_1");
@@ -77,7 +77,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_openOutputStream_1() throws Exception {
+  public void testOpenOutputStream() throws Exception {
     HandledFile file = getHandledFile(realComponentPath, "file");
     OutputStream test = file.openOutputStream();
     try {
@@ -123,7 +123,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_openInputStream() throws Exception {
+  public void testOpenInputStream() throws Exception {
 
     // File exists in real path only
     HandledFile file = getHandledFile(realComponentPath, "file");
@@ -166,7 +166,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_touch() throws Exception {
+  public void testTouch() throws Exception {
     final File sessionFile = getFile(sessionComponentPath, "file");
     final File realFile = getFile(realComponentPath, "file");
     final HandledFile test = getHandledFile(realFile);
@@ -190,7 +190,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_listFiles_1() throws Exception {
+  public void testListFiles() throws Exception {
     buildCommonPathStructure();
     HandledFile test = getHandledFile(realRootPath);
     Collection<HandledFile> files = test.listFiles();
@@ -237,7 +237,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_listFiles_2() throws Exception {
+  public void testListFilesWithFilters() throws Exception {
     buildCommonPathStructure();
     final HandledFile test = getHandledFile(realRootPath);
     Collection<HandledFile> files =
@@ -274,7 +274,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_contentEquals_1() throws Exception {
+  public void testContentEquals() throws Exception {
     buildCommonPathStructure();
     assertThat(
         getHandledFile(realRootPath, "root_file_2").contentEquals(
@@ -294,7 +294,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_copyFile() throws Exception {
+  public void testCopyFile() throws Exception {
     File test = getFile(realComponentPath, "a", otherFile.getName());
     File expected = getFile(sessionComponentPath, "a", otherFile.getName());
     writeStringToFile(getFile(realComponentPath, otherFile.getName()), "other");
@@ -326,21 +326,27 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_delete_1() throws Exception {
+  public void testDeleteFromRealPathOnly() throws Exception {
+
+    // Deleting not existing file
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(false));
     assertThat(getHandledFile(sessionComponentPath, "file").delete(), is(false));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
 
+    // Creating for test "file" in real path and verify existence
     touch(getFile(realComponentPath, "file"));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
+    // Verify the deletion of it (but file exists in real path because commit is not yet passed)
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(true));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
+    // Verify that a new deletion on same deleted file has no effect (results have to be identical
+    // as the previous part of test)
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(false));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
@@ -348,17 +354,22 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_delete_2() throws Exception {
+  public void testDeleteFromSessionPathOnly() throws Exception {
+
+    // Creating for test "file" in session path and verify existence
     touch(getFile(sessionComponentPath, "file"));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
     assertThat(getFile(realComponentPath, "file").exists(), is(false));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
 
+    // Verify the deletion of it (the file in session path is deleted)
     assertThat(getHandledFile(sessionComponentPath, "file").delete(), is(true));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
     assertThat(getFile(realComponentPath, "file").exists(), is(false));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
+    // Verify that a new deletion on same deleted file has no effect (results have to be identical
+    // as the previous part of test)
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(false));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
     assertThat(getFile(realComponentPath, "file").exists(), is(false));
@@ -366,18 +377,24 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_delete_3() throws Exception {
+  public void testDeleteFileExistingInSessionAndRealPaths() throws Exception {
+
+    // Creating for test "file" in session and real paths and verify existence
     touch(getFile(realComponentPath, "file"));
     touch(getFile(sessionComponentPath, "file"));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(0));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(true));
 
+    // Verify the deletion of these (the file in session path is deleted, and file in real path
+    // always exists until commit is done)
     assertThat(getHandledFile(sessionComponentPath, "file").delete(), is(true));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
+    // Verify that a new deletion on same deleted files has no effect (results have to be identical
+    // as the previous part of test)
     assertThat(getHandledFile(realComponentPath, "file").delete(), is(false));
     assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(getFile(realComponentPath, "file").exists(), is(true));
@@ -385,12 +402,13 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_delete_4() throws Exception {
+  public void testDeleteFileFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
     final File real = getFile(realComponentPath);
 
+    // Verify file existence before deletion
     assertThat(session.exists(), is(true));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(session, null, true).size(), is(5));
@@ -399,10 +417,11 @@ public class HandledFileTest extends AbstractHandledFileTest {
 
     getHandledFile(real).delete();
 
+    // Verify file existence after deletion
     assertThat(session.exists(), is(false));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(4));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(1));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));
@@ -410,12 +429,13 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_delete_5() throws Exception {
+  public void testCleanDirectoryFromCommonTestStructure() throws Exception {
     buildCommonPathStructure();
 
     final File session = getFile(sessionComponentPath);
     final File real = getFile(realComponentPath);
 
+    // Verify file existence before deletion
     assertThat(session.exists(), is(true));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(session, null, true).size(), is(5));
@@ -424,11 +444,12 @@ public class HandledFileTest extends AbstractHandledFileTest {
 
     getHandledFile(real).cleanDirectory();
 
+    // Verify file existence after cleaning
     assertThat(session.exists(), is(true));
     assertThat(real.exists(), is(true));
     assertThat(listFiles(session, null, true).size(), is(0));
     assertThat(listFiles(real, null, true).size(), is(12));
-    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(11));
+    assertThat(fileHandler.getMarkedToDelete(BASE_PATH_TEST).size(), is(9));
     assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
     for (final File fileMarkedToDelete : listFiles(real, null, true)) {
       assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, fileMarkedToDelete), is(true));
@@ -440,7 +461,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_waitFor_1() throws Exception {
+  public void testWaitForWithSuccessFileCreationInTime() throws Exception {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     final Thread create = new Thread(new Runnable() {
@@ -482,7 +503,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_waitFor_2() throws Exception {
+  public void testWaitForForWithFailFileCreationInTime() throws Exception {
     assertThat(getFile(sessionComponentPath, "file").exists(), is(false));
 
     final Thread create = new Thread(new Runnable() {
@@ -524,45 +545,94 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   /*
+   * moveFile
+   */
+
+  @Test
+  public void testMoveFile() throws Exception {
+    buildCommonPathStructure();
+    final File real = getFile(realRootPath, "root_file_1");
+    final File session = getFile(sessionHandledPath, "root_file_1");
+    final File realDest = getFile(realRootPath, "root_file_1_renamed");
+    final File sessionDest = getFile(sessionHandledPath, "root_file_1_renamed");
+
+    // Verify before move
+    assertThat(real.exists(), is(true));
+    assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
+    assertThat(readFileToString(real), is("root_file_1"));
+    assertThat(session.exists(), is(false));
+    assertThat(sessionDest.exists(), is(false));
+
+    getHandledFile(real).moveFile(getHandledFile(realDest));
+
+    // Verify after move
+    assertThat(real.exists(), is(true));
+    assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
+    assertThat(readFileToString(real), is("root_file_1"));
+    assertThat(session.exists(), is(false));
+    assertThat(sessionDest.exists(), is(true));
+    assertThat(readFileToString(sessionDest), is("root_file_1"));
+  }
+
+  /*
    * read
    */
 
   @Test
-  public void test_read_1() throws Exception {
+  public void testReadFileToStringFromFileExistingInSessionAndRealPath() throws Exception {
+
+    // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
     writeStringToFile(session, "session\nligne 2\n");
     writeStringToFile(real, "real\nligne 2\n");
+
+    // Content of session file has to be read
     String fileContent = getHandledFile(real).readFileToString();
     assertThat(fileContent, is("session\nligne 2\n"));
+
+    // When file doesn't exist in session, content of real file has to be read
     deleteQuietly(session);
     fileContent = getHandledFile(real).readFileToString();
     assertThat(fileContent, is("real\nligne 2\n"));
   }
 
   @Test
-  public void test_read_2() throws Exception {
+  public void testReadFileToStringFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+      throws Exception {
+
+    // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
     writeStringToFile(session, "session\nligne 2\n", "UTF16");
     writeStringToFile(real, "real\nligne 2\n", "UTF16");
+
+    // Content of session file has to be read
     String fileContent = getHandledFile(real).readFileToString("UTF16");
     assertThat(fileContent, is("session\nligne 2\n"));
+
+    // When file doesn't exist in session, content of real file has to be read
     deleteQuietly(session);
     fileContent = getHandledFile(real).readFileToString("UTF16");
     assertThat(fileContent, is("real\nligne 2\n"));
   }
 
   @Test
-  public void test_read_3() throws Exception {
+  public void testReadLinesFromFileExistingInSessionAndRealPath() throws Exception {
+
+    // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
     writeStringToFile(session, "session\nligne 2\n");
     writeStringToFile(real, "real\nligne 2\n");
+
+    // Content of session file has to be read
     List<String> fileContent = getHandledFile(real).readLines();
     assertThat(fileContent.size(), is(2));
     assertThat(fileContent.get(0), is("session"));
     assertThat(fileContent.get(1), is("ligne 2"));
+
+    // When file doesn't exist in session, content of real file has to be read
     deleteQuietly(session);
     fileContent = getHandledFile(real).readLines();
     assertThat(fileContent.size(), is(2));
@@ -571,15 +641,22 @@ public class HandledFileTest extends AbstractHandledFileTest {
   }
 
   @Test
-  public void test_read_4() throws Exception {
+  public void testReadLinesFromFileExistingInSessionAndRealPathWithSpecificFileEncoding()
+      throws Exception {
+
+    // Creating file with different content depending of session or real paths
     final File session = getFile(sessionComponentPath, "readFile");
     final File real = getFile(realComponentPath, "readFile");
     writeStringToFile(session, "session\nligne 2\n", "UTF16");
     writeStringToFile(real, "real\nligne 2\n", "UTF16");
+
+    // Content of session file has to be read
     List<String> fileContent = getHandledFile(real).readLines("UTF16");
     assertThat(fileContent.size(), is(2));
     assertThat(fileContent.get(0), is("session"));
     assertThat(fileContent.get(1), is("ligne 2"));
+
+    // When file doesn't exist in session, content of real file has to be read
     deleteQuietly(session);
     fileContent = getHandledFile(real).readLines("UTF16");
     assertThat(fileContent.size(), is(2));
@@ -592,32 +669,38 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_writeStringToFile_1() throws Exception {
+  public void testWriteStringToFile() throws Exception {
+
+    // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
     writeStringToFile(session, "notModified");
     writeStringToFile(real, "notModified");
 
+    // Writing empty content by specifying real file
     getHandledFile(real).writeStringToFile(null);
-
+    // Session file is now empty and real file is not modified
     String fileContent = readFileToString(session);
     assertThat(fileContent, is(""));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file
     getHandledFile(real).writeStringToFile("modifiedContent");
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file
     getHandledFile(real).writeStringToFile("modifiedContent", true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file and a specific file encoding
     getHandledFile(real).writeStringToFile(new String("newContent".getBytes("UTF16")), "UTF16");
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
     assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
     assertThat(readFileToString(real), is("notModified"));
@@ -628,63 +711,41 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_write_1() throws Exception {
+  public void testWrite() throws Exception {
+
+    // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
     writeStringToFile(session, "notModified");
     writeStringToFile(real, "notModified");
 
+    // Writing empty content by specifying real file
     getHandledFile(real).write(null);
-
+    // Session file is now empty and real file is not modified
     String fileContent = readFileToString(session);
     assertThat(fileContent, is(""));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file
     getHandledFile(real).write("modifiedContent");
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file
     getHandledFile(real).write("modifiedContent", true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file and a specific file encoding
     getHandledFile(real).write(new String("newContent".getBytes("UTF16")), "UTF16");
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "UTF16");
     assertThat(fileContent, is(new String("newContent".getBytes("UTF16"))));
     assertThat(readFileToString(real), is("notModified"));
-  }
-
-  /*
-   * moveFile
-   */
-
-  @Test
-  public void test_moveFile_1() throws Exception {
-    buildCommonPathStructure();
-    final File real = getFile(realRootPath, "root_file_1");
-    final File session = getFile(sessionHandledPath, "root_file_1");
-    final File realDest = getFile(realRootPath, "root_file_1_renamed");
-    final File sessionDest = getFile(sessionHandledPath, "root_file_1_renamed");
-
-    assertThat(real.exists(), is(true));
-    assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(false));
-    assertThat(readFileToString(real), is("root_file_1"));
-    assertThat(session.exists(), is(false));
-    assertThat(sessionDest.exists(), is(false));
-
-    getHandledFile(real).moveFile(getHandledFile(realDest));
-
-    assertThat(real.exists(), is(true));
-    assertThat(fileHandler.isMarkedToDelete(BASE_PATH_TEST, real), is(true));
-    assertThat(readFileToString(real), is("root_file_1"));
-    assertThat(session.exists(), is(false));
-    assertThat(sessionDest.exists(), is(true));
-    assertThat(readFileToString(sessionDest), is("root_file_1"));
   }
 
   /*
@@ -692,20 +753,24 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_writeByteArrayToFile_1() throws Exception {
+  public void testWriteByteArrayToFile() throws Exception {
+
+    // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
     writeStringToFile(session, "notModified");
     writeStringToFile(real, "notModified");
 
+    // Writing empty content by specifying real file
     getHandledFile(real).writeByteArrayToFile("modifiedContent".getBytes());
-
+    // Session file is now empty and real file is not modified
     String fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file
     getHandledFile(real).writeByteArrayToFile("modifiedContent".getBytes(), true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("modifiedContentmodifiedContent"));
     assertThat(readFileToString(real), is("notModified"));
@@ -716,39 +781,46 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_writeLines_1() throws Exception {
+  public void testWriteLines() throws Exception {
+
+    // Creating file with same content in session and real paths
     final File session = getFile(sessionComponentPath, "writeFile");
     final File real = getFile(realComponentPath, "writeFile");
     writeStringToFile(session, "notModified");
     writeStringToFile(real, "notModified");
 
+    // Writing empty content by specifying real file
     getHandledFile(real).writeLines(null);
-
+    // Session file is now empty and real file is not modified
     String fileContent = readFileToString(session);
     assertThat(fileContent, is(""));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file
     getHandledFile(real).writeLines(Arrays.asList("line1", "line2"));
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file
     getHandledFile(real).writeLines(Arrays.asList("line3", "line4"), true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR + "line3" +
         LINE_SEPARATOR + "line4" + LINE_SEPARATOR));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file and specific line ending
     getHandledFile(real).writeLines(Arrays.asList("line1", "line2"), LINE_SEPARATOR_UNIX);
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file and specific line ending
     getHandledFile(real).writeLines(Arrays.asList("line3", "line4"), LINE_SEPARATOR_UNIX, true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session);
     assertThat(fileContent, is("line1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX +
         "line3" + LINE_SEPARATOR_UNIX + "line4" + LINE_SEPARATOR_UNIX));
@@ -756,29 +828,35 @@ public class HandledFileTest extends AbstractHandledFileTest {
 
     // Encoding
 
+    // Writing new content by specifying real file and specific file encoding
     getHandledFile(real).writeLines("Latin1", Arrays.asList("éline1", "line2"));
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file and specific file encoding
     getHandledFile(real).writeLines("Latin1", Arrays.asList("éline3", "line4"), true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR + "line2" + LINE_SEPARATOR + "éline3" +
         LINE_SEPARATOR + "line4" + LINE_SEPARATOR));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Writing new content by specifying real file and specific file encoding and specific line
+    // ending
     getHandledFile(real)
         .writeLines("Latin1", Arrays.asList("éline1", "line2"), LINE_SEPARATOR_UNIX);
-
+    // Session file contains this new content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX));
     assertThat(readFileToString(real), is("notModified"));
 
+    // Appending new content by specifying real file and specific file encoding and specific line
+    // ending
     getHandledFile(real).writeLines("Latin1", Arrays.asList("éline3", "line4"),
         LINE_SEPARATOR_UNIX, true);
-
+    // Session file contains the new appended content and real file is not modified
     fileContent = readFileToString(session, "Latin1");
     assertThat(fileContent, is("éline1" + LINE_SEPARATOR_UNIX + "line2" + LINE_SEPARATOR_UNIX +
         "éline3" + LINE_SEPARATOR_UNIX + "line4" + LINE_SEPARATOR_UNIX));
@@ -790,7 +868,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_sizeOf() throws Exception {
+  public void testSizeOf() throws Exception {
     buildCommonPathStructure();
 
     long size = getHandledFile(realRootPath, "root_file_2").size();
@@ -807,7 +885,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_isFileNewer() throws Exception {
+  public void testIsFileNewer() throws Exception {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");
@@ -847,7 +925,7 @@ public class HandledFileTest extends AbstractHandledFileTest {
    */
 
   @Test
-  public void test_isFileOlder() throws Exception {
+  public void testIsFileOlder() throws Exception {
     final File real1 = getFile(realComponentPath, "file1");
     final File file1 = getFile(sessionComponentPath, "file1");
     final File file2 = getFile(sessionComponentPath, "file2");

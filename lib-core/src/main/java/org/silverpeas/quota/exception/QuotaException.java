@@ -33,6 +33,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class QuotaException extends SilverpeasException {
   private static final long serialVersionUID = -822107677650523574L;
 
+  private final Quota quota;
+
   /**
    * Default constructor
    * @param quota
@@ -53,6 +55,7 @@ public class QuotaException extends SilverpeasException {
         "quotaType=" + quota.getType() + ", resourceId=" + quota.getResourceId() + ", minCount=" +
             quota.getMinCount() + ", maxCount=" + quota.getMaxCount() + ", count=" +
             quota.getCount(), exception);
+    this.quota = quota;
   }
 
   /**
@@ -62,6 +65,7 @@ public class QuotaException extends SilverpeasException {
    */
   public QuotaException(final Exception exception) {
     super("NoClass", SilverpeasException.ERROR, "", exception);
+    quota = null;
   }
 
   /*
@@ -71,5 +75,12 @@ public class QuotaException extends SilverpeasException {
   @Override
   public String getModule() {
     return "quota";
+  }
+
+  /**
+   * @return the quota
+   */
+  public Quota getQuota() {
+    return quota;
   }
 }

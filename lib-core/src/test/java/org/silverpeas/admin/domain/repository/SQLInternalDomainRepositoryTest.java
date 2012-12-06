@@ -1,32 +1,29 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.admin.domain.repository;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,16 +31,15 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import junit.framework.Assert;
+import org.apache.commons.io.IOUtils;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -60,6 +56,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author lbertin
@@ -69,16 +67,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest(FileRepositoryManager.class)
 @PowerMockIgnore({"org.apache.log4j", "javax.xml.parsers"})
 public class SQLInternalDomainRepositoryTest {
+
   private static ApplicationContext context;
   private SQLDomainRepository dao;
   private DataSource dataSource;
 
   public SQLInternalDomainRepositoryTest() {
-
-  }
-
-  @BeforeClass
-  public static void generalSetUp() {
   }
 
   @Before
@@ -87,29 +81,34 @@ public class SQLInternalDomainRepositoryTest {
     if (context == null) {
       context = new ClassPathXmlApplicationContext("/spring-domain.xml");
     }
-
     dataSource = (DataSource) context.getBean("jpaDataSource");
-    dao =
-        (SQLDomainRepository) context.getAutowireCapableBeanFactory().getBean(
-            "sqlInternalDomainRepository");
+    dao = (SQLDomainRepository) context.getAutowireCapableBeanFactory().getBean(
+        "sqlInternalDomainRepository");
 
-    // Populate database
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        SQLInternalDomainRepositoryTest.class.getClassLoader().getResourceAsStream(
-            "org/silverpeas/admin/domain/repository/domain-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    InputStream in = SQLInternalDomainRepositoryTest.class.getClassLoader().getResourceAsStream(
+        "org/silverpeas/admin/domain/repository/domain-dataset.xml");
+    try {
+      ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+      DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
   @After
   public void cleanTest() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        SQLInternalDomainRepositoryTest.class.getClassLoader().getResourceAsStream(
-            "org/silverpeas/admin/domain/repository/domain-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
-    DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
+    InputStream in = SQLInternalDomainRepositoryTest.class.getClassLoader().getResourceAsStream(
+        "org/silverpeas/admin/domain/repository/domain-dataset.xml");
+    try {
+      ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+      DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
   @Test
@@ -158,11 +157,9 @@ public class SQLInternalDomainRepositoryTest {
         String tableName = rs.getString("TABLE_NAME");
         if (tableName.equalsIgnoreCase("domainTestCreation_User")) {
           userTableFound = true;
-        }
-        else if (tableName.equalsIgnoreCase("domainTestCreation_Group")) {
+        } else if (tableName.equalsIgnoreCase("domainTestCreation_Group")) {
           groupTableFound = true;
-        }
-        else if (tableName.equalsIgnoreCase("domainTestCreation_Group_User_Rel")) {
+        } else if (tableName.equalsIgnoreCase("domainTestCreation_Group_User_Rel")) {
           groupUserRelTableFound = true;
         }
       }
@@ -172,14 +169,13 @@ public class SQLInternalDomainRepositoryTest {
 
     // Performs checks
     if (mustExists) {
-      Assert.assertTrue("User table has not been created", userTableFound);
-      Assert.assertTrue("Group table has not been created", groupTableFound);
-      Assert.assertTrue("Group_User_Rel table has not been created", groupUserRelTableFound);
-    }
-    else {
-      Assert.assertFalse("User table has not been dropped", userTableFound);
-      Assert.assertFalse("Group table has not been dropped", groupTableFound);
-      Assert.assertFalse("Group_User_Rel table has not been dropped", groupUserRelTableFound);
+      assertThat("User table has not been created", userTableFound, is(true));
+      assertThat("Group table has not been created", groupTableFound, is(true));
+      assertThat("Group_User_Rel table has not been created", groupUserRelTableFound, is(true));
+    } else {
+      assertThat("User table has not been dropped", userTableFound, is(false));
+      assertThat("Group table has not been dropped", groupTableFound, is(false));
+      assertThat("Group_User_Rel table has not been dropped", groupUserRelTableFound, is(false));
     }
   }
 
@@ -199,13 +195,12 @@ public class SQLInternalDomainRepositoryTest {
   }
 
   private void populateFile(File tmpFile) throws IOException {
-    FileWriter writer = null;
-
+    FileWriter writer = new FileWriter(tmpFile);
     try {
-      writer = new FileWriter(tmpFile);
       writer.append("property.Number = 4\n");
-      writer
-          .append("property.ResourceFile = com.stratelia.silverpeas.domains.multilang.templateDomainSQLBundle\n");
+      writer.
+          append(
+          "property.ResourceFile = com.stratelia.silverpeas.domains.multilang.templateDomainSQLBundle\n");
 
       writer.append("property_1.Name = title\n");
       writer.append("property_1.Type = STRING\n");
@@ -223,8 +218,7 @@ public class SQLInternalDomainRepositoryTest {
       writer.append("property_4.Type = USERID\n");
       writer.append("property_4.MapParameter = boss\n");
     } finally {
-      writer.close();
+      IOUtils.closeQuietly(writer);
     }
   }
-
 }

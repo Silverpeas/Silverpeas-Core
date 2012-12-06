@@ -26,6 +26,7 @@ package org.silverpeas.admin.space;
 import javax.inject.Inject;
 
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaService;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaService;
 
 /**
  * @author Yohann Chastagnier
@@ -36,6 +37,9 @@ public class SpaceServiceFactory {
 
   @Inject
   private ComponentSpaceQuotaService componentSpaceQuotaService;
+
+  @Inject
+  private DataStorageSpaceQuotaService dataStorageSpaceQuotaService;
 
   /**
    * @return the componentSpaceQuotaService
@@ -50,5 +54,12 @@ public class SpaceServiceFactory {
    */
   private static SpaceServiceFactory getInstance() {
     return instance;
+  }
+
+  /**
+   * @return the dataStorageSpaceQuotaService
+   */
+  public static DataStorageSpaceQuotaService getDataStorageSpaceQuotaService() {
+    return getInstance().dataStorageSpaceQuotaService;
   }
 }

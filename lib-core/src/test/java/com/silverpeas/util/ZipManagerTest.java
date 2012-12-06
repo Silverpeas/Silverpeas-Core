@@ -110,8 +110,7 @@ public class ZipManagerTest {
     int result = ZipManager.getNbFiles(new File(outfilename));
     assertEquals(1, result);
     ZipFile zipFile = new ZipFile(file);
-    assertNotNull(zipFile.getEntry(File.separatorChar + "dir1" + File.separatorChar + "dir2"
-      + File.separatorChar + "FrenchScrum.odp"));
+    assertNotNull(zipFile.getEntry("/dir1/dir2/FrenchScrum.odp"));
     zipFile.close();
   }
 

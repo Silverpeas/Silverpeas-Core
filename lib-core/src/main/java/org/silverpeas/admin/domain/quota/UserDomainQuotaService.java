@@ -40,7 +40,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
    * @see org.silverpeas.quota.service.QuotaService#getCurrentCount(org.silverpeas.quota.QuotaKey)
    */
   @Override
-  public int getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
+  public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
     try {
       return DomainDriverManagerFactory.getCurrentDomainDriverManager().getAllUsers(
           key.getResourceId()).length;

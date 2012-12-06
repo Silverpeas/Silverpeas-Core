@@ -208,6 +208,13 @@ public class ClipboardBmEJB implements SessionBean {
     // As soon as one paste operation is done
     // we know that the next copy should not keep the old selection
     m_Adding2Selection = false;
+
+    // Deselect cutted objects still in clipboard
+    for (ClipboardSelection clipObject : m_ObjectList) {
+      if (clipObject.isCutted()) {
+        clipObject.setSelected(false);
+      }
+    }
   }
 
   /**
