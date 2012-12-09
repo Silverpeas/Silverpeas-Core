@@ -23,20 +23,14 @@
  */
 package org.silverpeas.admin.space.quota;
 
-import org.silverpeas.quota.QuotaKey;
 import org.silverpeas.quota.contant.QuotaType;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 /**
  * @author Yohann Chastagnier
  */
-public class ComponentSpaceQuotaKey implements QuotaKey {
-
-  private final SpaceInst space;
+public class ComponentSpaceQuotaKey extends AbstractSpaceQuotaKey {
 
   /**
    * Initializing a quota key from a given space
@@ -48,22 +42,11 @@ public class ComponentSpaceQuotaKey implements QuotaKey {
   }
 
   /**
-   * Initializing a quota key from a given space
-   * @param space
-   * @return
-   */
-  public static ComponentSpaceQuotaKey from(final SpaceInstLight space) {
-    final SpaceInst spaceInst = new SpaceInst();
-    spaceInst.setId(space.getShortId());
-    return new ComponentSpaceQuotaKey(spaceInst);
-  }
-
-  /**
    * Builds the componant space quota key from a given SpaceInst
    * @param space
    */
   private ComponentSpaceQuotaKey(final SpaceInst space) {
-    this.space = space;
+    super(space);
   }
 
   /*
@@ -73,30 +56,5 @@ public class ComponentSpaceQuotaKey implements QuotaKey {
   @Override
   public QuotaType getQuotaType() {
     return QuotaType.COMPONENTS_IN_SPACE;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#isValid()
-   */
-  @Override
-  public boolean isValid() {
-    return (space != null && StringUtil.isDefined(space.getId()));
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.quota.QuotaKey#getResourceId()
-   */
-  @Override
-  public String getResourceId() {
-    return space.getId().replaceFirst(Admin.SPACE_KEY_PREFIX, "");
-  }
-
-  /**
-   * @return the space
-   */
-  public SpaceInst getSpace() {
-    return space;
   }
 }

@@ -194,7 +194,9 @@ public class LookWebDelegate {
     gef =
         (GraphicElementFactory) request.getSession().getAttribute(
             GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    initializeUserMenuDisplay(request);
+    if (lookHelper != null) {
+      initializeUserMenuDisplay(request);
+    }
   }
 
   /**

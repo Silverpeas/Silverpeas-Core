@@ -24,10 +24,16 @@
 
 package com.stratelia.webactiv.beans.admin;
 
+import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.silverpeas.profile.token.UserTokenKey;
+import org.silverpeas.token.exception.TokenException;
+import org.silverpeas.token.exception.TokenRuntimeException;
 
 public class UserFull extends UserDetail {
 
@@ -37,7 +43,7 @@ public class UserFull extends UserDetail {
   protected String m_password = "";
   protected boolean m_isPasswordValid = false;
   protected boolean m_isPasswordAvailable = false;
-  
+
   /**
    * Gets the full profile of the user with the specified identifier.
    * @param userId the unique identifier of the user in Silverpeas.
@@ -84,6 +90,14 @@ public class UserFull extends UserDetail {
 
   public String getPassword() {
     return (m_password == null) ? "" : m_password;
+  }
+
+  public String getToken() {
+    try {
+      return getTokenService().getInitialized(UserTokenKey.from(this)).getValue();
+    } catch (TokenException e) {
+      throw new TokenRuntimeException(e);
+    }
   }
 
   public void setPassword(String p) {
