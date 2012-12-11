@@ -217,7 +217,7 @@
     target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
       if ($.userZoom.target != null && $.userZoom.target == target)
         return;
-      user.onRelationships($.userZoom.currentUser.lastName, true, function() {
+      user.loadRelationships({ name: $.userZoom.currentUser.lastName, reload: true}, function() {
         $.userZoom.currentUser.onMySentInvitations(function() {
           var element = tooltip(target, user);
           $.userZoom.set(target, element);
