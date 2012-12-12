@@ -423,6 +423,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
         // Has the session expired (timeout)
         if (currentTime - si.getLastAccessTimestamp() >= userSessionTimeoutMillis) {
           if (si instanceof HTTPSessionInfo) {
+            // the session was opened by a servlet (it is a servlet HTTPSession)
             long duration = currentTime - ((HTTPSessionInfo) si).getIsAliveDate();
             // Has the user been notified (only for living client)
             if ((duration < maxRefreshInterval)
@@ -438,9 +439,12 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
                 // Add to the notifications
                 userNotificationSessions.add(si.getSessionId());
               }
+            } else {
+              // Remove dead session or timeout with a notification
+              expiredSessions.add(si);
             }
           } else {
-            // Remove dead session or timeout with a notification
+            // the session isn't a Servlet API one (session opened directly by a web service for example).
             expiredSessions.add(si);
           }
         } // if (hasSessionExpired )
