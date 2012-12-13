@@ -32,7 +32,7 @@ import java.util.List;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;

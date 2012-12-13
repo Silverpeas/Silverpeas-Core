@@ -21,15 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.quota.contant;
+package org.silverpeas.quota.constant;
 
 /**
  * @author Yohann Chastagnier
  */
-public enum QuotaType {
+public enum QuotaLoad {
 
-  USERS_IN_DOMAIN,
-  COMPONENTS_IN_SPACE,
-  DATA_STORAGE_IN_SPACE,
-  DATA_STORAGE_IN_USER_SPACE
+  UNLIMITED, EMPTY, NOT_FULL, FULL, NOT_ENOUGH, OUT_OF_BOUNDS
 }

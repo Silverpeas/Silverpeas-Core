@@ -24,7 +24,7 @@
 package org.silverpeas.quota.service;
 
 import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.contant.QuotaType;
+import org.silverpeas.quota.constant.QuotaType;
 
 /**
  * @author Yohann Chastagnier

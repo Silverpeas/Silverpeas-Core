@@ -25,7 +25,7 @@
 --%>
 
 <%@page import="org.silverpeas.util.UnitUtil"%>
-<%@page import="org.silverpeas.quota.contant.QuotaLoad"%>
+<%@page import="org.silverpeas.quota.constant.QuotaLoad"%>
 <%@page import="com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings"%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>

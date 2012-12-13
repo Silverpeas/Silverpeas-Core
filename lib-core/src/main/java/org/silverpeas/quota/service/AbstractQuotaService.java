@@ -26,7 +26,7 @@ package org.silverpeas.quota.service;
 import javax.inject.Inject;
 
 import org.silverpeas.quota.QuotaKey;
-import org.silverpeas.quota.contant.QuotaLoad;
+import org.silverpeas.quota.constant.QuotaLoad;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaFullException;
 import org.silverpeas.quota.exception.QuotaNotEnoughException;
