@@ -24,8 +24,21 @@
 
 package com.stratelia.webactiv;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public enum SilverpeasRole {
   admin, publisher, writer, user, reader, supervisor, privilegedUser;
+
+  public static Set<SilverpeasRole> from(String[] roles) {
+    Set<SilverpeasRole> result = new HashSet<SilverpeasRole>();
+    if (roles != null) {
+      for (String role : roles) {
+        result.add(SilverpeasRole.valueOf(role));
+      }
+    }
+    return result;
+  }
 
   public boolean isInRole(String role) {
     try {

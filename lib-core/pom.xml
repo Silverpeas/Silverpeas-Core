@@ -411,7 +411,7 @@
       <plugin>
         <groupId>de.jflex</groupId>
         <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.5.0-20120831.084748-4</version> 
+        <version>1.5.0-20120831.084748-4</version>
         <executions>
           <execution>
             <goals>
