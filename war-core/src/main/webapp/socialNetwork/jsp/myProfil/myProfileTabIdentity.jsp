@@ -169,7 +169,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         </tr>
         <tr id="answer">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginAnswer")%> :</td>
-            <td><input type="text" name="userLoginAnswer" value="<%=userLoginAnswer%>" size="50" maxlength="99"/></td>
+            <td><input type="text" name="userLoginAnswer" value="" size="50" maxlength="99"/></td>
         </tr><%
     }
 %>
