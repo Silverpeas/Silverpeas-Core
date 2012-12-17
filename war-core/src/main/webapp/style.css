@@ -186,6 +186,11 @@ p label span {
 	color:#999999;
 }
 
+.changePwd {
+	font-size: 10px;
+	color:#999999;
+}
+
 #storePassword{
 	background-color:transparent;
 	border:0px;
