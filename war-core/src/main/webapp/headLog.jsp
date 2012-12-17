@@ -58,8 +58,11 @@ String styleSheet = general.getString("defaultLoginStyleSheet", m_context+"/styl
 // Is "forgotten password" feature active ?
 String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
 boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
+boolean changePwdFromLoginPageActive = authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
 boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
 boolean newRegistrationActive = authenticationSettings.getBoolean("newRegistrationEnabled", false);
+String changePasswordFromLoginPage = general.getString("changePasswordFromLoginPage", "/defaultChangePassword.jsp");
+pageContext.setAttribute("changePasswordFromLoginPage", changePasswordFromLoginPage);
 
 // active social networks
 boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
