@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.util.attachment.process;
 
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.process.io.file.FileHandler;
 import org.silverpeas.process.management.AbstractFileProcess;
 import org.silverpeas.process.management.ProcessExecutionContext;
@@ -33,33 +34,55 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * Silverpeas process which takes in charge the attachment deletion of a file with its indexes.
+ *
  * @author Yohann Chastagnier
  */
-public class AttachmentDeleteFileAndIndexProcess extends
-    AbstractFileProcess<ProcessExecutionContext> {
+public class AttachmentDeleteFileAndIndexProcess extends AbstractFileProcess<ProcessExecutionContext> {
 
+  private final SimpleDocument document;
   private final AttachmentDetail attachment;
 
   /**
    * Gets an instance
+   *
    * @param attachment
    * @return
    */
+  public static AttachmentDeleteFileAndIndexProcess getInstance(final SimpleDocument attachment) {
+    return new AttachmentDeleteFileAndIndexProcess(attachment);
+  }
+
   public static AttachmentDeleteFileAndIndexProcess getInstance(final AttachmentDetail attachment) {
     return new AttachmentDeleteFileAndIndexProcess(attachment);
   }
 
   /**
    * Default hidden constructor
+   *
    * @param attachment
    */
   private AttachmentDeleteFileAndIndexProcess(final AttachmentDetail attachment) {
+    this.document = null;
     this.attachment = attachment;
+  }
+
+  /**
+   * Default hidden constructor
+   *
+   * @param attachment
+   */
+  private AttachmentDeleteFileAndIndexProcess(final SimpleDocument document) {
+    this.document = document;
+    this.attachment = null;
   }
 
   @Override
   public void processFiles(final ProcessExecutionContext processExecutionProcess,
       final ProcessSession session, final FileHandler fileHandler) throws Exception {
-    AttachmentController.deleteFileAndIndex(attachment, fileHandler);
+    if (attachment != null) {
+      AttachmentController.deleteFileAndIndex(attachment, fileHandler);
+    } else {
+      AttachmentController.deleteFileAndIndex(document, fileHandler);      
+    }
   }
 }

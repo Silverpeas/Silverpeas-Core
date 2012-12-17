@@ -28,15 +28,16 @@ import java.io.File;
 import java.net.ConnectException;
 import java.util.Arrays;
 
-import org.apache.commons.io.FilenameUtils;
-
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
+import org.apache.commons.io.FilenameUtils;
+
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.DocumentFormatConversion;
 import com.silverpeas.converter.DocumentFormatConversionException;
 import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.option.FilterOption;
+
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -47,7 +48,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.converter.openoffice", "");
+      "org.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
 
@@ -61,7 +62,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   @Override
   public File convert(final File source, final DocumentFormat inFormat,
       final FilterOption... options) {
-    final String fileName = FilenameUtils.getBaseName(source.getName()) + "." + inFormat.name();
+    final String fileName = FilenameUtils.getBaseName(source.getName()) + '.' + inFormat.name();
     final File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
     return convert(source, destination, inFormat, options);
   }

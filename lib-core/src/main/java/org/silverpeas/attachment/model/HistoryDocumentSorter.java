@@ -24,10 +24,9 @@
 package org.silverpeas.attachment.model;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  *

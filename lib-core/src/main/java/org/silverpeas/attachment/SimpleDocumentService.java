@@ -81,6 +81,13 @@ public class SimpleDocumentService implements AttachmentService {
   }
 
   @Override
+  public void deleteIndex(SimpleDocument document) {
+    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+      deleteIndex(document, lang);
+    }
+  }
+
+  @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     String language = document.getLanguage();
     if (!StringUtil.isDefined(language)) {
@@ -283,7 +290,6 @@ public class SimpleDocumentService implements AttachmentService {
       session = BasicDaoFactory.getSystemSession();
       repository.fillNodeName(session, document);
       repository.deleteDocument(session, document.getPk());
-      FileUtils.deleteQuietly(new File(document.getAttachmentPath()));
       for (String lang : I18NHelper.getAllSupportedLanguages()) {
         deleteIndex(document, lang);
       }
@@ -809,7 +815,6 @@ public class SimpleDocumentService implements AttachmentService {
         document.getLanguage());
     repository.updateDocument(session, document);
     if (document.isOpenOfficeCompatible() && document.isReadOnly()) {
-      // le fichier est renommé
       if (!oldAttachment.getFilename().equals(document.getFilename())) {
         webdavRepository.deleteAttachmentNode(session, oldAttachment);
         webdavRepository.createAttachmentNode(session, document);

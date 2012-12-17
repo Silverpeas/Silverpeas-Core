@@ -78,12 +78,12 @@ public class WysiwygController {
    * @see AttachmentController
    */
   public static String[][] searchAllAttachments(String id, String componentId) {
-    List<SimpleDocument> vectAttachment = AttachmentServiceFactory.getAttachmentService().
+    List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
-    int nbImages = vectAttachment.size();
+    int nbImages = attachments.size();
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
-      SimpleDocument attD = vectAttachment.get(i);
+      SimpleDocument attD = attachments.get(i);
       String path = attD.getAttachmentPath();
       imagesList[i][0] = path;
       imagesList[i][1] = attD.getFilename();

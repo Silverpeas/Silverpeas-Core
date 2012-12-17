@@ -20,33 +20,6 @@
  */
 package com.stratelia.webactiv.util.attachment.control;
 
-import java.io.File;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -71,6 +44,22 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.attachment.process.AttachmentDeleteFileAndIndexProcess;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.process.management.AbstractFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import java.io.File;
+import java.sql.Connection;
+import java.util.*;
 
 public class AttachmentController {
 
@@ -703,6 +692,29 @@ public class AttachmentController {
    *
    * @param attachDetail : the attachmentDetail object to deleted
    * @param fileHandler
+   * @throws AttachmentRuntimeException when is impossible to delete
+   * @author Jean-Claude Groccia
+   * @version 1.0
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   */
+  public static void deleteFileAndIndex(SimpleDocument attachDetail, FileHandler fileHandler) {
+
+    try {
+        deleteFileOnServer(attachDetail, fileHandler);
+        AttachmentServiceFactory.getAttachmentService().deleteIndex(attachDetail);
+    } catch (Exception fe) {
+      throw new AttachmentRuntimeException(
+          "AttachmentController.deleteFileAndIndex(AttachmentDetail attachDetail, FileHandler fileHandler)",
+          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_DELETED_FAILED", fe);
+    }
+  }
+  
+  
+   /**
+   * to delete one file attached.
+   *
+   * @param attachDetail : the attachmentDetail object to deleted
+   * @param fileHandler
    * @return void
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
@@ -852,6 +864,34 @@ public class AttachmentController {
     return languages;
   }
 
+  /**
+   * to delete file on server param atDetail: type AttachmentDetail: the object AttachmentDetail to
+   * deleted
+   *
+   * @author Jean-Claude Groccia
+   * @version 1.0
+   * @param fileHandler
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
+   */
+  private static void deleteFileOnServer(SimpleDocument attachDetail, FileHandler fileHandler) {
+
+    // to create the context
+    List<String> ctx = new ArrayList<String>(2);
+    ctx.add(0, attachDetail.getInstanceId());
+    ctx.add(attachDetail.getFilename());
+    HandledFile file = null;
+    try {
+      file = fileHandler.getHandledFile(FileBasePath.UPLOAD_PATH, ctx.toArray(new String[] {}));
+      file.delete();
+      RepositoryHelper.getJcrAttachmentService().deleteAttachment(attachDetail, null);
+    } catch (Exception e) {
+      SilverTrace.warn("attachment",
+          "AttachmentController.deleteFileOnServer((AttachmentDetail attachDetail)",
+          "attachment_MSG_NOT_DELETE_FILE", "filePath=" + file.getRealPath(), e);
+    }
+  }
+  
+  
   /**
    * to delete file on server param atDetail: type AttachmentDetail: the object AttachmentDetail to
    * deleted

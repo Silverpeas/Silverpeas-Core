@@ -95,6 +95,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.util.ForeignPK;
+
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
  *
@@ -871,7 +873,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
     // Copie des images du wysiwig;
     String imagesContext = WysiwygController.getImagesFileName(pubId);
-    AttachmentPK foreignKey = new AttachmentPK(pubId, "useless", componentId);
+    ForeignPK foreignKey = new ForeignPK(pubId, componentId);
     Collection<AttachmentDetail> vectAttachment = AttachmentController.
         searchAttachmentByPKAndContext(foreignKey, imagesContext);
     String path = AttachmentController.createPath(componentId, imagesContext);

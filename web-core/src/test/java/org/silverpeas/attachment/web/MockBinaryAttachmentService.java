@@ -258,4 +258,9 @@ public class MockBinaryAttachmentService implements AttachmentService {
       Date endOfVisibilityPeriod) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
+
+  @Override
+  public void deleteIndex(SimpleDocument document) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

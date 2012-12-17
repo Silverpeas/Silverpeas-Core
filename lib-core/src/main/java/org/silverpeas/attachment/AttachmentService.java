@@ -170,6 +170,13 @@ public interface AttachmentService {
    * @param document
    */
   void createIndex(SimpleDocument document);
+  
+  
+  /**
+   *
+   * @param document
+   */
+  void deleteIndex(SimpleDocument document);
 
   /**
    *
