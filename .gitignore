@@ -1,3 +1,4 @@
+.idea
 *.iws
 *.ipr
 *.iml
@@ -7,6 +8,7 @@ target
 .settings
 .classpath
 .project
+.idea
 .sonar-ide.properties
 nbactions.xml
 nb-configuration.xml

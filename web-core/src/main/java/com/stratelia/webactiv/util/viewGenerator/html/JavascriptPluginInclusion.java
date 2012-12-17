@@ -24,10 +24,11 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+
+import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -64,6 +65,12 @@ public class JavascriptPluginInclusion {
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String FLEXPAPER_HANDLERS = "flexpaper_handlers.js";
+  private static final String jqueryNotifierPath = jqueryPath + "noty/";
+  private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
+  private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
+  private static final String JQUERY_NOTIFIER_CENTER = "layouts/topCenter.js";
+  private static final String JQUERY_NOTIFIER_THEME = "themes/silverpeas.js";
+  private static final String SILVERPEAS_NOTIFIER = "silverpeas-notifier.js";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -179,6 +186,25 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(popup);
     popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_HANDLERS);
     xhtml.addElement(popup);
+    return xhtml;
+  }
+
+  public static ElementContainer includeNotifier(final ElementContainer xhtml) {
+    script notifier =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_NOTIFIER_BASE);
+    xhtml.addElement(notifier);
+    notifier =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_TOP);
+    xhtml.addElement(notifier);
+    notifier =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_CENTER);
+    xhtml.addElement(notifier);
+    notifier =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryNotifierPath + JQUERY_NOTIFIER_THEME);
+    xhtml.addElement(notifier);
+    notifier =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_NOTIFIER);
+    xhtml.addElement(notifier);
     return xhtml;
   }
 

@@ -259,7 +259,7 @@
       <artifactId>hamcrest-all</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.fortuna.ical4j</groupId>
+      <groupId>org.mnode.ical4j</groupId>
       <artifactId>ical4j</artifactId>
     </dependency>
     <dependency>
@@ -433,7 +433,7 @@
       <plugin>
         <groupId>de.jflex</groupId>
         <artifactId>maven-jflex-plugin</artifactId>
-        <version>1.5.0-20120831.084748-4</version> 
+        <version>1.5.0-20120831.084748-4</version>
         <executions>
           <execution>
             <goals>

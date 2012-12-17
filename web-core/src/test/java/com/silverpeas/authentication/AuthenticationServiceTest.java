@@ -20,13 +20,12 @@
  */
 package com.silverpeas.authentication;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -34,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.silverpeas.jcrutil.RandomGenerator;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
