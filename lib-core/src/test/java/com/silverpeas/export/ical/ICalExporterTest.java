@@ -1,63 +1,61 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.export.ical;
 
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.DateTime;
-import com.silverpeas.calendar.Date;
-import com.silverpeas.export.ExportDescriptor;
-import com.silverpeas.export.ExportException;
-import com.silverpeas.export.ExporterFactory;
 import java.io.IOException;
-import java.util.Arrays;
-import com.silverpeas.export.Exporter;
-import com.silverpeas.export.NoDataToExportException;
-import com.silverpeas.util.PathTestUtil;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openide.filesystems.FileObject;
+import org.openide.filesystems.FileUtil;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static com.silverpeas.export.ical.CalendarEventMatcher.*;
-import static com.silverpeas.calendar.CalendarEvent.*;
-import static com.silverpeas.calendar.CalendarEventRecurrence.*;
+
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.CalendarEventRecurrence;
+import com.silverpeas.calendar.Date;
+import com.silverpeas.calendar.DateTime;
+import com.silverpeas.export.ExportDescriptor;
+import com.silverpeas.export.ExportException;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.NoDataToExportException;
+
+import static com.silverpeas.calendar.CalendarEvent.anEventAt;
+import static com.silverpeas.calendar.CalendarEventRecurrence.every;
 import static com.silverpeas.calendar.DayOfWeek.*;
-import static com.silverpeas.calendar.DayOfWeekOccurrence.*;
-import static com.silverpeas.calendar.TimeUnit.*;
+import static com.silverpeas.calendar.DayOfWeekOccurrence.nthOccurrence;
+import static com.silverpeas.calendar.TimeUnit.MONTH;
+import static com.silverpeas.calendar.TimeUnit.WEEK;
+import static com.silverpeas.export.ical.CalendarEventMatcher.describes;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests on the export of calendar events in iCal format.
@@ -66,7 +64,8 @@ import static com.silverpeas.calendar.TimeUnit.*;
 @ContextConfiguration(locations = "/spring-export.xml")
 public class ICalExporterTest {
 
-  private String icsPath;
+  private static final FileObject root = FileUtil.createMemoryFileSystem().getRoot();
+  private FileObject icsFile;
   private Exporter<ExportableCalendar> exporter;
   private ExportDescriptor descriptor;
 
@@ -75,18 +74,17 @@ public class ICalExporterTest {
 
   @Before
   public void setUp() throws IOException {
-    icsPath = PathTestUtil.TARGET_DIR
-        + "test-classes" + File.separatorChar + "myexport-" + UUID.randomUUID().toString() + ".ics";
+    icsFile = root.createData("myexport-" + UUID.randomUUID().toString() + ".ics");
     ExporterFactory factory = ExporterFactory.getFactory();
     exporter = factory.getICalExporter();
     assertNotNull(exporter);
-    assertThat(new File(icsPath).exists(), is(false));
-    descriptor = ExportDescriptor.withWriter(new FileWriter(icsPath));
+    descriptor = ExportDescriptor.withWriter(new OutputStreamWriter(icsFile.getOutputStream()));
   }
 
   @After
-  public void tearDown() throws IOException {
-    FileUtils.deleteQuietly(new File(icsPath));
+  public void clean() throws IOException {
+    IOUtils.closeQuietly(descriptor.getOutputStream());
+    icsFile.delete();
   }
 
   @Test
@@ -97,6 +95,7 @@ public class ICalExporterTest {
   /**
    * When no events have to be exported, then an exception is thrown by the impossibility to export
    * a calendar without any events in the iCal format.
+   *
    * @throws Exception if the test fails.
    */
   @Test(expected = NoDataToExportException.class)
@@ -107,36 +106,33 @@ public class ICalExporterTest {
 
   /**
    * Export one event in iCal format into a specified file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
   public void exportOneEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event));
-
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
 
   /**
    * Export one event in iCal format into a specified file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
   public void exportOneDayEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(true));
     exporter.export(descriptor, ExportableCalendar.with(event));
-
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
 
   /**
    * Export several events in iCal format into a specified file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
@@ -145,10 +141,7 @@ public class ICalExporterTest {
     CalendarEvent event2 = generateEventWithTitle("toto2", onDay(false));
     CalendarEvent event3 = generateEventWithTitle("toto3", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event1, event2, event3));
-
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     for (CalendarEvent event : Arrays.asList(event1, event2, event3)) {
       assertThat(content, describes(event));
     }
@@ -157,6 +150,7 @@ public class ICalExporterTest {
   /**
    * Export one recurring event in iCal format into a specified file. The recurring information of
    * the event should be indicated in the iCal file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
@@ -164,15 +158,14 @@ public class ICalExporterTest {
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
 
   /**
    * Export one event recurring on some days of week in iCal format into a specified file. The
    * recurring information of the event should be indicated in the iCal file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
@@ -183,15 +176,14 @@ public class ICalExporterTest {
         on(nthOccurrence(2, MONDAY), nthOccurrence(1, THURSDAY));
     CalendarEvent event = generateEventWithTitle("recurring", true).recur(recurrence);
     exporter.export(descriptor, ExportableCalendar.with(event));
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
 
   /**
    * Export one recurring event withWriter a recurring end date in iCal format into a specified
    * file. The recurring information of the event should be indicated in the iCal file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
@@ -203,49 +195,42 @@ public class ICalExporterTest {
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new Date(endDate.getTime()));
     exporter.export(descriptor, ExportableCalendar.with(event));
-
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
 
   /**
    * Export one recurring event withWriter a recurring end date in iCal format into a specified
    * file. The recurring information of the event should be indicated in the iCal file.
+   *
    * @throws Exception if the export fails.
    */
   @Test
   public void exportOneEventWithARecurringEndDateTimeGenerateAnICalFileWithInfoOnThatEventAndItsRecurrence()
-      throws
-      Exception {
+      throws Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     Calendar endDate = Calendar.getInstance();
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new DateTime(endDate.getTime()));
     exporter.export(descriptor, ExportableCalendar.with(event));
-
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
-  
+
   @Test
   public void exportOneEventOnDayStartingAtAGivenTime() throws Exception {
     CalendarEvent event = anEventAt(DateTime.now()).withTitle("toto").withPriority(10);
     exporter.export(descriptor, ExportableCalendar.with(event));
-    File icsFile = new File(icsPath);
-    assertThat(icsFile.exists(), is(true));
-    String content = FileUtils.readFileToString(icsFile);
+    String content = icsFile.asText();
     assertThat(content, describes(event));
   }
-  
+
   /**
    * An event defined on a day cannot have an end date in iCal.
+   *
    * @throws Exception if the ical export of the event failed.
    */
-  @Test(expected=ExportException.class)
+  @Test(expected = ExportException.class)
   public void exportOneEventOnDayEndingAtAGivenTime() throws Exception {
     CalendarEvent event = anEventAt(Date.today()).endingAt(DateTime.now()).withTitle("toto").
         withPriority(10);

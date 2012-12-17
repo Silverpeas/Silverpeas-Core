@@ -369,6 +369,14 @@
       <groupId>org.im4java</groupId>
       <artifactId>im4java</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.netbeans.api</groupId>
+      <artifactId>org-openide-filesystems</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -452,7 +460,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <skipTests>false</skipTests>
-		  <argLine>-XX:MaxPermSize=512m</argLine>
+          <argLine>-XX:MaxPermSize=512m</argLine>
           <systemProperties>
             <property>
               <name>java.awt.headless</name>
