@@ -840,30 +840,6 @@ public class AttachmentController {
     return FileUtil.getMimeType(fileLogicalName);
   }
 
-  public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
-    List<String> languages = new ArrayList<String>();
-    Vector<AttachmentDetail> attachments = searchAttachmentByPKAndContext(foreignPK, "Images");
-    AttachmentDetail detail = null;
-    Iterator<String> itLanguages = null;
-    String language = null;
-
-    for (int v = 0; attachments != null && v < attachments.size(); v++) {
-      detail = attachments.get(v);
-      itLanguages = detail.getLanguages();
-
-      while ((itLanguages != null) && itLanguages.hasNext()) {
-        language = itLanguages.next();
-
-        if (!languages.contains(language)) {
-          languages.add(language);
-        }
-      }
-
-    }
-
-    return languages;
-  }
-
   /**
    * to delete file on server param atDetail: type AttachmentDetail: the object AttachmentDetail to
    * deleted

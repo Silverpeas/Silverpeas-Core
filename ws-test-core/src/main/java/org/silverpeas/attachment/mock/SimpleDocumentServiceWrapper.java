@@ -23,16 +23,11 @@
  */
 package org.silverpeas.attachment.mock;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Named;
-
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.Default;
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.mockito.Mockito;
-
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.DocumentType;
@@ -41,11 +36,13 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.Default;
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import javax.inject.Named;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Default
 @Service
@@ -89,6 +86,12 @@ public class SimpleDocumentServiceWrapper implements AttachmentService {
   @Override
   public SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId) {
     return realService.cloneDocument(original, foreignCloneId);
+  }
+
+  @Override
+  public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+                                            DocumentType type) {
+    return realService.mergeDocuments(originalForeignKey,cloneForeignKey, type);
   }
 
   @Override

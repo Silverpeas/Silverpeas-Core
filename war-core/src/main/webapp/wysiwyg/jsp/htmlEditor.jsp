@@ -130,9 +130,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             } else {
             	boolean bIndexIt = (!StringUtil.isDefined(indexIt) || !"false".equalsIgnoreCase(indexIt));
             	if (StringUtil.isDefined(contentLanguage)) {
-            		WysiwygController.save(codeWysiwyg, spaceId, componentId, objectId, userId, contentLanguage, bIndexIt);
+            		WysiwygController.save(codeWysiwyg, componentId, objectId, userId, contentLanguage, bIndexIt);
             	} else {
-            		WysiwygController.updateFileAndAttachment(codeWysiwyg, spaceId, componentId, objectId, userId, bIndexIt);
+            		WysiwygController.updateFileAndAttachment(codeWysiwyg, componentId, objectId, userId, bIndexIt);
             	}
             }
         }

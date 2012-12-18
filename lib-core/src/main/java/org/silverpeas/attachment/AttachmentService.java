@@ -23,22 +23,21 @@
  */
 package org.silverpeas.attachment;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-
+import com.silverpeas.util.ForeignPK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
-import com.silverpeas.util.ForeignPK;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -71,13 +70,24 @@ public interface AttachmentService {
   void addXmlForm(SimpleDocumentPK pk, String language, String xmlFormName);
 
   /**
-   * Clone the attachment.
+   * Clone the document to a cloned container.
    *
    * @param original
    * @param foreignCloneId
    * @return
    */
   SimpleDocumentPK cloneDocument(SimpleDocument original, String foreignCloneId);
+
+  /**
+   * Merges the documents of cloned container with the original documents.
+   *
+   * @param originalForeignKey
+   * @param cloneForeignKey
+   * @param type
+   * @return a map with the cloned document id as key and the original document id as value.
+   */
+  Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+      DocumentType type);
 
   /**
    * Copy the attachment.
@@ -170,8 +180,7 @@ public interface AttachmentService {
    * @param document
    */
   void createIndex(SimpleDocument document);
-  
-  
+
   /**
    *
    * @param document
@@ -381,15 +390,17 @@ public interface AttachmentService {
    * @return an ordered list of the documents.
    */
   List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language);
-  
+
   /**
    * Add the documents to the index.
+   *
    * @param indexEntry the entry to be updated with the document indexes.
    */
   void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
-  
+
   /**
    * Indexes all the documents (whatever their type) of a container.
+   *
    * @param fk the id of the container of the document.
    * @param startOfVisibilityPeriod can be null.
    * @param endOfVisibilityPeriod can be null.

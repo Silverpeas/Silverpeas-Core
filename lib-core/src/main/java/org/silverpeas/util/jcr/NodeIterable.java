@@ -21,41 +21,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.model;
+package org.silverpeas.util.jcr;
+
+import java.util.Iterator;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 
 /**
  *
  * @author ehugonnet
  */
-public enum DocumentType {
+public class NodeIterable implements Iterable<Node> {
 
-  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video");
-  private String forlderName;
+    /**
+     * The node iterator being adapted.
+     */
+    private final NodeIterator iterator;
 
-  private DocumentType(String folder) {
-    this.forlderName = folder;
-  }
+    /**
+     * Creates an iterable adapter for the given node iterator.
+     *
+     * @param iterator the node iterator to be adapted
+     */
+    public NodeIterable(NodeIterator iterator) {
+        this.iterator = iterator;
+    }
 
-  public String getForlderName() {
-    return forlderName;
-  }
+    /**
+     * Returns the node iterator.
+     *
+     * @return node iterator
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Iterator<Node> iterator() {
+        return iterator;
+    }
 
-  public static DocumentType fromFolderName(String folder) {
-    if (attachment.forlderName.equals(folder)) {
-      return attachment;
-    }
-    if (form.forlderName.equals(folder)) {
-      return form;
-    }
-    if (wysiwyg.forlderName.equals(folder)) {
-      return wysiwyg;
-    }
-    if (image.forlderName.equals(folder)) {
-      return image;
-    }
-    if (video.forlderName.equals(folder)) {
-      return video;
-    }
-    return attachment;
-  }
 }

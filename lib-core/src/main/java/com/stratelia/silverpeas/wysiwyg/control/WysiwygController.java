@@ -33,7 +33,9 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -42,9 +44,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 
-import javax.naming.NamingException;
 import java.io.*;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
 public class WysiwygController {
 
   private static final OrganizationController ORGANIZATION_CONTROLLER = new OrganizationController();
-  public final static String WYSIWYG_CONTEXT = "wysiwyg";
+  public final static String WYSIWYG_CONTEXT = DocumentType.wysiwyg.name();
   public final static String WYSIWYG_IMAGES = "Images";
   public final static String WYSIWYG_WEBSITES = "webSites";
 
@@ -75,7 +75,6 @@ public class WysiwygController {
    * @param componentId type String: the id of component.
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
-   * @see AttachmentController
    */
   public static String[][] searchAllAttachments(String id, String componentId) {
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
@@ -377,26 +376,22 @@ public class WysiwygController {
    * @param context String : for example wysiwyg.
    * @param id String : for example the id of the publication.
    * @param userId
-   * @throws WysiwygException
-   * @see AttachmentController
    */
   public static void createFileAndAttachment(String textHtml, String fileName, String componentId,
-      String context, String id, String userId) throws WysiwygException {
+      String context, String id, String userId)  {
     createFileAndAttachment(textHtml, fileName, componentId, context, id, userId, true);
   }
 
   public static void createFileAndAttachment(String textHtml, String fileName, String componentId,
-      String context, String id, String userId, boolean indexIt) throws WysiwygException {
+      String context, String id, String userId, boolean indexIt) {
     createFileAndAttachment(textHtml, fileName, componentId, context, id, userId, indexIt, true);
   }
 
   public static void createFileAndAttachment(String textHtml, String fileName, String componentId,
-      String context, String id, String userId, boolean indexIt, boolean invokeCallback) throws
-      WysiwygException {
+      String context, String id, String userId, boolean indexIt, boolean invokeCallback)  {
     if (!StringUtil.isDefined(textHtml)) {
       return;
     }
-    try {
       int iUserId = -1;
       if (userId != null) {
         iUserId = Integer.parseInt(userId);
@@ -407,16 +402,11 @@ public class WysiwygController {
           MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
       document.setDocumentType(DocumentType.valueOf(context));
       AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-          new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt,
-          invokeCallback);
+          new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, invokeCallback);
       if (invokeCallback) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
       }
-    } catch (NumberFormatException exc) {
-      throw new WysiwygException("WysiwygController.createFileAndAttachment()",
-          SilverpeasException.ERROR, "wysiwyg.CREATING_WYSIWYG_DOCUMENT_FAILED", exc);
-    }
   }
 
   /**
@@ -426,11 +416,8 @@ public class WysiwygController {
    * @param textHtml String : contains the text published by the wysiwyg
    * @param componentId String : the id of component.
    * @param id String : for example the id of the publication.
-   * @throws WysiwygException
-   * @see AttachmentController
    */
-  public static void createFileAndAttachment(String textHtml, String componentId,
-      String id) throws WysiwygException {
+  public static void createFileAndAttachment(String textHtml, String componentId, String id)  {
     String fileName = getWysiwygFileName(id);
     createFileAndAttachment(textHtml, fileName, componentId, WYSIWYG_CONTEXT, id, null);
   }
@@ -457,11 +444,9 @@ public class WysiwygController {
    * @param context
    * @param objectId
    * @param userId
-   * @throws WysiwygException
    */
   private static void updateFileAndAttachment(String textHtml, String fileName,
-      String componentId, String context, String objectId, String userId, boolean indexIt) throws
-      WysiwygException {
+      String componentId, String context, String objectId, String userId, boolean indexIt) {
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
         "root.MSG_GEN_PARAM_VALUE", "fileName=" + fileName + " context=" + context + "objectId="
         + objectId);
@@ -480,28 +465,25 @@ public class WysiwygController {
    * Method declaration remove and recreates the file attached
    *
    * @param textHtml String : contains the text published by the wysiwyg
-   * @param spaceId String : the id of space.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @param userId
-   * @throws WysiwygException
-   * @see AttachmentController
    */
-  public static void updateFileAndAttachment(String textHtml, String spaceId, String componentId,
-      String objectId, String userId) throws WysiwygException {
-    updateFileAndAttachment(textHtml, spaceId, componentId, objectId, userId, true);
+  public static void updateFileAndAttachment(String textHtml, String componentId,
+      String objectId, String userId){
+    updateFileAndAttachment(textHtml, componentId, objectId, userId, true);
   }
 
-  public static void updateFileAndAttachment(String textHtml, String spaceId, String componentId,
-      String objectId, String userId, boolean indexIt) throws WysiwygException {
+  public static void updateFileAndAttachment(String textHtml, String componentId,
+      String objectId, String userId, boolean indexIt) {
     updateFileAndAttachment(textHtml, getWysiwygFileName(objectId), componentId, WYSIWYG_CONTEXT,
         objectId, userId, indexIt);
   }
 
-  public static void save(String textHtml, String spaceId, String componentId, String objectId,
-      String userId, String language, boolean indexIt) throws WysiwygException {
+  public static void save(String textHtml, String componentId, String objectId, String userId,
+      String language, boolean indexIt) {
     if (I18NHelper.isDefaultLanguage(language)) {
-      updateFileAndAttachment(textHtml, spaceId, componentId, objectId, userId, indexIt);
+      updateFileAndAttachment(textHtml, componentId, objectId, userId, indexIt);
     } else {
       updateFileAndAttachment(textHtml, getWysiwygFileName(objectId, language), componentId,
           WYSIWYG_CONTEXT, objectId, userId, indexIt);
@@ -509,32 +491,24 @@ public class WysiwygController {
   }
 
   /**
-   * Method declaration remove the file attached
-   *
+   * Method declaration remove the file attached. *
    *
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
-   * @throws NamingException
-   * @throws SQLException
-   * @throws WysiwygException
-   * @see AttachmentController
    */
-  public static void deleteWysiwygAttachments(String componentId, String objectId)
-      throws WysiwygException {
+  public static void deleteWysiwygAttachments(String componentId, String objectId)  {
     try {
       // delete all the attachments
       ForeignPK foreignKey = new ForeignPK(objectId, componentId);
-
-      AttachmentController.deleteAttachmentByCustomerPK(foreignKey);
-      // delete the images directory
-      String path =
-          AttachmentController.createPath(componentId, WysiwygController.getImagesFileName(
-          objectId));
-
-      FileFolderManager.deleteFolder(path);
-    } catch (Exception exc) {
-      throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
-          SilverpeasException.ERROR, "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
+      List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
+          .listAllDocumentsByForeignKey(foreignKey, null);
+      for (SimpleDocument document : documents) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
+      }
+    } catch (AttachmentException exc) {
+      SilverTrace.error("wysiwyg", "WysiwygController.deleteWysiwygAttachments()",
+          "wysiwyg.DELETING_WYSIWYG_ATTACHMENTS_FAILED", exc);
+      throw exc;
     }
   }
 
@@ -545,7 +519,6 @@ public class WysiwygController {
    * @param spaceId
    * @param componentId
    * @param objectId
-   * @throws WysiwygException
    */
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
       String objectId) throws WysiwygException {
@@ -563,27 +536,30 @@ public class WysiwygController {
   }
 
   /**
-   * Method declaration return the contents of the file attached.
+   * Loads the content of a Wysiwyg as a String.
    *
-   *
-   * @param fileName String : name of the file
-   * @param componentId String : the id of component.
-   * @param context String : for example wysiwyg.
-   * @return text : the contents of the file attached.
-   * @throws WysiwygException
-   * @see AttachmentController
+   * @param foreignPk
+   * @param context
+   * @param lang
+   * @return
    */
-  public static String loadFileAndAttachment(ForeignPK foreignPk, String context, String lang)
-      throws WysiwygException {
+  public static String loadFileAndAttachment(ForeignPK foreignPk, String context, String lang) {
     List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
         .listDocumentsByForeignKeyAndType(foreignPk, DocumentType.valueOf(context), lang);
     if (!docs.isEmpty()) {
-      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-      AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer,
-          docs.get(0).getPk(), null);
-      return new String(buffer.toByteArray(), Charsets.UTF_8);
+      return loadContent(docs.get(0), lang);
     }
     return "";
+  }
+
+  public static String loadContent(SimpleDocument doc, String lang) {
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    try {
+      AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, doc.getPk(), lang);
+      return new String(buffer.toByteArray(), Charsets.UTF_8);
+    } finally {
+      IOUtils.closeQuietly(buffer);
+    }
   }
 
   /**
@@ -593,11 +569,8 @@ public class WysiwygController {
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @return text : the contents of the file attached.
-   * @throws WysiwygException
-   * @see AttachmentController
    */
-  public static String loadFileAndAttachment(String componentId, String objectId)
-      throws WysiwygException {
+  public static String loadFileAndAttachment(String componentId, String objectId) {
     return loadFileAndAttachment(new ForeignPK(objectId, componentId), WYSIWYG_CONTEXT, null);
   }
 
@@ -608,10 +581,8 @@ public class WysiwygController {
    * @param objectId
    * @param language
    * @return
-   * @throws WysiwygException
    */
-  public static String load(String componentId, String objectId, String language)
-      throws WysiwygException {
+  public static String load(String componentId, String objectId, String language) {
     String content = null;
 
     boolean useDefaultLanguage = (language == null || I18NHelper.isDefaultLanguage(language));
@@ -700,12 +671,8 @@ public class WysiwygController {
   }
 
   public static boolean haveGotWysiwyg(String componentId, String objectId, String language) {
-    try {
       String wysiwygContent = load(componentId, objectId, language);
       return StringUtil.isDefined(wysiwygContent);
-    } catch (WysiwygException we) {
-      return false;
-    }
   }
 
   /**
@@ -718,7 +685,6 @@ public class WysiwygController {
    * @param context String : for example wysiwyg.
    * @param objectId String : for example the id of the publication.
    * @return SimpleDocument
-   * @see AttachmentController
    */
   public static SimpleDocument searchAttachmentDetail(String fileName, String componentId,
       String context, String objectId) {

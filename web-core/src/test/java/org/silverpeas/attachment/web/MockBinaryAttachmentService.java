@@ -23,30 +23,24 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.*;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.io.IOUtils;
-
-import org.silverpeas.attachment.AttachmentException;
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-
-import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  *
@@ -261,6 +255,12 @@ public class MockBinaryAttachmentService implements AttachmentService {
 
   @Override
   public void deleteIndex(SimpleDocument document) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+      DocumentType type) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

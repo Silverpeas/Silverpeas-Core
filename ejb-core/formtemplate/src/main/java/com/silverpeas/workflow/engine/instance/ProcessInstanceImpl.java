@@ -20,14 +20,7 @@
  */
 package com.silverpeas.workflow.engine.instance;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.DataRecordUtil;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.TextField;
 import com.silverpeas.util.ArrayUtil;
@@ -37,23 +30,10 @@ import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.UserManager;
 import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
-import com.silverpeas.workflow.api.instance.Actor;
-import com.silverpeas.workflow.api.instance.HistoryStep;
+import com.silverpeas.workflow.api.instance.*;
 import com.silverpeas.workflow.api.instance.Participant;
-import com.silverpeas.workflow.api.instance.ProcessInstance;
-import com.silverpeas.workflow.api.instance.Question;
-import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.model.Form;
-import com.silverpeas.workflow.api.model.Input;
-import com.silverpeas.workflow.api.model.Item;
-import com.silverpeas.workflow.api.model.Presentation;
-import com.silverpeas.workflow.api.model.ProcessModel;
-import com.silverpeas.workflow.api.model.QualifiedUsers;
-import com.silverpeas.workflow.api.model.RelatedGroup;
-import com.silverpeas.workflow.api.model.RelatedUser;
-import com.silverpeas.workflow.api.model.State;
-import com.silverpeas.workflow.api.model.TimeOutAction;
-import com.silverpeas.workflow.api.model.UserInRole;
+import com.silverpeas.workflow.api.model.*;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.LazyProcessInstanceDataRecord;
@@ -61,8 +41,6 @@ import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
@@ -73,18 +51,7 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library to

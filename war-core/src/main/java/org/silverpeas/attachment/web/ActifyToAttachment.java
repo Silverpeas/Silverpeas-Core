@@ -24,21 +24,20 @@
 
 package org.silverpeas.attachment.web;
 
-import java.io.File;
-import java.io.IOException;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Class declaration
@@ -89,37 +88,32 @@ public class ActifyToAttachment extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("attachment", "ActifyToAttachment.doPost", "root.MSG_GEN_ENTER_METHOD");
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
+    ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
     if (settings.getBoolean("ActifyPublisherEnable", false)) {
       try {
         SilverTrace.info("attachment", "ActifyToAttachment.doPost", "req=" + req.getParameter(
             "AttachmentId"));
-        int size = Integer.parseInt(req.getParameter("FileSize"));
+        long size = Long.parseLong(req.getParameter("FileSize"));
         String attachmentId = req.getParameter("AttachmentId");
         String logicalName = req.getParameter("LogicalName");
         boolean indexIt = false;
         // Get AttachmentDetail Object
-        AttachmentDetail ad = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-            attachmentId));
+        SimpleDocument ad = AttachmentServiceFactory.getAttachmentService().searchDocumentById(new
+            SimpleDocumentPK(attachmentId), null);
         if (ad != null) {
           // Remove string "HIDDEN" from the beginning of the instanceId
           String instanceId = ad.getInstanceId().substring(7);
-          ad.setInstanceId(instanceId);
+          ad.getPk().setComponentName(instanceId);
           ad.setSize(size);
-          ad.setLogicalName(logicalName);
-          AttachmentController.updateAttachment(ad, indexIt);
+          ad.setFilename(logicalName);
+          AttachmentServiceFactory.getAttachmentService().updateAttachment(ad, indexIt, false);
           // Copy 3D file converted from Actify Work directory to Silverpeas workspaces
           String actifyWorkingPath = "Actify";
           String srcFile = FileRepositoryManager.getTemporaryPath() + actifyWorkingPath
               + File.separator + logicalName;
-          String destFile = AttachmentController.createPath(ad.getInstanceId(), null)
-              + ad.getPhysicalName();
-
+          String destFile = ad.getAttachmentPath();
           SilverTrace.info("attachment", "ActifyToAttachment", "root.MSG_GEN_PARAM_VALUE",
-              "srcFile = " + srcFile);
-          SilverTrace.info("attachment", "ActifyToAttachment", "root.MSG_GEN_PARAM_VALUE",
-              "destFile = " + destFile);
+              "srcFile = " + srcFile + " and destFile = " + destFile);
           FileRepositoryManager.copyFile(srcFile, destFile);
         }
       } catch (Exception e) {

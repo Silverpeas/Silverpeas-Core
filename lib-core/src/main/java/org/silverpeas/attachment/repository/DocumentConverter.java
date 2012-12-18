@@ -47,9 +47,9 @@ import org.silverpeas.util.jcr.AbstractJcrConverter;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
-import com.stratelia.webactiv.util.DateUtil;
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
+import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
 /**
@@ -58,7 +58,7 @@ import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
  */
 class DocumentConverter extends AbstractJcrConverter {
 
-  SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
+  final SimpleAttachmentConverter attachmentConverter = new SimpleAttachmentConverter();
 
   /**
    * Convert the document history in a list of SimpleDocument.

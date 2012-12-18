@@ -23,11 +23,6 @@
  */
 package org.silverpeas.util.jcr;
 
-import com.silverpeas.jcrutil.converter.ConverterUtil;
-import com.silverpeas.util.ArrayUtil;
-import com.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.exception.UtilException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -42,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.jcr.AccessDeniedException;
 import javax.jcr.Binary;
 import javax.jcr.ItemNotFoundException;
@@ -54,12 +50,20 @@ import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.jackrabbit.JcrConstants;
 
-import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
+import com.silverpeas.jcrutil.converter.ConverterUtil;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.FileUtil;
+
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.exception.UtilException;
+
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
+import static com.silverpeas.jcrutil.JcrConstants.SLV_PROPERTY_NAME;
 import static javax.jcr.Property.*;
 
 /**

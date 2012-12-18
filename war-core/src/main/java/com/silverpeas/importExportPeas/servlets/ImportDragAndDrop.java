@@ -33,26 +33,26 @@ import com.silverpeas.pdc.service.PdcClassificationService;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import java.io.File;
-import java.io.IOException;
+import org.apache.commons.fileupload.FileItem;
 
-import java.util.List;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.fileupload.FileItem;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 
 /**
  * Class declaration
@@ -172,7 +172,7 @@ public class ImportDragAndDrop extends HttpServlet {
         return;
       }
     } catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }

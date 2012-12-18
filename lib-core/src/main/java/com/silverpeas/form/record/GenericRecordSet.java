@@ -24,30 +24,23 @@
 
 package com.silverpeas.form.record;
 
+import com.silverpeas.form.*;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldDisplayer;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.form.RecordTemplate;
-import com.silverpeas.form.TypeManager;
-import com.silverpeas.form.displayers.ImageFieldDisplayer;
-import com.silverpeas.form.displayers.VideoFieldDisplayer;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import java.util.Map;
 
 
 /**
@@ -132,8 +125,6 @@ public class GenericRecordSet implements RecordSet, Serializable {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * @see insert
-   * @see update
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
@@ -147,8 +138,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
   }
 
-  private void indexRecord(String recordId, String formName,
-      FullIndexEntry indexEntry, String language) throws FormException {
+  private void indexRecord(String recordId, String formName, FullIndexEntry indexEntry,
+                           String language) throws FormException {
     SilverTrace.info("form", "GenericRecordSet.index()",
         "root.MSG_GEN_ENTER_METHOD", "recordId = " + recordId + ", language = "
         + language);
@@ -231,18 +222,19 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     
     // clone images and videos
-    AttachmentPK fromPK = new AttachmentPK(originalExternalId, originalComponentId);
-    AttachmentPK toPK = new AttachmentPK(cloneExternalId, cloneComponentId);
+    ForeignPK fromPK = new ForeignPK(originalExternalId, originalComponentId);
+    ForeignPK toPK = new ForeignPK(cloneExternalId, cloneComponentId);
     try {
-      HashMap<String, String> ids =
-          AttachmentController.cloneAttachments(fromPK, toPK,
-              ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
-
-      HashMap<String, String> videoIds =
-          AttachmentController.cloneAttachments(fromPK, toPK,
-              VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
-      ids.putAll(videoIds);
-      
+      List<SimpleDocument> originals = AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
+      originals.addAll(AttachmentServiceFactory.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
+      Map<String, String> ids = new HashMap<String, String>(originals.size());
+      for(SimpleDocument original : originals) {
+        SimpleDocumentPK clonePk = AttachmentServiceFactory.getAttachmentService().cloneDocument
+            (original, cloneExternalId);
+        ids.put(original.getId(), clonePk.getId());
+      }
       replaceIds(ids, record);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
@@ -269,16 +261,14 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     
     // merge images and videos
-    AttachmentPK fromPK = new AttachmentPK(fromExternalId, fromComponentId);
-    AttachmentPK toPK = new AttachmentPK(toExternalId, toComponentId);
+    ForeignPK fromPK = new ForeignPK(fromExternalId, fromComponentId);
+    ForeignPK toPK = new ForeignPK(toExternalId, toComponentId);
     try {
-      HashMap<String, String> ids =
-          AttachmentController.mergeAttachments(toPK, fromPK,
-              ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
+      Map<String, String> ids = AttachmentServiceFactory.getAttachmentService().mergeDocuments
+          (toPK, fromPK, DocumentType.form);
       
-      HashMap<String, String> videoIds =
-        AttachmentController.mergeAttachments(toPK, fromPK,
-            VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
+      Map<String, String> videoIds =AttachmentServiceFactory.getAttachmentService().mergeDocuments
+          (toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
     
       replaceIds(ids, fromRecord);
@@ -289,12 +279,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
     update(fromRecord);
   }
   
-  private void replaceIds(HashMap<String, String> ids, GenericDataRecord record)
+  private void replaceIds(Map<String, String> ids, GenericDataRecord record)
       throws FormException {
     String[] fieldNames = record.getFieldNames();
-    Field field = null;
     for (String fieldName : fieldNames) {
-      field = record.getField(fieldName);
+      Field field = record.getField(fieldName);
       if (field != null) {
         FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
         if (fieldTemplate != null) {
@@ -310,8 +299,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
               }
             }
           } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.update",
-                "form.EXP_UNKNOWN_FIELD", null, e);
+            SilverTrace.error("form", "AbstractForm.update", "form.EXP_UNKNOWN_FIELD", null, e);
           }
         }
       }

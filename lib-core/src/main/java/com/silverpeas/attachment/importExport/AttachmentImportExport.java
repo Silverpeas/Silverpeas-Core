@@ -27,6 +27,7 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -47,8 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
@@ -143,29 +142,12 @@ public class AttachmentImportExport {
     return attachments;
   }
 
-  private AttachmentDetail copyFile(String componentId, AttachmentDetail a_Detail,
-      boolean updateLogicalName) {
-    String path = getPath(componentId);
-    return copyFile(componentId, a_Detail, path, updateLogicalName);
-  }
-
-  private AttachmentDetail copyFileWysiwyg(String componentId, AttachmentDetail a_Detail,
-      String context) {
-    String path = getPathWysiwyg(componentId, context);
-    a_Detail.setContext(context);
-    return copyFile(componentId, a_Detail, path);
-  }
-
-  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments) {
-    return copyFiles(componentId, attachments, getPath(componentId));
-  }
-
   public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments,
       String path) {
     List<AttachmentDetail> copiedAttachments = new ArrayList<AttachmentDetail>();
     for (AttachmentDetail attDetail : attachments) {
       copyFile(componentId, attDetail, path);
-      if (attDetail.getSize() != 0) {
+      if (0 != attDetail.getSize()) {
         copiedAttachments.add(attDetail);
       }
     }

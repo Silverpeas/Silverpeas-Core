@@ -57,7 +57,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.*;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -486,12 +488,10 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       in = new FileInputStream(original.getAttachmentPath());
       session = BasicDaoFactory.getSystemSession();
-      SimpleDocument clone =
-          new SimpleDocument(new SimpleDocumentPK(null, original.getInstanceId()),
-          foreignCloneId, original.getOrder(), original.isVersioned(), original.getFile());
-      SimpleDocumentPK clonePk = repository.createDocument(session, clone);
-      clone = repository.findDocumentById(session, clonePk, null);
-      repository.storeContent(clone, in);
+      SimpleDocumentPK clonePk = repository.copyDocument(session, original, new ForeignPK(
+          foreignCloneId, original.getInstanceId()));
+      SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
+      repository.copyMultilangContent(original, clone);
       repository.setClone(session, original, clone);
       session.save();
       return clonePk;
@@ -934,5 +934,66 @@ public class SimpleDocumentService implements AttachmentService {
     for (SimpleDocument currentDocument : documents) {
       createIndex(currentDocument, startOfVisibilityPeriod, endOfVisibilityPeriod);
     }
+  }
+
+  @Override
+  public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+      DocumentType type) {
+    Session session = null;
+    try {
+      session = BasicDaoFactory.getSystemSession();
+      // On part des fichiers d'origine
+      List<SimpleDocument> attachments = listDocumentsByForeignKeyAndType(originalForeignKey, type,
+          null);
+      Map<String, SimpleDocument> clones = mapClonedDocumentsByForeignKeyAndType(cloneForeignKey,
+          type, null);
+      Map<String, String> ids = new HashMap<String, String>(clones.size());
+      // recherche suppressions et modifications
+      for (SimpleDocument attachment : attachments) {
+        if (clones.containsKey(attachment.getId())) {
+          SimpleDocument clone = clones.get(attachment.getId());
+          // le fichier existe toujours !
+          // Merge du clone sur le fichier d'origine
+          repository.mergeAttachment(session, attachment, clone);
+          repository.copyMultilangContent(clone, clone);
+          repository.deleteDocument(session, clone.getPk());
+          ids.put(clone.getId(), attachment.getId());
+          // Suppression de la liste des clones
+          clones.remove(attachment.getId());
+        } else {
+          // le fichier a été supprimé
+          // Suppression du fichier d'origine
+          deleteAttachment(attachment);
+        }
+      }
+
+      if (!clones.isEmpty()) {
+        // Il s'agit d'ajouts
+        for (SimpleDocument clone : clones.values()) {
+          clone.setCloneId(null);
+          updateAttachment(clone, false, false);
+          moveDocument(clone, originalForeignKey);
+        }
+
+      }
+      return ids;
+    } catch (RepositoryException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } catch (IOException ex) {
+      throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+    } finally {
+      BasicDaoFactory.logout(session);
+    }
+
+  }
+
+  private Map<String, SimpleDocument> mapClonedDocumentsByForeignKeyAndType(ForeignPK foreignPk,
+      DocumentType type, String lang) {
+    List<SimpleDocument> documents = listDocumentsByForeignKeyAndType(foreignPk, type, lang);
+    Map<String, SimpleDocument> result = new HashMap<String, SimpleDocument>(documents.size());
+    for (SimpleDocument doc : documents) {
+      result.put(doc.getCloneId(), doc);
+    }
+    return result;
   }
 }

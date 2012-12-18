@@ -46,11 +46,14 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.util.jcr.NodeIterable;
+import org.silverpeas.util.jcr.PropertyIterable;
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
@@ -171,6 +174,9 @@ public class DocumentRepository {
     pk.setId(copy.getIdentifier());
     return pk;
   }
+  
+  
+
 
   /**
    * Copy the document to another attached object.
@@ -1006,6 +1012,9 @@ public class DocumentRepository {
     String targetDir = copy.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
+    if(target.exists()) {
+      FileUtils.cleanDirectory(target);
+    }
     File source = new File(originDir).getParentFile();
     if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
@@ -1035,5 +1044,24 @@ public class DocumentRepository {
       return;
     }
     FileUtils.copyDirectory(source, target);
+  }
+
+  public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone) 
+      throws ItemNotFoundException, RepositoryException {
+    Node originalNode = session.getNodeByIdentifier(attachment.getId());
+    Node cloneNode = session.getNodeByIdentifier(clone.getId());
+    for(Node child : new NodeIterable(originalNode.getNodes())) {
+      child.remove();
+    }
+    for(Node child : new NodeIterable(cloneNode.getNodes())) {
+      session.move(child.getPath(), originalNode.getPath() + '/' + child.getName());
+    }
+    for(Property property : new PropertyIterable(originalNode.getProperties())) {
+      property.remove();
+    }
+    for(Property property : new PropertyIterable(cloneNode.getProperties())) {
+      originalNode.setProperty(property.getName(), property.getValue());
+    }
+    converter.addStringProperty(originalNode, SLV_PROPERTY_CLONE, null);
   }
 }

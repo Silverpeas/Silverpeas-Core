@@ -155,10 +155,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <servlet-class>org.silverpeas.servlets.TempFileServer</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>FileUploader</servlet-name>
-        <servlet-class>org.silverpeas.servlets.FileUploader</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>RestOnlineFileServer</servlet-name>
         <servlet-class>org.silverpeas.servlets.RestOnlineFileServer</servlet-class>
     </servlet>
@@ -586,10 +582,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>TempFileServer</servlet-name>
     <url-pattern>/TempFileServer/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>FileUploader</servlet-name>
-    <url-pattern>/FileUploader/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>RestOnlineFileServer</servlet-name>

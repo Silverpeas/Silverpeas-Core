@@ -69,7 +69,7 @@ public class AttachmentDeleteFileAndIndexProcess extends AbstractFileProcess<Pro
   /**
    * Default hidden constructor
    *
-   * @param attachment
+   * @param document
    */
   private AttachmentDeleteFileAndIndexProcess(final SimpleDocument document) {
     this.document = document;
@@ -82,7 +82,7 @@ public class AttachmentDeleteFileAndIndexProcess extends AbstractFileProcess<Pro
     if (attachment != null) {
       AttachmentController.deleteFileAndIndex(attachment, fileHandler);
     } else {
-      AttachmentController.deleteFileAndIndex(document, fileHandler);      
+      AttachmentController.deleteFileAndIndex(document, fileHandler);
     }
   }
 }

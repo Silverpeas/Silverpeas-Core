@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
+import java.io.ByteArrayOutputStream;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,6 +36,8 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -102,6 +105,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationI18N;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
+import org.silverpeas.util.Charsets;
 
 /**
  * Class declaration
@@ -1405,8 +1409,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry,
       PublicationDetail pubDetail) {
     PublicationPK pubPK = pubDetail.getPK();
-    SilverTrace.info("publication",
-        "PublicationBmEJB.updateIndexEntryWithWysiwygContent()",
+    SilverTrace.info("publication", "PublicationBmEJB.updateIndexEntryWithWysiwygContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
         + ", pubPK = " + pubPK.toString());
     try {
@@ -1414,22 +1417,22 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         Iterator<String> languages = pubDetail.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
-          String wysiwygContent = WysiwygController.load(pubPK.getInstanceId(),
-              pubPK.getId(), language);
-          if (StringUtil.isDefined(wysiwygContent)) {
-            String wysiwygPath = WysiwygController.getWysiwygPath(pubPK.getInstanceId(),
-                pubPK.getId(), language);
+          ForeignPK foreignPk = new ForeignPK(pubPK);
+          List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService()
+              .listDocumentsByForeignKeyAndType(foreignPk, DocumentType.wysiwyg, language);
+          if (! docs.isEmpty()) {
+            String wysiwygPath = docs.get(0).getAttachmentPath();
             indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
-
+            String wysiwygContent = WysiwygController.loadContent(docs.get(0), language);
             // index embedded linked attachment (links presents in wysiwyg content)
             try {
-              List<String> embeddedAttachmentIds =
-                  WysiwygController.getEmbeddedAttachmentIds(wysiwygContent);
+              List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds
+                  (wysiwygContent);
               WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
             } catch (WysiwygException e) {
               SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent",
-                  "root.MSG_GEN_ENTER_METHOD",
-                  "Unable to extract linked files from object" + indexEntry.getObjectId(), e);
+                  "root.MSG_GEN_ENTER_METHOD", "Unable to extract linked files from object" +
+                  indexEntry.getObjectId(), e);
             }
           }
         }

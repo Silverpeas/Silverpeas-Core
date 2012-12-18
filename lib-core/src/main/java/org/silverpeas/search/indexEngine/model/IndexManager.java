@@ -20,12 +20,10 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.Map.Entry;
-
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
@@ -34,25 +32,19 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.LogDocMergePolicy;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.index.*;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -233,16 +225,6 @@ public class IndexManager {
    */
   public String getIndexDirectoryPath(String space, String component) {
     return org.silverpeas.search.indexEngine.IndexFileManager.getAbsoluteIndexPath(space, component);
-  }
-
-  /**
-   * Return the analyzer used to parse indexed texts and queries in the locale language .
-   *
-   * @return the analyzer used to parse indexed texts and queries in the locale language.
-   * @throws IOException
-   */
-  public Analyzer getAnalyzer() throws IOException {
-    return getAnalyzer(null);
   }
 
   /**
