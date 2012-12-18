@@ -96,7 +96,7 @@ public class TemporaryDataCleanerSchedulerInitializerTest {
   }
 
   @After
-  public void aftetTest() {
+  public void afterTest() {
     deleteQuietly(new File(FileRepositoryManager.getTemporaryPath()));
   }
 

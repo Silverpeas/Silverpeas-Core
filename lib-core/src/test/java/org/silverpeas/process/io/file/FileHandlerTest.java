@@ -1425,6 +1425,15 @@ public class FileHandlerTest extends AbstractHandledFileTest {
     assertThat(test, contains("componentInstanceId"));
   }
 
+  @Test
+  public void testListAllSessionHandledRootPathFiles() throws Exception {
+    buildCommonPathStructure();
+    final Collection<File> test =
+        new TreeSet<File>(fileHandler.listAllSessionHandledRootPathFiles());
+    assertThat(test.size(), is(1));
+    assertThat(test.iterator().next().getName(), is("componentInstanceId"));
+  }
+
   private abstract class RunnableTest<R> implements Runnable {
 
     protected R result;

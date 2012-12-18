@@ -54,6 +54,8 @@ public class JobStartPagePeasSettings {
   public static boolean dataStorageInSpaceQuotaActivated;
   public static long dataStorageInSpaceQuotaDefaultMaxCount;
   public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
+  public static String defaultAuthorizedFiles;
+  public static String defaultForbiddenFiles;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -85,5 +87,7 @@ public class JobStartPagePeasSettings {
     if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
       dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
     }
+    defaultAuthorizedFiles = rs.getString("file.authorized.default", "");
+    defaultForbiddenFiles = rs.getString("file.forbidden.default", "");
   }
 }

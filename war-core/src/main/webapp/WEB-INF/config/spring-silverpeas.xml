@@ -64,6 +64,7 @@
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
   <ctx:component-scan base-package="com.silverpeas.bundle.web" />
   <ctx:component-scan base-package="org.silverpeas.admin.space"/>
+  <ctx:component-scan base-package="org.silverpeas.admin.component"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.look"/>
   <ctx:component-scan base-package="org.silverpeas.viewer"/>

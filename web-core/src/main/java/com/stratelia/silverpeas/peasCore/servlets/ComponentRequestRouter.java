@@ -20,19 +20,6 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.util.Date;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -49,6 +36,16 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends HttpServlet {
 
@@ -98,6 +95,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     doPost(request, response);
   }
 
+  @SuppressWarnings("UnusedParameters")
   private String computeDestination(HttpServletRequest request, HttpServletResponse response) {
     String destination;
     // get the main session controller
@@ -198,18 +196,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
-    try {
-      destination = getDestination(function, component, request);
+    destination = getDestination(function, component, request);
 
-      // Check existence of a Data Storage Quota Exception
-      QuotaErrorManager.checkQuotaErrorFromRequest(request);
-
-    } catch (DataStorageQuotaException dsqe) {
-
-      // Data Storage Quota Exception : language is required
-      dsqe.setLanguage(component.getLanguage());
-      throw dsqe;
-    }
+    // Check existence of a transverse exception
+    SilverpeasWebErrorManager.verifyErrorFromRequest(request, component.getLanguage());
 
     if (selectionProcessor.isSelectionAsked(destination)) {
       selectionProcessor.prepareSelection(mainSessionCtrl.getSelection(), request);
@@ -243,15 +233,12 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // check if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
-    boolean isAllowed;
-
-    if (componentId == null) { // Personal space
-      isAllowed = true;
-    } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
-          componentId, controller.getUserId());
+    // componentId == null is case of personal space (user is allowed)
+    if (componentId != null) {
+      return controller.getOrganizationController()
+                       .isComponentAvailable(componentId, controller.getUserId());
     }
-    return isAllowed;
+    return true;
   }
 
   private void redirectService(HttpServletRequest request,
@@ -312,6 +299,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   }
 
   // Get the space id and the component id required by the user
+  @SuppressWarnings("UnusedParameters")
   static public String[] getComponentId(HttpServletRequest request,
       MainSessionController mainSessionCtrl) {
     return webUtil.getComponentId(request);
@@ -322,6 +310,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
   // 1 - the componentId if component is instanciable
   // 2 - the component bean name if component is not instanciable (Personal
   // space)
+  @SuppressWarnings("unchecked")
   private T getComponentSessionController(HttpSession session, String componentId) {
     if (componentId == null) {
       return (T) session.getAttribute("Silverpeas_" + getSessionControlBeanName());

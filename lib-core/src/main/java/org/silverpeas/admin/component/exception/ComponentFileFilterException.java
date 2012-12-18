@@ -21,50 +21,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.admin.space.quota.process.check.exception;
+package org.silverpeas.admin.component.exception;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.quota.model.Quota;
+import org.silverpeas.admin.component.parameter.ComponentFileFilterParameter;
+
+import java.io.File;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
  */
-public class DataStorageQuotaException extends RuntimeException {
-  private static final long serialVersionUID = 1663450786546676632L;
-  private final Quota quota;
-  private final SpaceInst space;
-  private final ComponentInstLight fromComponent;
+public class ComponentFileFilterException extends RuntimeException {
+
+  private final ComponentFileFilterParameter fromComponentFileFilter;
+  private final File forbiddenFile;
   private String language;
 
   /**
    * Default constructor
-   * @param quota
-   * @param space
-   * @param fromComponent
+   * @param fromComponentFileFilter
+   * @param forbiddenFile
    */
-  public DataStorageQuotaException(final Quota quota, final SpaceInst space,
-      final ComponentInstLight fromComponent) {
-    this.quota = quota;
-    this.space = space;
-    this.fromComponent = (fromComponent != null) ? fromComponent : new ComponentInstLight();
-  }
-
-  /**
-   * @return the quota
-   */
-  public Quota getQuota() {
-    return quota;
-  }
-
-  /**
-   * @return the space
-   */
-  public SpaceInst getSpace() {
-    return space;
+  public ComponentFileFilterException(final ComponentFileFilterParameter fromComponentFileFilter,
+      final File forbiddenFile) {
+    this.fromComponentFileFilter = fromComponentFileFilter;
+    this.forbiddenFile = forbiddenFile;
   }
 
   /**
@@ -84,8 +67,15 @@ public class DataStorageQuotaException extends RuntimeException {
   /**
    * @return the fromComponent
    */
-  public ComponentInstLight getFromComponent() {
-    return fromComponent;
+  public ComponentFileFilterParameter getComponentFileFilterParameter() {
+    return fromComponentFileFilter;
+  }
+
+  /**
+   * @return thr forbidden file name
+   */
+  public String getForbiddenFileName() {
+    return forbiddenFile != null ? forbiddenFile.getName() : "";
   }
 
   /**
@@ -93,7 +83,9 @@ public class DataStorageQuotaException extends RuntimeException {
    */
   @SuppressWarnings("UnusedDeclaration")
   public String getFromComponentUrl() {
-    return (isDefined(fromComponent.getId())) ? URLManager.getApplicationURL() +
-        URLManager.getURL(fromComponent.getName(), null, fromComponent.getId()) + "Main" : "";
+    return (isDefined(getComponentFileFilterParameter().getComponent().getId())) ?
+        URLManager.getApplicationURL() +
+            URLManager.getURL(getComponentFileFilterParameter().getComponent().getName(), null,
+                getComponentFileFilterParameter().getComponent().getId()) + "Main" : "";
   }
 }

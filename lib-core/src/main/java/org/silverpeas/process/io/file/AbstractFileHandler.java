@@ -24,17 +24,9 @@
 package org.silverpeas.process.io.file;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -254,7 +246,6 @@ public abstract class AbstractFileHandler {
 
   /**
    * Build session temporary path
-   * @param basePath
    * @return
    */
   File getSessionTemporaryPath() {
@@ -290,7 +281,7 @@ public abstract class AbstractFileHandler {
 
     // Root path (or file ?)
     final File rootPath =
-        FileUtils.getFile(sessionRootPath, rootPathParts.toArray(new String[] {}));
+        FileUtils.getFile(sessionRootPath, rootPathParts.toArray(new String[rootPathParts.size()]));
 
     // Size of not deleted files
     long size = (rootPath.exists()) ? FileUtils.sizeOf(rootPath) : 0;
@@ -370,8 +361,38 @@ public abstract class AbstractFileHandler {
   }
 
   /**
-   * Delete session path
+   * Gets handled root directory Files of a base path from the session. (reads, writes)
+   * @return
+   */
+  public Collection<File> listAllSessionHandledRootPathFiles() {
+    final Set<File> rootPathFiles = new HashSet<File>();
+    for (final FileBasePath basePath : handledBasePath) {
+      rootPathFiles.addAll(listAllSessionHandledRootPathFiles(basePath));
+    }
+    return rootPathFiles;
+  }
+
+  /**
+   * Gets handled root directory Files of a base path from the session. (reads, writes)
    * @param basePath
+   * @return
+   */
+  protected Collection<File> listAllSessionHandledRootPathFiles(final FileBasePath basePath) {
+    final Set<File> rootPathNames = new HashSet<File>();
+    if (isHandledPath(basePath)) {
+
+      // reads and writes
+      final File[] directories =
+          getSessionPath(basePath).listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+      if (directories != null) {
+        rootPathNames.addAll(Arrays.asList(directories));
+      }
+    }
+    return rootPathNames;
+  }
+
+  /**
+   * Delete session path
    * @return
    */
   protected void deleteSessionWorkingPath() {
@@ -405,8 +426,11 @@ public abstract class AbstractFileHandler {
     // Cleaning
     final File sessionPath = FileUtils.getFile(sessionRootPath, getSession().getId());
     if (sessionPath.exists()) {
-      for (final File file : sessionPath.listFiles()) {
-        FileUtils.deleteQuietly(file);
+      File[] files = sessionPath.listFiles();
+      if (files != null) {
+        for (final File file : files) {
+          FileUtils.deleteQuietly(file);
+        }
       }
     }
   }
@@ -424,8 +448,9 @@ public abstract class AbstractFileHandler {
       File currentFile;
       while ((currentFile = fifo.poll()) != null) {
         if (currentFile.isDirectory()) {
-          for (final File fileUnderDirectoty : currentFile.listFiles()) {
-            fifo.add(fileUnderDirectoty);
+          File[] files = currentFile.listFiles();
+          if (files != null) {
+            Collections.addAll(fifo, files);
           }
         } else {
           FileUtils.copyFile(currentFile, translateToRealPath(basePath, currentFile));

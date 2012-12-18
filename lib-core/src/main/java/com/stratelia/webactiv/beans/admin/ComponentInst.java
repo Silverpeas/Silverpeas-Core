@@ -27,6 +27,7 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.util.i18n.AbstractI18NBean;
+import org.silverpeas.admin.component.constant.ComponentInstanceParameterName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -304,6 +305,15 @@ public class ComponentInst extends AbstractI18NBean implements Serializable, Clo
       return param.getValue();
     }
     return "";
+  }
+
+  /**
+   * Gets a component instance parameter from a centralized parameter name.
+   * @param parameterName
+   * @return
+   */
+  public String getParameterValue(ComponentInstanceParameterName parameterName) {
+    return getParameterValue(parameterName.name());
   }
 
   public String getLabel(String language) {
