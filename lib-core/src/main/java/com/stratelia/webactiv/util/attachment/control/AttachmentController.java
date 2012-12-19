@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
-import com.stratelia.webactiv.util.attachment.process.AttachmentDeleteFileAndIndexProcess;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.silverpeas.attachment.AttachmentServiceFactory;
@@ -66,10 +65,6 @@ public class AttachmentController {
   private static AttachmentBm attachmentBm = new AttachmentBmImpl();
   public final static String CONTEXT_ATTACHMENTS = "Attachment" + File.separatorChar + "Images"
       + File.separatorChar;
-  // For Office files direct update
-  public final static String NO_UPDATE_MODE = "0";
-  public final static String UPDATE_DIRECT_MODE = "1";
-  public final static String UPDATE_SHORTCUT_MODE = "2";
   private final static ResourceLocator resources = new ResourceLocator(
       "com.stratelia.webactiv.util.attachment.Attachment", "");
 
@@ -77,15 +72,6 @@ public class AttachmentController {
    * the constructor.
    */
   public AttachmentController() {
-  }
-
-  /**
-   * the constructor.
-   */
-  public static AttachmentBm changeAttachmentControllerForTests(AttachmentBm attachmentBmForTests) {
-    AttachmentBm oldAttachmentBm = attachmentBm;
-    attachmentBm = attachmentBmForTests;
-    return oldAttachmentBm;
   }
 
   /**
@@ -231,55 +217,6 @@ public class AttachmentController {
     updateAttachment(attachDetail, true);
   }
 
-  public static void updateAttachmentForeignKey(AttachmentPK pk, String foreignKey) {
-    try {
-      attachmentBm.updateForeignKey(pk, foreignKey);
-    } catch (Exception e) {
-      throw new AttachmentRuntimeException("AttachmentController.updateAttachmentForeignKey()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED", e);
-    }
-
-  }
-
-  public static void moveDownAttachment(AttachmentDetail attachDetail) {
-
-    try {
-      AttachmentDetail next = attachmentBm.findNext(attachDetail);
-
-      if (next != null) {
-        int stockNum = next.getOrderNum();
-        next.setOrderNum(attachDetail.getOrderNum());
-        attachDetail.setOrderNum(stockNum);
-        attachmentBm.updateAttachment(next);
-        attachmentBm.updateAttachment(attachDetail);
-      }
-    } catch (Exception e) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.moveDownAttachment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          e);
-    }
-  }
-
-  public static void moveUpAttachment(AttachmentDetail attachDetail) {
-
-    try {
-      AttachmentDetail prev = attachmentBm.findPrevious(attachDetail);
-
-      if (prev != null) {
-        int stockNum = prev.getOrderNum();
-        prev.setOrderNum(attachDetail.getOrderNum());
-        attachDetail.setOrderNum(stockNum);
-        attachmentBm.updateAttachment(prev);
-        attachmentBm.updateAttachment(attachDetail);
-      }
-    } catch (Exception e) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.moveUpAttachment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          e);
-    }
-  }
 
   /**
    * to search all file attached to an object who is identified by "PK"
@@ -409,7 +346,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to search
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static AttachmentDetail searchAttachmentByPK(AttachmentPK primaryKey) {
     try {
@@ -429,14 +365,13 @@ public class AttachmentController {
   /**
    * to search all file attached by primary key of customer object and context of file attached
    *
-   * @param pk : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
+   * @param foreignKey : com.stratelia.webactiv.util.WAPrimaryKey: the primary key of customer object but
    * this key must be transformed to AttachmentPK
    * @param context : String: the context attribute of file attached
    * @return java.util.Vector, a vector of AttachmentDetail
    * @throws AttachmentRuntimeException when is impossible to search
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   // méthode pour wysiwig pb de gestion d'exception
   public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
@@ -459,7 +394,6 @@ public class AttachmentController {
    * @return void
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void attachmentIndexer(WAPrimaryKey fk) {
     try {
@@ -494,7 +428,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void deleteAttachmentByCustomerPK(WAPrimaryKey foreignKey) {
     AttachmentPK fk = new AttachmentPK(foreignKey.getId(), foreignKey.getComponentName());
@@ -548,7 +481,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException if the attachement cannot be deleted.
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void deleteAttachment(AttachmentDetail attachmentDetail) {
     deleteAttachment(attachmentDetail, true);
@@ -654,7 +586,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void deleteAttachment(Vector<AttachmentDetail> vectorAttachmentDetail) {
     for (AttachmentDetail aD : vectorAttachmentDetail) {
@@ -662,30 +593,6 @@ public class AttachmentController {
     }
   }
 
-  /**
-   * to delete one file attached.
-   *
-   * @param attachDetail : the attachmentDetail object to deleted
-   * @param fileHandler
-   * @return void
-   * @throws AttachmentRuntimeException when is impossible to delete
-   * @author Jean-Claude Groccia
-   * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
-   */
-  public static void deleteFileAndIndex(AttachmentDetail attachDetail) {
-    try {
-      ProcessFactory.getProcessManagement().execute(
-          AttachmentDeleteFileAndIndexProcess.getInstance(attachDetail),
-          new ProcessExecutionContext(attachDetail.getPK().getInstanceId()));
-    } catch (AttachmentRuntimeException are) {
-      throw are;
-    } catch (Exception fe) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.deleteFileAndIndex(AttachmentDetail attachDetail)",
-          SilverpeasRuntimeException.ERROR, "root.EX_RECORD_DELETED_FAILED", fe);
-    }
-  }
 
   /**
    * to delete one file attached.
@@ -695,7 +602,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void deleteFileAndIndex(SimpleDocument attachDetail, FileHandler fileHandler) {
 
@@ -719,7 +625,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void deleteFileAndIndex(AttachmentDetail attachDetail, FileHandler fileHandler) {
 
@@ -755,7 +660,6 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to create
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
    */
   public static void createAttachment(Vector<AttachmentDetail> vectorAttachmentDetail) {
     for (AttachmentDetail attachmentDetail : vectorAttachmentDetail) {
@@ -764,22 +668,8 @@ public class AttachmentController {
   }
 
   /**
-   * to create path
-   *
-   * @param spaceId : type String: the name of space
-   * @param componentId : type String: the name of component
-   * @param context : type String: string made up of the repertories separated by token ","
-   * @deprecated Warning: the token separing the repertories is ","
-   */
-  public static String createPath(String spaceId, String componentId,
-      String context) {
-    return createPath(componentId, context);
-  }
-
-  /**
    * To create path Warning: the token separing the repertories is ","
    *
-   * @param spaceId : type String: the name of space
    * @param componentId : type String: the name of component
    * @param context : type String: string made up of the repertories separated by token ","
    */

@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -22,8 +21,16 @@
 package com.stratelia.webactiv.util.attachment.control;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
+
+import org.apache.commons.io.filefilter.FileFilterUtils;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
@@ -33,12 +40,11 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class AttachmentSchedulerImpl implements SchedulerEventListener {
@@ -80,53 +86,38 @@ public class AttachmentSchedulerImpl implements SchedulerEventListener {
    * @throws IOException
    * @throws Exception
    */
-  public synchronized void doProcessActify() throws IOException,
-      Exception {
-    String attachmentId;
-    String componentId;
-    long now = new Date().getTime();
+  public synchronized void doProcessActify() throws IOException, Exception {
+    long now = System.currentTimeMillis();
 
     String resultActifyPath = resources.getString("ActifyPathResult");
-    int delayBeforeProcess = Integer.parseInt(resources.getString("DelayBeforeProcess"));
+    long delayBeforeProcess = Long.parseLong(resources.getString("DelayBeforeProcess")) * 60000L;
 
-    File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath() + resultActifyPath);
-    File[] elementsList = folderToAnalyse.listFiles();
-
+    File[] elementsList = new File(FileRepositoryManager.getTemporaryPath() + resultActifyPath).
+        listFiles((FileFilter) FileFilterUtils.and(FileFilterUtils.directoryFileFilter(),
+        FileFilterUtils.ageFileFilter(now - delayBeforeProcess)));
     // List all folders in Actify
     for (File element : elementsList) {
-      long lastModified = element.lastModified();
       String dirName = element.getName();
       String resultActifyFullPath = FileRepositoryManager.getTemporaryPath() + resultActifyPath
           + File.separator + dirName;
 
       // Directory to process ?
-      if (element.isDirectory() && (lastModified + delayBeforeProcess * 1000 * 60 < now)
-          && "a_".equals(dirName.substring(0, 2))) {
-        componentId = dirName.substring(dirName.indexOf('_') + 1, dirName.lastIndexOf('_'));
-        attachmentId = dirName.substring(dirName.lastIndexOf('_') + 1);
+      if ("a_".equals(dirName.substring(0, 2))) {
+        String componentId = dirName.substring(dirName.indexOf('_') + 1, dirName.lastIndexOf('_'));
+        String foreignId = dirName.substring(dirName.lastIndexOf('_') + 1);
 
         String detailPathToAnalyse = element.getAbsolutePath();
         SilverTrace.info("Attachment", "AttachmentSchedulerImpl.doProcessActify()",
             "root.MSG_GEN_PARAM_VALUE", "PathToAnalyze=" + detailPathToAnalyse);
-        folderToAnalyse = new File(detailPathToAnalyse);
+        File folderToAnalyse = new File(detailPathToAnalyse);
         File[] filesList = folderToAnalyse.listFiles();
-        AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-        AttachmentPK foreignPK = new AttachmentPK(attachmentId, "useless", componentId);
         for (File file : filesList) {
-          String fileName = file.getName();
-          String physicalName = Long.toString(System.currentTimeMillis()) + ".3d";
-          String logicalName = fileName.substring(0, fileName.lastIndexOf('.')) + ".3d";
-          String mimeType = FileUtil.getMimeType(physicalName);
-
-          AttachmentDetail attachmentDetail = new AttachmentDetail(atPK, physicalName, logicalName,
-              null, mimeType, file.length(), "Images", new Date(), foreignPK);
-          AttachmentController.createAttachment(attachmentDetail, false);
-
-          String physicalPath = AttachmentController.createPath(componentId, "Images");
-
-          String srcFile = resultActifyFullPath + File.separator + logicalName;
-          String destFile = physicalPath + File.separator + physicalName;
-          FileRepositoryManager.copyFile(srcFile, destFile);
+          String fileName = file.getName().substring(0, file.getName().lastIndexOf('.')) + ".3d";
+          SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
+              foreignId, 0, false, new SimpleAttachment(fileName, I18NHelper.defaultLanguage,
+              fileName,
+              "", file.length(), FileUtil.SPINFIRE_MIME_TYPE, "0", new Date(), null));
+          AttachmentServiceFactory.getAttachmentService().createAttachment(document, file, false);
         }
         FileFolderManager.deleteFolder(resultActifyFullPath);
       }
@@ -141,8 +132,8 @@ public class AttachmentSchedulerImpl implements SchedulerEventListener {
    * @throws Exception
    */
   public synchronized void doPurgeActify() throws Exception {
-    int delayBeforePurge = Integer.parseInt(resources.getString("DelayBeforePurge"));
-    long now = new Date().getTime();
+    long delayBeforePurge = Long.parseLong(resources.getString("DelayBeforePurge")) * 60000L;
+    long now = System.currentTimeMillis();
 
     File folderToAnalyse = new File(FileRepositoryManager.getTemporaryPath()
         + resources.getString("ActifyPathSource"));
@@ -151,7 +142,7 @@ public class AttachmentSchedulerImpl implements SchedulerEventListener {
     // List all folders in Actify
     for (File element : elementsList) {
       long lastModified = element.lastModified();
-      if (element.isDirectory() && (lastModified + delayBeforePurge * 1000 * 60 < now)) {
+      if (element.isDirectory() && (lastModified + delayBeforePurge < now)) {
         SilverTrace.info("Attachment", "AttachmentSchedulerImpl.doPurgeActify()",
             "root.MSG_GEN_PARAM_VALUE", "PathToPurge=" + element.getName());
         FileFolderManager.deleteFolder(element.getAbsolutePath());
@@ -189,20 +180,19 @@ public class AttachmentSchedulerImpl implements SchedulerEventListener {
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) {
-    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' is starting");
+    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is starting");
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("Attachment",
-        "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+    SilverTrace.debug("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent", "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverTrace.error("Attachment", "Attachment_TimeoutManagerImpl.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

@@ -24,11 +24,10 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@page import="java.util.Iterator"%>
-<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
-<%@page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
+<%@page import="com.silverpeas.glossary.HighlightGlossaryTerms" %>
+<%@page import="com.silverpeas.util.StringUtil" %>
 <%
   response.setHeader("Cache-Control", "no-store");
   //HTTP 1.1
@@ -36,47 +35,42 @@
   //HTTP 1.0
   response.setDateHeader("Expires", -1);
 %>
-  <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
-  <%@ page import="com.stratelia.silverpeas.wysiwyg.*" %>
-  <%@ page import="com.silverpeas.util.StringUtil"%>
-  <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement"%>
-  <%@ page import="com.silverpeas.glossary.HighlightGlossaryTerms"%>
+<%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
+<%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ page import="java.util.Iterator" %>
 <%
-//initialisation des variables
-String objectId = request.getParameter("ObjectId");
-String componentId = request.getParameter("ComponentId");
-String language = request.getParameter("Language");
-String axisId = request.getParameter("axisId");
-String highlightFirst = request.getParameter("highlightFirst");
-  
+  //initialisation des variables
+  String objectId = request.getParameter("ObjectId");
+  String componentId = request.getParameter("ComponentId");
+  String language = request.getParameter("Language");
+  String axisId = request.getParameter("axisId");
+  String highlightFirst = request.getParameter("highlightFirst");
 
-try {
   String content = WysiwygController.load(componentId, objectId, language);
   if (StringUtil.isDefined(language)) {
-	//if content not found in specified language, check other ones
-	if (!StringUtil.isDefined(content)) {
-	  Iterator<String> languages = I18NHelper.getLanguages();
-	  if (languages != null) {
-		while (languages.hasNext() && !StringUtil.isDefined(content)) {
-		  language = languages.next();
-		  content = WysiwygController.load(componentId, objectId, language);
-		}
-	  }
-	}
-	
-	//dynamic value functionnality : check if active and try to replace the keys by their values
-	if(DynamicValueReplacement.isActivate()){
-	  DynamicValueReplacement replacement = new DynamicValueReplacement();
-	  content = replacement.replaceKeyByValue(content);
-	}
-	
-	//highlight glossary term
-	if(StringUtil.isDefined(axisId)){
-	  content = new HighlightGlossaryTerms().searchReplace(content,"highlight-silver",axisId,StringUtil.getBooleanValue(highlightFirst),language);
-	}
+    //if content not found in specified language, check other ones
+    if (!StringUtil.isDefined(content)) {
+      Iterator<String> languages = I18NHelper.getLanguages();
+      if (languages != null) {
+        while (languages.hasNext() && !StringUtil.isDefined(content)) {
+          language = languages.next();
+          content = WysiwygController.load(componentId, objectId, language);
+        }
+      }
+    }
+
+    //dynamic value functionality : check if active and try to replace the keys by their values
+    if (DynamicValueReplacement.isActivate()) {
+      DynamicValueReplacement replacement = new DynamicValueReplacement();
+      content = replacement.replaceKeyByValue(content);
+    }
+
+    //highlight glossary term
+    if (StringUtil.isDefined(axisId)) {
+      content = new HighlightGlossaryTerms().searchReplace(content, "highlight-silver", axisId,
+          StringUtil.getBooleanValue(highlightFirst), language);
+    }
   }
   out.println(content);
-} catch (WysiwygException exc) {
-   SilverTrace.info("wysiwyg", "WysiwygDisplayerServlet", "Wysiwy error", exc);
-}
 %>

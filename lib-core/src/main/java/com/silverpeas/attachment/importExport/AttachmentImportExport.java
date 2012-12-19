@@ -20,7 +20,6 @@
  */
 package com.silverpeas.attachment.importExport;
 
-import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
@@ -32,7 +31,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.apache.commons.io.FileUtils;
@@ -43,7 +41,11 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -348,28 +350,6 @@ public class AttachmentImportExport {
         attDetail.getFilename());
     AttachmentServiceFactory.getAttachmentService().getBinaryContent(new File(fichierJointExport),
         attDetail.getPk(), null);
-  }
-
-  /**
-   * Methode recuperant le chemin d'acces au dossier de stockage des fichiers importes dans un
-   * composant.
-   *
-   * @param componentId - id du composant dont on veut recuperer le chemin de stockage de ses
-   * fichiers importes
-   * @return le chemin recherche
-   */
-  private String getPath(String componentId) {
-    String path = AttachmentController.createPath(componentId, AbstractForm.CONTEXT_FORM_FILE);
-    SilverTrace.info("attachment", "AttachmentImportExport.getPath()", "root.MSG_GEN_PARAM_VALUE",
-        "path=" + path);
-    return path;
-  }
-
-  private String getPathWysiwyg(String componentId, String context) {
-    String path = AttachmentController.createPath(componentId, context);
-    SilverTrace.info("attachment", "AttachmentImportExport.getPath()", "root.MSG_GEN_PARAM_VALUE",
-        "path=" + path);
-    return path;
   }
 
   public InputStream getAttachmentContent(AttachmentDetail attachment) throws FileNotFoundException {

@@ -1497,13 +1497,6 @@
     <tag-class>org.silverpeas.jstl.settings.SettingsValueTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
-      <description>The fully qualified name of the Resourceocator to be used for the settings.</description>
-      <name>settings</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
       <description>The fully qualified name of the ResourceLocator to be used for the settings.</description>
       <name>settings</name>
       <required>true</required>

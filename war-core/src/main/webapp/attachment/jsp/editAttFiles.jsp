@@ -104,8 +104,7 @@
 
       List<SimpleDocument> vectAttachment =
               AttachmentServiceFactory.getAttachmentService().searchAttachmentsByExternalObject(
-                      foreignKey,
-                      contentLanguage);
+                      foreignKey, contentLanguage);
       Iterator<SimpleDocument> itAttachment = vectAttachment.iterator();
 
 

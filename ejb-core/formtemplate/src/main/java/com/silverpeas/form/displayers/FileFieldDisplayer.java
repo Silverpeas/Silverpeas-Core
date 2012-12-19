@@ -21,12 +21,6 @@
 package com.silverpeas.form.displayers;
 
 
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.ProcessSession;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -36,15 +30,24 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
-
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.management.AbstractFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.ProcessSession;
 import org.silverpeas.viewer.ViewerFactory;
 
 import java.io.File;
@@ -55,14 +58,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-
-import com.silverpeas.util.FileUtil;
 
 
 
@@ -329,8 +324,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   private String processUploadedFile(List<FileItem> items, String parameterName,
-      PagesContext pagesContext, FileHandler fileHandler)
-      throws Exception {
+      PagesContext pagesContext, FileHandler fileHandler) throws Exception {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
     if (!item.isFormField()) {
@@ -342,7 +336,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         SilverTrace.info("form", "AbstractForm.processUploadedFile", "root.MSG_GEN_PARAM_VALUE",
             "fullFileName on Unix = " + fileName);
         long size = item.getSize();
-        if (size > 0) {
+        if (size > 0L) {
           SimpleDocument document = createSimpleDocument(objectId, componentId, item,
               fileName, userId, pagesContext.isVersioningUsed());
           return document.getId();

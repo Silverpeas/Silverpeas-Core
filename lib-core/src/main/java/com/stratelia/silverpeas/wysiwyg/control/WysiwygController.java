@@ -29,8 +29,10 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.IOUtils;
@@ -44,8 +46,18 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -751,21 +763,6 @@ public class WysiwygController {
     }
   }
 
-  /**
-   * deleteFile : destruction of a file Param = path name of the file
-   *
-   * @param directory
-   * @param fileName
-   * @throws WysiwygException
-   */
-  public synchronized void deleteFile(String directory, String fileName) throws WysiwygException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder\\File.html */
-    File file = new File(directory, fileName);
-    if (!file.delete()) {
-      throw new WysiwygException("WysiwygController.deleteFile()", SilverpeasException.ERROR,
-          "wysiwyg.DELETING_WYSIWYG_DOCUMENT_FAILED", "file = " + directory + fileName);
-    }
-  }
 
   /**
    * Method declaration
@@ -899,19 +896,19 @@ public class WysiwygController {
         wysiwyg = replaceInternalImagesPath(wysiwyg, oldComponentId, oldObjectId, newComponentId,
             newObjectId);
         // overwrite
-        createFile(AttachmentController.createPath(newComponentId, WYSIWYG_CONTEXT),
+        createFile(createPath(newComponentId, WYSIWYG_CONTEXT),
             getWysiwygFileName(newObjectId, language), wysiwyg);
       }
     }
   }
 
   public static String getWysiwygPath(String componentId, String objectId, String language) {
-    String path = AttachmentController.createPath(componentId, WYSIWYG_CONTEXT);
+    String path = createPath(componentId, WYSIWYG_CONTEXT);
     return path + getWysiwygFileName(objectId, language);
   }
 
   public static String getWysiwygPath(String componentId, String objectId) {
-    String path = AttachmentController.createPath(componentId, WYSIWYG_CONTEXT);
+    String path = createPath(componentId, WYSIWYG_CONTEXT);
     return path + getWysiwygFileName(objectId);
   }
 
@@ -974,6 +971,59 @@ public class WysiwygController {
             "Erreur dans l'indexation d'un fichier joint lié au contenu wysiwyg - attachmentId:"
             + attachmentId);
       }
+    }
+  }
+
+  /**
+   * To create path Warning: the token separing the repertories is ","
+   *
+   * @param componentId : type String: the name of component
+   * @param context : type String: string made up of the repertories separated by token ","
+   */
+  public static String createPath(String componentId, String context) {
+    String path = null;
+
+    if ((context != null) && !context.equals("null") && (context.length() > 0)) {
+
+      // to create the context
+      String strAt = "Attachment,";
+
+      strAt = strAt.concat(context);
+
+      StringTokenizer strToken = new StringTokenizer(strAt, ",");
+
+      // number of elements
+      int nElt = strToken.countTokens();
+
+      // to init array
+      String[] ctx = new String[nElt];
+
+      int k = 0;
+
+      while (strToken.hasMoreElements()) {
+        ctx[k] = (String) strToken.nextElement();
+        k++;
+      }
+
+      path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
+    } else {
+      String[] ctx = {"Attachment"};
+
+      path = FileRepositoryManager.getAbsolutePath(componentId, ctx);
+    }
+
+    try {
+      File d = new File(path);
+
+      if (!d.exists()) {
+        FileFolderManager.createFolder(path);
+      }
+
+      return path;
+    } catch (Exception e) {
+      throw new AttachmentRuntimeException(
+          "AttachmentController.createPath(String spaceId, String componentId, String context)",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
     }
   }
 }

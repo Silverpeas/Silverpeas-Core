@@ -1,34 +1,36 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.importExport;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import com.silverpeas.form.AbstractForm;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -41,11 +43,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import com.silverpeas.util.i18n.I18NHelper;
 
 public class FormTemplateImportExport {
 
@@ -56,11 +54,10 @@ public class FormTemplateImportExport {
       externalId = pk.getInstanceId() + ":" + objectType + ":" + xmlModel.getName();
     }
 
-    PublicationTemplateManager publicationTemplateManager =
-        PublicationTemplateManager.getInstance();
-    publicationTemplateManager.addDynamicPublicationTemplate(externalId, xmlModel.getName());
-
-    PublicationTemplate pub = publicationTemplateManager.getPublicationTemplate(externalId);
+    PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(externalId, xmlModel.
+        getName());
+    PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
+        externalId);
 
     RecordSet set = pub.getRecordSet();
 
@@ -78,40 +75,11 @@ public class FormTemplateImportExport {
       if (field != null) {
         FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
         if (fieldTemplate != null) {
-          FieldDisplayer fieldDisplayer =
-              TypeManager.getInstance().getDisplayer(field.getTypeName(),
-              fieldTemplate.getDisplayerName());
+          FieldDisplayer<Field> fieldDisplayer = TypeManager.getInstance().
+              getDisplayer(field.getTypeName(), fieldTemplate.getDisplayerName());
           String fieldValue;
           if (Field.TYPE_FILE.equals(field.getTypeName())) {
-            String context = null;
-            if ("image".equals(fieldTemplate.getDisplayerName())) {
-              context = AbstractForm.CONTEXT_FORM_IMAGE;
-            } else {
-              context = AbstractForm.CONTEXT_FORM_FILE;
-            }
-
-            String imagePath = xmlFieldValue;
-            String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
-                imagePath.length());
-            String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
-            String imageMimeType = FileUtil.getMimeType(imagePath);
-
-            String physicalName = String.valueOf(System.currentTimeMillis()) + "." + imageExtension;
-
-            String path = AttachmentController.createPath(pk.getInstanceId(), context);
-            FileRepositoryManager.copyFile(imagePath, path + physicalName);
-            File file = new File(path + physicalName);
-            long size = file.length();
-            if (size > 0) {
-              AttachmentDetail ad = createAttachmentDetail(pk.getId(), pk.getInstanceId(),
-                  physicalName, imageName, imageMimeType, size, context, userId);
-              ad = AttachmentController.createAttachment(ad, true);
-              fieldValue = ad.getPK().getId();
-            } else {
-              // le fichier à tout de même été créé sur le serveur, il faut le supprimer
-              FileFolderManager.deleteFolder(path + physicalName);
-              fieldValue = null;
-            }
+            fieldValue = manageFileField(pk, userId, xmlFieldValue, fieldTemplate);
           } else {
             fieldValue = xmlFieldValue;
           }
@@ -122,19 +90,29 @@ public class FormTemplateImportExport {
     set.save(data);
   }
 
-  private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
-      String physicalName, String logicalName, String mimeType, long size, String context,
-      String userId) {
-    AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-    AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-    if (objectId != null) {
-      foreignKey.setId(objectId);
+  public String manageFileField(ForeignPK pk, String userId, String xmlFieldValue,
+      FieldTemplate fieldTemplate) throws IOException {
+    String fieldValue;
+    DocumentType type;
+    if ("image".equals(fieldTemplate.getDisplayerName())) {
+      type = DocumentType.attachment;
     }
-    // create AttachmentDetail Object
-    AttachmentDetail ad =
-        new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size,
-        context, new Date(), foreignKey);
-    ad.setAuthor(userId);
-    return ad;
+    else {
+      type = DocumentType.form;
+    }
+    File image = new File(xmlFieldValue);
+    if (image.length() > 0L) {
+      String fileName = FileUtil.getFilename(xmlFieldValue);
+      SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, pk.getInstanceId()),
+          pk.getId(), 0, false, new SimpleAttachment(fileName, I18NHelper.defaultLanguage, fileName,
+          "", image.length(), FileUtil.getMimeType(fileName), userId, new Date(), null));
+      document.setDocumentType(type);
+      fieldValue = AttachmentServiceFactory.getAttachmentService().createAttachment(document, image,
+          true).getId();
+    }
+    else {
+      fieldValue = null;
+    }
+    return fieldValue;
   }
 }

@@ -31,7 +31,6 @@ import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,21 +48,6 @@ public class ActifyToAttachment extends HttpServlet {
 
   /**
    * Method declaration
-   * @param config
-   * @see
-   */
-  @Override
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException se) {
-      SilverTrace.fatal("attachment", "ActifyToSilverpeas.init",
-          "attachment.CANNOT_ACCESS_SUPERCLASS");
-    }
-  }
-
-  /**
-   * Method declaration
    * @param req
    * @param res
    * @throws IOException
@@ -71,21 +55,7 @@ public class ActifyToAttachment extends HttpServlet {
    * @see
    */
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    doPost(req, res);
-  }
-
-  /**
-   * Method declaration
-   * @param req
-   * @param res
-   * @throws IOException
-   * @throws ServletException
-   * @see
-   */
-  @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
+  public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
     SilverTrace.info("attachment", "ActifyToAttachment.doPost", "root.MSG_GEN_ENTER_METHOD");
     ResourceLocator settings = new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
