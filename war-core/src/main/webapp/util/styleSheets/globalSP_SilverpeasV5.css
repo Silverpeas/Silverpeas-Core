@@ -5248,7 +5248,7 @@ input.search:focus {
 /*************/
 /** preview **/
 /*************/
-.preview-button {
+.dialog-popup-button {
   cursor: pointer;
   text-align: center;
   margin: 5px;
@@ -5257,15 +5257,16 @@ input.search:focus {
   border: 1px solid #666666;
   background-color: #efefef;
   opacity:0.4;
+  z-index: 10;
 }
 
-.preview-button:hover {
+.dialog-popup-button:hover {
   border: 1px solid #9BD94A;
   background-color: #9BD94A;
   opacity: 1;
 }
 
-.preview-button-image {
+.dialog-popup-button-image {
   width: 13px;
   height: 13px;
 }

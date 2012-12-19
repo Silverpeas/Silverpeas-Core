@@ -239,7 +239,7 @@
 
     // Initializing
     var $buttonContainer = $('<div>')
-                            .addClass('preview-button')
+                            .addClass('dialog-popup-button')
                             .css('display', 'none')
                             .css('position', 'absolute')
                             .css('top', '0px')
@@ -297,7 +297,7 @@
 
     // Initializing the image if necessary
     if (!$button) {
-      $button = $('<img>').addClass('preview-button-image');
+      $button = $('<img>').addClass('dialog-popup-button-image');
     }
 
     // Setting the image source attribute
