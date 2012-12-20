@@ -28,6 +28,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@page import="com.silverpeas.authentication.AuthenticationService"%>
 <%@page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
@@ -38,6 +39,7 @@
 
 <%
 ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
 ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
 ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
 
@@ -60,7 +62,12 @@ boolean updateFirstNameIsAllowed 	= rs.getBoolean("updateFirstName", false);
 boolean updateLastNameIsAllowed 	= rs.getBoolean("updateLastName", false);
 boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
 boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
+AuthenticationService authenticationService = new AuthenticationService();
 %>
+
+<div id="passwordPoliciesModalDialog" style="display: none">
+	<%=authenticationService.getPasswordPoliciesInfo(request)%>
+</div>
 
 <style type="text/css">
 .txtlibform {
@@ -132,11 +139,11 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 	    </tr>
 		<tr id="newPassword">
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> type="password" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a href="javascript:showRules()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
 		<tr id="newPasswordConfirmation">
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPasswordConfirm" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> type="password" name="NewPasswordConfirm" size="50" maxlength="32"/>&nbsp;(<a href="javascript:showRules()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
     <%} else { %>
 	    <tr>
@@ -246,5 +253,23 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 		} else {
 			window.alert(errorMsg);
 		}
+	}
+
+	$(document).ready(function(){
+	      $("#passwordPoliciesModalDialog").dialog({
+	    	  autoOpen: false,
+	          modal: true,
+	          title: "<%=authRs.getString("authentication.password.policies") %>",
+	          height: 'auto',
+	          buttons: {
+					"<%=resource.getString("GML.close")%>": function() {
+						$( this ).dialog( "close" );
+					}
+				},
+	          width: 600});
+	    });
+
+	function showRules() {
+		$("#passwordPoliciesModalDialog").dialog("open");
 	}
 </script>

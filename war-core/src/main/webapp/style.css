@@ -191,6 +191,16 @@ p label span {
 	color:#999999;
 }
 
+.passwordRules {
+	font-size: 10px;
+	color:#999999;
+}
+
+.passwordRules a{
+	font-size: 10px;
+	color:#999999;
+}
+
 #storePassword{
 	background-color:transparent;
 	border:0px;

@@ -28,6 +28,7 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<%@page import="com.silverpeas.authentication.AuthenticationService"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="com.silverpeas.jobDomainPeas.JobDomainSettings"%>
@@ -37,13 +38,15 @@
 
 <%
 int minLengthPassword = JobDomainSettings.m_MinLengthPwd;
-ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
+ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+AuthenticationService authenticationService = new AuthenticationService();
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<title><%=generalMultilang.getString("GML.popupTitle")%></title>
 		<link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
+		<link type="text/css" href="/silverpeas/util/styleSheets/jquery/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet"/>
 		<link type="text/css" rel="stylesheet" href="<%=styleSheet%>" />
 		<!--[if lt IE 8]>
 			<style>
@@ -62,6 +65,8 @@ ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authe
 			</style>
 		<![endif]-->
 		<script type="text/javascript" src="<%=m_context%>/passwordValidator.js"></script>
+		<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js"></script>
 	    <script type="text/javascript">
 
 		function checkPassword() {
@@ -84,10 +89,30 @@ ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authe
 	    	}
 	    }
 
+		$(document).ready(function(){
+		      $("#passwordPoliciesModalDialog").dialog({
+		    	  autoOpen: false,
+		          modal: true,
+		          title: "<%=authenticationBundle.getString("authentication.password.policies") %>",
+		          height: 'auto',
+		          buttons: {
+						"<%=generalMultilang.getString("GML.close")%>": function() {
+							$( this ).dialog( "close" );
+						}
+					},
+		          width: 600});
+		    });
+
+		function showRules() {
+			$("#passwordPoliciesModalDialog").dialog("open");
+		}
 	    </script>
 	</head>
 
 <body>
+	  <div id="passwordPoliciesModalDialog" style="display: none">
+		<%=authenticationService.getPasswordPoliciesInfo(request)%>
+	  </div>
 	<form id="changePwdForm" action="<%=m_context%>/CredentialsServlet/ChangePasswordFromLogin" method="post">
         <div id="top"></div> <!-- Background foncé -->
         <div class="page"> <!-- Centrage horizontal des éléments (960px) -->
@@ -114,6 +139,7 @@ ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authe
                     <input type="hidden" name="domainId" value="${param.DomainId}" />
 					<br/>
 					<p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkPassword();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
+					<p><span class="passwordRules"><a href="javascript:showRules()"><%=authenticationBundle.getString("authentication.password.showRules") %></a></span></p>
                 </div>
             </div>
         </div>

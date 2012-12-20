@@ -111,17 +111,7 @@ ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authe
                     <input type="hidden" name="login" value="${param.login}" />
                     <input type="hidden" name="domainId" value="${param.domainId}" />
 					<br/>
-					<p>
-						<table cellspacing="0" width="100%">
-						<tbody>
-						<tr>
-							<td style="background-image: url('images/bt-left.png'); width: 31px; height: 31px">&nbsp;</td>
-							<td style="background-image: url('images/bt-bg.png'); background-repeat: repeat-x;"><a href="#" class="submit" onclick="checkPassword();"><%=authenticationBundle.getString("authentication.password.change") %></a></td>
-							<td style="background-image: url('images/bt-right.png');width: 16px; height: 31px">&nbsp;</td>
-						</tr>
-						</tbody>
-						</table>
-					</p>
+					<p><a href="#" class="submit" onclick="checkPassword();"><img src="images/bt-login.png" /></a></p>
                 </div>
             </div>
         </div>
