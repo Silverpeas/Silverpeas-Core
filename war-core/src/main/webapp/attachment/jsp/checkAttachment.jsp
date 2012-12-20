@@ -63,9 +63,8 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.control.AttachmentController"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.model.AttachmentDetail"%>
-<%@ page import="com.stratelia.webactiv.util.attachment.ejb.AttachmentPK"%>
+<%@ page import="org.silverpeas.importExport.attachment.AttachmentDetail"%>
+<%@ page import="org.silverpeas.importExport.attachment.AttachmentPK"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
@@ -77,42 +76,6 @@
 
 <%@ page import="org.apache.commons.fileupload.*"%>
 
-<%!
-private String getParameterValue(List items, String parameterName, String encoding) throws UnsupportedEncodingException
-{
-	Iterator iter = items.iterator();
-	while (iter.hasNext()) {
-		FileItem item = (FileItem) iter.next();
-		if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-			return item.getString(encoding);
-		}
-	}
-	return null;
-}
-
-private FileItem getUploadedFile(List items, String parameterName)
-{
-	Iterator iter = items.iterator();
-	while (iter.hasNext()) {
-		FileItem item = (FileItem) iter.next();
-		if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-			return item;
-		}
-	}
-	return null;
-}
-
-private boolean runOnUnix()
-{
-	return !com.silverpeas.util.FileUtil.isWindows();
-}
-
-private boolean isFileSharingEnable(MainSessionController msc, String componentId)
-{
-	String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
-	return "yes".equalsIgnoreCase(param);
-}
-%>
 
 <%
 	MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -122,14 +85,14 @@ private boolean isFileSharingEnable(MainSessionController msc, String componentI
 	ResourceLocator 		attSettings 		= new ResourceLocator("org.silverpeas.util.attachment.Attachment", "");
 
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	
-	String m_Context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-	
+
+	String m_Context = GeneralPropertiesManager.getString("ApplicationURL");
+
 	ResourcesWrapper attResources = new ResourcesWrapper(messages, null, attSettings, language);
-	
+
 	boolean useContextualMenu = attResources.getSetting("ui.useContextualMenu", false);
   pageContext.setAttribute("useContextualMenu", useContextualMenu);
 	// Pixels
 	String noColorPix       = m_Context + "/util/icons/colorPix/1px.gif";
-	String ArrayPnoColorPix = m_Context + "/util/icons/colorPix/15px.gif";	
+	String ArrayPnoColorPix = m_Context + "/util/icons/colorPix/15px.gif";
 %>

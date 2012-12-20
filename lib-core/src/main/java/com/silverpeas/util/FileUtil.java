@@ -91,7 +91,7 @@ public class FileUtil implements MimeTypes  {
         mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
       }
     } catch (final MissingResourceException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
+      SilverTrace.warn("attachment", "FileUtil",
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
     if (mimeType == null) {

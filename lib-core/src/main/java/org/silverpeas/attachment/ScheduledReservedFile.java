@@ -20,20 +20,12 @@
  */
 package org.silverpeas.attachment;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
 import com.silverpeas.scheduler.Scheduler;
 import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -42,8 +34,13 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
 
 public class ScheduledReservedFile implements SchedulerEventListener {
 

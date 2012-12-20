@@ -26,6 +26,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Named;
 
@@ -58,7 +60,6 @@ import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
 
-
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.CalendarEventRecurrence;
 import com.silverpeas.calendar.Datable;
@@ -73,11 +74,21 @@ import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.anICal4JRe
  */
 @Named("iCalCodec")
 public class ICal4JICalCodec implements ICalCodec {
-  
+
+  private UidGenerator uidGenerator;
+
+  public ICal4JICalCodec() {
+    try {
+      uidGenerator = new UidGenerator(Uid.UID);
+    } catch (SocketException ex) {
+      Logger.getLogger(ICal4JICalCodec.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
   @Override
   @SuppressWarnings("unchecked")
   public String encode(List<CalendarEvent> events) {
-    
+
     if (events == null || events.isEmpty()) {
       throw new IllegalArgumentException("The calendar events must be defined to encode them");
     }
@@ -97,14 +108,8 @@ public class ICal4JICalCodec implements ICalCodec {
         iCalEvent = new VEvent(startDate, endDate, event.getTitle());
       }
       iCalEvent.getProperties().add(asTzId(event.getStartDate().getTimeZone()));
-
       // Generate UID
-      try {
-        iCalEvent.getProperties().add(new UidGenerator(Uid.UID).generateUid());
-      } catch (SocketException ex) {
-        throw new EncodingException("Cannot generate an UID for the iCal event", ex);
-      }
-
+      iCalEvent.getProperties().add(uidGenerator.generateUid());
       // Add recurring data if any
       if (event.isRecurring()) {
         CalendarEventRecurrence eventRecurrence = event.getRecurrence();
@@ -146,7 +151,7 @@ public class ICal4JICalCodec implements ICalCodec {
           throw new EncodingException("Malformed attendee URI: " + attendee, ex);
         }
       }
-      
+
       iCalEvents.add(iCalEvent);
     }
     calendarIcs.getComponents().addAll(iCalEvents);
@@ -160,16 +165,16 @@ public class ICal4JICalCodec implements ICalCodec {
     } finally {
       IOUtils.closeQuietly(output);
     }
-    
+
   }
-  
+
   private TzId asTzId(final TimeZone timeZone) {
     TimeZoneRegistry timeZoneRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
     VTimeZone tz = timeZoneRegistry.getTimeZone(timeZone.getID()).getVTimeZone();
     TzId tzId = new TzId(tz.getProperties().getProperty(Property.TZID).getValue());
     return tzId;
   }
-  
+
   private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
     List<Datable<?>> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = new DateList();

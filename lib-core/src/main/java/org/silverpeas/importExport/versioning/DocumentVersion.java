@@ -23,7 +23,7 @@
  * Aliaksei_Budnikau
  * Date: Oct 16, 2002
  */
-package com.stratelia.silverpeas.versioning.model;
+package org.silverpeas.importExport.versioning;
 
 import java.io.File;
 import java.util.Date;

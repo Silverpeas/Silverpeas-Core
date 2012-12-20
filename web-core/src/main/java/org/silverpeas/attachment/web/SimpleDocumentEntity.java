@@ -23,17 +23,14 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.xml.bind.annotation.XmlElement;
-
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
 
-import com.silverpeas.web.Exposable;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -82,8 +79,8 @@ public class SimpleDocumentEntity implements Exposable {
     try {
       entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, document.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("AttachmentEntity.fromAttachment(",
+          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
     }
     entity.id = document.getId();
     entity.instanceId = document.getInstanceId();

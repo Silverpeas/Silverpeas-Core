@@ -56,7 +56,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -69,10 +69,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,9 +79,7 @@ import java.util.List;
 
 import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
-import com.silverpeas.util.FileUtil;
 import static java.io.File.separator;
 
 /**
@@ -242,12 +237,12 @@ public class PublicationsTypeManager {
     File fileHTML = new File(exportPublicationPath + separator + htmlNameIndex);
     SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
         "root.MSG_GEN_PARAM_VALUE", "pubId = " + pubId);
-    try {      
+    try {
       fileHTML.createNewFile();
       FileUtils.write(fileHTML, s.toHtml(), Charsets.UTF_8);
     } catch (IOException ex) {
       return false;
-    } 
+    }
     return true;
   }
 

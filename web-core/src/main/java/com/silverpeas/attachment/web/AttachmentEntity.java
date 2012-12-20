@@ -24,18 +24,15 @@
 
 package com.silverpeas.attachment.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.web.Exposable;
-
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author ehugonnet
@@ -72,12 +69,12 @@ public class AttachmentEntity implements Exposable {
   private URI sharedUri;
 
   public static AttachmentEntity fromAttachment(SimpleDocument detail) {
-    AttachmentEntity entity = new AttachmentEntity();   
+    AttachmentEntity entity = new AttachmentEntity();
     try {
       entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("AttachmentEntity.fromAttachment(",
+          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
     }
     entity.id = detail.getId();
     entity.instanceId = detail.getInstanceId();

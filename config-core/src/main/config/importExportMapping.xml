@@ -148,11 +148,11 @@
 	</class>
 	<class name="com.silverpeas.attachment.importExport.AttachmentsType">
 		<map-to xml="attachments" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v408"/>
-		<field name="listAttachmentDetail" type="com.stratelia.webactiv.util.attachment.model.AttachmentDetail" collection="arraylist">
+		<field name="listAttachmentDetail" type="org.silverpeas.importExport.attachment.AttachmentDetail" collection="arraylist">
 			<bind-xml name="sp:attachment" node="element"/>
 		</field>
 	</class>
-	<class name="com.stratelia.webactiv.util.attachment.model.AttachmentDetail">
+	<class name="org.silverpeas.importExport.attachment.AttachmentDetail">
 		<map-to xml="attachment" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v408"/>
 		<field name="title" type="string">
 			<bind-xml name="sp:name" node="element"/>
@@ -344,7 +344,7 @@
 	<class name="com.silverpeas.coordinates.importExport.CoordinatesPositionsType">
 		<map-to xml="coordinatesPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v408"/>
 		<field name="createEnable" type="boolean">
-			<bind-xml name="createEnable" node="attribute"/>		
+			<bind-xml name="createEnable" node="attribute"/>
 		</field>
 		<field name="coordinatesPositions" type="com.stratelia.webactiv.util.coordinates.model.Coordinate" collection="arraylist">
 			<bind-xml name="sp:coordinatePosition" node="element"/>

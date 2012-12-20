@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.versioning.importExport;
+package org.silverpeas.importExport.versioning;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -36,13 +36,11 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -60,8 +58,6 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 

@@ -26,16 +26,14 @@ import com.silverpeas.sharing.security.ShareableVersionDocument;
 import com.silverpeas.sharing.services.VersionFileAccessControl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.util.Date;
-
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.util.Date;
 
 /**
  * Ticket for files with versions.
@@ -69,7 +67,7 @@ public class VersionFileTicket extends Ticket {
       pk.setOldSilverpeasId(getSharedObjectId());
       return (HistorisedDocument) AttachmentServiceFactory.getAttachmentService().
           searchDocumentById(pk, null);
-    } catch (AttachmentRuntimeException e) {
+    } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
     }
     return null;
@@ -85,11 +83,11 @@ public class VersionFileTicket extends Ticket {
       if(doc != null) {
         return new ShareableVersionDocument(getToken(), doc);
       }
-    } catch (AttachmentRuntimeException e) {
+    } catch (AttachmentException e) {
       SilverTrace.error("fileSharing", "Ticket.getDocument", "root.MSG_GEN_PARAM_VALUE", e);
     }
     return null;
-    
+
   }
 
   @Override

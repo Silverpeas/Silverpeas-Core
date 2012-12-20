@@ -23,11 +23,16 @@ package com.silverpeas.portlets;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 
-import javax.portlet.*;
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequestDispatcher;
+import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -45,7 +50,7 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
     try {
       attachments = AttachmentServiceFactory.getAttachmentService().listDocumentsLockedByUser(
           sessionController.getUserId(), sessionController.getFavoriteLanguage()).iterator();
-    } catch (AttachmentRuntimeException e) {
+    } catch (AttachmentException e) {
       SilverTrace.error("portlet", "MyCheckOutFiles", "portlet.ERROR", e);
     }
     request.setAttribute("Attachments", attachments);

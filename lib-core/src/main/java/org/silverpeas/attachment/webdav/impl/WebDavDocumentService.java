@@ -20,21 +20,19 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import java.io.IOException;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.webdav.WebdavRepository;
 import org.silverpeas.attachment.webdav.WebdavService;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.io.IOException;
 
 @Named("webdavService")
 public class WebDavDocumentService implements WebdavService {
@@ -53,12 +51,12 @@ public class WebDavDocumentService implements WebdavService {
     } catch (IOException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } finally {
       if (session != null) {
@@ -77,12 +75,12 @@ public class WebDavDocumentService implements WebdavService {
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } catch (IOException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.create.exception", ex);
     } finally {
       if (session != null) {
@@ -101,7 +99,7 @@ public class WebDavDocumentService implements WebdavService {
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.delete.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
     } finally {
       if (session != null) {
@@ -120,12 +118,12 @@ public class WebDavDocumentService implements WebdavService {
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
     } catch (IOException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.create.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
     } finally {
       if (session != null) {
@@ -143,7 +141,7 @@ public class WebDavDocumentService implements WebdavService {
     } catch (RepositoryException ex) {
       SilverTrace.error("attachment", "JcrAttachmentServiceImpl",
           "attachment.jcr.isLocked.exception", ex);
-      throw new AttachmentRuntimeException("JcrAttachmentServiceImpl",
+      throw new AttachmentException("JcrAttachmentServiceImpl",
           SilverpeasRuntimeException.ERROR, "attachment.jcr.delete.exception", ex);
     } finally {
       if (session != null) {

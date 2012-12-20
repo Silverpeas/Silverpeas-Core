@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -1021,8 +1020,8 @@ public class WysiwygController {
 
       return path;
     } catch (Exception e) {
-      throw new AttachmentRuntimeException(
-          "AttachmentController.createPath(String spaceId, String componentId, String context)",
+      throw new AttachmentException(
+          "Wysiwyg.createPath(String spaceId, String componentId, String context)",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
     }
   }

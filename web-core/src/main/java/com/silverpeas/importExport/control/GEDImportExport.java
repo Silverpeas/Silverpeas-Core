@@ -60,7 +60,7 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -626,7 +626,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             }
             // On additionne la taille des fichiers importes au niveau du rapport
             ImportReportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
-            newWysiwygText.append(webContext).append(attDetail.getAttachmentURL());
+            //TODO FEATURE 82 newWysiwygText.append(webContext).append(attDetail.getAttachmentURL());
           } catch (Exception e) {
             SilverTrace.error("importExport", "GEDImportExport.replaceWysiwygImagesPathForImport()",
                 "importExport.CANNOT_FIND_FILE", e);

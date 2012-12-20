@@ -126,8 +126,6 @@ public class SimpleDocumentService implements AttachmentService {
 
   private void updateIndexEntryWithXMLFormContent(SimpleDocumentPK pk, String xmlFormName,
       FullIndexEntry indexEntry) {
-    SilverTrace.info("attachment", "AttachmentController.updateIndexEntryWithXMLFormContent()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
     try {
       String objectType = "Attachment";
       PublicationTemplate pub = PublicationTemplateManager.getInstance().
@@ -136,10 +134,10 @@ public class SimpleDocumentService implements AttachmentService {
       set.indexRecord(pk.getId(), xmlFormName, indexEntry);
     } catch (PublicationTemplateException e) {
       SilverTrace.error("attachment",
-          "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
+          "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
     } catch (FormException e) {
       SilverTrace.error("attachment",
-          "AttachmentController.updateIndexEntryWithXMLFormContent()", "", e);
+          "AttachmentService.updateIndexEntryWithXMLFormContent()", "", e);
     }
   }
 
@@ -714,21 +712,14 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      SilverTrace.debug("attachment", "AttachmentController.checkinOfficeFile()",
-          "root.MSG_GEN_ENTER_METHOD", "attachmentId = " + context.getAttachmentId());
-
       SimpleDocument document = repository.findDocumentById(session, new SimpleDocumentPK(
           context.getAttachmentId()), context.getLang());
       if (document.isOpenOfficeCompatible() && !context.isForce() && webdavRepository.isNodeLocked(
           session, document)) {
-        SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
-            "attachment.NODE_LOCKED");
         return false;
       }
       if (!context.isForce() && document.isReadOnly() && !document.getEditedBy().equals(context.
           getUserId())) {
-        SilverTrace.warn("attachment", "AttachmentController.checkinOfficeFile()",
-            "attachment.INCORRECT_USER");
         return false;
       }
 
@@ -763,9 +754,7 @@ public class SimpleDocumentService implements AttachmentService {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("attachment", "AttachmentController.checkinOfficeFile()",
-          "attachment.CHECKIN_FAILED", e);
-      throw new AttachmentException("AttachmentController.checkinOfficeFile()",
+      throw new AttachmentException("AttachmentService.unlock()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
     } finally {
       BasicDaoFactory.logout(session);

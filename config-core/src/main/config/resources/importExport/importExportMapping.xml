@@ -151,11 +151,11 @@
   </castor:class>
   <castor:class name="com.silverpeas.attachment.importExport.AttachmentsType">
     <castor:map-to xml="attachments" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listAttachmentDetail" type="com.stratelia.webactiv.util.attachment.model.AttachmentDetail" collection="arraylist">
+    <castor:field name="listAttachmentDetail" type="org.silverpeas.importExport.attachment.AttachmentDetail" collection="arraylist">
       <castor:bind-xml name="sp:attachment" node="element"/>
     </castor:field>
   </castor:class>
-  <castor:class name="com.stratelia.webactiv.util.attachment.model.AttachmentDetail">
+  <castor:class name="org.silverpeas.importExport.attachment.AttachmentDetail">
     <castor:map-to xml="attachment" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="title" type="string">
       <castor:bind-xml name="sp:name" node="element"/>
@@ -423,7 +423,7 @@
   <castor:class name="com.silverpeas.coordinates.importExport.CoordinatesPositionsType">
     <castor:map-to xml="coordinatesPositions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
     <castor:field name="createEnable" type="boolean">
-      <castor:bind-xml name="createEnable" node="attribute"/>        
+      <castor:bind-xml name="createEnable" node="attribute"/>
     </castor:field>
     <castor:field name="coordinatesPositions" type="com.stratelia.webactiv.util.coordinates.model.Coordinate" collection="arraylist">
       <castor:bind-xml name="sp:coordinatePosition" node="element"/>

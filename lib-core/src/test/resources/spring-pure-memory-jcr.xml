@@ -37,7 +37,7 @@
         http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
   <ctx:annotation-config/>
-  <ctx:component-scan base-package="com.stratelia.webactiv.util.attachment.model"/>
+  <ctx:component-scan base-package="org.silverpeas.importExport.attachment.model"/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
 
@@ -66,15 +66,11 @@
   <bean id="organizationControllerFactory"
         class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
         factory-method="getFactory" />
-  
+
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />
   <bean id="jcrLoginModule" scope="prototype" class="com.silverpeas.jcrutil.security.impl.BasicLoginModule" />
-  
-  <bean id="jcrAttachmentManager" class="org.mockito.Mockito" factory-method="mock"> 
-    <constructor-arg value="com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService" />
-  </bean> 
-  
-  <bean id="attachmentNotificationService" factory-method="getService" 
-        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />  
+
+  <bean id="attachmentNotificationService" factory-method="getService"
+        class="org.silverpeas.attachment.notification.AttachmentNotificationService" />
 </beans>

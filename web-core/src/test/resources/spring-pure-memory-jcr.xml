@@ -27,14 +27,10 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:ctx="http://www.springframework.org/schema/context"
-       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
-        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="com.silverpeas.jcrutil"/>
@@ -66,12 +62,8 @@
 
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
   <bean id="attachmentServiceFactory" class="org.silverpeas.attachment.AttachmentServiceFactory" factory-method="getInstance" />
-  
+
   <bean id="securityHelper" class="com.silverpeas.jcrutil.security.impl.RepositoryHelper" factory-method="getInstance" />
   <bean id="jcrAccessManager" scope="prototype" class="com.silverpeas.jcrutil.security.impl.SimpleAccessManager" />
   <bean id="jcrLoginModule" scope="prototype" class="com.silverpeas.jcrutil.security.impl.BasicLoginModule" />
-  
-  <bean id="jcrAttachmentManager" class="org.mockito.Mockito" factory-method="mock"> 
-    <constructor-arg value="com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentService" />
-  </bean> 
 </beans>

@@ -49,7 +49,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import org.silverpeas.importExport.attachment.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
@@ -101,7 +101,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
   private int explicitRank = -1;
-  
+
   // added for the taglib
   private InfoDetail infoDetail = null;
   private List<XMLField> xmlFields = null;

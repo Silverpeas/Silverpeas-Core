@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -78,7 +79,8 @@ public class ICalExporterTest {
     ExporterFactory factory = ExporterFactory.getFactory();
     exporter = factory.getICalExporter();
     assertNotNull(exporter);
-    descriptor = ExportDescriptor.withWriter(new OutputStreamWriter(icsFile.getOutputStream()));
+    descriptor = ExportDescriptor.withWriter(new OutputStreamWriter(icsFile.getOutputStream(),
+        Charsets.UTF_8));
   }
 
   @After

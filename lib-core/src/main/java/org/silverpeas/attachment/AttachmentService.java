@@ -25,7 +25,6 @@ package org.silverpeas.attachment;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -208,7 +207,7 @@ public interface AttachmentService {
    * @param document the document to deleted.
    * @param invokeCallback true if the callback methods of the components must be called, false for
    * ignoring thoose callbacks.
-   * @throws AttachmentRuntimeException if the attachement cannot be deleted.
+   * @throws AttachmentException if the attachement cannot be deleted.
    */
   void deleteAttachment(SimpleDocument document, boolean invokeCallback);
 
@@ -244,7 +243,7 @@ public interface AttachmentService {
    * @param primaryKey the primary key of document.
    * @param lang the lang of the document.
    * @return java.util.Vector: a collection of AttachmentDetail
-   * @throws AttachmentRuntimeException when is impossible to search
+   * @throws AttachmentException when is impossible to search
    */
   SimpleDocument searchDocumentById(SimpleDocumentPK primaryKey, String lang);
 
@@ -254,7 +253,7 @@ public interface AttachmentService {
    * @param foreignKey : the primary key of foreign object.
    * @param lang the language of the documents.
    * @return the list of attached documents.
-   * @throws AttachmentRuntimeException when is impossible to search
+   * @throws AttachmentException when is impossible to search
    */
   List<SimpleDocument> listDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
 
@@ -264,7 +263,7 @@ public interface AttachmentService {
    * @param foreignKey : the primary key of foreign object.
    * @param lang the language of the documents.
    * @return the list of attached documents.
-   * @throws AttachmentRuntimeException when is impossible to search
+   * @throws AttachmentException when is impossible to search
    */
   List<SimpleDocument> listAllDocumentsByForeignKey(WAPrimaryKey foreignKey, String lang);
 
@@ -275,7 +274,7 @@ public interface AttachmentService {
    * @param type : the type of document
    * @param lang the lang for the documents.
    * @return the list of attached documents.
-   * @throws AttachmentRuntimeException when is impossible to search
+   * @throws AttachmentException when is impossible to search
    */
   List<SimpleDocument> listDocumentsByForeignKeyAndType(WAPrimaryKey foreignKey, DocumentType type,
       String lang);

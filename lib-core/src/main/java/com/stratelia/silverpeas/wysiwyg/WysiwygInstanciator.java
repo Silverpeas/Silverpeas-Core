@@ -24,12 +24,12 @@
 
 package com.stratelia.silverpeas.wysiwyg;
 
-import java.sql.Connection;
-
+import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.silverpeas.admin.components.InstanciationException;
-import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.sql.Connection;
 
 public class WysiwygInstanciator extends SQLRequest {
 
@@ -43,30 +43,14 @@ public class WysiwygInstanciator extends SQLRequest {
     super("com.stratelia.webactiv.wysiwyg");
   }
 
-  /**
-   * Method declaration call the method create AttachmentInstanciator class.
-   * @param con
-   * @param spaceId
-   * @param componentId
-   * @param userId
-   * @throws InstanciationException
-   * @see
-   */
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
 
-    SilverTrace.debug("wysiwyg", "WysiwygInstanciator.create", "Begin");
-
-    AttachmentInstanciator ai = new AttachmentInstanciator(
-        "com.stratelia.webactiv.wysiwyg");
-    ai.create(con, spaceId, componentId, userId);
-
+  public void create(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.debug("wysiwyg", "WysiwygInstanciator.create", "Finished");
-
   }
 
   /**
-   * Method declaration call the method delete AttachmentInstanciator class.
+   * Method declaration call the method delete SimpleDocumentInstanciator class.
    * @param con
    * @param spaceId
    * @param componentId
@@ -74,20 +58,9 @@ public class WysiwygInstanciator extends SQLRequest {
    * @throws com.silverpeas.admin.components.InstanciationException
    * @see
    */
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) {
-    SilverTrace.debug("wysiwyg", "WysiwygInstanciator.delete",
-        "delete called with: space=" + spaceId);
-
-    AttachmentInstanciator ai = new AttachmentInstanciator(
-        "com.stratelia.webactiv.wysiwyg");
-    try {
-      ai.delete(con, spaceId, componentId, userId);
-    } catch (InstanciationException ie) {
-      SilverTrace.error("wysiwyg", "wysiwygInstanciator.delete",
-          "wysiwyg.DELETING_FAILED", ie);
-    }
-
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
+    new SimpleDocumentInstanciator().delete(componentId);
     SilverTrace.debug("wysiwyg", "WysiwygInstanciator.delete", "finished");
 
   }
