@@ -217,6 +217,26 @@
 
           var self = this;
 
+          var _pagination = {
+            page: 1,
+            count: CountPerPage
+          };
+
+          var _currentGroup;
+          var _groups;
+
+          function setGroupsInCache(groups) {
+            _groups = groups.slice(0, groups.length);
+            _groups.maxlength = groups.maxlength;
+          }
+
+          function addGroupsInCache(groups) {
+            var insertionIndex = _groups.length;
+            for(var i = 0; i < groups.length; i++)
+              _groups.push(groups[i]);
+            return insertionIndex;
+          }
+
           function renderUsersOfGroup(group) {
             if (itemToSelect.indexOf('user') > -1)
               group.loadUsers({
@@ -231,18 +251,35 @@
             self.event = null;
           }
 
+          function loadNextGroups(page, count, renderer) {
+            var start = count * (page - 1);
+            var end = start + count;
+            if (end >= _groups.length)
+              $('#breadcrumb').breadcrumb('current', function(group) {
+                group.loadChildren({pagination: {page: page, count: count}}, function(groups) {
+                  var start = addGroupsInCache(groups);
+                  if (renderer)
+                    renderer(_groups, start);
+                });
+              });
+            else if (renderer)
+              renderer(_groups, start, end);
+          }
+
           this.event = null;
 
           // initializes the user panel content
           this.onInit = function() {
             onEvent('init', function() {
-              rootUserGroup.loadChildren(function(groups) {
+              _currentGroup = rootUserGroup;
+              rootUserGroup.loadChildren({pagination: _pagination}, function(groups) {
                 if (groups.length == 0) {
                   itemToSelect = 'user';
                   $('#filter_groups').remove();
                   $('.groups_results_userPanel').remove();
                   $('.groups_selected_userPanel').remove();
                 } else {
+                  setGroupsInCache(groups);
                   renderUserGroups(groups);
                 }
                 self.onAllUsers();
@@ -259,9 +296,33 @@
               if (userListingPanelStatus.maximized)
                 unmaximizeUserListingPanel();
               $('#breadcrumb').breadcrumb('current', function(group) {
-                group.loadChildren(renderUserGroups);
+                if (_currentGroup != group) {
+                  _currentGroup = group;
+                  _pagination.page = 1
+                  group.loadChildren({pagination: _pagination}, function(groups) {
+                    setGroupsInCache(groups);
+                    renderUserGroups(groups);
+                  });
+                } else {
+                  renderFilteredUserGroups(_groups, false);
+                }
                 renderUsersOfGroup(group);
               });
+            });
+          }
+
+          // the next user groups are asked (used when the groups in the left panel are paginated)
+          this.onNextGroups = function() {
+            onEvent('nextGroups', function() {
+              _pagination.page++;
+              loadNextGroups(_pagination.page, _pagination.count, renderNextUserGroups);
+            });
+          }
+
+          // the next page in the groups panel is asked
+          this.onNextGroupPage = function(page) {
+            onEvent('nextGroupPage', function() {
+              loadNextGroups(page, pageSize(), renderNextUserGroupsPage);
             });
           }
 
@@ -417,24 +478,30 @@
         }
 
         function renderPaginationFor(size, dataContainer) {
-          var pagination, changedPage = null, pagesize = CountPerPage;
-          if (dataContainer == 'group_list')
+          var pagination, changedPage = null, count = size;
+          if (dataContainer == 'group_list') {
             pagination = $('#group_list_pagination');
-          else if (dataContainer == 'selected_group_list')
+            if (size.maxlength != size.length)
+              changedPage = function(page) {
+                eventProcessing.onNextGroupPage(page);
+              }
+            count = size.maxlength
+          } else if (dataContainer == 'selected_group_list') {
             pagination = $('#selected_group_list_pagination');
-          else if (dataContainer == 'user_list') {
+          } else if (dataContainer == 'user_list') {
             pagination = $('#user_list_pagination');
             changedPage = function(page) {
               renderUsersInPage(page);
             }
-          } else if (dataContainer == 'selected_user_list')
+          } else if (dataContainer == 'selected_user_list') {
             pagination = $('#selected_user_list_pagination');
+          }
 
-          if (size > 0) {
+          if (count > 0) {
             pagination.show();
             pagination.smartpaginator({
               display: 'single',
-              totalrecords: size,
+              totalrecords: count,
               recordsperpage: pageSize(),
               length: 6,
               datacontainer: dataContainer,
@@ -522,7 +589,13 @@
             appendTo($('ul.listing_groups_filter'));
         }
 
-        function renderFilteredUserGroups(groups, additionalRendering) {
+        function renderNextGroupLink() {
+          $('<li>', {'id': 'nextGroups'}).append($('<a>', { href: '#' }).addClass('filter').append("next groups").click(function() {
+            eventProcessing.onNextGroups();
+          })).appendTo($('ul.listing_groups_filter'));
+        }
+
+        function renderFilteredUserGroups(groups, inSamePagination, additionalRendering) {
           var text = (groups.length <= 1 ? foundGroupLabel: foundGroupsLabel);
           if (groupSelection.isMultiple()) {
             if (groups.length == 0 && groupSelection.isMultiple())
@@ -530,16 +603,17 @@
             else
               $('.listing_groups a.add_all').show();
           }
-          $('#group_result_count').text(groups.length + ' ' + text);
+          $('#group_result_count').text(groups.maxlength + ' ' + text);
           $('#group_list').hide();
-            $('#group_list').children().remove();
-            for(var i = 0; i < groups.length; i++) {
-              renderUserGroup($('#group_list'), i, groups[i]);
-              if (additionalRendering)
-                additionalRendering(groups[i]);
-            }
-            $('#group_list').show();
-            renderPaginationFor(groups.length, 'group_list');
+          $('#group_list').children().remove();
+          for(var i = 0; i < groups.length; i++) {
+            renderUserGroup($('#group_list'), i, groups[i]);
+            if (additionalRendering)
+              additionalRendering(groups[i]);
+          }
+          $('#group_list').show();
+          if (!inSamePagination)
+            renderPaginationFor({maxlength: groups.maxlength, length: groups.length}, 'group_list');
         }
 
         function renderUserGroups(groups) {
@@ -551,9 +625,29 @@
             for(var i = 0; i < groups.length; i++)
               renderUserGroupFilter(groups[i]);
           else
-            renderFilteredUserGroups(groups, renderUserGroupFilter);
+            renderFilteredUserGroups(groups, false, renderUserGroupFilter);
+          if (groups.length < groups.maxlength)
+            renderNextGroupLink();
           $container.show();
           autoresizeUserGroupFilters();
+        }
+
+        function renderNextUserGroups(groups, start) {
+          $('#nextGroups').remove();
+          for(var i = start; i < groups.length; i++) {
+            renderUserGroup($('#group_list'), i, groups[i]);
+            renderUserGroupFilter(groups[i]);
+          }
+          if (groups.length < groups.maxlength)
+            renderNextGroupLink();
+          autoresizeUserGroupFilters();
+        }
+
+        function renderNextUserGroupsPage(groups, start, end) {
+          var _end = (end == undefined? groups.length: end);
+          var groupsInPage = groups.slice(start, _end);
+          groupsInPage.maxlength = groups.maxlength;
+          renderFilteredUserGroups(groupsInPage, start > 0);
         }
 
         function renderUser($container, order, theUser) {
