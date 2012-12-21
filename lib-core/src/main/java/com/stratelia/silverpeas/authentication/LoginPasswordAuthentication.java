@@ -80,6 +80,7 @@ public class LoginPasswordAuthentication {
 
   static protected int m_AutoInc = 1;
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
+  public static final String ERROR_PWD_MUST_BE_CHANGED = "Error_PwdMustBeChanged";
 
   static {
     ResourceLocator propFile = new ResourceLocator(
@@ -242,6 +243,8 @@ public class LoginPasswordAuthentication {
         errorCause = "Error_5";
       } else if (ex instanceof AuthenticationPasswordExpired) {
         errorCause = ERROR_PWD_EXPIRED;
+      } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
+        errorCause = ERROR_PWD_MUST_BE_CHANGED;
       }
       return errorCause;
     } finally {
