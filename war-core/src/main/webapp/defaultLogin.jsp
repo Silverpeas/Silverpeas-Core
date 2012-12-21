@@ -34,6 +34,21 @@
 
 <%
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+ResourceLocator domainSettings = new ResourceLocator("com.silverpeas.authentication.settings.domainSettings", "");
+
+//Get Domain Id from server name
+String requestURL = request.getRequestURL().toString();
+String serverName = requestURL.substring( requestURL.indexOf("//")+2, requestURL.length() );
+serverName = serverName.substring( 0, serverName.indexOf("/"));
+if (serverName.indexOf(":") != -1) {
+serverName = serverName.substring( 0, serverName.indexOf(":"));
+}
+if (serverName.indexOf(".") != -1) {
+serverName = serverName.substring( 0, serverName.indexOf("."));
+}
+String computedDomainId = domainSettings.getString(serverName.toLowerCase(), null);
+pageContext.setAttribute("computedDomainId", computedDomainId);
+
 pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 String errorCode = request.getParameter("ErrorCode");
 if (!com.silverpeas.util.StringUtil.isDefined(errorCode)) {
@@ -219,6 +234,9 @@ $(document).ready(function(){
                     <c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+                      </c:when>
+                      <c:when test="${not empty computedDomainId}">
+                        <input class="noDisplay" type="hidden" name="DomainId" value="${computedDomainId}"/>
                       </c:when>
                       <c:otherwise>
                       	<p><label><span><fmt:message key="authentication.logon.domain" /></span>
