@@ -120,6 +120,10 @@ public class FileServer extends AbstractFileSender {
       } else if (attachment != null) {
         // the file to download is not in a temporary directory
         filePath = attachment.getAttachmentPath();
+      } else {
+        String directory = req.getParameter(DIRECTORY_PARAMETER);
+        filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator
+            + sourceFile;
       }
     }
     res.setContentType(mimeType);
