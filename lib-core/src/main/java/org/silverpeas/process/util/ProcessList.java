@@ -101,7 +101,8 @@ public class ProcessList<C extends ProcessExecutionContext> {
 
   /**
    * Adds a session parameter
-   * @param process
+   * @param key
+   * @param value
    */
   public void put(final String key, final Object value) {
     sessionParameters.put(key, value);

@@ -23,7 +23,18 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.token.TokenStringKey;
+import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.model.Token;
+import org.silverpeas.token.service.TokenService;
+import org.silverpeas.util.Charsets;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,19 +43,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -128,16 +127,23 @@ public class UserPriviledgeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header parameter X-Silverpeas-Session. If no such parameter is set, it
-   * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
-   * within an active HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter
+   * is set, it is then retrieved from the current HTTP session if any. If the incoming request
+   * isn't sent within an active HTTP session, then an empty string is returned as no HTTP session
+   * was defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+
+    // Search among http request parameters one called HTTP_SESSIONKEY
+    if (!isDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
+    }
+
+    // Try with JSession id
     if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
