@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,17 +20,12 @@
  */
 package org.silverpeas.servlets;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class OnlineFile {
 
@@ -44,6 +38,7 @@ public class OnlineFile {
     this.mimeType = mimeType;
     this.sourceFile = sourceFile;
     this.directory = directory;
+    this.componentId = componentId;
   }
 
   public String getMimeType() {
@@ -54,40 +49,18 @@ public class OnlineFile {
     return sourceFile;
   }
 
-  public String getDirectory() {
-    return directory;
-  }
-
   public String getComponentId() {
     return componentId;
   }
-
-  public long getContentLength() throws FileNotFoundException {
+  public File getContentFile() throws IOException {
     String filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory
         + File.separator + sourceFile;
     File realFile = new File(filePath);
     if (!realFile.exists() && !realFile.isFile()) {
       throw new FileNotFoundException("File " + filePath + "not found!");
     }
-    return realFile.length();
-  }
-
-  public void write(OutputStream out) throws IOException {
-    String filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory
-        + File.separator + sourceFile;
-    File realFile = new File(filePath);
-    if (!realFile.exists() && !realFile.isFile()) {
-      throw new FileNotFoundException("File " + filePath + "not found!");
-    }
-    BufferedInputStream input = null; // for the html document generated
     SilverTrace.info("peasUtil", "OnlineFile.write()", "root.MSG_GEN_ENTER_METHOD", " file "
         + filePath);
-    try {
-      input = new BufferedInputStream(new FileInputStream(filePath));
-      IOUtils.copy(input, out);
-      out.flush();
-    } finally {
-      IOUtils.closeQuietly(input);
-    }
+   return realFile;
   }
 }

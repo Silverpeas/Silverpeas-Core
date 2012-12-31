@@ -20,18 +20,18 @@
  */
 package com.silverpeas.importExport.control;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public class MassiveDocumentImport {
   private OrganizationController controller = new OrganizationController();
 
   public List<PublicationDetail> importDocuments(ComponentSessionController sessionController,
-      String directory, int topicId, boolean draftMode, boolean isPOIUsed) throws
-      ImportExportException {
+      String directory, int topicId, boolean draftMode, boolean isPOIUsed)
+      throws ImportExportException {
     return importDocuments(sessionController.getUserDetail(), sessionController.getComponentId(),
         directory, topicId, draftMode, isPOIUsed, new MassiveReport());
   }
@@ -63,9 +63,10 @@ public class MassiveDocumentImport {
       ImportReportManager.addMassiveReport(massiveReport, componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
       RepositoriesTypeManager rtm = new RepositoriesTypeManager();
-      publicationDetails = rtm.processImportRecursiveReplicate(massiveReport, userDetail, new File(
-          directory), gedIE, attachmentIE, versioningIE, pdcIE, componentId, topicId,
-          isPOIUsed, isVersioningUsed(componentId), draftMode);
+      publicationDetails =
+          rtm.processImportRecursiveReplicate(massiveReport, userDetail, new File(directory), gedIE,
+              attachmentIE, versioningIE, pdcIE, componentId, topicId, isPOIUsed,
+              isVersioningUsed(componentId), draftMode);
       ImportReportManager.setEndDate(new Date());
 
     } finally {

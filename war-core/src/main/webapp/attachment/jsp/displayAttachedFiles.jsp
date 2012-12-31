@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.silverpeas.peasCore.ComponentContext"%>
+<%@page import="org.silverpeas.attachment.web.VersioningSessionController"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -31,10 +33,10 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
+<%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="org.silverpeas.attachment.model.DocumentType" %>
+<%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -47,7 +49,19 @@
 <view:includePlugin name="preview"/>
 <c:choose>
   <c:when test="${view:booleanValue(isComponentVersioned)}">
-<script type="text/javascript" src='<c:url value="/versioningPeas/jsp/javaScript/dragAndDrop.js" />' ></script>   
+<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
+<%
+  MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
+  if(versioningSC == null) {
+      String componentId = request.getParameter("ComponentId");
+      ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
+      VersioningSessionController component = new VersioningSessionController(mainSessionCtrl, componentContext);
+      session.setAttribute("Silverpeas_versioningPeas", component);
+    versioningSC = component;
+    }
+  versioningSC.setProfile(request.getParameter("profile"));
+  %>
   </c:when>
   <c:otherwise>
 <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/dragAndDrop.js" />' ></script>
@@ -178,7 +192,7 @@
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
-          DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")), 
+          DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
 %>
@@ -189,10 +203,10 @@
       <c:forEach items="${pageScope.attachments}" var="varAttachment" >
         <c:choose>
           <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
-            <c:set var="currentAttachment" value="${varAttachment.lastPublicVersion}" />            
+            <c:set var="currentAttachment" value="${varAttachment.lastPublicVersion}" />
           </c:when>
           <c:otherwise>
-            <c:set var="currentAttachment" value="${varAttachment}" />    
+            <c:set var="currentAttachment" value="${varAttachment}" />
           </c:otherwise>
         </c:choose>
         <c:if test="${currentAttachment ne null}">
@@ -204,8 +218,8 @@
                     getAttribute("currentAttachment"), (Boolean) pageContext.getAttribute("useXMLForm"),
                     (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
                     getAttribute("webdavEditingEnable"), userId, (String) pageContext.getAttribute(
-                    "contentLanguage"), attResources, URLManager.getServerURL(request), 
-                    (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>              
+                    "contentLanguage"), attResources, URLManager.getServerURL(request),
+                    (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>
           </c:if>
           <span class="lineMain">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
@@ -259,10 +273,13 @@
             <c:if test="${view:isDefined(currentAttachment.description) && showInfo}">
               <span class="description"><view:encodeHtml string="${currentAttachment.description}" /></span>
             </c:if>
-            <c:if test="${view:isDefined(currentAttachment.xmlFormId)}"> 
+              <!--
+              xmlForm <c:out value="${currentAttachment.xmlFormId}" /> <c:out value="${view:isDefined(currentAttachment.xmlFormId)}" />
+              -->
+            <c:if test="${view:isDefined(currentAttachment.xmlFormId)}">
               <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
-                        <c:param name="ObjectId" value="${currentAttachment.id}"/>            
+                        <c:param name="ObjectId" value="${currentAttachment.id}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
                         <c:param name="ComponentId" value="${componentId}"/>
                         <c:param name="ObjectType" value="${'Attachment'}"/>
@@ -286,7 +303,7 @@
                   <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:hidden"> </div>
                 </c:otherwise>
               </c:choose>
-            </c:if>	
+            </c:if>
             <c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(currentAttachment.filename)}">
               <div id="switchView" name="switchView" style="display: none">
               <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
@@ -311,13 +328,13 @@
           </c:if>
         </c:forEach>
       </c:if>
-    </ul> 
+    </ul>
     <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
       <c:choose>
         <c:when test="${view:booleanValue(isComponentVersioned)}">
           <div>
             <div class="dragNdrop">
-              <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>        	
+              <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
             </div>
             <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
             <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
@@ -333,7 +350,7 @@
             <c:param name="Context" value="${param.Context}"/>
           </c:url>
           <div class="dragNdrop">
-            <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=m_Context%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
+            <a href="javascript:showHideDragDrop('<%=URLManager.getServerURL(request)%><c:out value="${dropUrl}" />','<%=URLManager.getFullApplicationURL(request)%>/upload/explanationShort_<%=language%>.html','<fmt:message key="GML.applet.dnd.alt" />','<c:out value="${maximumFileSize}" />','<%=URLManager.getApplicationURL()%>','<fmt:message key="GML.DragNDropExpand" />','<fmt:message key="GML.DragNDropCollapse" />')" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand" /></a>
             <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
           </div>
       </c:otherwise>
@@ -351,7 +368,7 @@
       document.getElementsByName("switchView")[i].style.display = '';
     }
   }
-  
+
   function changeView3d(objectId) {
     if (document.getElementById(objectId).style.display == 'none') {
       document.getElementById(objectId).style.display = '';
@@ -376,11 +393,11 @@
       larg = "800";
       haut = "475";
       windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
-      if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {        
+      if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {
         publicVersionsWindow.close();
       }
       publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-    }  
+    }
 
   <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
   <c:url var="publicURL" value="/VersioningDragAndDrop/jsp/Drop">
@@ -400,7 +417,7 @@
   function showDnD() {
     showHideDragDrop('${publicURL}', '<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningPublic_<%=language%>.html',
       '${workURL}', '<%=URLManager.getFullApplicationURL(request)%>/upload/VersioningWork_<%=language%>.html',
-      '<fmt:message key="GML.applet.dnd.alt" />', '${maximumFileSize}', '<%=m_Context%>',
+      '<fmt:message key="GML.applet.dnd.alt" />', '${maximumFileSize}', '<%=URLManager.getApplicationURL()%>',
       '<fmt:message key="GML.DragNDropExpand" />', '<fmt:message key="GML.DragNDropCollapse" />');
   }
 
@@ -505,20 +522,20 @@
         pageMustBeReloadingAfterSorting = true;
       }
     }
-    
+
     function checkoutAndDownload(id, oldId, webdav) {
       checkout(id, oldId, webdav, false, true);
     }
-    
+
     function checkoutAndEdit(id, oldId) {
       checkout(id, oldId, true, true, false);
     }
-    
+
     function checkin(id, oldId, webdav, forceRelease) {
       $("#dialog-attachment-checkin").data("attachmentId", id).data("oldId", oldId).data("webdav", webdav).data("forceRelease", forceRelease).dialog("open");
       pageMustBeReloadingAfterSorting = true;
     }
-    
+
     function menuCheckin(id) {
       var oMenu = eval("oMenu" + id);
       oMenu.getItem(3).cfg.setProperty("disabled", true);
@@ -529,11 +546,14 @@
       <c:choose>
         <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", false);</c:when>
         <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", false);</c:otherwise>
-      </c:choose>   
+      </c:choose>
       $('#worker' + id).html("");
       $('#worker' + id).css({'visibility':'hidden'});
+      if (pageMustBeReloadingAfterSorting) {
+        reloadIncludingPage();
+      }
     }
-    
+
     function notifyAttachment(attachmentId) {
       alertUsersAttachment(attachmentId); //dans publication.jsp
     }
@@ -541,11 +561,11 @@
     function AddAttachment() {
       $("#dialog-attachment-add").dialog("open");
     }
-    
+
     function deleteAttachment(id) {
       $("#dialog-attachment-delete").data("id", id).dialog("open");
     }
-    
+
     function removeAttachment(attachmentId) {
       var sLanguages = "";
       var boxItems = document.removeForm.languagesToDelete;
@@ -562,7 +582,7 @@
           }
         }
       }
-    
+
       $.get('<c:url value="/Attachment" />', { id:attachmentId, Action:'Delete', languagesToDelete:sLanguages}, function(data){
         data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
         if (data == "attachmentRemoved") {
@@ -576,14 +596,14 @@
       }, 'text');
       pageMustBeReloadingAfterSorting = true;
     }
-    
+
     function reloadIncludingPage() {
       <c:choose>
         <c:when test="${! view:isDefined(param.CallbackUrl)}">document.location.reload();</c:when>
         <c:otherwise>document.location.href = "<c:url value="${param.CallbackUrl}" />";</c:otherwise>
       </c:choose>
     }
-    
+
     function updateAttachment(attachmentId, lang) {
       loadAttachment(attachmentId, lang);
       $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
@@ -591,7 +611,7 @@
 
     <c:if test="${useXMLForm}">
       function EditXmlForm(id, lang) {
-        var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="ObjectId" value="${param.Id}"/><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang;
+        var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang + '&ObjectId=' + id;
         SP_openWindow(url, "test", "600", "400", "scrollbars=yes, resizable, alwaysRaised");
       }
     </c:if>
@@ -599,9 +619,9 @@
     function closeMessage() {
       $("#attachmentModalDialog").dialog("close");
     }
-    
+
     function displayWarning(attachmentId) {
-      var url = '<%=m_Context%>/attachment/jsp/warning_locked.jsp?id=' + attachmentId;
+      var url = '<%=URLManager.getApplicationURL()%>/attachment/jsp/warning_locked.jsp?id=' + attachmentId;
       $("#attachmentModalDialog").dialog("open").load(url);
     }
 
@@ -622,7 +642,7 @@
         $(this).dialog("close");
       }
     });
-    
+
     $('#add-attachment-form').iframePostForm ({
       json : true,
       post : function () {
@@ -632,19 +652,18 @@
         $(this).dialog("close");
       }
     });
-    
+
     $('#checkin-attachment-form').iframePostForm ({
       json : true,
       post : function () {},
       complete : function (response) {
         if (response.status) {
           menuCheckin(response.id);
-          //update version
         } else {
           displayWarning(response.attachmentId);
         }
         clearCheckin();
-      }      
+      }
     });
 
     $("#dialog-attachment-delete").dialog({
@@ -673,7 +692,7 @@
         close: function() {
         }
       });
-      
+
       $("#dialog-attachment-add").dialog({
         autoOpen: false,
         height: 350,
@@ -691,7 +710,7 @@
           close: function() {
           }
         });
-      
+
       $("#dialog-attachment-update").dialog({
         autoOpen: false,
         height: 350,
@@ -724,7 +743,7 @@
           close: function() {
           }
         });
-        
+
         $("#attachmentList").sortable({opacity: 0.4, axis: 'y', cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
         $("#attachmentModalDialog").dialog({
           autoOpen: false,
@@ -733,7 +752,7 @@
           height: 'auto',
           width: 400
         });
-        
+
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
         height: 350,
@@ -767,7 +786,7 @@
           }
         });
       });
-      
+
       $('#attachmentList').bind('sortupdate', function(event, ui) {
         var reg = new RegExp("attachment", "g");
         var data = $('#attachmentList').sortable('serialize');
@@ -782,7 +801,7 @@
         }
         sortAttachments(param);
       });
-        
+
       function sortAttachments(orderedList) {
         $.get('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
           data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
@@ -794,17 +813,17 @@
           reloadIncludingPage();
         }
       }
-        
+
       function uploadCompleted(s) {
         reloadIncludingPage();
       }
-        
+
       function ShareAttachment(id) {
         var url = '<c:url value="/RfileSharing/jsp/NewTicket"><c:param name="componentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /></c:url>&objectId=' + id;
         SP_openWindow(url, "NewTicket", "700", "300", "scrollbars=no, resizable, alwaysRaised");
       }
   </c:if>
-  
+
   function displayAttachment(attachment) {
     $('#fileName').text(attachment.fileName);
     $('#fileTitle').val(attachment.title);
@@ -816,14 +835,14 @@
     $('#fileTitle').val('');
     $('#fileDescription').val('');
   }
-  
+
   function clearCheckin() {
     $('#checkin_oldId').val('');
     $('#force').val('false');
-    $('#webdav').val('false');    
-    $('#comment').val('false');
+    $('#webdav').val('false');
+    $('#comment').val('false');   
   }
-  
+
   function loadAttachment(id, lang) {
     translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
@@ -853,7 +872,7 @@
     });
     return false;
   }
-  
+
   function view(target, attachmentId) {
     $(target).view("viewAttachment", {
       componentInstanceId: "<c:out value="${sessionScope.Silverpeas_Attachment_ComponentId}" />",
@@ -902,7 +921,7 @@
     <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
     <input type="submit" value="Submit" style="display:none" />
   </form>
-</div>  
+</div>
 
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
@@ -914,7 +933,7 @@
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
     <c:if test="${view:booleanValue(isComponentVersioned)}">
-      <label for="public"><fmt:message key="attachment.version.label"/></label><br/>
+      <label for="private"><fmt:message key="attachment.version.label"/></label><br/>
       <input value="false" type="radio" name="private" id="private" checked><fmt:message key="attachment.version_public.label"/>
       <input value="true" type="radio" name="private" id="private"><fmt:message key="attachment.version_wip.label"/><br/>
     </c:if>

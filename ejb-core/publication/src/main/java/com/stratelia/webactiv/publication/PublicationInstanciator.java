@@ -30,25 +30,22 @@
 
 package com.stratelia.webactiv.publication;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.attachment.SimpleDocumentInstanciator;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class PublicationInstanciator extends SQLRequest {
   private static ResourceLocator settings = new ResourceLocator(
-      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
+      "org.silverpeas.util.publication.publicationSettings", "fr");
 
-  /** Creates new PublicationInstanciator */
-  public PublicationInstanciator() {
-  }
 
   public PublicationInstanciator(String fullPathName) {
     super("com.stratelia.webactiv.publication");
@@ -58,14 +55,6 @@ public class PublicationInstanciator extends SQLRequest {
       String userId) throws InstanciationException {
     SilverTrace.info("publication", "PublicationInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD");
-
-    try {
-      // Create the attachments directory on the server disk
-      createAttachmentsAndImagesDirectory(spaceId, componentId);
-    } catch (Exception e) {
-      throw new InstanciationException("PublicationInstanciator.create()",
-          SilverpeasException.ERROR, "root.EX_CANT_CREATE_FILE", e);
-    }
 
     // PCH le 8/6/2001
     WysiwygInstanciator wysiwygI = new WysiwygInstanciator(
@@ -109,32 +98,13 @@ public class PublicationInstanciator extends SQLRequest {
         "root.root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createAttachmentsAndImagesDirectory(String spaceId,
-      String componentId) throws java.lang.Exception {
-    SilverTrace.info("publication",
-        "PublicationInstanciator.createAttachmentsAndImagesDirectory()",
-        "root.MSG_GEN_ENTER_METHOD");
-
-    // Create the subdirectory for the attachments
-    // FileRepositoryManager.createAbsolutePath(spaceId, componentId,
-    // settings.getString("attachmentsSubDirectory"));
-    // Create the subdirectory for the images
-    FileRepositoryManager.createAbsolutePath(componentId, settings
-        .getString("imagesSubDirectory"));
-  }
-
   private void deleteAttachmentsAndImagesDirectory(String spaceId,
       String componentId) throws java.lang.Exception {
     SilverTrace.info("publication",
         "PublicationInstanciator.deleteAttachmentsAndImagesDirectory()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    // Delete the subdirectory for the attachments
-    FileRepositoryManager.deleteAbsolutePath(spaceId, componentId, settings
-        .getString("attachmentsSubDirectory"));
-    // Delete the subdirectory for the images
-    FileRepositoryManager.deleteAbsolutePath(spaceId, componentId, settings
-        .getString("imagesSubDirectory"));
+    new SimpleDocumentInstanciator().delete(componentId);
   }
 
   /**

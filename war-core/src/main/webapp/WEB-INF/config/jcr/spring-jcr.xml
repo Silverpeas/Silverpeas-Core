@@ -75,23 +75,6 @@
           factory-method="getInstance" />
 
 
-  <!--
-    <bean id="attachmentDao" class="org.silverpeas.importExport.attachment.model.jcr.impl.AttachmentDaoImpl" /> <bean
-    id="attachmentBm" class="com.stratelia.webactiv.util.attachment.control.AttachmentService"> <property
-    name="attachmentDao" ref="attachmentDao" /> </bean>
-  -->
-
-  <!--  Versionning -->
-  <!--
-    <bean id="versioningConverter" class="com.stratelia.silverpeas.versioning.jcr.util.VersioningConverter" /> <bean
-    id="versioningDao" class="com.stratelia.silverpeas.versioning.jcr.impl.VersioningDaoImpl"> <property
-    name="versioningConverter" ref="versioningConverter" /> </bean> <bean id="workListDao"
-    class="com.stratelia.silverpeas.versioning.model.WorkListDAO" /> <bean id="silverpeasVersioningDao"
-    class="com.stratelia.silverpeas.versioning.model.SilverpeasVersioningDao" /> <bean id="versioningBusiness"
-    class="com.stratelia.silverpeas.versioning.ejb.VersioningService"> <property name="versioningDao"
-    ref="versioningDao" /> <property name="silverpeasVersioningDao" ref="silverpeasVersioningDao" /> <property
-    name="workListDao" ref="workListDao" /> <property name="datasource" ref="myDataSource" /> </bean>
-  -->
   <!-- Node -->
   <!--
     <bean id="jcrNodeDao" class="com.stratelia.webactiv.util.node.ejb.jcr.impl.JcrNodeDao" /> <bean

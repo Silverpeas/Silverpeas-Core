@@ -26,7 +26,6 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.util.ForeignPK;
-import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
@@ -44,6 +43,7 @@ import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.versioning.Document;
 
 /**
  * Access control to shared nodes and their content.

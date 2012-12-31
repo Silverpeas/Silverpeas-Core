@@ -23,6 +23,41 @@
  */
 package org.silverpeas.attachment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.attachment.repository.DocumentRepository;
+import org.silverpeas.attachment.webdav.WebdavRepository;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
 import com.silverpeas.annotation.Service;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -33,6 +68,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -40,26 +76,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.attachment.model.*;
-import org.silverpeas.attachment.notification.AttachmentNotificationService;
-import org.silverpeas.attachment.repository.DocumentRepository;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -68,6 +84,7 @@ import java.util.Map;
 @Service
 public class SimpleDocumentService implements AttachmentService {
 
+  private static final int STEP = 5;
   @Inject
   @Named("webdavRepository")
   private WebdavRepository webdavRepository;
@@ -550,12 +567,12 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      int i = 5;
+      int i = STEP;
       for (SimpleDocumentPK pk : pks) {
         SimpleDocument doc = repository.findDocumentById(session, pk, null);
         doc.setOrder(i);
         repository.setOrder(session, doc);
-        i = i + 5;
+        i += STEP;
       }
       session.save();
     } catch (RepositoryException ex) {
@@ -577,11 +594,11 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      int i = 5;
+      int i = STEP;
       for (SimpleDocument doc : documents) {
         doc.setOrder(i);
         repository.setOrder(session, doc);
-        i = i + 5;
+        i += STEP;
       }
       session.save();
     } catch (RepositoryException ex) {
@@ -753,7 +770,10 @@ public class SimpleDocumentService implements AttachmentService {
               finalDocument.getInstanceId(), finalDocument.getForeignId());
         }
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
+      throw new AttachmentException("AttachmentService.unlock()",
+          SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
+    } catch (RepositoryException e) {
       throw new AttachmentException("AttachmentService.unlock()",
           SilverpeasRuntimeException.ERROR, "attachment.CHECKIN_FAILED", e);
     } finally {

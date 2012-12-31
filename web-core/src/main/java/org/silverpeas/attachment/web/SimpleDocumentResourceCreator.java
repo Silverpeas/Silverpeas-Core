@@ -50,6 +50,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
@@ -59,8 +60,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
-
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 
 /**
  *

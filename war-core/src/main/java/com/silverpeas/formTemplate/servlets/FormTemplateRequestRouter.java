@@ -188,15 +188,15 @@ public class FormTemplateRequestRouter extends
         request.setAttribute("urlToReload", controller.getUrlToReload());
 
         destination = "/form/jsp/close.jsp";
-      } else if (function.equals("View")) {
+      } else if ("View".equals(function)) {
         String componentId = request.getParameter("ComponentId");
         String objectId = request.getParameter("ObjectId");
         String objectType = request.getParameter("ObjectType");
         String objectLanguage = request.getParameter("ObjectLanguage");
         String xmlFormName = request.getParameter("XMLFormName");
 
-        if (xmlFormName.indexOf(".") != -1)
-          xmlFormName = xmlFormName.substring(0, xmlFormName.indexOf("."));
+        if (xmlFormName.indexOf('.') != -1)
+          xmlFormName = xmlFormName.substring(0, xmlFormName.indexOf('.'));
 
         if (StringUtil.isDefined(xmlFormName) && StringUtil.isDefined(objectId)) {
           PublicationTemplateImpl pubTemplate =

@@ -21,9 +21,20 @@
  */
 package com.silverpeas.importExport.control;
 
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.ejb.CreateException;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.silverpeas.util.MetaData;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -35,15 +46,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-
-import java.io.File;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import org.apache.commons.lang.StringUtils;
 
 public class PublicationImportExport {
 

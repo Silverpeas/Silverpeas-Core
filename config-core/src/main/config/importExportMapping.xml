@@ -73,7 +73,7 @@
 		<field name="publicationContentType" type="com.silverpeas.publication.importExport.PublicationContentType">
 			<bind-xml name="sp:publicationContent" node="element"/>
 		</field>
-		<field name="attachmentsType" type="com.silverpeas.attachment.importExport.AttachmentsType">
+		<field name="attachmentsType" type="org.silverpeas.importExport.attachment.AttachmentsType">
 			<bind-xml name="sp:attachments" node="element"/>
 		</field>
 		<field name="nodePositionsType" type="com.silverpeas.node.importexport.NodePositionsType">
@@ -146,7 +146,7 @@
 			<bind-xml name="massiveType" node="attribute"/>
 		</field>
 	</class>
-	<class name="com.silverpeas.attachment.importExport.AttachmentsType">
+	<class name="org.silverpeas.importExport.attachment.AttachmentsType">
 		<map-to xml="attachments" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v408"/>
 		<field name="listAttachmentDetail" type="org.silverpeas.importExport.attachment.AttachmentDetail" collection="arraylist">
 			<bind-xml name="sp:attachment" node="element"/>

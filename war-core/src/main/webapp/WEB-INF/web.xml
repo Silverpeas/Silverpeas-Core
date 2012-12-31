@@ -399,7 +399,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>VersioningRequestRouter</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.VersioningRequestRouter</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.VersioningRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
@@ -448,10 +448,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet>
         <servlet-name>AttachmentAjaxServlet</servlet-name>
         <servlet-class>org.silverpeas.attachment.web.AjaxServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>VersioningAjaxServlet</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
     </servlet>
     <!--
 <servlet>
@@ -856,10 +852,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>AttachmentAjaxServlet</servlet-name>
     <url-pattern>/Attachment/*</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>VersioningAjaxServlet</servlet-name>
-    <url-pattern>/AjaxVersioning/*</url-pattern>
-  </servlet-mapping>
   <!--
   <servlet-mapping>
   <servlet-name>AjaxFileUploadServlet</servlet-name>
@@ -1010,5 +1002,4 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
       <transport-guarantee>NONE</transport-guarantee>
     </user-data-constraint>
   </security-constraint>
->>>>>>> master
 </web-app>

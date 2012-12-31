@@ -47,7 +47,6 @@
     <module>calendar</module>
     <module>favorit</module>
     <module>notation</module>
-    <module>versioning</module>
     <module>formtemplate</module>
     <module>publication</module>
     <module>statistic</module>
@@ -55,7 +54,7 @@
     <module>pdc</module>
     <module>mylinks</module>
     <module>questioncontainer</module>
-	<module>importExport</module>
+    <module>importExport</module>
   </modules>
 
 </project>

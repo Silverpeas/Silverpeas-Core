@@ -56,6 +56,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
@@ -66,7 +67,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
 
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 
 @Service
 @RequestScoped
@@ -155,7 +155,7 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("commentMessage") String comment) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
     boolean isPublic = false;
-    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {      
+    if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
       isPublic = Integer.parseInt(versionType) == DocumentVersion.TYPE_PUBLIC_VERSION;
       document.setPublicDocument(isPublic);
     }
@@ -311,7 +311,7 @@ public class SimpleDocumentResource extends RESTWebService {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
     UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
-        I18NHelper.defaultLanguage);
+        I18NHelper.defaultLanguage, comment);
     if (force) {
       unlockContext.addOption(UnlockOption.FORCE);
     }

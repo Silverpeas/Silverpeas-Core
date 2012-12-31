@@ -23,15 +23,13 @@
  */
 package org.silverpeas.attachment.web;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.silverpeas.servlets.OnlineFile;
-import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.servlets.OnlineFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
- *
  * @author ehugonnet
  */
 public class OnlineAttachment extends OnlineFile {
@@ -43,15 +41,9 @@ public class OnlineAttachment extends OnlineFile {
         getInstanceId());
     this.document = document;
   }
-  
-  @Override
-  public long getContentLength() {
-    return this.document.getSize();
-  }
 
   @Override
-  public void write(OutputStream out) throws IOException {
-    AttachmentServiceFactory.getAttachmentService().getBinaryContent(out, document.getPk(),
-        document.getLanguage());
+  public File getContentFile() throws IOException {
+    return new File(document.getAttachmentPath());
   }
 }

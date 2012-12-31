@@ -23,14 +23,16 @@
  */
 package org.silverpeas.attachment.web;
 
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-import com.silverpeas.web.ResourceGettingTest;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -41,20 +43,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.silverpeas.attachment.AttachmentService;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.util.Charsets;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.UUID;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.silverpeas.web.ResourceGettingTest;
+
+import com.stratelia.webactiv.beans.admin.UserDetail;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;

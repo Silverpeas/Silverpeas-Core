@@ -27,111 +27,32 @@ import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.*;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import org.apache.commons.io.FileUtils;
-import org.apache.tika.io.IOUtils;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.ejb.CreateException;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringReader;
 import java.rmi.RemoteException;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
-/**
- * Class declaration
- *
- * @author
- */
-public class FileServer extends HttpServlet {
+public class FileServer extends AbstractFileSender {
 
   private static final long serialVersionUID = 6377810839728682983L;
-
-  /**
-   * @param spaceId
-   * @param componentId
-   * @param logicalName
-   * @param physicalName
-   * @param mimeType
-   * @param subDirectory
-   * @return
-   * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
-   */
-  public static String getUrl(String spaceId, String componentId,
-      String logicalName, String physicalName, String mimeType,
-      String subDirectory) {
-    return FileServerUtils.getUrl(spaceId, componentId, logicalName,
-        physicalName, mimeType, subDirectory);
-  }
-
-  /**
-   * @param logicalName
-   * @param physicalName
-   * @param mimeType
-   * @return
-   * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
-   */
-  public static String getUrl(String logicalName, String physicalName,
-      String mimeType) {
-    return FileServerUtils.getUrl(logicalName, physicalName, mimeType);
-  }
-
-  /**
-   * @param spaceId
-   * @param componentId
-   * @param name
-   * @param mimeType
-   * @param subDirectory
-   * @return
-   * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
-   */
-  public static String getUrl(String spaceId, String componentId, String name,
-      String mimeType, String subDirectory) {
-    return FileServerUtils.getUrl(spaceId, componentId, name, name, mimeType,
-        subDirectory);
-  }
-
-  /**
-   * @param spaceId
-   * @param componentId
-   * @param userId
-   * @param logicalName
-   * @param physicalName
-   * @param mimeType
-   * @param archiveIt
-   * @param pubId
-   * @param nodeId
-   * @param subDirectory
-   * @return
-   * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
-   */
-  public static String getUrl(String spaceId, String componentId,
-      String userId, String logicalName, String physicalName, String mimeType,
-      boolean archiveIt, int pubId, int nodeId, String subDirectory) {
-    return FileServerUtils.getUrl(spaceId, componentId, userId, logicalName,
-        physicalName, mimeType, archiveIt, pubId, nodeId, subDirectory);
-  }
-
-  /**
-   * @param logicalName
-   * @return
-   * @deprecated Use com.stratelia.webactiv.util.FileServerUtils instead.
-   */
-  public static String getUrlToTempDir(String logicalName) {
-    return FileServerUtils.getUrlToTempDir(logicalName);
-  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -141,7 +62,6 @@ public class FileServer extends HttpServlet {
 
   /**
    * Method declaration
-   *
    * @param req
    * @param res
    * @throws IOException
@@ -178,13 +98,14 @@ public class FileServer extends HttpServlet {
       }
     }
     HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
-          + GeneralPropertiesManager.getString("sessionTimeout"));
-      res.sendRedirect(URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
+          "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
+              GeneralPropertiesManager.getString("sessionTimeout"));
+      res.sendRedirect(
+          URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
       return;
     }
 
@@ -206,9 +127,9 @@ public class FileServer extends HttpServlet {
     if (zip != null) {
       res.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
       tempFile = File.createTempFile("zipfile", ".zip", new File(tempDirectory));
-      SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE", " filePath ="
-          + filePath + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
-          + " fileName=" + fileName);
+      SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE",
+          " filePath =" + filePath + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath() +
+              " fileName=" + fileName);
       ZipManager.compressFile(filePath, tempFile.getCanonicalPath());
       filePath = tempFile.getCanonicalPath();
     }
@@ -233,8 +154,8 @@ public class FileServer extends HttpServlet {
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
       ForeignPK pubPK = new ForeignPK(pubId, componentId);
       try {
-        StatisticBmHome statisticBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
+        StatisticBmHome statisticBmHome =
+            EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
         StatisticBm statisticBm = statisticBmHome.create();
         statisticBm.addStat(userId, pubPK, 1, "Publication");
       } catch (CreateException ex) {
@@ -253,55 +174,21 @@ public class FileServer extends HttpServlet {
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      if ("yes".equalsIgnoreCase(controller.getComponentParameterValue(componentId, "publicFiles"))) {
+      if ("yes"
+          .equalsIgnoreCase(controller.getComponentParameterValue(componentId, "publicFiles"))) {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
-        isAllowed = controller.getOrganizationController().isComponentAvailable(
-            componentId, controller.getUserId());
+        isAllowed = controller.getOrganizationController()
+            .isComponentAvailable(componentId, controller.getUserId());
       }
     }
     return isAllowed;
   }
 
-  /**
-   * This method writes the result of the preview action.
-   *
-   * @param response
-   * @param htmlFilePath - the canonical path of the html document generated by the parser tools. if
-   * this String is null that an exception had been catched the html document generated is empty !!
-   */
-  private void sendFile(HttpServletResponse response, String htmlFilePath) throws IOException {
-    File downloadedFile = new File(htmlFilePath);
-    response.setHeader( "Content-Length", String.valueOf(downloadedFile.length()));
-    SilverTrace.info("peasUtil", "FileServer.sendFile()",
-        "root.MSG_GEN_ENTER_METHOD", " htmlFilePath " + htmlFilePath);
-    try {
-      OutputStream out = response.getOutputStream();
-      FileUtils.copyFile(downloadedFile, out);
-      out.flush();
-      SilverTrace.info("peasUtil", "FileServer.sendFile()", "root.MSG_GEN_ENTER_METHOD",
-          " BufferedInputStream was ok ");
-    } catch (IOException e) {
-      SilverTrace.warn("peasUtil", "FileServer.sendFile", "root.EX_CANT_READ_FILE", "file name="
-          + htmlFilePath, e);
-      displayWarningHtmlCode(response);
-    }
-  }
 
-  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
-    OutputStream out = res.getOutputStream();
-    ResourceLocator resourceLocator = new ResourceLocator(
-        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
-    StringReader sr = new StringReader(resourceLocator.getString("warning"));
-    try {
-      IOUtils.copy(sr, out);
-      out.flush();
-    } catch (IOException e) {
-      SilverTrace.warn("peasUtil", "FileServer.displayWarningHtmlCode",
-          "root.EX_CANT_READ_FILE", "warning properties", e);
-    } finally {
-      IOUtils.closeQuietly(sr);
-    }
+  @Override
+  protected ResourceLocator getResources() {
+    return new ResourceLocator("org.silverpeas.util.peasUtil.multiLang.fileServerBundle", "");
   }
 }

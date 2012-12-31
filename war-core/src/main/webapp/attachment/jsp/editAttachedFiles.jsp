@@ -31,9 +31,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="com.silverpeas.util.i18n.I18NHelper"%>
-<%@ page import="com.stratelia.webactiv.util.ClientBrowserUtil"%>
-<%@ page import="org.silverpeas.attachment.model.SimpleDocumentPK" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
@@ -72,28 +69,28 @@
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
-          DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")), 
+          DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
 %>
 <c:url var="noColorPix" value="/util/icons/colorPix/1px.gif" />
-<c:url var="ArrayPnoColorPix" value="/util/icons/colorPix/15px.gif" />	
+<c:url var="ArrayPnoColorPix" value="/util/icons/colorPix/15px.gif" />
 
 <c:choose>
   <c:when test="${i18n}">
-    <c:set var="winAddHeight" value="270" />    
-    <c:set var="winHeight" value="240" />    
+    <c:set var="winAddHeight" value="270" />
+    <c:set var="winHeight" value="240" />
   </c:when>
   <c:otherwise>
     <c:set var="winAddHeight" value="240" />
-    <c:set var="winHeight" value="220" />   
+    <c:set var="winHeight" value="220" />
   </c:otherwise>
 </c:choose>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src='<c:url value="/util/javaScript/animation.js" />' ></script>
-<script type="text/javascript"  language='Javascript'> 
+<script type="text/javascript"  language='Javascript'>
   function displayAttachment(attachment) {
     $('#fileName').text(attachment.fileName);
     $('#fileTitle').val(attachment.title);
@@ -105,20 +102,20 @@
     $('#fileTitle').val('');
     $('#fileDescription').val('');
   }
-  
+
   function addAttachment() {
       $("#dialog-attachment-add").dialog("open");
     }
-    
+
     function deleteAttachment(id) {
       $("#dialog-attachment-delete").data("id", id).dialog("open");
     }
-  
+
   function updateAttachment(attachmentId, lang) {
       loadAttachment(attachmentId, lang);
       $("#dialog-attachment-update").data('attachmentId', attachmentId).dialog("open");
     }
-  
+
   function loadAttachment(id, lang) {
     translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({
@@ -157,7 +154,7 @@
         $(this).dialog("close");
       }
     });
-    
+
     $('#add-attachment-form').iframePostForm ({
       json : true,
       post : function () {
@@ -194,7 +191,7 @@
         close: function() {
         }
       });
-      
+
       $("#dialog-attachment-add").dialog({
         autoOpen: false,
         height: 350,
@@ -212,7 +209,7 @@
           close: function() {
           }
         });
-      
+
       $("#dialog-attachment-update").dialog({
         autoOpen: false,
         height: 350,
@@ -253,24 +250,24 @@
           width: 400
         });
       });
-  
+
   function reloadPage() {
     location.reload();
   }
-      
+
   function selectFile(fileUrl) {
     var funcNum = getUrlParam('CKEditorFuncNum');
     window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl);
     window.close() ;
   }
-  
+
   function getUrlParam(paramName) {
     var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
     var match = window.location.search.match(reParam) ;
     return (match && match.length > 1) ? match[1] : '' ;
   }
 </script>
-<CENTER>
+<div style="text-align: center;">
   <view:board>
   <table border="0" width="100%">
     <tr>
@@ -303,7 +300,7 @@
             <a id="other" href='<c:out value="${currentAttachmentUrl}" />' target="_blank"><img src='<c:out value="${varAttachment.displayIcon}" />' border="0" alt=""/></a>
             </td>
             <td class="odd" align="left">
-              <a href="javascript:selectFile('<c:out value="${currentAttachmentUrl}" />');"><c:out value="${varAttachment.filename}" /></a> 
+              <a href="javascript:selectFile('<c:out value="${currentAttachmentUrl}" />');"><c:out value="${varAttachment.filename}" /></a>
             </td>
             <td class="odd" align="left">
               <c:choose>
@@ -313,8 +310,8 @@
                 <c:otherwise>&nbsp;</c:otherwise>
               </c:choose>
             </td>
-            <td class="odd" align="center">              
-              <view:icons> 
+            <td class="odd" align="center">
+              <view:icons>
                 <view:icon altText="${varAttachment.description}" iconName="${infoIcon}"/>
               </view:icons>
             </td>
@@ -337,12 +334,11 @@
   </table>
 </view:board>
 <br />
-  <%
-        ButtonPane buttonPane2 = gef.getButtonPane();
-        buttonPane2.addButton(gef.getFormButton(attResources.getString("GML.add"), "javascript:addAttachment()", false));
-        out.println(buttonPane2.print());
-  %>
-</CENTER>
+  <fmt:message key="GML.add" var="addLabel" />
+  <view:buttonPane>
+    <view:button action="javascript:addAttachment()" label="${addLabel}" />
+  </view:buttonPane>
+</div>
 
 
 <div id="dialog-attachment-update" style="display:none">
@@ -367,14 +363,14 @@
     <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />
     <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>
-    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>   
+    <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>
     <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
     <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
     <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>
     <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
     <input type="submit" value="Submit" style="display:none" />
   </form>
-</div>  
+</div>
 
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>

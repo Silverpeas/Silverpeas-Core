@@ -23,7 +23,6 @@
  */
 package org.silverpeas.attachment.web;
 
-import org.apache.ecs.xhtml.comment;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 

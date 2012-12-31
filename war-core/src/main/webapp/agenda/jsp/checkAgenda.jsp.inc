@@ -21,7 +21,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="org.silverpeas.servlets.FileServer"%>
 
 <%!
 String m_context = URLManager.getApplicationURL();
@@ -60,7 +59,7 @@ String arrLeft				= m_context + "/util/icons/arrow/arrowLeft.gif";
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
   }
-  
+
   Board board = graphicFactory.getBoard();
 %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
