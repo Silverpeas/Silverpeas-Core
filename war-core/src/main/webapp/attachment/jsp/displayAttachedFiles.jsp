@@ -279,7 +279,7 @@
             <c:if test="${view:isDefined(currentAttachment.xmlFormId)}">
               <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
-                        <c:param name="ObjectId" value="${currentAttachment.id}"/>
+                        <c:param name="ObjectId" value="${currentAttachment.oldSilverpeasId}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
                         <c:param name="ComponentId" value="${componentId}"/>
                         <c:param name="ObjectType" value="${'Attachment'}"/>
