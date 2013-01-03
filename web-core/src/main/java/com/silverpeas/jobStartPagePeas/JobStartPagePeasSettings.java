@@ -51,6 +51,9 @@ public class JobStartPagePeasSettings {
   public static String TEMPLATE_PATH;
   public static String CUSTOMERS_TEMPLATE_PATH;
   public static boolean componentsInSpaceQuotaActivated = false;
+  public static boolean dataStorageInSpaceQuotaActivated;
+  public static long dataStorageInSpaceQuotaDefaultMaxCount;
+  public static long dataStorageInPersonalSpaceQuotaDefaultMaxCount;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -71,5 +74,16 @@ public class JobStartPagePeasSettings {
     TEMPLATE_PATH = rs.getString("templatePath");
     CUSTOMERS_TEMPLATE_PATH = rs.getString("customersTemplatePath");
     componentsInSpaceQuotaActivated = rs.getBoolean("quota.space.components.activated", false);
+    dataStorageInSpaceQuotaActivated = rs.getBoolean("quota.space.datastorage.activated", false);
+    dataStorageInSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.space.datastorage.default.maxCount", 0);
+    if (dataStorageInSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInSpaceQuotaDefaultMaxCount = 0;
+    }
+    dataStorageInPersonalSpaceQuotaDefaultMaxCount =
+        rs.getLong("quota.personalspace.datastorage.default.maxCount", 0);
+    if (dataStorageInPersonalSpaceQuotaDefaultMaxCount < 0) {
+      dataStorageInPersonalSpaceQuotaDefaultMaxCount = 0;
+    }
   }
 }

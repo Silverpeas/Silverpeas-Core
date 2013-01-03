@@ -36,6 +36,6 @@ public class QuotaFullException extends QuotaException {
    * @param quota
    */
   public QuotaFullException(final Quota quota) {
-    super(quota, "IS_FULL");
+    super(quota, "EX_IS_FULL");
   }
 }

@@ -47,6 +47,10 @@ public abstract class AbstractTypeEntity implements Exposable {
     this.type = type;
   }
 
+  protected AbstractTypeEntity() {
+    type = "";
+  }
+
   public String getType() {
     return type;
   }

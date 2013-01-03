@@ -31,9 +31,12 @@ import java.util.List;
 
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.quota.contant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
+import org.silverpeas.util.UnitUtil;
 
 import com.google.common.base.Objects;
 import com.silverpeas.util.StringUtil;
@@ -114,6 +117,12 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   private Quota componentSpaceQuota = null;
   private Quota componentSpaceQuotaReached = null;
+
+  /**
+   * This data is not used in equals and hashcode process as it is an extra information.
+   */
+  private Quota dataStorageQuota = null;
+  private Quota dataStorageQuotaReached = null;
 
   /**
    * Constructor
@@ -628,7 +637,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
   public void setComponentSpaceQuotaMaxCount(final long componentSpaceQuotaMaxCount)
       throws QuotaException {
     loadComponentSpaceQuota();
-    componentSpaceQuota.setMaxCount((int) componentSpaceQuotaMaxCount);
+    componentSpaceQuota.setMaxCount(componentSpaceQuotaMaxCount);
     componentSpaceQuota.validateBounds();
   }
 
@@ -647,21 +656,9 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    * @param language
    * @return
    */
-  public String getComponentSpaceQuotaReachedErrorMessage(String language) {
-    SpaceInstLight space =
-        OrganizationControllerFactory.getFactory().getOrganizationController()
-            .getSpaceInstLightById(componentSpaceQuotaReached.getResourceId());
-    final SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
-    template.setAttribute("quota", componentSpaceQuotaReached);
-    if (!space.getShortId().equals(new SpaceInstLight(this).getShortId())) {
-      template.setAttribute("fromSpaceId", space.getShortId());
-      template.setAttribute("fromSpaceName", space.getName());
-    }
-    if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
-    }
-    return template.applyFileTemplate("componentSpaceQuotaReached_" + language);
+  public String getComponentSpaceQuotaReachedErrorMessage(final String language) {
+    return getQuotaReachedErrorMessage(componentSpaceQuotaReached, language,
+        "componentSpaceQuotaReached");
   }
 
   /**
@@ -676,6 +673,93 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
       throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
           "root.EX_CANT_GET_COMPONENT_SPACE_QUOTA", qe);
     }
+  }
+
+  /**
+   * @return the dataStorageQuota
+   */
+  public Quota getDataStorageQuota() {
+    if (dataStorageQuota == null) {
+      loadDataStorageQuota();
+    }
+    return dataStorageQuota;
+  }
+
+  /**
+   * Sets the max count of data storage of the space
+   */
+  public void setDataStorageQuotaMaxCount(final long dataStorageQuotaMaxCount)
+      throws QuotaException {
+    loadDataStorageQuota();
+    dataStorageQuota.setMaxCount(dataStorageQuotaMaxCount);
+    dataStorageQuota.validateBounds();
+  }
+
+  /**
+   * Indicates if the quota of the space or of a parent space is reached.
+   * @return
+   */
+  public boolean isDataStorageQuotaReached() {
+    dataStorageQuotaReached = SpaceServiceFactory.getDataStorageSpaceQuotaService()
+        .getQuotaReachedFromSpacePath(DataStorageSpaceQuotaKey.from(this));
+    return dataStorageQuotaReached.isReached();
+  }
+
+  /**
+   * Gets the error message about data storage space quota reached.
+   * @param language
+   * @return
+   */
+  public String getDataStorageQuotaReachedErrorMessage(final String language) {
+    return getQuotaReachedErrorMessage(dataStorageQuotaReached, language, "dataStorageQuotaReached");
+  }
+
+  /**
+   * Centralizes the data storage quota loading
+   */
+  private void loadDataStorageQuota() {
+    try {
+      dataStorageQuota =
+          SpaceServiceFactory.getDataStorageSpaceQuotaService().get(
+              DataStorageSpaceQuotaKey.from(this));
+    } catch (final QuotaException qe) {
+      throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
+          "root.EX_CANT_GET_DATA_STORAGE_QUOTA", qe);
+    }
+  }
+
+  /**
+   * Centralized the error message about reached quota.
+   * @param quotaReached
+   * @param language
+   * @param stringTemplateFile
+   * @return
+   */
+  private String getQuotaReachedErrorMessage(Quota quotaReached, String language,
+      final String stringTemplateFile) {
+    if (!QuotaType.COMPONENTS_IN_SPACE.equals(quotaReached.getType())) {
+      quotaReached = quotaReached.clone();
+      quotaReached.setMinCount(UnitUtil.convertTo(quotaReached.getMinCount(), UnitUtil.memUnit.B,
+          UnitUtil.memUnit.MB));
+      quotaReached.setMaxCount(UnitUtil.convertTo(quotaReached.getMaxCount(), UnitUtil.memUnit.B,
+          UnitUtil.memUnit.MB));
+      quotaReached.setCount(UnitUtil.convertTo(quotaReached.getCount(), UnitUtil.memUnit.B,
+          UnitUtil.memUnit.MB));
+    }
+    SpaceInstLight space =
+        OrganizationControllerFactory.getFactory().getOrganizationController()
+            .getSpaceInstLightById(quotaReached.getResourceId());
+    final SilverpeasTemplate template =
+        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");
+    template.setAttribute("quota", quotaReached);
+    if (!space.getShortId().equals(new SpaceInstLight(this).getShortId())) {
+      template.setAttribute("fromSpaceId", space.getShortId());
+      template.setAttribute("fromSpaceName", space.getName());
+    }
+    if (!StringUtil.isDefined(language)) {
+      language = I18NHelper.defaultLanguage;
+    }
+    return template.applyFileTemplate(stringTemplateFile + "_" + language);
   }
 
   @Override
