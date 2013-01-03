@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
@@ -31,16 +27,17 @@ import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import org.apache.commons.lang3.CharEncoding;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas.
@@ -55,6 +52,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   /**
    * Method invoked when called from a form or directly by URL
+   *
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws IOException when an error occurs while recieving the request or sending the response.
@@ -65,7 +63,7 @@ public class AuthenticationServlet extends HttpServlet {
     // Get the session
     HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding("UTF-8");
+      request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
       AUTHENTICATION_SERVICE.unauthenticate(request);
@@ -73,25 +71,23 @@ public class AuthenticationServlet extends HttpServlet {
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
-        "com.silverpeas.authentication.settings.authenticationSettings", "");
+        "org.silverpeas.authentication.settings.authenticationSettings", "");
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
-    IdentificationParameters identificationParameters = new IdentificationParameters(session,
-        request);
-    session.setAttribute("Silverpeas_pwdForHyperlink", identificationParameters.getClearPassword());
-    String sDomainId = getDomain(request, authenticationSettings,
-        identificationParameters.isCasMode());
+    IdentificationParameters identParams = new IdentificationParameters(session, request);
+    session.setAttribute("Silverpeas_pwdForHyperlink", identParams.getClearPassword());
+    String sDomainId = getDomain(request, authenticationSettings, identParams.isCasMode());
 
-    String authenticationKey = identify(request, identificationParameters, sDomainId);
+    String authenticationKey = identify(request, identParams, sDomainId);
     String url;
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
       if (sDomainId != null) {
         storeDomain(response, sDomainId);
       }
-      storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
+      storeLogin(response, isNewEncryptMode, identParams.getLogin());
 
       // if required by user, store password in cookie
-      storePassword(response, identificationParameters.getStoredPassword(), isNewEncryptMode,
-          identificationParameters.getClearPassword());
+      storePassword(response, identParams.getStoredPassword(), isNewEncryptMode,
+          identParams.getClearPassword());
 
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
@@ -100,57 +96,51 @@ public class AuthenticationServlet extends HttpServlet {
         return;
       }
       String absoluteUrl = AUTHENTICATION_SERVICE.authenticate(request, authenticationKey);
-
-      final Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
-      sessionCookie.setMaxAge(-1);
-      sessionCookie.setSecure(false);
-      sessionCookie.setPath(request.getContextPath());
-      response.addCookie(sessionCookie);
+      writeSessionCookie(response, session, AUTHENTICATION_SERVICE.isNavigationSecure(request));
       response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
       return;
     }
     // Authentication failed : remove password from cookies to avoid infinite loop
     removeStoredPassword(response);
-    if (identificationParameters.isCasMode()) {
+    if (identParams.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
-      if("Error_1".equals(authenticationKey)) {
+      if ("Error_1".equals(authenticationKey)) {
         url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
-      }
-      else if(LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)){
-          String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
-          if(StringUtil.getBooleanValue(allowPasswordChange)){
-            ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-            url = settings.getString("passwordExpiredURL")+"?login="+identificationParameters.getLogin()+"&domainId="+sDomainId;
-          } else {
-            url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
-          }
-      }
-      else {
+      } else if (LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)) {
+        String allowPasswordChange = (String) session.getAttribute(
+            Authentication.PASSWORD_CHANGE_ALLOWED);
+        if (StringUtil.getBooleanValue(allowPasswordChange)) {
+          ResourceLocator settings = new ResourceLocator(
+              "org.silverpeas.authentication.settings.passwordExpiration", "");
+          url = settings.getString("passwordExpiredURL") + "?login=" + identParams.
+              getLogin() + "&domainId=" + sDomainId;
+        } else {
+          url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+        }
+      } else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }
     }
-    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) +
-        url));
+    response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request)
+        + url));
   }
 
-  private void storePassword(HttpServletResponse response, String sStorePassword,
-      boolean newEncryptMode, String sDecodedPassword) {
-    if (StringUtil.getBooleanValue(sStorePassword)) {
+  private void storePassword(HttpServletResponse response, String shoudStorePasword,
+      boolean newEncryptMode, String clearPassword) {
+    if (StringUtil.getBooleanValue(shoudStorePasword)) {
       SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
           "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
         writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
-            sDecodedPassword), -1);
+            clearPassword), -1);
         writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
-            sDecodedPassword), 31536000);
+            clearPassword), 31536000);
       } else {
         writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
-            .encode(
-            sDecodedPassword), -1);
+            .encode(clearPassword), -1);
         writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
-            .encode(
-            sDecodedPassword), 31536000);
+            .encode(clearPassword), 31536000);
       }
     }
   }
@@ -177,61 +167,74 @@ public class AuthenticationServlet extends HttpServlet {
     writeCookie(response, "defaultDomain", sDomainId, 31536000);
   }
 
-  private String getDomain(HttpServletRequest request, ResourceLocator authenticationSettings,
-      boolean casMode) {
+  private String getDomain(HttpServletRequest request, ResourceLocator authSettings, boolean casMode) {
     String sDomainId = request.getParameter("DomainId");
     if (casMode) {
-      sDomainId = authenticationSettings.getString("cas.authentication.domainId", "0");
+      sDomainId = authSettings.getString("cas.authentication.domainId", "0");
     }
     return sDomainId;
   }
 
-  private String identify(HttpServletRequest request,
-      IdentificationParameters identificationParameters, String sDomainId) {
+  private String identify(HttpServletRequest request, IdentificationParameters identParams,
+      String domainId) {
     String testKey = request.getParameter("TestKey");
     if (!StringUtil.isDefined(testKey)) {
-      if (identificationParameters.isCasMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId, request);
-      } else if (identificationParameters.isSocialNetworkMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters
-            .getDomainId(), request);
+      if (identParams.isCasMode()) {
+        return lpAuth.authenticate(identParams.getLogin(), domainId, request);
       }
-      return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.
-          getClearPassword(),
-          sDomainId, request);
+      if (identParams.isSocialNetworkMode()) {
+        return lpAuth.authenticate(identParams.getLogin(), identParams.getDomainId(), request);
+      }
+      return lpAuth.authenticate(identParams.getLogin(), identParams.getClearPassword(), domainId,
+          request);
     }
     return null;
   }
 
   /**
    * Method invoked when called from a form or directly by URL.
+   *
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws ServletException if the servlet fails to answer the request.
    * @throws IOException if an IO error occurs with the client.
    */
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws
+      ServletException, IOException {
     doPost(request, response);
   }
 
   /**
+   * Write session cookie.
+   *
+   * @return
+   */
+  private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secure) {
+    String rawCookie = "JSESSIONID=" + session.getId() + ";max-age=-1; path=" + session.
+        getServletContext().getContextPath() + "; HttpOnly;";
+    if (secure) {
+      rawCookie = rawCookie + "secure;";
+    }
+    response.setHeader("Set-Cookie", rawCookie);
+  }
+
+  /**
    * Write connections cookie.
+   *
    * @param name
    * @param value
    * @param duration
    * @return
    */
   private void writeCookie(HttpServletResponse response, String name, String value, int duration) {
-    Cookie cookie;
+    String cookieValue;
     try {
-      cookie = new Cookie(name, URLEncoder.encode(value, "UTF-8"));
+      cookieValue = URLEncoder.encode(value, CharEncoding.UTF_8);
     } catch (UnsupportedEncodingException ex) {
-      cookie = new Cookie(name, value);
+      cookieValue = value;
     }
-    cookie.setMaxAge(duration); // Duration in s
-    cookie.setPath("/");
-    response.addCookie(cookie);
+    response.setHeader("Set-Cookie", name + '=' + cookieValue + "; max-age=" + duration
+        + "; path=/; HttpOnly; secure;");
   }
 }

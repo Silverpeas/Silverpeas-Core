@@ -47,7 +47,7 @@
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.favorit.control.*, com.stratelia.webactiv.util.node.model.NodePK, com.stratelia.webactiv.util.node.control.*, com.stratelia.webactiv.util.node.model.*, com.stratelia.webactiv.util.exception.* "%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodePK, com.stratelia.webactiv.util.node.control.*, com.stratelia.webactiv.util.node.model.*, com.stratelia.webactiv.util.exception.* "%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
@@ -67,23 +67,22 @@ String 					language 			= null;
 ResourceLocator 		message 			= null;
 ResourceLocator 		homePageSettings 	= null;
 String 					m_sContext 			= null;
-if (m_MainSessionCtrl == null)
-{
+System.out.println("Gef : " +  session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT));
+System.out.println("Session : " + session.getId());
+System.out.println("MainSessionController : " + m_MainSessionCtrl);
+if (m_MainSessionCtrl == null) {
 %>
 	<script> 
 		top.location="../../Login.jsp";
 	</script>
-<%
-}
-else
-{
+<% } else {
 	organizationCtrl 	= m_MainSessionCtrl.getOrganizationController();
-	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	
-	language 			= m_MainSessionCtrl.getFavoriteLanguage();
-	message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-	homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
-	
-	m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-}
-%>
+	gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+  System.out.println("Gef : " + gef);
+  System.out.println("Session : " + session.getId());
+  System.out.println("MainSessionController : " + m_MainSessionCtrl);
+	language  = m_MainSessionCtrl.getFavoriteLanguage();
+	message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+	homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");	
+	m_sContext = URLManager.getApplicationURL();
+}%>
