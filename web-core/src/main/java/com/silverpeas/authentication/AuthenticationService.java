@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
@@ -47,6 +43,7 @@ import java.util.Enumeration;
 /**
  * Service used for user authentication : creating all the required ressources for Silverpeas in the
  * Session.
+ *
  * @author ehugonnet
  */
 public class AuthenticationService {
@@ -83,9 +80,8 @@ public class AuthenticationService {
       String redirectURL = null;
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
         redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.
-            getOrganizationController().
-            getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage(),
-            StringUtil.getBooleanValue(allowPasswordChange));
+            getOrganizationController().getAdministratorUserIds(controller.getUserId())[0],
+            controller.getFavoriteLanguage(), StringUtil.getBooleanValue(allowPasswordChange));
       }
       if (!controller.getCurrentUserDetail().isAccessRemoved()) {
         // Init session management and session object !!! This method reset theSession Object
@@ -107,12 +103,12 @@ public class AuthenticationService {
 
   /**
    * No user is defined for this login-password combination.
+   *
    * @param request
    * @param sKey
    * @return
    */
   public String getAuthenticationErrorPageUrl(HttpServletRequest request, String sKey) {
-    HttpSession session = request.getSession();
     SilverTrace.error("peasCore", "AuthenticationService.authenticate()",
         "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + sKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
@@ -139,8 +135,8 @@ public class AuthenticationService {
 
     // Retrieve personal workspace
     String personalWs = controller.getPersonalization().getPersonalWorkSpaceId();
-    SilverTrace.debug("peasCore", "AuthenticationService.authenticate",
-        "user personal workspace=" + personalWs);
+    SilverTrace.debug("peasCore", "AuthenticationService.authenticate", "user personal workspace="
+        + personalWs);
 
     // Put a graphicElementFactory in the session
     GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
@@ -171,20 +167,26 @@ public class AuthenticationService {
 
   /**
    * Computes the beginning of an absolute URL for the home page.
+   *
    * @param request
    * @return
    */
   public String getAbsoluteUrl(HttpServletRequest request) {
     StringBuilder absoluteUrl = new StringBuilder(256);
-    if (request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false)) {
-      absoluteUrl.append("http");
+    if (isNavigationSecure(request)) {
+      absoluteUrl.append("https://");
     } else {
-      absoluteUrl.append(request.getScheme());
+      absoluteUrl.append("http://");
     }
-    absoluteUrl.append("://").append(request.getServerName()).append(':');
+    absoluteUrl.append(request.getServerName()).append(':');
     absoluteUrl.append(getServerPort(request));
     absoluteUrl.append(URLManager.getApplicationURL());
     return absoluteUrl.toString();
+  }
+
+  public boolean isNavigationSecure(HttpServletRequest request)  {
+    return !(request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false)) &&
+        request.isSecure();
   }
 
   private int getServerPort(HttpServletRequest request) {
@@ -215,12 +217,11 @@ public class AuthenticationService {
   private void sendPopupNotificationAboutPwdExpiration(String userId, String fromUserId,
       String language) throws NotificationManagerException {
     ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle", language);
+        "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL,
-        messages.getString("passwordExpirationAlert"), messages
-        .getString("passwordExpirationMessage"));
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+        messages.getString("passwordExpirationAlert"), messages.getString(
+        "passwordExpirationMessage"));
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
@@ -230,6 +231,7 @@ public class AuthenticationService {
     HttpSession session = request.getSession();
     session.removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     session.removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    @SuppressWarnings("unchecked")
     Enumeration<String> names = (Enumeration<String>) session.getAttributeNames();
     while (names.hasMoreElements()) {
       String attributeName = names.nextElement();
