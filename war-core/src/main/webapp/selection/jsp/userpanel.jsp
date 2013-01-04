@@ -221,7 +221,7 @@
           // pagination of the groups in the filtering panel
           var pagination = {
             page: 0,
-            count: 50
+            count: 60
           };
 
           // adds the specified groups into the cache at the specified index.
@@ -242,6 +242,7 @@
           this.groupsBetween = function(start, end) {
             var groups = self.groups.slice(start, end);
             groups.maxlength = self.groups.maxlength;
+            groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
             return groups;
           }
 
@@ -266,8 +267,10 @@
             if (end > self.groups.length || self.groups[start] == null || self.groups[end-1] == null)
               parentGroup.loadChildren({pagination: page}, function(groups) {
                 add(start, groups);
-                if (callback)
+                if (callback) {
+                  groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
                   callback(groups);
+                }
               });
             else if (callback)
               callback(self.groupsBetween(start, end));
@@ -314,21 +317,6 @@
             self.event = null;
           }
 
-          /*function renderNextGroups(page, count, renderer) {
-            var start = count * (page - 1);
-            var end = start + count;
-            if (end > _groups.length || _groups[start] == null || _groups[end-1] == null)
-              $('#breadcrumb').breadcrumb('current', function(group) {
-                group.loadChildren({pagination: {page: page, count: count}}, function(groups) {
-                  addGroupsInCache(start, groups);
-                  if (renderer)
-                    renderer(_groups, start, end);
-                });
-              });
-            else if (renderer)
-              renderer(_groups, start, end);
-          }*/
-
           this.event = null;
 
           // initializes the user panel content
@@ -347,20 +335,6 @@
                 self.onAllUsers();
                 highlightFilter($('#filter_users'));
               });
-
-              /*rootUserGroup.loadChildren({pagination: _pagination}, function(groups) {
-                if (groups.length == 0) {
-                  itemToSelect = 'user';
-                  $('#filter_groups').remove();
-                  $('.groups_results_userPanel').remove();
-                  $('.groups_selected_userPanel').remove();
-                } else {
-                  groupCache.set(groups);
-                  renderUserGroups(groups);
-                }
-                self.onAllUsers();
-                highlightFilter($('#filter_users'));
-              });*/
             });
           }
 
@@ -388,8 +362,6 @@
           this.onNextGroups = function() {
             onEvent('nextGroups', function() {
               groupCache.load(_currentGroup, renderNextUserGroups);
-              /*_pagination.page++;
-              renderNextGroups(_pagination.page, _pagination.count, renderNextUserGroups);*/
             });
           }
 
@@ -665,7 +637,7 @@
         }
 
         function renderNextGroupLink() {
-          $('<li>', {'id': 'nextGroups'}).append($('<a>', { href: '#' }).addClass('filter').append("next groups").click(function() {
+          $('<li>', {'id': 'nextGroups'}).append($('<a>', { href: '#' }).addClass('filter').append("<fmt:message key='selection.NextGroups'/>").click(function() {
             eventProcessing.onNextGroups();
           })).appendTo($('ul.listing_groups_filter'));
         }
@@ -712,7 +684,7 @@
           for(var i = 0; i < groups.length; i++) {
             renderUserGroupFilter(groups[i]);
           }
-          if (groups.length < groups.maxlength)
+          if (!groups.completlyLoaded)
             renderNextGroupLink();
           autoresizeUserGroupFilters();
         }
