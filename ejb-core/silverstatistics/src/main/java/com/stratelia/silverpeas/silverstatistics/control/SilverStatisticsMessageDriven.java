@@ -45,7 +45,6 @@ import static com.stratelia.silverpeas.silverstatistics.control.SilverStatistics
 public class SilverStatisticsMessageDriven implements MessageDrivenBean, MessageListener {
 
   private static final long serialVersionUID = -7349058052737871887L;
-  private SilverStatistics silverStatistics = null;
 
   public void ejbCreate() {
   }

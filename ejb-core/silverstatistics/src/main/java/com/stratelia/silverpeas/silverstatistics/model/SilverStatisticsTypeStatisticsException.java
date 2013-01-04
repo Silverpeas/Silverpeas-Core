@@ -27,6 +27,8 @@ package com.stratelia.silverpeas.silverstatistics.model;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class SilverStatisticsTypeStatisticsException extends SilverpeasException {
+
+  private static final long serialVersionUID = 4115554367067396762L;
   private String typeStats;
 
   public SilverStatisticsTypeStatisticsException(String callingClass,
