@@ -95,11 +95,7 @@ function isCorrectForm() {
     errorNb++;
   }
 
-  var dateErrors = isDateAfterAnother({
-    date : document.todoEditForm.EndDate.value,
-    label : "'<%=todo.getString("dateFinToDo")%>'"}, {
-    date : document.todoEditForm.StartDate.value,
-    label : "'<%=todo.getString("dateDebutToDo")%>'"});
+  var dateErrors = isPeriodValid('StartDate', 'EndDate');
   $(dateErrors).each(function(index, error) {
     errorMsg += "  - " + error.message + "\n";
     errorNb++;
@@ -511,7 +507,7 @@ function test(){
                         </tr>
                         <tr align=center>
 
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left><span class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</span>&nbsp;
+                                <td class="intfdcolor4" nowrap valign="baseline" align=left><label for="StartDate" class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</label>&nbsp;
                                         </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                         <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
@@ -520,7 +516,7 @@ function test(){
 												} else {
 													out.print("class=\"dateToPick\" ");
 												}
-                                                if (todoHeader != null) 
+                                                if (todoHeader != null)
                                                         if (todoHeader.getStartDate() != null)
                                                                 out.println("VALUE=\""+resources.getInputDate(todoHeader.getStartDate())+"\"");%>>
 
@@ -531,8 +527,7 @@ function test(){
                                 </tr>
                                 <tr align=center>
                                 <td nowrap class="intfdcolor4" valign="baseline" align=left> 
-                                        <span class="txtnote"><span class="txtlibform"><%=todo.getString("dateFinToDo")%> :</span>&nbsp;
-                                                </span>
+                                  <span class="txtnote"><label for="EndDate" class="txtlibform"><%=todo.getString("dateFinToDo")%> :</label>&nbsp;</span>
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                                 <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%

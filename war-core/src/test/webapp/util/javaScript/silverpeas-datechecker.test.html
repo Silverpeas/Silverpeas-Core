@@ -80,14 +80,14 @@
      */
     function testAll() {
       testIsDateValid();
-      testIsDateAfterAnother();
+      testIsPeriodValid();
 
       // Multi-test
       var futureDate = {date : '06/01/2012'};
       var beginDate = {date : '01/02/2012', label : "'Begin date'"};
       var endDate = {date : '01/01/2012', label : "'End date'" };
-      var dateErrors = isDateAfterAnother(beginDate, futureDate).concat(isDateAfterAnother(endDate,
-          futureDate)).concat(isDateAfterAnother(endDate, beginDate));
+      var dateErrors = isPeriodValid(futureDate, beginDate).concat(isPeriodValid(futureDate,
+          endDate)).concat(isPeriodValid(beginDate, endDate));
       var title = "Multi test";
       title += "\nBegin date : '" + beginDate.date + "'";
       title += "\nEnd date : '" + endDate.date + "'";
@@ -99,8 +99,8 @@
 
       beginDate = {date : '01/01/2013', label : "'Begin date'"};
       endDate = {date : '01/02/2013', label : "'End date'" };
-      dateErrors = isDateAfterAnother(beginDate, futureDate).concat(isDateAfterAnother(endDate,
-          futureDate)).concat(isDateAfterAnother(endDate, beginDate));
+      dateErrors = isPeriodValid(futureDate, beginDate).concat(isPeriodValid(futureDate,
+          endDate)).concat(isPeriodValid(beginDate, endDate));
       title = "Multi test";
       title += "\nBegin date : '" + beginDate.date + "'";
       title += "\nEnd date : '" + endDate.date + "'";
@@ -268,134 +268,130 @@
     }
 
     function assertIsDateValid() {
-      arguments[0] = '<em>isDateVali</em> - ' + arguments[0];
+      arguments[0] = '<em>isDateValid</em> - ' + arguments[0];
       arguments[2].nbCheck = 0;
       assertResult(arguments[0], arguments[1], isDateValid(arguments[2]));
     }
 
     /**
-     * Test of isDateAfterAnother method.
+     * Test of isPeriodValid method.
      */
-    function testIsDateAfterAnother() {
+    function testIsPeriodValid() {
       var title;
       var expected;
-      var date = defaultDateContext();
-      var anotherDate = defaultDateContext();
-      date.label = 'myDate';
-      date.labelHour = 'myHour';
-      anotherDate.label = 'myAnotherDate';
-      anotherDate.labelHour = 'myAnotherHour';
-      anotherDate.date = '06/24-1980';
-      date.isMandatory = true;
-      date.isMandatoryHour = true;
-      title = "D: none, H: none, OD: '" + anotherDate.date +
+      var endDate = defaultDateContext();
+      var beginDate = defaultDateContext();
+      endDate.label = 'myDate';
+      endDate.labelHour = 'myHour';
+      beginDate.label = 'myAnotherDate';
+      beginDate.labelHour = 'myAnotherHour';
+      beginDate.date = '06/24-1980';
+      endDate.isMandatory = true;
+      endDate.isMandatoryHour = true;
+      title = "D: none, H: none, OD: '" + beginDate.date +
           "' : mandatory date and hour and other date has bad format";
-      expected = "myDate GML.MustBeFilled\nmyHour GML.MustBeFilled";
-      expected += "\nmyAnotherDate GML.MustContainsCorrectDate";
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.isMandatory = false;
-      date.isMandatoryHour = false;
+      expected = "myAnotherDate GML.MustContainsCorrectDate";
+      expected += "\nmyDate GML.MustBeFilled\nmyHour GML.MustBeFilled";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.isMandatory = false;
+      endDate.isMandatoryHour = false;
 
       // Date && Hour
-      anotherDate.date = '06/24/1980';
-      anotherDate.hour = '10:15';
-      date.date = '06/25/1980';
-      date.hour = '10:00';
-      title =
-          "D: '" + date.date + "', H: '" + date.hour + "', OD: '" + anotherDate.date + "' , OH: '" +
-              anotherDate.hour + "' : OK";
+      beginDate.date = '06/24/1980';
+      beginDate.hour = '10:15';
+      endDate.date = '06/25/1980';
+      endDate.hour = '10:00';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : OK";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.date = '06/24/1980';
-      date.hour = '10:15';
-      title =
-          "D: '" + date.date + "', H: '" + date.hour + "', OD: '" + anotherDate.date + "' , OH: '" +
-              anotherDate.hour + "' : OK (strictly equals)";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '06/24/1980';
+      endDate.hour = '10:15';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : OK (strictly equals)";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.hour = '10:15';
-      date.canBeEqualToAnother = false;
-      title =
-          "D: '" + date.date + "', H: '" + date.hour + "', OD: '" + anotherDate.date + "' , OH: '" +
-              anotherDate.hour + "' : strictly greater, see hours";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      endDate.canBeEqualToAnother = false;
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : strictly greater, see hours";
       expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.hour = '10:16';
-      title =
-          "D: '" + date.date + "', H: '" + date.hour + "', OD: '" + anotherDate.date + "' , OH: '" +
-              anotherDate.hour + "' : strictly greater, see hours";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:16';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : strictly greater, see hours";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
+      assertIsPeriodValid(title, expected, beginDate, endDate);
 
       // Date
-      date.canBeEqualToAnother = true;
-      anotherDate.date = '06/24/1980';
-      anotherDate.hour = '';
-      date.date = '06/25/1980';
-      date.hour = '';
-      title = "D: '" + date.date + "', H: none, OD: '" + anotherDate.date + "' , OH: none : OK";
+      endDate.canBeEqualToAnother = true;
+      beginDate.date = '06/24/1980';
+      beginDate.hour = '';
+      endDate.date = '06/25/1980';
+      endDate.hour = '';
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date + "' , OH: none : OK";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.date = '06/24/1980';
-      title = "D: '" + date.date + "', H: none, OD: '" + anotherDate.date +
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '06/24/1980';
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
           "' , OH: none : OK (strictly equals)";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.canBeEqualToAnother = false;
-      title = "D: '" + date.date + "', H: none, OD: '" + anotherDate.date +
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.canBeEqualToAnother = false;
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
           "' , OH: none : strictly greater, see hours";
       expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
+      assertIsPeriodValid(title, expected, beginDate, endDate);
 
       // Hour
-      date.canBeEqualToAnother = true;
-      anotherDate.date = '';
-      anotherDate.hour = '10:15';
-      date.date = '';
-      date.hour = '10:16';
-      title = "D: none, H: '" + date.hour + "', OD: none , OH: '" + anotherDate.hour + "' : OK";
+      endDate.canBeEqualToAnother = true;
+      beginDate.date = '';
+      beginDate.hour = '10:15';
+      endDate.date = '';
+      endDate.hour = '10:16';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour + "' : OK";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.hour = '10:15';
-      title = "D: none, H: '" + date.hour + "', OD: none , OH: '" + anotherDate.hour +
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
           "' : OK (strictly equals)";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.hour = '10:15';
-      date.canBeEqualToAnother = false;
-      title = "D: none, H: '" + date.hour + "', OD: none , OH: '" + anotherDate.hour +
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      endDate.canBeEqualToAnother = false;
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
           "' : strictly greater, see hours";
       expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.hour = '10:16';
-      title = "D: none, H: '" + date.hour + "', OD: none , OH: '" + anotherDate.hour +
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:16';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
           "' : strictly greater, see hours";
       expected = NO_ERROR;
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
+      assertIsPeriodValid(title, expected, beginDate, endDate);
 
       // Simple functional use case : one of the two dates is missing but not mandatory.
-      date = defaultDateContext();
-      date.label = "'Ending date'";
-      date.date = '08/15/2012';
-      anotherDate = defaultDateContext();
-      anotherDate.label = "'Begin date'";
+      endDate = defaultDateContext();
+      endDate.label = "'Ending date'";
+      endDate.date = '08/15/2012';
+      beginDate = defaultDateContext();
+      beginDate.label = "'Begin date'";
       expected = NO_ERROR;
-      title = "D: '" + date.date + "', H: none, OD: '" + anotherDate.date +
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
           "' , OH: none : begin date is missing but not mandatory.";
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
-      date.date = '';
-      anotherDate.date = '08/15/2012';
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '';
+      beginDate.date = '08/15/2012';
       expected = NO_ERROR;
-      title = "D: '" + date.date + "', H: none, OD: '" + anotherDate.date +
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
           "' , OH: none : ending date is missing but not mandatory.";
-      assertIsDateAfterAnother(title, expected, date, anotherDate);
+      assertIsPeriodValid(title, expected, beginDate, endDate);
     }
 
-    function assertIsDateAfterAnother() {
-      arguments[0] = '<em>isDateAfterAnother</em> - ' + arguments[0];
+    function assertIsPeriodValid() {
+      arguments[0] = '<em>isPeriodValid</em> - ' + arguments[0];
       arguments[2].nbCheck = 0;
       arguments[3].nbCheck = 0;
-      assertResult(arguments[0], arguments[1], isDateAfterAnother(arguments[2], arguments[3]));
+      assertResult(arguments[0], arguments[1], isPeriodValid(arguments[2], arguments[3]));
     }
 
   </script>

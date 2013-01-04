@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,12 +27,14 @@
  *
  * After this plugin installed, some helper methods are usable :
  * - isDateValid(...) : to verify that the given date (and optionally hour) is valid
- * - isDateAfterNow(...) : to verify that the given date (and optionally hour) is greater
- *                         or equal than today
- * - isDateAfterAnother(...) : to verify that the given date (and optionally hour) is greater
- *                             or equal than another one
+ * - isDateFuture(...) : to verify that the given date (and optionally hour) is greater
+ *                       or equal than today
+ * - isPeriodValid(...) : to verify that the given date (and optionally hour) is greater
+ *                        or equal than another one
+ * - isPeriodEndingInFuture(...) : to verify that a period is valid and the end date is greater
+ *                                 or equal than today
  *
- * Please notice that method date parameter can accept formatted date instead of a date context
+ * Please notice that method date parameter can accept id of date HTML TAG instead of a date context
  * object. In this case, default values of a date context are used during check processes.
  *
  * If this plugin is installed via the taglib <view:includePlugin="datepicker" />, the language is
@@ -40,20 +42,20 @@
  *
  * Examples :
  * - One check > end date is greater or equals to begin date >
- *           var dateErrors = isDateAfterAnother({
- *             date : [value filled by user for end date],
- *             label : "'End date'"}, {
+ *           var dateErrors = isPeriodValid({
  *             date : [value filled by user for begin date],
  *             label : "'Begin date'"
- *           });
+ *           }, {
+ *             date : [value filled by user for end date],
+ *             label : "'End date'"});
  *           $(dateErrors).each(function(index, error) {
  *             // handling here error.message (and error.code if necessary)
  *           });
- * - severam checks > end date is greater or equals to begin date > the two dates are in the future
+ * - several checks > end date is greater or equals to begin date > the two dates are in the future
  *           var beginDate = {date : [value filled by user for begin date], label: "'Begin date'"};
  *           var endDate = {date : [value filled by user for end date], label: "'End date'"};
- *           var dateErrors = isDateAfterNow(beginDate).concat(isDateAfterNow(endDate))
- *                            .concat(isDateAfterAnother(endDate, beginDate));
+ *           var dateErrors = isDateFuture(beginDate).concat(isDateFuture(endDate))
+ *                            .concat(isPeriodValid(beginDate, endDate));
  *           $(dateErrors).each(function(index, error) {
  *             // handling here error.message (and error.code if necessary)
  *           });
@@ -64,10 +66,19 @@
  *
  * - date context object : it is an object that contains all necessary values to verify a date.
  * Properties : {
- *    label : the label of the date, empty by default
- *    date : the formatted date, empty by default
- *    labelHour : the label of the hour, empty by default
- *    hour : the formatted hour for the date, empty by default
+ *    labelId : the id of the HTML tag that contains the label of the date
+ *    dateId : the id of the HTML tag that contains the formatted date. If no labelId is passed, the
+ *             value of the associated label TAG is searched
+ *    labelHourId : the id of the HTML tag that contains the label of the hour
+ *    hourId : the id of the HTML tag that contains the formatted hour of the date. If no
+ *             labelHourId is passed, the value of the associated label TAG is searched
+ *    label : the label of the date, empty by default. Ignored if a value exists for labelId
+ *            parameter
+ *    date : the formatted date, empty by default. Ignored if a value exists for dateId parameter
+ *    labelHour : the label of the hour, empty by default. Ignored if a value exists for labelHourId
+ *                parameter
+ *    hour : the formatted hour for the date, empty by default. Ignored if a value exists for hourId
+ *           parameter
  *    isMandatory : boolean value to indicate if the date is mandatory, false by default. If false
  *                  then an unexisting date is not an error
  *    isMandatoryHour : boolean value to indicate if the hour is mandatory, false by default. If
@@ -122,7 +133,7 @@
    * @private
    */
   function __isDateAfterAnother(dateContext, anotherDateContext) {
-    var errors = __isDateValid(dateContext).concat(__isDateValid(anotherDateContext));
+    var errors = __isDateValid(anotherDateContext).concat(__isDateValid(dateContext));
     if (!dateContext.isError && !anotherDateContext.isError && dateContext.parsedDate &&
         anotherDateContext.parsedDate) {
       if (__compareDateToAnother(dateContext.parsedDate, anotherDateContext.parsedDate) < 0 ||
@@ -182,7 +193,11 @@
           } else {
             dateFormat = $.datepicker.regional[''].dateFormat;
           }
-          dateContext.parsedDate = jQuery.datepicker.parseDate(dateFormat, dateContext.date, null);
+          dateContext.parsedDate = $.datepicker.parseDate(dateFormat, dateContext.date, null);
+          if (dateContext.date !=
+              $.datepicker.formatDate(dateFormat, dateContext.parsedDate, null)) {
+            throw $.datechecker.CODE_ERROR.IS_NOT_VALID;
+          }
         } catch (ex) {
           errors.push(__buildError($.datechecker.CODE_ERROR.IS_NOT_VALID, dateContext));
         }
@@ -285,6 +300,10 @@
 
     var options = (arguments.length > 1) ? arguments[1] : null;
     var dateContext = {
+      labelId : '',
+      dateId : '',
+      labelHourId : '',
+      hourId : '',
       label : '',
       date : '',
       labelHour : '',
@@ -297,7 +316,7 @@
     };
     if (dateOrDateContext) {
       if (typeof dateOrDateContext === 'string') {
-        dateContext.date = dateOrDateContext;
+        dateContext.dateId = dateOrDateContext;
       } else {
         $.extend(dateContext, dateOrDateContext);
         if (!dateOrDateContext.nbCheck) {
@@ -307,11 +326,60 @@
           dateContext.nbCheck = dateOrDateContext.nbCheck;
         }
       }
+
+      /*
+       * Retrieving labels and values from given ids if necessary
+       */
+      var fromTagValues = {};
+      __loadValuesFromHtmlTags(fromTagValues, {
+        labelId : dateContext.labelId,
+        id : dateContext.dateId,
+        labelProp : 'label',
+        valueProp : 'date'
+      });
+      __loadValuesFromHtmlTags(fromTagValues, {
+        labelId : dateContext.labelHourId,
+        id : dateContext.hourId,
+        labelProp : 'labelHour',
+        valueProp : 'hour'
+      });
+      $.extend(dateContext, fromTagValues);
     }
     if (options && options != null) {
       $.extend(dateContext, options);
     }
     return dateContext;
+  }
+
+  /**
+   * Private method that centralizes the retrieving of label and value from HTML tags.
+   * @param result
+   * @param params
+   * @return {*}
+   * @private
+   */
+  function __loadValuesFromHtmlTags(result, params) {
+
+    // Label
+    var label = __isDefined(params.labelId) ? $('#' + params.labelId).html() : '';
+    if (!__isDefined(label) && __isDefined(params.id)) {
+      label = $("label[for='" + params.id + "']").html();
+      if (__isDefined(label)) {
+        label = "'" + label + "'";
+      }
+    }
+    if (__isDefined(label)) {
+      result[params.labelProp] = label;
+    }
+
+    // Value
+    var value = __isDefined(params.id) ? $('#' + params.id).val() : '';
+    if (__isDefined(value)) {
+      result[params.valueProp] = value;
+    }
+
+    // Completed result
+    return result;
   }
 
   /**
@@ -398,7 +466,7 @@
 // ###########
 
 /**
- * This method verify that the given date (and optionally hour) is valid. In common use please
+ * This method verifies that the given date (and optionally hour) is valid. In common use please
  * passing a date object context as parameter to the method like the following example :
  *     var errors = isDateValid({
  *       label : 'Begin date',
@@ -423,17 +491,17 @@ function isDateValid() {
 }
 
 /**
- * This method verify that the given date (and optionally hour) is greater or equal than today.
+ * This method verifies that the given date (and optionally hour) is greater or equal than today.
  * Notice that if the given date doesn't exist and is not mandatory then no error is returned.
  * In common use please passing a date object context as parameter to the method like the following
  * example :
- *     var errors = isDateAfterNow({
+ *     var errors = isDateFuture({
  *       label : 'Begin date',
  *       date : '01/01/2012'
  *     });
  *     ...
  * If date has to by strictly greater than today, please add the instruction like following :
- *     var errors = isDateAfterNow({
+ *     var errors = isDateFuture({
  *       label : 'Begin date',
  *       date : '01/01/2012',
  *       canBeEqualToAnother : false
@@ -441,37 +509,62 @@ function isDateValid() {
  *     ...
  * @return {Array} array of error objects (empty array if no error).
  */
-function isDateAfterNow() {
+function isDateFuture() {
   return $.datechecker.isDateAfterNow.apply(this, arguments);
 }
 
 /**
- * This method verify that the given date (and optionally hour) is greater or equal than another
+ * This method verifies that the given date (and optionally hour) is greater or equal than another
  * one. Notice that if one of the two dates doesn't exist and is not mandatory then no error is
  * returned.
  * Example :
- *     var errors = isDateAfterAnother({
- *       label : 'End date',
- *       date : '12/31/2012'
- *     },{
+ *     var errors = isPeriodValid({
  *       label : 'Begin date',
  *       date : '01/01/2012'
+ *     },{
+ *       label : 'End date',
+ *       date : '12/31/2012'
  *     });
  *     ...
  * If date has to be strictly greater than the other, please add the instruction like following :
- *     var errors = isDateAfterAnother({
+ *     var errors = isPeriodValid({
+ *       label : 'Begin date',
+ *       date : '01/01/2012'
+ *     },{
  *       label : 'End date',
  *       date : '12/31/2012',
  *       canBeEqualToAnother : false
- *     },{
- *       label : 'Begin date',
- *       date : '01/01/2012'
  *     });
  *     ...
- * @param dateContext the date to compare with another one
- * @param anotherDateContext the other date
+ * @param beginDateContext the other date
+ * @param endDateContext the date to compare with another one
  * @return {Array} array of error objects (empty array if no error).
  */
-function isDateAfterAnother(dateContext, anotherDateContext) {
-  return $.datechecker.isDateAfterAnother(dateContext, anotherDateContext);
+function isPeriodValid(beginDateContext, endDateContext) {
+  return $.datechecker.isDateAfterAnother(endDateContext, beginDateContext);
+}
+
+/**
+ * This method verifies that the given period (defined by beginDate and endDate) is valid and that
+ * the endDate is greater or equal than now.
+ * Notice that if one of the two dates doesn't exist and is not mandatory then no error is
+ * returned.
+ * Example :
+ *     var errors = isPeriodEndingInFuture('beginDateHtmlTagId', 'endDateHtmlTagId');
+ *     ...
+ * Other example :
+ *     var errors = isPeriodEndingInFuture({
+ *       label : 'Begin date',
+ *       date : '01/01/2012'
+ *     },{
+ *       label : 'End date',
+ *       date : '12/31/2012'
+ *     });
+ *     ...
+ * @param beginDateContext HTML TAG id or date context object
+ * @param endDateContext HTML TAG id or date context object
+ * @return {Array}
+ */
+function isPeriodEndingInFuture(beginDateContext, endDateContext) {
+  return isPeriodValid(beginDateContext, endDateContext).concat(isDateFuture(endDateContext));
 }
