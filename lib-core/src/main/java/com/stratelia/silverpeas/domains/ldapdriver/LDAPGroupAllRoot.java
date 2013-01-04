@@ -83,8 +83,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       for (LDAPEntry currentEntry : theEntries) {
         SilverTrace.info("admin", "LDAPGroupAllRoot.getMemberGroupIds()",
             "root.MSG_GEN_PARAM_VALUE", "GroupFound=" + currentEntry.getDN());
-        groupsVector.add(LDAPUtility.getFirstAttributeValue(currentEntry, driverSettings.
-            getGroupsIdField()));
+        groupsVector.add(getGroupId(currentEntry));
       }
     }
     return groupsVector;
@@ -144,7 +143,7 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         if (curGroup != null) {
           String grId = "???";
           try {
-            grId = LDAPUtility.getFirstAttributeValue(curGroup, driverSettings.getGroupsIdField());
+            grId = getGroupId(curGroup);
             if (!groupsManaged.contains(grId)) {
               groupsManaged.add(grId);
               usersManaged.addAll(getTRUEUserIds(lds, curGroup));
@@ -174,24 +173,28 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
         LDAPEntry userEntry;
         if ("memberUid".equals(groupsMemberField)) {
           // Case of most common OpenLDAP implementation.  memberUid = specificId
-          userEntry = LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-              driverSettings.getScope(), driverSettings.getUsersIdFilter(memberFieldValue),
-              driverSettings.getUserAttributes());
+          userEntry = getUserEntryByUID(lds, memberFieldValue);
           if (userEntry != null) {
             usersVector.add(memberFieldValue);
           }
         } else {
-          // Case of ActiveDirectory or NDS member = dn
-          userEntry = LDAPUtility.getFirstEntryFromSearch(lds, memberFieldValue, driverSettings.
-              getScope(), driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
+          // Case of ActiveDirectory, NDS, OpenDS or OpenDJ (member = dn)
+          // a group member can be a user of a group
+          // first case, get member as user 
+          userEntry = getUserEntryByDN(lds, memberFieldValue);
           if (userEntry != null) {
-            String userSpecificId = LDAPUtility.getFirstAttributeValue(
-                userEntry, driverSettings.getUsersIdField());
+            String userSpecificId = getUserId(userEntry);
             // Verify that the user exist in the scope
-            if (LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
-                driverSettings.getScope(), driverSettings.getUsersIdFilter(userSpecificId),
-                driverSettings.getUserAttributes()) != null) {
+            userEntry = getUserEntryByUID(lds, userSpecificId);
+            if (userEntry != null) {
               usersVector.add(userSpecificId);
+            }
+          } else {
+            // second case, get member as group
+            // users of this group must be added to current group
+            LDAPEntry gEntry = getGroupEntryByDN(lds, memberFieldValue);
+            if (gEntry != null) {
+              usersVector.addAll(getTRUEUserIds(lds, gEntry));
             }
           }
         }
@@ -314,5 +317,29 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
       groupsIdsSet = groupsCur;
     }
     return groupsManaged.values().toArray(new Group[groupsManaged.size()]);
+  }
+  
+  private String getGroupId(LDAPEntry entry) {
+    return LDAPUtility.getFirstAttributeValue(entry, driverSettings.getGroupsIdField());
+  }
+  
+  private String getUserId(LDAPEntry entry) {
+    return LDAPUtility.getFirstAttributeValue(entry, driverSettings.getUsersIdField());
+  }
+  
+  private LDAPEntry getUserEntryByUID(String lds, String uid) throws AdminException {
+    return LDAPUtility.getFirstEntryFromSearch(lds, driverSettings.getLDAPUserBaseDN(),
+        driverSettings.getScope(), driverSettings.getUsersIdFilter(uid),
+        driverSettings.getUserAttributes());
+  }
+  
+  private LDAPEntry getUserEntryByDN(String lds, String dn) throws AdminException {
+    return LDAPUtility.getFirstEntryFromSearch(lds, dn, driverSettings.getScope(),
+        driverSettings.getUsersFullFilter(), driverSettings.getUserAttributes());
+  }
+  
+  private LDAPEntry getGroupEntryByDN(String lds, String dn) throws AdminException {
+    return LDAPUtility.getFirstEntryFromSearch(lds, dn, driverSettings.getScope(),
+        driverSettings.getGroupsFullFilter(), driverSettings.getGroupAttributes());
   }
 }
