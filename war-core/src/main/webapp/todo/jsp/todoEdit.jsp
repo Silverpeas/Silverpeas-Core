@@ -438,15 +438,15 @@ function test(){
 <tr> 
         <td nowrap>
                 <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-                        <tr align=center> 
+                        <tr> 
 
-                                <td  class="intfdcolor4" valign="baseline" align=left> <span class="txtlibform"><%=todo.getString("organisateurToDo")%> :</span></td>
-                                        <td  class="intfdcolor4" align=left valign="baseline"><span class="txtnav">
+                                <td  class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("organisateurToDo")%></span></td>
+                                        <td class="intfdcolor4"><span class="txtnav">
                                                 <%
                                                         if (todoHeader.getDelegatorId() != null) {
                                                                 UserDetail user = todo.getUserDetail(todoHeader.getDelegatorId());
                                                                 if (user != null)
-                                                                        out.print(user.getLastName() + " " + user.getFirstName());
+                                                                        out.print(user.getDisplayedName());
                                                                 else
                                                                         out.println(todo.getString("utilisateurInconnu"));
                                                         }
@@ -454,9 +454,9 @@ function test(){
                                         </span>
                                 </td>
                         </tr>
-                        <tr align=center>
+                        <tr>
                         
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("nomToDo")%> :</span></td>
+                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("nomToDo")%></span></td>
                                 <td class="intfdcolor4" align=left valign="baseline">
                                         <input type="text" name="Name" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                                                 if (todoHeader.getName() != null) 
@@ -466,9 +466,9 @@ function test(){
                                                 %>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5">
                                 </td>
                         </tr>
-                        <tr align=center>
+                        <tr>
 
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("percentCompletedToDo")%> :</span></td>
+                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("percentCompletedToDo")%></span></td>
                                 <td class="intfdcolor4" align=left valign="baseline">
                                         <SELECT name="PercentCompleted">
                                         <%
@@ -496,18 +496,18 @@ function test(){
                                         </SELECT>
                                 </td>
                         </tr>
-                        <tr align=center> 
+                        <tr> 
 
-                                <td class="intfdcolor4"  valign="top" align=left><span class="txtlibform"><%=todo.getString("descriptionToDo")%> :</span>&nbsp;</td>
+                                <td class="intfdcolor4"  valign="top" align=left><span class="txtlibform"><%=todo.getString("descriptionToDo")%></span>&nbsp;</td>
                                 <td class="intfdcolor4"  align=left valign="baseline"><font size=1><textarea name="Description" wrap="VIRTUAL" rows="6" cols="49" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 %>><%if (todoHeader.getDescription() != null) out.print(EncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></font>
                                 </td>
                         </tr>
-                        <tr align=center>
+                        <tr>
 
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left><label for="StartDate" class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</label>&nbsp;
+                                <td class="intfdcolor4" nowrap valign="baseline" align=left><label for="StartDate" class="txtlibform"><%=todo.getString("dateDebutToDo")%></label>&nbsp;
                                         </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                         <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
@@ -527,7 +527,7 @@ function test(){
                                 </tr>
                                 <tr align=center>
                                 <td nowrap class="intfdcolor4" valign="baseline" align=left> 
-                                  <span class="txtnote"><label for="EndDate" class="txtlibform"><%=todo.getString("dateFinToDo")%> :</label>&nbsp;</span>
+                                  <span class="txtnote"><label for="EndDate" class="txtlibform"><%=todo.getString("dateFinToDo")%></label>&nbsp;</span>
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                                 <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
@@ -546,13 +546,13 @@ function test(){
                                                 }
                                                 %>>
                                                 <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                        <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></p>
+                                                        <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
                                                 <%}%>
                                 </td>
                         </tr>
-                        <tr align=center> 
+                        <tr> 
 
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("classification")%> :</span>&nbsp;
+                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("classification")%></span>&nbsp;
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                         <SELECT name="Classification" <%
@@ -575,7 +575,7 @@ function test(){
                                         </SELECT>
                                 </td>
                                 <tr align=center>
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("priorite")%> :</span>&nbsp;
+                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("priorite")%></span>&nbsp;
                                 </td>
                                 <td class="intfdcolor4" nowrap valign="baseline" align=left>
                                         <SELECT name="Priority" <%
@@ -599,14 +599,14 @@ function test(){
                                 </td>
                         </tr>
                         
-                        <tr align=center>
+                        <tr>
 
                                 <td valign="top" class="intfdcolor4" nowrap align=left>
                                 <% if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
 
                                 <% }%>
                                          <span class="txtlibform"><%=todo.getString("listeDiffusion")%> 
-                                        :</span> 
+                                        </span> 
                                         &nbsp;
                                         </td>
                                         <td valign="baseline" class="intfdcolor4" nowrap align=left>
@@ -638,8 +638,7 @@ function test(){
                                         
                                 </td>
                                         </tr>
-                                <tr align=center nowrap>
-                                 
+                                <tr>
                                         <td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"> : <%=todo.getString("mandatoryFields")%>) </span> 
                                         </td>
                         </tr>
