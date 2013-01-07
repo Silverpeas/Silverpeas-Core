@@ -65,7 +65,7 @@ function UserProfile(user) {
    * aren't loaded, so you have to load them before with the loadRelationships() method.
    * @return {UserProfile[]} the relationships of this user.
    */
-  this.relationships = function() {
+  this.relationships = function () {
     return myrelationships;
   };
 
@@ -76,10 +76,10 @@ function UserProfile(user) {
    * @param {function} [callback] the function to call once the user properties loaded.
    * @return {UserProfile} itself
    */
-  this.load = function(callback) {
+  this.load = function (callback) {
     usermgt.get({
       contacts: false
-    }, function(users) {
+    }, function (users) {
       if (users.length == 1) {
         for (var prop in users[0])
           self[prop] = users[0][prop];
@@ -87,7 +87,7 @@ function UserProfile(user) {
           callback(self);
       } else
         alert('Error loading the user of id ' + usermgt.filter.id +
-          ': several users match the parameters!');
+            ': several users match the parameters!');
       usermgt.users = null;
     });
     return self;
@@ -99,7 +99,7 @@ function UserProfile(user) {
    * @return {UserProfile} itself.
    * @param {String} component the unique identifier the component instance.
    */
-  this.inComponent = function(component) {
+  this.inComponent = function (component) {
     usermgt.filter.component = component;
     return self;
   };
@@ -109,7 +109,7 @@ function UserProfile(user) {
    * @param {String} domain the Silverpeas domain identifier.
    * @return {UserProfile} itself.
    */
-  this.inDomain = function(domain) {
+  this.inDomain = function (domain) {
     usermgt.filter.domain = domain;
     return self;
   };
@@ -119,7 +119,7 @@ function UserProfile(user) {
    * @param {String} roles the roles the user should play.
    * @return {UserProfile} itself.
    */
-  this.withRoles = function(roles) {
+  this.withRoles = function (roles) {
     usermgt.filter.roles = roles;
     return self;
   };
@@ -130,7 +130,7 @@ function UserProfile(user) {
    * @param {String} resource a resource unique identifier.
    * @return {UserProfile} itself.
    */
-  this.forResource = function(resource) {
+  this.forResource = function (resource) {
     usermgt.filter.resource = resource;
     return self;
   };
@@ -149,7 +149,7 @@ function UserProfile(user) {
    * @param {function} [callback] a function to call once the relationships of the user areloaded.
    * @return {UserProfile} itself.
    */
-  this.loadRelationships = function(filter, callback) {
+  this.loadRelationships = function (filter, callback) {
     var toload = false;
     if (arguments.length == 1 && typeof arguments[0] == "function") {
       callback = arguments[0];
@@ -169,7 +169,7 @@ function UserProfile(user) {
           filter.pagination.count = CountPerPage;
         if (usermgt.filter.pagination == null || usermgt.filter.pagination.page != filter.pagination.page
             || usermgt.filter.pagination.count != filter.pagination.count) {
-          usermgt.filter.pagination = filter.pagination;
+          usermgt.filter.pagination = {page: filter.pagination.page, count: filter.pagination.count};
           toload = true;
         }
       } else if (usermgt.filter.pagination != null) {
@@ -180,7 +180,7 @@ function UserProfile(user) {
     if (toload)
       usermgt.get({
         contacts: true
-      }, function(users) {
+      }, function (users) {
         myrelationships = users;
         if (callback)
           callback(users);
@@ -199,9 +199,9 @@ function UserProfile(user) {
  */
 function UserGroup(group) {
 
-  var self        = this;
+  var self = this;
   var subgroupmgt = new UserGroupManagement();
-  var usermgt     = new UserProfileManagement();
+  var usermgt = new UserProfileManagement();
 
   if (group != null)
     for (var prop in group)
@@ -212,7 +212,7 @@ function UserGroup(group) {
    * to call loadChildren() method before calling this method.
    * @return {UserGroup[]} the direct children of this group.
    */
-  this.children = function() {
+  this.children = function () {
     return subgroupmgt.groups;
   };
 
@@ -222,7 +222,7 @@ function UserGroup(group) {
    * @param {String} component the unique identifier of the component instance.
    * @return {UserGroup} itself.
    */
-  this.inComponent = function(component) {
+  this.inComponent = function (component) {
     subgroupmgt.filter.component = component;
     usermgt.filter.component = component;
     return self;
@@ -234,7 +234,7 @@ function UserGroup(group) {
    * @param {String} domain the unique identifier of the Silverpeas domain.
    * @return {UserGroup} itself.
    */
-  this.inDomain = function(domain) {
+  this.inDomain = function (domain) {
     subgroupmgt.filter.domain = domain;
     usermgt.filter.domain = domain;
     return self;
@@ -245,7 +245,7 @@ function UserGroup(group) {
    * @param {String} roles the roles all the users in this group should play.
    * @return {UserGroup} itself.
    */
-  this.withRoles = function(roles) {
+  this.withRoles = function (roles) {
     subgroupmgt.filter.roles = roles;
     usermgt.filter.roles = roles;
     return self;
@@ -258,7 +258,7 @@ function UserGroup(group) {
    * instance.
    * @return {UserGroup} itself.
    */
-  this.forResource = function(resource) {
+  this.forResource = function (resource) {
     subgroupmgt.filter.resource = resource;
     return self;
   };
@@ -270,11 +270,11 @@ function UserGroup(group) {
    * @param {function} [callback] the function to call once the properties of this group loaded.
    * @return {UserGroup} itself.
    */
-  this.load = function(callback) {
+  this.load = function (callback) {
     var groupmgt = new UserGroupManagement({
       id: self.id
     });
-    groupmgt.get(function(groups) {
+    groupmgt.get(function (groups) {
       if (groups.length == 1) {
         for (var prop in groups[0])
           self[prop] = groups[0][prop];
@@ -282,7 +282,7 @@ function UserGroup(group) {
           callback(self);
       } else
         alert('Error loading the user group of id ' + groupmgt.filter.id +
-          ': several user groups match the parameters!');
+            ': several user groups match the parameters!');
       groupmgt.groups = null;
     });
     return self;
@@ -293,23 +293,41 @@ function UserGroup(group) {
    * operation by passing it the fetched subgroups.
    * @param [filter] the filtering parameters on the subgroups to load.
    * @param {String} filter.name a pattern on the name of the groups to load.
+   * @param [filter.pagination] the pagination properties on the subgroups to load. If no pagination is set then load all the subgroups.
+   * @param filter.pagination.page the page number to load.
+   * @param [filter.pagination.count=CountPerPage] the number of subgroups in a page. By default, set at CountPerPage)
    * @param {function} [callback] a function to call once the subgroups are loaded.
    * @return {UserGroup} itself.
    */
-  this.loadChildren = function(filter, callback) {
+  this.loadChildren = function (filter, callback) {
     var toload = (subgroupmgt.groups == null);
     if (arguments.length == 1 && typeof arguments[0] == "function") {
       callback = arguments[0];
       filter = null;
     }
 
-    if (filter != null && subgroupmgt.filter.name != filter.name) {
-      subgroupmgt.filter.name = filter.name;
-      toload = true;
+    if (filter != null) {
+      if (subgroupmgt.filter.name != filter.name) {
+        subgroupmgt.filter.name = filter.name;
+        toload = true;
+      }
+      if (filter.pagination != null) {
+        if (filter.pagination.count == null)
+          filter.pagination.count = CountPerPage;
+        if (subgroupmgt.filter.pagination == null || subgroupmgt.filter.pagination.page != filter.pagination.page ||
+            subgroupmgt.filter.pagination.count != filter.pagination.count) {
+          subgroupmgt.filter.pagination = {page: filter.pagination.page, count: filter.pagination.count};
+          toload = true;
+        }
+      } else if (subgroupmgt.filter.pagination != null) {
+        subgroupmgt.filter.pagination = null;
+        toload = true;
+      }
     }
+
     if (toload) {
       subgroupmgt.filter.url = self.childrenUri;
-      subgroupmgt.get(function(groups) {
+      subgroupmgt.get(function (groups) {
         if (callback)
           callback(groups);
       });
@@ -328,7 +346,7 @@ function UserGroup(group) {
    * @param {function} [callback] a function to call once the users are loaded.
    * @return {UserProfile[]} the profile of the users in this group.
    */
-  this.loadUsers = function(filter, callback) {
+  this.loadUsers = function (filter, callback) {
     var toload = false;
     if (arguments.length == 1 && typeof arguments[0] == "function") {
       callback = arguments[0];
@@ -350,7 +368,7 @@ function UserGroup(group) {
           filter.pagination.count = CountPerPage;
         if (usermgt.filter.pagination == null || usermgt.filter.pagination.page != filter.pagination.page ||
             usermgt.filter.pagination.count != filter.pagination.count) {
-          usermgt.filter.pagination = filter.pagination;
+          usermgt.filter.pagination = {page: filter.pagination.page, count: filter.pagination.count};
           toload = true;
         }
       } else if (usermgt.filter.pagination != null) {
@@ -359,7 +377,7 @@ function UserGroup(group) {
       }
     }
     if (toload)
-      usermgt.get(function(users) {
+      usermgt.get(function (users) {
         if (callback)
           callback(users);
       });
@@ -373,7 +391,7 @@ function UserGroup(group) {
    * so you have to call loadUsers() method before calling this method.
    * @return {UserProfile[]}
    */
-  this.users = function() {
+  this.users = function () {
     return usermgt.users;
   }
 }
@@ -410,8 +428,8 @@ var rootUserGroup = new UserGroup({
  * @param params.pagination.page the page number.
  * @param params.pagination.count the number of users in each page.
  * @class Object dedicated to the management of the user profiles at client side.
-  * It that wraps the communication with the remote service that works on the user profiles.
-  * You can give some parameters to filter the users on which this object works.
+ * It that wraps the communication with the remote service that works on the user profiles.
+ * You can give some parameters to filter the users on which this object works.
  */
 function UserProfileManagement(params) {
 
@@ -442,10 +460,10 @@ function UserProfileManagement(params) {
     component: null, // a component instance identifier
     domain: null, // an identifier of the user domain the user belongs to
     resource: null, // an identifier of a resource belonging to a component instance (the identifier
-                    // must be set the resource type following by resource identifier in Silverpeas).
+    // must be set the resource type following by resource identifier in Silverpeas).
     roles: null, // a string with a comma-separated role names
     pagination: null // pagination data in the form of
-  // { page: <number of the page>, count: <count of users to fetch> }
+    // { page: <number of the page>, count: <count of users to fetch> }
   };
 
   /**
@@ -460,7 +478,7 @@ function UserProfileManagement(params) {
    */
   function setUpFilter(params) {
     if (params)
-      for(var prop in params)
+      for (var prop in params)
         if (prop != "async")
           self.filter[prop] = params[prop];
         else
@@ -512,7 +530,7 @@ function UserProfileManagement(params) {
    * @param {function} loaded a function to call once the user profiles are loaded.
    * @return {UserProfileManagement} itself.
    */
-  this.get = function(params, loaded) {
+  this.get = function (params, loaded) {
     var urlOfUsers = userRootURL, separator = '?', application = '/application/';
     if (arguments.length == 1) {
       loaded = arguments[0];
@@ -563,12 +581,12 @@ function UserProfileManagement(params) {
       dataType: 'json',
       cache: false,
       async: self.async,
-      success: function(users, status, jqXHR) {
+      success: function (users, status, jqXHR) {
         self.users = decorate(users);
         self.users.maxlength = jqXHR.getResponseHeader('X-Silverpeas-UserSize');
         loaded(self.users);
       },
-      error: function(jqXHR, textStatus, errorThrown) {
+      error: function (jqXHR, textStatus, errorThrown) {
         alert(errorThrown);
       }
     });
@@ -577,7 +595,8 @@ function UserProfileManagement(params) {
 }
 
 /**
- * Creates a UserGroupManagement instance dedicated to manage the communication between the th
+ * Creates a UserGroupManagement instance dedicated to manage the communication with the WEB
+ * service on user profiles.
  * @param [params] the policy parameters on the user fetch.
  * @param [params.async=true] the asynchronous property of the communication with the WEB service.
  * @param [params.id] the unique identifier of a user profile
@@ -586,6 +605,9 @@ function UserProfileManagement(params) {
  * @param [params.domain] an unique identifier of a domain the users in the group should belong to.
  * @param [params.resource] an unique identifier of a resource in a component instance the users in the group must have right accesses.
  * @param [params.roles] a String of comma-separated of role names. The roles the users in the group should play.
+ * @param [params.pagination] the pagination parameters on the user groups to fetch.
+ * @param params.pagination.page the page number.
+ * @param params.pagination.count the number of groups in each page.
  * @class Object dedicated to the management of user groups at client side.
  * It that wraps the communication with the remote service that works on the user groups.
  * You can give some parameters to constraints the user groups on which this object should work.
@@ -603,6 +625,9 @@ function UserGroupManagement(params) {
    * @property {String} [domain] an unique identifier of a domain the users in the group should belong to.
    * @property {String} [resource] an unique identifier of a resource in a component instance the users in the group must have right accesses.
    * @property {String} [roles] a String of comma-separated of role names. The roles the users in the group should play.
+   * @property [pagination] the pagination parameters on the user groups to fetch.
+   * @property {Number} pagination.page the page number.
+   * @property {Number} pagination.count the number of groups in each page.
    * @type {{id: null, url: null, name: null, component: null, domain: null, roles: null, resource: null}}
    */
   this.filter = {
@@ -612,7 +637,9 @@ function UserGroupManagement(params) {
     component: null,
     domain: null,
     roles: null,
-    resource: null
+    resource: null,
+    pagination: null // pagination data in the form of
+    // { page: <number of the page>, count: <count of users to fetch> }
   };
 
   /**
@@ -627,7 +654,7 @@ function UserGroupManagement(params) {
    */
   function setUpFilter(params) {
     if (params)
-      for(var prop in params)
+      for (var prop in params)
         if (prop != "async")
           self.filter[prop] = params[prop];
         else
@@ -646,7 +673,7 @@ function UserGroupManagement(params) {
       for (var i = 0; i < groups.length; i++)
         decoratedGroups.push(new UserGroup(groups[i]));
     } else {
-     decoratedGroups.push(groups);
+      decoratedGroups.push(groups);
     }
     return decoratedGroups;
   }
@@ -673,10 +700,13 @@ function UserGroupManagement(params) {
    * @param [params.domain] an unique identifier of a domain the users in the group should belong to.
    * @param [params.resource] an unique identifier of a resource in a component instance the users in the group must have right accesses.
    * @param [params.roles] a String of comma-separated of role names. The roles the users in the group should play.
+   * @param [params.pagination] the pagination parameters on the user groups to fetch.
+   * @param params.pagination.page the page number.
+   * @param params.pagination.count the number of groups in each page.
    * @param {function} loaded a function to call once the user groups are loaded.
    * @return {UserGroupManagement} itself.
    */
-  this.get = function(params, loaded) {
+  this.get = function (params, loaded) {
     var urlOfGroups = groupRootURL, separator = '?';
     if (arguments.length == 1) {
       loaded = arguments[0];
@@ -704,6 +734,10 @@ function UserGroupManagement(params) {
     }
     if (self.filter.id == null && self.filter.name && self.filter.name != '*') {
       urlOfGroups += separator + "name=" + self.filter.name;
+      separator = '&';
+    }
+    if (self.filter.pagination) {
+      urlOfGroups += separator + 'page=' + self.filter.pagination.page + ';' + self.filter.pagination.count;
     }
     $.ajax({
       url: urlOfGroups,
@@ -711,11 +745,12 @@ function UserGroupManagement(params) {
       dataType: 'json',
       cache: false,
       async: self.async,
-      success: function(groups) {
+      success: function (groups, status, jqXHR) {
         self.groups = decorate(groups);
+        self.groups.maxlength = jqXHR.getResponseHeader('X-Silverpeas-GroupSize');
         loaded(self.groups);
       },
-      error: function(jqXHR, textStatus, errorThrown) {
+      error: function (jqXHR, textStatus, errorThrown) {
         alert(errorThrown);
       }
     });
