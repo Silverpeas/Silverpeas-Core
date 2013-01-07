@@ -964,6 +964,13 @@ public class AttachmentController {
               indexEntry.setKeywords(title, language);
             }
 
+            if(translation.getLogicalName() != null){
+                int lastDot = translation.getLogicalName().lastIndexOf('.');
+                if(lastDot != -1){
+                    indexEntry.addTextContent(translation.getLogicalName().substring(0,lastDot));
+                }
+            }
+
             String info = translation.getInfo();
             if (StringUtil.isDefined(info)) {
               indexEntry.setPreview(info, language);
