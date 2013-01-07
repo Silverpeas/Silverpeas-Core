@@ -477,7 +477,7 @@ public class IndexManager {
 
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language),
-              Store.NO, Index.NOT_ANALYZED));
+              Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
@@ -541,35 +541,6 @@ public class IndexManager {
       doc.add(new Field(FIELDS_FOR_FACETS, sFieldsForFacet, Store.YES, Index.NO));
     }
 
-    if (!isWysiwyg(indexEntry)) {
-      // Lucene doesn't index all the words in a field
-      // (the max is given by the maxFieldLength property)
-      // The problem is that we don't no which words are skipped
-      // and which ones are taken. So the trick used here :
-      // the words which MUST been indexed are given twice to lucene
-      // at the beginning of the field CONTENT and at the end of this field.
-      // (In the current implementation of lucene and without this trick;
-      // some key words are not indexed !!!)
-      languages = indexEntry.getLanguages();
-      while (languages.hasNext()) {
-        String language = languages.next();
-        if (indexEntry.getTitle(language) != null) {
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
-        }
-        if (indexEntry.getPreview(language) != null) {
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
-        }
-        if (indexEntry.getKeywords(language) != null) {
-          doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
-        }
-      }
-    }
     // Add server name inside Lucene doc
     doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, Index.NOT_ANALYZED));
     return doc;
