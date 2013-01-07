@@ -68,6 +68,7 @@
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context %>/util/javaScript/checkForm.js"></script>
 <view:includePlugin name="messageme"/>
+<view:includePlugin name="password"/>
 <script type="text/javascript">
 function statusPublishFailed() {
 	$("#statusPublishFailedDialog").dialog("open");
