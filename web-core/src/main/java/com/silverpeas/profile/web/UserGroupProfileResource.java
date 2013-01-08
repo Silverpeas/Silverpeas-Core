@@ -30,12 +30,14 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -47,13 +49,20 @@ import static com.silverpeas.util.StringUtil.isDefined;
  *
  * The user groups that are published depend on some parameters whose the domain isolation and the
  * profile of the user behind the requesting. The domain isolation defines the visibility of a user
- * or a group of users in a given domain to the others domains in Silverpeas.
+ * or a group of groups in a given domain to the others domains in Silverpeas.
  */
 @Service
 @RequestScoped
 @Path(GROUPS_BASE_URI)
 @Authenticated
 public class UserGroupProfileResource extends RESTWebService {
+
+  /**
+   * The HTTP header parameter that provides the real size of the group profiles that match a query.
+   * This parameter is useful for clients that use the pagination to filter the count of group
+   * profiles to sent back.
+   */
+  public static final String RESPONSE_HEADER_GROUPSIZE = "X-Silverpeas-GroupSize";
 
   @Inject
   private UserProfileService profileService;
@@ -70,11 +79,16 @@ public class UserGroupProfileResource extends RESTWebService {
    * @param name a pattern on the name of the root groups to retrieve. If null, all the root groups
    * are fetched.
    * @param domain the unique identifier of the domain the groups has to be related.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
    * @return the JSON representation of the array of the groups matching the pattern.
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getAllRootGroups(@QueryParam("name") String name,
+  public Response getAllRootGroups(@QueryParam("name") String name,
+      @QueryParam("page") String page,
       @QueryParam("domain") String domain) {
     GroupsSearchCriteria criteria;
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
@@ -84,15 +98,19 @@ public class UserGroupProfileResource extends RESTWebService {
           withRootGroupSet().
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withRootGroupSet().
           withDomainId(domainId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] allGroups = getOrganizationController().searchGroups(criteria);
-    return asWebEntity(groupsNotEmpty(allGroups), locatedAt(getUriInfo().getAbsolutePath()));
+    ListSlice<Group> allGroups = getOrganizationController().searchGroups(criteria);
+    UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
+    return Response.ok(entities).
+        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).build() ;
   }
 
   /**
@@ -110,6 +128,10 @@ public class UserGroupProfileResource extends RESTWebService {
    * identifier.
    * @param name the pattern on the name the groups name must match. Null if all groups for the
    * specified application have to be fetched.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
    * @param domain the unique identifier of the domain the groups has to be related.
    * @return the JSON representation of the array with the parent groups having access the
    * application instance.
@@ -117,11 +139,12 @@ public class UserGroupProfileResource extends RESTWebService {
   @GET
   @Path("application/{instanceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getGroupsInApplication(
+  public Response getGroupsInApplication(
       @PathParam("instanceId") String instanceId,
       @QueryParam("roles") String roles,
       @QueryParam("resource") String resource,
       @QueryParam("name") String name,
+      @QueryParam("page") String page,
       @QueryParam("domain") String domain) {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
@@ -134,18 +157,21 @@ public class UserGroupProfileResource extends RESTWebService {
           withResourceId(resource).
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
           withRoles(roleNames).
           withResourceId(resource).
           withDomainId(domainId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] groups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> groups = getOrganizationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
-    return asWebEntity(groupsNotEmpty(groups), locatedAt(groupsUri));
+    return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
+            header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
   }
 
   /**
@@ -165,19 +191,24 @@ public class UserGroupProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets the direct subgroups of the group of users identified by the specified path.
+   * Gets the direct subgroups of the group of groups identified by the specified path.
    *
    * @param groups the path of group identifiers, from the root group downto the group for which the
    * direct subgroups are seeked.
    * @param name a pattern the subgroup names must match. If null, all the direct subgroups are
    * fetched.
+   * @param page the pagination parameters formatted as "page number;item count in the page". From
+   * this parameter is computed the part of groups to sent back: those between ((page number - 1)
+   * item count in the page) and ((page number - 1) item count in the page + item count in the
+   * page).
    * @return a JSON representation of the array of the direct subgroups.
    */
   @GET
   @Path("{path:[0-9]+/groups(/[0-9]+/groups)*}")
   @Produces(MediaType.APPLICATION_JSON)
-  public UserGroupProfileEntity[] getSubGroups(@PathParam("path") String groups,
-      @QueryParam("name") String name) {
+  public Response getSubGroups(@PathParam("path") String groups,
+      @QueryParam("name") String name,
+      @QueryParam("page") String page) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
     profileService.getGroupAccessibleToUser(groupId, getUserDetail());
@@ -188,15 +219,17 @@ public class UserGroupProfileResource extends RESTWebService {
           withSuperGroupId(groupId).
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withSuperGroupId(groupId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] subgroups = getOrganizationController().searchGroups(criteria);
-
-    return asWebEntity(groupsNotEmpty(subgroups), locatedAt(getUriInfo().getAbsolutePath()));
+    ListSlice<Group> subgroups = getOrganizationController().searchGroups(criteria);
+    return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
+            header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
   }
 
   @Override
@@ -213,21 +246,22 @@ public class UserGroupProfileResource extends RESTWebService {
     return uri;
   }
 
-  private List<Group> groupsNotEmpty(final Group[] groups) {
-    List<Group> noEmptyGroups = new ArrayList<Group>();
-    for (Group group : groups) {
-      if (group.getTotalNbUsers() > 0) {
-        noEmptyGroups.add(group);
-      }
-    }
-    return noEmptyGroups;
-  }
-
   private UserGroupProfileEntity[] asWebEntity(List<? extends Group> allGroups, URI baseUri) {
     return UserGroupProfileEntity.fromGroups(allGroups, baseUri);
   }
 
   private UserGroupProfileEntity asWebEntity(Group group, URI groupUri) {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
+  }
+
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
+    }
+    return paginationPage;
   }
 }
