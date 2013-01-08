@@ -30,15 +30,14 @@ import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
-import edu.emory.mathcs.backport.java.util.Arrays;
-
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.profile.web.ProfileResourceBaseURIs.GROUPS_BASE_URI;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -99,17 +98,19 @@ public class UserGroupProfileResource extends RESTWebService {
           withRootGroupSet().
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withRootGroupSet().
           withDomainId(domainId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] allGroups = getOrganizationController().searchGroups(criteria);
-    List<Group> matchingGroups = paginate(allGroups, page);
-    return Response.ok(asWebEntity(matchingGroups, locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_GROUPSIZE, allGroups.length).build() ;
+    ListSlice<Group> allGroups = getOrganizationController().searchGroups(criteria);
+    UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
+    return Response.ok(entities).
+        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).build() ;
   }
 
   /**
@@ -156,20 +157,21 @@ public class UserGroupProfileResource extends RESTWebService {
           withResourceId(resource).
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
           withRoles(roleNames).
           withResourceId(resource).
           withDomainId(domainId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] groups = getOrganizationController().searchGroups(criteria);
-    List<Group> matchingGroups = paginate(groups, page);
+    ListSlice<Group> groups = getOrganizationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
-    return Response.ok(asWebEntity(matchingGroups, locatedAt(groupsUri))).
-            header(RESPONSE_HEADER_GROUPSIZE, groups.length).build() ;
+    return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
+            header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
   }
 
   /**
@@ -217,16 +219,17 @@ public class UserGroupProfileResource extends RESTWebService {
           withSuperGroupId(groupId).
           withDomainId(domainId).
           withMixedDomainId().
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     } else {
       criteria = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withSuperGroupId(groupId).
-          withName(name).build();
+          withName(name).
+          withPaginationPage(fromPage(page)).build();
     }
-    Group[] subgroups = getOrganizationController().searchGroups(criteria);
-    List<Group> matchingGroups = paginate(subgroups, page);
-    return Response.ok(asWebEntity(matchingGroups, locatedAt(getUriInfo().getAbsolutePath()))).
-            header(RESPONSE_HEADER_GROUPSIZE, subgroups.length).build();
+    ListSlice<Group> subgroups = getOrganizationController().searchGroups(criteria);
+    return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
+            header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
   }
 
   @Override
@@ -251,28 +254,14 @@ public class UserGroupProfileResource extends RESTWebService {
     return UserGroupProfileEntity.fromGroup(group).withAsUri(groupUri);
   }
 
-  private List<Group> paginate(Group[] groups, String pagination) {
-    try {
-      List<Group> paginatedGroups;
-      if (pagination != null && !pagination.isEmpty()) {
-        String[] page = pagination.split(";");
-        int nth = Integer.valueOf(page[0]);
-        int count = Integer.valueOf(page[1]);
-        int begin = (nth - 1) * count;
-        int end = begin + count;
-        if (end > groups.length) {
-          end = groups.length;
-        }
-        paginatedGroups = new ArrayList<Group>(end - begin);
-        for (int i = begin; i < end; i++) {
-          paginatedGroups.add(groups[i]);
-        }
-      } else {
-        paginatedGroups = Arrays.asList(groups);
-      }
-      return paginatedGroups;
-    } catch (Exception ex) {
-      throw new WebApplicationException(Response.Status.BAD_REQUEST);
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
     }
+    return paginationPage;
   }
 }
