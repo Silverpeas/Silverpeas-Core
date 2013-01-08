@@ -34,6 +34,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import org.silverpeas.util.ListSlice;
 
 public class UserManager {
 
@@ -104,18 +105,18 @@ public class UserManager {
    * Gets the users that match the specified criteria.
    *
    * @param criteria the criteria in searching of user details.
-   * @return an array of user details matching the criteria or an empty array of no ones are found.
+   * @return a slice of the list of user details matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user details.
    */
-  public UserDetail[] getUsersMatchingCriteria(final UserSearchCriteriaForDAO criteria) throws
+  public ListSlice<UserDetail> getUsersMatchingCriteria(final UserSearchCriteriaForDAO criteria) throws
           AdminException {
     Connection connection = null;
     try {
       connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      List<UserDetail> users = userDAO.getUsersByCriteria(connection,
+      ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
               (UserSearchCriteriaForDAO) criteria);
-      return users.toArray(new UserDetail[users.size()]);
+      return users;
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersMatching",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
