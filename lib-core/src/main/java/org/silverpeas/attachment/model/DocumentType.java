@@ -29,7 +29,8 @@ package org.silverpeas.attachment.model;
  */
 public enum DocumentType {
 
-  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video");
+  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"), 
+  node("node");
   private String forlderName;
 
   private DocumentType(String folder) {
