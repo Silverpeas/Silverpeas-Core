@@ -34,6 +34,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletException;
@@ -41,6 +42,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.CharEncoding;
+
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -54,7 +58,8 @@ public class LaunchWebdavEdition extends HttpServlet {
   private final static byte[] KEY = new byte[] { -23, -75, -2, -17, 79, -94, -125, -14 };
   private final static String DIGITS = "0123456789abcdef";
   private static final ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.attachment.Attachment", "");
+      "org.silverpeas.util.attachment.Attachment", "");
+  private static final String ALGORITHME = "DES";
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -74,13 +79,17 @@ public class LaunchWebdavEdition extends HttpServlet {
       if (mainSessionController == null) {
         String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
         getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+        return;
       }
       String login = mainSessionController.getCurrentUserDetail().getLogin();
       String password = (String) request.getSession().getAttribute("Silverpeas_pwdForHyperlink");
-      Cipher cipher = Cipher.getInstance("DES");
-      cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(KEY, "DES"));
-      byte[] cipherText = cipher.doFinal(password.getBytes("UTF-8"));
-      String encPassword = toHex(cipherText);
+      String encPassword = "";
+      if(StringUtil.isDefined(password)) {
+        Cipher cipher = Cipher.getInstance(ALGORITHME);
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(KEY, ALGORITHME));
+        byte[] cipherText = cipher.doFinal(password.getBytes(CharEncoding.UTF_8));
+        encPassword = toHex(cipherText);
+      }
       prepareJNLP(request, out, login, encPassword);
     } catch (NoSuchAlgorithmException ex) {
       throw new ServletException(ex);
@@ -103,7 +112,7 @@ public class LaunchWebdavEdition extends HttpServlet {
    * @return a hex representation of length bytes of data.
    */
   String toHex(byte[] data) {
-    StringBuilder buf = new StringBuilder();
+    StringBuilder buf = new StringBuilder(data.length);
     for (int i = 0; i != data.length; i++) {
       int v = data[i] & 0xff;
       buf.append(DIGITS.charAt(v >> 4));
@@ -150,16 +159,16 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t</resources>");
     out.println("\t<application-desc main-class=\"com.silverpeas.openoffice.Launcher\">");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(request.getParameter("documentUrl"), "UTF-8"));
+    out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"), "UTF-8"));
+    out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"), CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(login, "UTF-8"));
+    out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(password, "UTF-8"));
+    out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
     out.println("</argument>");
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
