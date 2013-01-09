@@ -57,6 +57,8 @@ import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
 /**
  * SilverStatisticsManager is the tool used in silverpeas to compute statistics for connexions,
  * files size and components access. This is a singleton class.
+ * yet, the single instance is managed by the IoC container that will invoke the
+ * <code>initSilverStatisticsManager()</code> method for initializing it.
  * @author Marc Guillemin
  */
 public class SilverStatisticsManager implements SchedulerEventListener {
@@ -79,9 +81,10 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   }
 
   /**
-   * Init attributes
+   * Init attributes.
+   * This method is invoked by the IoC container. Don't invoke it!
    */
-  private void initSilverStatisticsManager() {
+  public void initSilverStatisticsManager() {
     directoryToScan = new ArrayList<String>();
     try {
       statsConfig = new StatisticsConfig();
@@ -119,7 +122,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   public static synchronized SilverStatisticsManager getInstance() {
     if (myInstance == null) {
       myInstance = new SilverStatisticsManager();
-      myInstance.initSilverStatisticsManager();
+      //myInstance.initSilverStatisticsManager();
     }
     return myInstance;
   }

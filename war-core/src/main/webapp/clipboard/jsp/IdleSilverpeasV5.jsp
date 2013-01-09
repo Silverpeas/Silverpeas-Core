@@ -33,16 +33,13 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.silverpeas.look.LookHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
-<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.SessionManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.silverpeas.session.SessionManagement" %>
+<%@ page import="com.silverpeas.session.SessionManagementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -60,7 +57,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     String connectedUsers = message.getString("connectedUsers");
     boolean displayConnectedUsers = homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null && lookHelper.getSettings("displayConnectedUsers", true);
     if (displayConnectedUsers) {
-        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
+      SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+      nbConnectedUsers = sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
         if (nbConnectedUsers <= 1) {
             connectedUsers = message.getString("connectedUser");
         }

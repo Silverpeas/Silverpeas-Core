@@ -26,9 +26,10 @@ package com.silverpeas.look;
 
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -374,8 +375,10 @@ public class LookSilverpeasV5Helper implements LookHelper {
     int nbConnectedUsers = 0;
     if (shouldDisplayConnectedUsers) {
       // Remove the current user
+      SessionManagementFactory factory = SessionManagementFactory.getFactory();
+      SessionManagement sessionManagement = factory.getSessionManagement();
       nbConnectedUsers =
-          SessionManager.getInstance().getNbConnectedUsersList(getMainSessionController().
+          sessionManagement.getNbConnectedUsersList(getMainSessionController().
           getCurrentUserDetail()) - 1;
     }
     return nbConnectedUsers;

@@ -21,6 +21,8 @@
 package com.stratelia.silverpeas.peasCore.servlets;
 
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 import com.stratelia.silverpeas.peasCore.*;
@@ -214,7 +216,9 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     SilverTrace.info("peasCore",
         "ComponentRequestRouter.updateSessionManagement",
         "root.MSG_GEN_PARAM_VALUE", "dest=" + destination);
-    SessionManager.getInstance().setLastAccess(session);
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    sessionManagement.validateSession(session.getId());
   }
 
   // check if the user is allowed to access the required component

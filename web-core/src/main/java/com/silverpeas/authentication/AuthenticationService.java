@@ -24,6 +24,8 @@
 
 package com.silverpeas.authentication;
 
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -32,7 +34,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -90,7 +91,9 @@ public class AuthenticationService {
       if (!controller.getCurrentUserDetail().isAccessRemoved()) {
         // Init session management and session object !!! This method reset theSession Object
         if (!UserDetail.isAnonymousUser(controller.getUserId())) {
-          SessionManager.getInstance().addSession(session, request, controller);
+          SessionManagementFactory factory = SessionManagementFactory.getFactory();
+          SessionManagement sessionManagement = factory.getSessionManagement();
+          sessionManagement.openSession(controller.getCurrentUserDetail(), request);
         }
         // Put the main session controller in the session
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -112,7 +115,6 @@ public class AuthenticationService {
    * @return
    */
   public String getAuthenticationErrorPageUrl(HttpServletRequest request, String sKey) {
-    HttpSession session = request.getSession();
     SilverTrace.error("peasCore", "AuthenticationService.authenticate()",
         "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + sKey);
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
@@ -237,6 +239,8 @@ public class AuthenticationService {
         session.removeAttribute(attributeName);
       }
     }
-    SessionManager.getInstance().closeSession(session.getId());
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    sessionManagement.closeSession(session.getId());
   }
 }
