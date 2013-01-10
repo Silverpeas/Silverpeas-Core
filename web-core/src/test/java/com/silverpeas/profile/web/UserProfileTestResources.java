@@ -37,8 +37,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.util.ListSlice;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
@@ -76,35 +77,12 @@ public class UserProfileTestResources extends TestResources {
     return users;
   }
 
-  @Deprecated
-  public void whenSearchGroupsThenReturn(final Group[] groups) {
-    OrganizationController mock = getOrganizationControllerMock();
-    String[] groupIds = getGroupIds(groups);
-    when(mock.searchGroupsIds(anyBoolean(), anyString(), any(String[].class), any(Group.class))).
-            thenReturn(groupIds);
-    doAnswer(new Answer<Group[]>() {
-
-      @Override
-      public Group[] answer(InvocationOnMock invocation) throws Throwable {
-        Group[] emptyGroup = new Group[0];
-        String[] passedGroupIds = (String[]) invocation.getArguments()[0];
-        String[] groupIds = getGroupIds(groups);
-        if (passedGroupIds.length == groupIds.length) {
-          if (Arrays.asList(passedGroupIds).containsAll(Arrays.asList(groupIds))) {
-            return groups;
-          }
-        }
-        return emptyGroup;
-      }
-    }).when(mock).getGroups(any(String[].class));
-  }
-
   public void whenSearchGroupsByCriteriaThenReturn(final Group[] groups) {
     OrganizationController mock = getOrganizationControllerMock();
-    doAnswer(new Answer<Group[]>() {
+    doAnswer(new Answer<ListSlice<Group>>() {
       @Override
-      public Group[] answer(InvocationOnMock invocation) throws Throwable {
-        return groups;
+      public ListSlice<Group> answer(InvocationOnMock invocation) throws Throwable {
+        return new ListSlice<Group>(Arrays.asList(groups));
       }
     }).when(mock).searchGroups(any(GroupsSearchCriteria.class));
   }
@@ -112,11 +90,11 @@ public class UserProfileTestResources extends TestResources {
   public void whenSearchUsersByCriteriaThenReturn(final UserDetailsSearchCriteria criteria,
           final UserDetail[] users) {
     OrganizationController mock = getOrganizationControllerMock();
-    doAnswer(new Answer<UserDetail[]>() {
+    doAnswer(new Answer<ListSlice<UserDetail>>() {
 
       @Override
-      public UserDetail[] answer(InvocationOnMock invocation) throws Throwable {
-        UserDetail[] emptyUsers = new UserDetail[0];
+      public ListSlice<UserDetail> answer(InvocationOnMock invocation) throws Throwable {
+        ListSlice<UserDetail> emptyUsers = new ListSlice<UserDetail>(0, 0, 0);
         UserDetailsSearchCriteria passedCriteria = (UserDetailsSearchCriteria) invocation.getArguments()[0];
         if (criteria.isCriterionOnComponentInstanceIdSet() && passedCriteria.
                 isCriterionOnComponentInstanceIdSet()) {
@@ -180,7 +158,7 @@ public class UserProfileTestResources extends TestResources {
           return emptyUsers;
         }
 
-        return users;
+        return new ListSlice<UserDetail>(Arrays.asList(users));
       }
     }).when(mock).searchUsers(any(UserDetailsSearchCriteria.class));
   }

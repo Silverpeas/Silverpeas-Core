@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.silverpeas.util.ListSlice;
 
 public class GroupManager {
 
@@ -51,16 +52,16 @@ public class GroupManager {
    * Gets the groups that match the specified criteria.
    *
    * @param criteria the criteria in searching of user groups.
-   * @return an array of user groups matching the criteria or an empty array of no ones are found.
+   * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public Group[] getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
+  public ListSlice<Group> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
           AdminException {
     Connection connection = null;
     try {
       connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      List<Group> groups = groupDao.getGroupsByCriteria(connection,
+      ListSlice<Group> groups = groupDao.getGroupsByCriteria(connection,
               (GroupSearchCriteriaForDAO) criteria);
 
       String domainIdConstraint = null;
@@ -77,13 +78,13 @@ public class GroupManager {
         List<String> groupIds = getAllSubGroupIdsRecursively(group.getId());
         groupIds.add(group.getId());
         UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-        List<UserDetail> users = userDao.getUsersByCriteria(connection, criteriaOnUsers.
+        int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
                 onDomainId(domainIdConstraint).
                 and().
                 onGroupIds(groupIds.toArray(new String[groupIds.size()])));
-        group.setTotalNbUsers(users.size());
+        group.setTotalNbUsers(userCount);
       }
-      return groups.toArray(new Group[groups.size()]);
+      return groups;
     } catch (Exception e) {
       throw new AdminException("GroupManager.getGroupsMatchingCriteria",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
