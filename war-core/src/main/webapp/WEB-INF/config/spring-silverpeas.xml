@@ -61,19 +61,22 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.admin.web"/>
-  <ctx:component-scan base-package="org.silverpeas.sharing.web" />
-  <ctx:component-scan base-package="com.silverpeas.bundle.web" />
+  <ctx:component-scan base-package="org.silverpeas.sharing.web"/>
+  <ctx:component-scan base-package="com.silverpeas.bundle.web"/>
   <ctx:component-scan base-package="org.silverpeas.admin.space"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.look"/>
   <ctx:component-scan base-package="org.silverpeas.viewer"/>
   <ctx:component-scan base-package="org.silverpeas.image.imagemagick"/>
   <ctx:component-scan base-package="org.silverpeas.util.data"/>
+  <ctx:component-scan base-package="com.stratelia.silverpeas.peasCore"/>
 
-  <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory" factory-method="getDomainDriverFactory" />
+  <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
+        factory-method="getDomainDriverFactory"/>
 
   <!-- The Bean Validator (JSR-303) bootstrapping through Spring. The Hibernate implementation is used -->
-  <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+  <bean id="validator"
+        class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
   <!-- Silverpeas context initializer. It depends upon some others components to do its job.
        Let's Spring to initialize the Silverpeas application context ;-) -->
@@ -82,35 +85,29 @@
 
   <!-- The user authenticator -->
   <bean id="authenticator"
-        class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" />
-
-  <!-- The session manager (implements the session management) -->
-  <bean id="sessionManager"
-        class="com.stratelia.silverpeas.peasCore.SessionManager"
-        factory-method="getInstance"
-        depends-on="schedulerFactory" />
+        class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication"/>
 
   <!-- The session management factory -->
   <bean id="sessionManagementFactory"
         class="com.silverpeas.session.SessionManagementFactory"
-        factory-method="getFactory" />
+        factory-method="getFactory"/>
 
   <!-- The controller of the organization and domain management for the Silverpeas administration module -->
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
-        depends-on="schedulerFactory" />
+        depends-on="schedulerFactory"/>
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"
         class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
-        factory-method="getFactory" />
+        factory-method="getFactory"/>
 
   <!-- The administration module -->
   <bean id="adminController" class="com.stratelia.webactiv.beans.admin.Admin"
         depends-on="schedulerFactory"/>
 
   <bean id="adminReference" class="com.stratelia.webactiv.beans.admin.AdminReference"
-         factory-method="getInstance"/>
+        factory-method="getInstance"/>
 
   <!-- the scheduler factory from which Silverpeas components access the scheduler. It bootstraps
        the actual scheduling backend -->
@@ -133,23 +130,34 @@
 
   <!-- the factory of the content management services.
         It wraps and provides an access to the actual content manager managed by the IoC container -->
-  <bean id="contentManagerFactory" class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
+  <bean id="contentManagerFactory"
+        class="com.stratelia.silverpeas.contentManager.ContentManagerFactory"
         factory-method="getFactory"/>
 
   <!-- the factory of the statistics management services.
         It wraps and provides an access to the actual statisitics manager managed by the IoC container -->
-  <bean id="silverStatisticsFactory" class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
+  <bean id="silverStatisticsFactory"
+        class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsFactory"
         factory-method="getFactory"/>
 
-  <bean id="userPriviledgeValidationFactory" class="com.silverpeas.web.UserPriviledgeValidationFactory"
+  <bean id="silverStatisticsManager"
+         class="com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager"
+         factory-method="getInstance"
+         init-method="initSilverStatisticsManager"
+         depends-on="schedulerFactory"/>
+
+  <bean id="userPriviledgeValidationFactory"
+        class="com.silverpeas.web.UserPriviledgeValidationFactory"
         factory-method="getFactory"/>
 
   <!-- the factory of space services.
         It wraps and provides an access to different service instances relative to space handling -->
   <bean id="spaceServiceFactory" class="org.silverpeas.admin.space.SpaceServiceFactory"
-      factory-method="getInstance"/>
+        factory-method="getInstance"/>
 
-  <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
-  <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
+  <bean id="userServiceProvider" factory-method="getInstance"
+        class="com.silverpeas.admin.service.UserServiceProvider"/>
+  <bean id="spaceServiceProvider" factory-method="getInstance"
+        class="com.silverpeas.admin.service.SpaceServiceProvider"/>
 
 </beans>
