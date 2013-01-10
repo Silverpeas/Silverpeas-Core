@@ -31,6 +31,7 @@ import com.silverpeas.admin.components.WAComponent;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.util.*;
+import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -476,10 +477,10 @@ public class OrganizationController implements java.io.Serializable {
    * Searches the users that match the specified criteria.
    *
    * @param criteria the criteria in searching of user details.
-   * @return an array of user details matching the criteria or an empty array of no ones are found.
+   * @return a slice of the list of user details matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user details.
    */
-  public UserDetail[] searchUsers(final UserDetailsSearchCriteria criteria) {
+  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
       return getAdminService().searchUsers(criteria);
     } catch (AdminException ex) {
@@ -538,10 +539,10 @@ public class OrganizationController implements java.io.Serializable {
   /**
    * Searches the groups that match the specified criteria.
    * @param criteria the criteria in searching of user groups.
-   * @return an array of user groups matching the criteria or an empty array of no ones are found.
+   * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
    * @throws AdminException if an error occurs while getting the user groups.
    */
-  public Group[] searchGroups(final GroupsSearchCriteria criteria) {
+  public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
     try {
       return getAdminService().searchGroups(criteria);
     } catch(AdminException ex) {
