@@ -46,6 +46,8 @@ import javax.jcr.RepositoryException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -238,10 +240,12 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
    */
   @Override
   public void destroy() throws Exception {
+    log.info("Shutdown the JCR repository...");
     // force cast (but use only the interface)
     if (repository instanceof JackrabbitRepository) {
       ((JackrabbitRepository) repository).shutdown();
     }
+    super.destroy();
   }
 
   /**
@@ -280,7 +284,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   }
 
   /**
-   * @param configurationProperties The configuration properties to set for the repository.
+   * @param resources The configuration resources to set for the repository.
    */
   public void setConfigurationProperties(List<String> resources) {
     this.configurationProperties = resources;
