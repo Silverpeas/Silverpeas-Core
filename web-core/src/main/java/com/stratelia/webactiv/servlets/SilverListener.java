@@ -50,9 +50,6 @@ public class SilverListener implements HttpSessionListener, ServletContextListen
   // ServletContextListener methods
   @Override
   public void contextDestroyed(ServletContextEvent event) {
-    SilverTrace.info("peasCore", "SilverListener.contextDestroyed",
-        "peasCore.MSG_END_OF_HTTPSESSION");
-    //SessionManager.getInstance().shutdown();
   }
 
   @Override

@@ -41,7 +41,7 @@ public interface SessionManagement {
    * their domain and the applied domain isolation policy.
    * @return Collection of session information.
    */
-    Collection<SessionInfo> getConnectedUsersList();
+  Collection<SessionInfo> getConnectedUsersList();
 
   /**
    * Gets the session information about all the connected users that are accessible to the specified

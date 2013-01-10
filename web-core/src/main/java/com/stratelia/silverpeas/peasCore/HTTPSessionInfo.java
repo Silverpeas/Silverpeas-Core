@@ -25,6 +25,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -59,7 +61,11 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   public void onClosed() {
     if (httpSession != null) {
       cleanSession(httpSession);
-      httpSession.invalidate();
+      try {
+        httpSession.invalidate();
+      } catch (IllegalStateException ex) {
+        SilverTrace.warn("peasCore", "SessionInfo.onClosed()", null, ex.getMessage());
+      }
     }
     super.onClosed();
   }
