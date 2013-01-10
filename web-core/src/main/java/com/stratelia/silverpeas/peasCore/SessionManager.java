@@ -98,7 +98,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * Init attributes
    */
   @PostConstruct
-  private void initSessionManager() {
+  public void initSessionManager() {
+    SilverTrace.info("peasCore", "SessionManagement.initialization", "peasCore.MSG_SERVICE_STARTING",
+        "Initialization of the session management service");
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
       ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings"
@@ -133,28 +135,19 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
           + convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
           "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout)
           + " adminSessionTimeout=" + convertMillisecondsToMinutes(adminSessionTimeout));
+
+      // register the shutdown session management process when the server is in shutdown.
+      Runtime.getRuntime().addShutdownHook(new Thread() {
+        @Override
+        public void run() {
+          SessionManager.this.shutdown();
+        }
+      });
+
     } catch (Exception ex) {
-      SilverTrace.fatal("peasCore", "SessionManager.getInstance", "root.EX_CLASS_NOT_INITIALIZED",
+      SilverTrace.fatal("peasCore", "SessionManagement.initialization", "root.EX_CLASS_NOT_INITIALIZED",
           ex);
     }
-  }
-
-  /**
-   * Set the server last acessed time by the user. Used to verify if the session duration has
-   * expired (because of timeout
-   *
-   * @param session
-   * @see ComponentRequestRouter and ClipboardRequestRouter
-   */
-  public synchronized void setLastAccess(HttpSession session) {
-    SessionInfo si = userDataSessions.get(session.getId());
-    if (si != null) {
-      si.updateLastAccess();
-    } else {
-      SilverTrace.debug("peasCore", "SessionManager.setLastAccess", "L'objet de session n'a pas "
-          + "ete retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
-    }
-    userNotificationSessions.remove(session.getId());
   }
 
   @Override
@@ -222,8 +215,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   private synchronized void removeSession(SessionInfo si) {
     try {
-      SilverTrace.debug("peasCore", "SessionManager.removeSession", "START on session="
-          + si.getSessionId() + " - " + log(si));
+      SilverTrace.info("peasCore", "SessionManager.removeSession", "Close the session "
+          + si.getSessionId());
       SilverLog.logConnexion("logout", si.getIPAddress(), log(si));
       // Notify statistics
       Date now = new java.util.Date();
@@ -236,8 +229,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       // Remove the session from lists
       userDataSessions.remove(si.getSessionId());
       userNotificationSessions.remove(si.getSessionId());
-      SilverTrace.debug("peasCore", "SessionManager.removeSession", "DONE on session="
-          + si.getSessionId() + " - " + log(si));
       si.onClosed();
     } catch (Exception ex) {
       SilverTrace.error("peasCore", "SessionManager.removeSession", "root.EX_NO_MESSAGE", ex);
@@ -328,16 +319,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     }
 
     return distinctConnectedUsersList.values();
-  }
-
-  /**
-   * Do not use this method. Use getNbConnectedUsersList(UserDetail user) instead.
-   *
-   * @return 1
-   * @deprecated
-   */
-  public int getNbConnectedUsersList() {
-    return 1;
   }
 
   /**
@@ -439,9 +420,9 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * This method remove and invalidates all sessions. The unique instance of the SessionManager will
    * be destroyed.
    */
-  @PreDestroy
   public void shutdown() {
-    SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
+    SilverTrace.info("peasCore", "SessionManagement.shutdown", "peasCore.MSG_SERVICE_STOPPING",
+        "Shutdown of the session management service: all the remaining sessions are cleared up");
     // Remove previous scheduled job
     try {
       scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
