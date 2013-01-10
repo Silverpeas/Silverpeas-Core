@@ -34,7 +34,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
@@ -96,7 +95,6 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    initProperties("org.silverpeas.search.indexEngine.IndexEngine");
     SilverTrace.debug("indexEngine", "IndexManager",
         "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
         + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs=" + maxMergeDocs);
@@ -279,32 +277,6 @@ public class IndexManager {
   }
 
   /**
-   * Reads and set the index engine parameters from the given properties file
-   */
-  private void initProperties(String propertiesFileName) {
-    try {
-      ResourceLocator resource = new ResourceLocator(propertiesFileName, "");
-      maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
-      mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
-      maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
-
-      String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-          IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-      RAMBufferSizeMB = Double.parseDouble(stringValue);
-
-      stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-          IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB));
-      RAMBufferSizeMB = Double.parseDouble(stringValue);
-
-      enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
-      serverName = resource.getString("server.name", "Silverpeas");
-    } catch (MissingResourceException e) {
-      SilverTrace.error("indexEngine", "IndexManager.initProperties",
-          "indexEngine.ERR_CANT_LOAD_PROPERTIES", e);
-    }
-  }
-
-  /**
    *
    * Returns an IndexWriter to the index stored at the given path.The index directory and files are
    * created if not found .
@@ -317,13 +289,9 @@ public class IndexManager {
     IndexWriter writer = indexWriters.get(path);
     if (writer == null) {
       try {
-        boolean createIndex;
         File file = new File(path);
         if (!file.exists()) {
           file.mkdirs();
-          createIndex = true;
-        } else {
-              createIndex = !IndexReader.indexExists(FSDirectory.open(file));
         }
         LogDocMergePolicy policy = new LogDocMergePolicy();
         policy.setMergeFactor(mergeFactor);
@@ -645,11 +613,27 @@ public class IndexManager {
   /*
    * The lucene index engine parameters.
    */
-  private int maxFieldLength = 10000;
-  private int mergeFactor = 10;
-  private int maxMergeDocs = Integer.MAX_VALUE;
-  private double RAMBufferSizeMB = IndexWriter.DEFAULT_RAM_BUFFER_SIZE_MB;
+  private static int maxFieldLength = 10000;
+  private static int mergeFactor = 10;
+  private static int maxMergeDocs = Integer.MAX_VALUE;
+  private static double RAMBufferSizeMB = IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB;
   // enable the "Did you mean " indexing
-  private boolean enableDymIndexing = false;
-  private String serverName = null;
+  private static boolean enableDymIndexing = false;
+  private static String serverName = null;
+  
+  static {
+    // Reads and set the index engine parameters from the given properties file
+    ResourceLocator resource =
+        new ResourceLocator("org.silverpeas.search.indexEngine.IndexEngine", "");
+    maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
+    mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
+    maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
+
+    String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+        IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
+    RAMBufferSizeMB = Double.parseDouble(stringValue);
+
+    enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
+    serverName = resource.getString("server.name", "Silverpeas");
+  }
 }
