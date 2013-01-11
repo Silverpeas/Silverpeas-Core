@@ -24,7 +24,8 @@
 
 package com.stratelia.webactiv.servlets;
 
-import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -49,9 +50,6 @@ public class SilverListener implements HttpSessionListener, ServletContextListen
   // ServletContextListener methods
   @Override
   public void contextDestroyed(ServletContextEvent event) {
-    SilverTrace.info("peasCore", "SilverListener.contextDestroyed",
-        "peasCore.MSG_END_OF_HTTPSESSION");
-    SessionManager.getInstance().shutdown();
   }
 
   @Override
@@ -60,8 +58,9 @@ public class SilverListener implements HttpSessionListener, ServletContextListen
 
   // Clear session informations
   private void remove(HttpSessionEvent event) {
-    SessionManager mgr = SessionManager.getInstance();
-    mgr.closeSession(event.getSession().getId());
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement =  factory.getSessionManagement();
+    sessionManagement.closeSession(event.getSession().getId());
     SilverTrace.info("peasCore", "SilverListener.sessionDestroyed",
         "peasCore.MSG_END_OF_HTTPSESSION", "ID=" + event.getSession().getId());
   }

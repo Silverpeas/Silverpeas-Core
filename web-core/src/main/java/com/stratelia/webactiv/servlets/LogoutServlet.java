@@ -24,7 +24,8 @@
 
 package com.stratelia.webactiv.servlets;
 
-import com.stratelia.silverpeas.peasCore.SessionManager;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -46,7 +47,9 @@ public class LogoutServlet extends HttpServlet {
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
     buffer.append(request.getServerPort()).append(request.getContextPath());
     // Notify session manager : invalidate unbinds any objects bound.
-    SessionManager.getInstance().closeSession(session.getId());
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    sessionManagement.closeSession(session.getId());
     ResourceLocator resource =
         new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
     String postLogoutPage = resource.getString("logout.page", "/Login.jsp?ErrorCode=4&logout=true");
