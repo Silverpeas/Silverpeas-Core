@@ -157,7 +157,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<jar href=\"log4j-1.2.17.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xml-apis-1.4.01.jar\" download=\"eager\"/>");
     out.println("\t</resources>");
-    out.println("\t<application-desc main-class=\"com.silverpeas.openoffice.Launcher\">");
+    out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.Launcher\">");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
     out.println("</argument>");
