@@ -23,6 +23,10 @@ package com.stratelia.silverpeas.peasCore;
 import java.text.ParseException;
 import java.util.*;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -50,6 +54,7 @@ import com.stratelia.webactiv.servlets.LogoutServlet;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * Class declaration This object is a singleton used by AuthenticationService : when the user log
@@ -58,13 +63,14 @@ import com.stratelia.webactiv.util.ResourceLocator;
  *
 * @author Nicolas Eysseric
  */
+@Named("sessionManagement")
 public class SessionManager implements SchedulerEventListener, SessionManagement {
 
   private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
   // Local constants
   private static final String SESSION_MANAGER_JOB_NAME = "SessionManagerScheduler";
   // Singleton implementation
-  private static SessionManager myInstance = null;
+  //private static SessionManager myInstance = null;
   // Max session duration in ms
   private long userSessionTimeout = 600000; // 10mn
   private long adminSessionTimeout = 1200000; // 20mn
@@ -77,7 +83,10 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   // Contains the session when notified
   private List<String> userNotificationSessions = new ArrayList<String>(100);
   private ResourceLocator messages = null;
+  @Inject
   private SilverStatisticsManager myStatisticsManager = null;
+  @Inject
+  private Scheduler scheduler;
 
   /**
    * Prevent the class from being instantiate (private)
@@ -88,7 +97,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   /**
    * Init attributes
    */
-  private synchronized void initSessionManager() {
+  @PostConstruct
+  private void initSessionManager() {
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
       ResourceLocator rl = new ResourceLocator("com.stratelia.webactiv.clipboard.settings"
@@ -119,7 +129,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       }
       initSchedulerTimeStamp();
 
-      myStatisticsManager = SilverStatisticsManager.getInstance();
       SilverLog.logConnexion("SessionManager starting", "TimeStamp="
           + convertMillisecondsToMinutes(scheduledSessionManagementTimeStamp),
           "UserSessionTimeout=" + convertMillisecondsToMinutes(userSessionTimeout)
@@ -128,38 +137,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       SilverTrace.fatal("peasCore", "SessionManager.getInstance", "root.EX_CLASS_NOT_INITIALIZED",
           ex);
     }
-  }
-
-  /**
-   * Gets the HTTP session with the specified identifier. If the identifier refers a non HTTP
-   * session or the session doesn't exist, then null is returned.
-   *
-   * @param sessionId the unique identifier of the session
-   * @return the HttpSession instance or null if this object doesn't exist with the specified
-   * identifier.
-   */
-  public HttpSession getHttpSession(String sessionId) {
-    SessionInfo sessionInfo = getSessionInfo(sessionId);
-    HttpSession session = null;
-    if (sessionInfo instanceof HTTPSessionInfo) {
-      session = ((HTTPSessionInfo) sessionInfo).getHttpSession();
-    }
-    return session;
-  }
-
-  /**
-   * SessionManager is a singleton
-   *
-   * @return the instance of SessionManager
-   */
-  public static SessionManager getInstance() {
-    synchronized (SessionManager.class) {
-      if (myInstance == null) {
-        myInstance = new SessionManager();
-        myInstance.initSessionManager();
-      }
-    }
-    return myInstance;
   }
 
   /**
@@ -180,6 +157,16 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     userNotificationSessions.remove(session.getId());
   }
 
+  @Override
+  public synchronized SessionInfo validateSession(String sessionKey) {
+    SessionInfo si = userDataSessions.get(sessionKey);
+    if (si != null) {
+      si.updateLastAccess();
+    }
+    userNotificationSessions.remove(sessionKey);
+    return si;
+  }
+
   /**
    * This method creates a job that executes the "doSessionManagement" method. That job fires a
    * SchedulerEvent of the type 'EXECUTION_NOT_SUCCESSFULL', or 'EXECUTION_SUCCESSFULL'. The
@@ -197,8 +184,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       throw new SchedulerException("SchedulerMethodJob.setParameter: minute value is out of range");
     }
 
-    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-    Scheduler scheduler = schedulerFactory.getScheduler();
     // Remove previous scheduled job
     scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
     // Create new scheduled job
@@ -209,29 +194,6 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       throw new SchedulerException(ex.getMessage(), ex);
     }
     scheduler.scheduleJob(manageSession(), trigger, this);
-  }
-
-  /**
-   * This method stores the users's sessions, initialises time counters and log session's data. The
-   * stored session may become invalid (if the user close the browser, this class is not notified).
-   *
-   * @param session the session to store.
-   * @param request
-   * @param controller
-   */
-  public synchronized void addSession(HttpSession session, HttpServletRequest request,
-      MainSessionController controller) {
-    String anIP = request.getRemoteHost();
-    try {
-      SilverTrace.debug("peasCore", "SessionManager.addSession", "sessionId="
-          + session.getId() + " - userId : " + controller.getUserId());
-      HTTPSessionInfo si = new HTTPSessionInfo(session, anIP, controller.getCurrentUserDetail());
-      openSession(si);
-      userDataSessions.put(si.getSessionId(), si);
-      SilverLog.logConnexion("login", si.getIPAddress(), log(si));
-    } catch (Exception ex) {
-      SilverTrace.error("peasCore", "SessionManager.addSession", "root.EX_NO_MESSAGE", ex);
-    }
   }
 
   /**
@@ -284,11 +246,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   @Override
   public synchronized SessionInfo getSessionInfo(String sessionId) {
-    SessionInfo sessionInfo = userDataSessions.get(sessionId);
-    if (sessionInfo != null) {
-      sessionInfo.updateLastAccess();
-    }
-    return sessionInfo;
+    return userDataSessions.get(sessionId);
   }
 
   /**
@@ -317,21 +275,12 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     }
   }
 
-  public synchronized void setIsAlived(HttpSession session) {
-    SessionInfo si = userDataSessions.get(session.getId());
-    if (si != null && si instanceof HTTPSessionInfo) {
-      ((HTTPSessionInfo) si).updateIsAlive();
-    } else {
-      SilverTrace.debug("peasCore", "SessionManager.setIsAlived", "L'objet de session n'a pas ete"
-          + " retrouve dans la variable userDataSessions !!! - sessionId = " + session.getId());
-    }
-  }
-
   /**
    * Gets all the connected users and the duration of their session.
    *
 * @return
    */
+  @Override
   public synchronized Collection<SessionInfo> getConnectedUsersList() {
     return userDataSessions.values();
   }
@@ -426,7 +375,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
         if (currentTime - si.getLastAccessTimestamp() >= userSessionTimeoutMillis) {
           if (si instanceof HTTPSessionInfo) {
             // the session was opened by a servlet (it is a servlet HTTPSession)
-            long duration = currentTime - ((HTTPSessionInfo) si).getIsAliveDate();
+            long duration = si.getLastIdleDuration();
             // Has the user been notified (only for living client)
             if ((duration < maxRefreshInterval)
                 && !userNotificationSessions.contains(si.getSessionId())) {
@@ -490,11 +439,10 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * This method remove and invalidates all sessions. The unique instance of the SessionManager will
    * be destroyed.
    */
-  public synchronized void shutdown() {
+  @PreDestroy
+  public void shutdown() {
     SilverTrace.debug("peasCore", "SessionManager.shutdown()", "");
     // Remove previous scheduled job
-    SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
-    Scheduler scheduler = schedulerFactory.getScheduler();
     try {
       scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
     } catch (SchedulerException ex) {
@@ -507,7 +455,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     // Writing journal
     SilverLog.logConnexion("SessionManager shutdown", null, null);
     // Destroy the unique instance
-    myInstance = null;
+    //myInstance = null;
   }
 
   private JobTrigger computeJobTrigger(int minute) throws ParseException {
@@ -563,8 +511,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   /**
    * This method is dedicated to the authentication for only accessing the WEB services published in
-   * Silverpeas. To authenticate a user using a WEB browser to access Silverpeas, please prefers for
-   * instance the addSession method.
+   * Silverpeas. To authenticate a user using a WEB browser to access Silverpeas, please prefers the
+   * below openSession method.
    *
    * @param user the user for which the session has to be opened
    * @return a SessionInfo instance representing the opened session.
@@ -575,6 +523,29 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
     openSession(session);
     return session;
   }
+
+  /**
+   * This method is dedicated to the authentication of users behind a WEB browser.
+   *
+   * @param user the user for which the session has to be opened
+   * @param request the HTTP servlet request in which the authentication is performed.
+   * @return a SessionInfo instance representing the opened session.
+   */
+    @Override
+    public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
+      HTTPSessionInfo si = null;
+      String anIP = request.getRemoteHost();
+      try {
+        HttpSession session = request.getSession();
+        si = new HTTPSessionInfo(session, anIP, user);
+        openSession(si);
+        userDataSessions.put(si.getSessionId(), si);
+        SilverLog.logConnexion("login", si.getIPAddress(), log(si));
+      } catch (Exception ex) {
+        SilverTrace.error("peasCore", "SessionManagement.openSession", "root.EX_NO_MESSAGE", ex);
+      }
+      return si;
+    }
 
   /**
    * Opens internally the session described by the specified information about that session.

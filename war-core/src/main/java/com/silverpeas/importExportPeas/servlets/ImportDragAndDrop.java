@@ -30,9 +30,10 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -93,8 +94,10 @@ public class ImportDragAndDrop extends HttpServlet {
       String topicId = request.getParameter("TopicId");
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
+        SessionManagementFactory factory = SessionManagementFactory.getFactory();
+        SessionManagement sessionManagement = factory.getSessionManagement();
         HttpSession session =
-            ((HTTPSessionInfo)SessionManager.getInstance().getSessionInfo(sessionId)).getHttpSession();
+            ((HTTPSessionInfo)sessionManagement.getSessionInfo(sessionId)).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
