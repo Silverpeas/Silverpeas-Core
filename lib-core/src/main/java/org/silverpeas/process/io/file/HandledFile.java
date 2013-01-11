@@ -231,7 +231,7 @@ public class HandledFile {
   /**
    * @see fileHandler
    */
-  public boolean delete() {
+  public boolean delete() throws Exception {
     return fileHandler.delete(basePath, file);
   }
 

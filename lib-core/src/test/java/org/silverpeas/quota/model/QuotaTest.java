@@ -32,7 +32,7 @@ public class QuotaTest {
     assertValidate(quota, true);
 
     quota = initializeQuota();
-    quota.setType(null);
+    quota.setType((QuotaType) null);
     assertValidate(quota, false);
 
     quota = initializeQuota();

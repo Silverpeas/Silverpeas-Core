@@ -26,6 +26,8 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.pdc.ejb.PdcBmHome;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -147,7 +149,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public Collection<SessionInfo> getConnectedUsersList() {
-    return SessionManager.getInstance().getConnectedUsersList();
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    return sessionManagement.getConnectedUsersList();
   }
 
   public Collection<String[]> getStatsConnexionAllAll(String dateBegin, String dateEnd) {
@@ -566,7 +570,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public void KickSession(String sessionId) {
-    SessionManager.getInstance().closeSession(sessionId);
+    SessionManagementFactory factory = SessionManagementFactory.getFactory();
+    SessionManagement sessionManagement = factory.getSessionManagement();
+    sessionManagement.closeSession(sessionId);
   }
 
   public UserDetail getTargetUserDetail(String userId) {

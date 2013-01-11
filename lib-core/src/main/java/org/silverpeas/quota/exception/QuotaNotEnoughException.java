@@ -36,6 +36,6 @@ public class QuotaNotEnoughException extends QuotaException {
    * @param quota
    */
   public QuotaNotEnoughException(final Quota quota) {
-    super(quota, "IS_NOT_ENOUGH");
+    super(quota, "EX_IS_NOT_ENOUGH");
   }
 }

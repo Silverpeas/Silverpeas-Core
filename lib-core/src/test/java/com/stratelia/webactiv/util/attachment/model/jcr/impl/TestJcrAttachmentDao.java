@@ -1,36 +1,31 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
 import org.springframework.test.context.ContextConfiguration;
 import com.silverpeas.jcrutil.model.impl.AbstractJcrTestCase;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 
 import javax.jcr.Node;
@@ -44,49 +39,31 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.attachment.model.jcr.JcrAttachmentDao;
 import javax.annotation.Resource;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static com.silverpeas.util.PathTestUtil.*;
 import static org.junit.Assert.*;
 
-@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
+@ContextConfiguration(inheritLocations = false, locations = {"/spring-in-memory-jcr.xml"})
 public class TestJcrAttachmentDao extends AbstractJcrTestCase {
 
   private static final String instanceId = "kmelia57";
-  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
-      + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
-      + SEPARATOR + "bart" + SEPARATOR;
+  private static final String UPLOAD_DIR = TARGET_DIR + SEPARATOR + "temp" + SEPARATOR + "uploads"
+      + SEPARATOR + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR
+      + "simpson" + SEPARATOR + "bart" + SEPARATOR;
   private Calendar calend;
-
   @Resource
   private JcrAttachmentDao jcrAttachmentDao;
 
-  protected void prepareUploadedFile(String fileName, String physicalName)
-      throws IOException {
-    InputStream in = null;
-    FileOutputStream out = null;
-    try {
-      in = this.getClass().getClassLoader().getResourceAsStream(fileName);
-      File destinationDir = new File(UPLOAD_DIR);
-      destinationDir.mkdirs();
-      File destinationFile = new File(destinationDir, physicalName);
-      out = new FileOutputStream(destinationFile);
-      int c = 0;
-      byte[] buffer = new byte[8];
-      while ((c = in.read(buffer)) >= 0) {
-        out.write(buffer, 0, c);
-      }
-      out.close();
-      out = null;
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-    }
+  protected void prepareUploadedFile(String fileName, String physicalName) throws IOException,
+      URISyntaxException {
+    File origin = new File(this.getClass().getClassLoader().getResource(fileName).toURI().getPath());
+    File destinationDir = new File(UPLOAD_DIR);
+    File destinationFile = new File(destinationDir, physicalName);
+    FileUtils.copyFile(origin, destinationFile);
   }
 
   protected File getFile() {
@@ -100,6 +77,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
 
   @Before
   public void onSetUp() throws Exception {
+    onTearDown();
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
     calend.set(Calendar.SECOND, 0);
@@ -113,16 +91,14 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
   @After
   public void onTearDown() throws Exception {
     File uploadDir = new File(UPLOAD_DIR);
-    uploadDir.delete();
-
+    FileUtils.deleteDirectory(uploadDir);
   }
 
   @Test
   public void testCreateAttachmentNode() throws Exception {
     Session session = null;
     try {
-      prepareUploadedFile("FrenchScrum.odp",
-          "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
+      prepareUploadedFile("FrenchScrum.odp", "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
       session = BasicDaoFactory.getSystemSession();
       AttachmentPK pk = new AttachmentPK("100", instanceId);
       AttachmentDetail attachment = new AttachmentDetail();
@@ -283,6 +259,7 @@ public class TestJcrAttachmentDao extends AbstractJcrTestCase {
       deleteTempFile(UPLOAD_DIR + "test.txt");
     }
   }
+
   @Test
   public void testUpdateNodeAttachment() throws Exception {
     Session session = null;

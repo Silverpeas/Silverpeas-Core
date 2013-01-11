@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,6 +42,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String RESOURCE_ID = "resourceId";
   private static final String INSTANCE_ID = "instanceId";
   private static final String NAME = "name";
+  private static final String PAGINATION = "pagination";
   private Map<String, Object> criteria = new HashMap<String, Object>();
 
   @Override
@@ -126,6 +127,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return criteria.containsKey(NAME);
   }
 
+  public boolean isCriterionOnPaginationSet() {
+    return criteria.containsKey(PAGINATION);
+  }
+
   /**
    * Gets the disjonction on the role names.
    * @return an array with each element of the disjonction.
@@ -182,6 +187,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
     return (String) criteria.get(NAME);
   }
 
+  /**
+   * Gets the pagination page into which the groups to return has to be part.
+   * @return the page in a pagination mechanism to fetch.
+   */
+  public PaginationPage getCriterionOnPagination() {
+    return (PaginationPage) criteria.get(PAGINATION);
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -228,5 +241,11 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
+  }
+
+  @Override
+  public SearchCriteria onPagination(PaginationPage page) {
+    criteria.put(PAGINATION, page);
+    return this;
   }
 }

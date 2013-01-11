@@ -36,12 +36,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.silverpeas.profile.web.UserProfileTestResources.*;
-import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import static com.silverpeas.profile.web.UserProfileTestResources.*;
+import static com.silverpeas.profile.web.matchers.UsersMatcher.contains;
 
 /**
  * Unit tests on the operations published by the UserProfileResource REST service.

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/legal/licensing"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,9 @@
 package com.stratelia.webactiv.beans.admin.dao;
 
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,9 +41,11 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
-  private StringBuilder query = new StringBuilder();
+  private static final String QUERY = "select {0} from {1} {2} order by name";
+  private StringBuilder filter = new StringBuilder();
   private Set<String> tables = new HashSet<String>();
   private List<String> domainIds = new ArrayList<String>();
+  private PaginationPage page = null;
 
   public static GroupSearchCriteriaForDAO newCriteria() {
     return new GroupSearchCriteriaForDAO();
@@ -49,16 +53,16 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public GroupSearchCriteriaForDAO and() {
-    if (query.length() > 0) {
-      query.append(" and ");
+    if (filter.length() > 0) {
+      filter.append(" and ");
     }
     return this;
   }
 
   @Override
   public GroupSearchCriteriaForDAO or() {
-    if (query.length() > 0) {
-      query.append(" or ");
+    if (filter.length() > 0) {
+      filter.append(" or ");
     }
     return this;
   }
@@ -68,8 +72,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     if (isDefined(name)) {
       tables.add("st_group");
       getFixedQuery().append("lower(st_group.name) like lower('").
-              append(name).
-              append("')");
+          append(name).
+          append("')");
     }
     return this;
   }
@@ -103,8 +107,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       domainIds.add(domainId);
       tables.add("st_group");
       getFixedQuery().append("(st_group.domainId = ").append(Integer.valueOf(domainId)).
-              append(" or st_group.domainId = ").append(Integer.valueOf(Domain.MIXED_DOMAIN_ID)).
-              append(")");
+          append(" or st_group.domainId = ").append(Integer.valueOf(Domain.MIXED_DOMAIN_ID)).
+          append(")");
     }
     return this;
   }
@@ -130,8 +134,9 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       tables.add("st_userrole_group_rel");
       StringBuilder[] sqlLists = asSQLList(roleIds);
       StringBuilder theQuery = getFixedQuery().
-              append("(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
-              append(sqlLists[0]);
+          append(
+          "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId in ").
+          append(sqlLists[0]);
       for (int i = 1; i < sqlLists.length; i++) {
         theQuery.append(" or ST_UserRole_Group_Rel.userRoleId in ").append(sqlLists[i]);
       }
@@ -154,14 +159,18 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  public String toSQLQuery(String fields) {
+    return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter());
+  }
+
   @Override
   public String toString() {
-    return query.toString();
+    return toSQLQuery("*");
   }
 
   @Override
   public boolean isEmpty() {
-    return query.length() == 0;
+    return filter.length() == 0;
   }
 
   public boolean isCriterionOnDomainIdSet() {
@@ -172,7 +181,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return domainIds;
   }
 
-  public String impliedTables() {
+  private String impliedTables() {
     StringBuilder tablesUsedInCriteria = new StringBuilder();
     for (String aTable : tables) {
       tablesUsedInCriteria.append(aTable).append(", ");
@@ -180,7 +189,16 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
     return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
   }
 
+  private String queryFilter() {
+    String sqlFilter = "";
+    if (filter.length() > 0) {
+      sqlFilter += " where " + filter;
+    }
+    return sqlFilter;
+  }
+
   private GroupSearchCriteriaForDAO() {
+    tables.add("st_group");
   }
 
   /**
@@ -192,11 +210,11 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
    * a disjonction operator.
    */
   private StringBuilder getFixedQuery() {
-    if (query.length() > 0 && !query.toString().endsWith(" and ")
-            && !query.toString().endsWith(" or ")) {
-      query.append(" and ");
+    if (filter.length() > 0 && !filter.toString().endsWith(" and ")
+        && !filter.toString().endsWith(" or ")) {
+      filter.append(" and ");
     }
-    return query;
+    return filter;
   }
 
   // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
@@ -230,5 +248,34 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public SearchCriteria onResourceId(String resourceId) {
     throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public SearchCriteria onPagination(PaginationPage page) {
+    if (filter.toString().endsWith(" and ")) {
+      filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
+    } else if  (filter.toString().endsWith(" or ")) {
+      filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
+    }
+    this.page = page;
+    return this;
+  }
+
+  /**
+   * Gets the criterion on the pagination page to fetch.
+   *
+   * @return a pagination page.
+   */
+  public PaginationPage getPagination() {
+    return page;
+  }
+
+  /**
+   * Is the pagination criterion set?
+   *
+   * @return true if a criterion on the pagination about user groups is set, false otherwise.
+   */
+  public boolean isPaginationSet() {
+    return page != null;
   }
 }

@@ -23,6 +23,19 @@
  */
 package com.silverpeas.web;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.token.TokenStringKey;
+import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.model.Token;
+import org.silverpeas.token.service.TokenService;
+import org.silverpeas.util.Charsets;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -30,20 +43,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.codec.binary.Base64;
-
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
-
 import static com.silverpeas.util.StringUtil.isDefined;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -57,16 +57,18 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 public class UserPriviledgeValidation {
 
   @Inject
-  @Named("sessionManager")
   private SessionManagement sessionManagement;
   @Inject
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private TokenService tokenService;
   /**
-   * The HTTP header paremeter in an incoming request that carries the user session key. This
-   * parameter isn't mandatory as the session key can be found from an active HTTP session. If
+   * The HTTP header paremeter in an incoming request that carries the user session key. By the user
+   * session key could be passed a user token to perform a HTTP request without opening a session.
+   * This parameter isn't mandatory as the session key can be found from an active HTTP session. If
    * neither HTTP session nor session key is available for the incoming request, user credentials
    * must be passed in the standard HTTP header parameter Authorization.
    */
@@ -99,9 +101,9 @@ public class UserPriviledgeValidation {
   public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
           WebApplicationException {
     SessionInfo userSession;
-    String sessionId = getUserSessionKey(request);
-    if (isDefined(sessionId)) {
-      userSession = validateUserSession(sessionId);
+    String sessionKey = getUserSessionKey(request);
+    if (isDefined(sessionKey)) {
+      userSession = validateUserSession(sessionKey);
     } else {
       userSession = authenticateUser(request);
     }
@@ -124,37 +126,44 @@ public class UserPriviledgeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header parameter X-Silverpeas-Session. If no such parameter is set, it
-   * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
-   * within an active HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter
+   * is set, it is then retrieved from the current HTTP session if any. If the incoming request
+   * isn't sent within an active HTTP session, then an empty string is returned as no HTTP session
+   * was defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
-    String sessionId = request.getHeader(HTTP_SESSIONKEY);
-    if (!isDefined(sessionId)) {
+    String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+
+    // Search among http request parameters one called HTTP_SESSIONKEY
+    if (!isDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
+    }
+
+    // Try with JSession id
+    if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
-        sessionId = httpSession.getId();
+        sessionKey = httpSession.getId();
       }
     }
-    return sessionId;
+    return sessionKey;
   }
 
   /**
    * Authenticates the user by using the credentials in the header Authorization of the specified
    * HTTP request.
-   * 
+   *
    * According to the HTTP specification, authentication credentials must be carried by the HTTP
    * header Authorization. Its value must follow the RFC 2617 basic digest and it must be Base 64
    * encoded.
-   * 
+   *
    * In Silverpeas, the authentication process with web services asks for the unique identifier of
    * the user as login instead of its true login text that can be not unique (it is unique only within
    * a given Silverpeas domain).
-   * 
+   *
    * Once the user well authenticated,
    * return details about him. If the authentication fails, then a WebApplicationException exception
    * is thrown with an HTTP status code UNAUTHORIZED (401). The implementation of this method is for
@@ -172,8 +181,7 @@ public class UserPriviledgeValidation {
       int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      OrganizationController controller = getOrganizationController();
-      UserFull user = controller.getUserFull(userId);
+      UserFull user = organizationController.getUserFull(userId);
       if (user == null || !user.getPassword().equals(password)) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
@@ -186,7 +194,7 @@ public class UserPriviledgeValidation {
   /**
    * Validates the current user session with the specified session key. If the incoming request is
    * within an opened HTTP session (not so stateless, should be avoided in RESTful REST web services
-   * for both scalability and REST policy reasons), then take checks this session is valide before
+   * for both scalability and REST policy reasons), then take checks this session is valid before
    * processing the request. If the session is valid, then detail about the user is returned,
    * otherwise a WebApplicationException exception is thrown. As the anonymous user has no opened
    * session, when a request is recieved by this web service and that request does neither belong to
@@ -197,17 +205,23 @@ public class UserPriviledgeValidation {
    * @return the detail about the user requesting this web service.
    */
   private SessionInfo validateUserSession(String sessionKey) {
-    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+    SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
     if (sessionInfo == null) {
+
+      // Verify user token
+      final Token userToken = tokenService.get(TokenStringKey.from(sessionKey));
+      if (TokenType.USER.equals(userToken.getType())) {
+        final UserDetail user = UserDetail.getById(userToken.getResourceId());
+        if (user != null) {
+          return new SessionInfo(sessionKey, user);
+        }
+      }
+
       if (!UserDetail.isAnonymousUserExist()) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
       return new SessionInfo(null, UserDetail.getAnonymousUser());
     }
     return sessionInfo;
-  }
-  
-  private OrganizationController getOrganizationController() {
-    return organizationController;
   }
 }

@@ -53,6 +53,8 @@ import com.silverpeas.tagcloud.ejb.TagCloudBmHome;
 import com.silverpeas.tagcloud.model.TagCloud;
 import com.silverpeas.tagcloud.model.TagCloudPK;
 import com.silverpeas.tagcloud.model.TagCloudUtil;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -93,7 +95,6 @@ import com.stratelia.webactiv.util.publication.info.InfoDAO;
 import com.stratelia.webactiv.util.publication.info.SeeAlsoDAO;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
@@ -114,8 +115,6 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   private static final long serialVersionUID = -829288807683338746L;
   private String dbName = JNDINames.PUBLICATION_DATASOURCE;
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
-  private static final ResourceLocator publicationSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
   public PublicationDetail getDetail(PublicationPK pubPK) throws RemoteException {
     if (pubPK.getInstanceId() == null) {
@@ -192,7 +191,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       pubDetail.setIndexOperation(indexOperation);
       createIndex(pubDetail);
 
-      if (publicationSettings.getBoolean("useTagCloud", false)) {
+      if (useTagCloud) {
         createTagCloud(pubDetail);
       }
     } catch (Exception re) {
@@ -384,7 +383,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
         deleteIndex(detail.getPK());
       }
 
-      if (publicationSettings.getBoolean("useTagCloud", false)) {
+      if (useTagCloud) {
         updateTagCloud(detail);
       }
     } catch (Exception re) {
@@ -1370,36 +1369,6 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * ************************* INDEXING METHODS *********************************
    * *******************************************************************
    */
-  private void updateIndexEntryWithModelContent(FullIndexEntry indexEntry,
-      Collection<InfoTextDetail> textList) {
-    SilverTrace.info("publication",
-        "PublicationBmEJB.updateIndexEntryWithModelContent()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString());
-    if (textList != null) {
-      for (InfoTextDetail textDetail : textList) {
-        indexEntry.addTextContent(textDetail.getContent());
-      }
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param indexEntry
-   * @param infoDetail
-   * @return
-   * @see
-   */
-  private void updateIndexEntryWithInfoDetail(FullIndexEntry indexEntry, InfoDetail infoDetail) {
-    SilverTrace.info("publication",
-        "PublicationBmEJB.updateIndexEntryWithInfoDetail()",
-        "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
-        + ", infoDetail = " + infoDetail.toString());
-    if (infoDetail != null) {
-      // Index the text includes in the model
-      updateIndexEntryWithModelContent(indexEntry, infoDetail.getInfoTextList());
-    }
-  }
-
   private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry,
       PublicationDetail pubDetail) {
     PublicationPK pubPK = pubDetail.getPK();
@@ -1499,41 +1468,30 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     createIndex(pubPK, true);
   }
 
-  private void createIndex(PublicationPK pubPK, boolean processWysiwygContent, int indexOperation) {
+  private void createIndex(PublicationPK pubPK, boolean processContent, int indexOperation) {
     SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
-        "root.MSG_GEN_ENTER_METHOD", "processWysiwygContent = "
-        + processWysiwygContent + ", indexOperation = " + indexOperation);
-    if (indexOperation == IndexManager.ADD
-        || indexOperation == IndexManager.READD) {
+        "root.MSG_GEN_ENTER_METHOD", "processContent = "
+        + processContent + ", indexOperation = " + indexOperation);
+    if (indexOperation == IndexManager.ADD || indexOperation == IndexManager.READD) {
       SilverTrace.info("publication", "PublicationBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
       try {
-        CompletePublication completePublication = getCompletePublication(pubPK);
-        FullIndexEntry indexEntry = null;
-        PublicationDetail pubDetail = null;
-        InfoDetail infoDetail = null;
+        PublicationDetail pubDetail = getDetail(pubPK);
+        if (pubDetail != null) {
+          // Index the Publication Header
+          FullIndexEntry indexEntry = getFullIndexEntry(pubDetail);
 
-        if (completePublication != null) {
-          pubDetail = completePublication.getPublicationDetail();
-          if (pubDetail != null) {
-            // Index the Publication Header
-            indexEntry = getFullIndexEntry(pubDetail);
-
-            // Index the Publication Content
-            infoDetail = completePublication.getInfoDetail();
-            updateIndexEntryWithInfoDetail(indexEntry, infoDetail);
-
-            if (processWysiwygContent) {
-              updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
-              updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
-            }
-
-            // add versioning documents to publication's index
-            // Note : attachments are added directly from indexing layer (IndexManager)
-            new VersioningUtil().updateIndexEntryWithDocuments(indexEntry);
-
-            IndexEngineProxy.addIndexEntry(indexEntry);
+          // Index the Publication Content
+          if (processContent) {
+            updateIndexEntryWithWysiwygContent(indexEntry, pubDetail);
+            updateIndexEntryWithXMLFormContent(indexEntry, pubDetail);
           }
+
+          // add versioning documents to publication's index
+          // Note : attachments are added directly from indexing layer (IndexManager)
+          new VersioningUtil().updateIndexEntryWithDocuments(indexEntry);
+
+          IndexEngineProxy.addIndexEntry(indexEntry);
         }
       } catch (Exception e) {
         SilverTrace.error("publication", "PublicationBmEJB.createIndex()",
@@ -1579,7 +1537,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       indexEntry.setCreationUser(pubDetail.getCreatorId());
       indexEntry.setLastModificationUser(pubDetail.getUpdaterId());
       // index creator's full name
-      if (publicationSettings.getString("indexAuthorName").equals("true")) {
+      if (indexAuthorName) {
         try {
           UserDetail ud = AdminReference.getAdminService().getUserDetail(pubDetail.getCreatorId());
           if (ud != null) {
@@ -1592,15 +1550,19 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       }
 
       try {
-        indexEntry.setThumbnail(pubDetail.getImage());
-        indexEntry.setThumbnailMimeType(pubDetail.getImageMimeType());
+        ThumbnailDetail thumbnail = pubDetail.getThumbnail();
+        if (thumbnail != null) {
+          String[] imageProps = ThumbnailController.getImageAndMimeType(thumbnail, -1, -1);
+          indexEntry.setThumbnail(imageProps[0]);
+          indexEntry.setThumbnailMimeType(imageProps[1]);
+        }
       } catch (Exception e) {
         throw new PublicationRuntimeException(
             "PublicationBmEJB.getFullIndexEntry()",
             SilverpeasRuntimeException.ERROR,
             "publication.GETTING_FULL_INDEX_ENTRY", e);
       }
-      indexEntry.setThumbnailDirectory(publicationSettings.getString("imagesSubDirectory"));
+      indexEntry.setThumbnailDirectory(thumbnailDirectory);
     }
 
     return indexEntry;
@@ -1619,12 +1581,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
     // Suppression du nuage de tags lors de la suppression de l'index (et pas
     // lors de l'envoi de la publication dans la corbeille).
-    if (publicationSettings.getBoolean("useTagCloud", false)) {
+    if (useTagCloud) {
       deleteTagCloud(pubPK);
     }
 
     // idem pour les notations
-    if (publicationSettings.getBoolean("useNotation", false)) {
+    if (useNotation) {
       deleteNotation(pubPK);
     }
   }
@@ -2065,5 +2027,18 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     } finally {
       freeConnection(con);
     }
+  }
+  
+  private static final boolean useTagCloud;
+  private static final boolean useNotation;
+  private static final boolean indexAuthorName;
+  private static final String thumbnailDirectory;
+  static {
+    ResourceLocator publicationSettings = new ResourceLocator(
+        "com.stratelia.webactiv.util.publication.publicationSettings", "");
+    useTagCloud = publicationSettings.getBoolean("useTagCloud", false);
+    useNotation = publicationSettings.getBoolean("useNotation", false);
+    indexAuthorName = publicationSettings.getBoolean("indexAuthorName", false);
+    thumbnailDirectory = publicationSettings.getString("imagesSubDirectory");
   }
 }

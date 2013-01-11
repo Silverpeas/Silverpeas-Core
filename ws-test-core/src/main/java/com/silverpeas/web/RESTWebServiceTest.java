@@ -26,8 +26,6 @@ package com.silverpeas.web;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.UUID;
-
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.junit.Before;
@@ -52,12 +50,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import javax.ws.rs.core.MultivaluedMap;
-import org.junit.Before;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.request.RequestContextListener;
 
 /**
 * The base class for testing REST web services in Silverpeas.
@@ -133,17 +125,17 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   }
 
   /**
-* Authenticates the user to use in the tests.
-* The user will be added in the context of the mocked organization controller.
-* @param theUser the user to authenticate.
-* @return the key of the opened session.
-*/
+   * Authenticates the user to use in the tests.
+   * The user will be added in the context of the mocked organization controller.
+   * @param theUser the user to authenticate.
+   * @return the key of the opened session.
+   */
   public String authenticate(final UserDetail theUser) {
     getTestResources().registerUser(theUser);
     for (String componentId : getExistingComponentInstances()) {
       setComponentAccessibilityToUser(componentId, theUser.getId());
     }
-    SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
+    final SessionInfo session = getTestResources().getSessionManagerMock().openSession(theUser);
     return session.getSessionId();
   }
 
@@ -186,12 +178,12 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
     OrganizationController mock = getOrganizationControllerMock();
     when(mock.isComponentExist(componentId)).thenReturn(true);
   }
-  
+
   public void addTool(String toolId) {
     OrganizationController mock = getOrganizationControllerMock();
     when(mock.isToolAvailable(toolId)).thenReturn(true);
   }
-  
+
   public void setComponentAccessibilityToUser(String componentId, String userId) {
     OrganizationController mock = getOrganizationControllerMock();
     when(mock.isComponentAvailable(componentId, userId)).thenReturn(true);
@@ -212,7 +204,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
   protected PersonalizationService getPersonalizationServiceMock() {
     return getTestResources().getPersonalizationServiceMock();
   }
-  
+
   protected MultivaluedMap<String, String> buildQueryParametersFrom(String query) {
     MultivaluedMap<String, String> parameters = new MultivaluedMapImpl();
     String[] queryParameters = query.split("&");

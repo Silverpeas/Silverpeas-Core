@@ -37,9 +37,11 @@ import java.util.Properties;
 
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
@@ -109,6 +111,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   String[][] currentSpaceTemplateProfilesGroups = new String[0][0];
   String[][] m_TemplateProfilesUsers = new String[0][0];
   String m_componentSpaceQuotaMaxCount = "";
+  String m_dataStorageQuotaMaxCount = "";
   // Order space / component b
   boolean m_spaceFirst = true;
   // Space sort buffers
@@ -420,7 +423,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void setCreateSpaceParameters(String name, String desc, String ssEspace,
-      String spaceTemplate, String language, String look, String componentSpaceQuotaMaxCount) {
+      String spaceTemplate, String language, String look, String componentSpaceQuotaMaxCount,
+      String dataStorageQuotaMaxCount) {
     m_ssEspace = ssEspace;
     m_name = name;
     m_desc = desc;
@@ -428,6 +432,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_spaceTemplate = spaceTemplate;
     m_look = look;
     m_componentSpaceQuotaMaxCount = componentSpaceQuotaMaxCount;
+    m_dataStorageQuotaMaxCount = dataStorageQuotaMaxCount;
     // Only use global variable to set spacePosition
     m_spaceFirst = !JobStartPagePeasSettings.SPACEDISPLAYPOSITION_AFTER.equalsIgnoreCase(
         JobStartPagePeasSettings.SPACEDISPLAYPOSITION_CONFIG);
@@ -468,11 +473,23 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     }
 
-    // Data storage quota
+    // Component space quota
     if (isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated &&
         StringUtil.isDefined(m_componentSpaceQuotaMaxCount)) {
       try {
         spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(m_componentSpaceQuotaMaxCount));
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
+
+    // Data storage quota
+    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated &&
+        StringUtil.isDefined(m_dataStorageQuotaMaxCount)) {
+      try {
+        spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
+            Long.valueOf(m_dataStorageQuotaMaxCount), UnitUtil.memUnit.MB, UnitUtil.memUnit.B));
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);
@@ -535,8 +552,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     // Finally refresh the cache
     m_NavBarMgr.addSpaceInCache(res);
 
+    // Component space storage quota
+    initializeComponentSpaceQuota(spaceInst);
+
     // Data storage quota
-   initializeComponentSpaceQuota(spaceInst);
+    initializeDataStorageQuota(spaceInst);
 
     return res;
   }
@@ -548,6 +568,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     spaceInst.setUpdaterUserId(getUserId());
     String res = adminController.updateSpaceInst(spaceInst);
     initializeComponentSpaceQuota(spaceInst);
+    initializeDataStorageQuota(spaceInst);
     return res;
   }
 
@@ -556,10 +577,26 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
    * @param space
    */
   public void initializeComponentSpaceQuota(final SpaceInst space) {
-    if (JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
+    if (isUserAdmin() && JobStartPagePeasSettings.componentsInSpaceQuotaActivated) {
       try {
         SpaceServiceFactory.getComponentSpaceQuotaService().initialize(
             ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
+      } catch (QuotaException qe) {
+        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
+            qe);
+      }
+    }
+  }
+
+  /**
+   * Initializing data storage quota
+   * @param space
+   */
+  public void initializeDataStorageQuota(final SpaceInst space) {
+    if (isUserAdmin() && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated) {
+      try {
+        SpaceServiceFactory.getDataStorageSpaceQuotaService().initialize(
+            DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());
       } catch (QuotaException qe) {
         throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
             qe);
@@ -690,7 +727,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     SpaceProfileInst m_SpaceProfileInst = getSpaceInstById().getSpaceProfileInst(role);
     return getUsersFromSpaceProfile(m_SpaceProfileInst);
   }
-  
+
   private List<UserDetail> getUsersFromSpaceProfile(SpaceProfileInst profile) {
     List<UserDetail> res = new ArrayList<UserDetail>();
     if (profile != null) {
@@ -704,7 +741,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     return res;
   }
-  
+
   private List<Group> getGroupsFromSpaceProfile(SpaceProfileInst profile) {
     List<Group> res = new ArrayList<Group>();
     if (profile != null) {
@@ -718,7 +755,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     return res;
   }
-  
+
   public List<UserDetail> getUsersManagerOfParentSpace() {
     List<UserDetail> res = new ArrayList<UserDetail>();
     List<SpaceInst> path = getCurrentSpacePath(true);
@@ -728,17 +765,17 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     }
     return res;
   }
-  
+
   public List<Group> getGroupsManagerOfParentSpace() {
     List<Group> res = new ArrayList<Group>();
     List<SpaceInst> path = getCurrentSpacePath(true);
     for (SpaceInst space : path) {
       // get managers of each parent space
       res.addAll(getGroupsFromSpaceProfile(space.getSpaceProfileInst("Manager")));
-    }    
+    }
     return res;
   }
-  
+
   private List<SpaceInst> getCurrentSpacePath(boolean excludeSpace) {
     List<SpaceInst> path = getOrganizationController().getSpacePath(getSpaceInstById().getId());
     if (!excludeSpace) {

@@ -85,5 +85,13 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Silverpeas plugin to open document preview dialog.
    */
-  preview;
+  preview,
+  /**
+   * Silverpeas plugin to notify user.
+   */
+  notifier,
+  /**
+   * External plugin to manage list of items as tags
+   */
+  tags;
 }

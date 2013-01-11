@@ -28,6 +28,7 @@ import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Named;
+import org.silverpeas.util.ListSlice;
 
 import static org.mockito.Mockito.mock;
 
@@ -69,12 +70,12 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(UserDetailsSearchCriteria criteria) {
+  public ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria criteria) {
     return mock.searchUsers(criteria);
   }
 
   @Override
-  public Group[] searchGroups(GroupsSearchCriteria criteria) {
+  public ListSlice<Group> searchGroups(GroupsSearchCriteria criteria) {
     return mock.searchGroups(criteria);
   }
 

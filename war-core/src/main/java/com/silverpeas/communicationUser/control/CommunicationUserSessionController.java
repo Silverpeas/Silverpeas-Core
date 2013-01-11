@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import org.apache.commons.io.FileUtils;
 
 import com.silverpeas.communicationUser.CommunicationUserException;
@@ -42,7 +44,6 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -83,7 +84,8 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return
    */
   public int getNbConnectedUsersList() {
-    return SessionManager.getInstance().getNbConnectedUsersList(getUserDetail());
+    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+    return sessionManagement.getNbConnectedUsersList(getUserDetail());
   }
 
   /**
@@ -92,7 +94,8 @@ public class CommunicationUserSessionController extends AbstractComponentSession
    * @return Collection of connected Users
    */
   public Collection<SessionInfo> getDistinctConnectedUsersList() {
-    return SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
+    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+    return sessionManagement.getDistinctConnectedUsersList(getUserDetail());
   }
 
   /**
@@ -147,7 +150,6 @@ public class CommunicationUserSessionController extends AbstractComponentSession
   }
 
   /**
-   * @param discussion
    * @return
    */
   public Collection<File> getListCurrentDiscussion() {

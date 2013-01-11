@@ -23,16 +23,20 @@
 */
 package com.silverpeas.web;
 
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import java.util.UUID;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import java.util.UUID;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.Test;
+
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
 
 /**
 * Unit tests on the getting of a resource in Silverpeas through a REST web service.
@@ -61,7 +65,7 @@ public abstract class ResourceGettingTest<T extends TestResources> extends RESTW
   public <C> C getAt(String uri, Class<C> c) {
     return getAt(uri, MediaType.APPLICATION_JSON_TYPE, c);
   }
-  
+
   /**
    * Gets the web resource at the specified URI as an instance of the specified class in the way
    * it is sent back by the web resource in the specified media type.

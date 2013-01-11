@@ -33,7 +33,6 @@ import javax.inject.Named;
 public class SessionManagementFactory {
   
   @Inject
-  @Named("sessionManager")
   private SessionManagement sessionManagement;
   private static SessionManagementFactory instance = new SessionManagementFactory();
   

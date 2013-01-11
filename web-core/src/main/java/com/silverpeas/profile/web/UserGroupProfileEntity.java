@@ -61,7 +61,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   /**
    * Decorates the specified user groups with required WEB exposition features.
    *
-   * @param users a list of user groups to decorate.
+   * @param groups a list of user groups to decorate.
    * @param groupsURI the URI at which the specified groups are defined.
    * @return a list of web entities representing the specified group profiles.
    */

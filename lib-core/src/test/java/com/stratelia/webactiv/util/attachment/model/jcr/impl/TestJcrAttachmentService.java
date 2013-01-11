@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.attachment.model.jcr.impl;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
@@ -43,62 +39,46 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 
-import static com.silverpeas.util.PathTestUtil.BUILD_PATH;
+import org.apache.commons.io.FileUtils;
+
+import org.silverpeas.util.Charsets;
+import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
 import static com.silverpeas.util.PathTestUtil.SEPARATOR;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(inheritLocations=false, locations={"/spring-in-memory-jcr.xml"})
+@ContextConfiguration(inheritLocations = false, locations = {"/spring-in-memory-jcr.xml"})
 public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Resource
   private JcrAttachmentService service;
   private Calendar calend;
   private static final String instanceId = "kmelia57";
-  private static final String UPLOAD_DIR = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR
-      + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR + "simpson"
-      + SEPARATOR + "bart" + SEPARATOR;
+  private static final String UPLOAD_DIR = TARGET_DIR + SEPARATOR + "temp" + SEPARATOR + "uploads"
+      + SEPARATOR + instanceId + SEPARATOR + "Attachment" + SEPARATOR + "tests" + SEPARATOR
+      + "simpson" + SEPARATOR + "bart" + SEPARATOR;
 
   @After
   public void onTearDown() throws Exception {
     File uploadDir = new File(UPLOAD_DIR);
-    uploadDir.delete();
+    FileUtils.deleteDirectory(uploadDir);
   }
 
-  protected void prepareUploadedFile(String fileName, String physicalName)
-      throws IOException {
-    InputStream in = null;
-    FileOutputStream out = null;
-    try {
-      in = this.getClass().getClassLoader().getResourceAsStream(fileName);
-      File destinationDir = new File(UPLOAD_DIR);
-      destinationDir.mkdirs();
-      File destinationFile = new File(destinationDir, physicalName);
-      out = new FileOutputStream(destinationFile);
-      int c = 0;
-      byte[] buffer = new byte[8];
-      while ((c = in.read(buffer)) >= 0) {
-        out.write(buffer, 0, c);
-      }
-      out.close();
-      out = null;
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-      if (out != null) {
-        out.close();
-      }
-    }
+  protected void prepareUploadedFile(String fileName, String physicalName) throws IOException,
+      URISyntaxException {
+    File origin = new File(this.getClass().getClassLoader().getResource(fileName).toURI().getPath());
+    File destinationDir = new File(UPLOAD_DIR);
+    File destinationFile = new File(destinationDir, physicalName);
+    FileUtils.copyFile(origin, destinationFile);
   }
 
   @Before
   public void onSetUp() throws Exception {
+    onTearDown();
     calend = Calendar.getInstance();
     calend.set(Calendar.MILLISECOND, 0);
     calend.set(Calendar.SECOND, 0);
@@ -111,8 +91,7 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testCreateAttachmentWithLanguage() throws Exception {
-    prepareUploadedFile("FrenchScrum.odp",
-        "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
+    prepareUploadedFile("FrenchScrum.odp", "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
     attachment.setAuthor("1");
@@ -184,6 +163,7 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testCreateAttachmentWithoutLanguage() throws Exception {
+    prepareUploadedFile("FrenchScrum.odp", "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
     attachment.setAuthor("1");
@@ -282,7 +262,7 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
       assertEquals("nt:resource", content.getPrimaryNodeType().getName());
       assertEquals("application/vnd.oasis.opendocument.presentation", content.getProperty(
           "jcr:mimeType").getString());
-      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".getBytes());
+      ByteArrayInputStream in = new ByteArrayInputStream("Ce test fonctionne.".getBytes(Charsets.UTF_8));
       content.setProperty("jcr:data", in);
       session.save();
     } finally {
@@ -298,6 +278,7 @@ public class TestJcrAttachmentService extends AbstractJcrRegisteringTestCase {
 
   @Test
   public void testDeleteAttachment() throws Exception {
+    prepareUploadedFile("FrenchScrum.odp", "abf562dee7d07e1b5af50a2d1b3d724ef5a88869");
     AttachmentPK pk = new AttachmentPK("100", instanceId);
     AttachmentDetail attachment = new AttachmentDetail();
     attachment.setAuthor("1");

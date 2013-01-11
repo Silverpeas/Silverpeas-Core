@@ -24,11 +24,12 @@
 
 package com.stratelia.webactiv.filter;
 
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.authentication.security.SecurityData;
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -85,7 +86,9 @@ public class ExternalAccessFilter implements Filter {
                 "ExternalAccessFilter.doFilter()", "root.MSG_GEN_EXIT_METHOD", e);
           }
           // Init session management and session object.
-          SessionManager.getInstance().addSession(session, req, controller);
+          SessionManagementFactory factory = SessionManagementFactory.getFactory();
+          SessionManagement sessionManagement = factory.getSessionManagement();
+          sessionManagement.openSession(controller.getCurrentUserDetail(), req);
           // Put the main session controller in the session
           session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
           GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());

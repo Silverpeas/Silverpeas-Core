@@ -26,6 +26,7 @@ package com.silverpeas.authentication;
 
 import com.google.common.collect.Lists;
 import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -38,6 +39,9 @@ import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,6 +51,8 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/spring-authentication.xml")
 public class AuthenticationServiceTest {
   
   public AuthenticationServiceTest() {

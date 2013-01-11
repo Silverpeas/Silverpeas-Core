@@ -54,8 +54,7 @@ a:hover {
   color: #666699;
 }
 
-input,
-ul.tagit {
+input {
 	background-color: #FFFFFF;
 	font-family: "Verdana", "Arial", sans-serif;
 	font-size: 10px;
@@ -4783,6 +4782,12 @@ li.application  .applicationName {
     padding: 6px 0 1px 43px;
 }
 
+#filter_userPanel .listing_filter ul li#nextGroups .filter{
+	background-image: url("../icons/arrow/arrowDownModal.png");
+    background-position: 25px 6px;
+    padding: 6px 0 1px 43px;
+}
+
 #filter_userPanel .listing_filter ul {
   overflow:auto;
   border-top:1px solid #868686;
@@ -5249,7 +5254,7 @@ input.search:focus {
 /*************/
 /** preview **/
 /*************/
-.preview-button {
+.dialog-popup-button {
   cursor: pointer;
   text-align: center;
   margin: 5px;
@@ -5258,15 +5263,16 @@ input.search:focus {
   border: 1px solid #666666;
   background-color: #efefef;
   opacity:0.4;
+  z-index: 10;
 }
 
-.preview-button:hover {
+.dialog-popup-button:hover {
   border: 1px solid #9BD94A;
   background-color: #9BD94A;
   opacity: 1;
 }
 
-.preview-button-image {
+.dialog-popup-button-image {
   width: 13px;
   height: 13px;
 }
@@ -5309,17 +5315,18 @@ input.search:focus {
 /** Tagit **/
 /*******************************/
 ul.tagit {
-    padding: 1px;
+    padding: 1px !important;
+    border: 1px solid #999999 !important;
 }
 
 ul.tagit li {
-    margin: 1px 5px 1px 0px;
+    margin: 1px 5px 1px 0px !important;
 }
 
 ul.tagit li.tagit-choice {
-	padding: 1px 15px 1px 4px;
+	padding: 1px 15px 1px 4px !important;
 }
 
 ul.tagit li.tagit-choice a.tagit-close {
-    padding: 0px 0px 2px 3px;
+    padding: 0px 0px 2px 3px !important;
 }

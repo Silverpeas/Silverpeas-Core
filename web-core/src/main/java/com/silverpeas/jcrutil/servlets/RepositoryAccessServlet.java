@@ -126,24 +126,6 @@ public class RepositoryAccessServlet extends HttpServlet {
   }
 
   @Override
-  public void destroy() {
-    super.destroy();
-    unregisterJNDI();
-    log("Closing the repository ...........");
-    SilverTrace.info("RepositoryAccessServlet", "jackrabbit.init",
-        "Closing the repository ...........");
-  }
-
-  private void unregisterJNDI() {
-    try {
-      RegistryHelper.unregisterRepository(new InitialContext(), jndiName);
-    } catch (NamingException ex) {
-      SilverTrace.error("RepositoryAccessServlet", "jackrabbit.unregisterJndi",
-          "Unregistering the repository ...........", ex);
-    }
-  }
-
-  @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     try {
