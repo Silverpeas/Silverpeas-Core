@@ -20,10 +20,20 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.MissingResourceException;
+import java.util.Set;
+
+import javax.ws.rs.HEAD;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
@@ -32,19 +42,23 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.LogDocMergePolicy;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.Map.Entry;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -89,10 +103,9 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    initProperties("org.silverpeas.search.indexEngine.IndexEngine");
-    SilverTrace.debug("indexEngine", "IndexManager",
-        "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
-        + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs=" + maxMergeDocs);
+    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_INDEX_ENGINE_STARTED",
+        "maxFieldLength=" + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs="
+        + maxMergeDocs);
   }
 
   /**
@@ -115,43 +128,37 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void optimize() {
-    SilverTrace.debug("indexEngine", "IndexManager",
-        "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
+    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
         "# of index to optimize = " + indexWriters.size());
 
     Iterator<Entry<String, IndexWriter>> writerPaths = indexWriters.entrySet().iterator();
     while (writerPaths.hasNext()) {
       Entry<String, IndexWriter> writerEntry = writerPaths.next();
       String writerPath = writerEntry.getKey();
-      SilverTrace.debug("indexEngine", "IndexManager",
-          "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = "
-          + writerPath);
+      SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
+          "writerPath = " + writerPath);
 
       if (writerPath != null) {
         IndexWriter writer = writerEntry.getValue();
         if (writer != null) {
-          SilverTrace.debug("indexEngine", "IndexManager.optimize()",
-              "root_MSG_GEN_PARAM_VALUE", "try to optimize " + writerPath);
+          SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+              "try to optimize " + writerPath);
           // First, optimize
           try {
             writer.optimize();
           } catch (IOException e) {
             SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED",
-                "Can't optimize index " + writerPath, e);
+                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't optimize index " + writerPath, e);
           }
 
-          SilverTrace.info("indexEngine", "IndexManager.optimize()",
-              "root_MSG_GEN_PARAM_VALUE", "# of documents indexed in "
-              + writerPath + " = " + writer.maxDoc());
-
+          SilverTrace.info("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+              "# of documents indexed in " + writerPath + " = " + writer.maxDoc());
           // Then, close the writer
           try {
             writer.close();
           } catch (IOException e) {
             SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath,
-                e);
+                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
           }
         }
         // update the spelling index
@@ -262,32 +269,6 @@ public class IndexManager {
   }
 
   /**
-   * Reads and set the index engine parameters from the given properties file
-   */
-  private void initProperties(String propertiesFileName) {
-    try {
-      ResourceLocator resource = new ResourceLocator(propertiesFileName, "");
-      maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
-      mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
-      maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
-
-      String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-          IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
-      RAMBufferSizeMB = Double.parseDouble(stringValue);
-
-      stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
-          IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
-      RAMBufferSizeMB = Double.parseDouble(stringValue);
-
-      enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
-      serverName = resource.getString("server.name", "Silverpeas");
-    } catch (MissingResourceException e) {
-      SilverTrace.error("indexEngine", "IndexManager.initProperties",
-          "indexEngine.ERR_CANT_LOAD_PROPERTIES", e);
-    }
-  }
-
-  /**
    *
    * Returns an IndexWriter to the index stored at the given path.The index directory and files are
    * created if not found .
@@ -300,13 +281,9 @@ public class IndexManager {
     IndexWriter writer = indexWriters.get(path);
     if (writer == null) {
       try {
-        boolean createIndex;
         File file = new File(path);
         if (!file.exists()) {
           file.mkdirs();
-          createIndex = true;
-        } else {
-              createIndex = !IndexReader.indexExists(FSDirectory.open(file));
         }
         LogDocMergePolicy policy = new LogDocMergePolicy();
         policy.setMergeFactor(mergeFactor);
@@ -414,20 +391,17 @@ public class IndexManager {
     if (!isWysiwyg(indexEntry)) {
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
-            indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Store.NO, Index.NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
+            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
           if (indexEntry.getTitle(language) != null) {
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(), Store.NO,
-                Index.ANALYZED));
+                toLowerCase(), Store.NO, Index.ANALYZED));
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(), Store.NO,
-                Index.NOT_ANALYZED));
+                toLowerCase(), Store.NO, Index.NOT_ANALYZED));
           }
         }
       }
@@ -436,23 +410,19 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
-            indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Store.NO, Index.NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
+            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
       } else {
-        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(),
-            Store.NO, Index.ANALYZED));
+        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(), Store.NO, Index.ANALYZED));
       }
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
@@ -464,13 +434,11 @@ public class IndexManager {
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
     }
@@ -502,12 +470,12 @@ public class IndexManager {
     }
 
     List<FieldDescription> list3 = indexEntry.getFields();
-    Store storeAction;
-    List<String> fieldsForFacets = new ArrayList<String>();
+    List<String> fieldsForFacets = new ArrayList<String>(list3.size());
     for (FieldDescription field : list3) {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort or to generate a facet, it's stored in the lucene index
         String fieldName = getFieldName(field.getFieldName(), field.getLang());
+        Store storeAction;
         if (field.isStored() || SearchEnginePropertiesManager.getFieldsNameList().contains(field.
             getFieldName())) {
           storeAction = Store.YES;
@@ -519,9 +487,9 @@ public class IndexManager {
       }
     }
     if (!fieldsForFacets.isEmpty()) {
-      String sFieldsForFacet = list2String(fieldsForFacets);
+      String stringForFacets = buildStringForFacets(fieldsForFacets);
       // adds all fields which generate facets
-      doc.add(new Field(FIELDS_FOR_FACETS, sFieldsForFacet, Store.YES, Index.NO));
+      doc.add(new Field(FIELDS_FOR_FACETS, stringForFacets, Store.YES, Index.NO));
     }
 
     if (!isWysiwyg(indexEntry)) {
@@ -538,18 +506,15 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
     }
@@ -558,17 +523,12 @@ public class IndexManager {
     return doc;
   }
 
-  private String list2String(List<String> fieldsForFacets) {
-    boolean first = true;
-    String sFieldsForFacet = "";
-    for (String fieldForFacets : fieldsForFacets) {
-      if (!first) {
-        sFieldsForFacet += ",";
-      }
-      sFieldsForFacet += fieldForFacets;
-      first = false;
+  private String buildStringForFacets(List<String> fieldsForFacets) {
+    String fieldsForFacet = "";
+    if (fieldsForFacets != null && !fieldsForFacets.isEmpty()) {
+      fieldsForFacet = StringUtil.join(fieldsForFacets, ',');
     }
-    return sFieldsForFacet;
+    return fieldsForFacet;
   }
 
   private String getFieldName(String name, String language) {
@@ -628,11 +588,28 @@ public class IndexManager {
   /*
    * The lucene index engine parameters.
    */
-  private int maxFieldLength = 10000;
-  private int mergeFactor = 10;
-  private int maxMergeDocs = Integer.MAX_VALUE;
-  private double RAMBufferSizeMB = IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB;
+  private static int maxFieldLength = 10000;
+  private static int mergeFactor = 10;
+  private static int maxMergeDocs = Integer.MAX_VALUE;
+  private static double RAMBufferSizeMB = IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB;
+
   // enable the "Did you mean " indexing
-  private boolean enableDymIndexing = false;
-  private String serverName = null;
+  private static boolean enableDymIndexing = false;
+  private static String serverName = null;
+
+  static {
+    // Reads and set the index engine parameters from the given properties file
+    ResourceLocator resource =
+        new ResourceLocator("org.silverpeas.search.indexEngine.IndexEngine", "");
+    maxFieldLength = resource.getInteger("lucene.maxFieldLength", maxFieldLength);
+    mergeFactor = resource.getInteger("lucene.mergeFactor", mergeFactor);
+    maxMergeDocs = resource.getInteger("lucene.maxMergeDocs", maxMergeDocs);
+
+    String stringValue = resource.getString("lucene.RAMBufferSizeMB", Double.toString(
+        IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB));
+    RAMBufferSizeMB = Double.parseDouble(stringValue);
+
+    enableDymIndexing = resource.getBoolean("enableDymIndexing", false);
+    serverName = resource.getString("server.name", "Silverpeas");
+  }
 }

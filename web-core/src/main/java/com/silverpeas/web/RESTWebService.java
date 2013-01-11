@@ -83,6 +83,8 @@ public abstract class RESTWebService {
           WebApplicationException {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
+    // If user authentication is done by API Token catched from HTTP URL request, HTTP_SESSIONKEY
+    // is not returned into HTTP response header
     if (request.getHeader(HTTP_SESSIONKEY) != null || (request.getHeader(HTTP_AUTHORIZATION) != null
             && session.getLastAccessTimestamp() == session.getOpeningTimestamp())) {
       getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());

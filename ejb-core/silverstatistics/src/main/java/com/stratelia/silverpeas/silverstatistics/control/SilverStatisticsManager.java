@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -69,7 +70,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   // Object variables
   // List of directory to compute size
   private List<String> directoryToScan = null;
-  private SilverStatistics silverStatistics = null;
   private StatisticsConfig statsConfig = null;
 
   /**
@@ -402,24 +402,22 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     }
     return -1;
   }
-
-  /**
-   * Method declaration
-   * @param file
-   * @return
-   * @see
-   */
+  
   private long returnSize(File file) {
     if (file.isFile()) {
       return file.length();
     }
     File fDirContent[] = file.listFiles();
     long fileslength = 0L;
-    for (File aFDirContent : fDirContent) {
-      if (aFDirContent.isFile()) {
-        fileslength = fileslength + aFDirContent.length();
-      } else {
-        fileslength = fileslength + returnSize(aFDirContent);
+    if (fDirContent != null) {
+      for (File aFDirContent : fDirContent) {
+        if (aFDirContent != null) {
+          if (aFDirContent.isFile()) {
+            fileslength = fileslength + aFDirContent.length();
+          } else {
+            fileslength = fileslength + returnSize(aFDirContent);
+          }
+        }
       }
     }
     return fileslength;
@@ -470,7 +468,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("silverstatistics", "SilverStatisticsManager.handleSchedulerEvent",
-        "The job '"
-        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+        anEvent.getJobThrowable());
   }
 }

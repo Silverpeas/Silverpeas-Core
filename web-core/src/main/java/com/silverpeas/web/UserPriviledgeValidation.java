@@ -149,16 +149,23 @@ public class UserPriviledgeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header parameter X-Silverpeas-Session. If no such parameter is set, it
-   * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
-   * within an active HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter is
+   * set, it is then retrieved from the current HTTP session if any. If the incoming request isn't
+   * sent within an active HTTP session, then an empty string is returned as no HTTP session was
+   * defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+
+    // Search among http request parameters one called HTTP_SESSIONKEY
+    if (!isDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
+    }
+
+    // Try with JSession id
     if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {

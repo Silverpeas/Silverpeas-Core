@@ -210,6 +210,79 @@
           }
         }
 
+        // a cache with the loaded subgroups of the current user group. It is mainly used for
+        // caching pages of groups so that their render can be paginated within the filtering panel
+        // in case of a lot of user groups. With the cache, only the not yet loaded groups are asked
+        // to the remote service. Theses groups can be loaded on the demand either by the paginated
+        // group listing panel or by the filtering panel
+        var groupCache = new function() {
+          var self = this;
+
+          // pagination of the groups in the filtering panel
+          var pagination = {
+            page: 0,
+            count: 60
+          };
+
+          // adds the specified groups into the cache at the specified index.
+          function add(index, groups) {
+            var insertionIndex = index;
+            if (self.groups.maxlength == undefined)
+              self.groups.maxlength = groups.maxlength;
+            for(var i = 0; i < groups.length; i++)
+              self.groups[insertionIndex++] = groups[i];
+          }
+
+          // the loaded groups
+          this.groups = [];
+
+          // size of the cache
+          this.size = function() { return self.groups.length }
+
+          this.groupsBetween = function(start, end) {
+            var groups = self.groups.slice(start, end);
+            groups.maxlength = self.groups.maxlength;
+            groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
+            return groups;
+          }
+
+          // loads a page of subgroups of the specified parent into the cache and invokes a callback
+          // with as parameter the loaded groups.
+          // If the page parameter isn't passed, then the next not yet loaded page of groups is
+          // loaded.
+          // If the groups for the specified page are already loaded, no load is done and they
+          // are passed to the callback if it is defined.
+          this.load = function(parentGroup) {
+            var page = pagination, callback = null;
+            for (var i = 1; i < arguments.length; i++) {
+              if (typeof arguments[i] == "function")
+                callback = arguments[i];
+              else
+                page = arguments[i];
+            }
+            if (page == pagination)
+              pagination.page++;
+            var start = page.count * (page.page - 1);
+            var end = start + page.count;
+            if (end > self.groups.length || self.groups[start] == null || self.groups[end-1] == null)
+              parentGroup.loadChildren({pagination: page}, function(groups) {
+                add(start, groups);
+                if (callback) {
+                  groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
+                  callback(groups);
+                }
+              });
+            else if (callback)
+              callback(self.groupsBetween(start, end));
+          }
+
+          this.reset = function() {
+            this.groups = [];
+            pagination.page = 0;
+          }
+
+        }
+
         // the ui event processing in the user panel
         // each event is sent by an action of the user on an ui element and drives to a computation
         // into which different others ui elements can be updated
@@ -217,12 +290,25 @@
 
           var self = this;
 
+          // the group currently selected in the filtered panel
+          var _currentGroup;
+
           function renderUsersOfGroup(group) {
             if (itemToSelect.indexOf('user') > -1)
               group.loadUsers({
                 pagination: {
                   page: 1,
                   count: pageSize()} }, renderFilteredUsers);
+          }
+
+          function resetGroupFilter() {
+            $('#breadcrumb').breadcrumb('current', function(group) {
+              if (_currentGroup != group) {
+                _currentGroup = group;
+                groupCache.reset();
+                groupCache.load(_currentGroup, renderUserGroups);
+              }
+            });
           }
 
           function onEvent(event, processor, args) {
@@ -236,7 +322,8 @@
           // initializes the user panel content
           this.onInit = function() {
             onEvent('init', function() {
-              rootUserGroup.loadChildren(function(groups) {
+              _currentGroup = rootUserGroup;
+              groupCache.load(_currentGroup, function(groups) {
                 if (groups.length == 0) {
                   itemToSelect = 'user';
                   $('#filter_groups').remove();
@@ -259,8 +346,30 @@
               if (userListingPanelStatus.maximized)
                 unmaximizeUserListingPanel();
               $('#breadcrumb').breadcrumb('current', function(group) {
-                group.loadChildren(renderUserGroups);
+                if (_currentGroup != group) {
+                  _currentGroup = group;
+                  groupCache.reset();
+                  groupCache.load(_currentGroup, renderUserGroups);
+                } else {
+                  renderFilteredUserGroups(groupCache.groupsBetween(0, pageSize()), false);
+                }
                 renderUsersOfGroup(group);
+              });
+            });
+          }
+
+          // the next user groups are asked (used when the groups in the left panel are paginated)
+          this.onNextGroups = function() {
+            onEvent('nextGroups', function() {
+              groupCache.load(_currentGroup, renderNextUserGroups);
+            });
+          }
+
+          // the next page in the groups panel is asked
+          this.onNextGroupPage = function(page) {
+            onEvent('nextGroupPage', function() {
+              groupCache.load(_currentGroup, {page: page, count: pageSize()}, function(groups) {
+                renderFilteredUserGroups(groups, true);
               });
             });
           }
@@ -272,6 +381,7 @@
               maximizeUserListingPanel();
               userListingPanelStatus.renderedItems = self.event;
               $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              resetGroupFilter();
               allUsers.get({
                 pagination: {
                   page: 1,
@@ -288,6 +398,7 @@
               maximizeUserListingPanel();
               userListingPanelStatus.renderedItems = self.event;
               $('#breadcrumb').breadcrumb('set', rootUserGroup);
+              resetGroupFilter();
               me.loadRelationships({
                     pagination: {page: 1, count: pageSize()}
                   }, renderFilteredUsers);
@@ -306,9 +417,7 @@
           this.onGroupSearch = function(pattern) {
             onEvent('search', function() {
               var name = arguments[0];
-              $('#breadcrumb').breadcrumb('current', function(group) {
-                group.loadChildren({ name: name }, renderFilteredUserGroups);
-              });
+              _currentGroup.loadChildren({ name: name }, renderFilteredUserGroups);
             }, pattern);
           }
         }
@@ -356,15 +465,16 @@
             renderUsers = function(users) {
               renderFilteredUsers(users, page > 1);
             }
+          var pagination = (page == null ? null: {
+            page: page,
+            count: pageSize()
+          });
           if (userListingPanelStatus.renderedItems == 'myContacts')
             me.loadRelationships({
                 name: nameInUserSearch,
-                pagination: {page: page, count: pageSize()}}, renderUsers);
+                pagination: pagination
+            }, renderUsers);
           else if (userListingPanelStatus.renderedItems == 'allUsers') {
-            var pagination = (page == null ? null: {
-              page: page,
-              count: pageSize()
-            });
             allUsers.get({
               pagination: pagination,
               name: nameInUserSearch
@@ -374,10 +484,8 @@
             $('#breadcrumb').breadcrumb('current', function(group) {
               group.loadUsers({
                 name: nameInUserSearch,
-                pagination: {
-                  page: page,
-                  count: pageSize()
-                } }, renderUsers);
+                pagination: pagination
+              }, renderUsers);
             });
         }
 
@@ -417,24 +525,30 @@
         }
 
         function renderPaginationFor(size, dataContainer) {
-          var pagination, changedPage = null, pagesize = CountPerPage;
-          if (dataContainer == 'group_list')
+          var pagination, changedPage = null, count = size;
+          if (dataContainer == 'group_list') {
             pagination = $('#group_list_pagination');
-          else if (dataContainer == 'selected_group_list')
+            if (size.maxlength != size.length)
+              changedPage = function(page) {
+                eventProcessing.onNextGroupPage(page);
+              }
+            count = size.maxlength
+          } else if (dataContainer == 'selected_group_list') {
             pagination = $('#selected_group_list_pagination');
-          else if (dataContainer == 'user_list') {
+          } else if (dataContainer == 'user_list') {
             pagination = $('#user_list_pagination');
             changedPage = function(page) {
               renderUsersInPage(page);
             }
-          } else if (dataContainer == 'selected_user_list')
+          } else if (dataContainer == 'selected_user_list') {
             pagination = $('#selected_user_list_pagination');
+          }
 
-          if (size > 0) {
+          if (count > 0) {
             pagination.show();
             pagination.smartpaginator({
               display: 'single',
-              totalrecords: size,
+              totalrecords: count,
               recordsperpage: pageSize(),
               length: 6,
               datacontainer: dataContainer,
@@ -522,7 +636,13 @@
             appendTo($('ul.listing_groups_filter'));
         }
 
-        function renderFilteredUserGroups(groups, additionalRendering) {
+        function renderNextGroupLink() {
+          $('<li>', {'id': 'nextGroups'}).append($('<a>', { href: '#' }).addClass('filter').append("<fmt:message key='selection.NextGroups'/>").click(function() {
+            eventProcessing.onNextGroups();
+          })).appendTo($('ul.listing_groups_filter'));
+        }
+
+        function renderFilteredUserGroups(groups, inSamePagination, additionalRendering) {
           var text = (groups.length <= 1 ? foundGroupLabel: foundGroupsLabel);
           if (groupSelection.isMultiple()) {
             if (groups.length == 0 && groupSelection.isMultiple())
@@ -530,16 +650,17 @@
             else
               $('.listing_groups a.add_all').show();
           }
-          $('#group_result_count').text(groups.length + ' ' + text);
+          $('#group_result_count').text(groups.maxlength + ' ' + text);
           $('#group_list').hide();
-            $('#group_list').children().remove();
-            for(var i = 0; i < groups.length; i++) {
-              renderUserGroup($('#group_list'), i, groups[i]);
-              if (additionalRendering)
-                additionalRendering(groups[i]);
-            }
-            $('#group_list').show();
-            renderPaginationFor(groups.length, 'group_list');
+          $('#group_list').children().remove();
+          for(var i = 0; i < groups.length; i++) {
+            renderUserGroup($('#group_list'), i, groups[i]);
+            if (additionalRendering)
+              additionalRendering(groups[i]);
+          }
+          $('#group_list').show();
+          if (!inSamePagination)
+            renderPaginationFor({maxlength: groups.maxlength, length: groups.length}, 'group_list');
         }
 
         function renderUserGroups(groups) {
@@ -551,8 +672,20 @@
             for(var i = 0; i < groups.length; i++)
               renderUserGroupFilter(groups[i]);
           else
-            renderFilteredUserGroups(groups, renderUserGroupFilter);
+            renderFilteredUserGroups(groups, false, renderUserGroupFilter);
+          if (groups.length < groups.maxlength)
+            renderNextGroupLink();
           $container.show();
+          autoresizeUserGroupFilters();
+        }
+
+        function renderNextUserGroups(groups) {
+          $('#nextGroups').remove();
+          for(var i = 0; i < groups.length; i++) {
+            renderUserGroupFilter(groups[i]);
+          }
+          if (!groups.completlyLoaded)
+            renderNextGroupLink();
           autoresizeUserGroupFilters();
         }
 
@@ -654,10 +787,10 @@
               eventProcessing.onInit();
             },
             onchange: function(group) {
-              if (eventProcessing.event != null)
-                group.loadChildren(renderUserGroups);
-              else
-                eventProcessing.onGroupChange(group);
+              if (eventProcessing.event == null)
+                eventProcessing.onGroupChange();
+              /*else
+                group.loadChildren(renderUserGroups);*/
               highlightFilter($('#breadcrumb'));
             }
           });
@@ -666,7 +799,7 @@
           if (groupSelection.isMultiple()) {
             $('.listing_groups a.add_all').click(function() {
               $('#breadcrumb').breadcrumb('current', function(group) {
-                groupSelection.add(group.children());
+                group.loadChildren({}, groupSelection.add);
               });
             });
           } else {

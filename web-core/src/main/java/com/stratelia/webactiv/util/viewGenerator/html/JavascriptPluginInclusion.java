@@ -48,6 +48,7 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_IFRAME_POST = "jquery.iframe-post-form.js";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
+  private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
   private static final String STYLESHEET_CALENDAR = "fullcalendar.css";
@@ -99,9 +100,16 @@ public class JavascriptPluginInclusion {
             + SILVERPEAS_DATEPICKER);
     script silverpeasDateUtils = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
             + SILVERPEAS_DATE_UTILS);
+    script silverpeasDateChecker = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath
+        + SILVERPEAS_DATECHECKER);
+    script silverpeasDateCheckerLang = new script().setType(JAVASCRIPT_TYPE).addElement(
+        new StringBuilder("$.datechecker.settings.language = '").append(language).append("';")
+                                                                .toString());
     xhtml.addElement(datePicker);
     xhtml.addElement(silverpeasDatePicker);
     xhtml.addElement(silverpeasDateUtils);
+    xhtml.addElement(silverpeasDateChecker);
+    xhtml.addElement(silverpeasDateCheckerLang);
     return xhtml;
   }
 
@@ -168,7 +176,7 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePopup(final ElementContainer xhtml) {
     script popupViewGeneratorIconPath =
         new script().setType(JAVASCRIPT_TYPE).addElement(
-            new StringBuffer("var popupViewGeneratorIconPath='")
+            new StringBuilder("var popupViewGeneratorIconPath='")
                 .append(GraphicElementFactory.getIconsPath()).append("';").toString());
     xhtml.addElement(popupViewGeneratorIconPath);
     script popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_POPUP);
