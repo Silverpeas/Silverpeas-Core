@@ -95,9 +95,9 @@ public class IndexManager {
    * properties file "com/stratelia/webactiv/util/indexEngine/indexEngine.properties".
    */
   public IndexManager() {
-    SilverTrace.debug("indexEngine", "IndexManager",
-        "indexEngine.INFO_INDEX_ENGINE_STARTED", "maxFieldLength="
-        + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs=" + maxMergeDocs);
+    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_INDEX_ENGINE_STARTED",
+        "maxFieldLength=" + maxFieldLength + ", mergeFactor=" + mergeFactor + ", maxMergeDocs="
+        + maxMergeDocs);
   }
 
   /**
@@ -120,43 +120,37 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void optimize() {
-    SilverTrace.debug("indexEngine", "IndexManager",
-        "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
+    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
         "# of index to optimize = " + indexWriters.size());
 
     Iterator<Entry<String, IndexWriter>> writerPaths = indexWriters.entrySet().iterator();
     while (writerPaths.hasNext()) {
       Entry<String, IndexWriter> writerEntry = writerPaths.next();
       String writerPath = writerEntry.getKey();
-      SilverTrace.debug("indexEngine", "IndexManager",
-          "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION", "writerPath = "
-          + writerPath);
+      SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
+          "writerPath = " + writerPath);
 
       if (writerPath != null) {
         IndexWriter writer = writerEntry.getValue();
         if (writer != null) {
-          SilverTrace.debug("indexEngine", "IndexManager.optimize()",
-              "root_MSG_GEN_PARAM_VALUE", "try to optimize " + writerPath);
+          SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+              "try to optimize " + writerPath);
           // First, optimize
           try {
             writer.optimize();
           } catch (IOException e) {
             SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED",
-                "Can't optimize index " + writerPath, e);
+                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't optimize index " + writerPath, e);
           }
 
-          SilverTrace.info("indexEngine", "IndexManager.optimize()",
-              "root_MSG_GEN_PARAM_VALUE", "# of documents indexed in "
-              + writerPath + " = " + writer.maxDoc());
-
+          SilverTrace.info("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
+              "# of documents indexed in " + writerPath + " = " + writer.maxDoc());
           // Then, close the writer
           try {
             writer.close();
           } catch (IOException e) {
             SilverTrace.error("indexEngine", "IndexManager.optimize()",
-                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath,
-                e);
+                "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
           }
         }
         // update the spelling index
@@ -399,20 +393,17 @@ public class IndexManager {
     if (!isWysiwyg(indexEntry)) {
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
-            indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Store.NO, Index.NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
+            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
           if (indexEntry.getTitle(language) != null) {
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(), Store.NO,
-                Index.ANALYZED));
+                toLowerCase(), Store.NO, Index.ANALYZED));
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(), Store.NO,
-                Index.NOT_ANALYZED));
+                toLowerCase(), Store.NO, Index.NOT_ANALYZED));
           }
         }
       }
@@ -421,23 +412,19 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()),
-            indexEntry.getTitle(indexEntry.getLang()).toLowerCase(),
-            Store.NO, Index.NOT_ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
+            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
       } else {
-        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(),
-            Store.NO, Index.ANALYZED));
+        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(), Store.NO, Index.ANALYZED));
       }
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
@@ -449,13 +436,11 @@ public class IndexManager {
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
     }
@@ -487,12 +472,12 @@ public class IndexManager {
     }
 
     List<FieldDescription> list3 = indexEntry.getFields();
-    Store storeAction;
-    List<String> fieldsForFacets = new ArrayList<String>();
+    List<String> fieldsForFacets = new ArrayList<String>(list3.size());
     for (FieldDescription field : list3) {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort or to generate a facet, it's stored in the lucene index
         String fieldName = getFieldName(field.getFieldName(), field.getLang());
+        Store storeAction;
         if (field.isStored() || SearchEnginePropertiesManager.getFieldsNameList().contains(field.
             getFieldName())) {
           storeAction = Store.YES;
@@ -504,9 +489,9 @@ public class IndexManager {
       }
     }
     if (!fieldsForFacets.isEmpty()) {
-      String sFieldsForFacet = list2String(fieldsForFacets);
+      String stringForFacets = buildStringForFacets(fieldsForFacets);
       // adds all fields which generate facets
-      doc.add(new Field(FIELDS_FOR_FACETS, sFieldsForFacet, Store.YES, Index.NO));
+      doc.add(new Field(FIELDS_FOR_FACETS, stringForFacets, Store.YES, Index.NO));
     }
 
     if (!isWysiwyg(indexEntry)) {
@@ -523,18 +508,15 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(), Store.NO,
-              Index.ANALYZED));
+              toLowerCase(), Store.NO, Index.ANALYZED));
         }
       }
     }
@@ -543,17 +525,12 @@ public class IndexManager {
     return doc;
   }
 
-  private String list2String(List<String> fieldsForFacets) {
-    boolean first = true;
-    String sFieldsForFacet = "";
-    for (String fieldForFacets : fieldsForFacets) {
-      if (!first) {
-        sFieldsForFacet += ",";
-      }
-      sFieldsForFacet += fieldForFacets;
-      first = false;
+  private String buildStringForFacets(List<String> fieldsForFacets) {
+    String fieldsForFacet = "";
+    if (fieldsForFacets != null && !fieldsForFacets.isEmpty()) {
+      fieldsForFacet = StringUtil.join(fieldsForFacets, ',');
     }
-    return sFieldsForFacet;
+    return fieldsForFacet;
   }
 
   private String getFieldName(String name, String language) {
@@ -620,7 +597,7 @@ public class IndexManager {
   // enable the "Did you mean " indexing
   private static boolean enableDymIndexing = false;
   private static String serverName = null;
-  
+
   static {
     // Reads and set the index engine parameters from the given properties file
     ResourceLocator resource =
