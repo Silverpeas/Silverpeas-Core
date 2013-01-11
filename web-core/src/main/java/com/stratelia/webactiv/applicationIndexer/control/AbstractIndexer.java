@@ -37,9 +37,10 @@ public abstract class AbstractIndexer {
 
   final OrganizationController organizationController = new OrganizationController();
   final AdminController admin = new AdminController(null);
+  final static String silvertraceModule = "applicationIndexer";
 
   void setSilverTraceLevel() {
-    SilverTrace.setTraceLevel(this.getClass().getName(), SilverTrace.TRACE_LEVEL_INFO);
+    SilverTrace.setTraceLevel(silvertraceModule, SilverTrace.TRACE_LEVEL_INFO);
   }
 
   public void indexAllSpaces() throws Exception {
@@ -48,12 +49,12 @@ public abstract class AbstractIndexer {
 
   public void index(String currentSpaceId, String componentId) throws Exception {
     setSilverTraceLevel();
-    SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
+    SilverTrace.info(silvertraceModule, "AbstractIndexer.index()",
         "root.MSG_GEN_ENTER_METHOD");
     if (currentSpaceId == null) {
       // index whole application
       String[] spaceIds = organizationController.getAllSpaceIds();
-      SilverTrace.info("applicationIndexer", "ApplicationIndexer.index()",
+      SilverTrace.info(silvertraceModule, "AbstractIndexer.index()",
           "applicationIndexer.MSG_INDEXING_ALL_SPACES");
       for (String spaceId : spaceIds) {
         indexSpace(spaceId);
@@ -67,8 +68,7 @@ public abstract class AbstractIndexer {
         indexComponent(currentSpaceId, componentId);
       }
     }
-    SilverTrace
-        .info("applicationIndexer", "ApplicationIndexer.index()", "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info(silvertraceModule, "AbstractIndexer.index()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -77,7 +77,7 @@ public abstract class AbstractIndexer {
    * @throws Exception whether an exception occurred
    */
   public void indexSpace(String spaceId) throws Exception {
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
+    SilverTrace.info(silvertraceModule, "AbstractIndexer.indexSpace()",
         "applicationIndexer.MSG_START_INDEXING_SPACE", "spaceId = " + spaceId);
 
     if (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
@@ -99,7 +99,7 @@ public abstract class AbstractIndexer {
       indexSpace(subSpaceId);
     }
 
-    SilverTrace.info(ApplicationDYMIndexer.class.toString(), "ApplicationDYMIndexer.indexSpace()",
+    SilverTrace.info(silvertraceModule, "AbstractIndexer.indexSpace()",
         "applicationIndexer.MSG_END_INDEXING_SPACE", "spaceId = " + spaceId);
   }
 
