@@ -27,6 +27,8 @@ package com.silverpeas.authentication;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -242,5 +244,23 @@ public class AuthenticationService {
     SessionManagementFactory factory = SessionManagementFactory.getFactory();
     SessionManagement sessionManagement = factory.getSessionManagement();
     sessionManagement.closeSession(session.getId());
+  }
+
+  public String getPasswordPoliciesInfo(HttpServletRequest request) {
+    HttpSession session = request.getSession(true);
+    MainSessionController controller = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+
+    // Get user's favorite language if user is logged, or language defined in browser
+    String language = null;
+    if (controller == null) {
+      language = request.getLocale().getLanguage();
+    }
+    else {
+      language = controller.getFavoriteLanguage();
+    }
+
+    // load template
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("authentication");
+    return template.applyFileTemplate("passwordPolicies_"+language);
   }
 }

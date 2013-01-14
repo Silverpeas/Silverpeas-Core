@@ -51,6 +51,8 @@ public abstract class FunctionHandler {
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
   private ResourceLocator general =
       new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  private ResourceLocator authenticationSettings =
+      new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
 
   public FunctionHandler() {
     resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager",
@@ -162,4 +164,9 @@ public abstract class FunctionHandler {
   protected void setGeneral(ResourceLocator general) {
     this.general = general;
   }
+
+  public ResourceLocator getAuthenticationSettings() {
+    return authenticationSettings;
+  }
+
 }
