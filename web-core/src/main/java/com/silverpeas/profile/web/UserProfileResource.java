@@ -29,7 +29,6 @@ import static com.silverpeas.util.StringUtil.isDefined;
 
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,9 +52,11 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.util.ListSlice;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -74,7 +75,7 @@ public class UserProfileResource extends RESTWebService {
 
   /**
    * The HTTP header parameter that provides the real size of the user profiles that match a query.
-   * This parameter is usefull for clients that use the pagination to filter the count of user
+   * This parameter is useful for clients that use the pagination to filter the count of user
    * profiles to sent back.
    */
   public static final String RESPONSE_HEADER_USERSIZE = "X-Silverpeas-UserSize";
@@ -134,12 +135,11 @@ public class UserProfileResource extends RESTWebService {
     UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
         withGroupId(groupId).
         withName(name).
-        build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+        withPaginationPage(fromPage(page)).build();
+    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -220,13 +220,12 @@ public class UserProfileResource extends RESTWebService {
         withResourceId(resource).
         withGroupId(groupId).
         withName(name).
-        build();
-    UserDetail[] users = getOrganizationController().searchUsers(criteria);
-    UserDetail[] paginatedUsers = paginate(users, page);
+        withPaginationPage(fromPage(page)).build();
+    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, users.length).build();
+        asWebEntity(users, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
   }
 
   /**
@@ -268,7 +267,7 @@ public class UserProfileResource extends RESTWebService {
     UserDetail theUser = getUserDetailMatching(userId);
     String[] roleNames = (isDefined(roles) ? roles.split(",") : null);
     String[] contactIds = getContactIds(theUser.getId());
-    UserDetail[] contacts;
+    ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
       UserDetailsSearchCriteria criteria = aSearchCriteria().
           withComponentInstanceId(instanceId).
@@ -277,16 +276,15 @@ public class UserProfileResource extends RESTWebService {
           withResourceId(resource).
           withUserIds(contactIds).
           withName(name).
-          build();
+          withPaginationPage(fromPage(page)).build();
       contacts = getOrganizationController().searchUsers(criteria);
     } else {
-      contacts = new UserDetail[0];
+      contacts = new ListSlice<UserDetail>(0, 0, 0);
     }
-    UserDetail[] paginatedUsers = paginate(contacts, page);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
-        asWebEntity(Arrays.asList(paginatedUsers), locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, contacts.length).build();
+        asWebEntity(contacts, locatedAt(usersUri))).
+        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).build();
   }
 
   @Override
@@ -361,31 +359,6 @@ public class UserProfileResource extends RESTWebService {
     }
   }
 
-  private UserDetail[] paginate(UserDetail[] users, String pagination) {
-    try {
-      UserDetail[] paginatedUsers;
-      if (pagination != null && !pagination.isEmpty()) {
-        String[] page = pagination.split(";");
-        int nth = Integer.valueOf(page[0]);
-        int count = Integer.valueOf(page[1]);
-        int begin = (nth - 1) * count;
-        int end = begin + count;
-        if (end > users.length) {
-          end = users.length;
-        }
-        paginatedUsers = new UserDetail[end - begin];
-        for (int i = begin, j = 0; i < end; i++, j++) {
-          paginatedUsers[j] = users[i];
-        }
-      } else {
-        paginatedUsers = users;
-      }
-      return paginatedUsers;
-    } catch (Exception ex) {
-      throw new WebApplicationException(Status.BAD_REQUEST);
-    }
-  }
-
   /**
    * Gets the detail about the user that matchs the specified identifier. The identifier is a
    * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
@@ -415,5 +388,16 @@ public class UserProfileResource extends RESTWebService {
     } else {
       return getUserFullById(identifier);
     }
+  }
+
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.valueOf(pageAttributes[0]);
+      int count = Integer.valueOf(pageAttributes[1]);
+      paginationPage = new PaginationPage(nth, count);
+    }
+    return paginationPage;
   }
 }

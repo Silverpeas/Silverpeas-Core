@@ -27,35 +27,25 @@
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.calendar.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.homepage.HomePageUtil"%>
-<%@ page import="com.stratelia.webactiv.util.exception.*"%>
-<%@ page import="com.stratelia.webactiv.todo.control.TodoUserException"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.Attendee" %>
+<%@ page import="com.stratelia.webactiv.calendar.model.Classification" %>
+<%@ page import="com.stratelia.webactiv.calendar.model.Priority"%>
+<%@ page import="com.stratelia.webactiv.calendar.model.ToDoHeader" %>
+<%@ page import="com.stratelia.webactiv.todo.control.TodoUserException" %>
+<%@ page import="com.stratelia.webactiv.util.DBUtil" %>
+<%@ page import="com.stratelia.webactiv.util.DateUtil" %>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager" %>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane" %>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Iterator" %>
 
 <%@ include file="checkTodo.jsp" %>
 
@@ -63,23 +53,20 @@
 
 <%
 
-  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-  String action;
+  String m_context = GeneralPropertiesManager.getString("ApplicationURL");
+  String action = request.getParameter("Action");
   ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(todo.getLanguage());
   ResourceLocator settings = todo.getSettings();
-
-  action = request.getParameter("Action"); 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="datepicker"/>
-<TITLE>_________________/ Silverpeas - Corporate portal organizer \_________________/</TITLE>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
-<Script language="JavaScript">
+<script type="text/javascript">
 
 function gotoToDo()
 {
@@ -91,73 +78,45 @@ function gotoToDo()
 }
 
 function isCorrectForm() {
-        var errorMsg = "";
-        var errorNb = 0;
-        var beginDate = document.todoEditForm.StartDate.value;
-        var endDate = document.todoEditForm.EndDate.value;
-        var yearBegin = extractYear(beginDate, '<%=todo.getLanguage()%>');
-        var monthBegin = extractMonth(beginDate, '<%=todo.getLanguage()%>');
-                var dayBegin = extractDay(beginDate, '<%=todo.getLanguage()%>');
-                
-                var yearEnd = extractYear(endDate, '<%=todo.getLanguage()%>'); 
-                var monthEnd = extractMonth(endDate, '<%=todo.getLanguage()%>');
-                var dayEnd = extractDay(endDate, '<%=todo.getLanguage()%>'); 
-                
-                var beginDateOK = false;
-                var endDateOK = false;
-                
-                if (isWhitespace(document.todoEditForm.Name.value)) {
-                   errorMsg+="  - '<%=todo.getString("nomToDo")%>' <%=todo.getString("MustContainsText")%>\n";
-                   errorNb++; 
-            }
+  var errorMsg = "";
+  var errorNb = 0;
 
-                if (!isValidTextArea(document.todoEditForm.Description)) {
-                        errorMsg+="  - '<%=todo.getString("descriptionToDo")%>' <%=todo.getString("ContainsTooLargeText")+todo.getString("NbMaxTextArea")+todo.getString("Characters")%>\n";
-                        errorNb++;              
-                }           
-       
-        if (! isWhitespace(beginDate)) {
-                if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-                        errorMsg+="  - '<%=todo.getString("dateDebutToDo")%>' <%=todo.getString("MustContainsCorrectDate")%>\n";
-                        errorNb++;
-                }
-                else beginDateOK = true;
-        }
-              
-        if (! isWhitespace(endDate)) {
-                if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                        errorMsg+="  - '<%=todo.getString("dateFinToDo")%>' <%=todo.getString("MustContainsCorrectDate")%>\n";
-                        errorNb++;
-                }
-                else endDateOK = true;
-        }
-        
-        if (beginDateOK && endDateOK) {
-                        if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
-                                errorMsg+="  - '<%=todo.getString("dateFinToDo")%>' <%=todo.getString("MustContainsPostDateToBeginDate")%>\n";
-                    errorNb++;  
-                        }
-        }    
-              
-        
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=todo.getString("ThisFormContains")%> 1 <%=todo.getString("Error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=todo.getString("ThisFormContains")%> " + errorNb + " <%=todo.getString("Errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;     
-     
+  if (isWhitespace(document.todoEditForm.Name.value)) {
+    errorMsg += "  - '<%=todo.getString("nomToDo")%>' <%=todo.getString("MustContainsText")%>\n";
+    errorNb++;
+  }
+
+  if (!isValidTextArea(document.todoEditForm.Description)) {
+    errorMsg +=
+        "  - '<%=todo.getString("descriptionToDo")%>' <%=todo.getString("ContainsTooLargeText")+todo.getString("NbMaxTextArea")+todo.getString("Characters")%>\n";
+    errorNb++;
+  }
+
+  var dateErrors = isPeriodValid('StartDate', 'EndDate');
+  $(dateErrors).each(function(index, error) {
+    errorMsg += "  - " + error.message + "\n";
+    errorNb++;
+  });
+
+  var result;
+  switch (errorNb) {
+    case 0 :
+      result = true;
+      break;
+    case 1 :
+      errorMsg =
+          "<%=todo.getString("ThisFormContains")%> 1 <%=todo.getString("Error")%> : \n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+    default :
+      errorMsg = "<%=todo.getString("ThisFormContains")%> " + errorNb +
+          " <%=todo.getString("Errors")%> :\n" + errorMsg;
+      window.alert(errorMsg);
+      result = false;
+      break;
+  }
+  return result;
 }
 
 
@@ -203,8 +162,7 @@ function test(){
         document.todoEditForm.Priority.disabled = false;        
         document.todoEditForm.submit(); 
 }
-
-</SCRIPT>
+</script>
 
 <%
 
@@ -220,15 +178,17 @@ function test(){
   }
   
   ToDoHeader todoHeader = todo.getCurrentToDoHeader();
-  Collection attendees = todo.getCurrentAttendees();
+  Collection<Attendee> attendees = todo.getCurrentAttendees();
 
   /* todo == null : premier acces a la page */
   if (todoHeader == null) {
     String toDoId = request.getParameter("ToDoId");
     
-    if (toDoId != null)
-      if (toDoId.length() == 0)
+    if (toDoId != null) {
+      if (toDoId.length() == 0) {
         toDoId = null;
+      }
+    }
     
     /* Update et premier acces a la page */
     if (toDoId != null) {
@@ -239,7 +199,7 @@ function test(){
     /* Add et premier acces a la page */
     else {
       todoHeader = new ToDoHeader("", todo.getUserId());
-      attendees = new ArrayList();
+      attendees = new ArrayList<Attendee>();
       // the current organizer
        attendees.add(new Attendee(todo.getUserId()));
     }
@@ -251,8 +211,7 @@ function test(){
   /* todo != null */  
   else {
   
-        if ( (action.equals("View")) || (action.equals("EditDiffusionList")) )
-        {
+        if (action.equals("View") || action.equals("EditDiffusionList")) {
             
             //sauvegarde des valeurs saisies
             String name = request.getParameter("Name");
@@ -276,7 +235,7 @@ function test(){
               todoHeader.setPercentCompleted(new Integer(percent).intValue());
             } 
             catch (Exception e) {
-                        throw new TodoUserException("pourcentErreur");
+              throw new TodoUserException("pourcentErreur");
             }
             
             try {
@@ -298,36 +257,37 @@ function test(){
         
             todo.setCurrentToDoHeader(todoHeader);
             
-            
             if (action.equals("EditDiffusionList")) {
                 //routage vers le UserPanel
                 action = "View";
                 %>
            
-                 <Script language="javascript" type="text/javascript">
+                 <script language="javascript" type="text/javascript">
                          SP_openWindow('diffusion.jsp','diffusion','750','550','scrollbars=yes, resizable, alwaysRaised');
-                 </Script>
+                 </script>
                  <%  
                 } 
         }
   } //fin else  %>
-  </HEAD>
+  </head>
   
   <%
   /* ReallyAdd || ReallyUpdate */ 
-  if ((action.equals("ReallyAdd")) || (action.equals("ReallyUpdate"))) {
+  if (action.equals("ReallyAdd") || action.equals("ReallyUpdate")) {
     String name = request.getParameter("Name");
     String description = request.getParameter("Description");
     String priority = request.getParameter("Priority");
     String classification = request.getParameter("Classification");
     String startDate = request.getParameter("StartDate");
-    if (startDate == null) 
+    if (startDate == null) {
         startDate = "";
+    }
     String startHour = request.getParameter("StartHour");
     String startMinute = request.getParameter("StartMinute");
     String endDate = request.getParameter("EndDate");
-    if (endDate == null) 
+    if (endDate == null) {
         endDate = "";
+    }
     String endHour = request.getParameter("EndHour");
     String endMinute = request.getParameter("EndMinute");
     String withoutHour = request.getParameter("WithoutHour");
@@ -365,10 +325,10 @@ function test(){
                 endHour =null;
                 
                 String[] selectedUsers = new String[todo.getCurrentAttendees().size()];
-                Iterator i = todo.getCurrentAttendees().iterator();
+                Iterator<Attendee> i = todo.getCurrentAttendees().iterator();
                 int j = 0;
                 while (i.hasNext()) {
-                        Attendee attendee = (Attendee) i.next();
+                        Attendee attendee = i.next();
                         selectedUsers[j] = attendee.getUserId();
                         j++;
                 }
@@ -378,8 +338,8 @@ function test(){
                 if (todoHeader.getId() == null) {
                         String id = todo.addToDo(name, description, priority, classification, date1, startHour, date2, endHour, percent);
                         todo.setToDoAttendees(id, selectedUsers);
-                        out.println("<BODY onLoad=gotoToDo()>");
-                        out.println("</BODY>");
+                        out.println("<body onload=gotoToDo()>");
+                        out.println("</body>");
                         out.println("</html>");
                         return;
                 }
@@ -394,8 +354,8 @@ function test(){
                                 todo.setToDoPercentCompleted(todoHeader.getId(), percent);
                                 todo.setToDoAttendees(todoHeader.getId(), selectedUsers);
                         }
-                        out.println("<BODY onLoad=gotoToDo()>");
-                        out.println("</BODY>");
+                        out.println("<body onload=gotoToDo()>");
+                        out.println("</body>");
                         out.println("</html>");
                         return;
                 }
@@ -409,30 +369,26 @@ function test(){
   /* ReallyRemove */
   else if (action.equals("ReallyRemove")) {
     todo.removeToDo(todoHeader.getId());
-    out.println("<BODY onLoad=gotoToDo()>");
-    out.println("</BODY>");
+    out.println("<body onload=gotoToDo()>");
+    out.println("</body>");
     out.println("</html>");
     return;
   }  
     
 %>
-<BODY onLoad="document.todoEditForm.Name.focus();">
-<FORM NAME="todoEditForm" ACTION="todoEdit.jsp" METHOD=POST >
+<body onload="document.todoEditForm.Name.focus();">
+<form name="todoEditForm" action="todoEdit.jsp" method="post">
 
 <%
         Window window = graphicFactory.getWindow();
 
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setComponentName(todo.getString("todo"),"todo.jsp");
-
-
         browseBar.setPath(todo.getString("editionTodo"));
 
         OperationPane operationPane = window.getOperationPane();
 
-        if ( (todoHeader.getId() != null) && 
-           (todoHeader.getDelegatorId().equals(todo.getUserId())) &&
-           (toPrint == null) ) {
+        if (todoHeader.getId() != null && todoHeader.getDelegatorId().equals(todo.getUserId()) && toPrint == null) {
            
             // en cas de modification
                 operationPane.addOperation(m_context + "/util/icons/task_del.gif",
@@ -460,8 +416,8 @@ function test(){
 
   if (toPrint != null) {
     out.println(toPrint);
-    out.println("<BR>");
-    out.println("<BR>");
+    out.println("<br/>");
+    out.println("<br/>");
                 out.println("<div align=\"center\">");
                 Button button = graphicFactory.getFormButton(todo.getString("retour"), "javascript:onClick=history.back()", false);
     out.print(button.print());
@@ -469,46 +425,40 @@ function test(){
   }
 
   /* Add || Update || View || DiffusionListOK */  
-  else if ((action.equals("Update")) || (action.equals("Add")) || (action.equals("View")) || (action.equals("DiffusionListOK"))) {      
+  else if (action.equals("Update") || action.equals("Add") || action.equals("View") || action.equals("DiffusionListOK")) {      
 %>      
 <center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
-<tr> 
-        <td nowrap>
-                <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-                        <tr align=center> 
-
-                                <td  class="intfdcolor4" valign="baseline" align=left> <span class="txtlibform"><%=todo.getString("organisateurToDo")%> :</span></td>
-                                        <td  class="intfdcolor4" align=left valign="baseline"><span class="txtnav">
+<view:board>
+                <table border="0" cellspacing="0" cellpadding="5">
+                        <tr>
+                                <td class="txtlibform"><%=todo.getString("organisateurToDo")%></td>
+                                        <td class="txtnav">
                                                 <%
                                                         if (todoHeader.getDelegatorId() != null) {
                                                                 UserDetail user = todo.getUserDetail(todoHeader.getDelegatorId());
                                                                 if (user != null)
-                                                                        out.print(user.getLastName() + " " + user.getFirstName());
+                                                                        out.print(user.getDisplayedName());
                                                                 else
                                                                         out.println(todo.getString("utilisateurInconnu"));
                                                         }
                                                 %>
-                                        </span>
                                 </td>
                         </tr>
-                        <tr align=center>
-                        
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("nomToDo")%> :</span></td>
-                                <td class="intfdcolor4" align=left valign="baseline">
+                        <tr>
+                                <td class="txtlibform"><%=todo.getString("nomToDo")%></td>
+                                <td>
                                         <input type="text" name="Name" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                                                 if (todoHeader.getName() != null) 
-                                                        out.print("VALUE=\""+EncodeHelper.javaStringToHtmlString(todoHeader.getName())+"\" ");
+                                                        out.print("value=\""+EncodeHelper.javaStringToHtmlString(todoHeader.getName())+"\" ");
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
-                                                %>>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5">
+                                                %>/>&nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"/>
                                 </td>
                         </tr>
-                        <tr align=center>
-
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("percentCompletedToDo")%> :</span></td>
-                                <td class="intfdcolor4" align=left valign="baseline">
-                                        <SELECT name="PercentCompleted">
+                        <tr>
+                                <td class="txtlibform"><%=todo.getString("percentCompletedToDo")%></td>
+                                <td>
+                                        <select name="PercentCompleted">
                                         <%
                                                 for (int i = -1; i <= 10; i++) {
                                                         String s;
@@ -526,49 +476,43 @@ function test(){
                                                                                 selected = true;
                                                         if (v < 0) v = ToDoHeader.PERCENT_UNDEFINED;
                                                         if (selected)
-                                                                out.println("<OPTION SELECTED value=\""+v+"\">" + s);
+                                                                out.println("<option selected=\"selected\" value=\""+v+"\">" + s);
                                                         else
-                                                                out.println("<OPTION value=\""+v+"\">" + s);
+                                                                out.println("<option value=\""+v+"\">" + s);
                                                 }
                                         %>
-                                        </SELECT>
+                                        </select>
                                 </td>
                         </tr>
-                        <tr align=center> 
-
-                                <td class="intfdcolor4"  valign="top" align=left><span class="txtlibform"><%=todo.getString("descriptionToDo")%> :</span>&nbsp;</td>
-                                <td class="intfdcolor4"  align=left valign="baseline"><font size=1><textarea name="Description" wrap="VIRTUAL" rows="6" cols="49" <%
+                        <tr>
+                                <td class="txtlibform"><%=todo.getString("descriptionToDo")%></td>
+                                <td><textarea name="Description" rows="6" cols="49" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
-                                                %>><%if (todoHeader.getDescription() != null) out.print(EncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></font>
-                                </td>
+                                                %>><%if (todoHeader.getDescription() != null) out.print(EncodeHelper.javaStringToHtmlString(todoHeader.getDescription()));%></textarea></td>
                         </tr>
-                        <tr align=center>
+                        <tr>
 
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left><span class="txtlibform"><%=todo.getString("dateDebutToDo")%> :</span>&nbsp;
-                                        </td>
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left>
+                                <td class="txtlibform"><label for="StartDate" class="txtlibform"><%=todo.getString("dateDebutToDo")%></label></td>
+                                <td>
                                         <input type="text" name="StartDate" id="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
 													out.print("disabled ");
 												} else {
 													out.print("class=\"dateToPick\" ");
 												}
-                                                if (todoHeader != null) 
+                                                if (todoHeader != null)
                                                         if (todoHeader.getStartDate() != null)
-                                                                out.println("VALUE=\""+resources.getInputDate(todoHeader.getStartDate())+"\"");%>>
+                                                                out.println("value=\""+resources.getInputDate(todoHeader.getStartDate())+"\"");%>/>
 
                                         <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
                                                 <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
                                         <%}%>
                                         </td>
                                 </tr>
-                                <tr align=center>
-                                <td nowrap class="intfdcolor4" valign="baseline" align=left> 
-                                        <span class="txtnote"><span class="txtlibform"><%=todo.getString("dateFinToDo")%> :</span>&nbsp;
-                                                </span>
-                                </td>
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left>
+                                <tr>
+                                <td class="txtlibform"><label for="EndDate" class="txtlibform"><%=todo.getString("dateFinToDo")%></label></td>
+                                <td>
                                                 <input type="text" name="EndDate" id="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId())) {
 													out.print("disabled ");
@@ -578,23 +522,21 @@ function test(){
                                                 if (todoHeader != null) {
                                                         if (todoHeader.getEndDay() != null) {
                                                                 if (todoHeader.getStartDay() == null)
-                                                                        out.print("VALUE=\""+resources.getInputDate(todoHeader.getEndDate())+"\"");
+                                                                        out.print("value=\""+resources.getInputDate(todoHeader.getEndDate())+"\"");
                                                                 else if (! todoHeader.getEndDay().equals(todoHeader.getStartDay()))
-                                                                        out.print("VALUE=\""+resources.getInputDate(todoHeader.getEndDate())+"\"");
+                                                                        out.print("value=\""+resources.getInputDate(todoHeader.getEndDate())+"\"");
                                                         }
                                                 }
-                                                %>>
+                                                %>/>
                                                 <%if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-                                                        <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></p>
+                                                        <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
                                                 <%}%>
                                 </td>
                         </tr>
-                        <tr align=center> 
-
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("classification")%> :</span>&nbsp;
-                                </td>
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                        <SELECT name="Classification" <%
+                        <tr> 
+                                <td class="txtlibform"><%=todo.getString("classification")%></td>
+                                <td>
+                                        <select name="Classification" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 %>>
@@ -606,18 +548,18 @@ function test(){
                                                                 if (todoHeader.getClassification().getString().equals(classifications[i]))
                                                                         selected = true;
                                                         if (selected)
-                                                                out.println("<OPTION SELECTED VALUE=\"" + classifications[i] +"\">" + todo.getString(classifications[i]));
+                                                                out.println("<option selected=\"selected\" value=\"" + classifications[i] +"\">" + todo.getString(classifications[i])+"</option>");
                                                         else
-                                                                out.println("<OPTION VALUE=\"" + classifications[i] +"\">" + todo.getString(classifications[i]));
+                                                                out.println("<option value=\"" + classifications[i] +"\">" + todo.getString(classifications[i])+"</option>");
                                                 }
                                         %>
-                                        </SELECT>
+                                        </select>
                                 </td>
-                                <tr align=center>
-                                <td class="intfdcolor4" valign="baseline" align=left><span class="txtlibform"><%=todo.getString("priorite")%> :</span>&nbsp;
-                                </td>
-                                <td class="intfdcolor4" nowrap valign="baseline" align=left>
-                                        <SELECT name="Priority" <%
+                         </tr>
+                         <tr>
+                                <td class="txtlibform"><%=todo.getString("priorite")%></td>
+                                <td>
+                                        <select name="Priority" <%
                                                 if (! todo.getUserId().equals(todoHeader.getDelegatorId()))
                                                         out.print("disabled ");
                                                 %>>
@@ -629,73 +571,56 @@ function test(){
                                                                 if (todoHeader.getPriority().getValue() == priorities[i])
                                                                         selected = true;
                                                         if (selected)
-                                                                out.println("<OPTION SELECTED VALUE=\"" + priorities[i] +"\">" + todo.getString("priorite" + priorities[i]));
+                                                                out.println("<option selected=\"selected\" value=\"" + priorities[i] +"\">" + todo.getString("priorite" + priorities[i])+"</option>");
                                                         else
-                                                                out.println("<OPTION VALUE=\"" + priorities[i] +"\">" + todo.getString("priorite" +priorities[i]));
+                                                                out.println("<option value=\"" + priorities[i] +"\">" + todo.getString("priorite" +priorities[i])+"</option>");
                                                 }
                                         %>
-                                        </SELECT>
+                                        </select>
                                 </td>
                         </tr>
-                        
-                        <tr align=center>
-
-                                <td valign="top" class="intfdcolor4" nowrap align=left>
-                                <% if (todo.getUserId().equals(todoHeader.getDelegatorId())) { %>
-
-                                <% }%>
-                                         <span class="txtlibform"><%=todo.getString("listeDiffusion")%> 
-                                        :</span> 
-                                        &nbsp;
-                                        </td>
-                                        <td valign="baseline" class="intfdcolor4" nowrap align=left>
-                                        <span class="selectNS">
-                                                <TABLE width="100%" cellspacing="1" border="0" cellpadding="1"><!--tablliste-->
+                        <tr>
+                                <td class="txtlibform"><%=todo.getString("listeDiffusion")%></td>
+                                        <td>
+                                                <table width="100%" cellspacing="1" border="0" cellpadding="1"><!--tablliste-->
                                                 <%
                                                         if (attendees != null) {
                                                                 if (attendees.size() == 0) {
-                                                                        out.print("<TR><TD>");
+                                                                        out.print("<tr><td>");
                                                                         out.print(todo.getString("listeDiffusionVide"));
-                                                                        out.println("</TD></TR>");
+                                                                        out.println("</td></tr>");
                                                                 }
-                                                                Iterator i = attendees.iterator();
+                                                                Iterator<Attendee> i = attendees.iterator();
                                                                 while (i.hasNext()) {
-                                                                        out.println("<TR><TD>");
-                                                                        Attendee attendee = (Attendee) i.next();
+                                                                        out.println("<tr><td>");
+                                                                        Attendee attendee = i.next();
                                                                         UserDetail user = todo.getUserDetail(attendee.getUserId());
                                                                         if (user != null)
-                                                                                out.print("&nbsp;" + user.getLastName() + " " + user.getFirstName() + " "); 
+                                                                                out.print("&nbsp;" + user.getDisplayedName() + " "); 
                                                                         else
                                                                                 out.println(todo.getString("utilisateurInconnu"));
-                                                                        out.println("</TD>");
-                                                                        out.println("</TR>");
+                                                                        out.println("</td>");
+                                                                        out.println("</tr>");
                                                                 }
                                                         }
                                                 %>
-                                                </table><!--endTablListe-->
-                                        </span>
-                                        
+                                                </table><!--endTablListe-->                                        
                                 </td>
                                         </tr>
-                                <tr align=center nowrap>
-                                 
-                                        <td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"> : <%=todo.getString("mandatoryFields")%>) </span> 
+                                <tr>
+                                        <td colspan="2" nowrap="nowrap"><span class="txt"><img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"/> : <%=todo.getString("mandatoryFields")%></span> 
                                         </td>
                         </tr>
                                 
                 </table>
-        </td>
-</tr>
-
-</table></center>
+</view:board>
+</center>
 <%
 out.println(frame.printMiddle());
 %>
-                <input type="hidden" name="Action">
-                <br>
-                <center><table width="100%" cellpadding=2 cellspacing=0 border=0>
-                        <tr align=center>
-                                <td>
+                <input type="hidden" name="Action"/>
+                <br/>
+                <center>
                                         <%
                                         ButtonPane pane = graphicFactory.getButtonPane();
                                         Button button = null;
@@ -711,9 +636,7 @@ out.println(frame.printMiddle());
                                         pane.addButton(button);                                                                 
                                         out.println(pane.print());
                                         %>
-                                </td>
-                        </tr>
-                </table></center>
+				</center>
                                         
 <%
         } //fin du if
@@ -725,14 +648,6 @@ out.println(frame.printMiddle());
         out.println(window.printAfter());
 %>
 
-</FORM>
-
- <FORM NAME="searchForm" ACTION="todo.jsp" METHOD=POST >
-  <input type="hidden" name="query">
-</FORM>
-
-</BODY>
-
-</HTML>
-
-
+</form>
+</body>
+</html>

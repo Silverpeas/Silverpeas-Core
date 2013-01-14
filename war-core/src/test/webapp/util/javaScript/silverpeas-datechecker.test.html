@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!--
+  Copyright (C) 2000 - 2012 Silverpeas
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  As a special exception to the terms and conditions of version 3.0 of
+  the GPL, you may redistribute this Program in connection with Free/Libre
+  Open Source Software ("FLOSS") applications as described in Silverpeas's
+  FLOSS exception.  You should have recieved a copy of the text describing
+  the FLOSS exception, and it is also available here:
+  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Affero General Public License for more details.
+
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html>
+<head>
+  <title>Unit Tests of siverpeas-datechecker.js</title>
+  <link href="./../styleSheets/common/assert.css" type="text/css" rel="stylesheet">
+  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+  <script src="./../../../../main/webapp/util/javaScript/jquery/jquery.ui.datepicker-fr.js" type="text/javascript"></script>
+  <script src="./../../../../main/webapp/util/javaScript/silverpeas-datechecker.js" type="text/javascript"></script>
+  <script src="./common/assert.js" type="text/javascript"></script>
+  <script language="JavaScript">
+    var webContext = '';
+    var NO_ERROR = 'No error.';
+
+    /**
+     * Centralized assertion method.
+     * @param title
+     * @param expected
+     * @param errors
+     */
+    function assertResult(title, expected, errors) {
+      var test = '';
+      if (errors.length == 0) {
+        test = NO_ERROR;
+      } else {
+        $(errors).each(function(index, error) {
+          if (index > 0) {
+            test += '<br/>';
+          }
+          test += error.message;
+        });
+      }
+      assertThat({title : title, expected : expected, test : test});
+    }
+
+    /**
+     * Build a default date context.
+     * @return {{label: string, date: string, labelHour: string, hour: string, isMandatory: boolean, isMandatoryHour: boolean, canBeEqualToAnother: boolean}}
+     */
+    function defaultDateContext() {
+      return {
+        label : '',
+        date : '',
+        labelHour : '',
+        hour : '',
+        isMandatory : false,
+        isMandatoryHour : false,
+        canBeEqualToAnother : true
+      }
+    }
+
+    /**
+     * This Script contains some unit tests on silverpeas-datechecker plugin.
+     * For now, all tests are assertable by a human.
+     */
+    function testAll() {
+      testIsDateValid();
+      testIsPeriodValid();
+
+      // Multi-test
+      var futureDate = {date : '06/01/2012'};
+      var beginDate = {date : '01/02/2012', label : "'Begin date'"};
+      var endDate = {date : '01/01/2012', label : "'End date'" };
+      var dateErrors = isPeriodValid(futureDate, beginDate).concat(isPeriodValid(futureDate,
+          endDate)).concat(isPeriodValid(beginDate, endDate));
+      var title = "Multi test";
+      title += "\nBegin date : '" + beginDate.date + "'";
+      title += "\nEnd date : '" + endDate.date + "'";
+      title += "\nThe two dates are in the future (future is '" + futureDate.date + "')";
+      var expected = "'Begin date' GML.MustContainsPostOrEqualDateTo\n";
+      expected += "'End date' GML.MustContainsPostOrEqualDateTo\n";
+      expected += "'End date' GML.MustContainsPostOrEqualDateTo 'Begin date'";
+      assertResult(title, expected, dateErrors);
+
+      beginDate = {date : '01/01/2013', label : "'Begin date'"};
+      endDate = {date : '01/02/2013', label : "'End date'" };
+      dateErrors = isPeriodValid(futureDate, beginDate).concat(isPeriodValid(futureDate,
+          endDate)).concat(isPeriodValid(beginDate, endDate));
+      title = "Multi test";
+      title += "\nBegin date : '" + beginDate.date + "'";
+      title += "\nEnd date : '" + endDate.date + "'";
+      title += "\nThe two dates are in the future (future is '" + futureDate.date + "')";
+      expected = NO_ERROR;
+      assertResult(title, expected, dateErrors);
+    }
+
+    /**
+     * Test of isDateValid method.
+     */
+    function testIsDateValid() {
+      var title;
+      var expected;
+      var date = defaultDateContext();
+      assertIsDateValid("D: none, H: none.", "No error.", date);
+
+      // Mandatory values and date label
+      date = defaultDateContext();
+      date.isMandatory = true;
+      expected = "GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: none.", expected, date);
+      date.label = 'myDate';
+      expected = "myDate GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: none. (Date label)", expected, date);
+      date.isMandatoryHour = true;
+      expected = "myDate GML.MustBeFilled\nmyDate GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: none(M). (Date label)", expected, date);
+      date.isMandatory = false;
+      expected = "myDate GML.MustBeFilled";
+      assertIsDateValid("D: none , H: none(M). (Date label)", expected, date);
+
+      // Mandory values and Label of hour
+      date = defaultDateContext();
+      date.isMandatory = true;
+      date.labelHour = 'myHour';
+      expected = "GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: none. (Hour label)", expected, date);
+      date.isMandatoryHour = true;
+      expected = "GML.MustBeFilled\nmyHour GML.MustBeFilled";
+      assertIsDateValid("D: none (M), H: none(M). (Hour label)", expected, date);
+      date.isMandatory = false;
+      expected = "myHour GML.MustBeFilled";
+      assertIsDateValid("D: none , H: none(M). (Hour label)", expected, date);
+
+      // Values date
+      date = defaultDateContext();
+      date.label = 'myDate';
+      date.labelHour = 'myHour';
+      date.date = '01-01-2012';
+      title = "D: '" + date.date + "', H: none : bad format (-)";
+      expected = "myDate GML.MustContainsCorrectDate";
+      assertIsDateValid(title, expected, date);
+      date.date = ' 01/01/2012';
+      title = "D: '" + date.date + "', H: none : bad format (space at begin)";
+      expected = "myDate GML.MustContainsCorrectDate";
+      assertIsDateValid(title, expected, date);
+      date.date = '01/01/2012 ';
+      title = "D: '" + date.date + "', H: none : bad format (space at end)";
+      expected = "myDate GML.MustContainsCorrectDate";
+      assertIsDateValid(title, expected, date);
+      date.date = '13/01/2012';
+      title = "D: '" + date.date + "', H: none : bad format (12 months only)";
+      expected = "myDate GML.MustContainsCorrectDate";
+      assertIsDateValid(title, expected, date);
+      date.date = '02/29/2011';
+      title = "D: '" + date.date + "', H: none : bad format (this February 29 doesn't exist)";
+      expected = "myDate GML.MustContainsCorrectDate";
+      assertIsDateValid(title, expected, date);
+      date.date = '02/29/2012';
+      title = "D: '" + date.date + "', H: none : bad format (this February 29 exists)";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      $.datechecker.settings.language = 'fr';
+      date.date = '29/02/2012';
+      title =
+          "D: '" + date.date + "', H: none : bad format (this February 29 exists but fr language)";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      $.datechecker.settings.language = 'en';
+      date.date = '2/29/2012';
+      title = "D: '" + date.date +
+          "', H: none : bad format (this February 29 exists, missing 0 at begin)";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      date.date = '01/01/0';
+      title = "D: '" + date.date + "', H: none : bad format (year 0!)";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      date.date = '01/01/9999';
+      title = "D: '" + date.date + "', H: none : bad format (year 9999!)";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+
+      // Values hour
+      date = defaultDateContext();
+      date.label = 'myDate';
+      date.labelHour = 'myHour';
+      date.hour = '17-58';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (-)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '17:58';
+      title = "D: none, H: '" + date.hour + "' : OK";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      date.hour = '7:58';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (missing 0 at begin)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '07:58';
+      title = "D: none, H: '" + date.hour + "' : OK";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      date.hour = '-7:58';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (wrong character)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '07:-8';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (wrong character)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '07:60';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (60 minutes!)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '23:59';
+      title = "D: none, H: '" + date.hour + "' : OK";
+      expected = NO_ERROR;
+      assertIsDateValid(title, expected, date);
+      date.hour = '24:00';
+      title = "D: none, H: '" + date.hour + "' : bad hour format (00:00 instead)";
+      expected = "myHour GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+
+      // Values hour with no label for hour (date OK)
+      date = defaultDateContext();
+      date.label = 'myDate';
+      date.date = '06/24/1980';
+      date.hour = '17-58';
+      title = "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (-)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '7:58';
+      title =
+          "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (missing 0 at begin)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '-7:58';
+      title = "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (wrong character)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '07:-8';
+      title = "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (wrong character)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '07:60';
+      title = "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (60 minutes!)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+      date.hour = '24:00';
+      title = "D: '" + date.date + "', H: '" + date.hour + "' : bad hour format (00:00 instead)";
+      expected = "myDate GML.MustContainsCorrectHour";
+      assertIsDateValid(title, expected, date);
+    }
+
+    function assertIsDateValid() {
+      arguments[0] = '<em>isDateValid</em> - ' + arguments[0];
+      arguments[2].nbCheck = 0;
+      assertResult(arguments[0], arguments[1], isDateValid(arguments[2]));
+    }
+
+    /**
+     * Test of isPeriodValid method.
+     */
+    function testIsPeriodValid() {
+      var title;
+      var expected;
+      var endDate = defaultDateContext();
+      var beginDate = defaultDateContext();
+      endDate.label = 'myDate';
+      endDate.labelHour = 'myHour';
+      beginDate.label = 'myAnotherDate';
+      beginDate.labelHour = 'myAnotherHour';
+      beginDate.date = '06/24-1980';
+      endDate.isMandatory = true;
+      endDate.isMandatoryHour = true;
+      title = "D: none, H: none, OD: '" + beginDate.date +
+          "' : mandatory date and hour and other date has bad format";
+      expected = "myAnotherDate GML.MustContainsCorrectDate";
+      expected += "\nmyDate GML.MustBeFilled\nmyHour GML.MustBeFilled";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.isMandatory = false;
+      endDate.isMandatoryHour = false;
+
+      // Date && Hour
+      beginDate.date = '06/24/1980';
+      beginDate.hour = '10:15';
+      endDate.date = '06/25/1980';
+      endDate.hour = '10:00';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : OK";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '06/24/1980';
+      endDate.hour = '10:15';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : OK (strictly equals)";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      endDate.canBeEqualToAnother = false;
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : strictly greater, see hours";
+      expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:16';
+      title = "D: '" + beginDate.date + "', H: '" + beginDate.hour + "', OD: '" + endDate.date +
+          "' , OH: '" + endDate.hour + "' : strictly greater, see hours";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+
+      // Date
+      endDate.canBeEqualToAnother = true;
+      beginDate.date = '06/24/1980';
+      beginDate.hour = '';
+      endDate.date = '06/25/1980';
+      endDate.hour = '';
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date + "' , OH: none : OK";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '06/24/1980';
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
+          "' , OH: none : OK (strictly equals)";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.canBeEqualToAnother = false;
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
+          "' , OH: none : strictly greater, see hours";
+      expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+
+      // Hour
+      endDate.canBeEqualToAnother = true;
+      beginDate.date = '';
+      beginDate.hour = '10:15';
+      endDate.date = '';
+      endDate.hour = '10:16';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour + "' : OK";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
+          "' : OK (strictly equals)";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:15';
+      endDate.canBeEqualToAnother = false;
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
+          "' : strictly greater, see hours";
+      expected = 'myDate GML.MustContainsPostDateTo myAnotherDate';
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.hour = '10:16';
+      title = "D: none, H: '" + beginDate.hour + "', OD: none , OH: '" + endDate.hour +
+          "' : strictly greater, see hours";
+      expected = NO_ERROR;
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+
+      // Simple functional use case : one of the two dates is missing but not mandatory.
+      endDate = defaultDateContext();
+      endDate.label = "'Ending date'";
+      endDate.date = '08/15/2012';
+      beginDate = defaultDateContext();
+      beginDate.label = "'Begin date'";
+      expected = NO_ERROR;
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
+          "' , OH: none : begin date is missing but not mandatory.";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+      endDate.date = '';
+      beginDate.date = '08/15/2012';
+      expected = NO_ERROR;
+      title = "D: '" + beginDate.date + "', H: none, OD: '" + endDate.date +
+          "' , OH: none : ending date is missing but not mandatory.";
+      assertIsPeriodValid(title, expected, beginDate, endDate);
+    }
+
+    function assertIsPeriodValid() {
+      arguments[0] = '<em>isPeriodValid</em> - ' + arguments[0];
+      arguments[2].nbCheck = 0;
+      arguments[3].nbCheck = 0;
+      assertResult(arguments[0], arguments[1], isPeriodValid(arguments[2], arguments[3]));
+    }
+
+  </script>
+</head>
+<body>
+<script language="JavaScript">
+
+  // Tests
+  $(document).ready(function() {
+    testAll()
+  });
+
+</script>
+</body>
+</html>

@@ -23,7 +23,18 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.util.StringUtil.isDefined;
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.token.TokenStringKey;
+import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.model.Token;
+import org.silverpeas.token.service.TokenService;
+import org.silverpeas.util.Charsets;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -32,19 +43,7 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
-import org.silverpeas.util.Charsets;
-
-import com.silverpeas.accesscontrol.AccessController;
-import com.silverpeas.session.SessionInfo;
-import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -58,7 +57,6 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 public class UserPriviledgeValidation {
 
   @Inject
-  @Named("sessionManager")
   private SessionManagement sessionManagement;
   @Inject
   @Named("componentAccessController")
@@ -128,16 +126,23 @@ public class UserPriviledgeValidation {
 
   /**
    * Gets the key of the session of the user calling this web service. The session key is first
-   * retrieved from the HTTP header parameter X-Silverpeas-Session. If no such parameter is set, it
-   * is then retrieved from the current HTTP session if any. If the incoming request isn't sent
-   * within an active HTTP session, then an empty string is returned as no HTTP session was defined
-   * for the current request.
+   * retrieved from the HTTP header or URL parameter X-Silverpeas-Session. If no such parameter
+   * is set, it is then retrieved from the current HTTP session if any. If the incoming request
+   * isn't sent within an active HTTP session, then an empty string is returned as no HTTP session
+   * was defined for the current request.
    *
    * @return the user session key or an empty string if no HTTP session is active for the current
    * request.
    */
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
+
+    // Search among http request parameters one called HTTP_SESSIONKEY
+    if (!isDefined(sessionKey)) {
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
+    }
+
+    // Try with JSession id
     if (!isDefined(sessionKey)) {
       HttpSession httpSession = request.getSession(false);
       if (httpSession != null) {
@@ -189,7 +194,7 @@ public class UserPriviledgeValidation {
   /**
    * Validates the current user session with the specified session key. If the incoming request is
    * within an opened HTTP session (not so stateless, should be avoided in RESTful REST web services
-   * for both scalability and REST policy reasons), then take checks this session is valide before
+   * for both scalability and REST policy reasons), then take checks this session is valid before
    * processing the request. If the session is valid, then detail about the user is returned,
    * otherwise a WebApplicationException exception is thrown. As the anonymous user has no opened
    * session, when a request is recieved by this web service and that request does neither belong to
@@ -200,7 +205,7 @@ public class UserPriviledgeValidation {
    * @return the detail about the user requesting this web service.
    */
   private SessionInfo validateUserSession(String sessionKey) {
-    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+    SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
     if (sessionInfo == null) {
 
       // Verify user token
