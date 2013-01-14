@@ -149,7 +149,7 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-httpclient-3.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.2.11.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.5.1.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jackrabbit-webdav-2.5.1.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jcl-over-slf4j-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-log4j12-1.5.6.jar\" download=\"eager\"/>");
@@ -165,15 +165,17 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"),
         CharEncoding.UTF_8));
     out.println("</argument>");
+        out.print("\t\t<argument>");
+    out.print(resources.getBoolean("deconnectedMode", false));
+    out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
     out.println("</argument>");
-    out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
-    out.println("</argument>");
-    out.print("\t\t<argument>");
-    out.print(resources.getBoolean("deconnectedMode", false));
-    out.println("</argument>");
+    if(StringUtil.isDefined(password)) {
+      out.print("\t\t<argument>");
+      out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
+      out.println("</argument>");
+    }
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
   }
