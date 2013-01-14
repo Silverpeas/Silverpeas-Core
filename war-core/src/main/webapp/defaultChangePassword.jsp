@@ -38,6 +38,8 @@
 <%
 int minLengthPassword = JobDomainSettings.m_MinLengthPwd;
 ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
+
+String message = (String) request.getAttribute("message");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -97,14 +99,9 @@ ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authe
                     <div id="header">
                         <img src="<%=logo%>" class="logo" />
                         <p class="information"><%=authenticationBundle.getString("authentication.password.change") %><br/>
-								<%
-									String message = (String) request.getAttribute("message");
-									if (message != null) {
-								%>
-									( <%=message%> )<br/>
-								<%
-									}
-								%></p>
+								<% if (message != null) { %>
+									<span><%=message%></span>
+								<% } %></p>
                         <div class="clear"></div>
                     </div>
 					<p><label><span><%=authenticationBundle.getString("authentication.password.old") %></span><input type="password" name="oldPassword" id="oldPassword"/></label></p>
