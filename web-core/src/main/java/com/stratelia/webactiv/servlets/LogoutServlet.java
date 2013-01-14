@@ -24,32 +24,31 @@
 
 package com.stratelia.webactiv.servlets;
 
-import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class LogoutServlet extends HttpServlet {
 
   private static final long serialVersionUID = 996291597161289526L;
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the session
     HttpSession session = request.getSession(false);
+    // Notify session manager : invalidate unbinds any objects bound.
+    if (session != null) {
+      SessionManagementFactory.getFactory().getSessionManagement().closeSession(session.getId());
+    }
     StringBuilder buffer = new StringBuilder();
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
     buffer.append(request.getServerPort()).append(request.getContextPath());
-    // Notify session manager : invalidate unbinds any objects bound.
-    SessionManagementFactory factory = SessionManagementFactory.getFactory();
-    SessionManagement sessionManagement = factory.getSessionManagement();
-    sessionManagement.closeSession(session.getId());
     ResourceLocator resource =
         new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
     String postLogoutPage = resource.getString("logout.page", "/Login.jsp?ErrorCode=4&logout=true");
