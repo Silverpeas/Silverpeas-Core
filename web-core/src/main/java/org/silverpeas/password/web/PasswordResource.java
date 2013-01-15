@@ -84,7 +84,8 @@ public class PasswordResource extends AbstractPasswordResource {
   @Produces(MediaType.APPLICATION_JSON)
   public PasswordPolicyEntity getPolicy() {
     try {
-      final PasswordPolicyEntity passwordPolicy = PasswordPolicyEntity.createFrom();
+      final PasswordPolicyEntity passwordPolicy =
+          PasswordPolicyEntity.createFrom(getPasswordService().getExtraRuleMessage(getLanguage()));
       for (final PasswordRule rule : getPasswordService().getRequiredRules()) {
         passwordPolicy.addRule(asWebEntity(rule));
       }

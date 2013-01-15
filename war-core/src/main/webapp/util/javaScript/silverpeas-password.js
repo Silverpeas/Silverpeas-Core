@@ -30,11 +30,14 @@
   $.password = {
     webServiceContext : webContext + '/services',
     rules : null,
+    extraRuleMessage : null,
     initialized : false,
     doInitialize : function() {
       if (!$.password.initialized) {
         $.password.initialized = true;
-        $.password.rules = __getJSonData($.password.webServiceContext + '/password/policy').rules;
+        var policy = __getJSonData($.password.webServiceContext + '/password/policy');
+        $.password.rules = policy.rules;
+        $.password.extraRuleMessage = policy.extraRuleMessage;
       }
     }
   };
@@ -170,6 +173,9 @@
     //      <li id="[rule name]" class="[status style class]">[description]</li>
     //      ...
     //    </ul>
+    //    <div class"extraRules">
+    //      [extra rule massage from StringTemplate]
+    //    </div>
     //  </div>
 
     // Root id
@@ -192,6 +198,11 @@
     $.each($.password.rules, function(name, rule) {
       $rules.append($('<li>').attr('id', name).addClass('info').append(rule.description));
     });
+
+    // Extra rules
+    if ($.password.extraRuleMessage) {
+      $box.append($('<div>').addClass('extraRules').append($.password.extraRuleMessage));
+    }
 
     // Events
     $target.keyup(function(event) {

@@ -130,6 +130,12 @@ public class PasswordServiceTest {
     }
   }
 
+  @Test
+  public void testGetExtraRuleMessage() {
+    assertThat(passwordService.getExtraRuleMessage("fr"),
+        is("règles supplémentaires non vérifiables ..."));
+  }
+
   @After
   public void afterTest() {
     context.settings("org.silverpeas.password.settings.password");

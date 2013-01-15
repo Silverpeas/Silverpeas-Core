@@ -25,6 +25,7 @@ package org.silverpeas.password.service;
 
 import com.silverpeas.annotation.Service;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.apache.commons.lang.StringUtils;
 import org.silverpeas.password.constant.PasswordRuleType;
 import org.silverpeas.password.rule.AtLeastOneDigitPasswordRule;
@@ -150,5 +151,11 @@ public class DefaultPasswordService implements PasswordService {
    */
   private int random(int maxValue) {
     return (int) (maxValue * Math.random());
+  }
+
+  @Override
+  public String getExtraRuleMessage(final String language) {
+    return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("password").
+        applyFileTemplate("extraRules_" + language).trim();
   }
 }

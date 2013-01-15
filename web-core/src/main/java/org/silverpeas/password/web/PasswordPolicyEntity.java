@@ -41,19 +41,28 @@ public class PasswordPolicyEntity {
   @XmlElement(defaultValue = "")
   private Map<String, PasswordRuleEntity> rules = new LinkedHashMap<String, PasswordRuleEntity>();
 
+  /* Message contains additional rules that are not verifiable within Silverpeas services */
+  @XmlElement(defaultValue = "")
+  private String extraRuleMessage = "";
+
   /**
    * Creates a new password policy entity
+   * @param extraRuleMessage
    * @return the entity representing the specified rule.
    */
-  public static PasswordPolicyEntity createFrom() {
-    return new PasswordPolicyEntity();
+  public static PasswordPolicyEntity createFrom(final String extraRuleMessage) {
+    return new PasswordPolicyEntity(extraRuleMessage);
   }
 
   /**
    * Default hidden constructor.
+   * @param extraRuleMessage
    */
-  protected PasswordPolicyEntity() {
+  private PasswordPolicyEntity(final String extraRuleMessage) {
+    this.extraRuleMessage = extraRuleMessage;
+  }
 
+  protected PasswordPolicyEntity() {
   }
 
   public PasswordPolicyEntity addRule(PasswordRuleEntity rule) {
@@ -63,5 +72,9 @@ public class PasswordPolicyEntity {
 
   public Map<String, PasswordRuleEntity> getRules() {
     return rules;
+  }
+
+  public String getExtraRuleMessage() {
+    return extraRuleMessage;
   }
 }

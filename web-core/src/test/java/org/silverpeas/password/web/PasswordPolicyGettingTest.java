@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.silverpeas.password.web.PasswordTestResources.JAVA_PACKAGE;
 import static org.silverpeas.password.web.PasswordTestResources.SPRING_CONTEXT;
@@ -84,6 +85,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest<PasswordTestR
     assertThat(
         entity.getRules().get(PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR.name()).getDescription(),
         is("au moins un caractère spécial (%*!?$-+#&=.,;)"));
+    assertThat(entity.getExtraRuleMessage(), notNullValue());
   }
 
   @Ignore

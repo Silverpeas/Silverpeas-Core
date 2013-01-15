@@ -65,4 +65,12 @@ public interface PasswordService {
    * @return
    */
   String generate();
+
+  /**
+   * Gets additional rule message.
+   * All rules explicited in this message are not verifiable within Silverpeas services.
+   * @param language
+   * @return
+   */
+  String getExtraRuleMessage(String language);
 }
