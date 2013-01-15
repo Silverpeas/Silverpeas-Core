@@ -41,6 +41,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   private static final String RESOURCE_ID = "resourceId";
   private static final String ROOT_GROUP = "mustBeRoot";
   private static final String NAME = "name";
+  private static final String PAGINATION = "pagination";
   private Map<String, Object> criteria = new HashMap<String, Object>();
 
   @Override
@@ -156,6 +157,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return criteria.containsKey(NAME);
   }
 
+  public boolean isCriterionOnPaginationSet() {
+    return criteria.containsKey(PAGINATION);
+  }
+
   public boolean mustBeRoot() {
     return criteria.containsKey(ROOT_GROUP);
   }
@@ -231,6 +236,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return (String) criteria.get(NAME);
   }
 
+  /**
+   * Gets the pagination page into which the groups to return has to be part.
+   * @return the page in a pagination mechanism to fetch.
+   */
+  public PaginationPage getCriterionOnPagination() {
+    return (PaginationPage) criteria.get(PAGINATION);
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -293,6 +306,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
     if (isDefined(resourceId)) {
       criteria.put(RESOURCE_ID, resourceId);
     }
+    return this;
+  }
+
+  @Override
+  public SearchCriteria onPagination(PaginationPage page) {
+    criteria.put(PAGINATION, page);
     return this;
   }
 }

@@ -62,6 +62,7 @@ public class FileServer extends AbstractFileSender {
 
   /**
    * Method declaration
+   *
    * @param req
    * @param res
    * @throws IOException
@@ -102,8 +103,8 @@ public class FileServer extends AbstractFileSender {
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if ((mainSessionCtrl == null) || (!isUserAllowed(mainSessionCtrl, componentId))) {
       SilverTrace.warn("peasUtil", "FileServer.doPost", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId() + URLManager.getApplicationURL() +
-              GeneralPropertiesManager.getString("sessionTimeout"));
+          "NewSessionId=" + session.getId() + URLManager.getApplicationURL()
+          + GeneralPropertiesManager.getString("sessionTimeout"));
       res.sendRedirect(
           URLManager.getApplicationURL() + GeneralPropertiesManager.getString("sessionTimeout"));
       return;
@@ -120,6 +121,10 @@ public class FileServer extends AbstractFileSender {
       } else if (attachment != null) {
         // the file to download is not in a temporary directory
         filePath = attachment.getAttachmentPath();
+      } else {
+        String directory = req.getParameter(DIRECTORY_PARAMETER);
+        filePath = FileRepositoryManager.getAbsolutePath(componentId) + directory + File.separator
+            + sourceFile;
       }
     }
     res.setContentType(mimeType);
@@ -128,8 +133,8 @@ public class FileServer extends AbstractFileSender {
       res.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
       tempFile = File.createTempFile("zipfile", ".zip", new File(tempDirectory));
       SilverTrace.debug("peasUtil", "FileServer.doPost()", "root.MSG_GEN_PARAM_VALUE",
-          " filePath =" + filePath + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath() +
-              " fileName=" + fileName);
+          " filePath =" + filePath + " tempFile.getCanonicalPath()=" + tempFile.getCanonicalPath()
+          + " fileName=" + fileName);
       ZipManager.compressFile(filePath, tempFile.getCanonicalPath());
       filePath = tempFile.getCanonicalPath();
     }
@@ -185,7 +190,6 @@ public class FileServer extends AbstractFileSender {
     }
     return isAllowed;
   }
-
 
   @Override
   protected ResourceLocator getResources() {

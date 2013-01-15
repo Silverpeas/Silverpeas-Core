@@ -42,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.CharEncoding;
+
 /**
  * The class AuthenticationServlet is called to authenticate user in Silverpeas.
  */
@@ -65,7 +67,7 @@ public class AuthenticationServlet extends HttpServlet {
     // Get the session
     HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding("UTF-8");
+      request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
       AUTHENTICATION_SERVICE.unauthenticate(request);

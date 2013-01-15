@@ -4782,6 +4782,12 @@ li.application  .applicationName {
     padding: 6px 0 1px 43px;
 }
 
+#filter_userPanel .listing_filter ul li#nextGroups .filter{
+	background-image: url("../icons/arrow/arrowDownModal.png");
+    background-position: 25px 6px;
+    padding: 6px 0 1px 43px;
+}
+
 #filter_userPanel .listing_filter ul {
   overflow:auto;
   border-top:1px solid #868686;

@@ -57,6 +57,7 @@ import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.util.ListSlice;
 
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
@@ -6553,7 +6554,7 @@ public final class Admin {
     return userIds;
   }
 
-  public UserDetail[] searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
+  public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
@@ -6630,11 +6631,14 @@ public final class Admin {
     if (searchCriteria.isCriterionOnNameSet()) {
       criteria.and().onName(searchCriteria.getCriterionOnName());
     }
+    if (searchCriteria.isCriterionOnPaginationSet()) {
+      criteria.onPagination(searchCriteria.getCriterionOnPagination());
+    }
 
     return userManager.getUsersMatchingCriteria(criteria);
   }
 
-  public Group[] searchGroups(final GroupsSearchCriteria searchCriteria) throws AdminException {
+  public ListSlice<Group> searchGroups(final GroupsSearchCriteria searchCriteria) throws AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
@@ -6683,6 +6687,10 @@ public final class Admin {
 
     if (searchCriteria.isCriterionOnSuperGroupIdSet()) {
       criteria.and().onSuperGroupId(searchCriteria.getCriterionOnSuperGroupId());
+    }
+
+    if (searchCriteria.isCriterionOnPaginationSet()) {
+      criteria.onPagination(searchCriteria.getCriterionOnPagination());
     }
 
     return groupManager.getGroupsMatchingCriteria(criteria);

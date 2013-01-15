@@ -31,6 +31,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -53,6 +54,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     SimpleDocument document = new SimpleDocument(documentPk, objectId, 0, false, userId,
         new SimpleAttachment(fileName, null, null, null, item.getSize(),
         FileUtil.getMimeType(fileName), userId, new Date(), null));
+    document.setDocumentType(DocumentType.form);
     InputStream in = item.getInputStream();
     try {
       return AttachmentServiceFactory.getAttachmentService().createAttachment(document, in, false);

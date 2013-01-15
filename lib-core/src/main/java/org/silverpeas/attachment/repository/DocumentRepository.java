@@ -46,7 +46,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -174,8 +173,8 @@ public class DocumentRepository {
     pk.setId(copy.getIdentifier());
     return pk;
   }
-  
-  
+
+
 
 
   /**
@@ -268,7 +267,7 @@ public class DocumentRepository {
     if (checkedin) {
       session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
     }
-    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());    
+    documentNode.setProperty(SLV_PROPERTY_ORDER, document.getOrder());
     if (checkedin) {
       session.save();
       session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
@@ -537,7 +536,7 @@ public class DocumentRepository {
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
         getPath()
-        + instanceId + '/' + type.getForlderName());
+        + instanceId + '/' + type.getFolderName());
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
@@ -1021,7 +1020,7 @@ public class DocumentRepository {
     }
     FileUtils.copyDirectory(source, target);
   }
-  
+
   public void copyFullContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
     String originDir = origin.getDirectoryPath(null);
     String targetDir = copy.getDirectoryPath(null);
@@ -1046,7 +1045,7 @@ public class DocumentRepository {
     FileUtils.copyDirectory(source, target);
   }
 
-  public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone) 
+  public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
       throws ItemNotFoundException, RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
     Node cloneNode = session.getNodeByIdentifier(clone.getId());

@@ -110,6 +110,16 @@ public interface SearchCriteria {
   SearchCriteria onUserIds(String... userIds);
 
   /**
+   * Appends a criteria on a resources pagination. The pagination is a mechanism to distribute the
+   * resources to fetch in one or more pages of same size and to navigate among theses different
+   * available pages.
+   * Yet, this criterion is about the page of resources to fetch.
+   * @param page the page of resources to fetch.
+   * @return the criteria enriched with a criterion on the resources pagination.
+   */
+  SearchCriteria onPagination(final PaginationPage page);
+
+  /**
    * Appends a criteria disjonction.
    *
    * @return the criteria enriched with a disjonction. The disjonction will be applied with the last

@@ -21,11 +21,7 @@
  */
 package com.silverpeas.jcrutil;
 
-/**
- * Created on Aug 31, 2005
- *
- * $Id: BetterRepositoryFactoryBean.java,v 1.2 2009/04/01 14:10:07 ehugonnet Exp $ $Revision: 1.2 $
- */
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -58,6 +54,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springmodules.jcr.RepositoryFactoryBean;
 import org.xml.sax.InputSource;
 
+import org.silverpeas.util.Charsets;
 import com.silverpeas.util.StringUtil;
 
 /**
@@ -81,7 +78,6 @@ import com.silverpeas.util.StringUtil;
  * </code>
  *
  * @see org.springframework.jndi.JndiObjectFactoryBean
- * @author Costin Leau
  * @author Emmanuel Hugonnet
  */
 public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
@@ -221,7 +217,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     while (q != -1) {
       result.append(value.substring(p, q)); // Text before ${
       p = q;
-      q = value.indexOf("}", q + 2); // Find }
+      q = value.indexOf('}', q + 2); // Find }
       if (q != -1) {
         String variable = value.substring(p + 2, q);
         String replacement = variables.getProperty(variable);
@@ -357,7 +353,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     StringWriter out = new StringWriter();
     Reader reader = null;
     try {
-      reader = new InputStreamReader(config.getInputStream());
+      reader = new InputStreamReader(config.getInputStream(), Charsets.UTF_8);
       char[] buffer = new char[8];
       int c;
       while ((c = reader.read(buffer)) > 0) {
