@@ -28,6 +28,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.net.URI;
 import java.util.HashMap;
 
+import org.silverpeas.util.URLUtils;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
@@ -103,15 +104,19 @@ public class FileServerUtils {
   /**
    * Return the full url to access an attachment from web site
    *
+   * @param spaceId
+   * @param componentId
+   * @param logicalName
+   * @param physicalName
+   * @param mimeType
    * @param fullContext something like serverName:serverPort/context
+   * @param subDirectory
+   * @return
    */
-  public static String getWebUrl(String spaceId, String componentId,
-      String logicalName, String physicalName, String mimeType,
-      String subDirectory) {
+  public static String getWebUrl(String spaceId, String componentId, String logicalName,
+      String physicalName, String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-
-    String newLogicalName = replaceSpecialChars(logicalName);
-
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(newLogicalName).append("?ComponentId=").append(componentId).
         append("&SourceFile=").append(physicalName).append("&MimeType=").append(
         mimeType).append("&Directory=").append(subDirectory);
@@ -120,7 +125,7 @@ public class FileServerUtils {
 
   public static String getUrl(String componentId, String logicalName) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId);
     return url.toString();
@@ -130,32 +135,28 @@ public class FileServerUtils {
       String logicalName, String physicalName, String mimeType,
       String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
-
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?ComponentId=").append(componentId).append("&SourceFile=").append(
-        physicalName).append("&MimeType=").append(mimeType).append(
-        "&Directory=").append(subDirectory);
+        "?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).append(
+        "&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
     return url.toString();
   }
 
   public static String getOnlineURL(String componentId, String logicalName,
       String physicalName, String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/OnlineFileServer/").append(newLogicalName).
-        append("?ComponentId=").append(componentId).append("&SourceFile=").
-        append(physicalName).append("&MimeType=").append(mimeType).append(
-        "&Directory=").append(subDirectory);
+        append("?ComponentId=").append(componentId).append("&SourceFile=").append(physicalName).
+        append("&MimeType=").append(mimeType).append("&Directory=").append(subDirectory);
     return url.toString();
   }
 
   public static String getAttachmentURL(String componentId, String logicalName,
       String attachmentId, String lang) {
-    SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL",
-        "root.MSG_GEN_ENTER_METHOD",
-        "componentId = " + componentId + ", logicalName = " + logicalName + ", "
-        + "attachmentId = " + attachmentId + ", lang = " + lang);
+    SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL", "root.MSG_GEN_ENTER_METHOD",
+        "componentId = " + componentId + ", logicalName = " + logicalName + ", attachmentId = "
+        + attachmentId + ", lang = " + lang);
     StringBuilder url = new StringBuilder();
     String language = lang;
     if (language == null) {
@@ -163,27 +164,26 @@ public class FileServerUtils {
     }
     SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL",
         "root.MSG_GEN_PARAM_VALUE", "language = " + language);
-    String newLogicalName = replaceSpecialChars(logicalName);
-    url.append("/attached_file/").append("componentId/").append(componentId).append(
-        "/attachmentId/"). append(attachmentId).append("/lang/").append(language).append("/name/").
-        append(newLogicalName);
+    url.append("/attached_file/").append("componentId/").append(URLUtils.encodePathSegment(
+        componentId)).append("/attachmentId/").append(URLUtils.encodePathSegment(attachmentId)).
+        append("/lang/").append(URLUtils.encodePathSegment(language)).append("/name/").
+        append(URLUtils.encodePathSegment(logicalName));
     return url.toString();
   }
 
   public static String getVersionedDocumentURL(String componentId,
       String logicalName, String documentId, String versionId) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
-    url.append("/attached_file").append("/componentId/").
-        append(componentId).append("/documentId/").append(documentId).append(
-        "/versionId/").append(versionId).append("/name/").append(newLogicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    url.append("/attached_file").append("/componentId/").append(componentId).append("/documentId/").
+        append(documentId).append("/versionId/").append(versionId).append("/name/").append(
+        newLogicalName);
     return url.toString();
   }
 
-  public static String getAliasURL(String componentId, String logicalName,
-      String attachmentId) {
+  public static String getAliasURL(String componentId, String logicalName, String attachmentId) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&AttachmentId=").
         append(attachmentId);
@@ -193,16 +193,15 @@ public class FileServerUtils {
   public static String getAliasURL(String componentId, String logicalName,
       String documentId, String versionId) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/AliasFileServer/").append(newLogicalName).
         append("?ComponentId=").append(componentId).append("&DocumentId=").
         append(documentId).append("&VersionId=").append(versionId);
     return url.toString();
   }
 
-  public static Map<String, String> getMappedUrl(String spaceId,
-      String componentId, String logicalName, String physicalName,
-      String mimeType, String subDirectory) {
+  public static Map<String, String> getMappedUrl(String spaceId, String componentId,
+      String logicalName, String physicalName, String mimeType, String subDirectory) {
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("SpaceId", spaceId);
     parameters.put("ComponentId", componentId);
@@ -214,15 +213,13 @@ public class FileServerUtils {
 
   public static String getUrl(String spaceId, String componentId, String name,
       String mimeType, String subDirectory) {
-    String url = getUrl(spaceId, componentId, name, name, mimeType,
-        subDirectory);
+    String url = getUrl(spaceId, componentId, name, name, mimeType, subDirectory);
     return url;
   }
 
-  public static String getUrl(String logicalName, String physicalName,
-      String mimeType) {
+  public static String getUrl(String logicalName, String physicalName, String mimeType) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?SourceFile=").append(physicalName).append(
         "&TypeUpload=link&MimeType=").append(mimeType);
@@ -237,26 +234,25 @@ public class FileServerUtils {
     if (archiveIt) {
       archiveItStr = 'Y';
     }
-    String newLogicalName = replaceSpecialChars(logicalName);
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&UserId=").append(userId).
-        append("&SourceFile=").append(physicalName).append("&MimeType=").append(
-        mimeType);
-    url.append("&ArchiveIt=").append(archiveItStr).append("&PubId=").append(
-        pubId).append("&NodeId=").append(nodeId).append("&Directory=").append(
-        subDirectory);
+        append("&SourceFile=").append(physicalName).append("&MimeType=").append(mimeType);
+    url.append("&ArchiveIt=").append(archiveItStr).append("&PubId=").append(pubId).
+        append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
     return url.toString();
   }
 
   public static String getUrlToTempDir(String logicalName) {
     StringBuilder path = new StringBuilder();
-    path.append(getApplicationContext()).append("/TempFileServer/").append(logicalName);
+    path.append(getApplicationContext()).append("/TempFileServer/").append(URLUtils.
+        encodePathSegment(logicalName));
     try {
       URI uri = new URI(null, null, path.toString(), null);
       return uri.toString();
     } catch (URISyntaxException ex) {
       path = new StringBuilder();
-      String newLogicalName = replaceSpecialChars(logicalName);
+      String newLogicalName = URLUtils.encodePathSegment(logicalName);
       path.append(getApplicationContext()).append("/TempFileServer/").append(newLogicalName);
       return path.toString();
     }

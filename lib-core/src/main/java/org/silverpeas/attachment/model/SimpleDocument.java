@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.silverpeas.util.URLUtils;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -570,7 +571,7 @@ public class SimpleDocument implements Serializable {
         getContentType(), "");
     String extension = FileRepositoryManager.getFileExtension(getFilename());
     if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-      onlineUrl += "&logicalName=" + FileServerUtils.replaceSpecialChars(getFilename());
+      onlineUrl += "&logicalName=" + URLUtils.encodePathParamValue(getFilename());
     }
     return onlineUrl;
   }
@@ -582,7 +583,7 @@ public class SimpleDocument implements Serializable {
     }
     String extension = FileRepositoryManager.getFileExtension(getFilename());
     if ("exe".equalsIgnoreCase(extension) || "pdf".equalsIgnoreCase(extension)) {
-      aliasUrl += "&logicalName=" + FileServerUtils.replaceSpecialChars(getFilename());
+      aliasUrl += "&logicalName=" + URLUtils.encodePathParamValue(getFilename());
     }
     return aliasUrl;
   }
@@ -594,9 +595,15 @@ public class SimpleDocument implements Serializable {
     if (!webAppContext.endsWith("/")) {
       url.append('/');
     }
-    url.append(GeneralPropertiesManager.getString("webdav.respository")).append('/').
-        append(GeneralPropertiesManager.getString("webdav.workspace")).append('/').
-        append(getWebdavJcrPath());
+    url.append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.respository"))).
+        append('/').
+        append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.workspace")));
+        
+    String[] pathParts = StringUtil.split(getWebdavJcrPath(), '/');
+    for(String pathElement : pathParts) {
+      url.append('/');
+      url.append((URLUtils.encodePathSegment(pathElement)));
+    }
     return url.toString();
   }
 
@@ -636,6 +643,6 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getFolder() {
-    return documentType.getForlderName();
+    return documentType.getFolderName();
   }
 }

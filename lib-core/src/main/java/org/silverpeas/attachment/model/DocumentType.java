@@ -29,32 +29,32 @@ package org.silverpeas.attachment.model;
  */
 public enum DocumentType {
 
-  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"), 
+  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"),
   node("node");
-  private String forlderName;
+  private String folderName;
 
   private DocumentType(String folder) {
-    this.forlderName = folder;
+    this.folderName = folder;
   }
 
-  public String getForlderName() {
-    return forlderName;
+  public String getFolderName() {
+    return folderName;
   }
 
   public static DocumentType fromFolderName(String folder) {
-    if (attachment.forlderName.equals(folder)) {
+    if (attachment.folderName.equals(folder)) {
       return attachment;
     }
-    if (form.forlderName.equals(folder)) {
+    if (form.folderName.equals(folder)) {
       return form;
     }
-    if (wysiwyg.forlderName.equals(folder)) {
+    if (wysiwyg.folderName.equals(folder)) {
       return wysiwyg;
     }
-    if (image.forlderName.equals(folder)) {
+    if (image.folderName.equals(folder)) {
       return image;
     }
-    if (video.forlderName.equals(folder)) {
+    if (video.folderName.equals(folder)) {
       return video;
     }
     return attachment;
