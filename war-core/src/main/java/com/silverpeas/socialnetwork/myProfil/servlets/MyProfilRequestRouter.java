@@ -246,9 +246,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
     ResourceLocator authenticationSettings =
-        new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
+        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -276,16 +276,14 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       // user has filled a new login answer
       if (userLoginAnswer != null) {
         userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
-          // Crypt password if needed
+        // Crypt password if needed
         boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
-          if (answerCrypted) {
-            userLoginAnswer = CryptMD5.crypt(userLoginAnswer);
-          }
-      }
-      else {
+        if (answerCrypted) {
+          userLoginAnswer = CryptMD5.crypt(userLoginAnswer);
+        }
+      } else {
         userLoginAnswer = currentUser.getLoginAnswer();
       }
-
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();
