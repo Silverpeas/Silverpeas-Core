@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.util.DomainDetector"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -32,22 +33,10 @@
 <fmt:setLocale value="${pageContext.request.locale.language}" />
 <%@ include file="headLog.jsp" %>
 
+<c:set var="computedDomainId" value="<%= DomainDetector.getDomainId(request)%>" />
+
 <%
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
-ResourceLocator domainSettings = new ResourceLocator("com.silverpeas.authentication.settings.domainSettings", "");
-
-//Get Domain Id from server name
-String requestURL = request.getRequestURL().toString();
-String serverName = requestURL.substring( requestURL.indexOf("//")+2, requestURL.length() );
-serverName = serverName.substring( 0, serverName.indexOf("/"));
-if (serverName.indexOf(":") != -1) {
-serverName = serverName.substring( 0, serverName.indexOf(":"));
-}
-if (serverName.indexOf(".") != -1) {
-serverName = serverName.substring( 0, serverName.indexOf("."));
-}
-String computedDomainId = domainSettings.getString(serverName.toLowerCase(), null);
-pageContext.setAttribute("computedDomainId", computedDomainId);
 
 pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 String errorCode = request.getParameter("ErrorCode");
