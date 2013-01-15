@@ -27,6 +27,7 @@ import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.UserPriviledgeValidation;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.password.rule.PasswordRule;
 
 import javax.ws.rs.Consumes;
@@ -38,8 +39,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import static org.silverpeas.password.service.PasswordServiceFactory.getPasswordService;
 import static org.silverpeas.password.web.PasswordResourceURIs.*;
@@ -53,6 +52,10 @@ import static org.silverpeas.password.web.PasswordResourceURIs.*;
 @Path(PASSWORD_BASE_URI)
 @Authenticated
 public class PasswordResource extends AbstractPasswordResource {
+  protected static ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.password.settings.password", "");
+  protected static int nbMatchingCombinedRules =
+      settings.getInteger("password.combination.nbMatchingRules", 0);
 
   /**
    * User authentication is not necessary for this WEB Service. The authentication processing is
@@ -84,10 +87,14 @@ public class PasswordResource extends AbstractPasswordResource {
   @Produces(MediaType.APPLICATION_JSON)
   public PasswordPolicyEntity getPolicy() {
     try {
-      final PasswordPolicyEntity passwordPolicy =
-          PasswordPolicyEntity.createFrom(getPasswordService().getExtraRuleMessage(getLanguage()));
+      final PasswordPolicyEntity passwordPolicy = PasswordPolicyEntity
+          .createFrom(nbMatchingCombinedRules,
+              getPasswordService().getExtraRuleMessage(getLanguage()));
       for (final PasswordRule rule : getPasswordService().getRequiredRules()) {
         passwordPolicy.addRule(asWebEntity(rule));
+      }
+      for (final PasswordRule rule : getPasswordService().getCombinedRules()) {
+        passwordPolicy.addCombinedRule(asWebEntity(rule));
       }
       return passwordPolicy;
     } catch (final WebApplicationException ex) {
@@ -109,11 +116,7 @@ public class PasswordResource extends AbstractPasswordResource {
   @Path(PASSWORD_POLICY_URI_PART + "/" + PASSWORD_CHECKING_URI_PART)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<String> checking(final PasswordEntity password) {
-    final Collection<String> passwordErrors = new ArrayList<String>();
-    for (PasswordRule notVerifiedRule : getPasswordService().check(password.getValue())) {
-      passwordErrors.add(notVerifiedRule.getType().name());
-    }
-    return passwordErrors;
+  public PasswordCheckEntity checking(final PasswordEntity password) {
+    return asWebEntity(getPasswordService().check(password.getValue()));
   }
 }

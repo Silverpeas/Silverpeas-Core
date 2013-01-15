@@ -30,6 +30,8 @@
   $.password = {
     webServiceContext : webContext + '/services',
     rules : null,
+    nbMatchingCombinedRules : null,
+    combinedRules : null,
     extraRuleMessage : null,
     initialized : false,
     doInitialize : function() {
@@ -37,6 +39,8 @@
         $.password.initialized = true;
         var policy = __getJSonData($.password.webServiceContext + '/password/policy');
         $.password.rules = policy.rules;
+        $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
+        $.password.combinedRules = policy.combinedRules;
         $.password.extraRuleMessage = policy.extraRuleMessage;
       }
     }
@@ -122,25 +126,50 @@
   function __checking($target, $box, options) {
 
     // Checking
-    var notVerifiedRules = __postJSonData($.password.webServiceContext +
-        '/password/policy/checking', {value : $target.val()});
+    var passwordCheck = __postJSonData($.password.webServiceContext + '/password/policy/checking',
+        {value : $target.val()});
 
     // All rules are verified by default
     $box.find('li').each(function() {
-      __switchStatusStyleClass($(this), 'success');
+      var $rule = $(this);
+      if ($rule.attr('id')) {
+        if (!$rule.hasClass('combined')) {
+          __switchStatusStyleClass($rule, 'success');
+        } else {
+          if ($.inArray($rule.attr('id'), passwordCheck.combinedRuleIdsInError) < 0) {
+            __switchStatusStyleClass($rule, 'success');
+          } else {
+            __switchStatusStyleClass($rule, '');
+          }
+        }
+      }
     });
 
-    if (notVerifiedRules.length == 0) {
-      if (options.onSuccess) {
-        options.onSuccess.call(this);
-      }
-    } else if (notVerifiedRules.length > 0) {
-      // Indicate the rules in error
-      $.each(notVerifiedRules, function(index, value) {
-        $box.find('li[id="' + value + '"]').each(function() {
-          __switchStatusStyleClass($(this), 'error');
+    try {
+      if (passwordCheck.isCorrect) {
+        if (options.onSuccess) {
+          options.onSuccess.call(this);
+        }
+      } else {
+        // Indicate the rules in error
+        $.each(passwordCheck.requiredRuleIdsInError, function(index, value) {
+          $box.find('li[id="' + value + '"]').each(function() {
+            var $rule = $(this);
+            if (!$rule.hasClass('combined')) {
+              __switchStatusStyleClass($rule, 'error');
+            }
+          });
         });
-      });
+        if (!passwordCheck.isRuleCombinationRespected) {
+          __switchStatusStyleClass($box.find('li[id="' + __getCombinedRuleId() + '"]'), 'error');
+        }
+        if (options.onError) {
+          options.onError.call(this);
+        }
+        $box.show();
+      }
+    } catch (e) {
+      alert("Silverpeas JQuery password plugin error ...");
       if (options.onError) {
         options.onError.call(this);
       }
@@ -199,6 +228,21 @@
       $rules.append($('<li>').attr('id', name).addClass('info').append(rule.description));
     });
 
+    // Combined rules
+    if (!$.isEmptyObject($.password.combinedRules)) {
+      $rules.append($('<li>').attr('id',
+              __getCombinedRuleId()).addClass('info').append(__getFromBundleKey('password.rule.combination',
+              $.password.nbMatchingCombinedRules)));
+      var $combinedRule = $('<li>');
+      var $combinedRuleDetails = $('<ul>');
+      $combinedRule.append($combinedRuleDetails);
+      $.each($.password.combinedRules, function(name, rule) {
+        $combinedRuleDetails.append($('<li>').attr('id',
+            name).addClass('combined').append(rule.description));
+      });
+      $rules.append($combinedRule);
+    }
+
     // Extra rules
     if ($.password.extraRuleMessage) {
       $box.append($('<div>').addClass('extraRules').append($.password.extraRuleMessage));
@@ -247,6 +291,15 @@
     $box.appendTo(document.body);
     __setBoxInfoPosition($target, $box);
     return $box;
+  }
+
+  /**
+   * Private method that returns the combined rule id.
+   * @return {string}
+   * @private
+   */
+  function __getCombinedRuleId() {
+    return 'COMBINED_RULES'
   }
 
   /**
@@ -345,10 +398,11 @@
   /**
    * Private method that handles i18n.
    * @param key
+   * @param params
    * @return message
    * @private
    */
-  function __getFromBundleKey(key) {
+  function __getFromBundleKey(key, params) {
     if (webContext) {
       if (!__i18nInitialized) {
         $.i18n.properties({
@@ -359,7 +413,7 @@
         });
         __i18nInitialized = true;
       }
-      return $.i18n.prop(key);
+      return $.i18n.prop(key, params);
     }
     return key;
   }

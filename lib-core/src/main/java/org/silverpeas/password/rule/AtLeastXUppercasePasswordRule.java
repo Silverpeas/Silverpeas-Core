@@ -25,41 +25,60 @@ package org.silverpeas.password.rule;
 
 import org.silverpeas.password.constant.PasswordRuleType;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * At least one digit in password.
+ * At least X uppercase in password.
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-public class AtLeastOneDigitPasswordRule extends AbstractPasswordRule {
+public class AtLeastXUppercasePasswordRule extends AbstractPasswordRule {
 
-  private boolean value;
+  private Integer value;
+  private boolean required;
+  private boolean combined;
 
   /**
    * Default constructor.
    */
-  public AtLeastOneDigitPasswordRule() {
-    super(PasswordRuleType.AT_LEAST_ONE_DIGIT);
-    value = settings.getBoolean(getType().getSettingKey(), false);
+  public AtLeastXUppercasePasswordRule() {
+    super(PasswordRuleType.AT_LEAST_X_UPPERCASE);
+    required = settings.getBoolean(getType().getSettingKey(), false);
+    value = getIntegerFromSettings(getType().getSettingKey() + ".X", 0);
+    combined = settings.getBoolean(getType().getSettingKey() + ".combined", false);
+    if (value == 0) {
+      required = false;
+      combined = false;
+    }
   }
 
   @Override
-  public Boolean getValue() {
+  public boolean isRequired() {
+    return required;
+  }
+
+  @Override
+  public boolean isCombined() {
+    return combined;
+  }
+
+  @Override
+  public Integer getValue() {
     return value;
   }
 
   @Override
   public boolean check(final String password) {
-    return isDefined(password) && Pattern.compile("[0-9]+").matcher(password).find();
+    return isDefined(password) && countRegexOccur(password, "[A-Z]") >= value;
   }
 
   @Override
   public String random() {
-    // 0 - 9 : 48 - 57
-    return String.valueOf(((char) (48 + random(10))));
+    final StringBuilder random = new StringBuilder();
+    for (int i = 0; i < value; i++) {
+      // A - Z : 65 - 90
+      random.append(((char) (65 + random(26))));
+    }
+    return random.toString();
   }
 }

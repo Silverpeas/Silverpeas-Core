@@ -25,54 +25,60 @@ package org.silverpeas.password.rule;
 
 import org.silverpeas.password.constant.PasswordRuleType;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
- * Interface that defines methods of a password rule.
+ * At least X digit in password.
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-public interface PasswordRule {
+public class AtLeastXDigitPasswordRule extends AbstractPasswordRule {
+
+  private Integer value;
+  private boolean required;
+  private boolean combined;
 
   /**
-   * Gets the type password rule.
-   * @return
+   * Default constructor.
    */
-  PasswordRuleType getType();
+  public AtLeastXDigitPasswordRule() {
+    super(PasswordRuleType.AT_LEAST_X_DIGIT);
+    required = settings.getBoolean(getType().getSettingKey(), false);
+    value = getIntegerFromSettings(getType().getSettingKey() + ".X", 0);
+    combined = settings.getBoolean(getType().getSettingKey() + ".combined", false);
+    if (value == 0) {
+      required = false;
+      combined = false;
+    }
+  }
 
-  /**
-   * Indicates if the rule is required.
-   * @return
-   */
-  boolean isRequired();
+  @Override
+  public boolean isRequired() {
+    return required;
+  }
 
-  /**
-   * Indicates if the rule is combined one.
-   * @return
-   */
-  boolean isCombined();
+  @Override
+  public boolean isCombined() {
+    return combined;
+  }
 
-  /**
-   * Gets the value of the parameter defined in settings for the rule.
-   * @param <T>
-   * @return
-   */
-  <T> T getValue();
+  @Override
+  public Integer getValue() {
+    return value;
+  }
 
-  /**
-   * Generates a random password part according to the nature of the rule.
-   * @return the random part of a password
-   */
-  String random();
+  @Override
+  public boolean check(final String password) {
+    return isDefined(password) && countRegexOccur(password, "[0-9]") >= value;
+  }
 
-  /**
-   * Checks the given password.
-   * @return
-   */
-  boolean check(String password);
-
-  /**
-   * Gets the description of the rule according to a language.
-   * @param language
-   * @return
-   */
-  String getDescription(String language);
+  @Override
+  public String random() {
+    final StringBuilder random = new StringBuilder();
+    for (int i = 0; i < value; i++) {
+      // 0 - 9 : 48 - 57
+      random.append(((char) (48 + random(10))));
+    }
+    return random.toString();
+  }
 }

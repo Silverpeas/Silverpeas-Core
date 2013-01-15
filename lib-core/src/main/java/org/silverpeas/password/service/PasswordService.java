@@ -53,12 +53,17 @@ public interface PasswordService {
   Collection<PasswordRule> getRequiredRules();
 
   /**
-   * Checks server required password rule on the given password.
-   * @param password
-   * @return List of required password rules that are not verified (no error if returned list is
-   *         empty).
+   * Gets server combined password rules.
+   * @return
    */
-  Collection<PasswordRule> check(String password);
+  Collection<PasswordRule> getCombinedRules();
+
+  /**
+   * Checks server required and combined password rule on the given password.
+   * @param password
+   * @return Password rules in error if any.
+   */
+  PasswordCheck check(String password);
 
   /**
    * Generates a random password from existing rules.

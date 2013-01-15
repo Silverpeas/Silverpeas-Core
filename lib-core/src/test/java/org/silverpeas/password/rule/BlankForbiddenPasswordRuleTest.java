@@ -23,6 +23,7 @@
  */
 package org.silverpeas.password.rule;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.silverpeas.password.constant.PasswordRuleType;
 
@@ -64,7 +65,18 @@ public class BlankForbiddenPasswordRuleTest
     BlankForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
+  }
+
+  @Ignore
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+  }
+
+  @Ignore
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
   }
 
   @Test
@@ -74,6 +86,7 @@ public class BlankForbiddenPasswordRuleTest
     BlankForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
   }
 
@@ -84,6 +97,7 @@ public class BlankForbiddenPasswordRuleTest
     BlankForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(false));
   }
 
@@ -94,6 +108,7 @@ public class BlankForbiddenPasswordRuleTest
     BlankForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(false));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
     assertThat(Pattern.compile("[ ]+").matcher(rule.random()).find(), is(true));
   }
 }

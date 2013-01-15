@@ -26,24 +26,29 @@ package org.silverpeas.password.service;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang.StringUtils;
 import org.silverpeas.password.constant.PasswordRuleType;
-import org.silverpeas.password.rule.AtLeastOneDigitPasswordRule;
-import org.silverpeas.password.rule.AtLeastOneLowercasePasswordRule;
-import org.silverpeas.password.rule.AtLeastOneSpecialCharPasswordRule;
-import org.silverpeas.password.rule.AtLeastOneUppercasePasswordRule;
+import org.silverpeas.password.rule.AtLeastXDigitPasswordRule;
+import org.silverpeas.password.rule.AtLeastXLowercasePasswordRule;
+import org.silverpeas.password.rule.AtLeastXSpecialCharPasswordRule;
+import org.silverpeas.password.rule.AtLeastXUppercasePasswordRule;
 import org.silverpeas.password.rule.BlankForbiddenPasswordRule;
 import org.silverpeas.password.rule.MaxLengthPasswordRule;
 import org.silverpeas.password.rule.MinLengthPasswordRule;
 import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.password.rule.SequentialForbiddenPasswordRule;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: Yohann Chastagnier
@@ -51,6 +56,10 @@ import java.util.Map;
  */
 @Service
 public class DefaultPasswordService implements PasswordService {
+  protected static ResourceLocator settings =
+      new ResourceLocator("org.silverpeas.password.settings.password", "");
+  protected static int nbMatchingCombinedRules =
+      settings.getInteger("password.combination.nbMatchingRules", 0);
 
   /* All server password rules */
   private Map<PasswordRuleType, PasswordRule> allPasswordRules =
@@ -58,6 +67,10 @@ public class DefaultPasswordService implements PasswordService {
 
   /* All required server password rules */
   private Map<PasswordRuleType, PasswordRule> requiredPasswordRules =
+      new LinkedHashMap<PasswordRuleType, PasswordRule>(PasswordRuleType.values().length);
+
+  /* All combined server password rules */
+  private Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
       new LinkedHashMap<PasswordRuleType, PasswordRule>(PasswordRuleType.values().length);
 
   /**
@@ -69,11 +82,15 @@ public class DefaultPasswordService implements PasswordService {
     requiredPasswordRules.clear();
     for (PasswordRule rule : new PasswordRule[]{new MinLengthPasswordRule(),
         new MaxLengthPasswordRule(), new BlankForbiddenPasswordRule(),
-        new AtLeastOneUppercasePasswordRule(), new AtLeastOneLowercasePasswordRule(),
-        new AtLeastOneDigitPasswordRule(), new AtLeastOneSpecialCharPasswordRule()}) {
+        new SequentialForbiddenPasswordRule(), new AtLeastXUppercasePasswordRule(),
+        new AtLeastXLowercasePasswordRule(), new AtLeastXDigitPasswordRule(),
+        new AtLeastXSpecialCharPasswordRule()}) {
       allPasswordRules.put(rule.getType(), rule);
       if (rule.isRequired()) {
         requiredPasswordRules.put(rule.getType(), rule);
+      }
+      if (rule.isCombined()) {
+        combinedPasswordRules.put(rule.getType(), rule);
       }
     }
   }
@@ -94,22 +111,49 @@ public class DefaultPasswordService implements PasswordService {
   }
 
   @Override
-  public Collection<PasswordRule> check(final String password) {
-    final Collection<PasswordRule> notVerifiedRules = new ArrayList<PasswordRule>();
+  public Collection<PasswordRule> getCombinedRules() {
+    return new ArrayList<PasswordRule>(combinedPasswordRules.values());
+  }
+
+  @Override
+  public PasswordCheck check(final String password) {
+    PasswordCheck passwordCheck = new PasswordCheck(getCombinedRules(), nbMatchingCombinedRules);
     for (final PasswordRule rule : getRequiredRules()) {
       if (!rule.check(password)) {
-        notVerifiedRules.add(rule);
+        passwordCheck.addRequiredError(rule);
       }
     }
-    return notVerifiedRules;
+    for (final PasswordRule rule : getCombinedRules()) {
+      if (!rule.check(password)) {
+        passwordCheck.addCombinedError(rule);
+      }
+    }
+    return passwordCheck;
   }
 
   @Override
   public String generate() {
+    long start = System.currentTimeMillis();
+    PasswordRule sequentialForbidden = getRule(PasswordRuleType.SEQUENTIAL_FORBIDDEN);
+    String generatedPassword = generate(sequentialForbidden);
+    if (sequentialForbidden.isRequired()) {
+      // Trying during 5 seconds to generate a not sequential password before returning the result
+      while ((System.currentTimeMillis() - start) <= 5000) {
+        if (sequentialForbidden.check(generatedPassword)) {
+          break;
+        }
+        generatedPassword = generate(sequentialForbidden);
+      }
+    }
+    return generatedPassword;
+  }
+
+  private String generate(PasswordRule sequentialForbidden) {
 
     // Context
     final List<PasswordRule> rules = new ArrayList<PasswordRule>(getRules());
     final List<PasswordRule> requiredRules = new ArrayList<PasswordRule>(getRequiredRules());
+    final List<PasswordRule> combinedRules = new ArrayList<PasswordRule>(getCombinedRules());
     int minLength = (Integer) getRule(PasswordRuleType.MIN_LENGTH).getValue();
     int maxLength = (Integer) getRule(PasswordRuleType.MAX_LENGTH).getValue();
 
@@ -118,21 +162,34 @@ public class DefaultPasswordService implements PasswordService {
 
     // Random parts of the password
     int currentPasswordLength = 0;
-    final List<String> randomPasswordParts = new ArrayList<String>();
+    List<String> randomPasswordParts = new ArrayList<String>();
     PasswordRule currentRule;
     String currentRandomPasswordPart;
+    Set<PasswordRule> combinedRulesPerformed = new HashSet<PasswordRule>();
     while (currentPasswordLength < requiredPasswordLength) {
 
       // Gets a password rule
       if (!requiredRules.isEmpty()) {
         currentRule = requiredRules.remove(random(requiredRules.size()));
+      } else if (!combinedRules.isEmpty() &&
+          combinedRulesPerformed.size() < nbMatchingCombinedRules) {
+        currentRule = combinedRules.remove(random(combinedRules.size()));
       } else {
         currentRule = rules.get(random(rules.size()));
+      }
+
+      // Storing combined rule performed
+      if (currentRule.isCombined()) {
+        combinedRulesPerformed.add(currentRule);
       }
 
       // Generate and store a random part of the password
       currentRandomPasswordPart = currentRule.random();
       if (StringUtil.isDefined(currentRandomPasswordPart)) {
+        while ((currentPasswordLength + currentRandomPasswordPart.length()) > maxLength) {
+          currentRandomPasswordPart =
+              currentRandomPasswordPart.substring(0, (currentRandomPasswordPart.length() - 1));
+        }
         randomPasswordParts.add(currentRandomPasswordPart);
       }
 
@@ -141,8 +198,18 @@ public class DefaultPasswordService implements PasswordService {
     }
 
     // The generated random password
+    // Trying 10 times to generate a not sequential password before returning the result
     Collections.shuffle(randomPasswordParts);
-    return StringUtils.join(randomPasswordParts, "");
+    String generatedPassword = StringUtils.join(randomPasswordParts, "");
+    for (int i = 0; i < 10 && sequentialForbidden.isRequired(); i++) {
+      if (sequentialForbidden.check(generatedPassword)) {
+        break;
+      }
+      randomPasswordParts = Arrays.asList(generatedPassword.split(""));
+      Collections.shuffle(randomPasswordParts);
+      generatedPassword = StringUtils.join(randomPasswordParts, "");
+    }
+    return generatedPassword;
   }
 
   /**

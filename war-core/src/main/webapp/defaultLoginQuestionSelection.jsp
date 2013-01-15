@@ -40,7 +40,7 @@
   </title>
   <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <script src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -118,7 +118,7 @@
         <br/>
 
         <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="submit" onclick="$('#questionForm').submit()"><img src="<c:url value="/images/bt-ok.png"/>" alt=""/></a>
+          <a href="#" class="submit" onclick="$('#questionForm').submit()"><img src="<%=m_context%>/images/bt-ok.png" alt=""/></a>
         </p>
       </div>
     </div>

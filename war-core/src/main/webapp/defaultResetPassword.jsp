@@ -43,11 +43,11 @@
   <title><%=generalMultilang.getString("GML.popupTitle")%>
   </title>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <link type="text/css" rel="stylesheet" href="<c:url value="/util/styleSheets/silverpeas-password.css"/>"/>
-  <script src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/util/javaScript/jquery/jquery.json-2.3.min.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/password.js"/>" type="text/javascript"></script>
+  <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery.json-2.3.min.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/password.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -73,7 +73,7 @@
       })
     });
   </script>
-  <script src="<c:url value="/util/javaScript/silverpeas-password.js"/>" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -103,7 +103,7 @@
         <br/>
 
         <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-          <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><img src="<c:url value="/images/bt-ok.png"/>" alt=""/></a>
+          <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><img src="<%=m_context%>/images/bt-ok.png" alt=""/></a>
         </p>
       </div>
     </div>

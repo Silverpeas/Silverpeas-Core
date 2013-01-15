@@ -28,6 +28,8 @@ import org.silverpeas.password.constant.PasswordRuleType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -66,8 +68,15 @@ public abstract class AbstractPasswordRule implements PasswordRule {
       return isDefined((String) value);
     } else if (value instanceof Boolean) {
       return (Boolean) value;
+    } else if (value instanceof Number) {
+      return ((Number) value).doubleValue() > 0;
     }
     return value != null;
+  }
+
+  @Override
+  public boolean isCombined() {
+    return false;
   }
 
   /**
@@ -96,5 +105,36 @@ public abstract class AbstractPasswordRule implements PasswordRule {
     }
     return (params != null && params.length > 0) ? messages.getStringWithParams(key, params) :
         messages.getString(key, "");
+  }
+
+  /**
+   * Gets an integer from settings
+   * @param key
+   * @param defaultValue
+   * @return
+   */
+  protected Integer getIntegerFromSettings(final String key, final Integer defaultValue) {
+    Integer value = 0;
+    try {
+      value = settings.getInteger(key, 0);
+    } catch (NumberFormatException nfe) {
+      // Nothing to do
+    }
+    return value >= 0 ? value : 0;
+  }
+
+  /**
+   * Counting regexpr occurences in a String
+   * @param text
+   * @param regex
+   * @return
+   */
+  protected int countRegexOccur(String text, String regex) {
+    Matcher matcher = Pattern.compile(regex).matcher(text);
+    int occur = 0;
+    while (matcher.find()) {
+      occur++;
+    }
+    return occur;
   }
 }

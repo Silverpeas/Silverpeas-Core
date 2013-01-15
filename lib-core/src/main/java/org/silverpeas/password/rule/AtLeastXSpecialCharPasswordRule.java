@@ -25,34 +25,52 @@ package org.silverpeas.password.rule;
 
 import org.silverpeas.password.constant.PasswordRuleType;
 
-import java.util.regex.Pattern;
-
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * At least one digit char in password.
+ * At least X digit char in password.
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-public class AtLeastOneSpecialCharPasswordRule extends AbstractPasswordRule {
+public class AtLeastXSpecialCharPasswordRule extends AbstractPasswordRule {
 
-  private boolean required = true;
+  private Integer nb;
   private String value;
   private String regexValue;
+  private boolean required;
+  private boolean combined;
 
   /**
    * Default constructor.
    */
-  public AtLeastOneSpecialCharPasswordRule() {
-    super(PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR);
+  public AtLeastXSpecialCharPasswordRule() {
+    super(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR);
     required = settings.getBoolean(getType().getSettingKey(), false);
+    combined = settings.getBoolean(getType().getSettingKey() + ".combined", false);
+    nb = getIntegerFromSettings(getType().getSettingKey() + ".X", 0);
     value = settings.getString("password.rule.specialChars", "%*!?$-+#&=.,;");
-    regexValue = "[" + value.replaceAll("\\^", "\\\\^").replaceAll("\\-", "\\\\-") + "]+";
+    regexValue = "[" +
+        value.replaceAll("\\^", "\\\\^").replaceAll("\\-", "\\\\-").replaceAll("\\[]", "\\\\[")
+            .replaceAll("\\]", "\\\\]") + "]";
+    if (nb == 0) {
+      required = false;
+      combined = false;
+    }
+  }
+
+  @Override
+  public String getDescription(final String language) {
+    return getString(getType().getBundleKey(), language, nb.toString(), value);
   }
 
   @Override
   public boolean isRequired() {
     return required;
+  }
+
+  @Override
+  public boolean isCombined() {
+    return combined;
   }
 
   @Override
@@ -62,12 +80,16 @@ public class AtLeastOneSpecialCharPasswordRule extends AbstractPasswordRule {
 
   @Override
   public boolean check(final String password) {
-    return isDefined(password) && Pattern.compile(regexValue).matcher(password).find();
+    return isDefined(password) && countRegexOccur(password, regexValue) >= nb;
   }
 
   @Override
   public String random() {
-    // One special character among those specified in settings
-    return String.valueOf(value.charAt(random(value.length())));
+    final StringBuilder random = new StringBuilder();
+    for (int i = 0; i < nb; i++) {
+      // One special character among those specified in settings
+      random.append(value.charAt(random(value.length())));
+    }
+    return random.toString();
   }
 }

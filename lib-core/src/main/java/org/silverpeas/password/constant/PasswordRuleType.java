@@ -31,10 +31,11 @@ public enum PasswordRuleType {
   MIN_LENGTH("minLength"),
   MAX_LENGTH("maxLength"),
   BLANK_FORBIDDEN("blankForbidden"),
-  AT_LEAST_ONE_UPPERCASE("atLeastOneUppercase"),
-  AT_LEAST_ONE_LOWERCASE("atLeastOneLowercase"),
-  AT_LEAST_ONE_DIGIT("atLeastOneDigit"),
-  AT_LEAST_ONE_SPECIAL_CHAR("atLeastOneSpecialChar");
+  SEQUENTIAL_FORBIDDEN("sequentialForbidden"),
+  AT_LEAST_X_UPPERCASE("atLeastXUppercase"),
+  AT_LEAST_X_LOWERCASE("atLeastXLowercase"),
+  AT_LEAST_X_DIGIT("atLeastXDigit"),
+  AT_LEAST_X_SPECIAL_CHAR("atLeastXSpecialChar");
 
   private String settingKey;
 

@@ -24,7 +24,6 @@
 package org.silverpeas.password.web;
 
 import com.silverpeas.web.ResourceGettingTest;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -45,7 +44,6 @@ import static org.silverpeas.password.web.PasswordTestResources.SPRING_CONTEXT;
  */
 public class PasswordPolicyGettingTest extends ResourceGettingTest<PasswordTestResources> {
 
-  private UserDetail user;
   private String sessionKey;
 
   public PasswordPolicyGettingTest() {
@@ -54,8 +52,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest<PasswordTestR
 
   @Before
   public void prepareTestResources() {
-    user = aUser();
-    sessionKey = authenticate(user);
+    sessionKey = authenticate(aUser());
   }
 
   @Test
@@ -76,15 +73,14 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest<PasswordTestR
    */
   private void assertEntity(PasswordPolicyEntity entity) {
     assertNotNull(entity);
-    assertThat(entity.getRules().size(), is(7));
+    assertThat(entity.getRules().size(), is(8));
     assertThat(entity.getRules().get(PasswordRuleType.MIN_LENGTH.name()).getDescription(),
         is("au moins 8 caractères"));
+    assertThat(entity.getRules().get(PasswordRuleType.AT_LEAST_X_UPPERCASE.name()).getDescription(),
+        is("au moins 1 majuscule(s)"));
     assertThat(
-        entity.getRules().get(PasswordRuleType.AT_LEAST_ONE_UPPERCASE.name()).getDescription(),
-        is("au moins une majuscule"));
-    assertThat(
-        entity.getRules().get(PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR.name()).getDescription(),
-        is("au moins un caractère spécial (%*!?$-+#&=.,;)"));
+        entity.getRules().get(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()).getDescription(),
+        is("au moins 1 caractère(s) spécial(aux) (%*!?$-+#&=.,;)"));
     assertThat(entity.getExtraRuleMessage(), notNullValue());
   }
 

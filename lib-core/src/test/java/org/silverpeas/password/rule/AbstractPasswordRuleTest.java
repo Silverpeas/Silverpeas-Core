@@ -46,6 +46,16 @@ public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
         new ResourceLocator("org.silverpeas.password.settings.passwordDefined", "");
   }
 
+  protected void setDefinedMoreThanOneSettings() {
+    AbstractPasswordRule.settings =
+        new ResourceLocator("org.silverpeas.password.settings.passwordMoreThanOneDefined", "");
+  }
+
+  protected void setCombinationDefinedMoreThanOneSettings() {
+    AbstractPasswordRule.settings =
+        new ResourceLocator("org.silverpeas.password.settings.passwordCombinationDefined", "");
+  }
+
   protected void setNotDefinedSettings() {
     AbstractPasswordRule.settings =
         new ResourceLocator("org.silverpeas.password.settings.passwordNotDefined", "");
@@ -62,6 +72,10 @@ public abstract class AbstractPasswordRuleTest<T extends PasswordRule> {
   }
 
   public abstract void testDefinedPropertyValues();
+
+  public abstract void testDefinedMoreThanOnePropertyValues();
+
+  public abstract void testCombinationDefinedMoreThanOnePropertyValues();
 
   public abstract void testNotDefinedPropertyValues();
 

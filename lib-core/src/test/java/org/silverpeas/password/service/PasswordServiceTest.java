@@ -29,14 +29,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.password.constant.PasswordRuleType;
 import org.silverpeas.password.rule.AbstractPasswordRule;
+import org.silverpeas.password.rule.PasswordRule;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -78,41 +82,89 @@ public class PasswordServiceTest {
   @Test
   public void testGetRequiredRulesNoneRequiredInSettings() {
     setNotDefinedSettings();
-    // Max length and min length are always required.
+    // Max length and blank forbidden are required.
     assertThat(passwordService.getRequiredRules().size(), is(2));
   }
 
   @Test
   public void testCheck() {
-    assertThat(passwordService.check("aA0$1234").size(), is(0));
+    assertThat(passwordService.check("aA0$1234").isCorrect(), is(true));
 
     // Min length is not validated
-    assertThat(passwordService.check("aA0$123").iterator().next().getType(),
-        is(PasswordRuleType.MIN_LENGTH));
+    assertCheckRequired("aA0$123", PasswordRuleType.MIN_LENGTH);
     // Max length is not validated
-    assertThat(passwordService.check("aA0$1234123456789").iterator().next().getType(),
-        is(PasswordRuleType.MAX_LENGTH));
+    assertCheckRequired("aA0$1234123456789", PasswordRuleType.MAX_LENGTH);
     // Blank forbidden is not validated
-    assertThat(passwordService.check("aa0 $1234").iterator().next().getType(),
-        is(PasswordRuleType.BLANK_FORBIDDEN));
+    assertCheckRequired("aa0 $1234", PasswordRuleType.BLANK_FORBIDDEN);
+    // Sequential forbidden is not validated
+    assertCheckRequired("aA0$11234", PasswordRuleType.SEQUENTIAL_FORBIDDEN);
     // At least one uppercase is not validated
-    assertThat(passwordService.check("aa0$1234").iterator().next().getType(),
-        is(PasswordRuleType.AT_LEAST_ONE_UPPERCASE));
+    assertCheckRequired("ab0$1234", PasswordRuleType.AT_LEAST_X_UPPERCASE);
     // At least one lowercase is not validated
-    assertThat(passwordService.check("AA0$1234").iterator().next().getType(),
-        is(PasswordRuleType.AT_LEAST_ONE_LOWERCASE));
+    assertCheckRequired("AB0$1234", PasswordRuleType.AT_LEAST_X_LOWERCASE);
     // At least one special char is not validated
-    assertThat(passwordService.check("aAb01234").iterator().next().getType(),
-        is(PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR));
+    assertCheckRequired("aAb01234", PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR);
     // At least one digit is not validated
-    assertThat(passwordService.check("aAb$cdef").iterator().next().getType(),
-        is(PasswordRuleType.AT_LEAST_ONE_DIGIT));
+    assertCheckRequired("aAb$cdef", PasswordRuleType.AT_LEAST_X_DIGIT);
 
     // Several errors :
     // - Min length is not validated
     // - At least one uppercase is not validated
     // - At least one special char is not validated
-    assertThat(passwordService.check("ab0c123").size(), is(3));
+    assertThat(passwordService.check("ab0c123").getRequiredRulesInError().size(), is(3));
+  }
+
+  private void assertCheckRequired(String password, PasswordRuleType typeExpected) {
+    assertThat(
+        passwordService.check(password).getRequiredRulesInError().iterator().next().getType(),
+        is(typeExpected));
+  }
+
+  @Test
+  public void testCheckWithCombination() {
+    setCombinationSettings();
+    assertThat(passwordService.check("aABC;0$1234").isCorrect(), is(true));
+
+    // Min length is not validated and combination fail
+    assertCheckRequiredAndCombined("aA0$123", PasswordRuleType.MIN_LENGTH, false,
+        PasswordRuleType.AT_LEAST_X_UPPERCASE, PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR);
+    // Max length is not validated
+    assertCheckRequiredAndCombined("aA0$12B41C3;56789mP3Bb", PasswordRuleType.MAX_LENGTH, true);
+
+    // Several errors :
+    // - Min length is not validated
+    // - Blank forbidden
+    // - Sequential forbidden
+    PasswordCheck passwordCheck = passwordService.check("ab0 c1123");
+    assertThat(passwordCheck.getRequiredRulesInError().size(), is(3));
+    assertThat(passwordCheck.getCombinedRulesInError().size(), is(2));
+  }
+
+  private void assertCheckRequiredAndCombined(String password,
+      PasswordRuleType requiredTypeExpected, boolean isCombinationRespected,
+      PasswordRuleType... combinedTypeExpected) {
+    PasswordCheck passwordCheck = passwordService.check(password);
+    if (requiredTypeExpected != null && combinedTypeExpected == null) {
+      assertThat(password, passwordCheck.isCorrect(), is(false));
+    }
+    if (requiredTypeExpected == null) {
+      assertThat(password, passwordCheck.getRequiredRulesInError().isEmpty(), is(true));
+    } else {
+      assertThat(password, passwordCheck.getRequiredRulesInError().isEmpty(), is(false));
+      assertThat(password, passwordCheck.getRequiredRulesInError().iterator().next().getType(),
+          is(requiredTypeExpected));
+    }
+
+    if (combinedTypeExpected == null) {
+      assertThat(password, passwordCheck.isRuleCombinationRespected(), is(true));
+    } else {
+      assertThat(password, passwordCheck.isRuleCombinationRespected(), is(isCombinationRespected));
+      List<PasswordRuleType> combinedRulesInError = new ArrayList<PasswordRuleType>();
+      for (PasswordRule rule : passwordCheck.getCombinedRulesInError()) {
+        combinedRulesInError.add(rule.getType());
+      }
+      assertThat(password, combinedRulesInError, hasItems(combinedTypeExpected));
+    }
   }
 
   @Test
@@ -125,8 +177,24 @@ public class PasswordServiceTest {
     assertThat("Identical passwords have been generated", generatedPasswords.size(),
         is(nbGenerations));
     for (String password : generatedPasswords) {
-      assertThat("At least one generated password is not valid",
-          passwordService.check(password).size(), is(0));
+      assertThat("At least one generated password is not valid : " + password,
+          passwordService.check(password).isCorrect(), is(true));
+    }
+  }
+
+  @Test
+  public void testGenerateWithCombination() {
+    setCombinationSettings();
+    int nbGenerations = 1000;
+    final Set<String> generatedPasswords = new HashSet<String>(nbGenerations);
+    for (int i = 0; i < nbGenerations; i++) {
+      generatedPasswords.add(passwordService.generate());
+    }
+    assertThat("Identical passwords have been generated", generatedPasswords.size(),
+        is(nbGenerations));
+    for (String password : generatedPasswords) {
+      assertThat("At least one generated password is not valid : " + password,
+          passwordService.check(password).isCorrect(), is(true));
     }
   }
 
@@ -143,6 +211,10 @@ public class PasswordServiceTest {
 
   protected void setNotDefinedSettings() {
     context.settings("org.silverpeas.password.settings.passwordNotDefined");
+  }
+
+  protected void setCombinationSettings() {
+    context.settings("org.silverpeas.password.settings.passwordCombinationDefined");
   }
 
   /**

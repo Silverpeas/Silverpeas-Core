@@ -23,10 +23,9 @@
  */
 package org.silverpeas.password.rule;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.silverpeas.password.constant.PasswordRuleType;
-
-import java.util.regex.Pattern;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,27 +34,20 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastOneDigitPasswordRuleTest
-    extends AbstractPasswordRuleTest<AtLeastOneDigitPasswordRule> {
+public class SequentialForbiddenPasswordRuleTest
+    extends AbstractPasswordRuleTest<SequentialForbiddenPasswordRule> {
 
   @Test
   public void testCommons() {
-    AtLeastOneDigitPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_ONE_DIGIT));
-    assertThat(rule.check("ajlkaslkj"), is(false));
+    SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getType(), is(PasswordRuleType.SEQUENTIAL_FORBIDDEN));
+    assertThat(rule.check("a1234 ;"), is(true));
+    assertThat(rule.check("a1234;"), is(true));
     for (char c = 97; c < (97 + 26); c++) {
-      assertThat(rule.check("a" + c + "zdzdz"), is(false));
+      assertThat(rule.check("0" + c + "2135 "), is(true));
     }
     for (char c = 65; c < (65 + 26); c++) {
-      assertThat(rule.check("a" + c + "dzzd"), is(false));
-    }
-    for (int i = 0; i < 10; i++) {
-      assertThat(rule.check("ajlkaslkj" + i), is(true));
-    }
-    for (int i = 0; i < NB_LOOP; i++) {
-      assertThat(Pattern.compile("[a-z]+").matcher(rule.random()).find(), is(false));
-      assertThat(Pattern.compile("[A-Z]+").matcher(rule.random()).find(), is(false));
-      assertThat(Pattern.compile("[0-9]+").matcher(rule.random()).find(), is(true));
+      assertThat(rule.check("0" + c + "123456789"), is(true));
     }
   }
 
@@ -63,35 +55,56 @@ public class AtLeastOneDigitPasswordRuleTest
   @Override
   public void testDefinedPropertyValues() {
     setDefinedSettings();
-    AtLeastOneDigitPasswordRule rule = newRuleInstanceForTest();
+    SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(true));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+    assertThat(rule.check("121"), is(true));
+    assertThat(rule.check("aba"), is(true));
+    assertThat(rule.check("aA"), is(true));
+    assertThat(rule.check("11"), is(false));
+    assertThat(rule.check("aa"), is(false));
+    assertThat(rule.check("AA"), is(false));
+    assertThat(rule.check("@@"), is(false));
+  }
+
+  @Ignore
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+  }
+
+  @Ignore
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
   }
 
   @Test
   @Override
   public void testNotDefinedPropertyValues() {
     setNotDefinedSettings();
-    AtLeastOneDigitPasswordRule rule = newRuleInstanceForTest();
+    SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(false));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testBadDefinedPropertyValues() {
     setBadDefinedSettings();
-    AtLeastOneDigitPasswordRule rule = newRuleInstanceForTest();
+    SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(false));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testNotRequiredPropertyValues() {
     setNotRequiredSettings();
-    AtLeastOneDigitPasswordRule rule = newRuleInstanceForTest();
+    SequentialForbiddenPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(false));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 }

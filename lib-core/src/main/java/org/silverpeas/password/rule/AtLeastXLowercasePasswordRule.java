@@ -25,40 +25,60 @@ package org.silverpeas.password.rule;
 
 import org.silverpeas.password.constant.PasswordRuleType;
 
-import java.util.regex.Pattern;
-
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * At least one uppercase in password.
+ * At least X lowercase in password.
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-public class AtLeastOneUppercasePasswordRule extends AbstractPasswordRule {
+public class AtLeastXLowercasePasswordRule extends AbstractPasswordRule {
 
-  private boolean value;
+  private Integer value;
+  private boolean required;
+  private boolean combined;
 
   /**
    * Default constructor.
    */
-  public AtLeastOneUppercasePasswordRule() {
-    super(PasswordRuleType.AT_LEAST_ONE_UPPERCASE);
-    value = settings.getBoolean(getType().getSettingKey(), false);
+  public AtLeastXLowercasePasswordRule() {
+    super(PasswordRuleType.AT_LEAST_X_LOWERCASE);
+    required = settings.getBoolean(getType().getSettingKey(), false);
+    value = getIntegerFromSettings(getType().getSettingKey() + ".X", 0);
+    combined = settings.getBoolean(getType().getSettingKey() + ".combined", false);
+    if (value == 0) {
+      required = false;
+      combined = false;
+    }
   }
 
   @Override
-  public Boolean getValue() {
+  public boolean isRequired() {
+    return required;
+  }
+
+  @Override
+  public boolean isCombined() {
+    return combined;
+  }
+
+  @Override
+  public Integer getValue() {
     return value;
   }
 
   @Override
   public boolean check(final String password) {
-    return isDefined(password) && Pattern.compile("[A-Z]+").matcher(password).find();
+    return isDefined(password) && countRegexOccur(password, "[a-z]") >= value;
   }
 
   @Override
   public String random() {
-    // A - Z : 65 - 90
-    return String.valueOf(((char) (65 + random(26))));
+    final StringBuilder random = new StringBuilder();
+    for (int i = 0; i < value; i++) {
+      // a - z : 97 - 122
+      random.append(((char) (97 + random(26))));
+    }
+    return random.toString();
   }
 }

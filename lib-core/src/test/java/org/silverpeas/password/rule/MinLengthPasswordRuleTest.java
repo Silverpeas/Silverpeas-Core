@@ -23,6 +23,7 @@
  */
 package org.silverpeas.password.rule;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.silverpeas.password.constant.PasswordRuleType;
 
@@ -49,9 +50,20 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     MinLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(10));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(rule.check("123456789"), is(false));
     assertThat(rule.check("1234567890"), is(true));
     assertThat(rule.check("12345678901"), is(true));
+  }
+
+  @Ignore
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+  }
+
+  @Ignore
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
   }
 
   @Test
@@ -61,6 +73,7 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     MinLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(8));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(rule.check("1234567"), is(false));
     assertThat(rule.check("12345678"), is(true));
     assertThat(rule.check("1234567890"), is(true));
@@ -73,6 +86,7 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     MinLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(8));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(rule.check("1234567"), is(false));
     assertThat(rule.check("12345678"), is(true));
     assertThat(rule.check("1234567890"), is(true));
@@ -85,6 +99,7 @@ public class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengt
     MinLengthPasswordRule rule = newRuleInstanceForTest();
     assertThat(rule.getValue(), is(10));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
     assertThat(rule.check("123456789"), is(false));
     assertThat(rule.check("1234567890"), is(true));
     assertThat(rule.check("12345678901"), is(true));

@@ -35,22 +35,22 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastOneSpecialCharPasswordRuleTest extends
-    org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastOneSpecialCharPasswordRule> {
+public class AtLeastXLowercasePasswordRuleTest
+    extends org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastXLowercasePasswordRule> {
 
   @Test
   public void testCommons() {
-    AtLeastOneSpecialCharPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR));
-    assertThat(rule.check("akl _"), is(false));
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_LOWERCASE));
+    assertThat(rule.check("003123150131;,:!*ù^$=)àç_è-('\"é&@\\~#{}][|`"), is(false));
     for (char c = 97; c < (97 + 26); c++) {
-      assertThat(rule.check("0" + c + "2135"), is(false));
+      assertThat(rule.check("0" + c + "2135"), is(true));
     }
     for (char c = 65; c < (65 + 26); c++) {
       assertThat(rule.check("0" + c + "123456789"), is(false));
     }
     for (int i = 0; i < NB_LOOP; i++) {
-      assertThat(Pattern.compile("[a-z]+").matcher(rule.random()).find(), is(false));
+      assertThat(Pattern.compile("[a-z]+").matcher(rule.random()).find(), is(true));
       assertThat(Pattern.compile("[A-Z]+").matcher(rule.random()).find(), is(false));
       assertThat(Pattern.compile("[0-9]+").matcher(rule.random()).find(), is(false));
     }
@@ -60,63 +60,64 @@ public class AtLeastOneSpecialCharPasswordRuleTest extends
   @Override
   public void testDefinedPropertyValues() {
     setDefinedSettings();
-    String expectedValue = "^*?$.;";
-    AtLeastOneSpecialCharPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(expectedValue));
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(1));
     assertThat(rule.isRequired(), is(true));
-    for (Character character : "%!-+#&=,".toCharArray()) {
-      assertThat(rule.check("ak12" + character + "3"), is(false));
+    assertThat(rule.isCombined(), is(false));
+  }
+
+  @Test
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+    setDefinedMoreThanOneSettings();
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(3));
+    assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+    for (int i = 0; i < NB_LOOP; i++) {
+      assertThat(Pattern.compile("[a-z]{2,}").matcher(rule.random()).find(), is(true));
     }
-    for (Character character : expectedValue.toCharArray()) {
-      assertThat(rule.check("ak12" + character + "3"), is(true));
-    }
+    assertThat(rule.check("aRbRZ"), is(false));
+    assertThat(rule.check("aRbRz"), is(true));
+  }
+
+  @Test
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
+    setCombinationDefinedMoreThanOneSettings();
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(1));
+    assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(true));
   }
 
   @Test
   @Override
   public void testNotDefinedPropertyValues() {
     setNotDefinedSettings();
-    String expectedValue = "%*!?$-+#&=.,;";
-    AtLeastOneSpecialCharPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(expectedValue));
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
-    for (Character character : "ç".toCharArray()) {
-      assertThat(rule.check("ak12" + character + "3"), is(false));
-    }
-    for (Character character : expectedValue.toCharArray()) {
-      assertThat("Character : " + character, rule.check("ak12" + character + "3"), is(true));
-    }
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testBadDefinedPropertyValues() {
     setBadDefinedSettings();
-    String expectedValue = "azerty";
-    AtLeastOneSpecialCharPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(expectedValue));
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
-    for (Character character : "%*!?$-+#&=.,;".toCharArray()) {
-      assertThat(rule.check("k12" + character + "3"), is(false));
-    }
-    for (Character character : "azerty".toCharArray()) {
-      assertThat(rule.check("k12" + character + "3"), is(true));
-    }
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testNotRequiredPropertyValues() {
     setNotRequiredSettings();
-    String expectedValue = "^*?$.;";
-    AtLeastOneSpecialCharPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(expectedValue));
+    AtLeastXLowercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
-    for (Character character : "ç".toCharArray()) {
-      assertThat(rule.check("ak12" + character + "3"), is(false));
-    }
-    for (Character character : expectedValue.toCharArray()) {
-      assertThat("Character : " + character, rule.check("ak12" + character + "3"), is(true));
-    }
+    assertThat(rule.isCombined(), is(false));
   }
 }

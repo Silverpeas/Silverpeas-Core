@@ -46,11 +46,11 @@
   </title>
   <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
-  <link type="text/css" rel="stylesheet" href="<c:url value="/util/styleSheets/silverpeas-password.css"/>"/>
-  <script src="<c:url value="/util/javaScript/jquery/jquery-1.7.1.min.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/util/javaScript/jquery/jquery.json-2.3.min.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js"/>" type="text/javascript"></script>
-  <script src="<c:url value="/password.js"/>" type="text/javascript"></script>
+  <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery.json-2.3.min.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
+  <script src="<%=m_context%>/password.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -76,7 +76,7 @@
       })
     });
   </script>
-  <script src="<c:url value="/util/javaScript/silverpeas-password.js"/>" type="text/javascript"></script>
+  <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
 </head>
 
 <body>

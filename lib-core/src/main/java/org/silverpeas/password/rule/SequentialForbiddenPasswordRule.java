@@ -30,19 +30,18 @@ import java.util.regex.Pattern;
 import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
- * At least one lowercase in password.
+ * Sequential character forbidden in password.
  * User: Yohann Chastagnier
  * Date: 07/01/13
  */
-public class AtLeastOneLowercasePasswordRule extends AbstractPasswordRule {
-
+public class SequentialForbiddenPasswordRule extends AbstractPasswordRule {
   private boolean value;
 
   /**
    * Default constructor.
    */
-  public AtLeastOneLowercasePasswordRule() {
-    super(PasswordRuleType.AT_LEAST_ONE_LOWERCASE);
+  public SequentialForbiddenPasswordRule() {
+    super(PasswordRuleType.SEQUENTIAL_FORBIDDEN);
     value = settings.getBoolean(getType().getSettingKey(), false);
   }
 
@@ -53,12 +52,12 @@ public class AtLeastOneLowercasePasswordRule extends AbstractPasswordRule {
 
   @Override
   public boolean check(final String password) {
-    return isDefined(password) && Pattern.compile("[a-z]+").matcher(password).find();
+    return isDefined(password) && !Pattern.compile("([\\S\\s])\\1").matcher(password).find();
   }
 
   @Override
   public String random() {
-    // a - z : 97 - 122
-    return String.valueOf(((char) (97 + random(26))));
+    // This rule is not able to generate a random character.
+    return "";
   }
 }

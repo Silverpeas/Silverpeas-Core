@@ -35,24 +35,27 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastOneLowercasePasswordRuleTest
-    extends org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastOneLowercasePasswordRule> {
+public class AtLeastXDigitPasswordRuleTest
+    extends AbstractPasswordRuleTest<AtLeastXDigitPasswordRule> {
 
   @Test
   public void testCommons() {
-    AtLeastOneLowercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_ONE_LOWERCASE));
-    assertThat(rule.check("003123150131;,:!*ù^$=)àç_è-('\"é&@\\~#{}][|`"), is(false));
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_DIGIT));
+    assertThat(rule.check("ajlkaslkj"), is(false));
     for (char c = 97; c < (97 + 26); c++) {
-      assertThat(rule.check("0" + c + "2135"), is(true));
+      assertThat(rule.check("a" + c + "zdzdz"), is(false));
     }
     for (char c = 65; c < (65 + 26); c++) {
-      assertThat(rule.check("0" + c + "123456789"), is(false));
+      assertThat(rule.check("a" + c + "dzzd"), is(false));
+    }
+    for (int i = 0; i < 10; i++) {
+      assertThat(rule.check("ajlkaslkj" + i), is(true));
     }
     for (int i = 0; i < NB_LOOP; i++) {
-      assertThat(Pattern.compile("[a-z]+").matcher(rule.random()).find(), is(true));
+      assertThat(Pattern.compile("[a-z]+").matcher(rule.random()).find(), is(false));
       assertThat(Pattern.compile("[A-Z]+").matcher(rule.random()).find(), is(false));
-      assertThat(Pattern.compile("[0-9]+").matcher(rule.random()).find(), is(false));
+      assertThat(Pattern.compile("[0-9]+").matcher(rule.random()).find(), is(true));
     }
   }
 
@@ -60,35 +63,65 @@ public class AtLeastOneLowercasePasswordRuleTest
   @Override
   public void testDefinedPropertyValues() {
     setDefinedSettings();
-    AtLeastOneLowercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(true));
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(1));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+  }
+
+  @Test
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+    setDefinedMoreThanOneSettings();
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(2));
+    assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+    for (int i = 0; i < NB_LOOP; i++) {
+      assertThat(Pattern.compile("[0-9]{2,}").matcher(rule.random()).find(), is(true));
+    }
+    assertThat(rule.check("1RbRZ"), is(false));
+    assertThat(rule.check("1R9Rz"), is(true));
+    assertThat(rule.check("1R0Rz"), is(true));
+  }
+
+  @Test
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
+    setCombinationDefinedMoreThanOneSettings();
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(2));
+    assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(true));
   }
 
   @Test
   @Override
   public void testNotDefinedPropertyValues() {
     setNotDefinedSettings();
-    AtLeastOneLowercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testBadDefinedPropertyValues() {
     setBadDefinedSettings();
-    AtLeastOneLowercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testNotRequiredPropertyValues() {
     setNotRequiredSettings();
-    AtLeastOneLowercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXDigitPasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(1));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 }

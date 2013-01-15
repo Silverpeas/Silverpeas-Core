@@ -35,13 +35,13 @@ import static org.hamcrest.Matchers.is;
  * User: Yohann Chastagnier
  * Date: 08/01/13
  */
-public class AtLeastOneUppercasePasswordRuleTest
-    extends org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastOneUppercasePasswordRule> {
+public class AtLeastXUppercasePasswordRuleTest
+    extends org.silverpeas.password.rule.AbstractPasswordRuleTest<AtLeastXUppercasePasswordRule> {
 
   @Test
   public void testCommons() {
-    AtLeastOneUppercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_ONE_UPPERCASE));
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getType(), is(PasswordRuleType.AT_LEAST_X_UPPERCASE));
     assertThat(rule.check("003123150131;,:!*ù^$=)àç_è-('\"é&@\\~#{}][|`"), is(false));
     for (char c = 97; c < (97 + 26); c++) {
       assertThat(rule.check("0" + c + "2135"), is(false));
@@ -60,35 +60,64 @@ public class AtLeastOneUppercasePasswordRuleTest
   @Override
   public void testDefinedPropertyValues() {
     setDefinedSettings();
-    AtLeastOneUppercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(true));
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(1));
     assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+  }
+
+  @Test
+  @Override
+  public void testDefinedMoreThanOnePropertyValues() {
+    setDefinedMoreThanOneSettings();
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(2));
+    assertThat(rule.isRequired(), is(true));
+    assertThat(rule.isCombined(), is(false));
+    for (int i = 0; i < NB_LOOP; i++) {
+      assertThat(Pattern.compile("[A-Z]{2,}").matcher(rule.random()).find(), is(true));
+    }
+    assertThat(rule.check("aGbgz"), is(false));
+    assertThat(rule.check("aRbMz"), is(true));
+  }
+
+  @Test
+  @Override
+  public void testCombinationDefinedMoreThanOnePropertyValues() {
+    setCombinationDefinedMoreThanOneSettings();
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(3));
+    assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(true));
   }
 
   @Test
   @Override
   public void testNotDefinedPropertyValues() {
     setNotDefinedSettings();
-    AtLeastOneUppercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testBadDefinedPropertyValues() {
     setBadDefinedSettings();
-    AtLeastOneUppercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 
   @Test
   @Override
   public void testNotRequiredPropertyValues() {
     setNotRequiredSettings();
-    AtLeastOneUppercasePasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(false));
+    AtLeastXUppercasePasswordRule rule = newRuleInstanceForTest();
+    assertThat(rule.getValue(), is(0));
     assertThat(rule.isRequired(), is(false));
+    assertThat(rule.isCombined(), is(false));
   }
 }

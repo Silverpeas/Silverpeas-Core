@@ -41,24 +41,36 @@ public class PasswordPolicyEntity {
   @XmlElement(defaultValue = "")
   private Map<String, PasswordRuleEntity> rules = new LinkedHashMap<String, PasswordRuleEntity>();
 
+  /* Number of rules that have to match within a combination of rules */
+  @XmlElement
+  private int nbMatchingCombinedRules = 0;
+
+  /* List of password combined rules indexed by rule names */
+  @XmlElement(defaultValue = "")
+  private Map<String, PasswordRuleEntity> combinedRules =
+      new LinkedHashMap<String, PasswordRuleEntity>();
+
   /* Message contains additional rules that are not verifiable within Silverpeas services */
   @XmlElement(defaultValue = "")
   private String extraRuleMessage = "";
 
   /**
    * Creates a new password policy entity
+   * @param nbMatchingCombinedRules
    * @param extraRuleMessage
    * @return the entity representing the specified rule.
    */
-  public static PasswordPolicyEntity createFrom(final String extraRuleMessage) {
-    return new PasswordPolicyEntity(extraRuleMessage);
+  public static PasswordPolicyEntity createFrom(int nbMatchingCombinedRules,
+      final String extraRuleMessage) {
+    return new PasswordPolicyEntity(nbMatchingCombinedRules, extraRuleMessage);
   }
 
   /**
    * Default hidden constructor.
    * @param extraRuleMessage
    */
-  private PasswordPolicyEntity(final String extraRuleMessage) {
+  private PasswordPolicyEntity(int nbMatchingCombinedRules, final String extraRuleMessage) {
+    this.nbMatchingCombinedRules = nbMatchingCombinedRules;
     this.extraRuleMessage = extraRuleMessage;
   }
 
@@ -70,8 +82,21 @@ public class PasswordPolicyEntity {
     return this;
   }
 
+  public PasswordPolicyEntity addCombinedRule(PasswordRuleEntity rule) {
+    combinedRules.put(rule.getType(), rule);
+    return this;
+  }
+
   public Map<String, PasswordRuleEntity> getRules() {
     return rules;
+  }
+
+  public int getNbMatchingCombinedRules() {
+    return nbMatchingCombinedRules;
+  }
+
+  public Map<String, PasswordRuleEntity> getCombinedRules() {
+    return combinedRules;
   }
 
   public String getExtraRuleMessage() {

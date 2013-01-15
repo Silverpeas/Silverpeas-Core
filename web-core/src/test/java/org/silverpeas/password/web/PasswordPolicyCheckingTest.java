@@ -24,14 +24,11 @@
 package org.silverpeas.password.web;
 
 import com.silverpeas.web.ResourceCreationTest;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.silverpeas.password.constant.PasswordRuleType;
-
-import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -46,12 +43,7 @@ import static org.silverpeas.password.web.PasswordTestResources.SPRING_CONTEXT;
  */
 public class PasswordPolicyCheckingTest extends ResourceCreationTest<PasswordTestResources> {
 
-  private UserDetail user;
   private String sessionKey;
-
-  private static String ALBUM_ID = "3";
-  private static String PHOTO_ID = "7";
-  private static String PHOTO_ID_DOESNT_EXISTS = "8";
 
   public PasswordPolicyCheckingTest() {
     super(JAVA_PACKAGE, SPRING_CONTEXT);
@@ -59,27 +51,27 @@ public class PasswordPolicyCheckingTest extends ResourceCreationTest<PasswordTes
 
   @Before
   public void prepareTestResources() {
-    user = aUser();
-    sessionKey = authenticate(user);
+    sessionKey = authenticate(aUser());
   }
 
   @Test
   public void checking() {
     final ClientResponse response = post(PasswordEntity.createFrom("aA0$1234"), aResourceURI());
-    final Collection<?> passwordErrors = response.getEntity(Collection.class);
-    assertNotNull(passwordErrors);
-    assertThat(passwordErrors.size(), is(0));
+    final PasswordCheckEntity passwordCheck = response.getEntity(PasswordCheckEntity.class);
+    assertNotNull(passwordCheck);
+    assertThat(passwordCheck.isCorrect(), is(true));
   }
 
   @Test
   @SuppressWarnings("unchecked")
   public void checkingWithErrors() {
     final ClientResponse response = post(PasswordEntity.createFrom("AA0ç123"), aResourceURI());
-    final Collection<String> passwordErrors = response.getEntity(Collection.class);
-    assertNotNull(passwordErrors);
-    assertThat(passwordErrors,
-        contains(PasswordRuleType.MIN_LENGTH.name(), PasswordRuleType.AT_LEAST_ONE_LOWERCASE.name(),
-            PasswordRuleType.AT_LEAST_ONE_SPECIAL_CHAR.name()));
+    final PasswordCheckEntity passwordCheck = response.getEntity(PasswordCheckEntity.class);
+    assertNotNull(passwordCheck);
+    assertThat(passwordCheck.getRequiredRuleIdsInError(),
+        contains(PasswordRuleType.MIN_LENGTH.name(), PasswordRuleType.SEQUENTIAL_FORBIDDEN.name(),
+            PasswordRuleType.AT_LEAST_X_LOWERCASE.name(),
+            PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()));
   }
 
   @Ignore

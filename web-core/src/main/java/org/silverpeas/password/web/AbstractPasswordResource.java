@@ -26,6 +26,7 @@ package org.silverpeas.password.web;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.password.service.PasswordCheck;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -52,6 +53,16 @@ public abstract class AbstractPasswordResource extends RESTWebService {
   protected PasswordRuleEntity asWebEntity(PasswordRule rule) {
     checkNotFoundStatus(rule);
     return PasswordRuleEntity.createFrom(rule, getLanguage());
+  }
+
+  /**
+   * Converts the password check into its corresponding web entity.
+   * @param check the password check.
+   * @return the corresponding password check entity.
+   */
+  protected PasswordCheckEntity asWebEntity(PasswordCheck check) {
+    checkNotFoundStatus(check);
+    return PasswordCheckEntity.createFrom(check);
   }
 
   /**

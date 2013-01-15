@@ -68,6 +68,7 @@ import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.password.rule.PasswordRule;
+import org.silverpeas.password.service.PasswordCheck;
 import org.silverpeas.password.service.PasswordServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
 
@@ -554,19 +555,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // password is not mandatory
       if (StringUtil.isDefined(motDePasse)) {
         // Cheking password
-        Collection<PasswordRule> notValidatedRules =
-            PasswordServiceFactory.getPasswordService().check(motDePasse);
-        if (!notValidatedRules.isEmpty()) {
+        PasswordCheck passwordCheck = PasswordServiceFactory.getPasswordService().check(motDePasse);
+        if (!passwordCheck.isCorrect()) {
           boolean isNotFirstError = false;
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse))
-              .append(getString("JDP.pwdTitleErrors")).append(" ");
-          for (PasswordRule notValidatedRule : notValidatedRules) {
-            if (isNotFirstError) {
-              listErrors.append(", ");
-            }
-            listErrors.append(notValidatedRule.getDescription(getLanguage()));
-            isNotFirstError = true;
-          }
+              .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
           listErrors.append("<br/>");
         } else if (motDePasse.length() > 32) {// verifier 32 char max
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
