@@ -126,6 +126,15 @@ public class AuthenticationServlet extends HttpServlet {
             url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
           }
       }
+      else if(LoginPasswordAuthentication.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)){
+        String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
+        if(StringUtil.getBooleanValue(allowPasswordChange)){
+          ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+          url = settings.getString("passwordExpiredURL")+"?login="+identificationParameters.getLogin()+"&domainId="+sDomainId;
+        } else {
+          url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+        }
+      }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }

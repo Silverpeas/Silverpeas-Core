@@ -34,6 +34,7 @@ import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
@@ -243,7 +244,9 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
     ResourceLocator rl = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+        "org.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
+    ResourceLocator authenticationSettings =
+        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
     UserDetail currentUser = sc.getUserDetail();
     // Update informations only if updateMode is allowed for each field
     try {
@@ -267,9 +270,18 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           ? EncodeHelper.htmlStringToJavaString(userLoginQuestion)
           : currentUser.getLoginQuestion());
       String userLoginAnswer = request.getParameter("userLoginAnswer");
-      userLoginAnswer = (userLoginAnswer != null
-          ? EncodeHelper.htmlStringToJavaString(userLoginAnswer)
-          : currentUser.getLoginAnswer());
+
+      // user has filled a new login answer
+      if (userLoginAnswer != null) {
+        userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
+        // Crypt password if needed
+        boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
+        if (answerCrypted) {
+          userLoginAnswer = CryptMD5.crypt(userLoginAnswer);
+        }
+      } else {
+        userLoginAnswer = currentUser.getLoginAnswer();
+      }
 
       // process extra properties
       Map<String, String> properties = new HashMap<String, String>();

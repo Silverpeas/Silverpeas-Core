@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.web.util.DomainDetector"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -32,8 +33,11 @@
 <fmt:setLocale value="${pageContext.request.locale.language}" />
 <%@ include file="headLog.jsp" %>
 
+<c:set var="computedDomainId" value="<%= DomainDetector.getDomainId(request)%>" />
+
 <%
 ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+
 pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 String errorCode = request.getParameter("ErrorCode");
 if (!com.silverpeas.util.StringUtil.isDefined(errorCode)) {
@@ -124,6 +128,17 @@ function resetPassword() {
     }
 }
 
+function changePassword() {
+	var form = document.getElementById("formLogin");
+    if (form.elements["Login"].value.length == 0) {
+      alert('<fmt:message key="authentication.logon.loginMissing" />');
+    } else {
+      form.action ='<c:url value="${changePasswordFromLoginPage}" />';
+      form.submit();
+    }
+}
+
+
 function newRegistration() {
 	var form = document.getElementById("formLogin");
     form.action ='<c:url value="/CredentialsServlet/NewRegistration" />';
@@ -136,7 +151,7 @@ $(document).ready(function(){
 			checkForm();
 		}
 	});
-	
+
 	$("#Password").keypress(function(event) {
 		if(event.keyCode == 13) {
 			checkForm();
@@ -150,8 +165,8 @@ $(document).ready(function(){
       <form id="formLogin" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
       	<% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
 	        <div id="top">
-				<fmt:message key="authentication.logon.newRegistration.tease" /> 
-				<% if (newRegistrationActive) { %> 
+				<fmt:message key="authentication.logon.newRegistration.tease" />
+				<% if (newRegistrationActive) { %>
 					<a href="javascript:newRegistration()"><fmt:message key="authentication.logon.newRegistration.create" /></a>
 				<% } %>
 				<% if (facebookEnabled || linkedInEnabled) {
@@ -164,9 +179,9 @@ $(document).ready(function(){
 					<% } %>
 					<% if (facebookEnabled) { %>
 						<% if (linkedInEnabled) { %>
-							 <fmt:message key="GML.or" /> 
+							 <fmt:message key="GML.or" />
 						<% } %>
-						<a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a> 
+						<a title="Facebook" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">Facebook</a>
 					<% } %>
 				<% } %>
 	        </div>
@@ -202,12 +217,15 @@ $(document).ready(function(){
                           </c:choose>
                         </p>
                         <div class="clear"></div>
-                    </div>   
+                    </div>
                     <p><label><span><fmt:message key="authentication.logon.login" /></span><input type="text" name="Login" id="Login"/><input type="hidden" class="noDisplay" name="cryptedPassword"/></label></p>
                     <p><label><span><fmt:message key="authentication.logon.password" /></span><input type="password" name="Password" id="Password"/></label></p>
                     <c:choose>
                       <c:when test="${!pageScope.multipleDomains}">
                         <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+                      </c:when>
+                      <c:when test="${not empty computedDomainId}">
+                        <input class="noDisplay" type="hidden" name="DomainId" value="${computedDomainId}"/>
                       </c:when>
                       <c:otherwise>
                       	<p><label><span><fmt:message key="authentication.logon.domain" /></span>
@@ -216,12 +234,12 @@ $(document).ready(function(){
                                       <option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected</c:if> ><c:out value="${domain.name}"/></option>
                                   </c:forEach>
 							</select>
-                          </label></p> 
+                          </label></p>
                       </c:otherwise>
-                    </c:choose>            
+                    </c:choose>
                      <p><input type="submit" style="width:0; height:0; border:0; padding:0"/><a href="#" class="<%=submitClass%>" onclick="checkForm();"><img src='<c:url value="/images/bt-login.png" />' alt="login"/></a></p>
 
-					 <% if (rememberPwdActive || forgottenPwdActive) { %>
+					 <% if (rememberPwdActive || forgottenPwdActive || changePwdFromLoginPageActive) { %>
 						 <% if (forgottenPwdActive) { %>
 						 <p>
 							<span class="forgottenPwd">
@@ -231,14 +249,28 @@ $(document).ready(function(){
 							 	<a href="javascript:resetPassword()"><fmt:message key="authentication.logon.passwordReinit" /></a>
 							<%} %>
 							</span>
+						 <% } %>
+
+						 <% if (changePwdFromLoginPageActive) { %>
+								<% if (forgottenPwdActive) { %>
+									 <span class="separator">|</span>
+								<% } else {%>
+								<p>
+								<span class="changePwd">
+								<% } %>
+								<a class="changePwd" href="javascript:changePassword()"><fmt:message key="authentication.logon.changePassword" /></a>
+								</span>
+						<%	} %>
+
+						 <% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
 						</p>
 						 <% } %>
 
 						 <% if (rememberPwdActive) { %>
 						 		<p>
 								<span class="rememberPwd">
-								<% if (forgottenPwdActive) { %>
-									 |
+								<% if (forgottenPwdActive || changePwdFromLoginPageActive) { %>
+									 <span class="separator">|</span>
 								<% } %>
 								<fmt:message key="authentication.logon.passwordRemember" /> <input type="checkbox" name="storePassword" id="storePassword" value="Yes"/></span>
 								</p>
