@@ -327,15 +327,11 @@ public class IndexManager {
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
-    doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES,
-        Index.NOT_ANALYZED));
-
+    doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES, Index.NOT_ANALYZED));
     Iterator<String> languages = indexEntry.getLanguages();
-    if (indexEntry.getObjectType() != null
-        && indexEntry.getObjectType().startsWith("Attachment")) {
+    if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
       doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry.getTitle(indexEntry.
-          getLang()), Store.YES,
-          Index.NOT_ANALYZED));
+          getLang()), Store.YES, Index.NOT_ANALYZED));
     } else {
       while (languages.hasNext()) {
         String language = languages.next();
@@ -592,7 +588,6 @@ public class IndexManager {
   private static int mergeFactor = 10;
   private static int maxMergeDocs = Integer.MAX_VALUE;
   private static double RAMBufferSizeMB = IndexWriterConfig.DEFAULT_RAM_BUFFER_SIZE_MB;
-
   // enable the "Did you mean " indexing
   private static boolean enableDymIndexing = false;
   private static String serverName = null;

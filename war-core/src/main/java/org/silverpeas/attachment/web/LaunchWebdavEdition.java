@@ -147,22 +147,25 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.6+\" />");
     out.println("\t\t<jar href=\"OpenOfficeLauncher.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"commons-codec-1.6.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-httpclient-3.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.2.11.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-webdav-2.2.11.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.5.1.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-webdav-2.5.1.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jcl-over-slf4j-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-log4j12-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-api-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"log4j-1.2.17.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xml-apis-1.4.01.jar\" download=\"eager\"/>");
     out.println("\t</resources>");
-    out.println("\t<application-desc main-class=\"com.silverpeas.openoffice.Launcher\">");
+    out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.Launcher\">");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"), CharEncoding.UTF_8));
+    out.println("</argument>");
+    out.print("\t\t<argument>");
+    out.print(resources.getBoolean("deconnectedMode", false));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
@@ -209,6 +212,6 @@ public class LaunchWebdavEdition extends HttpServlet {
    */
   @Override
   public String getServletInfo() {
-    return "Short description";
-  }// </editor-fold>
+    return "Generating the JNLP for direct edition";
+  }
 }

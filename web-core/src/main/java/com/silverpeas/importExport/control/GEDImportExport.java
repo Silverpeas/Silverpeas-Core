@@ -577,8 +577,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
-    WysiwygController
-        .createFileAndAttachment(newWysiwygText, wysiwygFileName, getCurrentComponentId(),
+    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, getCurrentComponentId(),
             WysiwygController.WYSIWYG_CONTEXT, String.valueOf(pubId), userId);
   }
 
