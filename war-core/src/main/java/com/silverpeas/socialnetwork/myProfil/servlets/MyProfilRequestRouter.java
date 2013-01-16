@@ -113,8 +113,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         request.setAttribute("UpdateIsAllowed", updateIsAllowed);
         request.setAttribute("isAdmin", myProfilSC.isAdmin());
         request.setAttribute("isPasswordChangeAllowed", myProfilSC.isPasswordChangeAllowed());
-        request.setAttribute("minLengthPwd", myProfilSC.getMinLengthPwd());
-        request.setAttribute("blanksAllowedInPwd", myProfilSC.isBlanksAllowedInPwd());
         request.setAttribute("View", "MyInfos");
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";
       } else if (route == MyProfileRoutes.UpdatePhoto) {
@@ -274,7 +272,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       String userLoginAnswer = request.getParameter("userLoginAnswer");
 
       // user has filled a new login answer
-      if (userLoginAnswer != null) {
+      if (StringUtil.isDefined(userLoginAnswer)) {
         userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
         // Crypt password if needed
         boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);

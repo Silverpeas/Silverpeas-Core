@@ -89,5 +89,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * Silverpeas plugin to notify user.
    */
-  notifier;
+  notifier,
+  /**
+   * Silverpeas plugin to manage password.
+   */
+  password;
 }

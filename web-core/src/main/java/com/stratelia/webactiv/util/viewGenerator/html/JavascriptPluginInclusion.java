@@ -71,6 +71,8 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_NOTIFIER_CENTER = "layouts/topCenter.js";
   private static final String JQUERY_NOTIFIER_THEME = "themes/silverpeas.js";
   private static final String SILVERPEAS_NOTIFIER = "silverpeas-notifier.js";
+  private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
+  private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
@@ -109,8 +111,8 @@ public class JavascriptPluginInclusion {
   public static ElementContainer includePagination(final ElementContainer xhtml) {
     script pagination = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + PAGINATION_TOOL
             + ".js");
-    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryCssPath
-            + PAGINATION_TOOL + ".css");
+    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
+        .setHref(jqueryCssPath + PAGINATION_TOOL + ".css");
     xhtml.addElement(css);
     xhtml.addElement(pagination);
     return xhtml;
@@ -206,6 +208,16 @@ public class JavascriptPluginInclusion {
     notifier =
         new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_NOTIFIER);
     xhtml.addElement(notifier);
+    return xhtml;
+  }
+
+  public static ElementContainer includePassword(final ElementContainer xhtml) {
+    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL)
+        .setHref(stylesheetPath + STYLESHEET_PASSWORD);
+    script password =
+        new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_PASSWORD);
+    xhtml.addElement(css);
+    xhtml.addElement(password);
     return xhtml;
   }
 
