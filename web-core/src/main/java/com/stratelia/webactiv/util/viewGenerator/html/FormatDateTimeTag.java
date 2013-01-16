@@ -56,8 +56,12 @@ public class FormatDateTimeTag extends TagSupport {
     return new Date(dateTime.getTime());
   }
 
-  public void setValue(Date dateTime) {
-    this.dateTime = new Date(dateTime.getTime());
+  public void setValue(Date value) {
+    if (value == null) {
+      this.dateTime = null;
+    } else {
+      this.dateTime = new Date(value.getTime());
+    }
   }
 
   public String getLanguage() {

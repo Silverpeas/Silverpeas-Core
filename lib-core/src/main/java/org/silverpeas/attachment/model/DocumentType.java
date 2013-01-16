@@ -29,8 +29,9 @@ package org.silverpeas.attachment.model;
  */
 public enum DocumentType {
 
-  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"), picture("pictures");
-  private String forlderName;
+  attachment("attachments"), form("forms"), wysiwyg("wysiwyg"), image("images"), video("video"),
+  node("node");
+  private String folderName;
 
   private DocumentType(String folder) {
     this.forlderName = folder;
@@ -55,9 +56,6 @@ public enum DocumentType {
     }
     if (video.forlderName.equals(folder)) {
       return video;
-    }
-    if (picture.forlderName.equals(folder)) {
-      return picture;
     }
     return attachment;
   }
