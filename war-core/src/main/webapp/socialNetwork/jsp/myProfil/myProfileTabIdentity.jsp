@@ -37,27 +37,27 @@
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
-ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+  ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
+  ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", resource.getLanguage());
+  ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
 
-boolean 	updateIsAllowed				= ((Boolean) request.getAttribute("UpdateIsAllowed")).booleanValue();
-boolean 	isAdmin						= ((Boolean) request.getAttribute("isAdmin")).booleanValue();
-boolean 	isPasswordChangeAllowed		= ((Boolean) request.getAttribute("isPasswordChangeAllowed")).booleanValue();
-String 		action 						= (String) request.getAttribute("Action");
-String 		messageOK 					= (String) request.getAttribute("MessageOK");
-String 		messageNOK 					= (String) request.getAttribute("MessageNOK");
+  boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
+  boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
+  boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
+  String action = (String) request.getAttribute("Action");
+  String messageOK = (String) request.getAttribute("MessageOK");
+  String messageNOK = (String) request.getAttribute("MessageNOK");
 
+  String fieldAttribute = " disabled=\"disabled\" ";
+  if (updateIsAllowed) {
+    fieldAttribute = "";
+  }
 
-String fieldAttribute = " disabled=\"disabled\" ";
-if (updateIsAllowed) {
-	fieldAttribute = "";
-}
-
-boolean updateFirstNameIsAllowed 	= rs.getBoolean("updateFirstName", false);
-boolean updateLastNameIsAllowed 	= rs.getBoolean("updateLastName", false);
-boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
-boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
+  boolean updateFirstNameIsAllowed = rs.getBoolean("updateFirstName", false);
+  boolean updateLastNameIsAllowed = rs.getBoolean("updateLastName", false);
+  boolean updateEmailIsAllowed = rs.getBoolean("updateEmail", false);
+  boolean displayInfosLDAP = rs.getBoolean("displayInfosLDAP", false);
 %>
 
 <style type="text/css">
@@ -130,7 +130,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/></td>
+	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>

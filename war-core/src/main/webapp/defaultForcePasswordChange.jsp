@@ -90,7 +90,7 @@
               String message = (String) request.getAttribute("message");
               if (message != null) {
             %>
-            ( <%=message%> )<br/>
+            <span><%=message%></span><br/>
             <%
               }
             %></p>
@@ -112,6 +112,12 @@
 
         <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
           <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><img src="<%=m_context%>/images/bt-ok.png" alt=""/></a>
+        </p>
+
+        <p>
+          <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
+            <%=authenticationBundle.getString("authentication.password.showRules") %>
+          </a></span>
         </p>
       </div>
     </div>

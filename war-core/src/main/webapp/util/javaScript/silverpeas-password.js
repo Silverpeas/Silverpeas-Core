@@ -41,7 +41,7 @@
         $.password.rules = policy.rules;
         $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
         $.password.combinedRules = policy.combinedRules;
-        $.password.extraRuleMessage = policy.extraRuleMessage;
+        $.password.extraRuleMessage = policy.extraRuleMessage.trim();
       }
     }
   };
@@ -139,7 +139,7 @@
           if ($.inArray($rule.attr('id'), passwordCheck.combinedRuleIdsInError) < 0) {
             __switchStatusStyleClass($rule, 'success');
           } else {
-            __switchStatusStyleClass($rule, '');
+            __switchStatusStyleClass($rule, 'error');
           }
         }
       }
@@ -263,6 +263,10 @@
 
       // Position
       if ($box.css('display') != 'none') {
+        // Checking when displaying the box from 'Escape' key event
+        if (event.keyCode == 27 && $target.val()) {
+          __checking($target, $box, {});
+        }
         __setBoxInfoPosition($target, $box);
       }
     });
@@ -274,6 +278,9 @@
       }
     });
     $target.focus(function() {
+      if ($target.val()) {
+        __checking($target, $box, {});
+      }
       $box.show();
       __setBoxInfoPosition($target, $box);
       return true;

@@ -81,7 +81,7 @@ public class PasswordPolicyGettingTest extends ResourceGettingTest<PasswordTestR
     assertThat(
         entity.getRules().get(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR.name()).getDescription(),
         is("au moins 1 caractère(s) spécial(aux) (%*!?$-+#&=.,;)"));
-    assertThat(entity.getExtraRuleMessage(), notNullValue());
+    assertThat(entity.getExtraRuleMessage(), is("règles supplémentaires non vérifiables ..."));
   }
 
   @Ignore
