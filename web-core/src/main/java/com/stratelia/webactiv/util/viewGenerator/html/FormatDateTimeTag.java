@@ -63,7 +63,7 @@ public class FormatDateTimeTag extends TagSupport {
     if (value == null) {
       this.dateTime = null;
     } else {
-      this.dateTime = new Date(dateTime.getTime());
+      this.dateTime = new Date(value.getTime());
     }
   }
 
