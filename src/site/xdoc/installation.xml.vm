@@ -27,6 +27,7 @@
 <document>
   <properties>
     <author>Emmanuel Hugonnet</author>
+    <author>Miguel Moquillon</author>
     <title>Installation</title>
   </properties>
   <head>
@@ -124,6 +125,7 @@ Please find a list of the tools you will need to install Silverpeas below.<br/>
         </ul>
         <p>the Jboss community provides also a groovy script to secure your Jboss 6.x instance : follow the instructions from <a href="http://community.jboss.org/wiki/SimpleWayToLockUpYourJBossASInstance">this page</a>.</p>
         <p>The first installation of Silverpeas will secure this for you since Silverpeas 5.9, but be careful, <b>the upgrade process doesn't secure your server.</b></p>
+        <p>Since the version 6.x, JBoss AS embeds HornetQ as the JMS provider. The version in JBoss AS 6.1.0 is buggy and consequence you need to upgrade it to a more recent version. From the minor version 5.11.1, Silverpeas will be provided with an upgrade of HornetQ to the version 2.2.24. For the older versions of Silverpeas V5 (since 5.9) , an archive with all the necessary for upgrading HornetQ is available: <a href="http://repository.silverpeas.org/files/hornetq-upgrade.zip">hornetq-upgrade.zip</a>; unzip the archive and copy the content of the unzipped folder <code>hornetq-upgrade</code> into your Silverpeas installation (<code>%SILVERPEAS_HOME%</code> on Windows, <code>$SILVERPEAS_HOME</code> on Unix).</p>
       </subsection>
       <subsection name="Preparing Silverpeas">
         <p>We currently provide a packaged and pre-configured version that will build Silverpeas and its database. Please download </p>
