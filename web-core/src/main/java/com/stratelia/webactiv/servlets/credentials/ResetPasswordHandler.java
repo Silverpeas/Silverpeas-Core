@@ -24,13 +24,14 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.silverpeas.util.PasswordGenerator;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.password.service.PasswordServiceFactory;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,8 +39,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author ehugonnet
  */
 public class ResetPasswordHandler extends FunctionHandler {
-
-  private PasswordGenerator passwordGenerator = new PasswordGenerator();
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -52,7 +51,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         return getGeneral().getString("forgottenPasswordResetError");
       }
       if (userId != null) {
-        String password = passwordGenerator.random();
+        String password = PasswordServiceFactory.getPasswordService().generate();
         ForgottenPasswordMailParameters parameters = null;
         try {
           parameters = getMailParameters(userId);

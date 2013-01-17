@@ -241,7 +241,7 @@
       var nbDisplayed =  0;
       var keyCode;
       var keyCodeUndefined = String.fromCharCode(0);
-      for (i = 0; i <= 1000; i++) {
+      for (i = 0; i <= 10000; i++) {
         keyCode = String.fromCharCode(i);
         if (nbDisplayed%50 == 0 && (!$div || $div.html().length > 0)) {
           $div = $('<div>').css('float', 'left').css('margin-right', '20px');
