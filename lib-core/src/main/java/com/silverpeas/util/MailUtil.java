@@ -54,6 +54,7 @@ public class MailUtil {
   private static final String password;
   private static final String notificationAddress;
   private static final String notificationPersonalName;
+  private static final boolean forceReplyToSenderField;
   private static Iterable<String> domains;
   public static final ResourceLocator configuration = new ResourceLocator(
       "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
@@ -69,7 +70,12 @@ public class MailUtil {
     secure = configuration.getBoolean(SMTP_SECURE, false);
     notificationAddress = configuration.getString("NotificationAddress");
     notificationPersonalName = configuration.getString("NotificationPersonalName");
+    forceReplyToSenderField = configuration.getBoolean("ForceReplyToSenderField", false);
     reloadConfiguration(configuration.getString("AuthorizedDomains", ""));
+  }
+
+  public static boolean isForceReplyToSenderField() {
+    return forceReplyToSenderField;
   }
 
   /**
@@ -96,26 +102,17 @@ public class MailUtil {
     return false;
   }
 
-  public static synchronized InternetAddress getAuthorizedEmailAddress(String pFrom) throws
-      AddressException, UnsupportedEncodingException {
-    String senderAddress = getAuthorizedEmail(pFrom);
-    return new InternetAddress(emailFormatter.format(new String[] {
-        pFrom.substring(0, pFrom.indexOf(
-        '@')), senderAddress }), true);
-  }
-  
   public static synchronized InternetAddress getAuthorizedEmailAddress(String pFrom,
       String personalName) throws AddressException, UnsupportedEncodingException {
     String senderAddress = getAuthorizedEmail(pFrom);
-    if (senderAddress.equals(pFrom)) {
-      // email is authorized, use it as it
-      InternetAddress address = new InternetAddress(pFrom, true);
-      address.setPersonal(personalName, "UTF-8");
-      return address;
-    }
-    // email is not authorized, use default one and default personal name too
     InternetAddress address = new InternetAddress(senderAddress, true);
-    address.setPersonal(notificationPersonalName, "UTF-8");
+    // - If email is authorized (senderAddress.equals(pFrom)), use it as it (personalName)
+    // - If email is not authorized (!senderAddress.equals(pFrom)), use default one and default
+    //   personal name too (notificationPersonalName)
+    String personal = senderAddress.equals(pFrom) ? personalName : notificationPersonalName;
+    if (StringUtil.isDefined(personal)) {
+      address.setPersonal(personal, "UTF-8");
+    }
     return address;
   }
 
