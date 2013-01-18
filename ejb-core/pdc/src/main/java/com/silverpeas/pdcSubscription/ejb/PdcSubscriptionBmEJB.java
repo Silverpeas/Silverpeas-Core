@@ -465,7 +465,13 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    */
   protected boolean checkValueInPath(String value, List<String> pathList) {
     for (String path : pathList) {
-      if (path.contains(value)) {
+      String p = "/0/";
+      if (path != null) {
+        // use given path if it not null
+        // otherwise this means that first level has been removed, so use root path
+        p = new String(path);
+      }
+      if (p.contains(value)) {
         return true;
       }
     }
