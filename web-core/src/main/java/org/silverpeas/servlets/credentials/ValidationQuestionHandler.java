@@ -25,6 +25,7 @@
 package org.silverpeas.servlets.credentials;
 
 import com.silverpeas.authentication.AuthenticationService;
+import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -43,12 +44,19 @@ public class ValidationQuestionHandler extends FunctionHandler {
   public String doAction(HttpServletRequest request) {
     HttpSession session = request.getSession();
     String key = (String) session.getAttribute("svplogin_Key");
+    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
+
     try {
       String userId = getAdmin().authenticate(key, session.getId(), false, false);
       UserDetail userDetail = getAdmin().getUserDetail(userId);
       String question = request.getParameter("question");
       String answer = request.getParameter("answer");
       userDetail.setLoginQuestion(question);
+
+      // Crypt password if needed
+      if (answerCrypted) {
+        answer = CryptMD5.crypt(answer);
+      }
       userDetail.setLoginAnswer(answer);
       getAdmin().updateUser(userDetail);
 

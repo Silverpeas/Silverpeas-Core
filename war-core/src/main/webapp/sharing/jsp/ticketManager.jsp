@@ -37,7 +37,7 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<c:set var="language" value="${sessionScope[sessionController].language}"/>
+<c:set var="language" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>

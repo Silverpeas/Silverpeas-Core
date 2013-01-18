@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.util.template;
 
 import java.io.File;
@@ -40,7 +36,6 @@ import org.apache.commons.lang3.CharEncoding;
 
 import com.silverpeas.util.template.renderer.DateRenderer;
 
-
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
   public Map<String, Object> attributes = new HashMap<String, Object>();
@@ -57,7 +52,14 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     String physicalName = group.getFileNameFromTemplateName(fileName);
     File file = new File(customersRootDir, physicalName);
     if (!file.exists() || !file.isFile()) {
-      group = new StringTemplateGroup(fileName, templateConfig.getProperty(TEMPLATE_ROOT_DIR));
+      String rootRootDir = templateConfig.getProperty(TEMPLATE_ROOT_DIR);
+      file = new File(rootRootDir, physicalName);
+      group = new StringTemplateGroup(fileName, rootRootDir);
+    }
+    // In case the file is empty, StringTemplate is in error because the encoding can't be
+    // guessed ...
+    if (file.exists() && file.length() == 0) {
+      return "";
     }
     group.setFileCharEncoding(CharEncoding.UTF_8);
     StringTemplate template = group.getInstanceOf(fileName);
@@ -81,9 +83,9 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
       template.write(out);
     } catch (IOException e) {
       return template.toString();
-    }finally {
+    } finally {
       IOUtils.closeQuietly(writer);
-    }    
+    }
     return writer.toString();
   }
 
@@ -101,15 +103,14 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
   public String applyFileTemplateOnComponent(String componentName, String fileName) {
     return applyFileTemplate("/" + componentName.toLowerCase() + "/" + fileName);
   }
-  
+
   @Override
   public boolean isCustomTemplateExists(String componentName, String fileName) {
-    String filePath = "/"+componentName.toLowerCase()+"/" + fileName;
+    String filePath = "/" + componentName.toLowerCase() + "/" + fileName;
     String customersRootDir = templateConfig.getProperty(TEMPLATE_CUSTOM_DIR);
     StringTemplateGroup group = new StringTemplateGroup(filePath, customersRootDir);
     String physicalName = group.getFileNameFromTemplateName(filePath);
     File file = new File(customersRootDir, physicalName);
     return file.exists() && file.isFile();
   }
-
 }

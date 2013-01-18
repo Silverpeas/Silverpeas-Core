@@ -44,7 +44,7 @@ public class CredentialsServlet extends HttpServlet {
 
   private static final long serialVersionUID = -7586840606648226466L;
   private static final Map<String, FunctionHandler> handlers =
-      new HashMap<String, FunctionHandler>();
+      new HashMap<String, FunctionHandler>(20);
 
   static {
     initHandlers();
@@ -64,6 +64,7 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("LoginQuestion", new LoginQuestionHandler());
     handlers.put("ValidateAnswer", new ValidationAnswerHandler());
     handlers.put("ChangePassword", new ChangePasswordHandler());
+    handlers.put("ChangePasswordFromLogin", new ChangePasswordFromLoginHandler());
     handlers.put("ChangeExpiredPassword", new ChangeExpiredPasswordHandler());
     // Password reset management
     handlers.put("ForgotPassword", new ForgotPasswordHandler());

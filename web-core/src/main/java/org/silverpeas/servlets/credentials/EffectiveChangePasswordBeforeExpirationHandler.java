@@ -56,7 +56,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
     ResourceLocator settings =
         new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
     String passwordChangeURL =
-        settings.getString("passwordChangeURL", "/admin/jsp/passwordAboutToExpire.jsp");
+        settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
 
     try {
       String userId = controller.getUserId();

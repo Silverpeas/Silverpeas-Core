@@ -33,21 +33,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.clipboard.model.*"%>
-<%@ page import="org.silverpeas.search.indexEngine.model.*"%>
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.silverpeas.peasCore.SessionManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.silverpeas.session.SessionManagement" %>
+<%@ page import="com.silverpeas.session.SessionManagementFactory" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
     if (clipboardSC != null) {
@@ -60,7 +57,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
     String connectedUsers = message.getString("connectedUsers");
     if ("yes".equals(homePageSettings.getString("displayConnectedUsers"))) {
-        nbConnectedUsers = SessionManager.getInstance().getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
+        SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+        nbConnectedUsers = sessionManagement.getNbConnectedUsersList(m_MainSessionCtrl.getCurrentUserDetail()) - 1;
         if (nbConnectedUsers <= 1) {
           connectedUsers = message.getString("connectedUser");
         }

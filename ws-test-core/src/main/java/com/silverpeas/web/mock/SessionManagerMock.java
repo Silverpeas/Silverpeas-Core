@@ -32,16 +32,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * A mock of a session manager for testing purpose.
  */
-@Named("sessionManager")
+@Named("sessionManagement")
 public class SessionManagerMock implements SessionManagement {
 
   private boolean noSession = false;
 
   private Map<String, SessionInfo> sessions = new HashMap<String, SessionInfo>();
+
+  @Override
+  public Collection<SessionInfo> getConnectedUsersList() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 
   @Override
   public Collection<SessionInfo> getDistinctConnectedUsersList(UserDetail user) {
@@ -68,6 +75,14 @@ public class SessionManagerMock implements SessionManagement {
     sessions.put(key, session);
     return session;
   }
+
+  @Override
+  public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    SessionInfo sessionInfo = new SessionInfo(session.getId(), user);
+    sessions.put(sessionInfo.getSessionId(), sessionInfo);
+    return sessionInfo;
+    }
 
   @Override
   public void closeSession(String sessionKey) {
@@ -99,5 +114,26 @@ public class SessionManagerMock implements SessionManagement {
    */
   public void setNoSession(boolean noSession) {
     this.noSession = noSession;
+  }
+
+  /*
+  * Validates the session identified uniquely by the specified key. The validation checks a session
+   * exists with the specified identifier and returns information about this session.
+   * At each access by the user to Silverpeas, its current session must be validated. The validation
+   * updates also useful information about the session like the timestamp of this access
+   * so that additional features can be performed (for example, the timeout computation of the
+   * session).
+   *
+   * @param sessionKey the key of the user session.
+   * @return information about the session identified by the specified key or null if no such session
+   *         exists.
+   */
+  @Override
+  public SessionInfo validateSession(String sessionKey) {
+    SessionInfo sessionInfo = getSessionInfo(sessionKey);
+    if (sessionInfo != null) {
+      sessionInfo.updateLastAccess();
+    }
+    return sessionInfo;
   }
 }

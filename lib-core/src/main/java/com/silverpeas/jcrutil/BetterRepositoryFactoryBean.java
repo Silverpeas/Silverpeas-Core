@@ -243,10 +243,12 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   @PreDestroy
   @Override
   public void destroy() throws Exception {
+    log.info("Shutdown the JCR repository...");
     // force cast (but use only the interface)
     if (repository instanceof JackrabbitRepository) {
       ((JackrabbitRepository) repository).shutdown();
     }
+    super.destroy();
   }
 
   public void testCleanUp() throws IOException {
@@ -293,7 +295,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   }
 
   /**
-   * @param configurationProperties The configuration properties to set for the repository.
+   * @param resources The configuration resources to set for the repository.
    */
   public void setConfigurationProperties(List<String> resources) {
     this.configurationProperties = resources;

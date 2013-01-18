@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -19,8 +18,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.filter;
+
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 
 import java.io.IOException;
 
@@ -39,7 +40,6 @@ import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.authentication.security.SecurityData;
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -82,11 +82,13 @@ public class ExternalAccessFilter implements Filter {
           try {
             controller = new MainSessionController(key, session.getId());
           } catch (Exception e) {
-            SilverTrace.error("util",
-                "ExternalAccessFilter.doFilter()", "root.MSG_GEN_EXIT_METHOD", e);
+            SilverTrace.error("util", "ExternalAccessFilter.doFilter()", "root.MSG_GEN_EXIT_METHOD",
+                e);
           }
           // Init session management and session object.
-          SessionManager.getInstance().addSession(session, req, controller);
+          SessionManagementFactory factory = SessionManagementFactory.getFactory();
+          SessionManagement sessionManagement = factory.getSessionManagement();
+          sessionManagement.openSession(controller.getCurrentUserDetail(), req);
           // Put the main session controller in the session
           session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
           GraphicElementFactory gef = new GraphicElementFactory(controller.getFavoriteLook());
