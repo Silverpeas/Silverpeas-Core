@@ -38,6 +38,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
