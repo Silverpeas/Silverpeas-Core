@@ -29,6 +29,7 @@
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
 import com.silverpeas.importExport.model.RepositoryType;
@@ -36,11 +37,17 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.publication.importExport.PublicationContentType;
+import com.silverpeas.publication.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -50,14 +57,31 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.silverpeas.util.mail.Extractor;
+import org.silverpeas.util.mail.Mail;
+import org.silverpeas.util.mail.MailAttachment;
+import org.silverpeas.util.mail.MailExtractor;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
  * @author sdevolder
  */
 public class RepositoriesTypeManager {
+  
+  public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
+      EntityArrays.ISO8859_1_ESCAPE());
 
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
@@ -194,10 +218,10 @@ public class RepositoriesTypeManager {
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
           userDetail, pubDetailToCreate, topicId);
-
+      
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
-
+      
       // Ajout de l'attachment
       AttachmentDetail attDetail = new AttachmentDetail();
       AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
@@ -223,6 +247,88 @@ public class RepositoriesTypeManager {
         // Ajout des attachments
         attachmentIE.importAttachment(pubDetailToCreate.getPK().getId(),
             componentId, attDetail, pubDetailToCreate.isIndexable());
+      }
+      
+      if (FileUtil.isMail(file.getName())) {
+        MailExtractor extractor = Extractor.getExtractor(file);
+        Mail mail = extractor.getMail();
+        String content = mail.getBody();
+        
+        PublicationContentType pubContent = new PublicationContentType();
+        XMLModelContentType modelContent = new XMLModelContentType("mail");
+        pubContent.setXMLModelContentType(modelContent);
+        List<XMLField> fields = new ArrayList<XMLField>();
+        modelContent.setFields(fields);
+        
+        XMLField subject = new XMLField("subject", mail.getSubject());
+        fields.add(subject);
+        
+        XMLField body = new XMLField("body", ESCAPE_ISO8859_1.translate(content));
+        fields.add(body);
+        
+        XMLField date = new XMLField("date", DateUtil.getOutputDateAndHour(mail.getDate(), "fr"));
+        fields.add(date);
+        
+        InternetAddress address = mail.getFrom();
+        String from = "";
+        if (StringUtil.isDefined(address.getPersonal())) {
+          from += address.getPersonal() + " - ";
+        }
+        from += "<a href=\"mailto:" + address.getAddress() + "\">" + address.getAddress() + "</a>";
+        XMLField fieldFROM = new XMLField("from", from);
+        fields.add(fieldFROM);
+        
+        Address[] recipients = mail.getAllRecipients();
+        String to = "";
+        for (Address recipient : recipients) {
+          InternetAddress ia = (InternetAddress) recipient;
+          if (StringUtil.isDefined(ia.getPersonal())) {
+            to += ia.getPersonal() + " - ";
+          }
+          to += "<a href=\"mailto:" + ia.getAddress() + "\">" + ia.getAddress() + "</a></br>";
+        }
+        XMLField fieldTO = new XMLField("to", to);
+        fields.add(fieldTO);
+        
+        gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetailToCreate.getPK().getId()), pubContent, userDetail.getId());
+        
+        try {
+          List<MailAttachment> attachments = extractor.getAttachments();
+          String dir = FileRepositoryManager.getTemporaryPath() + "mail"+Calendar.getInstance().getTimeInMillis()+File.separator;
+          for (MailAttachment attachment : attachments) {
+            if (attachment != null) {
+              String attachmentPath = dir+attachment.getName();
+              File attachmentFile = new File(dir+attachment.getName());
+              FileUtils.writeByteArrayToFile(attachmentFile, IOUtils.toByteArray(attachment.getFile()));
+              
+              attDetail = new AttachmentDetail();
+              pk = new AttachmentPK("unknown", "useless", componentId);
+              attDetail.setPhysicalName(attachmentPath);
+              attDetail.setAuthor(userDetail.getId());
+              attDetail.setPK(pk);
+              
+              if (isVersioningUsed) {
+                // Mode versioning
+                // copie du fichier sur le serveur et enrichissement du AttachmentDetail
+                attachmentIE.copyFile(componentId, attDetail, versioningIE.getVersioningPath(componentId));
+                if (attDetail.getSize() != 0) {
+                  List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
+                  documents.add(attDetail);
+                  versioningIE.importDocuments(pubDetailToCreate.getPK().getId(), componentId, documents,
+                      Integer.parseInt(userDetail.getId()), pubDetailToCreate.isIndexable(),
+                      String.valueOf(topicId));
+                }
+              } else {
+                // Ajout des attachments
+                attachmentIE.importAttachment(pubDetailToCreate.getPK().getId(),
+                    componentId, attDetail, pubDetailToCreate.isIndexable());
+              }
+            }
+          }
+        } catch (Exception e) {
+          SilverTrace.error("importExport", "RepositoriesTypeManager.importFile()",
+              "root.EX_NO_MESSAGE", e);
+        }
       }
 
       // Traitement des statistiques

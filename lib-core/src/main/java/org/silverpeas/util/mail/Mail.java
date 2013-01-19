@@ -1,0 +1,78 @@
+package org.silverpeas.util.mail;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+
+public class Mail {
+  
+  public static final String EML_MAIL_EXTENSION = "eml";
+  public static final String MSG_MAIL_EXTENSION = "msg";
+  public static final String[] MAIL_EXTENTIONS = new String[] { EML_MAIL_EXTENSION,
+      MSG_MAIL_EXTENSION };
+  
+  private String subject;
+  private InternetAddress from;
+  private Address[] to;
+  private Address[] cc;
+  private Date date;
+  private String body;
+  
+  public String getSubject() {
+    return subject;
+  }
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+  public Date getDate() {
+    return date;
+  }
+  public void setDate(Date date) {
+    this.date = date;
+  }
+  public void setDate(Calendar date) {
+    this.date = date.getTime();
+  }
+  public String getBody() {
+    return body;
+  }
+  public void setBody(String body) {
+    this.body = body;
+  }
+  
+  public InternetAddress getFrom() {
+    return from;
+  }
+  public void setFrom(InternetAddress from) {
+    this.from = from;
+  }
+  public Address[] getTo() {
+    return to;
+  }
+  public void setTo(Address[] to) {
+    this.to = to;
+  }
+  public Address[] getCc() {
+    return cc;
+  }
+  public void setCc(Address[] cc) {
+    this.cc = cc;
+  }
+  
+  public Address[] getAllRecipients() {
+    List<Address> recipients = new ArrayList<Address>();
+    if (getTo() != null) {
+      recipients.addAll(Arrays.asList(getTo()));
+    }
+    if (getCc() != null) {
+      recipients.addAll(Arrays.asList(getCc()));
+    }
+    return recipients.toArray(new Address[0]);
+  }
+
+}
