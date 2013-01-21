@@ -67,6 +67,7 @@ import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.password.service.PasswordCheck;
 import org.silverpeas.password.service.PasswordServiceFactory;
@@ -197,7 +198,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasTrappedException
    */
   public String createUser(String userLogin, String userLastName, String userFirstName,
-      String userEMail, String userAccessLevel, boolean userPasswordValid, String userPassword,
+      String userEMail, UserAccessLevel userAccessLevel, boolean userPasswordValid, String userPassword,
       HashMap<String, String> properties, String groupId, HttpServletRequest req, boolean sendEmail)
       throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
@@ -474,7 +475,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     String existingLogin;
     String email;
     String droits;
-    String userAccessLevel;
+    UserAccessLevel userAccessLevel;
     String motDePasse;
 
     String title;
@@ -688,17 +689,17 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       // Droits
       droits = csvValue[4].getValueString();
       if ("Admin".equals(droits)) {
-        userAccessLevel = "A";
+        userAccessLevel = UserAccessLevel.ADMINISTRATOR;
       } else if ("AdminPdc".equals(droits)) {
-        userAccessLevel = "K";
+        userAccessLevel = UserAccessLevel.PDC_MANAGER;
       } else if ("AdminDomain".equals(droits)) {
-        userAccessLevel = "D";
+        userAccessLevel = UserAccessLevel.DOMAIN_ADMINISTRATOR;
       } else if ("User".equals(droits)) {
-        userAccessLevel = "U";
+        userAccessLevel = UserAccessLevel.USER;
       } else if ("Guest".equals(droits)) {
-        userAccessLevel = "G";
+        userAccessLevel = UserAccessLevel.GUEST;
       } else {
-        userAccessLevel = "U";
+        userAccessLevel = UserAccessLevel.USER;
       }
 
       // MotDePasse
@@ -837,8 +838,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @param req the current HttpServletRequest
    * @throws JobDomainPeasException
    */
-  public void modifyUser(String idUser, String userLastName, String userFirstName,
-      String userEMail, String userAccessLevel, boolean userPasswordValid, String userPassword,
+  public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
+      UserAccessLevel userAccessLevel, boolean userPasswordValid, String userPassword,
       HashMap<String, String> properties, HttpServletRequest req, boolean sendEmail)
       throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas", "JobDomainPeasSessionController.modifyUser()",
@@ -883,7 +884,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     regroupInGroup(properties, lastGroupId);
   }
 
-  public void modifySynchronizedUser(String idUser, String userAccessLevel)
+  public void modifySynchronizedUser(String idUser, UserAccessLevel userAccessLevel)
       throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas",
         "JobDomainPeasSessionController.modifySynchronizedUser()",
@@ -907,7 +908,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     setTargetUser(idRet);
   }
 
-  public void modifyUserFull(String idUser, String userAccessLevel,
+  public void modifyUserFull(String idUser, UserAccessLevel userAccessLevel,
       HashMap<String, String> properties)
       throws JobDomainPeasException {
     SilverTrace.info("jobDomainPeas",
@@ -950,7 +951,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     boolean deleteUser = true;
 
     // TODO : Manage deleting case for group manager
-    if (!"A".equals(getUserAccessLevel()) && !"D".equals(getUserAccessLevel()) && isGroupManager()) {
+    if (!UserAccessLevel.ADMINISTRATOR.equals(getUserAccessLevel()) &&
+        !UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(getUserAccessLevel()) && isGroupManager()) {
       List<String> directGroupIds =
           Arrays.asList(getOrganizationController().getDirectGroupIdsOfUser(idUser));
       List<String> manageableGroupIds = getUserManageableGroupIds();

@@ -49,11 +49,11 @@
   <st_component id="17" componentname="kmax"/>
   <st_component id="18" componentname="formManager"/>
   <st_component id="19" componentname="infoLetter"/>
-  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A"/>
-  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="3" domainid="0" specificid="3" firstname="Marge" lastname="Simpson" email="" login="msimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="4" domainid="1" specificid="f6632e21-9990-4393-9d65-4bdfebf7163f" firstname="Lisa" lastname="Simpson" email="lisa@simpson.com" login="lsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
+  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="3" domainid="0" specificid="3" firstname="Marge" lastname="Simpson" email="" login="msimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="4" domainid="1" specificid="f6632e21-9990-4393-9d65-4bdfebf7163f" firstname="Lisa" lastname="Simpson" email="lisa@simpson.com" login="lsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_group id="1" domainid="0" specificid="1" name="Admnistrateurs" description="administrateurs de la plateforme" synchrorule=""/>
   <st_group id="2" domainid="0" specificid="2" name="Les Simpsons" description="La famille Simpson" synchrorule=""/>
   <st_group_user_rel groupid="1" userid="0"/>

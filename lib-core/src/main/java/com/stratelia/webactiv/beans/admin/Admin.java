@@ -54,6 +54,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
@@ -5332,11 +5333,11 @@ public final class Admin {
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Synchronisation du groupe '" + group.
             getName() + "' - Regle de synchronisation = \"" + rule + "\"", null);
-        String[] actualUserIds = group.getUserIds();
+        List<String> actualUserIds = Arrays.asList(group.getUserIds());
         domainDriverManager.startTransaction(false);
 
         // Getting users according to rule
-        List<String> userIds = null;
+        List<String> userIds = new ArrayList<String>();
 
         if (rule.toLowerCase().startsWith("ds_")) {
           if (rule.toLowerCase().startsWith("ds_accesslevel")) {
@@ -5349,7 +5350,6 @@ public final class Admin {
           String propertyName = rule.substring(rule.indexOf("_") + 1, rule.indexOf("=")).trim();
           String propertyValue = rule.substring(rule.indexOf("=") + 1).trim();
 
-          userIds = new ArrayList<String>();
           if (domainId == null) {
             // All users by extra information
             Domain[] domains = getAllDomains();
@@ -5358,7 +5358,7 @@ public final class Admin {
                   getUserIdsBySpecificProperty(domain.getId(), propertyName, propertyValue));
             }
           } else {
-            userIds.addAll(getUserIdsBySpecificProperty(domainId, propertyName, propertyValue));
+            userIds = getUserIdsBySpecificProperty(domainId, propertyName, propertyValue);
           }
         } else {
           SilverTrace.error("admin", "Admin.synchronizeGroup", "admin.MSG_ERR_SYNCHRONIZE_GROUP",
@@ -5367,18 +5367,13 @@ public final class Admin {
 
         // Add users
         List<String> newUsers = new ArrayList<String>();
-        for (int i = 0; userIds != null && i < userIds.size(); i++) {
-          String userId = userIds.get(i);
-          boolean bFound = false;
-          for (int j = 0; j < actualUserIds.length && !bFound; j++) {
-            if (actualUserIds[j].equals(userId)) {
-              bFound = true;
+        if (userIds != null) {
+          for (String userId : userIds) {
+            if (!actualUserIds.contains(userId)) {
+              newUsers.add(userId);
+              SynchroGroupReport
+                  .info("admin.synchronizeGroup", "Ajout de l'utilisateur " + userId, null);
             }
-          }
-          if (!bFound) {
-            newUsers.add(userId);
-            SynchroGroupReport.info("admin.synchronizeGroup", "Ajout de l'utilisateur " + userId,
-                null);
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup",
@@ -5392,16 +5387,11 @@ public final class Admin {
         // Remove users
         List<String> removedUsers = new ArrayList<String>();
         for (String actualUserId : actualUserIds) {
-          boolean bFound = false;
-          for (int j = 0; userIds != null && j < userIds.size() && !bFound; j++) {
-            if (userIds.get(j).equals(actualUserId)) {
-              bFound = true;
-            }
-          }
-          if (!bFound) {
+          if (userIds == null || !userIds.contains(actualUserId)) {
             removedUsers.add(actualUserId);
-            SynchroGroupReport.info("admin.synchronizeGroup", "Suppression de l'utilisateur "
-                + actualUserId, null);
+            SynchroGroupReport
+                .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId,
+                    null);
           }
         }
         SynchroGroupReport.warn("admin.synchronizeGroup", "Suppression de " + removedUsers.size()
@@ -5466,10 +5456,10 @@ public final class Admin {
       // All users by access level
       if (domainId == null) {
         userIds = Arrays.asList(domainDriverManager.getOrganization().user.getUserIdsByAccessLevel(
-            accessLevel));
+           UserAccessLevel.fromCode(accessLevel)));
       } else {
         userIds = Arrays.asList(userManager.getUserIdsOfDomainAndAccessLevel(domainDriverManager,
-            domainId, accessLevel));
+            domainId, UserAccessLevel.fromCode(accessLevel)));
       }
     }
     return userIds;

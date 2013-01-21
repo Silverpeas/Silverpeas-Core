@@ -25,6 +25,7 @@
 --%>
 
 <%@page import="com.silverpeas.session.SessionInfo"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkSilverStatistics.jsp" %>
@@ -34,7 +35,7 @@
 ArrayLine arrayLine = null;
 Iterator   iter = null;
 Collection cResultData = (Collection)request.getAttribute("ConnectedUsersList");
-String userProfile = (String)request.getAttribute("UserProfile");
+UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 %>
 
@@ -90,7 +91,7 @@ function DoIdle()
 	operationPane.addOperation(resources.getIcon("silverStatisticsPeas.icoNotifyAll"),resources.getString("silverStatisticsPeas.notifyAllUser"),"javascript:openSPWindow('DisplayNotifyAllSessions','DisplayNotifyAllSessions')");
 
     out.println(window.printBefore());
-    if (userProfile.equals("A"))
+    if (UserAccessLevel.ADMINISTRATOR.equals(userProfile))
     {
 		out.println(tabbedPane.print());
     }

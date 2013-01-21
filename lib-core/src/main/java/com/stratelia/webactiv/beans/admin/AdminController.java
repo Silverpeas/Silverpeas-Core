@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -204,7 +205,7 @@ public class AdminController implements java.io.Serializable {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       UserDetail user = getAdminService().getUserDetail(sUserId);
-      if (user.getAccessLevel().equals("A") || sUserId.equals("0")) {
+      if (user.isAccessAdmin() || sUserId.equals("0")) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
         return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(sUserId));

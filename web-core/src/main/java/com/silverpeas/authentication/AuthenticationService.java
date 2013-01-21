@@ -88,7 +88,7 @@ public class AuthenticationService {
             getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage(),
             StringUtil.getBooleanValue(allowPasswordChange));
       }
-      if (!controller.getCurrentUserDetail().isAccessRemoved()) {
+      if (!controller.getCurrentUserDetail().isDeletedState()) {
         // Init session management and session object !!! This method reset theSession Object
         if (!UserDetail.isAnonymousUser(controller.getUserId())) {
           SessionManagementFactory factory = SessionManagementFactory.getFactory();

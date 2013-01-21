@@ -31,6 +31,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,19 +76,22 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    */
   public SpaceUserRoleRow getSpaceUserRole(int spaceId, String roleName, int inherited) throws
       AdminPersistenceException {
-    List<SpaceUserRoleRow> spaceUserRoles = getRows(SELECT_SPACEUSERROLE_BY_ROLENAME,
-        new int[] { spaceId, inherited }, new String[] { roleName });
+    List<Object> params = new ArrayList<Object>(3);
+    params.add(spaceId);
+    params.add(inherited);
+    params.add(roleName);
+    List<SpaceUserRoleRow> spaceUserRoles = getRows(SELECT_SPACEUSERROLE_BY_ROLENAME, params);
 
     if (spaceUserRoles.isEmpty()) {
       return null;
     } else if (spaceUserRoles.size() == 1) {
       return spaceUserRoles.get(0);
-    } else {
-      throw new AdminPersistenceException(
-          "SpaceUserRoleTable.getSpaceUserRole", SilverpeasException.ERROR,
-          "admin.EX_ERR_SPACEUSERROLE_NAME_SPACEID_FOUND_TWICE", "space id : '"
-          + spaceId + "', space userrole name: '" + roleName + "'");
     }
+
+    throw new AdminPersistenceException(
+        "SpaceUserRoleTable.getSpaceUserRole", SilverpeasException.ERROR,
+        "admin.EX_ERR_SPACEUSERROLE_NAME_SPACEID_FOUND_TWICE", "space id : '"
+        + spaceId + "', space userrole name: '" + roleName + "'");
   }
 
   static final private String SELECT_SPACEUSERROLE_BY_ROLENAME = "select "
@@ -186,6 +190,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
       + " ST_SpaceUserRole(id,spaceId,name,RoleName,description,isInherited)"
       + " values     (? 	,?       ,?   ,?       ,?		   ,?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, SpaceUserRoleRow row)
       throws SQLException {
     SilverTrace.debug("admin", "SpaceUserRoleTable.prepareInsert",
@@ -247,10 +252,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     int[] ids = new int[] { userId, spaceUserRoleId };
     Integer result = getInteger(SELECT_COUNT_SPACEUSERROLE_USER_REL, ids);
 
-    if (result == null) {
-      return false;
-    }
-    return result >= 1;
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_SPACEUSERROLE_USER_REL = "select count(*) from "
@@ -334,11 +336,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     int[] ids = new int[] { groupId, spaceUserRoleId };
     Integer result = getInteger(SELECT_COUNT_SPACEUSERROLE_GROUP_REL, ids);
 
-    if (result == null) {
-      return false;
-    } else {
-      return result >= 1;
-    }
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_SPACEUSERROLE_GROUP_REL =

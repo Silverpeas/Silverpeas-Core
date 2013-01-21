@@ -220,9 +220,7 @@ public class LoginPasswordAuthentication {
       authenticationServer.authenticate(login, password, request);
 
       // Generate a random key and store it in database
-      String key = getAuthenticationKey(login, domainId);
-
-      return key;
+      return getAuthenticationKey(login, domainId);
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication",
           "LoginPasswordAuthentication.authenticate()",

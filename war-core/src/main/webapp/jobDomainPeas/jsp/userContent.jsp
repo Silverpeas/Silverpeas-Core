@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -105,16 +106,22 @@ out.println(board.printBefore());
 		<td class="textePetitBold"><%=resource.getString("JDP.userRights") %> :</td>
 		<td align=left valign="baseline">
 			<%
-                if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("A")))
-                    out.print(resource.getString("GML.administrateur"));
-                else if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("G")))
-                    out.print(resource.getString("GML.guest"));
-                else if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("K")))
-                    out.print(resource.getString("GML.kmmanager"));
-                else if ((userObject.getAccessLevel() != null) && (userObject.getAccessLevel().equalsIgnoreCase("D")))
-                    out.print(resource.getString("GML.domainManager"));
-                else
-                    out.print(resource.getString("GML.user"));
+        switch (userObject.getAccessLevel()) {
+          case ADMINISTRATOR:
+            out.print(resource.getString("GML.administrateur"));
+            break;
+          case GUEST:
+            out.print(resource.getString("GML.guest"));
+            break;
+          case PDC_MANAGER:
+            out.print(resource.getString("GML.kmmanager"));
+            break;
+          case DOMAIN_ADMINISTRATOR:
+            out.print(resource.getString("GML.domainManager"));
+            break;
+          default:
+            out.print(resource.getString("GML.user"));
+        }
             %>
 		</td>
 	</tr>

@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -53,7 +54,7 @@
 	String spaceId = (String) request.getAttribute("SpaceId");
 	Vector vPath = (Vector) request.getAttribute("Path");
   Vector vStatsData = (Vector)request.getAttribute("StatsData");
-  String userProfile = (String) request.getAttribute("UserProfile");
+  UserAccessLevel userProfile = (UserAccessLevel) request.getAttribute("UserProfile");
 %>
 
 <html>
@@ -122,7 +123,7 @@
 		while ( i.hasNext() )
 		{
 			String[] pathItem = (String[]) i.next();
-			if(userProfile.equals("A")) {//Administrateur
+			if(UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {//Administrateur
 				path += separator + "<a href=\"ValidateViewAccess?MonthBegin="+pageContext.getAttribute("monthBegin")+"&YearBegin="+pageContext.getAttribute("yearBegin")+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+( (pathItem[0]==null) ? "" : ("&SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {//manager d'espaces
 				path += separator + pathItem[1];
@@ -183,8 +184,8 @@
         <td nowrap colspan="2"> 
           <input type="text" name="FilterLibGroup" value="<%=filterLibGroup%>" size="25" disabled>
 		  <input type="hidden" name="FilterIdGroup" value="<%=filterIdGroup%>">
-          <a href=javascript:openSPWindow('AccessCallUserPanelGroup','')><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessGroupPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a> 
-          <a href=javascript:clearFilterGroup()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
+          <a href="javascript:openSPWindow('AccessCallUserPanelGroup','')"><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessGroupPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a>
+          <a href="javascript:clearFilterGroup()"><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a>
         </td>
       </tr>
       <tr> 
@@ -192,8 +193,8 @@
         <td nowrap colspan="2"> 
           <input type="text" name="FilterLibUser" value="<%=filterLibUser%>" size="25" disabled>
 		  <input type="hidden" name="FilterIdUser" value="<%=filterIdUser%>">
-          <a href=javascript:openSPWindow('AccessCallUserPanelUser','')><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessUserPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a> 
-          <a href=javascript:clearFilterUser()><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a> 
+          <a href="javascript:openSPWindow('AccessCallUserPanelUser','')"><img src="<%=resources.getIcon("silverStatisticsPeas.icoAccessUserPanelPeas")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.openUserPanelPeas")%>"></a>
+          <a href="javascript:clearFilterUser()"><img src="<%=resources.getIcon("silverStatisticsPeas.icoClearGroupUser")%>" align="absmiddle" alt="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>" border=0 title="<%=resources.getString("silverStatisticsPeas.ClearUserPanelPeas")%>"></a>
         </td>
       </tr>
     </table>

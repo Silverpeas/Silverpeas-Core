@@ -36,7 +36,7 @@
   <domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs"
     passwordvalid="Y" />
 
-  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 
   <st_space id="3" name="Espace de Tests" description="" createdby="0" firstpagetype="1" firstpageextraparam="indicateurs16"
     ordernum="2" createtime="1194276699849" updatetime="1205750893265" spacestatus="[NULL]" domainfatherid="[NULL]"
@@ -104,15 +104,15 @@
     value="no" />
 
   <st_user id="8" domainid="0" specificid="12" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.com"
-    login="hsimpson" accesslevel="U" />
+    login="hsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="7" domainid="0" specificid="11" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.com"
-    login="bsimpson" accesslevel="U" />
+    login="bsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="9" domainid="0" specificid="13" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.com"
-    login="msimpson" accesslevel="U" />
+    login="msimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="10" domainid="0" specificid="14" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.com"
-    login="lsimpson" accesslevel="U" />
+    login="lsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="11" domainid="0" specificid="15" firstname="Maggie" lastname="Simpson" email="maggie.simpson@silverpeas.com"
-    login="bbsimpson" accesslevel="U" />
+    login="bbsimpson" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 
   <st_notifdefaultaddress id="1" userid="7" notifaddressid="-12" />
   <st_notifdefaultaddress id="2" userid="8" notifaddressid="-12" />

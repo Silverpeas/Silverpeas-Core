@@ -29,11 +29,10 @@ import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.Schema;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 /**
 * A Table object manages a table in a database.
@@ -50,6 +49,13 @@ public abstract class Table<T> {
       return "";
     }
     return sn;
+  }
+
+  static Timestamp getSqlTimestamp(Date date) {
+    if (date == null) {
+      return null;
+    }
+    return new Timestamp(date.getTime());
   }
 
   /**
@@ -94,7 +100,7 @@ public abstract class Table<T> {
 * @throws SQLException
 */
   public int getNextId() throws SQLException {
-    int nextId = 0;
+    int nextId;
     try {
       nextId = com.stratelia.webactiv.util.DBUtil.getNextId(tableName, "id");
     } catch (Exception e) {
@@ -190,316 +196,189 @@ public abstract class Table<T> {
   }
 
   /**
-* Returns the ids described by the given no parameters query.
-* @param query
-* @return
-* @throws AdminPersistenceException
-*/
+   * Returns the ids described by the given no parameters query.
+   * @param query
+   * @return
+   * @throws AdminPersistenceException
+   */
   protected synchronized List<String> getIds(String query) throws AdminPersistenceException {
+    return getIdsUnsynchronized(query, null);
+  }
+
+  /**
+   * Returns the ids described by the given query with one id parameter.
+   * @param query
+   * @param id
+   * @return
+   * @throws AdminPersistenceException
+   */
+  protected synchronized List<String> getIds(String query, int id)
+      throws AdminPersistenceException {
+    return getIdsUnsynchronized(query, Collections.singletonList(id));
+  }
+
+  /**
+   * Returns the rows described by the given query with parameters.
+   * Handled Types :
+   * - Integer
+   * - Long
+   * - String
+   * - Date (util)
+   * - Date (sql)
+   * - Timestamp
+   * @param query
+   * @param params
+   * @return
+   * @throws AdminPersistenceException
+   */
+  protected synchronized List<String> getIds(String query, List<?> params)
+      throws AdminPersistenceException {
+    return getIdsUnsynchronized(query, params);
+  }
+
+  /**
+   * Returns the rows described by the given query with parameters.
+   * @param query
+   * @param params
+   * @return
+   * @throws AdminPersistenceException
+   */
+  private List<String> getIdsUnsynchronized(String query, List<?> params)
+      throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY", query);
+      logQuery("getIds", query, params);
       select = schema.getStatement(query);
+      performPrepareStatementParams(select, params);
       rs = select.executeQuery();
       return getIds(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
   }
 
   /**
-* Returns the ids described by the given query with one id parameter.
-* @param query
-* @param id
-* @return
-* @throws AdminPersistenceException
-*/
-  protected synchronized List<String> getIds(String query, int id) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY", query + " id: " + id);
-      select = schema.getStatement(query);
-      select.setInt(1, id);
-      rs = select.executeQuery();
-      return getIds(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the ids described by the given query with id parameters.
-* @param query
-* @param ids
-* @return
-* @throws AdminPersistenceException
-*/
-  protected synchronized List<String> getIds(String query, int[] ids) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + " ids: " + Arrays.
-              toString(ids));
-      select = schema.getStatement(query);
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      rs = select.executeQuery();
-      return getIds(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the rows described by the given query with id and String parameters.
-* @param query
-* @param ids
-* @param params
-* @return
-* @throws AdminPersistenceException
-*/
-  protected synchronized List<String> getIds(String query, int[] ids, String[] params) throws
-          AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getIds", "root.MSG_QUERY",
-              query + " id[]: " + Arrays.toString(ids) + " params[]: " + Arrays.toString(params));
-      select = schema.getStatement(query);
-      int i, j;
-      for (i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      for (j = 0; j < params.length; j++) {
-        select.setString(i + j + 1, params[j]);
-      }
-      rs = select.executeQuery();
-      return getIds(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getIds", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the rows described by the given no parameters query.
-* @param query
-* @return
-* @throws AdminPersistenceException
-*/
+   * Returns the rows described by the given no parameters query.
+   * @param query
+   * @return
+   * @throws AdminPersistenceException
+   */
   protected synchronized List<T> getRows(String query) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query);
-      select = schema.getStatement(query);
-      rs = select.executeQuery();
-      return getRows(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
+    return getRowsUnsynchronized(query, null);
   }
 
   /**
-* Returns the rows described by the given query with one id parameter.
-* @param query
-* @param id
-* @return
-* @throws AdminPersistenceException
-*/
+   * Returns the rows described by the given query with one id parameter.
+   * @param query
+   * @param id
+   * @return
+   * @throws AdminPersistenceException
+   */
   protected synchronized List<T> getRows(String query, int id) throws AdminPersistenceException {
+    return getRowsUnsynchronized(query, Collections.singletonList(id));
+  }
+
+  /**
+   * Returns the rows described by the given query with parameters.
+   * Handled Types :
+   * - Integer
+   * - Long
+   * - String
+   * - Date (util)
+   * - Date (sql)
+   * - Timestamp
+   * @param query
+   * @param params
+   * @return
+   * @throws AdminPersistenceException
+   */
+  protected synchronized List<T> getRows(String query, List<?> params)
+      throws AdminPersistenceException {
+    return getRowsUnsynchronized(query, params);
+  }
+
+  /**
+   * Returns the rows described by the given query with parameters.
+   * @param query
+   * @param params
+   * @return
+   * @throws AdminPersistenceException
+   */
+  private List<T> getRowsUnsynchronized(String query, List<?> params)
+      throws AdminPersistenceException {
     ResultSet rs = null;
     PreparedStatement select = null;
     try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + " id: " + id);
+      logQuery("getRows", query, params);
       select = schema.getStatement(query);
-      select.setInt(1, id);
+      performPrepareStatementParams(select, params);
       rs = select.executeQuery();
       return getRows(rs);
     } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
   }
 
   /**
-* Returns the rows described by the given query with id parameters.
-* @param query
-* @param ids
-* @return
-* @throws AdminPersistenceException
-*/
-  protected synchronized List<T> getRows(String query, int[] ids) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + " id[]: " + Arrays.
-              toString(ids));
-      select = schema.getStatement(query);
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
+   * Centralization of log writing.
+   * @param fromMethodName
+   * @param query
+   * @param params
+   */
+  private void logQuery(String fromMethodName, String query, List<?> params) {
+    StringBuilder message = new StringBuilder(query);
+    if (params != null && !params.isEmpty()) {
+      message.append(" params[]: ");
+      message.append(Arrays.toString(params.toArray()));
+    }
+    SilverTrace.debug("admin", "Table." + fromMethodName, "root.MSG_QUERY", message.toString());
+  }
+
+  /**
+   * Centralization of PreparedStatement parameter setting.
+   * @param ps
+   * @param params
+   * @throws SQLException
+   */
+  protected void performPrepareStatementParams(PreparedStatement ps, List<?> params)
+      throws SQLException {
+    int i = 1;
+    if (params != null) {
+      for (Object param : params) {
+        if (param instanceof Integer) {
+          ps.setInt(i++, (Integer) param);
+        } else if (param instanceof String) {
+          ps.setString(i++, (String) param);
+        } else if (param instanceof Long) {
+          ps.setLong(i++, (Long) param);
+        } else if (param instanceof java.sql.Date) {
+          ps.setDate(i++, (java.sql.Date) param);
+        } else if (param instanceof Timestamp) {
+          ps.setTimestamp(i++, (Timestamp) param);
+        } else if (param instanceof Date) {
+          ps.setDate(i++, new java.sql.Date(((Date) param).getTime()));
+        }
       }
-      rs = select.executeQuery();
-      return getRows(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
   /**
-* Returns the rows described by the given query and String parameters.
-* @param query
-* @param params
-* @return
-* @throws AdminPersistenceException
-*/
-  protected List<T> getRows(String query, String[] params) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-
-    try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + " params: " + Arrays.
-              toString(params));
-      select = schema.getStatement(query);
-      for (int i = 0; i < params.length; i++) {
-        select.setString(i + 1, params[i]);
-      }
-      rs = select.executeQuery();
-      return getRows(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getRows",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the rows described by the given query with id and String parameters.
-* @param query
-* @param ids
-* @param params
-* @return
-* @throws AdminPersistenceException
-*/
-  protected List<T> getRows(String query, int[] ids, String[] params)
-          throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-
-    try {
-      SilverTrace.debug("admin", "Table.getRows", "root.MSG_QUERY", query + " id[]: " + Arrays.
-              toString(ids) + " params[]: " + Arrays.toString(params));
-      select = schema.getStatement(query);
-      int i, j;
-
-      for (i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      for (j = 0; j < params.length; j++) {
-        select.setString(i + j + 1, params[j]);
-      }
-      rs = select.executeQuery();
-      return getRows(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getRows", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn) throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query);
-      select = schema.getStatement(query);
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param id
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause, int id) throws
-          AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " id: " + id);
-      select = schema.getStatement(query);
-      select.setInt(1, id);
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param param
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause, String param)
-          throws AdminPersistenceException {
+   * Returns the nb of rows in the given table agregated on the given column
+   * @param tableName
+   * @param whereClause
+   * @param param
+   * @return
+   * @throws AdminPersistenceException
+   */
+  protected int getCount(String tableName, String whereClause, String param)
+      throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
@@ -513,35 +392,34 @@ public abstract class Table<T> {
       }
       return 0;
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", e);
     } catch (Exception e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
   }
 
   /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param id
-* @param param
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause, int id,
-          String param) throws AdminPersistenceException {
+   * Returns the nb of rows in the given table agregated on the given column
+   * @param tableName
+   * @param whereClause
+   * @param id
+   * @param param
+   * @return
+   * @throws AdminPersistenceException
+   */
+  protected int getCount(String tableName, String whereClause, int id, String param)
+      throws AdminPersistenceException {
     ResultSet rs = null;
     String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
     PreparedStatement select = null;
 
     try {
       SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " id: " + Integer.
-              toString(id) + " param: " + param);
+          toString(id) + " param: " + param);
       select = schema.getStatement(query);
       select.setInt(1, id);
       select.setString(2, param);
@@ -551,141 +429,33 @@ public abstract class Table<T> {
       }
       return 0;
     } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } catch (Exception e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param ids
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause, int[] ids)
-          throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " id[]: " + Arrays.
-              toString(ids));
-      select = schema.getStatement(query);
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param params
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause,
-          String[] params) throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY",
-              query + " params[]: " + Arrays.toString(params));
-      select = schema.getStatement(query);
-      for (int i = 0; i < params.length; i++) {
-        select.setString(i + 1, params[i]);
-      }
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException("Table.getCount",
-              SilverpeasException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the nb of rows in the given table agregated on the given column
-* @param tableName
-* @param agregateColumn
-* @param whereClause
-* @param ids
-* @param params
-* @return
-* @throws AdminPersistenceException
-*/
-  protected int getCount(String tableName, String agregateColumn, String whereClause, int[] ids,
-          String[] params) throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-    try {
-      SilverTrace.debug("admin", "Table.getCount", "root.MSG_QUERY", query + " id[]: " + Arrays.
-              toString(ids) + " params[]: " + Arrays.toString(params));
-      select = schema.getStatement(query);
-      int i, j;
-      for (i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      for (j = 0; j < params.length; j++) {
-        select.setString(i + j + 1, params[j]);
-      }
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-
-    } catch (SQLException e) {
       throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
-              "root.EX_SQL_QUERY_FAILED", e);
+          "root.EX_SQL_QUERY_FAILED", e);
+    } catch (Exception e) {
+      throw new AdminPersistenceException("Table.getCount", SilverpeasException.ERROR,
+          "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       DBUtil.close(rs, select);
     }
   }
 
   /**
-* * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
-* matchValues list of values. For each matchColumn with a non null matchValue is added a
-* criterium : where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
-* caller : so we can choose and do queries as "login like 'exactlogin'" and queries as
-* "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
-* returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
-* @param returnedColumns
-* @param matchColumns
-* @param matchValues
-* @return
-* @throws AdminPersistenceException
-*/
+   * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
+   * matchValues list of values. For each matchColumn with a non null matchValue is added a
+   * criterium : where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
+   * caller : so we can choose and do queries as "login like 'exactlogin'" and queries as
+   * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
+   * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
+   * @param returnedColumns
+   * @param matchColumns
+   * @param matchValues
+   * @return
+   * @throws AdminPersistenceException
+   */
   protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
           String[] matchValues) throws AdminPersistenceException {
     String query = "select " + returnedColumns + " from " + tableName;
-    ArrayList<String> notNullValues = new ArrayList<String>();
+    List<String> notNullValues = new ArrayList<String>();
     String sep = " where ";
     for (int i = 0; i < matchColumns.length; i++) {
       if (matchValues[i] != null) {
@@ -694,7 +464,7 @@ public abstract class Table<T> {
         notNullValues.add(matchValues[i]);
       }
     }
-    return getRows(query, notNullValues.toArray(new String[notNullValues.size()]));
+    return getRows(query, notNullValues);
   }
 
   /**
@@ -861,36 +631,50 @@ public abstract class Table<T> {
   private Schema schema = null;
   private String tableName = null;
 
-  protected boolean addParamToQuery(Collection<String> theVect, StringBuilder theQuery, String value,
+  protected boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery, String value,
           String column, boolean concatAndOr, String andOr) {
-    boolean valret = concatAndOr;
     if ((value != null) && (value.length() > 0)) {
-      if (concatAndOr) {
-        theQuery.append(andOr);
-      } else {
-        theQuery.append(" where (");
-        valret = true;
-      }
-      theQuery.append("LOWER(").append(column).append(")" + " LIKE LOWER(?)");
-      theVect.add(value);
+      return addParamToQuery(theVect, theQuery, (Object) value, column, concatAndOr, andOr);
     }
-    return valret;
+    return concatAndOr;
   }
 
-  protected boolean addIdToQuery(Collection<Integer> theVect, StringBuilder theQuery, int value,
-          String column, boolean concatAndOr, String andOr) {
-    boolean valret = concatAndOr;
-
-    if (value != -2) {
-      if (concatAndOr) {
-        theQuery.append(andOr);
-      } else {
-        theQuery.append(" where (");
-        valret = true;
-      }
-      theQuery.append(column).append(" = ?");
-      theVect.add(value);
+  protected boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery,
+      Timestamp value, String column, boolean concatAndOr, String andOr) {
+    if (value != null) {
+      return addParamToQuery(theVect, theQuery, (Object) value, column, concatAndOr, andOr);
     }
+    return concatAndOr;
+  }
+
+  protected boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery, int value,
+      String column, boolean concatAndOr, String andOr) {
+    return addParamToQuery(theVect, theQuery, (Object) value, column, concatAndOr, andOr);
+  }
+
+  protected boolean addIdToQuery(Collection<Object> theVect, StringBuilder theQuery, int value,
+          String column, boolean concatAndOr, String andOr) {
+    if (value != -2) {
+      return addParamToQuery(theVect, theQuery, value, column, concatAndOr, andOr);
+    }
+    return concatAndOr;
+  }
+
+  private boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery, Object value,
+      String column, boolean concatAndOr, String andOr) {
+    boolean valret = concatAndOr;
+    if (valret) {
+      theQuery.append(andOr);
+    } else {
+      theQuery.append(" where (");
+      valret = true;
+    }
+    if (value instanceof String) {
+      theQuery.append("LOWER(").append(column).append(")" + " LIKE LOWER(?)");
+    } else {
+      theQuery.append(column).append(" = ?");
+    }
+    theVect.add(value);
     return valret;
   }
 }
