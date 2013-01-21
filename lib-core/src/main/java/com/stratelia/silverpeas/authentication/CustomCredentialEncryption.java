@@ -26,15 +26,18 @@ package com.stratelia.silverpeas.authentication;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class AuthenticationEncrypt implements EncryptionInterface {
-  public AuthenticationEncrypt() {
+/**
+ * Custom encryption algorithm of the user credentials before storing them in cookies.
+ */
+public class CustomCredentialEncryption implements CredentialEncryption {
+  public CustomCredentialEncryption() {
   }
 
   /**
    * Simple encode for cookie value
    */
   public String encode(String stringToEncode) {
-    SilverTrace.info("authentication", "AuthenticationEncrypt.encode()",
+    SilverTrace.info("authentication", "CustomCredentialEncryption.encode()",
         "root.MSG_PARAM_ENTER_METHOD", "stringToEncode=" + stringToEncode);
     StringBuilder hashString = new StringBuilder();
     char[] uniqueKey = stringToEncode.toCharArray();
@@ -44,17 +47,17 @@ public class AuthenticationEncrypt implements EncryptionInterface {
       hashString.append(lg).append(carInt);
     }
     hashString.reverse();
-    SilverTrace.info("authentication", "AuthenticationEncrypt.encode()",
+    SilverTrace.info("authentication", "CustomCredentialEncryption.encode()",
         "root.MSG_PARAM_EXIT_METHOD", "encodedString=" + hashString.toString());
     return hashString.toString();
   }
 
   /**
    * Simple decode for cookie value
-   * @param encodedText : la chaine à décoder
+   * @param encodedText : the text to decode.
    */
   public String decode(String encodedText) {
-    SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
+    SilverTrace.info("authentication", "CustomCredentialEncryption.decode()",
         "root.MSG_PARAM_ENTER_METHOD", "encodedText=" + encodedText);
     int pos = 0;
     String reverseEncodedText = new StringBuffer(encodedText).reverse()
@@ -66,19 +69,19 @@ public class AuthenticationEncrypt implements EncryptionInterface {
       pos = pos + lg;
       hashString.append((char) (Integer.parseInt(car) / 3));
     }
-    SilverTrace.info("authentication", "AuthenticationEncrypt.decode()",
+    SilverTrace.info("authentication", "CustomCredentialEncryption.decode()",
         "root.MSG_PARAM_EXIT_METHOD", "decodedString=" + hashString.toString());
     return hashString.toString();
   }
 
   /**
-   * XOR Decrypt for authent param values
+   * XOR Decrypt for credential parameters (login and password)
    * @param str : String to decode
    * @param key : key for decoding
    * @param extraCrypt : add simple encode (see decode(String))
    */
   public String decode(String str, String key, boolean extraCrypt) {
-    // SilverTrace.info("authentication", "AuthenticationEncrypt.decode1()",
+    // SilverTrace.info("authentication", "CustomCredentialEncryption.decode1()",
     // "root.MSG_PARAM_ENTER_VALUE", "str à décoder="+str+" clé="+key);
     String asciiChar_string = "";
     for (int i = 0; i < key.length(); i++) {

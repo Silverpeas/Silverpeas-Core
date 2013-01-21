@@ -30,11 +30,11 @@ import com.stratelia.silverpeas.authentication.password.ForgottenPasswordExcepti
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 /**
  * @author ehugonnet
@@ -56,11 +56,11 @@ public class ForgotPasswordHandler extends FunctionHandler {
       // Login incorrect.
       request.setAttribute("login", login);
 
-      Map<String, String> domains = lpAuth.getAllDomains();
+      List<Domain> domains = lpAuth.getAllDomains();
       String domain = "";
-      for (Entry<String, String> entry : domains.entrySet()) {
-        if (entry.getKey().equals(domainId)) {
-          domain = entry.getValue();
+      for (Domain aDomain: domains) {
+        if (aDomain.getId().equals(domainId)) {
+          domain = aDomain.getName();
         }
       }
       request.setAttribute("domain", domain);

@@ -86,7 +86,7 @@ public class UserPriviledgeValidation {
    * Validates the authentication of the user at the origin of a web request.
    *
    * The validation checks first the user is already authenticated and in that case its
-   * authenticated session is always valid. Otherwise it attempt to authenticate the user by using
+   * authenticated session is always valid. Otherwise it attempt to openSession the user by using
    * its credentials passed through the request (as an HTTP header). Once the authentication
    * succeed, the identification of the user is done and detail about it can then be got. A runtime
    * exception is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The

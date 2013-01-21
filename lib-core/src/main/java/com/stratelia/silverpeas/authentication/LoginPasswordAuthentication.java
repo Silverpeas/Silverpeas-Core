@@ -151,24 +151,12 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Get list of domains
-   * @return hashtable object (keys=domain ids, values=domain name)
-   * @deprecated use getListDomains method instead
+   * Gets all the available user domains. A domain in Silverpeas is a repository of users with its
+   * its own authentication process.
+   * @return a list of user domains.
    */
-  public Hashtable<String, String> getAllDomains() {
-    return m_Domains;
-  }
-
-  /**
-   * Use this method instead of m_Domains Hashtable class attributes
-   * @return a list of domains
-   */
-  public List<Domain> getListDomains() {
+  public List<Domain> getAllDomains() {
     return domains;
-  }
-
-  public List<String> getDomainsIds() {
-    return m_DomainsIds;
   }
 
   static public void initDomains() {

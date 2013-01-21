@@ -154,7 +154,7 @@ public class MainSessionController implements Clipboard {
   }
 
   /** Creates new MainSessionController */
-  /** Return an exception if the user is not authenticate */
+  /** Return an exception if the user is not openSession */
   /**
    * parameter authenticationKey replaced by sUserId
    */

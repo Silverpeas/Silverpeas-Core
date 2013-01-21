@@ -70,9 +70,7 @@ boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
 
 // list of domains
-// Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
-Hashtable domains = lpAuth.getAllDomains();
-List<Domain> listDomains = lpAuth.getListDomains();
+List<Domain> listDomains = lpAuth.getAllDomains();
 pageContext.setAttribute("listDomains", listDomains);
 boolean multipleDomains = listDomains != null && listDomains.size() > 1;
 pageContext.setAttribute("multipleDomains", multipleDomains);
@@ -80,5 +78,4 @@ String submitClass = "submitWithOneDomain";
 if (multipleDomains) {
   submitClass = "submit";
 }
-List<String> domainIds = lpAuth.getDomainsIds();
 %>

@@ -24,7 +24,12 @@
 
 package com.stratelia.silverpeas.authentication;
 
-public interface EncryptionInterface {
+/**
+ * Encryption of the user credentials before recording them into a given storage (cookies, ...)
+ * All encryption algorithms available in Silverpeas to encrypt the user credentials must implement
+ * this interface.
+ */
+public interface CredentialEncryption {
   public String encode(String str);
 
   public String decode(String str);

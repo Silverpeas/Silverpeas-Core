@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.silverpeas.authentication.AuthenticationService;
+import com.silverpeas.authentication.SilverpeasSessionOpenener;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -38,7 +38,7 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class ValidationQuestionHandler extends FunctionHandler {
-  private static final AuthenticationService authenticationService = new AuthenticationService();
+  private static final SilverpeasSessionOpenener sessionOpenener = new SilverpeasSessionOpenener();
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -63,7 +63,7 @@ public class ValidationQuestionHandler extends FunctionHandler {
       if (getGeneral().getBoolean("userLoginForcePasswordChange", false)) {
         return getGeneral().getString("userLoginForcePasswordChangePage");
       }
-      return authenticationService.authenticate(request, key);
+      return sessionOpenener.openSession(request, key);
     } catch (AdminException e) {
       // Error : go back to login page
       SilverTrace.error("peasCore", "validationQuestionHandler.doAction()",

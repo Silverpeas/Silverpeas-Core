@@ -369,7 +369,7 @@ out.println(gef.getLookStyleSheet());
                     // domains are used by 'selectDomain.jsp.inc'
                     // Get a LoginPasswordAuthentication object
                     LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    List<Domain> listDomains = lpAuth.getListDomains();
+                    List<Domain> listDomains = lpAuth.getAllDomains();
                     pageContext.setAttribute("listDomains", listDomains);
                     pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);
                     //------------------------------------------------------------------

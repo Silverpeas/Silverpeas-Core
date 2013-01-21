@@ -26,7 +26,6 @@ package com.silverpeas.authentication;
 
 import com.google.common.collect.Lists;
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.session.SessionManagementFactory;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -53,9 +52,9 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/spring-authentication.xml")
-public class AuthenticationServiceTest {
+public class SilverpeasSessionOpenenerTest {
   
-  public AuthenticationServiceTest() {
+  public SilverpeasSessionOpenenerTest() {
   }
 
   @BeforeClass
@@ -75,14 +74,14 @@ public class AuthenticationServiceTest {
   }
 
   /**
-   * Test of isAnonymousUser method, of class AuthenticationService.
+   * Test of isAnonymousUser method, of class SilverpeasSessionOpenener.
    */
   @Test
   public void testIsAnonymousUser() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
-    AuthenticationService instance = new AuthenticationService();
+    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
     boolean result = instance.isAnonymousUser(request);
     assertThat(result, is(false));
     MainSessionController controller = mock(MainSessionController.class);
@@ -99,10 +98,10 @@ public class AuthenticationServiceTest {
   }
   
   /**
-   * Test of getAuthenticationErrorPageUrl method, of class AuthenticationService.
+   * Test of getErrorPageUrl method, of class SilverpeasSessionOpenener.
    */
   @Test
-  public void testGetAuthenticationErrorPageUrl() {
+  public void testGetErrorPageUrl() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     when(request.isSecure()).thenReturn(false);
     when(request.getScheme()).thenReturn("http");
@@ -113,18 +112,18 @@ public class AuthenticationServiceTest {
     when(request.getSession()).thenReturn(session);
     when(session.getId()).thenReturn("mysessionid");    
     
-    AuthenticationService instance = new AuthenticationService();
+    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
     String url = instance.getAbsoluteUrl(request);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     String sKey = RandomGenerator.getRandomString();
-    String errorUrl = instance.getAuthenticationErrorPageUrl(request, sKey);
+    String errorUrl = instance.getErrorPageUrl(request, sKey);
     assertThat(errorUrl, is("http://www.silverpeas.org:80/silverpeas/Login.jsp"));
   }
 
 
 
   /**
-   * Test of getAbsoluteUrl method, of class AuthenticationService.
+   * Test of getAbsoluteUrl method, of class SilverpeasSessionOpenener.
    */
   @Test
   public void testGetAbsoluteUrl() {    
@@ -133,7 +132,7 @@ public class AuthenticationServiceTest {
     when(request.getScheme()).thenReturn("http");
     when(request.getServerPort()).thenReturn(80);    
     when(request.getServerName()).thenReturn("www.silverpeas.org");
-    AuthenticationService instance = new AuthenticationService();
+    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
     String url = instance.getAbsoluteUrl(request);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     
@@ -147,7 +146,7 @@ public class AuthenticationServiceTest {
   }
 
   /**
-   * Test of unauthenticate method, of class AuthenticationService.
+   * Test of closeSession method, of class SilverpeasSessionOpenener.
    */
   @Test
   public void testUnauthenticate() {
@@ -156,8 +155,8 @@ public class AuthenticationServiceTest {
     when(request.getSession()).thenReturn(session);
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(
             Lists.newArrayList("test1", "test2")));    
-    AuthenticationService instance = new AuthenticationService();
-    instance.unauthenticate(request);
+    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
+    instance.closeSession(request);
     verify(session, times(1)).removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     verify(session, times(1)).removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     verify(session, times(1)).removeAttribute("test1");
