@@ -36,7 +36,9 @@ public class Mail {
     this.date = date;
   }
   public void setDate(Calendar date) {
-    this.date = date.getTime();
+    if (date != null) {
+      this.date = date.getTime();
+    }
   }
   public String getBody() {
     return body;

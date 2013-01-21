@@ -2,16 +2,21 @@ package org.silverpeas.util.mail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
+import org.apache.poi.hsmf.datatypes.Chunk;
 import org.apache.poi.hsmf.datatypes.Chunks;
 import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
@@ -20,10 +25,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MSGExtractor implements MailExtractor {
 
-  MAPIMessage message;
+  private MAPIMessage message;
+  private static final DateFormat DATE_MAIL_FORMAT =
+    new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
   public MSGExtractor(File file) throws Exception {
-    init(new FileInputStream(file));
+    message = new MAPIMessage(file.getPath());
+    message.setReturnNullOnMissingChunk(true);
   }
 
   public MSGExtractor(InputStream file) throws Exception {
@@ -39,7 +47,13 @@ public class MSGExtractor implements MailExtractor {
 
     Mail mail = new Mail();
     try {
-      mail.setDate(message.getMessageDate());
+      Date date = null;
+      if (message.getMessageDate() != null) {
+        date = message.getMessageDate().getTime();
+      } else {
+        date = extractDateOfReception();
+      }
+      mail.setDate(date);
     } catch (ChunkNotFoundException e) {
       SilverTrace.warn("info", "MSGExtractor.getMail()", "", e);
     }
@@ -78,6 +92,21 @@ public class MSGExtractor implements MailExtractor {
     }
     return mail;
   }
+  
+  private Date extractDateOfReception() throws ParseException {
+    String chunkContent;
+    int dateIdx;
+    for (Chunk chunk : message.getMainChunks().getChunks()) {
+      chunkContent = chunk.toString();
+      dateIdx = chunkContent.indexOf("Date: ");
+      if (dateIdx >= 0) {
+        chunkContent = chunkContent.substring(dateIdx + 6, chunkContent.indexOf("\n", dateIdx))
+            .replaceAll("[\r\n]", "");
+        return DATE_MAIL_FORMAT.parse(chunkContent);
+      }
+    }
+    return null;
+  }
 
   @Override
   public List<MailAttachment> getAttachments() throws Exception {
@@ -86,7 +115,7 @@ public class MSGExtractor implements MailExtractor {
     for (AttachmentChunks attachment : attachmentChunks) {
       byte[] data = attachment.attachData.getValue();
       
-      MailAttachment mailAttachment = new MailAttachment(attachment.attachFileName.getValue());
+      MailAttachment mailAttachment = new MailAttachment(attachment.attachLongFileName.getValue());
       mailAttachment.setFile(new ByteArrayInputStream(data));
       
       mailAttachments.add(mailAttachment);
