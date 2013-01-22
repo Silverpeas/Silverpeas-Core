@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -22,33 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.converter.openoffice;
-
-import static com.silverpeas.converter.DocumentFormat.pdf;
-
-import java.io.File;
-
-import javax.inject.Named;
-
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.ToPDFConverter;
-import com.silverpeas.converter.option.FilterOption;
-import com.silverpeas.util.FileUtil;
+package com.silverpeas.converter;
 
 /**
- * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.
- * @author Yohann Chastagnier
+ * A converter of following listed documents into PDF format :
+ * - ODT
+ * - DOC
+ * - RTF
+ * The converter is managed by the IoC container and can be retrieving under the name
+ * 'toHTMLConverter'.
  */
-@Named("toPDFConverter")
-public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToPDFConverter {
+public interface ToHTMLConverter extends DocumentFormatConversion {
 
-  @Override
-  public DocumentFormat[] getSupportedFormats() {
-    return new DocumentFormat[] { pdf };
-  }
-
-  @Override
-  public boolean isDocumentSupported(final File document) {
-    return FileUtil.isOpenOfficeCompatible(document.getName());
-  }
 }
