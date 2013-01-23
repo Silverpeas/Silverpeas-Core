@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * This class performs the authentification using an SQL table
+ * This class performs the authentication using an SQL table
  * @author tleroi
  * @version
  */
@@ -211,7 +211,7 @@ public class AuthenticationSQL extends Authentication {
             SilverpeasException.ERROR,
             "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
-      SilverTrace.info("authentication",
+      SilverTrace.info(module,
           "AuthenticationSQL.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (UtilException ex) {
@@ -273,7 +273,7 @@ public class AuthenticationSQL extends Authentication {
             SilverpeasException.ERROR,
             "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
-      SilverTrace.info("authentication",
+      SilverTrace.info(module,
           "AuthenticationSQL.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (SQLException ex) {

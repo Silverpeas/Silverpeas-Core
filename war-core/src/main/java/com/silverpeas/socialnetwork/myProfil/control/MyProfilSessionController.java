@@ -38,6 +38,7 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.authentication.AuthenticationCredential;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -135,6 +136,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
     UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
 
+    AuthenticationCredential credential = AuthenticationCredential
+        .newWithAsLogin(theModifiedUser.getLogin())
+        .withAsPassword(oldPassword)
+        .withAsDomainId(theModifiedUser.getDomainId());
     if (isUserDomainRW()) {
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
@@ -144,8 +149,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         // In this case, this method checks if oldPassword and actual password match !
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword, theModifiedUser.
-            getDomainId());
+        changePassword(credential, newPassword);
 
         theModifiedUser.setPassword(newPassword);
       }
@@ -158,16 +162,15 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
     } else {
       if (StringUtil.isDefined(newPassword)) {
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword,
-            theModifiedUser.getDomainId());
+        changePassword(credential, newPassword);
       }
     }
   }
 
-  private void changePassword(String login, String oldPassword, String newPassword, String domainId)
+  private void changePassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
-    AuthenticationService auth = new AuthenticationService();
-    auth.changePassword(login, oldPassword, newPassword, domainId);
+    AuthenticationService authenticator = new AuthenticationService();
+    authenticator.changePassword(credential, newPassword);
   }
 
   public UserPreferences getPreferences() {

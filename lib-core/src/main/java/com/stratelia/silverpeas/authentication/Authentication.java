@@ -48,6 +48,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @author mmoquillon
  */
 public abstract class Authentication {
+
+  protected static final String module = "authentication";
+
   protected boolean enabled = true;
 
   public final static String ENC_TYPE_UNIX = "CryptUnix";
@@ -97,7 +100,7 @@ public abstract class Authentication {
    * @throws AuthenticationException if an error occurs while authenticating the user.
    */
   public void authenticate(final AuthenticationCredential credential) throws AuthenticationException {
-    doSecurityOperation(new SecurityOperation("authenticate") {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION) {
       @Override
       public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
         doAuthentication(connection, credential);
@@ -108,29 +111,22 @@ public abstract class Authentication {
   /**
    * Changes the password of the user, authenticated with the specified credential, with the
    * specified new one. The user must be authenticated for doing a such operation.
+   * The specified credential won't be updated by the password change.
    * If the user cannot be authenticated, an exception is thrown, whatever the reason.
    * If the authentication could not be performed because the credentials are invalid
    * (e.g. wrong password), the AuthenticationException code should be set to
    * EXCEPTION_BAD_CREDENTIALS.
-   * @param login user login
-   * @param oldPassword user old password
+   * @param credential the user credential used in an authentication with Silverpeas.
    * @param newPassword user new password
    * @return true if succeeded
    * @throws AuthenticationException if an error occurs while changing the user password.
    */
-  public void changePassword(final String login, final String oldPassword,
-                                final String newPassword) throws AuthenticationException {
-    if ((login == null) || (login.length() <= 0)) {
-      throw new AuthenticationException("AuthenticationServer.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-    }
-
-    doSecurityOperation(new SecurityOperation("changePassword") {
+  public void changePassword(final AuthenticationCredential credential,
+                             final String newPassword) throws AuthenticationException {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_CHANGE) {
       @Override
       public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
-        doChangePassword(connection,
-            AuthenticationCredential.newWithAsLogin(login).withAsPassword(oldPassword),
-            newPassword);
+        doChangePassword(connection, credential, newPassword);
       }
     });
   }
@@ -144,14 +140,8 @@ public abstract class Authentication {
    * @param newPassword the new password
    * @throws AuthenticationException if an error occurs while resetting the user password.
    */
-  public void resetPassword(final String login, final String newPassword)
-      throws AuthenticationException {
-      if ((login == null) || (login.length() == 0)) {
-        throw new AuthenticationException("AuthenticationServer.resetPassword",
-            SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-      }
-
-      doSecurityOperation(new SecurityOperation("resetPassword") {
+  public void resetPassword(final String login, final String newPassword) throws AuthenticationException {
+      doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_RESET) {
         @Override
         public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {
           doResetPassword(connection, login, newPassword);
@@ -185,7 +175,8 @@ public abstract class Authentication {
    * @throws AuthenticationException if no connection was previously opened or if the connection
    * cannot be closed for any reason.
    */
-  abstract protected <T> void closeConnection(AuthenticationConnection<T> connection) throws AuthenticationException;
+  abstract protected <T> void closeConnection(AuthenticationConnection<T> connection)
+      throws AuthenticationException;
 
   /**
    * Does the authentication by using the specified connection with the remote server and with
@@ -195,8 +186,8 @@ public abstract class Authentication {
    * @param <T> the type of the authentication server's connector.
    * @throws AuthenticationException if an error occurs while authenticating the user.
    */
-  abstract protected <T> void doAuthentication(AuthenticationConnection<T> connection, AuthenticationCredential credential)
-        throws AuthenticationException;
+  abstract protected <T> void doAuthentication(AuthenticationConnection<T> connection,
+                                               AuthenticationCredential credential) throws AuthenticationException;
 
   /**
    * Does the password change by using the specified connection with the remote server and with
@@ -252,23 +243,28 @@ public abstract class Authentication {
         }
       } catch (AuthenticationException closeEx) {
         // The exception that could occur in the emergency stop is not interesting.
-        SilverTrace.error("authentication", "Authentication." + op.getName(),
+        SilverTrace.error(module, "Authentication." + op.getName(),
             "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
       }
     }
   }
 
   private abstract class SecurityOperation {
-      private String name;
 
-      public SecurityOperation(String operationName) {
-        this.name = operationName;
-      }
+    public static final String AUTHENTICATION = "authenticate";
+    public static final String PASSWORD_CHANGE = "changePassword";
+    public static final String PASSWORD_RESET = "resetPassword";
 
-      public String getName() {
-        return name;
-      }
+    private String name;
 
-      public abstract <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException;
+    public SecurityOperation(String operationName) {
+      this.name = operationName;
     }
+
+    public String getName() {
+      return name;
+    }
+
+    public abstract <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException;
+  }
 }

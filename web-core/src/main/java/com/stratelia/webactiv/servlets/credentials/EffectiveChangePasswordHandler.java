@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
+import com.stratelia.silverpeas.authentication.AuthenticationCredential;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -37,7 +38,7 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class EffectiveChangePasswordHandler extends FunctionHandler {
-  private static final AuthenticationService auth = new AuthenticationService();
+  private static final AuthenticationService authenticator = new AuthenticationService();
 
   private ForcePasswordChangeHandler forcePasswordChangeHandler = new ForcePasswordChangeHandler();
 
@@ -53,7 +54,11 @@ public class EffectiveChangePasswordHandler extends FunctionHandler {
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
-      auth.changePassword(login, oldPassword, newPassword, domainId);
+      AuthenticationCredential credential = AuthenticationCredential
+          .newWithAsLogin(login)
+          .withAsPassword(oldPassword)
+          .withAsDomainId(domainId);
+      authenticator.changePassword(credential, newPassword);
 
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
           domainId;

@@ -56,6 +56,9 @@ import java.util.*;
  * doing an authentication server that is mapped with the user domain.
  */
 public class AuthenticationService {
+
+  private static final String module = "authentication";
+
   static final protected String m_JDBCUrl;
   static final protected String m_AccessLogin;
   static final protected String m_AccessPasswd;
@@ -157,7 +160,7 @@ public class AuthenticationService {
     try {
       domains = Arrays.asList(AdminReference.getAdminService().getAllDomains());
     } catch (AdminException e) {
-      SilverTrace.error("authentication", "AuthenticationService",
+      SilverTrace.error(module, "AuthenticationService",
           "Problem to retrieve all the domains", e);
       domains = Collections.EMPTY_LIST;
     }
@@ -204,12 +207,12 @@ public class AuthenticationService {
       return null;
     }
 
-    Connection m_Connection = null;
+    Connection connection = null;
     try {
       // Open connection
-      m_Connection = openConnection();
+      connection = openConnection();
 
-      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
+      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
         // Store information about password change capabilities
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
@@ -223,7 +226,7 @@ public class AuthenticationService {
 
       return key;
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication",
+      SilverTrace.error(module,
           "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
           + login, ex);
@@ -247,7 +250,7 @@ public class AuthenticationService {
       }
       return errorCause;
     } finally {
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
   }
 
@@ -268,16 +271,16 @@ public class AuthenticationService {
 
     PreparedStatement prepStmt = null;
     ResultSet resultSet = null;
-    Connection m_Connection = null;
+    Connection connection = null;
     boolean authenticationOK = false;
     try {
       // Open connection
-      m_Connection = openConnection();
+      connection = openConnection();
 
       String query = "SELECT " + m_UserIdColumnName + " FROM "
           + m_UserTableName + " WHERE " + m_UserLoginColumnName + " = ? AND "
           + m_UserDomainColumnName + " = ?";
-      prepStmt = m_Connection.prepareStatement(query);
+      prepStmt = connection.prepareStatement(query);
 
       prepStmt.setString(1, login);
       prepStmt.setInt(2, Integer.parseInt(domainId));
@@ -286,13 +289,13 @@ public class AuthenticationService {
 
       authenticationOK = resultSet.next();
     } catch (Exception ex) {
-      SilverTrace.warn("authentication", "AuthenticationService.authenticate()",
+      SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       String errorCause = "Error_2";
       return errorCause;
     } finally {
       DBUtil.close(resultSet, prepStmt);
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
 
     String key = null;
@@ -302,7 +305,7 @@ public class AuthenticationService {
       try {
         key = getAuthenticationKey(login, domainId);
       } catch (Exception e) {
-        SilverTrace.warn("authentication", "AuthenticationService.authenticate()",
+        SilverTrace.warn(module, "AuthenticationService.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
             login, e);
         String errorCause = "Error_2";
@@ -314,38 +317,41 @@ public class AuthenticationService {
   }
 
   /**
-   * Changes the password
-   *
-   * @param login User login
-   * @param oldPassword User old password
-   * @param newPassword User new password
-   * @param domainId User domain Id
-   * @throws AuthenticationException
+   * Changes the password of the specified user credential with the specified new one.
+   * In order to change the password of a user, the user will be first authenticated.
+   * The specified credential won't be updated by the password change.
+   * @param credential the current authentication credential of the user.
+   * @param newPassword User new password the new password to set.
+   * @throws AuthenticationException if an error occurs while changing the password of the specified
+   * credential.
    */
-  public void changePassword(String login, String oldPassword,
-                             String newPassword, String domainId) throws AuthenticationException {
+  public void changePassword(AuthenticationCredential credential, String newPassword)
+      throws AuthenticationException {
     // Test data coming from calling page
+    String login = credential.getLogin();
+    String oldPassword = credential.getPassword();
+    String domainId = credential.getDomainId();
     if (login == null || oldPassword == null || domainId == null
         || newPassword == null) {
       throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
-    Connection m_Connection = null;
+    Connection connection = null;
     try {
       // Open connection
-      m_Connection = openConnection();
+      connection = openConnection();
 
-      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
+      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
       // Authentication test
-      authenticationServer.changePassword(login, oldPassword, newPassword);
+      authenticationServer.changePassword(credential, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "AuthenticationService.changePassword()",
+      SilverTrace.error(module, "AuthenticationService.changePassword()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       throw ex;
     } finally {
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
   }
 
@@ -379,7 +385,7 @@ public class AuthenticationService {
         + " FROM " + m_DomainTableName + " WHERE " + m_DomainIdColumnName
         + " = " + domainId + "";
 
-    SilverTrace.info("authentication", "AuthenticationService.getAuthenticationServerName()",
+    SilverTrace.info(module, "AuthenticationService.getAuthenticationServerName()",
         "root.MSG_GEN_PARAM_VALUE", "query=" + query);
     try {
       stmt = con.createStatement();
@@ -443,10 +449,10 @@ public class AuthenticationService {
 
       stmt = m_Connection.createStatement();
       stmt.execute(query);
-      SilverTrace.info("authentication", "AuthenticationService.storeAuthenticationKey()",
+      SilverTrace.info(module, "AuthenticationService.storeAuthenticationKey()",
           "root.MSG_GEN_PARAM_VALUE", "query=" + query);
     } catch (SQLException ex) {
-      SilverTrace.error("authentication", "AuthenticationService.storeAuthenticationKey()",
+      SilverTrace.error(module, "AuthenticationService.storeAuthenticationKey()",
           "authentication.EX_WRITE_KEY_ERROR", "User=" + login + " exception=" + ex.getSQLState());
     } finally {
       DBUtil.close(stmt);
@@ -454,9 +460,24 @@ public class AuthenticationService {
     }
   }
 
-  public void resetPassword(String login, String newPassword, String domainId)
+  /**
+   * Resets the specified password of the user behind the specified authentication credential with
+   * the specified one.
+   * The reset operation can only be performed if the password change is allowed by the domain to
+   * which the user belongs. It doesn't require the user to be authenticated but, as consequence,
+   * requires to be run in a privileged mode (only an administrator or the system itself can do
+   * this operation). The privileged mode isn't checked by this method, hence it is the responsibility
+   * of the caller to ensure this.
+   * The specified credential won't be updated by the password reset.
+   * @param credential the authentication credential of the user for which the password has to be reset.
+   * @param newPassword the password with which the credential password will be reset.
+   * @throws AuthenticationException if an error occurs while resetting the credential password.
+   */
+  public void resetPassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
     // Test data coming from calling page
+    String login = credential.getLogin();
+    String domainId = credential.getDomainId();
     if (login == null || domainId == null || newPassword == null) {
       throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
@@ -471,10 +492,10 @@ public class AuthenticationService {
       // Build a AuthenticationServer instance
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
-      // Authentification test
+      // Authentication test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "AuthenticationService.resetPassword()",
+      SilverTrace.error(module, "AuthenticationService.resetPassword()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       throw ex;
     } finally {
@@ -482,22 +503,28 @@ public class AuthenticationService {
     }
   }
 
+  /**
+   * Is the change of a user password is allowed by specified user domain?
+   * @param domainId the unique identifier of the user domain.
+   * @return true if the password of the users in the specified domain can be changed, false
+   * otherwise.
+   */
   public boolean isPasswordChangeAllowed(String domainId) {
-    Connection m_Connection = null;
+    Connection connection = null;
     try {
       // Open connection
-      m_Connection = openConnection();
+      connection = openConnection();
 
       // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
+      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
       return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "AuthenticationService.isPasswordChangeAllowed()",
+      SilverTrace.error(module, "AuthenticationService.isPasswordChangeAllowed()",
           "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
           ex.getMessage());
     } finally {
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
     return false;
   }

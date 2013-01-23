@@ -39,7 +39,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 /**
- * This class performs the NT authentification by calling the NTRIS service
+ * This class performs the NT authentication by calling the NTRIS service
  * <p/>
  * @author tleroi
  * @version
@@ -95,7 +95,7 @@ public class AuthenticationNT extends Authentication {
                                   AuthenticationCredential credential) throws AuthenticationException {
     String login = credential.getLogin();
     int idx;
-    SilverTrace.info("authentication",
+    SilverTrace.info(module,
         "AuthenticationNT.doAuthentication()",
         "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "User=" + login);
     if ((idx = login.indexOf("\\")) > 0) {
@@ -135,7 +135,7 @@ public class AuthenticationNT extends Authentication {
           SilverpeasException.ERROR, "authentication.EX_NT_ACCESS_ERROR", ex);
     }
     if ("-OK".equalsIgnoreCase(line)) {
-      SilverTrace.info("authentication", "AuthenticationNT.doAuthentication()",
+      SilverTrace.info(module, "AuthenticationNT.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } else if ("-ERR".equalsIgnoreCase(line)) {
       throw new AuthenticationBadCredentialException("AuthenticationNT.doAuthentication()",

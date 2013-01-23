@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class ForgotPasswordHandler extends FunctionHandler {
 
-  private static AuthenticationService lpAuth = new AuthenticationService();
+  private static AuthenticationService authenticator = new AuthenticationService();
   private ForgottenPasswordMailManager forgottenPasswordMailManager =
       new ForgottenPasswordMailManager();
 
@@ -49,14 +49,14 @@ public class ForgotPasswordHandler extends FunctionHandler {
   public String doAction(HttpServletRequest request) {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
-    String userId = null;
+    String userId;
     try {
       userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
     } catch (AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);
 
-      List<Domain> domains = lpAuth.getAllDomains();
+      List<Domain> domains = authenticator.getAllDomains();
       String domain = "";
       for (Domain aDomain: domains) {
         if (aDomain.getId().equals(domainId)) {
@@ -68,10 +68,10 @@ public class ForgotPasswordHandler extends FunctionHandler {
     }
 
     try {
-      if (lpAuth.isPasswordChangeAllowed(domainId)) {
-        String authenticationKey = null;
+      if (authenticator.isPasswordChangeAllowed(domainId)) {
+        String authenticationKey;
         try {
-          authenticationKey = lpAuth.getAuthenticationKey(login, domainId);
+          authenticationKey = authenticator.getAuthenticationKey(login, domainId);
         } catch (AuthenticationException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.forgotPasswordHandler.doAction()",

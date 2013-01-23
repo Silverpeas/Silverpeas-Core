@@ -54,7 +54,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * This class performs the LDAP authentification
+ * This class performs the LDAP authentication
  * @author tleroi
  * @version
  */
@@ -112,7 +112,7 @@ public class AuthenticationLDAP extends Authentication {
         m_MustAlertPasswordExpiration = false;
       }
     }
-    SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
+    SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
         "root.MSG_GEN_PARAM_VALUE", "javax.net.ssl.trustStore = "
         + System.getProperty("javax.net.ssl.trustStore"));
   }
@@ -186,7 +186,7 @@ public class AuthenticationLDAP extends Authentication {
     String[] baseDNs = extractBaseDNs(m_UserBaseDN);
     for (String baseDN : baseDNs) {
       try {
-        SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
+        SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
             "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDN);
         LDAPSearchResults res = ldapConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
@@ -208,7 +208,7 @@ public class AuthenticationLDAP extends Authentication {
       }
 
     // Calculate nb days before password expiration
-    SilverTrace.debug("authentication", "AuthenticationLDAP.doAuthentication()",
+    SilverTrace.debug(module, "AuthenticationLDAP.doAuthentication()",
             "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
             + m_MustAlertPasswordExpiration);
     if (m_MustAlertPasswordExpiration) {
@@ -225,10 +225,10 @@ public class AuthenticationLDAP extends Authentication {
           SilverpeasException.ERROR, "authentication.EX_PWD_EMPTY", "User=" + login);
     }
     try {
-      SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
+      SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
           "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "UserDN=" + userFullDN);
       ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, password.getBytes(Charsets.UTF_8));
-      SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
+      SilverTrace.info(module, "AuthenticationLDAP.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (LDAPException ex) {
       throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
@@ -251,14 +251,14 @@ public class AuthenticationLDAP extends Authentication {
    * @return duration in days
    */
   private int calculateDaysBeforeExpiration(LDAPEntry fe) throws AuthenticationPasswordMustBeChangedAtNextLogon {
-    SilverTrace.debug("authentication",
+    SilverTrace.debug(module,
         "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_ENTER_METHOD");
     LDAPAttribute pwdLastSetAttr = fe.getAttribute(m_PwdLastSetFieldName);
 
     // if password last set attribute is not found, return max value : user
     // won't be notified
-    SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "pwdLastSetAttr is null ? " + (pwdLastSetAttr == null));
     if (pwdLastSetAttr == null) {
       return Integer.MAX_VALUE;
@@ -274,13 +274,13 @@ public class AuthenticationLDAP extends Authentication {
         if (lastSetValue == 0) {
           throw new AuthenticationPasswordMustBeChangedAtNextLogon("user="+fe.getDN());
         }
-        SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
             "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         lastSetValue = lastSetValue / INTERVALS_PER_MILLISECOND;
-        SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
             "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         lastSetValue -= MILLISECONDS_BETWEEN_1601_AND_1970;
-        SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+        SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
             "root.MSG_GEN_PARAM_VALUE", "lastSetValue = " + lastSetValue);
         pwdLastSet = new Date(lastSetValue);
         break;
@@ -290,35 +290,35 @@ public class AuthenticationLDAP extends Authentication {
           DateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
           String ldapValue = pwdLastSetAttr.getStringValue();
           if (ldapValue == null) {
-            SilverTrace.error("authentication",
+            SilverTrace.error(module,
                 "AuthenticationLDAP.calculateDaysBeforeExpiration()",
                 "authentication.NO_VALUE", "m_PwdLastSetField=" + m_PwdLastSetFieldName);
             return Integer.MAX_VALUE;
           } else if (ldapValue.length() >= 14) {
             ldapValue = ldapValue.substring(0, 14);
           } else {
-            SilverTrace.error("authentication",
+            SilverTrace.error(module,
                 "AuthenticationLDAP.calculateDaysBeforeExpiration()",
                 "authentication.EX_BAD_DATE_FORMAT", "ldapValue=" + ldapValue);
             return Integer.MAX_VALUE;
           }
           pwdLastSet = format.parse(pwdLastSetAttr.getStringValue());
         } catch (ParseException e) {
-          SilverTrace.error("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+          SilverTrace.error(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
               "authentication.EX_BAD_DATE_FORMAT", e);
         }
     }
-    SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "pwdLastSet = " +
         DateUtil.getOutputDateAndHour(pwdLastSet, "fr"));
 
     Date now = new Date();
     long delayInMilliseconds = pwdLastSet.getTime() - now.getTime();
-    SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_PARAM_VALUE", "delayInMilliseconds = " + delayInMilliseconds);
     int delayInDays =
         Math.round((float) ((delayInMilliseconds / (1000 * 3600 * 24)) + m_PwdMaxAge));
-    SilverTrace.debug("authentication", "AuthenticationLDAP.calculateDaysBeforeExpiration()",
+    SilverTrace.debug(module, "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_EXIT_METHOD", "delayInDays = " + delayInDays);
     return delayInDays;
   }
@@ -339,7 +339,7 @@ public class AuthenticationLDAP extends Authentication {
           m_AccessPasswd.getBytes(Charsets.UTF_8));
 
       // Get user DN
-      SilverTrace.info("authentication", "AuthenticationLDAP.changePassword()",
+      SilverTrace.info(module, "AuthenticationLDAP.changePassword()",
           "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
       LDAPSearchResults res = ldapConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
           searchString, strAttributes, false);
@@ -430,7 +430,7 @@ public class AuthenticationLDAP extends Authentication {
   @Override
   protected void doResetPassword(AuthenticationConnection connection, String login, String newPassword)
       throws AuthenticationException {
-    String userFullDN = null;
+    String userFullDN;
     String searchString = m_UserLoginFieldName + "=" + login;
     String[] strAttributes = { "sAMAccountName", "memberOf" };
     LDAPConnection ldapConnection = getLDAPConnection(connection);
@@ -440,7 +440,7 @@ public class AuthenticationLDAP extends Authentication {
           m_AccessPasswd.getBytes(Charsets.UTF_8));
 
       // Get user DN
-      SilverTrace.info("authentication", "AuthenticationLDAP.changePassword()",
+      SilverTrace.info(module, "AuthenticationLDAP.changePassword()",
           "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
       LDAPSearchResults res = ldapConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);

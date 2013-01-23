@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
+import com.stratelia.silverpeas.authentication.AuthenticationCredential;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
@@ -70,9 +71,12 @@ public class ResetPasswordHandler extends FunctionHandler {
               "forgottenPassword.EX_GET_FULL_USER_DETAIL", "userId=" + userId, e);
         }
 
-        AuthenticationService auth = new AuthenticationService();
         try {
-          auth.resetPassword(user.getLogin(), password, user.getDomainId());
+          AuthenticationCredential credential = AuthenticationCredential
+              .newWithAsLogin(user.getLogin())
+              .withAsDomainId(user.getDomainId());
+          AuthenticationService authenticator = new AuthenticationService();
+          authenticator.resetPassword(credential, password);
         } catch (AuthenticationException e1) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

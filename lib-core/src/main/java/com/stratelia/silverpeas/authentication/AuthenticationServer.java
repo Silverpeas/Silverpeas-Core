@@ -51,6 +51,9 @@ import java.util.List;
  * @author mmoquillon
  */
 public class AuthenticationServer {
+
+  private static final String module = "authentication";
+
   protected String fallbackMode;
   protected List<Authentication> authServers;
   protected boolean passwordChangeAllowed;
@@ -88,14 +91,14 @@ public class AuthenticationServer {
             authenticationWithAServer.init(serverName, serverSettings);
             authServers.add(authenticationWithAServer);
           } catch (Exception ex) {
-            SilverTrace.error("authentication", "AuthenticationServer.AuthenticationServer",
+            SilverTrace.error(module, "AuthenticationServer.AuthenticationServer",
                 "authentication.EX_CANT_INSTANCIATE_SERVER_CLASS",
                 authServerName + " / " + serverName, ex);
           }
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("authentication", "AuthenticationServer.AuthenticationServer",
+      SilverTrace.error(module, "AuthenticationServer.AuthenticationServer",
           "authentication.EX_DOMAIN_INFO_ERROR", "Server=" + authServerName, e);
     }
   }
@@ -107,7 +110,7 @@ public class AuthenticationServer {
    * @throws AuthenticationException if the authentication fails.
    */
   public void authenticate(final AuthenticationCredential credential) throws AuthenticationException {
-    doSecurityOperation(new SecurityOperation("authenticate", credential) {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION, credential) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
         authentication.authenticate(credential);
@@ -121,28 +124,22 @@ public class AuthenticationServer {
    * The password modification capability is available only with some authentication services, so
    * please use the method <code>isPasswordChangeAllowed()</code> to check if this operation is
    * supported.
-   * @param login
-   * @param oldPassword
-   * @param newPassword
+   * The specified credential won't be updated by the password change.
+   * @param credential the authentication credential of the user for which the password has to be changed.
+   * @param newPassword the new password that will replace the one in the specified credential.
    * @throws AuthenticationException if an error occurs while changing the password.
    */
-  public void changePassword(final String login, final String oldPassword,
+  public void changePassword(final AuthenticationCredential credential,
                              final String newPassword) throws AuthenticationException {
     if (!passwordChangeAllowed) {
       throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword",
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
 
-    if ((login == null) || (login.length() <= 0)) {
-      throw new AuthenticationException("AuthenticationServer.changePassword",
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-    }
-
-    doSecurityOperation(new SecurityOperation("changePassword",
-        AuthenticationCredential.newWithAsLogin(login).withAsPassword(newPassword)) {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_CHANGE, credential) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
-        authentication.changePassword(login, oldPassword, newPassword);
+        authentication.changePassword(credential, newPassword);
       }
     });
   }
@@ -172,13 +169,8 @@ public class AuthenticationServer {
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
 
-    if ((login == null) || (login.length() <= 0)) {
-      throw new AuthenticationException("AuthenticationServer.resetPassword",
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-    }
-
-    doSecurityOperation(new SecurityOperation("resetPassword",
-        AuthenticationCredential.newWithAsLogin(login).withAsPassword(newPassword)) {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_RESET,
+        AuthenticationCredential.newWithAsLogin(login)) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
         authentication.resetPassword(login, newPassword);
@@ -188,7 +180,7 @@ public class AuthenticationServer {
 
   private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
     if (!StringUtil.isDefined(op.getAuthenticationCredential().getLogin())) {
-      throw new AuthenticationException("AuthenticationCredential.newWithAsLogin",
+      throw new AuthenticationException("AuthenticationServer." + op.getName(),
           SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
     }
 
@@ -214,10 +206,10 @@ public class AuthenticationServer {
 
     if (serverNotFound) {
       if (lastException == null) {
-        throw new AuthenticationException("AuthenticationServer.resetPassword",
+        throw new AuthenticationException("AuthenticationServer." + op.getName(),
             SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
       } else {
-        throw new AuthenticationException("AuthenticationServer.resetPassword",
+        throw new AuthenticationException("AuthenticationServer." + op.getName(),
             SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR",
             lastException);
       }
@@ -225,6 +217,11 @@ public class AuthenticationServer {
   }
 
   private abstract class SecurityOperation {
+
+    public static final String AUTHENTICATION = "authenticate";
+    public static final String PASSWORD_CHANGE = "changePassword";
+    public static final String PASSWORD_RESET = "resetPassword";
+
     private String name;
     private AuthenticationCredential credential;
 
@@ -268,7 +265,7 @@ public class AuthenticationServer {
       if (fallbackMode.equals("none") || fallbackMode.equals("ifNotRejected")) {
         throw ex;
       } else {
-        SilverTrace.info("authentication",
+        SilverTrace.info(module,
             "AuthenticationServer." + operation,
             "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "Auth server="
             + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
@@ -281,7 +278,7 @@ public class AuthenticationServer {
       if (fallbackMode.equals("none")) {
         throw ex;
       } else {
-        SilverTrace.info("authentication",
+        SilverTrace.info(module,
             "AuthenticationServer." + operation,
             "authentication.EX_AUTHENTICATION_HOST_ERROR", "Auth server="
             + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
@@ -294,7 +291,7 @@ public class AuthenticationServer {
       if (fallbackMode.equals("none")) {
         throw ex;
       } else {
-        SilverTrace.info("authentication",
+        SilverTrace.info(module,
             "AuthenticationServer." + operation,
             "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
             "Auth server=" + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
@@ -304,7 +301,7 @@ public class AuthenticationServer {
 
     @Override
     public void visit(AuthenticationPwdNotAvailException ex) throws AuthenticationException {
-      SilverTrace.info("authentication",
+      SilverTrace.info(module,
           "AuthenticationServer." + operation,
           "authentication.EX_PWD_NOT_AVAILABLE", "Auth server="
           + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
@@ -323,7 +320,7 @@ public class AuthenticationServer {
 
     @Override
     public void visit(AuthenticationPwdChangeNotAvailException ex) throws AuthenticationException {
-      SilverTrace.info("authentication",
+      SilverTrace.info(module,
           "AuthenticationServer." + operation,
           "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE",
           "Auth server=" + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
