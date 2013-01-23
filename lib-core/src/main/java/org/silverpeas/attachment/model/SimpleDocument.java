@@ -23,15 +23,9 @@
  */
 package org.silverpeas.attachment.model;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-
-import org.silverpeas.util.URLUtils;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.DBUtil;
@@ -40,6 +34,11 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.util.URLUtils;
+
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLanguage;
 import static java.io.File.separatorChar;
@@ -54,8 +53,6 @@ public class SimpleDocument implements Serializable {
   private final static ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   public static final String WEBDAV_FOLDER = "webdav";
-  public static final String FORM_FOLDER = "xmlform";
-  public static final String ATTACHMENTS_FOLDER = "attachments";
   public final static String ATTACHMENT_PREFIX = "attach_";
   public final static String VERSION_PREFIX = "version_";
   public final static String FILE_PREFIX = "file_";
@@ -598,7 +595,7 @@ public class SimpleDocument implements Serializable {
     url.append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.respository"))).
         append('/').
         append(URLUtils.encodePathSegment(GeneralPropertiesManager.getString("webdav.workspace")));
-        
+
     String[] pathParts = StringUtil.split(getWebdavJcrPath(), '/');
     for(String pathElement : pathParts) {
       url.append('/');
@@ -609,7 +606,7 @@ public class SimpleDocument implements Serializable {
 
   public String getWebdavJcrPath() {
     StringBuilder jcrPath = new StringBuilder(500);
-    jcrPath.append(WEBDAV_FOLDER).append('/').append(ATTACHMENTS_FOLDER).append('/').
+    jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append('/').
         append(getInstanceId()).append('/');
     if (getId() != null) {
       jcrPath.append(getId()).append('/');

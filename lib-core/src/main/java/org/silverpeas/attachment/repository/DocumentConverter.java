@@ -23,9 +23,15 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import org.apache.jackrabbit.core.state.NoSuchItemStateException;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.jcr.AbstractJcrConverter;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -34,18 +40,9 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
-
-import org.apache.jackrabbit.core.state.NoSuchItemStateException;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.jcr.AbstractJcrConverter;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
@@ -63,8 +60,6 @@ class DocumentConverter extends AbstractJcrConverter {
   /**
    * Convert the document history in a list of SimpleDocument.
    *
-   * @param session
-   * @param path
    * @param lang
    * @return
    * @throws RepositoryException
@@ -114,13 +109,13 @@ class DocumentConverter extends AbstractJcrConverter {
     }
     return fillDocument(node, lang);
   }
-  
+
   /**
    * Convert a NodeIteraor into a collection of SimpleDocument.
    * @param iter th NodeIterator to convert.
    * @param language the language of the wanted document.
    * @return a collection of SimpleDocument.
-   * @throws RepositoryException 
+   * @throws RepositoryException
    */
   public List<SimpleDocument> convertNodeIterator(NodeIterator iter, String language) throws RepositoryException {
     List<SimpleDocument> result = new ArrayList<SimpleDocument>((int) iter.getSize());
@@ -234,7 +229,7 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public boolean isForm(Node node) throws RepositoryException {
-    return node.getPath().contains('/' + SimpleDocument.FORM_FOLDER + '/');
+    return node.getPath().contains('/' + DocumentType.form.getFolderName() + '/');
   }
 
   public String updateVersion(Node node, String lang, boolean isPublic) throws RepositoryException {
