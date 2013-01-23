@@ -44,6 +44,9 @@ public class DocumentFormatConverterFactory {
   @Inject
   private ToPDFConverter toPDFConverter;
 
+  @Inject
+  private ToHTMLConverter toHTMLConverter;
+
   /**
    * Gets an instance of this factory.
    * @return a DocumentFormatConverterFactory instance.
@@ -74,6 +77,14 @@ public class DocumentFormatConverterFactory {
    */
   public ToPDFConverter getToPDFConverter() {
     return toPDFConverter;
+  }
+
+  /**
+   * Gets an instance of the ToHTMLConverter interface.
+   * @return a ToHTMLConverter instance.
+   */
+  public ToHTMLConverter getToHTMLConverter() {
+    return toHTMLConverter;
   }
 
   private DocumentFormatConverterFactory() {
