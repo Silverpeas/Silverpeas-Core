@@ -26,14 +26,16 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
+import com.stratelia.silverpeas.authentication.AuthenticationCredential;
+import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.authentication.CredentialEncryptionFactory;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -52,7 +54,7 @@ import javax.servlet.http.HttpSession;
  */
 public class AuthenticationServlet extends HttpServlet {
 
-  private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+  private static AuthenticationService authService = new AuthenticationService();
   private static final long serialVersionUID = -8695946617361150513L;
   private static final SilverpeasSessionOpenener silverpeasSessionOpener = new SilverpeasSessionOpenener();
   private static final String TECHNICAL_ISSUE = "2";
@@ -120,22 +122,22 @@ public class AuthenticationServlet extends HttpServlet {
       if("Error_1".equals(authenticationKey)) {
         url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
       }
-      else if(LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)){
+      else if(AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)){
           String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
           if(StringUtil.getBooleanValue(allowPasswordChange)){
             ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
             url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
           } else {
-            url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+            url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
           }
       }
-      else if(LoginPasswordAuthentication.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)){
+      else if(AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)){
         String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
         if(StringUtil.getBooleanValue(allowPasswordChange)){
           ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
           url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
         } else {
-          url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+          url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
       }
       else {
@@ -200,17 +202,25 @@ public class AuthenticationServlet extends HttpServlet {
 
   private String authenticate(HttpServletRequest request,
                               AuthenticationParameters authenticationParameters, String sDomainId) {
-    String testKey = request.getParameter("TestKey");
-    if (!StringUtil.isDefined(testKey)) {
+    String key = request.getParameter("TestKey");
+    if (!StringUtil.isDefined(key)) {
+      AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin());
       if (authenticationParameters.isCasMode()) {
-        return lpAuth.authenticate(authenticationParameters.getLogin(), sDomainId, request);
+        key = authService.authenticate(credential.withAsDomainId(sDomainId));
       } else if (authenticationParameters.isSocialNetworkMode()) {
-        return lpAuth.authenticate(authenticationParameters.getLogin(), authenticationParameters
-            .getDomainId(), request);
+        key = authService.authenticate(credential.withAsDomainId(authenticationParameters.getDomainId()));
+      } else {
+        key = authService.authenticate(credential
+            .withAsPassword(authenticationParameters.getClearPassword())
+            .withAsDomainId(sDomainId));
       }
-      return lpAuth.authenticate(authenticationParameters.getLogin(), authenticationParameters.
-          getClearPassword(),
-          sDomainId, request);
+      HttpSession session = request.getSession();
+      for(Map.Entry<String, Object> capability: credential.getCapabilities().entrySet()) {
+        session.setAttribute(capability.getKey(), capability.getValue());
+      }
+
+      return key;
     }
     return null;
   }

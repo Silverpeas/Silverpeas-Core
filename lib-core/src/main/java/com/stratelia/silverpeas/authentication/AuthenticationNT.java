@@ -48,9 +48,6 @@ public class AuthenticationNT extends Authentication {
 
   protected String m_Host;
   protected int m_Port = 9999;
-  protected Socket m_Client;
-  protected PrintWriter m_Out = null;
-  protected BufferedReader m_In = null;
   protected int m_Timeout = 10000; // timeout after which, without any response
   // from the host, we give up and close the
   // connection
@@ -60,24 +57,19 @@ public class AuthenticationNT extends Authentication {
   char END_DELIM = 2;
 
   @Override
-  public void init(String authenticationServerName, ResourceLocator propFile) {
-    m_Host = propFile.getString(authenticationServerName + ".NTRISHost");
-    m_Port = Integer.parseInt(propFile.getString(authenticationServerName + ".NTRISPort"));
+  public void loadProperties(ResourceLocator settings) {
+    m_Host = settings.getString(getServerName() + ".NTRISHost");
+    m_Port = Integer.parseInt(settings.getString(getServerName() + ".NTRISPort"));
   }
 
   @Override
-  protected void openConnection() throws AuthenticationException {
+  protected AuthenticationConnection<Socket> openConnection() throws AuthenticationException {
     try {
       InetAddress localAddr = InetAddress.getByName(m_Host); // pick any
-      m_Client = new Socket(localAddr, m_Port);
-      m_Out = new PrintWriter(m_Client.getOutputStream(), true);
-      m_In = new BufferedReader(
-          new InputStreamReader(m_Client.getInputStream()));
-      m_Client.setSoTimeout(m_Timeout);
+      Socket socket = new Socket(localAddr, m_Port);
+      socket.setSoTimeout(m_Timeout);
+      return new AuthenticationConnection<Socket>(socket);
     } catch (Exception ex) {
-      m_Client = null;
-      m_Out = null;
-      m_In = null;
       throw new AuthenticationHostException("AuthenticationNT.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED",
           "Host=" + m_Host + ";Port=" + java.lang.Integer.toString(m_Port), ex);
@@ -85,14 +77,12 @@ public class AuthenticationNT extends Authentication {
   }
 
   @Override
-  protected void closeConnection() throws AuthenticationException {
+  protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
     try {
-      if (m_Client != null) {
-        m_Client.close();
+      Socket connector = getSocket(connection);
+      if (connector != null) {
+        connector.close();
       }
-      m_Client = null;
-      m_Out = null;
-      m_In = null;
     } catch (Exception ex) {
       throw new AuthenticationHostException("AuthenticationNT.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
@@ -101,24 +91,28 @@ public class AuthenticationNT extends Authentication {
   }
 
   @Override
-  protected void internalAuthentication(String login, String passwd) throws AuthenticationException {
-    String pass;
+  protected void doAuthentication(AuthenticationConnection connection,
+                                  AuthenticationCredential credential) throws AuthenticationException {
+    String login = credential.getLogin();
     int idx;
     SilverTrace.info("authentication",
-        "AuthenticationNT.internalAuthentication()",
+        "AuthenticationNT.doAuthentication()",
         "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "User=" + login);
     if ((idx = login.indexOf("\\")) > 0) {
       login = login.substring(idx + 1);
     }
-    if (passwd == null) {
+    String pass = credential.getPassword();
+    if (pass == null) {
       pass = "";
-    } else {
-      pass = passwd;
     }
-    String line = null;
+    String line;
     try {
+      Socket socket = getSocket(connection);
+      PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
       // gobble up welcome string
-      line = m_In.readLine();
+      line = reader.readLine();
 
       // start delim + LOGON Command + start delim + <user> + start delim +
       // <passwd> + end delim
@@ -134,23 +128,27 @@ public class AuthenticationNT extends Authentication {
       sb.append(START_DELIM);
       sb.append(pass);
       sb.append(END_DELIM);
-      m_Out.println(sb);
-      line = m_In.readLine();
+      writer.println(sb);
+      line = reader.readLine();
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationNT.internalAuthentication()",
+      throw new AuthenticationHostException("AuthenticationNT.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_NT_ACCESS_ERROR", ex);
     }
     if ("-OK".equalsIgnoreCase(line)) {
-      SilverTrace.info("authentication", "AuthenticationNT.internalAuthentication()",
+      SilverTrace.info("authentication", "AuthenticationNT.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } else if ("-ERR".equalsIgnoreCase(line)) {
-      throw new AuthenticationBadCredentialException("AuthenticationNT.internalAuthentication()",
+      throw new AuthenticationBadCredentialException("AuthenticationNT.doAuthentication()",
           SilverpeasException.ERROR,
           "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User=" + login);
     } else {
-      throw new AuthenticationHostException("AuthenticationNT.internalAuthentication()",
+      throw new AuthenticationHostException("AuthenticationNT.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_NT_RETURN_ERROR",
           "Line=" + line);
     }
+  }
+
+  private static Socket getSocket(AuthenticationConnection connection) {
+    return (Socket) connection.getConnector();
   }
 }

@@ -63,34 +63,25 @@ public class AuthenticationSQL extends Authentication {
   protected String m_UserPasswordAvailableColumnName;
   protected String m_PasswordEncryption;
 
-  protected Connection m_Connection;
-
-  public void init(String authenticationServerName, ResourceLocator propFile) {
-    // Lecture du fichier de proprietes
-    m_JDBCUrl = propFile
-        .getString(authenticationServerName + ".SQLJDBCUrl");
-    m_AccessLogin = propFile.getString(authenticationServerName
-        + ".SQLAccessLogin");
-    m_AccessPasswd = propFile.getString(authenticationServerName
-        + ".SQLAccessPasswd");
-    m_DriverClass = propFile.getString(authenticationServerName
-        + ".SQLDriverClass");
-    m_UserTableName = propFile.getString(authenticationServerName
-        + ".SQLUserTableName");
-    m_UserLoginColumnName = propFile.getString(authenticationServerName
-        + ".SQLUserLoginColumnName");
-    m_UserPasswordColumnName = propFile.getString(authenticationServerName
-        + ".SQLUserPasswordColumnName");
-    m_UserPasswordAvailableColumnName = propFile
-        .getString(authenticationServerName
+  @Override
+  public void loadProperties(ResourceLocator settings) {
+    String serverName = getServerName();
+    m_JDBCUrl = settings.getString(serverName + ".SQLJDBCUrl");
+    m_AccessLogin = settings.getString(serverName + ".SQLAccessLogin");
+    m_AccessPasswd = settings.getString(serverName + ".SQLAccessPasswd");
+    m_DriverClass = settings.getString(serverName + ".SQLDriverClass");
+    m_UserTableName = settings.getString(serverName + ".SQLUserTableName");
+    m_UserLoginColumnName = settings.getString(serverName + ".SQLUserLoginColumnName");
+    m_UserPasswordColumnName = settings.getString(serverName + ".SQLUserPasswordColumnName");
+    m_UserPasswordAvailableColumnName = settings.getString(serverName
         + ".SQLUserPasswordAvailableColumnName");
-    m_PasswordEncryption = propFile.getString(authenticationServerName
-        + ".SQLPasswordEncryption");
+    m_PasswordEncryption = settings.getString(serverName + ".SQLPasswordEncryption");
   }
 
-  protected void openConnection() throws AuthenticationException {
+  @Override
+  protected AuthenticationConnection<Connection> openConnection() throws AuthenticationException {
     Properties info = new Properties();
-    Driver driverSQL = null;
+    Driver driverSQL;
 
     try {
       info.setProperty("user", m_AccessLogin);
@@ -104,7 +95,8 @@ public class AuthenticationSQL extends Authentication {
           + m_DriverClass, iex);
     }
     try {
-      m_Connection = driverSQL.connect(m_JDBCUrl, info);
+      Connection connection = driverSQL.connect(m_JDBCUrl, info);
+      return new AuthenticationConnection<Connection>(connection);
     } catch (SQLException ex) {
       throw new AuthenticationHostException(
           "AuthenticationSQL.openConnection()",
@@ -114,14 +106,14 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
-  protected void closeConnection() throws AuthenticationException {
+  @Override
+  protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
+    Connection sqlConnection = getSQLConnection(connection);
     try {
-      if (m_Connection != null) {
-        m_Connection.close();
-        m_Connection = null;
+      if (sqlConnection != null) {
+        sqlConnection.close();
       }
     } catch (SQLException ex) {
-      m_Connection = null;
       throw new AuthenticationHostException(
           "AuthenticationSQL.closeConnection()",
           SilverpeasException.ERROR,
@@ -130,19 +122,23 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
-  protected void internalAuthentication(String login, String passwd)
+  @Override
+  protected void doAuthentication(AuthenticationConnection connection,
+                                  AuthenticationCredential credential)
       throws AuthenticationException {
     String loginQuery;
-    String sqlPasswd;
+    String sqlPassword;
     ResultSet rs = null;
     PreparedStatement stmt = null;
-    if (passwd == null) {
-      passwd = "";
+    String login = credential.getLogin();
+    String password = credential.getPassword();
+    if (password == null) {
+      password = "";
     }
     try {
-      String thepasswd = passwd;
+      String thepasswd = password;
       if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption))
-        thepasswd = CryptMD5.crypt(passwd);
+        thepasswd = CryptMD5.crypt(password);
 
       if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
         loginQuery = "SELECT " + m_UserLoginColumnName + ", "
@@ -156,7 +152,7 @@ public class AuthenticationSQL extends Authentication {
             + " WHERE " + m_UserLoginColumnName + " = ?";
       }
 
-      stmt = m_Connection.prepareStatement(loginQuery);
+      stmt = getSQLConnection(connection).prepareStatement(loginQuery);
       stmt.setString(1, login);
       rs = stmt.executeQuery();
       if (rs.next()) {
@@ -167,17 +163,17 @@ public class AuthenticationSQL extends Authentication {
           if ((validString != null)
               && (validString.equalsIgnoreCase("N"))) {
             throw new AuthenticationPwdNotAvailException(
-                "AuthenticationSQL.internalAuthentication()",
+                "AuthenticationSQL.doAuthentication()",
                 SilverpeasException.ERROR,
                 "authentication.EX_PWD_NOT_AVAILABLE", "User="
                 + login);
           }
         }
-        sqlPasswd = rs.getString(m_UserPasswordColumnName);
-        if (sqlPasswd == null) {
-          if (passwd.length() > 0) {
+        sqlPassword = rs.getString(m_UserPasswordColumnName);
+        if (sqlPassword == null) {
+          if (password.length() > 0) {
             throw new AuthenticationBadCredentialException(
-                "AuthenticationSQL.internalAuthentication()",
+                "AuthenticationSQL.doAuthentication()",
                 SilverpeasException.ERROR,
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
                 "User=" + login);
@@ -192,18 +188,18 @@ public class AuthenticationSQL extends Authentication {
             // OK sinon
             // notOK
             String crypt2Check = "";
-            if (sqlPasswd.startsWith(UnixMD5Crypt.MAGIC)) {
-              crypt2Check = UnixMD5Crypt.crypt(sqlPasswd, passwd);
+            if (sqlPassword.startsWith(UnixMD5Crypt.MAGIC)) {
+              crypt2Check = UnixMD5Crypt.crypt(sqlPassword, password);
             } else {
-              crypt2Check = jcrypt.crypt(sqlPasswd, passwd);
+              crypt2Check = jcrypt.crypt(sqlPassword, password);
             }
-            passwordsMatch = crypt2Check.equals(sqlPasswd);
+            passwordsMatch = crypt2Check.equals(sqlPassword);
           } else {
-            passwordsMatch = thepasswd.equals(sqlPasswd);
+            passwordsMatch = thepasswd.equals(sqlPassword);
           }
           if (!passwordsMatch) {
             throw new AuthenticationBadCredentialException(
-                "AuthenticationSQL.internalAuthentication()",
+                "AuthenticationSQL.doAuthentication()",
                 SilverpeasException.ERROR,
                 "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
                 "User=" + login);
@@ -211,21 +207,21 @@ public class AuthenticationSQL extends Authentication {
         }
       } else {
         throw new AuthenticationBadCredentialException(
-            "AuthenticationSQL.internalAuthentication()",
+            "AuthenticationSQL.doAuthentication()",
             SilverpeasException.ERROR,
             "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
       SilverTrace.info("authentication",
-          "AuthenticationSQL.internalAuthentication()",
+          "AuthenticationSQL.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (UtilException ex) {
       throw new AuthenticationHostException(
-          "AuthenticationSQL.internalAuthentication()",
+          "AuthenticationSQL.doAuthentication()",
           SilverpeasException.ERROR,
           "authentication.EX_SQL_ACCESS_ERROR", ex);
     } catch (SQLException ex) {
       throw new AuthenticationHostException(
-          "AuthenticationSQL.internalAuthentication()",
+          "AuthenticationSQL.doAuthentication()",
           SilverpeasException.ERROR,
           "authentication.EX_SQL_ACCESS_ERROR", ex);
     } finally {
@@ -233,7 +229,7 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
-  protected String getPassword(String login) throws AuthenticationException {
+  private String getPassword(Connection connection, String login) throws AuthenticationException {
     String loginQuery;
     String sqlPasswd;
     ResultSet rs = null;
@@ -253,7 +249,7 @@ public class AuthenticationSQL extends Authentication {
     }
 
     try {
-      stmt = m_Connection.prepareStatement(loginQuery);
+      stmt = connection.prepareStatement(loginQuery);
       stmt.setString(1, login);
       rs = stmt.executeQuery();
       if (rs.next()) {
@@ -273,16 +269,16 @@ public class AuthenticationSQL extends Authentication {
         sqlPasswd = rs.getString(m_UserPasswordColumnName);
       } else {
         throw new AuthenticationBadCredentialException(
-            "AuthenticationSQL.internalAuthentication()",
+            "AuthenticationSQL.doAuthentication()",
             SilverpeasException.ERROR,
             "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
       SilverTrace.info("authentication",
-          "AuthenticationSQL.internalAuthentication()",
+          "AuthenticationSQL.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (SQLException ex) {
       throw new AuthenticationHostException(
-          "AuthenticationSQL.internalAuthentication()",
+          "AuthenticationSQL.doAuthentication()",
           SilverpeasException.ERROR,
           "authentication.EX_SQL_ACCESS_ERROR", ex);
     } finally {
@@ -291,7 +287,7 @@ public class AuthenticationSQL extends Authentication {
     return sqlPasswd;
   }
 
-  private void updatePassword(String login, String newPassword)
+  private void updatePassword(Connection connection, String login, String newPassword)
       throws AuthenticationException {
     String updateQuery;
 
@@ -302,7 +298,7 @@ public class AuthenticationSQL extends Authentication {
         + m_UserLoginColumnName + " = ?";
 
     try {
-      stmt = m_Connection.prepareStatement(updateQuery);
+      stmt = connection.prepareStatement(updateQuery);
       stmt.setString(1, newPassword);
       stmt.setString(2, login);
       stmt.executeUpdate();
@@ -316,18 +312,14 @@ public class AuthenticationSQL extends Authentication {
     }
   }
 
-  /**
-   * Overrides Authentication.internalChangePassword to offer password update capabilities In case
-   * of SQL Authentication, this method check if password entry matches with the actual one. The
-   * password update is made in the updateUserFull method.
-   * @param login user login
-   * @param oldPassword user old password
-   * @param newPassword user new password
-   * @throws AuthenticationException if oldPassword does not match with actual password
-   */
-  protected void internalChangePassword(String login, String oldPassword,
-      String newPassword) throws AuthenticationException {
-    String passwordInDB = getPassword(login);
+  @Override
+  protected void doChangePassword(AuthenticationConnection connection,
+                                  AuthenticationCredential credential, String newPassword)
+      throws AuthenticationException {
+    Connection sqlConnection = getSQLConnection(connection);
+    String login = credential.getLogin();
+    String oldPassword = credential.getPassword();
+    String passwordInDB = getPassword(sqlConnection, login);
     String newPasswordInDB = null;
     boolean passwordsMatch = true;
     if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
@@ -347,7 +339,7 @@ public class AuthenticationSQL extends Authentication {
         passwordsMatch = thepasswd.equals(passwordInDB);
       } catch (UtilException e) {
         throw new AuthenticationPwdNotAvailException(
-            "AuthenticationSQL.internalChangePassword()",
+            "AuthenticationSQL.doChangePassword()",
             SilverpeasException.ERROR,
             "authentication.EX_INCORRECT_PASSWORD",
             "Crypt Md5 impossible");
@@ -358,25 +350,18 @@ public class AuthenticationSQL extends Authentication {
     }
     if (!passwordsMatch)
       throw new AuthenticationBadCredentialException(
-          "AuthenticationSQL.internalChangePassword()",
+          "AuthenticationSQL.doChangePassword()",
           SilverpeasException.ERROR,
           "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
 
-    updatePassword(login, newPasswordInDB);
+    updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
-  /**
-   * Overrides Authentication.internalChangePassword to offer password update capabilities In case
-   * of SQL Authentication, this method check if password entry matches with the actual one. The
-   * password update is made in the updateUserFull method.
-   * @param login user login
-   * @param oldPassword user old password
-   * @param newPassword user new password
-   * @throws AuthenticationException if oldPassword does not match with actual password
-   */
-  protected void internalResetPassword(String login, String newPassword)
-      throws AuthenticationException {
-    String passwordInDB = getPassword(login);
+  @Override
+  protected void doResetPassword(AuthenticationConnection connection, String login,
+                                 String newPassword) throws AuthenticationException {
+    Connection sqlConnection = getSQLConnection(connection);
+    String passwordInDB = getPassword(sqlConnection, login);
     String newPasswordInDB = null;
     if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
       if (passwordInDB.startsWith(UnixMD5Crypt.MAGIC)) {
@@ -389,7 +374,7 @@ public class AuthenticationSQL extends Authentication {
         newPasswordInDB = CryptMD5.crypt(newPassword);
       } catch (UtilException e) {
         throw new AuthenticationPwdNotAvailException(
-            "AuthenticationSQL.internalChangePassword()",
+            "AuthenticationSQL.doChangePassword()",
             SilverpeasException.ERROR,
             "authentication.EX_INCORRECT_PASSWORD",
             "Crypt Md5 impossible");
@@ -398,6 +383,10 @@ public class AuthenticationSQL extends Authentication {
       newPasswordInDB = newPassword;
     }
 
-    updatePassword(login, newPasswordInDB);
+    updatePassword(sqlConnection, login, newPasswordInDB);
+  }
+
+  private static Connection getSQLConnection(AuthenticationConnection connection) {
+    return (Connection) connection.getConnector();
   }
 }

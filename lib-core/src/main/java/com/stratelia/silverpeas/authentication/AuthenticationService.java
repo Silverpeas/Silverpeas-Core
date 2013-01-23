@@ -39,25 +39,23 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
+import java.util.*;
 
 /**
- * The class AuthenticationServlet is called to authenticate user in Silverpeas
+ * A service for authenticating a user in Silverpeas. This service is the entry point for any
+ * authentication process as it wraps all the mechanism and the delegation to perform the actual
+ * authentication.
+ *
+ * This service wraps all the mechanism to perform the authentication process itself. It uses for
+ * doing an authentication server that is mapped with the user domain.
  */
-public class LoginPasswordAuthentication {
+public class AuthenticationService {
   static final protected String m_JDBCUrl;
   static final protected String m_AccessLogin;
   static final protected String m_AccessPasswd;
@@ -70,9 +68,6 @@ public class LoginPasswordAuthentication {
   static final protected String m_KeyStoreKeyColumnName;
   static final protected String m_KeyStoreLoginColumnName;
   static final protected String m_KeyStoreDomainIdColumnName;
-  static protected Hashtable<String, String> m_Domains = new Hashtable<String, String>();
-  static protected List<Domain> domains = new ArrayList<Domain>();
-  static protected List<String> m_DomainsIds = new ArrayList<String>();
   static final protected String m_UserTableName;
   static final protected String m_UserIdColumnName;
   static final protected String m_UserLoginColumnName;
@@ -107,20 +102,18 @@ public class LoginPasswordAuthentication {
     m_UserIdColumnName = propFile.getString("SQLUserIdColumnName");
     m_UserLoginColumnName = propFile.getString("SQLUserLoginColumnName");
     m_UserDomainColumnName = propFile.getString("SQLUserDomainColumnName");
-
-    initDomains();
   }
 
   /**
-   * Constructor
+   * Constructs a new AuthenticationService instance.
    */
-  public LoginPasswordAuthentication() {
+  public AuthenticationService() {
   }
 
   /**
-   * Opens a new connection to Silverpeas database
+   * Opens a new connection to the Silverpeas database.
    */
-  static protected Connection openConnection() throws AuthenticationException {
+  static private Connection openConnection() throws AuthenticationException {
     Properties info = new Properties();
     Driver driverSQL = null;
     Connection con;
@@ -130,62 +123,83 @@ public class LoginPasswordAuthentication {
       info.setProperty("password", m_AccessPasswd);
       driverSQL = (Driver) Class.forName(m_DriverClass).newInstance();
     } catch (Exception iex) {
-      throw new AuthenticationHostException("LoginPasswordAuthentication.openConnection()",
+      throw new AuthenticationHostException("AuthenticationService.openConnection()",
           SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" +
           m_DriverClass, iex);
     }
     try {
       con = driverSQL.connect(m_JDBCUrl, info);
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("LoginPasswordAuthentication.openConnection()",
+      throw new AuthenticationHostException("AuthenticationService.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + m_JDBCUrl, ex);
     }
     return con;
   }
 
   /**
-   * Close connection to Silverpeas database
+   * Closes the specified connection to the Silverpeas database
    */
-  static protected void closeConnection(Connection con) {
+  static private void closeConnection(Connection con) {
     DBUtil.close(con);
   }
 
   /**
    * Gets all the available user domains. A domain in Silverpeas is a repository of users with its
    * its own authentication process.
-   * @return a list of user domains.
+   *
+   * At each user domain is associated an authentication server that is responsible of the
+   * authentication of the domain's users.
+   *
+   * @return an unmodifiable list of user domains.
    */
   public List<Domain> getAllDomains() {
+    List<Domain> domains;
+    try {
+      domains = Arrays.asList(AdminReference.getAdminService().getAllDomains());
+    } catch (AdminException e) {
+      SilverTrace.error("authentication", "AuthenticationService",
+          "Problem to retrieve all the domains", e);
+      domains = Collections.EMPTY_LIST;
+    }
     return domains;
   }
 
-  static public void initDomains() {
-    m_DomainsIds.clear();
-    m_Domains.clear();
-    domains.clear();
-    try {
-      Domain[] allDomains = AdminReference.getAdminService().getAllDomains();
-      for (Domain domain : allDomains) {
-        m_Domains.put(domain.getId(), domain.getName());
-        m_DomainsIds.add(domain.getId());
-        domains.add(domain);
+  /**
+   * Authenticates a user with the specified authentication credential.
+   *
+   * If the authentication succeed, the security-related capabilities, mapped to the
+   * user's credential, are set from information sent back by the authentication server related to
+   * the domain to which the user belongs.
+   * @param userCredential the credential of the user to use to authenticate him.
+   * @return an authentication key or null if the authentication fails. The authentication key
+   * identifies uniquely the status of the user authentication and it is unique to the user so that
+   * he can be identified from it.
+   */
+  public String authenticate(final AuthenticationCredential userCredential) {
+    String key = null;
+    if (userCredential.getLogin() != null) {
+      if (userCredential.isPasswordSet()) {
+        key = authenticateByLoginAndPasswordAndDomain(userCredential);
+      } else {
+        key = authenticateByLoginAndDomain(userCredential);
       }
-    } catch (AdminException e) {
-      SilverTrace.error("authentication", "LoginPasswordAuthentication",
-          "Problem to retrieve all the domains", e);
     }
+    return key;
   }
 
   /**
-   * Main method that authenticates given user and return an authantication key
-   * @param login User login
-   * @param password User password
-   * @param domainId User domain Id
-   * @return authentication key used by LoginServlet
+   * Authenticates the user with the login, password, and domain contained in the specified
+   * authentication credential.
+   *
+   * @param credential an authentication credential with the login and the password of the user, and
+   * with the domain to which the user belongs.
+   * @return an authentication key if the authentication succeed, null otherwise.
    */
-  public String authenticate(String login, String password, String domainId,
-      HttpServletRequest request) {
+  private String authenticateByLoginAndPasswordAndDomain(AuthenticationCredential credential) {
     // Test data coming from calling page
+    String login = credential.getLogin();
+    String password = credential.getPassword();
+    String domainId = credential.getDomainId();
     if (login == null || password == null || domainId == null) {
       return null;
     }
@@ -197,15 +211,12 @@ public class LoginPasswordAuthentication {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
 
-      if (request != null) {
-        // Store information about password change capabilities in HTTP session
-        HttpSession session = request.getSession();
-        session.setAttribute(Authentication.PASSWORD_CHANGE_ALLOWED,
-            (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
-      }
+        // Store information about password change capabilities
+      credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
+          (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Authentification test
-      authenticationServer.authenticate(login, password, request);
+      // Authentication test
+      authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
       String key = getAuthenticationKey(login, domainId);
@@ -213,7 +224,7 @@ public class LoginPasswordAuthentication {
       return key;
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication",
-          "LoginPasswordAuthentication.authenticate()",
+          "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
           + login, ex);
       String errorCause = "Error_2";
@@ -241,14 +252,16 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Method that authenticates given user and return an authentication key Used in case of ntlm
-   * authentication
-   * @param login User login
-   * @param domainId User domain Id
-   * @return authentication key used by LoginServlet
+   * Authenticates the user only by its login and the domain to which he belongs.
+   *
+   * @param credential an authentication credential with the login and the domain to which the user
+   * belongs.
+   * @return an authentication key if the authentication succeed, null otherwise.
    */
-  public String authenticate(String login, String domainId, HttpServletRequest request) {
+  private String authenticateByLoginAndDomain(AuthenticationCredential credential) {
     // Test data coming from calling page
+    String login = credential.getLogin();
+    String domainId = credential.getDomainId();
     if (login == null || domainId == null) {
       return null;
     }
@@ -261,8 +274,8 @@ public class LoginPasswordAuthentication {
       // Open connection
       m_Connection = openConnection();
 
-      String query = "select " + m_UserIdColumnName + " from "
-          + m_UserTableName + " where " + m_UserLoginColumnName + " = ? and "
+      String query = "SELECT " + m_UserIdColumnName + " FROM "
+          + m_UserTableName + " WHERE " + m_UserLoginColumnName + " = ? AND "
           + m_UserDomainColumnName + " = ?";
       prepStmt = m_Connection.prepareStatement(query);
 
@@ -273,7 +286,7 @@ public class LoginPasswordAuthentication {
 
       authenticationOK = resultSet.next();
     } catch (Exception ex) {
-      SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
+      SilverTrace.warn("authentication", "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       String errorCause = "Error_2";
       return errorCause;
@@ -289,7 +302,7 @@ public class LoginPasswordAuthentication {
       try {
         key = getAuthenticationKey(login, domainId);
       } catch (Exception e) {
-        SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
+        SilverTrace.warn("authentication", "AuthenticationService.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
             login, e);
         String errorCause = "Error_2";
@@ -301,7 +314,8 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Main method that change user password
+   * Changes the password
+   *
    * @param login User login
    * @param oldPassword User old password
    * @param newPassword User new password
@@ -309,11 +323,11 @@ public class LoginPasswordAuthentication {
    * @throws AuthenticationException
    */
   public void changePassword(String login, String oldPassword,
-      String newPassword, String domainId) throws AuthenticationException {
+                             String newPassword, String domainId) throws AuthenticationException {
     // Test data coming from calling page
     if (login == null || oldPassword == null || domainId == null
         || newPassword == null) {
-      throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.changePassword",
+      throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
@@ -324,10 +338,10 @@ public class LoginPasswordAuthentication {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
 
-      // Authentification test
+      // Authentication test
       authenticationServer.changePassword(login, oldPassword, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "LoginPasswordAuthentication.changePassword()",
+      SilverTrace.error("authentication", "AuthenticationService.changePassword()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       throw ex;
     } finally {
@@ -336,9 +350,26 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Get the Authentication Server name for the given domain
-   * @param domainId Domain Id
-   * @return authentication server name
+   * Gets an authentication key for a given user from its specified login and from the domain to which
+   * he belongs. This method doesn't perform any authentication but it only set a new authentication
+   * key for the given user. This method can be used, for example, to let a user who has forgotten its
+   * password of setting a new one.
+   *
+   * @param login the user login.
+   * @param domainId the unique identifier of the domain of the user.
+   * @return an authentication key.
+   */
+  public String getAuthenticationKey(String login, String domainId) throws AuthenticationException {
+    String authKey = computeGenerationKey(login, domainId);
+    storeAuthenticationKey(login, domainId, authKey);
+    return authKey;
+  }
+
+  /**
+   * Gets the Authentication Server name for the given domain.
+   *
+   * @param domainId the unique domain identifier.
+   * @return the authentication server name related to the specified domain.
    */
   private String getAuthenticationServerName(Connection con, String domainId)
       throws AuthenticationException {
@@ -348,7 +379,7 @@ public class LoginPasswordAuthentication {
         + " FROM " + m_DomainTableName + " WHERE " + m_DomainIdColumnName
         + " = " + domainId + "";
 
-    SilverTrace.info("authentication", "LoginPasswordAuthentication.getAuthenticationServerName()",
+    SilverTrace.info("authentication", "AuthenticationService.getAuthenticationServerName()",
         "root.MSG_GEN_PARAM_VALUE", "query=" + query);
     try {
       stmt = con.createStatement();
@@ -357,7 +388,7 @@ public class LoginPasswordAuthentication {
         String serverName = rs.getString(m_DomainAuthenticationServerColumnName);
         if (!StringUtil.isDefined(serverName)) {
           throw new AuthenticationException(
-              "LoginPasswordAuthentication.getAuthenticationServerName()",
+              "AuthenticationService.getAuthenticationServerName()",
               SilverpeasException.ERROR, "authentication.EX_SERVER_NOT_FOUND",
               "DomainId=" + domainId);
         } else {
@@ -365,13 +396,13 @@ public class LoginPasswordAuthentication {
         }
       } else {
         throw new AuthenticationException(
-            "LoginPasswordAuthentication.getAuthenticationServerName()",
+            "AuthenticationService.getAuthenticationServerName()",
             SilverpeasException.ERROR, "authentication.EX_DOMAIN_NOT_FOUND",
             "DomainId=" + domainId);
       }
     } catch (SQLException ex) {
       throw new AuthenticationException(
-          "LoginPasswordAuthentication.getAuthenticationServerName()",
+          "AuthenticationService.getAuthenticationServerName()",
           SilverpeasException.ERROR, "authentication.EX_DOMAIN_INFO_ERROR",
           "DomainId=" + domainId);
     } finally {
@@ -380,26 +411,23 @@ public class LoginPasswordAuthentication {
   }
 
   /**
-   * Build a random authentication key, store it in Silverpeas database and return it.
-   * @param login user login
-   * @param domainId user domain id
-   * @return generated authentication key
+   * Builds a random authentication key.
+   *
+   * @param login a user login
+   * @param domainId a user domain identifier.
+   * @return the generated authentication key.
    */
-  public String getAuthenticationKey(String login, String domainId)
+  private String computeGenerationKey(String login, String domainId)
       throws AuthenticationException {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
     Random rand = new Random(nStart);
     int key = rand.nextInt();
 
-    String sKey = String.valueOf(key);
-
-    storeAuthenticationKey(login, domainId, sKey);
-
-    return sKey;
+    return String.valueOf(key);
   }
 
-  public void storeAuthenticationKey(String login, String domainId, String sKey)
+  private void storeAuthenticationKey(String login, String domainId, String sKey)
       throws AuthenticationException {
     Statement stmt = null;
     int key = Integer.parseInt(sKey);
@@ -415,10 +443,10 @@ public class LoginPasswordAuthentication {
 
       stmt = m_Connection.createStatement();
       stmt.execute(query);
-      SilverTrace.info("authentication", "LoginPasswordAuthentication.storeAuthenticationKey()",
+      SilverTrace.info("authentication", "AuthenticationService.storeAuthenticationKey()",
           "root.MSG_GEN_PARAM_VALUE", "query=" + query);
     } catch (SQLException ex) {
-      SilverTrace.error("authentication", "LoginPasswordAuthentication.storeAuthenticationKey()",
+      SilverTrace.error("authentication", "AuthenticationService.storeAuthenticationKey()",
           "authentication.EX_WRITE_KEY_ERROR", "User=" + login + " exception=" + ex.getSQLState());
     } finally {
       DBUtil.close(stmt);
@@ -430,7 +458,7 @@ public class LoginPasswordAuthentication {
       throws AuthenticationException {
     // Test data coming from calling page
     if (login == null || domainId == null || newPassword == null) {
-      throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.resetPassword",
+      throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
@@ -446,7 +474,7 @@ public class LoginPasswordAuthentication {
       // Authentification test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "LoginPasswordAuthentication.resetPassword()",
+      SilverTrace.error("authentication", "AuthenticationService.resetPassword()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       throw ex;
     } finally {
@@ -465,7 +493,7 @@ public class LoginPasswordAuthentication {
 
       return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication", "LoginPasswordAuthentication.isPasswordChangeAllowed()",
+      SilverTrace.error("authentication", "AuthenticationService.isPasswordChangeAllowed()",
           "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
           ex.getMessage());
     } finally {
@@ -479,8 +507,8 @@ public class LoginPasswordAuthentication {
     // Get authentication server name
     String authenticationServerName = getAuthenticationServerName(con, domainId);
 
-    // Build a AuthenticationServer instance
-    return new AuthenticationServer(authenticationServerName);
+    // Return the AuthenticationServer instance with the specified unique name
+    return AuthenticationServer.getAuthenticationServer(authenticationServerName);
   }
 
 }

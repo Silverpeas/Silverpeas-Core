@@ -49,13 +49,13 @@ public class AuthenticationParameters {
 
   private final int keyMaxLength = 12;
 
-  String login;
-  String password;
-  String domainId;
-  String storedPassword;
-  String cryptedPassword;
-  String clearPassword;
-  boolean casMode;
+  private String login;
+  private String password;
+  private String domainId;
+  private String storedPassword;
+  private String cryptedPassword;
+  private String clearPassword;
+  private boolean casMode;
 
   private boolean socialNetworkMode;
   private SocialNetworkID networkId;

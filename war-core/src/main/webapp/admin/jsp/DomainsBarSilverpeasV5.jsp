@@ -367,8 +367,8 @@ out.println(gef.getLookStyleSheet());
                 <% if (helper.isAnonymousAccess()) {
                     //------------------------------------------------------------------
                     // domains are used by 'selectDomain.jsp.inc'
-                    // Get a LoginPasswordAuthentication object
-                    LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+                    // Get a AuthenticationService object
+                    AuthenticationService lpAuth = new AuthenticationService();
                     List<Domain> listDomains = lpAuth.getAllDomains();
                     pageContext.setAttribute("listDomains", listDomains);
                     pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);

@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.servlets.credentials;
 
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
 import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class ForgotPasswordHandler extends FunctionHandler {
 
-  private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+  private static AuthenticationService lpAuth = new AuthenticationService();
   private ForgottenPasswordMailManager forgottenPasswordMailManager =
       new ForgottenPasswordMailManager();
 

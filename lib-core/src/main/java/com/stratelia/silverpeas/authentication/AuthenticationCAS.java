@@ -46,23 +46,22 @@ public class AuthenticationCAS extends Authentication {
   protected String loginColumnName;
   private String loginQuery;
 
-  protected Connection connection;
-
   @Override
-  public void init(String authenticationServerName, ResourceLocator propFile) {
-    jdbcUrl = propFile.getString(authenticationServerName + ".SQLJDBCUrl");
-    jdbcLogin = propFile.getString(authenticationServerName + ".SQLAccessLogin");
-    jdbcPasswd = propFile.getString(authenticationServerName + ".SQLAccessPasswd");
-    jdbcDriver = propFile.getString(authenticationServerName + ".SQLDriverClass");
-    loginTableName = propFile.getString(authenticationServerName + ".SQLUserTableName");
-    loginColumnName = propFile.getString(authenticationServerName + ".SQLUserLoginColumnName");
+  public void loadProperties(ResourceLocator settings) {
+    String serverName = getServerName();
+    jdbcUrl = settings.getString(serverName + ".SQLJDBCUrl");
+    jdbcLogin = settings.getString(serverName + ".SQLAccessLogin");
+    jdbcPasswd = settings.getString(serverName + ".SQLAccessPasswd");
+    jdbcDriver = settings.getString(serverName + ".SQLDriverClass");
+    loginTableName = settings.getString(serverName + ".SQLUserTableName");
+    loginColumnName = settings.getString(serverName + ".SQLUserLoginColumnName");
     loginQuery =
         "SELECT " + loginColumnName + " FROM " + loginTableName + " WHERE " + loginColumnName +
         " = ?";
   }
 
   @Override
-  protected void openConnection() throws AuthenticationException {
+  protected AuthenticationConnection<Connection> openConnection() throws AuthenticationException {
     Properties info = new Properties();
     Driver driverSQL = null;
     try {
@@ -83,7 +82,8 @@ public class AuthenticationCAS extends Authentication {
           "Driver=" + jdbcDriver, ex);
     }
     try {
-      connection = driverSQL.connect(jdbcUrl, info);
+      Connection connection = driverSQL.connect(jdbcUrl, info);
+      return new AuthenticationConnection<Connection>(connection);
     } catch (SQLException ex) {
       throw new AuthenticationHostException("AuthenticationCAS.openConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
@@ -91,22 +91,23 @@ public class AuthenticationCAS extends Authentication {
   }
 
   @Override
-  protected void internalAuthentication(String login, String passwd) throws AuthenticationException {
+  protected void doAuthentication(AuthenticationConnection connection,
+                                  AuthenticationCredential credential) throws AuthenticationException {
     ResultSet rs = null;
     PreparedStatement stmt = null;
     try {
-      stmt = connection.prepareStatement(loginQuery);
-      stmt.setString(1, login);
+      stmt = getSQLConnection(connection).prepareStatement(loginQuery);
+      stmt.setString(1, credential.getLogin());
       rs = stmt.executeQuery();
       if (!rs.next()) {
         throw new AuthenticationBadCredentialException(
-            "AuthenticationCAS.internalAuthentication()",
-            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
+            "AuthenticationCAS.doAuthentication()",
+            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + credential.getLogin());
       }
-      SilverTrace.info("authentication", "AuthenticationCAS.internalAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
+      SilverTrace.info("authentication", "AuthenticationCAS.doAuthentication()",
+          "authentication.MSG_USER_AUTHENTIFIED", "User=" + credential.getLogin());
     } catch (SQLException ex) {
-      throw new AuthenticationHostException("AuthenticationCAS.internalAuthentication()",
+      throw new AuthenticationHostException("AuthenticationCAS.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_SQL_ACCESS_ERROR", ex);
     } finally {
       DBUtil.close(rs, stmt);
@@ -114,8 +115,12 @@ public class AuthenticationCAS extends Authentication {
   }
 
   @Override
-  protected void closeConnection() throws AuthenticationException {
-    DBUtil.close(connection);
+  protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
+    DBUtil.close(getSQLConnection(connection));
+  }
+
+  private static Connection getSQLConnection(AuthenticationConnection connection) {
+    return (Connection) connection.getConnector();
   }
 
 }

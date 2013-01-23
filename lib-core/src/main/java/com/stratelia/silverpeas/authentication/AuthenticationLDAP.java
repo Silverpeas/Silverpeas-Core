@@ -78,80 +78,72 @@ public class AuthenticationLDAP extends Authentication {
   protected String m_AccessPasswd;
   protected String m_UserBaseDN;
   protected String m_UserLoginFieldName;
-  protected LDAPConnection m_LDAPConnection = null;
 
-  public void init(String authenticationServerName, ResourceLocator propFile) {
-    // Lecture du fichier de proprietes
-    m_IsSecured = getBooleanProperty(propFile, authenticationServerName + ".LDAPSecured", false);
-    m_Host = propFile.getString(authenticationServerName + ".LDAPHost");
+  @Override
+  public void loadProperties(ResourceLocator settings) {
+    String serverName = getServerName();
+    m_IsSecured = settings.getBoolean(serverName + ".LDAPSecured", false);
+    m_Host = settings.getString(serverName + ".LDAPHost");
     if (m_IsSecured) {
-      m_Port = Integer.parseInt(propFile.getString(authenticationServerName + ".LDAPSecuredPort"));
+      m_Port = Integer.parseInt(settings.getString(serverName + ".LDAPSecuredPort"));
     } else {
-      m_Port = Integer.parseInt(propFile.getString(authenticationServerName + ".LDAPPort"));
+      m_Port = Integer.parseInt(settings.getString(serverName + ".LDAPPort"));
     }
-    ldapImpl = propFile.getString(authenticationServerName + ".LDAPImpl");
-    m_AccessLogin = propFile.getString(authenticationServerName + ".LDAPAccessLogin");
-    m_AccessPasswd = propFile.getString(authenticationServerName + ".LDAPAccessPasswd");
-    m_UserBaseDN = propFile.getString(authenticationServerName + ".LDAPUserBaseDN");
-    m_UserLoginFieldName = propFile.getString(authenticationServerName + ".LDAPUserLoginFieldName");
+    ldapImpl = settings.getString(serverName + ".LDAPImpl");
+    m_AccessLogin = settings.getString(serverName + ".LDAPAccessLogin");
+    m_AccessPasswd = settings.getString(serverName + ".LDAPAccessPasswd");
+    m_UserBaseDN = settings.getString(serverName + ".LDAPUserBaseDN");
+    m_UserLoginFieldName = settings.getString(serverName + ".LDAPUserLoginFieldName");
 
     // get parameters about user alert if password is about to expire or is already expired
-    m_MustAlertPasswordExpiration = getBooleanProperty(propFile, authenticationServerName
-        + ".MustAlertPasswordExpiration", false);
+    m_MustAlertPasswordExpiration = settings.getBoolean(serverName + ".MustAlertPasswordExpiration", false);
     if (m_MustAlertPasswordExpiration) {
       m_PwdLastSetFieldName =
-          propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldName");
-      String propValue = propFile.getString(authenticationServerName + ".LDAPPwdMaxAge");
+          settings.getString(serverName + ".LDAPPwdLastSetFieldName");
+      String propValue = settings.getString(serverName + ".LDAPPwdMaxAge");
       m_PwdMaxAge = (propValue == null) ? Integer.MAX_VALUE : Integer.parseInt(propValue);
 
-      propValue = propFile.getString(authenticationServerName + ".LDAPPwdLastSetFieldFormat");
+      propValue = settings.getString(serverName + ".LDAPPwdLastSetFieldFormat");
       m_PwdLastSetFieldFormat = ((propValue == null) || (propValue.equals("nanoseconds"))) ? 0 : 1;
 
-      propValue = propFile.getString(authenticationServerName + ".PwdExpirationReminderDelay");
+      propValue = settings.getString(serverName + ".PwdExpirationReminderDelay");
       m_PwdExpirationReminderDelay = (propValue == null) ? 5 : Integer.parseInt(propValue);
       if (m_PwdLastSetFieldName == null) {
         m_MustAlertPasswordExpiration = false;
       }
     }
-    SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+    SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
         "root.MSG_GEN_PARAM_VALUE", "javax.net.ssl.trustStore = "
         + System.getProperty("javax.net.ssl.trustStore"));
   }
 
   @Override
-  protected void openConnection() throws AuthenticationException {
-    boolean doConnect = false;
-    // Connect to server
-    if (m_LDAPConnection == null) {
-      if (m_IsSecured) {
-        m_LDAPConnection = new LDAPConnection(new LDAPJSSESecureSocketFactory());
-      } else {
-        m_LDAPConnection = new LDAPConnection();
-      }
-      doConnect = true;
-    } else if (m_LDAPConnection.isConnected() == false) {
-      doConnect = true;
+  protected AuthenticationConnection<LDAPConnection> openConnection() throws AuthenticationException {
+    LDAPConnection ldapConnection;
+    if (m_IsSecured) {
+      ldapConnection = new LDAPConnection(new LDAPJSSESecureSocketFactory());
+    } else {
+      ldapConnection = new LDAPConnection();
     }
-    if (doConnect) {
-      try {
-        m_LDAPConnection.connect(m_Host, m_Port);
-      } catch (LDAPException ex) {
-        throw new AuthenticationHostException(
-            "AuthenticationLDAP.openConnection()", SilverpeasException.ERROR,
-            "root.EX_CONNECTION_OPEN_FAILED", "Host=" + m_Host + ";Port=" + String.valueOf(m_Port),
-            ex);
-      }
+    try {
+      ldapConnection.connect(m_Host, m_Port);
+    } catch (LDAPException ex) {
+      throw new AuthenticationHostException(
+          "AuthenticationLDAP.openConnection()", SilverpeasException.ERROR,
+          "root.EX_CONNECTION_OPEN_FAILED", "Host=" + m_Host + ";Port=" + String.valueOf(m_Port),
+          ex);
     }
+    return new AuthenticationConnection<LDAPConnection>(ldapConnection);
   }
 
   @Override
-  protected void closeConnection() throws AuthenticationException {
+  protected void closeConnection(AuthenticationConnection connection) throws AuthenticationException {
     // disconnect from the server
     try {
-      if (m_LDAPConnection != null && m_LDAPConnection.isConnected()) {
-        m_LDAPConnection.disconnect();
+      LDAPConnection ldapConnection = getLDAPConnection(connection);
+      if (ldapConnection != null && ldapConnection.isConnected()) {
+        ldapConnection.disconnect();
       }
-      m_LDAPConnection = null;
     } catch (Exception ex) {
       throw new AuthenticationHostException("AuthenticationLDAP.closeConnection()",
           SilverpeasException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "Host=" + m_Host + ";Port="
@@ -160,9 +152,9 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
-  protected void internalAuthentication(String login, String passwd)
+  protected void doAuthentication(AuthenticationConnection connection, AuthenticationCredential credential)
       throws AuthenticationException {
-    String searchString = m_UserLoginFieldName + "=" + login;
+    String searchString = m_UserLoginFieldName + "=" + credential.getLogin();
     String[] attrNames;
     int nbDaysBeforeExpiration = 0;
 
@@ -178,11 +170,14 @@ public class AuthenticationLDAP extends Authentication {
     }
 
     // bind to LDAP with administrator account
+    LDAPConnection ldapConnection = getLDAPConnection(connection);
+    String login = credential.getLogin();
+    String password = credential.getPassword();
     try {
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
+      ldapConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
           m_AccessPasswd.getBytes(Charsets.UTF_8));
     } catch (LDAPException e) {
-      throw new AuthenticationHostException("AuthenticationLDAP.internalAuthentication()",
+      throw new AuthenticationHostException("AuthenticationLDAP.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", e);
     }
 
@@ -191,29 +186,29 @@ public class AuthenticationLDAP extends Authentication {
     String[] baseDNs = extractBaseDNs(m_UserBaseDN);
     for (String baseDN : baseDNs) {
       try {
-        SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+        SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
             "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString + ", baseDN = " + baseDN);
-        LDAPSearchResults res = m_LDAPConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
+        LDAPSearchResults res = ldapConnection.search(baseDN, LDAPConnection.SCOPE_SUB,
             searchString, attrNames, false);
         if (res.hasMore()) {
           fe = res.next();
           break;
         }
       } catch (LDAPException ex) {
-        throw new AuthenticationHostException("AuthenticationLDAP.internalAuthentication()",
+        throw new AuthenticationHostException("AuthenticationLDAP.doAuthentication()",
             SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
       }
     }
 
     // No user found
     if (fe == null) {
-        throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalAuthentication()",
+        throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
             + ";LoginField=" + m_UserLoginFieldName);
       }
 
     // Calculate nb days before password expiration
-    SilverTrace.debug("authentication", "AuthenticationLDAP.internalAuthentication()",
+    SilverTrace.debug("authentication", "AuthenticationLDAP.doAuthentication()",
             "root.MSG_GEN_PARAM_VALUE", "m_MustAlertPasswordExpiration="
             + m_MustAlertPasswordExpiration);
     if (m_MustAlertPasswordExpiration) {
@@ -225,25 +220,25 @@ public class AuthenticationLDAP extends Authentication {
 
     // Checks if password is correct
     String userFullDN = fe.getDN();
-    if (!StringUtil.isDefined(passwd)) {
-      throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalAuthentication()",
+    if (!StringUtil.isDefined(password)) {
+      throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_PWD_EMPTY", "User=" + login);
     }
     try {
-      SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+      SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
           "authentication.MSG_TRY_TO_AUTHENTICATE_USER", "UserDN=" + userFullDN);
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, passwd.getBytes(Charsets.UTF_8));
-      SilverTrace.info("authentication", "AuthenticationLDAP.internalAuthentication()",
+      ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, password.getBytes(Charsets.UTF_8));
+      SilverTrace.info("authentication", "AuthenticationLDAP.doAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (LDAPException ex) {
-      throw new AuthenticationBadCredentialException("AuthenticationLDAP.internalAuthentication()",
+      throw new AuthenticationBadCredentialException("AuthenticationLDAP.doAuthentication()",
           SilverpeasException.ERROR, "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "User="
           + login, ex);
     }
 
     if (m_MustAlertPasswordExpiration && (nbDaysBeforeExpiration < m_PwdExpirationReminderDelay)) {
       throw new AuthenticationPasswordAboutToExpireException(
-          "AuthenticationLDAP.internalAuthentication()",
+          "AuthenticationLDAP.doAuthentication()",
           SilverpeasException.WARNING, "authentication.EX_AUTHENTICATION_PASSWORD_ABOUT_TO_EXPIRE",
           "User=" + login);
     }
@@ -328,29 +323,25 @@ public class AuthenticationLDAP extends Authentication {
     return delayInDays;
   }
 
-  /**
-   * Overrides Authentication.internalChangePassword to offer password update capabilities
-   * @param login user login
-   * @param oldPassword user old password
-   * @param newPassword user new password
-   * @throws AuthenticationException
-   */
   @Override
-  protected void internalChangePassword(String login, String oldPassword, String newPassword)
+  protected void doChangePassword(AuthenticationConnection connection,
+                                  AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
-    String userFullDN = null;
+    String login = credential.getLogin();
+    String oldPassword = credential.getPassword();
+    String userFullDN;
     String searchString = m_UserLoginFieldName + "=" + login;
     String[] strAttributes = { "sAMAccountName", "memberOf" };
-
+    LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
       // Bind as the admin for the search
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
+      ldapConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
           m_AccessPasswd.getBytes(Charsets.UTF_8));
 
       // Get user DN
       SilverTrace.info("authentication", "AuthenticationLDAP.changePassword()",
           "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
-      LDAPSearchResults res = m_LDAPConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
+      LDAPSearchResults res = ldapConnection.search(m_UserBaseDN, LDAPConnection.SCOPE_SUB,
           searchString, strAttributes, false);
       if (!res.hasMore()) {
         throw new AuthenticationBadCredentialException(
@@ -364,7 +355,7 @@ public class AuthenticationLDAP extends Authentication {
       LDAPModification[] mod;
       if ("opends".equalsIgnoreCase(ldapImpl) || "openldap".equalsIgnoreCase(ldapImpl)) {
         // re bind with the requested user to verify old password
-        m_LDAPConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
+        ldapConnection.bind(LDAPConnection.LDAP_V3, userFullDN, oldPassword.getBytes(Charsets.UTF_8));
         // prepare password change
         mod = changeOpenDSPassword(newPassword);
       } else { //Active Directory (something else ?)
@@ -382,10 +373,10 @@ public class AuthenticationLDAP extends Authentication {
       }
 
       // Perform the update
-      m_LDAPConnection.modify(userFullDN, mod);
+      ldapConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
       throw new AuthenticationHostException(
-          "AuthenticationLDAP.internalChangePassword()",
+          "AuthenticationLDAP.doChangePassword()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
     }
   }
@@ -420,7 +411,7 @@ public class AuthenticationLDAP extends Authentication {
         newPassword))};
   }
 
-  static String[] extractBaseDNs(String baseDN) {
+  private static String[] extractBaseDNs(String baseDN) {
     // if no separator, return a array with only the baseDN
     if (!baseDN.contains(BASEDN_SEPARATOR)) {
       String[] baseDNs = new String[1];
@@ -437,25 +428,25 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
-  protected void internalResetPassword(String login, String newPassword)
+  protected void doResetPassword(AuthenticationConnection connection, String login, String newPassword)
       throws AuthenticationException {
     String userFullDN = null;
     String searchString = m_UserLoginFieldName + "=" + login;
     String[] strAttributes = { "sAMAccountName", "memberOf" };
-
+    LDAPConnection ldapConnection = getLDAPConnection(connection);
     try {
       // Bind as the admin for the search
-      m_LDAPConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
+      ldapConnection.bind(LDAPConnection.LDAP_V3, m_AccessLogin,
           m_AccessPasswd.getBytes(Charsets.UTF_8));
 
       // Get user DN
       SilverTrace.info("authentication", "AuthenticationLDAP.changePassword()",
           "root.MSG_GEN_PARAM_VALUE", "UserFilter=" + searchString);
-      LDAPSearchResults res = m_LDAPConnection.search(
+      LDAPSearchResults res = ldapConnection.search(
           m_UserBaseDN, LDAPConnection.SCOPE_SUB, searchString, strAttributes, false);
       if (!res.hasMore()) {
         throw new AuthenticationBadCredentialException(
-            "AuthenticationLDAP.internalResetPassword()",
+            "AuthenticationLDAP.doResetPassword()",
             SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login
             + ";LoginField=" + m_UserLoginFieldName);
       }
@@ -472,11 +463,14 @@ public class AuthenticationLDAP extends Authentication {
       }
 
       // Perform the update
-      m_LDAPConnection.modify(userFullDN, mod);
+      ldapConnection.modify(userFullDN, mod);
     } catch (Exception ex) {
-      throw new AuthenticationHostException("AuthenticationLDAP.internalResetPassword()",
+      throw new AuthenticationHostException("AuthenticationLDAP.doResetPassword()",
           SilverpeasException.ERROR, "authentication.EX_LDAP_ACCESS_ERROR", ex);
     }
   }
 
+  private static LDAPConnection getLDAPConnection(AuthenticationConnection connection) {
+    return (LDAPConnection) connection.getConnector();
+  }
 }

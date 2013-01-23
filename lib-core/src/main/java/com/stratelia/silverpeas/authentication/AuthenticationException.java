@@ -64,6 +64,10 @@ public class AuthenticationException extends SilverpeasException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
+  public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
+    visitor.visit(this);
+  }
+
   /**
    * -------------------------------------------------------------------------- getModule getModule
    */

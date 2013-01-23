@@ -23,7 +23,6 @@ package com.stratelia.webactiv.beans.admin;
 import com.silverpeas.domains.DomainDriverFactory;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
 import com.stratelia.webactiv.organization.*;
@@ -926,7 +925,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
       // Create domain
       getOrganization().domain.createDomain(dr);
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return idAsString(dr.id);
     } catch (AdminException e) {
@@ -962,7 +960,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         domainDriverInstances.remove(theDomain.getId());
       }
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return theDomain.getId();
     } catch (AdminException e) {
@@ -990,7 +987,6 @@ public class DomainDriverManager extends AbstractDomainDriver {
         domainDriverInstances.remove(domainId);
       }
       this.commit();
-      LoginPasswordAuthentication.initDomains();
 
       return domainId;
     } catch (AdminException e) {

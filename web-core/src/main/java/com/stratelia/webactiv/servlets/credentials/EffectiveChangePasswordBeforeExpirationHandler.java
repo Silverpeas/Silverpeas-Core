@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.servlets.credentials;
 
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -65,7 +65,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
-      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
+      AuthenticationService auth = new AuthenticationService();
       auth.changePassword(login, oldPassword, newPassword, domainId);
 
       GraphicElementFactory gef =

@@ -39,7 +39,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -166,7 +166,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   private void changePassword(String login, String oldPassword, String newPassword, String domainId)
       throws AuthenticationException {
-    LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
+    AuthenticationService auth = new AuthenticationService();
     auth.changePassword(login, oldPassword, newPassword, domainId);
   }
 

@@ -66,8 +66,8 @@ pageContext.setAttribute("changePasswordFromLoginPage", changePasswordFromLoginP
 boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
 boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 
-// Get a LoginPasswordAuthentication object
-LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+// Get a AuthenticationService object
+AuthenticationService lpAuth = new AuthenticationService();
 
 // list of domains
 List<Domain> listDomains = lpAuth.getAllDomains();

@@ -24,153 +24,111 @@
 
 package com.stratelia.silverpeas.authentication;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class manage the authentication for a given domain
+ * The authentication server is a proxy in Silverpeas side of the external authentication service
+ * related to a given user domain. This service is identified by an unique name. The authentication
+ * is delegated to an implementation of the Authentication abstract class that knows how to perform
+ * the authentication with the remote service.
+ *
+ * An external authentication service can be backed by one or more remote authentication servers.
+ * So, the authentication with each server is then performed by a different Authentication instance
+ * of the same type; each Authentication instance is mapped with a given server behind the external
+ * authentication service.
+ *
+ * The correct implementation of the Authentication abstract class is loaded from the properties
+ * mapped to an authentication service name. Each service name identifies uniquely an external
+ * security service (SQL database, LDAP, NTLM, ...)
+ *
  * @author tleroi
- * @version
+ * @author mmoquillon
  */
 public class AuthenticationServer {
-  protected String m_FallbackType;
-  protected int m_nbServers;
-  protected List<Authentication> m_AutServers;
-  protected boolean m_allowPasswordChange;
+  protected String fallbackMode;
+  protected List<Authentication> authServers;
+  protected boolean passwordChangeAllowed;
 
-  public AuthenticationServer(String authServerName) {
-    int nbServers;
-    int i;
-    Authentication autObj;
-    String serverName;
-    ResourceLocator propFile;
+  /**
+   * Gets the authentication server identified by the specified name.
+   *
+   * @param serverName the authentication server name.
+   * @return the authentication server with the specified name.
+   */
+  public static AuthenticationServer getAuthenticationServer(String serverName) {
+    return new AuthenticationServer(serverName);
+  }
 
-    m_nbServers = 0;
+  /**
+   * Creates an authentication server proxying the external one defined by the specified name.
+   * All the settings to communicate with the remote service are then loaded from the properties
+   * mapped with the specified server name.
+   * @param authServerName an authentication server name.
+   */
+  private AuthenticationServer(String authServerName) {
     try {
-      propFile = new ResourceLocator("com.stratelia.silverpeas.authentication."
+      ResourceLocator serverSettings = new ResourceLocator("org.silverpeas.authentication."
           + authServerName, "");
-      m_FallbackType = propFile.getString("fallbackType");
-      m_allowPasswordChange = getBooleanProperty(propFile, "allowPasswordChange", false);
-      nbServers = Integer.parseInt(propFile.getString("autServersCount"));
-      m_AutServers = new ArrayList<Authentication>();
-      for (i = 0; i < nbServers; i++) {
-        serverName = "autServer" + i;
-        if (getBooleanProperty(propFile, serverName + ".enabled", true)) {
+      fallbackMode = serverSettings.getString("fallbackType");
+      passwordChangeAllowed = serverSettings.getBoolean("allowPasswordChange", false);
+      int nbServers = Integer.parseInt(serverSettings.getString("autServersCount"));
+      authServers = new ArrayList<Authentication>(nbServers);
+      for (int i = 0; i < nbServers; i++) {
+        String serverName = "autServer" + i;
+        if (serverSettings.getBoolean(serverName + ".enabled", true)) {
           try {
-            autObj = (Authentication) Class.forName(
-                propFile.getString(serverName + ".type")).newInstance();
-            autObj.init(serverName, propFile);
-            autObj.setEnabled(true);
-            m_AutServers.add(autObj);
-            m_nbServers++;
+            Authentication authenticationWithAServer = (Authentication) Class.forName(
+                serverSettings.getString(serverName + ".type")).newInstance();
+            authenticationWithAServer.init(serverName, serverSettings);
+            authServers.add(authenticationWithAServer);
           } catch (Exception ex) {
-            SilverTrace.error("authentication",
-                "AuthenticationServer.AuthenticationServer",
+            SilverTrace.error("authentication", "AuthenticationServer.AuthenticationServer",
                 "authentication.EX_CANT_INSTANCIATE_SERVER_CLASS",
                 authServerName + " / " + serverName, ex);
           }
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("authentication",
-          "AuthenticationServer.AuthenticationServer",
+      SilverTrace.error("authentication", "AuthenticationServer.AuthenticationServer",
           "authentication.EX_DOMAIN_INFO_ERROR", "Server=" + authServerName, e);
     }
   }
 
-  public void authenticate(String login, String passwd,
-      HttpServletRequest request) throws AuthenticationException {
-    int i;
-    Authentication autObj;
-    boolean bNotFound = true;
-    AuthenticationException lastException = null;
-
-    if ((login == null) || (login.length() <= 0)) {
-      throw new AuthenticationException("AuthenticationServer.authenticate",
-          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
-    }
-    i = 0;
-    while ((i < m_nbServers) && bNotFound) {
-      autObj = m_AutServers.get(i);
-      if (autObj.getEnabled()) {
-        try {
-          autObj.authenticate(login, passwd, request);
-          bNotFound = false;
-        } catch (AuthenticationPasswordAboutToExpireException ex) {
-          // authentication succeeded but throw exception to alert that password
-          // is about to expire
-          // Store information in request and return
-          bNotFound = false;
-          if (request != null) {
-            request.getSession().
-                setAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
-          }
-        } catch (AuthenticationPwdNotAvailException ex) {
-          SilverTrace.info("authentication",
-              "AuthenticationServer.authenticate",
-              "authentication.EX_PWD_NOT_AVAILABLE", "ServerNbr="
-              + Integer.toString(i) + ";User=" + login, ex);
-          lastException = ex;
-        } catch (AuthenticationHostException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.authenticate",
-                "authentication.EX_AUTHENTICATION_HOST_ERROR", "ServerNbr="
-                + i + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationBadCredentialException ex) {
-          if (m_FallbackType.equals("none")
-              || m_FallbackType.equals("ifNotRejected")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.authenticate",
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "ServerNbr="
-                + i + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.authenticate",
-                "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
-                "ServerNbr=" + i + ";User=" + login, ex);
-            lastException = ex;
-          }
-        }
+  /**
+   * Authenticates the user with the specified authentication credential.
+   *
+   * @param credential the authentication credential to use to authenticate the user.
+   * @throws AuthenticationException if the authentication fails.
+   */
+  public void authenticate(final AuthenticationCredential credential) throws AuthenticationException {
+    doSecurityOperation(new SecurityOperation("authenticate", credential) {
+      @Override
+      public void performWith(Authentication authentication) throws AuthenticationException {
+        authentication.authenticate(credential);
       }
-      i++;
-    }
-    if (bNotFound) {
-      if (lastException == null) {
-        throw new AuthenticationException("AuthenticationServer.authenticate",
-            SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
-      } else {
-        throw new AuthenticationException("AuthenticationServer.authenticate",
-            SilverpeasException.ERROR,
-            "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR", lastException);
-      }
-    }
+    });
   }
 
-  public void changePassword(String login, String oldPassword,
-      String newPassword) throws AuthenticationException {
-    int i;
-    Authentication autObj;
-    boolean bNotFound = true;
-    AuthenticationException lastException = null;
-
-    if (!m_allowPasswordChange) {
+  /**
+   * Changes the password associated with the login in the specified credential by the one passed
+   * in parameter. The credential is used to validate the authentication of the user.
+   * The password modification capability is available only with some authentication services, so
+   * please use the method <code>isPasswordChangeAllowed()</code> to check if this operation is
+   * supported.
+   * @param login
+   * @param oldPassword
+   * @param newPassword
+   * @throws AuthenticationException if an error occurs while changing the password.
+   */
+  public void changePassword(final String login, final String oldPassword,
+                             final String newPassword) throws AuthenticationException {
+    if (!passwordChangeAllowed) {
       throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.changePassword",
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
@@ -179,82 +137,37 @@ public class AuthenticationServer {
       throw new AuthenticationException("AuthenticationServer.changePassword",
           SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
     }
-    i = 0;
-    while ((i < m_nbServers) && bNotFound) {
-      autObj = m_AutServers.get(i);
-      if (autObj.getEnabled()) {
-        try {
-          autObj.changePassword(login, oldPassword, newPassword);
-          bNotFound = false;
-        } catch (AuthenticationPwdChangeNotAvailException ex) {
-          SilverTrace.info("authentication",
-              "AuthenticationServer.changePassword",
-              "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE", "ServerNbr="
-              + Integer.toString(i) + ";User=" + login, ex);
-          lastException = ex;
-        } catch (AuthenticationHostException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.changePassword",
-                "authentication.EX_AUTHENTICATION_HOST_ERROR", "ServerNbr="
-                + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationBadCredentialException ex) {
-          if (m_FallbackType.equals("none")
-              || m_FallbackType.equals("ifNotRejected")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.changePassword",
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "ServerNbr="
-                + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication",
-                "AuthenticationServer.changePassword",
-                "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
-                "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
-        }
+
+    doSecurityOperation(new SecurityOperation("changePassword",
+        AuthenticationCredential.newWithAsLogin(login).withAsPassword(newPassword)) {
+      @Override
+      public void performWith(Authentication authentication) throws AuthenticationException {
+        authentication.changePassword(login, oldPassword, newPassword);
       }
-      i++;
-    }
-    if (bNotFound) {
-      if (lastException == null) {
-        throw new AuthenticationException(
-            "AuthenticationServer.changePassword", SilverpeasException.ERROR,
-            "authentication.EX_NO_SERVER_AVAILABLE");
-      } else {
-        throw new AuthenticationException(
-            "AuthenticationServer.changePassword", SilverpeasException.ERROR,
-            "authentication.EX_AUTHENTICATION_FAILED_LAST_ERROR", lastException);
-      }
-    }
+    });
   }
 
-  protected final boolean getBooleanProperty(ResourceLocator resources,
-      String propertyName, boolean defaultValue) {
-    String value = resources.getString(propertyName);
-    if (value != null) {
-      return "true".equalsIgnoreCase(value);
-    }
-    return defaultValue;
-  }
-
+  /**
+   * Is the the password change is allowed by the remote authentication service represented by this
+   * instance?
+   * @return true if the password can be changed, false otherwise.
+   */
   public boolean isPasswordChangeAllowed() {
-    return m_allowPasswordChange;
+    return passwordChangeAllowed;
   }
 
-  public void resetPassword(String login, String newPassword) throws AuthenticationException {
-    if (!m_allowPasswordChange) {
+  /**
+   * Resets the password associated with the specified login by replacing it with the specified one.
+   * This password reset capability is available only whether the authentication service supports the
+   * password change. Please use the method <code>isPasswordChangeAllowed()</code> to check this.
+   * This operation doesn't require the user to be authenticated, so the reset must be under the
+   * control of the system for security reasons.
+   * @param login the login of the user for which the password has to be reset.
+   * @param newPassword the new password of the user.
+   * @throws AuthenticationException if an error occurs while resetting the password with the new one.
+   */
+  public void resetPassword(final String login, final String newPassword) throws AuthenticationException {
+    if (!passwordChangeAllowed) {
       throw new AuthenticationPwdChangeNotAvailException("AuthenticationServer.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
@@ -264,53 +177,42 @@ public class AuthenticationServer {
           SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
     }
 
-    Authentication autObj;
-    boolean bNotFound = true;
+    doSecurityOperation(new SecurityOperation("resetPassword",
+        AuthenticationCredential.newWithAsLogin(login).withAsPassword(newPassword)) {
+      @Override
+      public void performWith(Authentication authentication) throws AuthenticationException {
+        authentication.resetPassword(login, newPassword);
+      }
+    });
+  }
+
+  private void doSecurityOperation(SecurityOperation op) throws AuthenticationException {
+    if (!StringUtil.isDefined(op.getAuthenticationCredential().getLogin())) {
+      throw new AuthenticationException("AuthenticationCredential.newWithAsLogin",
+          SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
+    }
+
+    boolean serverNotFound = true;
     AuthenticationException lastException = null;
-    int i = 0;
-    while ((i < m_nbServers) && bNotFound) {
-      autObj = m_AutServers.get(i);
-      if (autObj.getEnabled()) {
+    for(Authentication authServer: authServers) {
+      if (authServer.isEnabled()) {
         try {
-          autObj.resetPassword(login, newPassword);
-          bNotFound = false;
-        } catch (AuthenticationPwdChangeNotAvailException ex) {
-          SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
-              "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE",
-              "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
+          op.performWith(authServer);
+          serverNotFound = false;
+        } catch(AuthenticationException ex) {
+          AuthenticationExceptionProcessor processor =
+              new AuthenticationExceptionProcessor(op.getName(), authServer,
+                  op.getAuthenticationCredential());
+          serverNotFound = processor.processAuthenticationException(ex);
           lastException = ex;
-        } catch (AuthenticationHostException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
-                "authentication.EX_AUTHENTICATION_HOST_ERROR",
-                "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationBadCredentialException ex) {
-          if (m_FallbackType.equals("none") || m_FallbackType.equals("ifNotRejected")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
-                "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
-        } catch (AuthenticationException ex) {
-          if (m_FallbackType.equals("none")) {
-            throw ex;
-          } else {
-            SilverTrace.info("authentication", "AuthenticationServer.resetPassword",
-                "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
-                "ServerNbr=" + Integer.toString(i) + ";User=" + login, ex);
-            lastException = ex;
-          }
         }
       }
-      i++;
+      if (!serverNotFound) {
+        break;
+      }
     }
-    if (bNotFound) {
+
+    if (serverNotFound) {
       if (lastException == null) {
         throw new AuthenticationException("AuthenticationServer.resetPassword",
             SilverpeasException.ERROR, "authentication.EX_NO_SERVER_AVAILABLE");
@@ -321,4 +223,112 @@ public class AuthenticationServer {
       }
     }
   }
+
+  private abstract class SecurityOperation {
+    private String name;
+    private AuthenticationCredential credential;
+
+    public SecurityOperation(String operationName, AuthenticationCredential credential) {
+      this.credential = credential;
+      this.name = operationName;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public AuthenticationCredential getAuthenticationCredential() {
+      return credential;
+    }
+
+    public abstract void performWith(Authentication authentication) throws AuthenticationException;
+  }
+
+  private class AuthenticationExceptionProcessor implements AuthenticationExceptionVisitor {
+
+    private final Authentication authentication;
+    private final AuthenticationCredential credential;
+    private boolean continueAuthentication = true;
+    private final String operation;
+
+    public AuthenticationExceptionProcessor(String authOperation, Authentication authentication,
+                                            AuthenticationCredential credential) {
+      this.operation = authOperation;
+      this.authentication = authentication;
+      this.credential = credential;
+    }
+
+    public boolean processAuthenticationException(AuthenticationException ex) throws AuthenticationException {
+      ex.accept(this);
+      return continueAuthentication;
+    }
+
+    @Override
+    public void visit(AuthenticationBadCredentialException ex) throws AuthenticationException {
+      if (fallbackMode.equals("none") || fallbackMode.equals("ifNotRejected")) {
+        throw ex;
+      } else {
+        SilverTrace.info("authentication",
+            "AuthenticationServer." + operation,
+            "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL", "Auth server="
+            + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
+      }
+      continueAuthentication = true;
+    }
+
+    @Override
+    public void visit(AuthenticationHostException ex) throws AuthenticationException {
+      if (fallbackMode.equals("none")) {
+        throw ex;
+      } else {
+        SilverTrace.info("authentication",
+            "AuthenticationServer." + operation,
+            "authentication.EX_AUTHENTICATION_HOST_ERROR", "Auth server="
+            + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
+      }
+      continueAuthentication = true;
+    }
+
+    @Override
+    public void visit(AuthenticationException ex) throws AuthenticationException {
+      if (fallbackMode.equals("none")) {
+        throw ex;
+      } else {
+        SilverTrace.info("authentication",
+            "AuthenticationServer." + operation,
+            "authentication.EX_AUTHENTICATION_REJECTED_BY_SERVER",
+            "Auth server=" + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
+      }
+      continueAuthentication = true;
+    }
+
+    @Override
+    public void visit(AuthenticationPwdNotAvailException ex) throws AuthenticationException {
+      SilverTrace.info("authentication",
+          "AuthenticationServer." + operation,
+          "authentication.EX_PWD_NOT_AVAILABLE", "Auth server="
+          + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
+      continueAuthentication = true;
+    }
+
+    /**
+     * In fact, the authentication succeeded but an exception has been thrown to alert the password is
+     * about to expire.
+     */
+    @Override
+    public void visit(AuthenticationPasswordAboutToExpireException ex) throws AuthenticationException {
+      credential.getCapabilities().put(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE, Boolean.TRUE);
+      continueAuthentication = false;
+    }
+
+    @Override
+    public void visit(AuthenticationPwdChangeNotAvailException ex) throws AuthenticationException {
+      SilverTrace.info("authentication",
+          "AuthenticationServer." + operation,
+          "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE",
+          "Auth server=" + authentication.getServerName() + ";User=" + credential.getLogin(), ex);
+      continueAuthentication = true;
+    }
+  }
+
 }
