@@ -61,7 +61,6 @@ import static com.silverpeas.util.StringUtil.isDefined;
 public class UserPriviledgeValidation {
 
   @Inject
-  @Named("sessionManager")
   private SessionManagement sessionManagement;
   @Inject
   @Named("componentAccessController")
@@ -216,7 +215,7 @@ public class UserPriviledgeValidation {
   /**
    * Validates the current user session with the specified session key. If the incoming request is
    * within an opened HTTP session (not so stateless, should be avoided in RESTful REST web services
-   * for both scalability and REST policy reasons), then take checks this session is valide before
+   * for both scalability and REST policy reasons), then take checks this session is valid before
    * processing the request. If the session is valid, then detail about the user is returned,
    * otherwise a WebApplicationException exception is thrown. As the anonymous user has no opened
    * session, when a request is recieved by this web service and that request does neither belong to
@@ -227,7 +226,7 @@ public class UserPriviledgeValidation {
    * @return the detail about the user requesting this web service.
    */
   private SessionInfo validateUserSession(String sessionKey) {
-    SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+    SessionInfo sessionInfo = sessionManagement.validateSession(sessionKey);
     if (sessionInfo == null) {
 
       // Verify user token

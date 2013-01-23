@@ -54,7 +54,9 @@ public class EffectiveChangePasswordHandler extends FunctionHandler {
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
       auth.changePassword(login, oldPassword, newPassword, domainId);
-      return "/LoginServlet";
+
+      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
+          domainId;
     } catch (AdminException e) {
       SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
           "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);

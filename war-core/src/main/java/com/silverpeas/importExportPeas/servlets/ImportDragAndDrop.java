@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.MassiveDocumentImport;
@@ -30,11 +29,12 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.util.FileUtil;
+
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
-import com.stratelia.silverpeas.peasCore.SessionManager;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -52,6 +52,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import com.silverpeas.util.FileUtil;
+
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
@@ -94,8 +97,10 @@ public class ImportDragAndDrop extends HttpServlet {
       String topicId = request.getParameter("TopicId");
       if (!StringUtil.isDefined(topicId)) {
         String sessionId = request.getParameter("SessionId");
+        SessionManagementFactory factory = SessionManagementFactory.getFactory();
+        SessionManagement sessionManagement = factory.getSessionManagement();
         HttpSession session =
-            ((HTTPSessionInfo)SessionManager.getInstance().getSessionInfo(sessionId)).getHttpSession();
+            ((HTTPSessionInfo)sessionManagement.getSessionInfo(sessionId)).getHttpSession();
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");

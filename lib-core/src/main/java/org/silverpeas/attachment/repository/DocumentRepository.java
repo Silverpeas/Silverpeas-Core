@@ -31,13 +31,30 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.model.*;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.jcr.NodeIterable;
+import org.silverpeas.util.jcr.PropertyIterable;
 
 import javax.inject.Named;
-import javax.jcr.*;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.qom.*;
+import javax.jcr.query.qom.ChildNode;
+import javax.jcr.query.qom.Comparison;
+import javax.jcr.query.qom.DescendantNode;
+import javax.jcr.query.qom.Ordering;
+import javax.jcr.query.qom.QueryObjectModel;
+import javax.jcr.query.qom.QueryObjectModelFactory;
+import javax.jcr.query.qom.Selector;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
@@ -51,8 +68,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.util.jcr.NodeIterable;
-import org.silverpeas.util.jcr.PropertyIterable;
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
 
@@ -376,8 +391,8 @@ public class DocumentRepository {
     QueryManager manager = session.getWorkspace().getQueryManager();
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
-    ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath() + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
+    DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
+        session.getRootNode().getPath() + instanceId);
     Comparison oldSilverpeasIdComparison = factory.comparison(factory.propertyValue(
         SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OLD_ID), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
@@ -386,7 +401,7 @@ public class DocumentRepository {
         SLV_PROPERTY_VERSIONED), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(versioned)));
 
-    QueryObjectModel query = factory.createQuery(source, factory.and(childNodeConstraint,
+    QueryObjectModel query = factory.createQuery(source, factory.and(descendantdNodeConstraint,
         factory.and(oldSilverpeasIdComparison, versionedComparison)), null, null);
     QueryResult result = query.execute();
     NodeIterator iter = result.getNodes();
@@ -506,9 +521,7 @@ public class DocumentRepository {
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     DescendantNode descendantdNodeConstraint = factory.descendantNode(SIMPLE_DOCUMENT_ALIAS,
-        session.getRootNode().
-        getPath()
-        + instanceId);
+        session.getRootNode().getPath() + instanceId);
     Comparison foreignIdComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_FOREIGN_KEY), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.
         literal(session.getValueFactory().createValue(foreignId)));
@@ -713,8 +726,7 @@ public class DocumentRepository {
     QueryObjectModelFactory factory = manager.getQOMFactory();
     Selector source = factory.selector(SLV_SIMPLE_DOCUMENT, SIMPLE_DOCUMENT_ALIAS);
     ChildNode childNodeConstraint = factory.childNode(SIMPLE_DOCUMENT_ALIAS, session.getRootNode().
-        getPath()
-        + instanceId + '/' + SimpleDocument.ATTACHMENTS_FOLDER);
+        getPath() + instanceId + '/' + DocumentType.attachment.getFolderName());
     Comparison ownerComparison = factory.comparison(factory.propertyValue(SIMPLE_DOCUMENT_ALIAS,
         SLV_PROPERTY_OWNER), QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, factory.literal(session.
         getValueFactory().createValue(owner)));

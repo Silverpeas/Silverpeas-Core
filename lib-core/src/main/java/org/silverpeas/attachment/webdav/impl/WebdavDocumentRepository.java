@@ -20,11 +20,13 @@
  */
 package org.silverpeas.attachment.webdav.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Calendar;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.webdav.WebdavRepository;
 
 import javax.inject.Named;
 import javax.jcr.Binary;
@@ -32,14 +34,11 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.webdav.WebdavRepository;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Calendar;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 
@@ -51,7 +50,7 @@ public class WebdavDocumentRepository implements WebdavRepository {
       RepositoryException, IOException {
     Node rootNode = session.getRootNode();
     Node attachmentFolder = addFolder(rootNode, SimpleDocument.WEBDAV_FOLDER);
-    attachmentFolder = addFolder(attachmentFolder, SimpleDocument.ATTACHMENTS_FOLDER);
+    attachmentFolder = addFolder(attachmentFolder, DocumentType.attachment.getFolderName());
     Node componentFolder = addFolder(attachmentFolder, attachment.getInstanceId());
     Node contextFolder = componentFolder;
     if (attachment.getId() != null) {

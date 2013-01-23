@@ -41,6 +41,7 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   public HistorisedDocument() {
+    super(new SimpleDocumentPK(null), null, 0, true, new SimpleAttachment());
   }
 
   public HistorisedDocument(SimpleDocument doc) {
@@ -51,6 +52,11 @@ public class HistorisedDocument extends SimpleDocument {
     setStatus(doc.getStatus());
     setPublicDocument(doc.isPublic());
     setNodeName(doc.getNodeName());
+  }
+
+  @Override
+  public boolean isVersioned() {
+    return true;
   }
 
   public List<SimpleDocument> getHistory() {

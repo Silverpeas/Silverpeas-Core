@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
@@ -48,7 +50,6 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -179,11 +180,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*get all User that heir lastname or first name Last Name like "Key"
-* @param Key:the key of search
-* @throws DirectoryException
-* @see
-*/
+   * get all User that heir lastname or first name Last Name like "Key"
+   * @param query the search query
+   * @throws DirectoryException
+   * @see
+   */
   public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
     setCurrentView("query");
     setCurrentQuery(query);
@@ -402,8 +403,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentQuery(null);
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
-    Collection<SessionInfo> sessions =
-            SessionManager.getInstance().getDistinctConnectedUsersList(getUserDetail());
+    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
+    Collection<SessionInfo> sessions = sessionManagement.getDistinctConnectedUsersList(getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }

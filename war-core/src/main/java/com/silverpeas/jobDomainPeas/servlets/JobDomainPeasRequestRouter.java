@@ -221,8 +221,8 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.modifyUserFull(userId, accessLevel, properties);
           }
         } else if (function.startsWith("userSearchToImport")) {
-          Hashtable<String, String> query = null;
-          List<UserDetail> users = null;
+          Hashtable<String, String> query;
+          List<UserDetail> users;
           jobDomainSC.clearListSelectedUsers();
           jobDomainSC.setIndexOfFirstItemToDisplay("0");
 
@@ -233,8 +233,8 @@ public class JobDomainPeasRequestRouter extends
           } else {
             query = new Hashtable<String, String>();
             Enumeration<String> parameters = request.getParameterNames();
-            String paramName = null;
-            String paramValue = null;
+            String paramName;
+            String paramValue;
             while (parameters.hasMoreElements()) {
               paramName = parameters.nextElement();
               if (!paramName.startsWith("Pagination")) {
@@ -314,14 +314,14 @@ public class JobDomainPeasRequestRouter extends
           AdminController adminController = new AdminController(jobDomainSC.getUserId());
           String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
           if (groupIds != null && groupIds.length > 0) {
-            for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-              Group group = orgaController.getGroup(groupIds[iGrp]);
+            for (final String groupId : groupIds) {
+              Group group = orgaController.getGroup(groupId);
 
               String groupDomainId = group.getDomainId();
               if (groupDomainId == null) {
                 groupDomainId = "-1";
               }
-              if (groupDomainId != "-1") {
+              if (!groupDomainId.equals("-1")) {
                 jobDomainSC.goIntoGroup(group.getId());
                 break;
               }
@@ -347,7 +347,7 @@ public class JobDomainPeasRequestRouter extends
         // Browse functions
         // ----------------
         if (function.startsWith("groupContent")) {
-          String groupId = (String) request.getParameter("Idgroup");
+          String groupId = request.getParameter("Idgroup");
           if (StringUtil.isDefined(groupId)) {
             jobDomainSC.goIntoGroup(groupId);
           }
@@ -605,10 +605,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("groupsPath", jobDomainSC.getPath(
               (String) request.getAttribute("myComponentURL"),
               jobDomainSC.getString("JDP.userAdd") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC
-              .isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
@@ -624,17 +621,13 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayUserModify")) {
           long domainRight = jobDomainSC.getDomainActions();
 
-          request.setAttribute("isUserRW", Boolean.valueOf(
-              (domainRight & DomainDriver.ACTION_UPDATE_USER) != 0));
+          request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_UPDATE_USER) != 0);
 
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userModify");
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.
-              isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserMS")) {
@@ -642,17 +635,14 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("action", "userMS");
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
-          request.setAttribute("minLengthLogin", Integer.valueOf(jobDomainSC.getMinLengthLogin()));
-          request.setAttribute("minLengthPwd", Integer.valueOf(jobDomainSC.getMinLengthPwd()));
-          request.setAttribute("blanksAllowedInPwd", Boolean.valueOf(jobDomainSC.
-              isBlanksAllowedInPwd()));
+          request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
 
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserImport")) {
           request.setAttribute("SelectedIds", jobDomainSC.getListSelectedUsers());
-          request.setAttribute("FirstUserIndex", Integer.valueOf(jobDomainSC.
-              getIndexOfFirstItemToDisplay()));
+          request.setAttribute("FirstUserIndex", jobDomainSC.
+              getIndexOfFirstItemToDisplay());
           request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
               "myComponentURL"), jobDomainSC.getString("JDP.userImport") + "..."));
           request.setAttribute("properties", jobDomainSC.getPropertiesToImport());

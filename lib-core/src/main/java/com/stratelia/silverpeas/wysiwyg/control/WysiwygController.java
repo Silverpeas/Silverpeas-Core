@@ -145,7 +145,6 @@ public class WysiwygController {
    * @throws WysiwygException
    */
   public static String[][] getWebsitePages(String path, String componentId) throws WysiwygException {
-    /* chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\webSite10\\nomSite\\rep */
     try {
       Collection<File> listPages = FileFolderManager.getAllWebPages(getNodePath(path, componentId));
       Iterator<File> i = listPages.iterator();
@@ -428,9 +427,9 @@ public class WysiwygController {
    * @param componentId String : the id of component.
    * @param id String : for example the id of the publication.
    */
-  public static void createFileAndAttachment(String textHtml, String componentId, String id)  {
+  public static void createFileAndAttachment(String textHtml, String componentId, String id, String userId)  {
     String fileName = getWysiwygFileName(id);
-    createFileAndAttachment(textHtml, fileName, componentId, WYSIWYG_CONTEXT, id, null);
+    createFileAndAttachment(textHtml, fileName, componentId, WYSIWYG_CONTEXT, id, userId);
   }
 
   /**

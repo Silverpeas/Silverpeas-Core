@@ -491,7 +491,7 @@
     function checkout(id, oldId, webdav, edit, download) {
       if (id.length > 0) {
         pageMustBeReloadingAfterSorting = true;
-        $.get('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(data) {
+        $.post('<c:url value="/Attachment" />', {Id:id, FileLanguage:'<c:out value="${contentLanguage}" />', Action:'Checkout'}, function(data) {
           if (data == 'ok') {
             var oMenu = eval("oMenu" + oldId);
             oMenu.getItem(3).cfg.setProperty("disabled", false);
@@ -583,7 +583,7 @@
         }
       }
 
-      $.get('<c:url value="/Attachment" />', { id:attachmentId, Action:'Delete', languagesToDelete:sLanguages}, function(data){
+      $.post('<c:url value="/Attachment" />', { id:attachmentId, Action:'Delete', languagesToDelete:sLanguages}, function(data){
         data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
         if (data == "attachmentRemoved") {
           $('#attachment_' + attachmentId).remove();
@@ -803,7 +803,7 @@
       });
 
       function sortAttachments(orderedList) {
-        $.get('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
+        $.post('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
           data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
           if (data == "error") {
             alert("Une erreur s'est produite !");

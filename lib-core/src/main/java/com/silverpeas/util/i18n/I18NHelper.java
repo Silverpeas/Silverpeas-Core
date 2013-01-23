@@ -58,7 +58,7 @@ public class I18NHelper {
   public static final String HTMLLink2 = "Translation?Code=";
 
   static {
-    ResourceLocator rs = new ResourceLocator("com.silverpeas.util.i18n", "");
+    ResourceLocator rs = new ResourceLocator("org.silverpeas.util.i18n", "");
     String rsLanguages = rs.getString("languages");
     StringTokenizer tokenizer = new StringTokenizer(rsLanguages, ",");
     while (tokenizer.hasMoreTokens()) {
@@ -68,7 +68,7 @@ public class I18NHelper {
       if (defaultLanguage == null) {
         defaultLanguage = language;
       }
-      ResourceLocator rsLanguage = new ResourceLocator("com.silverpeas.util.multilang.i18n",
+      ResourceLocator rsLanguage = new ResourceLocator("org.silverpeas.util.multilang.i18n",
           language);
 
       StringTokenizer tokenizer2 = new StringTokenizer(rsLanguages, ",");
@@ -119,7 +119,7 @@ public class I18NHelper {
 
   public static String checkLanguage(String language) {
     String lang = language;
-    if (!StringUtil.isDefined(language)) {
+    if (!StringUtil.isDefined(language) || ! allCodes.contains(language)) {
       lang = defaultLanguage;
     }
     return lang;

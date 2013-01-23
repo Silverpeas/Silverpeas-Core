@@ -43,6 +43,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 
@@ -108,10 +109,7 @@ public class SimpleDocumentService implements AttachmentService {
 
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
-    String language = document.getLanguage();
-    if (!StringUtil.isDefined(language)) {
-      language = I18NHelper.defaultLanguage;
-    }
+    String language = I18NHelper.checkLanguage(document.getLanguage());
     String objectType = "Attachment" + document.getId();
     if (I18NHelper.isI18N) {
       objectType += "_" + language;
@@ -127,14 +125,15 @@ public class SimpleDocumentService implements AttachmentService {
     if (endOfVisibility != null) {
       indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
     }
-    indexEntry.setTitle(document.getTitle(), language);
+   
     String title = document.getTitle();
-    if (StringUtil.isDefined(title)) {
-      indexEntry.setKeywords(title, language);
+    if (!StringUtil.isDefined(title)) {
+      title = FilenameUtils.getBaseName(document.getFilename());
     }
+     indexEntry.setTitle(title, language);
+     indexEntry.setKeywords(title, language);
     indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
         getContentType(), language);
-
     if (StringUtil.isDefined(document.getXmlFormId())) {
       updateIndexEntryWithXMLFormContent(document.getPk(), document.getXmlFormId(), indexEntry);
     }

@@ -1,28 +1,25 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.attachment.web;
+
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -34,17 +31,21 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HEAD;
 
 import org.apache.commons.lang3.CharEncoding;
 
+
+import org.silverpeas.util.Charsets;
+
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -55,14 +56,18 @@ import com.stratelia.webactiv.util.ResourceLocator;
  */
 public class LaunchWebdavEdition extends HttpServlet {
 
-  private final static byte[] KEY = new byte[] { -23, -75, -2, -17, 79, -94, -125, -14 };
+  private final static byte[] KEY = new byte[]{-23, -75, -2, -17, 79, -94, -125, -14};
   private final static String DIGITS = "0123456789abcdef";
   private static final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.util.attachment.Attachment", "");
   private static final String ALGORITHME = "DES";
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
+   * Processes requests for both HTTP
+   * <code>GET</code> and
+   * <code>POST</code> methods.
+   *
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -108,6 +113,7 @@ public class LaunchWebdavEdition extends HttpServlet {
 
   /**
    * Return length many bytes of the passed in byte array as a hex string.
+   *
    * @param data the bytes to be converted.
    * @return a hex representation of length bytes of data.
    */
@@ -147,38 +153,43 @@ public class LaunchWebdavEdition extends HttpServlet {
     out.println("\t\t<j2se href=\"http://java.sun.com/products/autodl/j2se\" version=\"1.6+\" />");
     out.println("\t\t<jar href=\"OpenOfficeLauncher.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xercesImpl-2.10.0.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"commons-codec-1.6.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"commons-codec-1.7.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"commons-httpclient-3.1.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.2.11.jar\" download=\"eager\"/>");
-    out.println("\t\t<jar href=\"jackrabbit-webdav-2.2.11.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-jcr-commons-2.5.1.jar\" download=\"eager\"/>");
+    out.println("\t\t<jar href=\"jackrabbit-webdav-2.5.1.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"jcl-over-slf4j-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-log4j12-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"slf4j-api-1.5.6.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"log4j-1.2.17.jar\" download=\"eager\"/>");
     out.println("\t\t<jar href=\"xml-apis-1.4.01.jar\" download=\"eager\"/>");
     out.println("\t</resources>");
-    out.println("\t<application-desc main-class=\"com.silverpeas.openoffice.Launcher\">");
+    out.println("\t<application-desc main-class=\"org.silverpeas.openoffice.Launcher\">");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(request.getParameter("documentUrl"), CharEncoding.UTF_8));
     out.println("</argument>");
     out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"), CharEncoding.UTF_8));
+    out.print(URLEncoder.encode(resources.getString("ms.office.installation.path"),
+        CharEncoding.UTF_8));
+    out.println("</argument>");
+        out.print("\t\t<argument>");
+    out.print(resources.getBoolean("deconnectedMode", false));
     out.println("</argument>");
     out.print("\t\t<argument>");
     out.print(URLEncoder.encode(login, CharEncoding.UTF_8));
     out.println("</argument>");
-    out.print("\t\t<argument>");
-    out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
-    out.println("</argument>");
+    if(StringUtil.isDefined(password)) {
+      out.print("\t\t<argument>");
+      out.print(URLEncoder.encode(password, CharEncoding.UTF_8));
+      out.println("</argument>");
+    }
     out.println("\t</application-desc>");
     out.println(" </jnlp>");
   }
 
-  // <editor-fold defaultstate="collapsed"
-  // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
   /**
-   * Handles the HTTP <code>GET</code> method.
+   * Handles the HTTP
+   * <code>GET</code> method.
+   *
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -191,7 +202,9 @@ public class LaunchWebdavEdition extends HttpServlet {
   }
 
   /**
-   * Handles the HTTP <code>POST</code> method.
+   * Handles the HTTP
+   * <code>POST</code> method.
+   *
    * @param request servlet request
    * @param response servlet response
    * @throws ServletException if a servlet-specific error occurs
@@ -205,10 +218,11 @@ public class LaunchWebdavEdition extends HttpServlet {
 
   /**
    * Returns a short description of the servlet.
+   *
    * @return a String containing servlet description
    */
   @Override
   public String getServletInfo() {
-    return "Short description";
-  }// </editor-fold>
+    return "Generating the JNLP for direct edition";
+  }
 }

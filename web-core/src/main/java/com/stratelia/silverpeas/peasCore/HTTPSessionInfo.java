@@ -25,6 +25,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -39,26 +41,8 @@ import javax.servlet.http.HttpSession;
  */
 public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
 
-  private static final long millisPerHour = 60L * 60L * 1000L;
-  private static final long millisPerMinute = 60000L;
   private HttpSession httpSession;
-  private long lastAliveTimestamp;
 
-  /**
-   * Updates the isalive status of the session.
-   */
-  protected void updateIsAlive() {
-    lastAliveTimestamp = System.currentTimeMillis();
-  }
-
-  /**
-   * Gets the date at which the session is alive.
-   *
-   * @return the isalive date
-   */
-  public long getIsAliveDate() {
-    return lastAliveTimestamp;
-  }
 
   /**
    * Prevent the class from being instantiate (private)
@@ -70,7 +54,6 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   public HTTPSessionInfo(HttpSession session, String IP, UserDetail ud) {
     super(session.getId(), ud);
     httpSession = session;
-    lastAliveTimestamp = System.currentTimeMillis();
     setIPAddress(IP);
   }
 
@@ -78,7 +61,11 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
   public void onClosed() {
     if (httpSession != null) {
       cleanSession(httpSession);
-      httpSession.invalidate();
+      try {
+        httpSession.invalidate();
+      } catch (IllegalStateException ex) {
+        SilverTrace.warn("peasCore", "SessionInfo.onClosed()", null, ex.getMessage());
+      }
     }
     super.onClosed();
   }
