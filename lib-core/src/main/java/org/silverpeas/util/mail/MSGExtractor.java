@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +20,7 @@ import java.util.Locale;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.poi.hsmf.datatypes.Chunks;
@@ -26,6 +28,7 @@ import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 
 import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MSGExtractor implements MailExtractor {
@@ -73,22 +76,22 @@ public class MSGExtractor implements MailExtractor {
         new InternetAddress(mainChunks.emailFromChunk.getValue(),
             mainChunks.displayFromChunk.getValue());
     mail.setFrom(from);
-
-    RecipientChunks[] recipientChunks = message.getRecipientDetailsChunks();
-    List<Address> addresses = new ArrayList<Address>();
-    for (RecipientChunks recipient : recipientChunks) {
-      InternetAddress address =
-          new InternetAddress(recipient.getRecipientEmailAddress(), recipient.getRecipientName());
-      addresses.add(address);
+    
+    String[] toNames = StringUtils.split(message.getDisplayTo(), ";");
+    mail.setTo(getInChunks(toNames).toArray(new Address[0]));
+    
+    String[] ccNames = StringUtils.split(message.getDisplayCC(), ";");
+    List<InternetAddress> ccAddresses = getInChunks(ccNames);
+    if (ccAddresses != null && !ccAddresses.isEmpty()) {
+      mail.setCc(getInChunks(ccNames).toArray(new Address[0]));
     }
-    mail.setTo(addresses.toArray(new Address[0]));
 
     try {
       String body = message.getHtmlBody();
       if (body == null) {
         body = getRtfText(message.getRtfBody());
         if (body == null) {
-          body = message.getTextBody();
+          body = EncodeHelper.javaStringToHtmlParagraphe(message.getTextBody());
         }
       }
       mail.setBody(body);
@@ -96,6 +99,29 @@ public class MSGExtractor implements MailExtractor {
       SilverTrace.warn("info", "MSGExtractor.getMail()", "", e);
     }
     return mail;
+  }
+  
+  private List<InternetAddress> getInChunks(String[] names) throws UnsupportedEncodingException {
+    List<InternetAddress> result = new ArrayList<InternetAddress>();
+    for (String name : names) {
+      InternetAddress address = getInChunks(name.trim());
+      if (address != null) {
+        result.add(address);
+      }
+    }
+    return result;
+  }
+  
+  private InternetAddress getInChunks(String name) throws UnsupportedEncodingException {
+    RecipientChunks[] recipientChunks = message.getRecipientDetailsChunks();
+    for (RecipientChunks recipient : recipientChunks) {
+      if (name.equals(recipient.getRecipientName())) {
+        InternetAddress address =
+          new InternetAddress(recipient.getRecipientEmailAddress(), recipient.getRecipientName());
+        return address;
+      }
+    }
+    return null;
   }
   
   private Date extractDateOfReception() throws ParseException {

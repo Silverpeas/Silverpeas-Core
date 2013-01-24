@@ -23,6 +23,7 @@ import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
 
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MimeTypes;
 
 public class EMLExtractor implements MailExtractor {
@@ -105,9 +106,10 @@ public class EMLExtractor implements MailExtractor {
         }
       }
     } else {
-      if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0 ||
-          part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
+      if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
         return (String) part.getContent();
+      } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
+        return EncodeHelper.javaStringToHtmlParagraphe(part.getContentType());
       }
     }
     return "";

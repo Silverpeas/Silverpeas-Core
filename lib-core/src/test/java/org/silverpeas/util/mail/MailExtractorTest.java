@@ -3,6 +3,7 @@ package org.silverpeas.util.mail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.File;
 import java.util.Calendar;
@@ -56,9 +57,9 @@ public class MailExtractorTest {
     assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
 
     // check to
+    assertThat(mail.getTo().length, is(2));
+    assertThat(mail.getCc().length, is(1));
     assertThat(mail.getAllRecipients().length, is(3));
-    /*assertThat(mail.getTo().length, is(2));
-    assertThat(mail.getCc().length, is(1));*/
 
     // check body
     assertThat(mail.getBody(), is(notNullValue()));
@@ -101,9 +102,9 @@ public class MailExtractorTest {
     assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
 
     // check to
+    assertThat(mail.getTo().length, is(2));
+    assertThat(mail.getCc(), is(nullValue()));
     assertThat(mail.getAllRecipients().length, is(2));
-    /*assertThat(mail.getTo().length, is(2));
-    assertThat(mail.getCc(), is(nullValue()));*/
 
     // check body
     assertThat(mail.getBody(), is(notNullValue()));
@@ -146,9 +147,9 @@ public class MailExtractorTest {
     assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
 
     // check to
+    assertThat(mail.getTo().length, is(1));
+    assertThat(mail.getCc().length, is(1));
     assertThat(mail.getAllRecipients().length, is(2));
-    /*assertThat(mail.getTo().length, is(1));
-    assertThat(mail.getCc().length, is(1));*/
 
     // check body
     assertThat(mail.getBody(), is(notNullValue()));
