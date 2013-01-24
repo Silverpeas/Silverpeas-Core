@@ -23,12 +23,9 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.Session;
 

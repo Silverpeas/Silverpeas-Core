@@ -25,13 +25,14 @@ package org.silverpeas.attachment.model;
 
 import java.io.File;
 import java.util.UUID;
+
 import org.junit.Test;
 
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.util.PathTestUtil;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -159,12 +160,12 @@ public class SimpleDocumentTest {
     assertThat(nodeName, is("simpledoc_" + oldSilverpeasId));
     String expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
         + "/0_0/fr/myFile.odt".replace('/', File.separatorChar);
-    String result = instance.getAttachmentPath();
+    String result = instance.getAttachmentPath().replace('/', File.separatorChar);
     assertThat(result, is(expResult));
     instance.setLanguage("en");
     expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
         + "/0_0/en/myFile.odt".replace('/', File.separatorChar);
-    result = instance.getAttachmentPath();
+    result = instance.getAttachmentPath().replace('/', File.separatorChar);
     assertThat(result, is(expResult));
   }
 
@@ -183,11 +184,11 @@ public class SimpleDocumentTest {
     assertThat(nodeName, is("simpledoc_" + oldSilverpeasId));
     String expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/fr/".
         replace('/', File.separatorChar);
-    String result = instance.getDirectoryPath(null);
+    String result = instance.getDirectoryPath(null).replace('/', File.separatorChar);
     assertThat(result, is(expResult));
     expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/en/".replace(
         '/', File.separatorChar);
-    result = instance.getDirectoryPath("en");
+    result = instance.getDirectoryPath("en").replace('/', File.separatorChar);
     assertThat(result, is(expResult));
   }
 
