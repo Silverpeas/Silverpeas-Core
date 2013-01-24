@@ -158,13 +158,13 @@ public class SimpleDocumentTest {
     instance.setPK(pk);
     String nodeName = instance.computeNodeName();
     assertThat(nodeName, is("simpledoc_" + oldSilverpeasId));
-    String expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
-        + "/0_0/fr/myFile.odt".replace('/', File.separatorChar);
+    String expResult = (PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
+        + "/0_0/fr/myFile.odt").replace('/', File.separatorChar);
     String result = instance.getAttachmentPath().replace('/', File.separatorChar);
     assertThat(result, is(expResult));
     instance.setLanguage("en");
-    expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
-        + "/0_0/en/myFile.odt".replace('/', File.separatorChar);
+    expResult = (PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName
+        + "/0_0/en/myFile.odt").replace('/', File.separatorChar);
     result = instance.getAttachmentPath().replace('/', File.separatorChar);
     assertThat(result, is(expResult));
   }
@@ -182,12 +182,12 @@ public class SimpleDocumentTest {
     instance.setPK(pk);
     String nodeName = instance.computeNodeName();
     assertThat(nodeName, is("simpledoc_" + oldSilverpeasId));
-    String expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/fr/".
-        replace('/', File.separatorChar);
+    String expResult = (PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/fr/")
+        .replace('/', File.separatorChar);
     String result = instance.getDirectoryPath(null).replace('/', File.separatorChar);
     assertThat(result, is(expResult));
-    expResult = PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/en/".replace(
-        '/', File.separatorChar);
+    expResult = (PathTestUtil.TARGET_DIR + "temp/uploads/kmelia36/" + nodeName + "/0_0/en/")
+        .replace('/', File.separatorChar);
     result = instance.getDirectoryPath("en").replace('/', File.separatorChar);
     assertThat(result, is(expResult));
   }
