@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -917,7 +918,7 @@ public class WysiwygController {
       List<AttachmentDetail> vectAttachment =
           AttachmentController.searchAttachmentByPKAndContext(foreignKey,
           getImagesFileName(oldObjectId));
-      Map<String, String> imageIds = new HashMap<String, String>();
+      Map<AttachmentPK, AttachmentPK> imageIds = new HashMap<AttachmentPK, AttachmentPK>();
 
       for (AttachmentDetail attD : vectAttachment) {
         currentPath = oldPath + attD.getPhysicalName();
@@ -933,13 +934,12 @@ public class WysiwygController {
         newAttd.setAuthor(attD.getAuthor());
         AttachmentController.createAttachment(newAttd);
 
-        imageIds.put(attD.getPK().getId(), newAttd.getPK().getId());
+        imageIds.put(attD.getPK(), newAttd.getPK());
       }
 
       Iterator<String> languages = I18NHelper.getLanguages();
       while (languages.hasNext()) {
         String language = languages.next();
-
         copyFile(oldComponentId, oldObjectId, componentId, objectId, userId, language, imageIds);
       }
     } catch (Exception e) {
@@ -947,7 +947,7 @@ public class WysiwygController {
   }
 
   private static void copyFile(String oldComponentId, String oldObjectId, String componentId,
-      String objectId, String userId, String language, Map<String, String> imageIds) {
+      String objectId, String userId, String language, Map<AttachmentPK, AttachmentPK> imageIds) {
     SilverTrace.info("wysiwyg", "WysiwygController.copyFile()", "root.MSG_GEN_ENTER_METHOD");
     try {
       // copy the wysiwyg
@@ -967,19 +967,19 @@ public class WysiwygController {
   }
 
   private static String replaceInternalImageIds(String wysiwygContent,
-      Map<String, String> imageIds) {
+      Map<AttachmentPK, AttachmentPK> imageIds) {
     String tmp = wysiwygContent;
-    for (Map.Entry<String, String> imageId : imageIds.entrySet()) {
-      String newImageId = imageId.getValue();
-      tmp = replaceInternalImageId(tmp, imageId.getKey(), newImageId);
+    for (Entry<AttachmentPK, AttachmentPK> imageId : imageIds.entrySet()) {
+      tmp = replaceInternalImageId(tmp, imageId.getKey(), imageId.getValue());
     }
     return tmp;
   }
 
-  private static String replaceInternalImageId(String wysiwygContent, String oldAttachmentId,
-      String newAttachmentId) {
-    return wysiwygContent.replaceAll("/attachmentId/" + oldAttachmentId + "/", "/attachmentId/" +
-        newAttachmentId + "/");
+  private static String replaceInternalImageId(String wysiwygContent, AttachmentPK oldPK,
+      AttachmentPK newPK) {
+    String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
+    String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
+    return wysiwygContent.replaceAll(from, to);
   }
 
   /**
