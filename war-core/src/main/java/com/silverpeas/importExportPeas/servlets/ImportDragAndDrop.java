@@ -101,20 +101,18 @@ public class ImportDragAndDrop extends HttpServlet {
         topicId = (String) session.getAttribute("Silverpeas_DragAndDrop_TopicId");
       }
       String userId = request.getParameter("UserId");
-      String ignoreFolders = request.getParameter("IgnoreFolders");
-      String draftMode = request.getParameter("Draft");
+      boolean ignoreFolders = StringUtil.getBooleanValue(request.getParameter("IgnoreFolders"));
+      boolean draftUsed = StringUtil.getBooleanValue(request.getParameter("Draft"));
 
       SilverTrace.info("importExportPeas", "Drop", "root.MSG_GEN_PARAM_VALUE",
           "componentId = " + componentId + " topicId = " + topicId
           + " userId = " + userId + " ignoreFolders = " + ignoreFolders
-          + ", draftMode = " + draftMode);
+          + ", draftUsed = " + draftUsed);
 
       String savePath = FileRepositoryManager.getTemporaryPath() + "tmpupload"
           + File.separator + topicId + System.currentTimeMillis() + File.separator;
 
       List<FileItem> items = FileUploadUtil.parseRequest(request);
-      SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "debut de la boucle");
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
@@ -138,8 +136,11 @@ public class ImportDragAndDrop extends HttpServlet {
             SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "fileName on Unix = " + fileName);
           }
-          if (!"1".equals(ignoreFolders)) {
-            fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
+          if (!ignoreFolders) {
+            if (parentPath != null && parentPath.length() > 0) {
+              result.append("newFolder=true&");
+              fileName = File.separatorChar + parentPath + File.separatorChar + fileName;
+            }
           }
           if (!"".equals(savePath)) {
             File f = new File(savePath + fileName);
@@ -157,12 +158,12 @@ public class ImportDragAndDrop extends HttpServlet {
       MassiveReport massiveReport = new MassiveReport();
       OrganizationController controller = new OrganizationController();
       UserDetail userDetail = controller.getUserDetail(userId);
-      boolean isDraftUsed = "1".equals(draftMode);
+      
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
-        List<PublicationDetail> importedPublications = massiveImporter
-            .importDocuments(userDetail, componentId, savePath, Integer.parseInt(topicId),
-            isDraftUsed, true, massiveReport);
+        List<PublicationDetail> importedPublications =
+            massiveImporter.importDocuments(userDetail, componentId, savePath,
+                Integer.parseInt(topicId), draftUsed, true, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           for (PublicationDetail publicationDetail : importedPublications) {
