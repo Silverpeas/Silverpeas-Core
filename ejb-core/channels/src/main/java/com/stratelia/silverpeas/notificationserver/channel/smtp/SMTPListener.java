@@ -68,7 +68,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
     } catch (NotificationServerException e) {
       SilverTrace.error("smtp", "SMTPListner.onMessage()",
           "smtp.EX_CANT_PROCESS_MSG", "JMS Message = " + msg.toString()
-          + ", Payload = " + m_payload == null ? "" : m_payload, e);
+          + ", Payload = " + (m_payload == null ? "" : m_payload), e);
     }
   }
 
@@ -146,15 +146,15 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
       try {
         toAddress = InternetAddress.parse(pTo, false);
         if (!AdminReference.getAdminService().getAdministratorEmail().equals(pFrom) &&
-            !fromAddress.getAddress().equals(pFrom)) {
+            (!fromAddress.getAddress().equals(pFrom) || isForceReplyToSenderField())) {
           replyToAddress = new InternetAddress(pFrom, false);
           if (StringUtil.isDefined(personalName)) {
             replyToAddress.setPersonal(personalName, "UTF-8");
           }
         }
       } catch (AddressException e) {
-        SilverTrace.warn("smtp", "SMTPListner.sendEmail()",
-            "root.MSG_GEN_PARAM_VALUE", "From = " + pFrom + ", To = " + pTo);
+        SilverTrace.warn("smtp", "SMTPListner.sendEmail()", "root.MSG_GEN_PARAM_VALUE",
+            "From = " + pFrom + ", To = " + pTo);
       }
       MimeMessage email = new MimeMessage(session);
       email.setFrom(fromAddress);
@@ -173,7 +173,7 @@ public class SMTPListener extends AbstractListener implements SMTPConstant {
         content = "";
       }
       email.setSubject(subject, "UTF-8");
-      if (content.toLowerCase().indexOf("<html>") != -1 || htmlFormat) {
+      if (content.toLowerCase().contains("<html>") || htmlFormat) {
         email.setContent(content, "text/html; charset=\"UTF-8\"");
       } else {
         email.setText(content, "UTF-8");
