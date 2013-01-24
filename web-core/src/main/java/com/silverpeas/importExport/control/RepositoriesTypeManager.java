@@ -214,6 +214,23 @@ public class RepositoriesTypeManager {
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
           + pubDetailToCreate.getStatus());
+      
+      Mail mail = null;
+      MailExtractor extractor = null;
+      if (FileUtil.isMail(file.getName())) {
+        extractor = Extractor.getExtractor(file);
+        mail = extractor.getMail();
+        
+        pubDetailToCreate.setName(mail.getSubject());
+        pubDetailToCreate.setCreationDate(mail.getDate());
+        String description = "Ceci est un message électronique envoyé par ";
+        InternetAddress address = mail.getFrom();
+        if (StringUtil.isDefined(address.getPersonal())) {
+          description += address.getPersonal() + " - ";
+        }
+        description += address.getAddress();
+        pubDetailToCreate.setDescription(description);
+      }
 
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
@@ -249,9 +266,7 @@ public class RepositoriesTypeManager {
             componentId, attDetail, pubDetailToCreate.isIndexable());
       }
       
-      if (FileUtil.isMail(file.getName())) {
-        MailExtractor extractor = Extractor.getExtractor(file);
-        Mail mail = extractor.getMail();
+      if (mail != null) {
         String content = mail.getBody();
         
         PublicationContentType pubContent = new PublicationContentType();
