@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.inject.Inject;
+import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -129,16 +130,19 @@ public abstract class AbstractJcrTestCase {
       ValueFormatException, PathNotFoundException, RepositoryException {
     CharArrayWriter writer = null;
     Reader reader = null;
+    Binary in = null;
     try {
-      InputStream in =
-          fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getStream();
+      in = fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary();
       writer = new CharArrayWriter();
-      reader = new InputStreamReader(in);
+      reader = new InputStreamReader(in.getStream());
       IOUtils.copy(reader, writer);
       return new String(writer.toCharArray());
     } catch (IOException ioex) {
       return null;
     } finally {
+      if(in != null) {
+        in.dispose();
+      }
       IOUtils.closeQuietly(reader);
       IOUtils.closeQuietly(writer);
     }

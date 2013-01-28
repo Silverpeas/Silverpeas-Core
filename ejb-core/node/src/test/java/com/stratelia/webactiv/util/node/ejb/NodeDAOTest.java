@@ -36,7 +36,10 @@ import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 import org.dbunit.database.IDatabaseConnection;
+import org.junit.AfterClass;
 import org.junit.Test;
+
+import static com.silverpeas.components.model.AbstractJndiCase.executeDDL;
 import static org.junit.Assert.*;
 
 /**
@@ -57,6 +60,11 @@ public class NodeDAOTest extends AbstractJndiCase {
     baseTest.getDatabaseTester().closeConnection(databaseConnection);    
   }
 
+  
+  @AfterClass
+  public static void generalTearDown() throws IOException, NamingException, Exception {
+    baseTest.shudown();
+  }
 
   @Test
   public void testGetTree() throws Exception {

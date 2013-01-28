@@ -37,6 +37,7 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
@@ -45,6 +46,7 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
 
   public TestBasicDaoFactory() {

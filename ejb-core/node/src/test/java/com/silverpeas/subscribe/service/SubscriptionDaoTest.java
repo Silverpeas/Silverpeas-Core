@@ -34,6 +34,7 @@ import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.AfterClass;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -48,13 +49,17 @@ public class SubscriptionDaoTest extends AbstractJndiCase {
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
-    baseTest = new SilverpeasJndiCase(
-        "com/silverpeas/subscribe/service/node-actors-test-dataset.xml",
+    baseTest = new SilverpeasJndiCase("com/silverpeas/subscribe/service/node-actors-test-dataset.xml",
         "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
     executeDDL(databaseConnection, baseTest.getDdlFile());
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
+  }
+
+  @AfterClass
+  public static void generalTearDown() throws IOException, NamingException, Exception {
+    baseTest.shudown();
   }
 
   public SubscriptionDaoTest() {

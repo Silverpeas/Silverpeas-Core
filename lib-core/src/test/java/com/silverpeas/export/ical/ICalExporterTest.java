@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,7 +116,7 @@ public class ICalExporterTest {
   public void exportOneEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -128,7 +129,7 @@ public class ICalExporterTest {
   public void exportOneDayEventGenerateAnICalFileWithInfoOnThatEvent() throws Exception {
     CalendarEvent event = generateEventWithTitle("toto", onDay(true));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -143,7 +144,7 @@ public class ICalExporterTest {
     CalendarEvent event2 = generateEventWithTitle("toto2", onDay(false));
     CalendarEvent event3 = generateEventWithTitle("toto3", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event1, event2, event3));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     for (CalendarEvent event : Arrays.asList(event1, event2, event3)) {
       assertThat(content, describes(event));
     }
@@ -160,7 +161,7 @@ public class ICalExporterTest {
       Exception {
     CalendarEvent event = generateRecurringEventWithTitle("recurring", onDay(false));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -178,7 +179,7 @@ public class ICalExporterTest {
         on(nthOccurrence(2, MONDAY), nthOccurrence(1, THURSDAY));
     CalendarEvent event = generateEventWithTitle("recurring", true).recur(recurrence);
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -197,7 +198,7 @@ public class ICalExporterTest {
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new Date(endDate.getTime()));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -215,7 +216,7 @@ public class ICalExporterTest {
     endDate.add(Calendar.YEAR, 1);
     event.getRecurrence().upTo(new DateTime(endDate.getTime()));
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -223,7 +224,7 @@ public class ICalExporterTest {
   public void exportOneEventOnDayStartingAtAGivenTime() throws Exception {
     CalendarEvent event = anEventAt(DateTime.now()).withTitle("toto").withPriority(10);
     exporter.export(descriptor, ExportableCalendar.with(event));
-    String content = icsFile.asText();
+    String content = icsFile.asText(CharEncoding.UTF_8);
     assertThat(content, describes(event));
   }
 
@@ -247,8 +248,8 @@ public class ICalExporterTest {
     } else {
       Calendar endingDate = Calendar.getInstance();
       endingDate.add(Calendar.HOUR_OF_DAY, 2);
-      event = anEventAt(new DateTime((startingDate.getTime()))).
-          endingAt(new DateTime(endingDate.getTime()));
+      event = anEventAt(new DateTime((startingDate.getTime()))).endingAt(new DateTime(
+          endingDate.getTime()));
     }
     event.withTitle(title).withPriority(10);
     event.getAttendees().add("emmanuel.hugonnet@silverpeas.com");
