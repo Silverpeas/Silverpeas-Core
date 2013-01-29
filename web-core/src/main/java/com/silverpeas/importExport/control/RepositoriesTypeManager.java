@@ -52,6 +52,7 @@ import java.util.List;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
+ *
  * @author sdevolder
  */
 public class RepositoriesTypeManager {
@@ -59,12 +60,12 @@ public class RepositoriesTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param repositoriesType - objet mappé par castor contenant toutes les informations de création
    * des publications du path défini
    * @return un objet ComponentReport contenant les informations de création des publications
-   *         unitaires et nécéssaire au rapport détaillé
-   * @throws ImportExportException
+   * unitaires et nécéssaire au rapport détaillé
    */
   public void processImport(UserDetail userDetail, RepositoriesType repositoriesType,
       boolean isPOIUsed) {
@@ -149,49 +150,32 @@ public class RepositoriesTypeManager {
   private PublicationDetail importFile(File file, int topicId, MassiveReport massiveReport,
       GEDImportExport gedIE, PdcImportExport pdcIE, boolean isPOIUsed, boolean isVersioningUsed,
       boolean isDraftUsed) {
-    SilverTrace
-        .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_ENTER_METHOD",
-            "file = " + file.getName());
-
+    SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
+        "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
     UserDetail userDetail = gedIE.getCurentUserDetail();
     PublicationDetail pubDetailToCreate = null;
-
     try {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport();
       massiveReport.addUnitReport(unitReport);
 
       // On récupére les infos nécéssaires à la création de la publication
-      pubDetailToCreate = PublicationImportExport.
-          convertFileInfoToPublicationDetail(userDetail, file, isPOIUsed);
+      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(userDetail,
+          file, isPOIUsed);
       pubDetailToCreate.setPk(new PublicationPK("unknown", "useless", componentId));
-
-      SilverTrace
-          .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-              "pubDetailToCreate instanciated");
-
       if ((isDraftUsed && pdcIE.isClassifyingMandatory(componentId)) || isDraftUsed) {
         pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
-
-      SilverTrace
-          .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-              "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
-
+      SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
+          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
       // Création de la publication
-      pubDetailToCreate = gedIE
-          .createPublicationForMassiveImport(unitReport, userDetail, pubDetailToCreate, topicId);
-
-      SilverTrace
-          .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-              "pubDetailToCreate created");
-
-
-      SilverTrace
-          .debug("importExport", "RepositoriesTypeManager.importFile", "root.MSG_GEN_PARAM_VALUE",
-              "attDetail instanciated");
+      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, userDetail,
+          pubDetailToCreate, topicId);
+      SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
+          "root.MSG_GEN_PARAM_VALUE",
+          "pubDetailToCreate created");
       SimpleDocument document;
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       if (isVersioningUsed) {
@@ -228,6 +212,7 @@ public class RepositoriesTypeManager {
   /**
    * Méthode récursive appelée dans le cas de l'importation massive récursive sans création de
    * nouveau topic: toutes les publications crées le seront dans le thème passé en paramètre.
+   *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
@@ -258,6 +243,7 @@ public class RepositoriesTypeManager {
   /**
    * Méthode récursive appelée dans le cas de l'importation massive récursive avec création de
    * nouveau topic: chaque sous dossier entrainera la création d'un topic de même nom.
+   *
    * @param massiveReport - référence sur l'objet de rapport détaillé du cas import massif
    * permettant de le compléter quelque soit le niveau de récursivité.
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport.
@@ -280,7 +266,7 @@ public class RepositoriesTypeManager {
       if (file.isFile()) {
         PublicationDetail publication =
             importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
-                isDraftUsed);
+            isDraftUsed);
         if (publication != null) {
           publications.add(publication);
         }
@@ -290,8 +276,8 @@ public class RepositoriesTypeManager {
         // Traitement récursif spécifique
         publications.addAll(
             processImportRecursiveReplicate(massiveReport, userDetail, file, gedIE, attachmentIE,
-                versioningIE, pdcIE, componentId, Integer.parseInt(nodeDetail.
-                getNodePK().getId()), isPOIUsed, isVersioningUsed, isDraftUsed));
+            versioningIE, pdcIE, componentId, Integer.parseInt(nodeDetail.
+            getNodePK().getId()), isPOIUsed, isVersioningUsed, isDraftUsed));
       }
     }
     return publications;
@@ -314,6 +300,7 @@ public class RepositoriesTypeManager {
   /**
    * Transforme la table des chaines de caractères de nom de fichier en une liste de fichiers pour
    * le chemin passé en paramètre
+   *
    * @param listFileName - table des nom de fichier sous forme de chaine de caractères.
    * @param path - chemin des fichiers contenu dans les chaines de caractères.
    * @return renvoie une liste d'objets File pour les noms de fichiers passés en paramètres

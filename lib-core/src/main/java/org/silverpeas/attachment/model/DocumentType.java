@@ -59,4 +59,8 @@ public enum DocumentType {
     }
     return attachment;
   }
+
+  public String getName() {
+    return this.name();
+  }
 }
