@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.node.ejb;
+package com.stratelia.webactiv.util.node.control.dao;
 
 import com.silverpeas.util.StringUtil;
 import java.util.ArrayList;
