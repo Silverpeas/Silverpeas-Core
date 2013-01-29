@@ -1,7 +1,4 @@
-package com.stratelia.silverpeas.authentication;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+package org.silverpeas.authentication;
 
 import java.util.HashMap;
 import java.util.Map;

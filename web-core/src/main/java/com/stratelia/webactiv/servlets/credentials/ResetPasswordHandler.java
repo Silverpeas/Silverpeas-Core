@@ -24,11 +24,11 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationCredential;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationService;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.password.service.PasswordServiceFactory;

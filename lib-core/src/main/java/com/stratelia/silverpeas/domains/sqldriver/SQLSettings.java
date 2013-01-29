@@ -24,7 +24,7 @@
 
 package com.stratelia.silverpeas.domains.sqldriver;
 
-import com.stratelia.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.domains.DriverSettings;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -40,7 +40,6 @@ public class SQLSettings extends DriverSettings {
   protected String SQLJDBCUrl = "";
   protected String SQLAccessLogin = "";
   protected String SQLAccessPasswd = "";
-  protected String SQLPasswordEncryption = Authentication.ENC_TYPE_CLEAR;
 
   // For Table Names
   protected String SQLUserTableName = "DomainSQL_User";
@@ -78,8 +77,6 @@ public class SQLSettings extends DriverSettings {
     SQLJDBCUrl = rs.getString("database.SQLJDBCUrl", SQLJDBCUrl);
     SQLAccessLogin = rs.getString("database.SQLAccessLogin", SQLAccessLogin);
     SQLAccessPasswd = rs.getString("database.SQLAccessPasswd", SQLAccessPasswd);
-    SQLPasswordEncryption = rs.getString("database.SQLPasswordEncryption",
-        SQLPasswordEncryption);
 
     // For Table Names
     SQLUserTableName = rs.getString("database.SQLUserTableName",
@@ -140,15 +137,6 @@ public class SQLSettings extends DriverSettings {
 
   public String getAccessPasswd() {
     return SQLAccessPasswd;
-  }
-
-  public String getPasswordEncryption() {
-    return SQLPasswordEncryption;
-  }
-
-  public boolean isPasswordEncrypted() {
-    return (!Authentication.ENC_TYPE_CLEAR
-        .equalsIgnoreCase(SQLPasswordEncryption));
   }
 
   // For Table Names

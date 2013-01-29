@@ -27,7 +27,7 @@ package com.silverpeas.authentication;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;

@@ -28,7 +28,7 @@
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;

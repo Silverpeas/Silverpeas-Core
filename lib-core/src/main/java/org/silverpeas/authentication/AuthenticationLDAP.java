@@ -28,7 +28,7 @@
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;

@@ -30,6 +30,7 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
+<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
 <%
 	response.setHeader( "Expires", "Tue, 21 Dec 1993 23:59:59 GMT" );

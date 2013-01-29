@@ -671,4 +671,6 @@ public class UnixDESEncryption implements PasswordEncryption {
   public boolean doUnderstandDigest(String digest) {
     return !digest.matches("\\$\\d\\$.*\\$");
   }
+
+  protected UnixDESEncryption() {}
 }

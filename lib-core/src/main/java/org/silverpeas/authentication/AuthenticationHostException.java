@@ -22,26 +22,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.authentication.password;
+/*
+ * AuthenticationHostException.java
+ *
+ * Created on 6 aout 2001
+ */
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+package org.silverpeas.authentication;
 
-public class ForgottenPasswordException extends SilverpeasException {
+/**
+ * @author tleroi
+ * @version
+ */
+public class AuthenticationHostException extends AuthenticationException {
 
-  private static final long serialVersionUID = -2521215893839712639L;
+  private static final long serialVersionUID = 3318090264755986318L;
 
-  public ForgottenPasswordException(String callingClass, String message, Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, message, nested);
+  /**
+   * -------------------------------------------------------------------------- constructor
+   * constructor
+   */
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
   }
 
-  public ForgottenPasswordException(String callingClass, String message, String extraParams,
-      Exception nested) {
-    super(callingClass, SilverpeasException.ERROR, message, extraParams, nested);
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  @Override
-  public String getModule() {
-    return "authentication";
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
 }

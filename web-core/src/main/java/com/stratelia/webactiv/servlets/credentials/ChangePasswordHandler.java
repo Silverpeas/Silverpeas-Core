@@ -24,9 +24,10 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationCredential;
-import com.stratelia.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**

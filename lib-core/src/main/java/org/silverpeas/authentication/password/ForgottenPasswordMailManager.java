@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.authentication.password;
+package org.silverpeas.authentication.password;
 
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

@@ -55,7 +55,6 @@ public class SQLDriver extends AbstractDomainDriver {
 
   protected Connection openedConnection = null;
   protected boolean inTransaction = false;
-  protected String passwordEncryption = null;
   protected SQLSettings drvSettings = new SQLSettings();
   protected SQLUserTable localUserMgr = new SQLUserTable(drvSettings);
   protected SQLGroupTable localGroupMgr = new SQLGroupTable(drvSettings);
@@ -87,7 +86,6 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   @Override
   public void initFromProperties(ResourceLocator rs) throws Exception {
-    passwordEncryption = rs.getString("database.SQLPasswordEncryption");
     drvSettings.initFromProperties(rs);
   }
 

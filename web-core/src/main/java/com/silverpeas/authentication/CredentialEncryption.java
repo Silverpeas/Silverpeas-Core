@@ -22,43 +22,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * AuthenticationHostException.java
- *
- * Created on 6 aout 2001
- */
-
-package com.stratelia.silverpeas.authentication;
+package com.silverpeas.authentication;
 
 /**
- * @author tleroi
- * @version
+ * Encryption of the user credentials before recording them into a given storage (cookies, ...)
+ * All encryption algorithms available in Silverpeas to encrypt the user credentials must implement
+ * this interface.
  */
-public class AuthenticationHostException extends AuthenticationException {
+public interface CredentialEncryption {
+  public String encode(String str);
 
-  private static final long serialVersionUID = 3318090264755986318L;
+  public String decode(String str);
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
-  }
+  public String decode(String str, String key, boolean extraCrypt);
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
 }

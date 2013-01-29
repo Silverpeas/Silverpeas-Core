@@ -1,4 +1,4 @@
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 /**
  * A connection with a server of a remote authentication service.

@@ -28,7 +28,7 @@
  * date 21/9/2001
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;

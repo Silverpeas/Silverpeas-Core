@@ -23,41 +23,41 @@
  */
 
 /*
- * AuthenticationBadCredentialException.java
+ * AuthenticationPwdNotAvailException.java
  *
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 /**
  * @author tleroi
  * @version
  */
-public class AuthenticationBadCredentialException extends AuthenticationException {
+public class AuthenticationPasswordAboutToExpireException extends AuthenticationException {
 
-  private static final long serialVersionUID = -6224596419804291843L;
+  private static final long serialVersionUID = -6944881509553671169L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationBadCredentialException(String callingClass,
+  public AuthenticationPasswordAboutToExpireException(String callingClass,
       int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationBadCredentialException(String callingClass,
+  public AuthenticationPasswordAboutToExpireException(String callingClass,
       int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationBadCredentialException(String callingClass,
+  public AuthenticationPasswordAboutToExpireException(String callingClass,
       int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationBadCredentialException(String callingClass,
+  public AuthenticationPasswordAboutToExpireException(String callingClass,
       int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }

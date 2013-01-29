@@ -28,7 +28,7 @@
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -59,7 +59,6 @@ public class AuthenticationSQL extends Authentication {
   protected String m_UserLoginColumnName;
   protected String m_UserPasswordColumnName;
   protected String m_UserPasswordAvailableColumnName;
-  protected String m_PasswordEncryption;
 
   @Override
   public void loadProperties(ResourceLocator settings) {
@@ -73,7 +72,6 @@ public class AuthenticationSQL extends Authentication {
     m_UserPasswordColumnName = settings.getString(serverName + ".SQLUserPasswordColumnName");
     m_UserPasswordAvailableColumnName = settings.getString(serverName
         + ".SQLUserPasswordAvailableColumnName");
-    m_PasswordEncryption = settings.getString(serverName + ".SQLPasswordEncryption");
   }
 
   @Override

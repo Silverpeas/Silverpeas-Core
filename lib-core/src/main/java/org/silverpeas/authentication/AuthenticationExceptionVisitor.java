@@ -1,4 +1,4 @@
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication;
 
 /**
  * A processor of authentication exceptions. It is a visitor (see pattern visitor) of such exceptions

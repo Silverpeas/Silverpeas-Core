@@ -87,7 +87,7 @@
 
   <!-- The user authenticator -->
   <bean id="authenticator"
-        class="com.stratelia.silverpeas.authentication.AuthenticationService"/>
+        class="org.silverpeas.authentication.AuthenticationService"/>
 
   <!-- The session management factory -->
   <bean id="sessionManagementFactory"

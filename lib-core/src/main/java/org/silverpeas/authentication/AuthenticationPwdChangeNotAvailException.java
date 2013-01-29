@@ -23,55 +23,41 @@
  */
 
 /*
- * AuthenticationException.java
+ * AuthenticationPwdChangeNotAvailException
  *
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+package org.silverpeas.authentication;
 
 /**
- * @author tleroi
- * @version
+ * @author Ludovic Bertin
  */
-public class AuthenticationException extends SilverpeasException {
+public class AuthenticationPwdChangeNotAvailException extends AuthenticationException {
 
-  private static final long serialVersionUID = 8552020923204390308L;
+  private static final long serialVersionUID = -5828893849246684442L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message) {
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
+      int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
+      int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
+      int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
+      int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
-    visitor.visit(this);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "authentication";
   }
 }

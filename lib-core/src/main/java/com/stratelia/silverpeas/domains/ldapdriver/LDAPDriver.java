@@ -28,7 +28,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
-import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.AuthenticationBadCredentialException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;

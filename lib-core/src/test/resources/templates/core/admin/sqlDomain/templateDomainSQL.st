@@ -56,12 +56,6 @@ database.SQLGroupParentIdColumnName         = superGroupId
 database.SQLUserGroupUIDColumnName          = userId
 database.SQLUserGroupGIDColumnName          = groupId
 
-# Database encryption
-# -------------------
-# Available values : ClearText, CryptUnix, CryptMd5
-database.SQLPasswordEncryption = $SQLPasswordEncryption$
-
-
 # Users synchronisation
 # -------------------
 

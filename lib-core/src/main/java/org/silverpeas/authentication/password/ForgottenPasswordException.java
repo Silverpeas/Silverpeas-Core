@@ -22,18 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.authentication;
+package org.silverpeas.authentication.password;
 
-/**
- * Encryption of the user credentials before recording them into a given storage (cookies, ...)
- * All encryption algorithms available in Silverpeas to encrypt the user credentials must implement
- * this interface.
- */
-public interface CredentialEncryption {
-  public String encode(String str);
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-  public String decode(String str);
+public class ForgottenPasswordException extends SilverpeasException {
 
-  public String decode(String str, String key, boolean extraCrypt);
+  private static final long serialVersionUID = -2521215893839712639L;
+
+  public ForgottenPasswordException(String callingClass, String message, Exception nested) {
+    super(callingClass, SilverpeasException.ERROR, message, nested);
+  }
+
+  public ForgottenPasswordException(String callingClass, String message, String extraParams,
+      Exception nested) {
+    super(callingClass, SilverpeasException.ERROR, message, extraParams, nested);
+  }
+
+  @Override
+  public String getModule() {
+    return "authentication";
+  }
 
 }

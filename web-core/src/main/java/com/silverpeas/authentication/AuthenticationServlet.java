@@ -25,13 +25,13 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.authentication.AuthenticationCredential;
-import com.stratelia.silverpeas.authentication.AuthenticationService;
-import com.stratelia.silverpeas.authentication.CredentialEncryptionFactory;
+import org.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

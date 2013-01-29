@@ -277,4 +277,6 @@ public class UnixMD5Encryption implements PasswordEncryption {
   public boolean doUnderstandDigest(String digest) {
     return digest.length() == 32 && digest.matches("\\$1\\$.*");
   }
+
+  protected UnixMD5Encryption() {}
 }

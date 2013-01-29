@@ -26,8 +26,8 @@ package com.stratelia.webactiv.filter;
 
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import com.stratelia.silverpeas.authentication.AuthenticationCredential;
-import com.stratelia.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.authentication.security.SecurityData;
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.silverpeas.peasCore.MainSessionController;

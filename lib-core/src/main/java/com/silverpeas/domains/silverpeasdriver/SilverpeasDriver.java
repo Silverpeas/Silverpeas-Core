@@ -58,7 +58,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   private SPUserDao userDao;
   @Inject
   private SPGroupDao groupDao;
-  private String passwordEncryption = null;
 
   /**
    * Constructor
@@ -73,7 +72,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void initFromProperties(ResourceLocator rs) throws Exception {
-    passwordEncryption = rs.getString("database.SQLPasswordEncryption");
   }
 
   @Override

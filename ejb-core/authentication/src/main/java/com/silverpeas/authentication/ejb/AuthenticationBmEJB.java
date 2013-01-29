@@ -30,8 +30,8 @@ import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.stratelia.silverpeas.authentication.AuthenticationCredential;
-import com.stratelia.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 
 public class AuthenticationBmEJB implements SessionBean {
 

@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.authentication;
+package com.silverpeas.authentication;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -45,7 +45,7 @@ public class CredentialEncryptionFactory {
     try {
       encryptionClass =
           (Class<? extends CredentialEncryption>) Class.forName(settingsFile.getString(
-          "encryptionClass", "com.stratelia.silverpeas.authentication.CustomCredentialEncryption"));
+          "encryptionClass", "com.silverpeas.authentication.CustomCredentialEncryption"));
 
     } catch (ClassNotFoundException e) {
       SilverTrace.info("authentication", "CredentialEncryptionFactory.getCustomEncryption()",

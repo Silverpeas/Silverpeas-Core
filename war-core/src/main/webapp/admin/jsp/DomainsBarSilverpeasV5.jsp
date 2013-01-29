@@ -38,6 +38,7 @@
 
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
 <%@ page import="com.silverpeas.look.LookHelper" %>
+<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>

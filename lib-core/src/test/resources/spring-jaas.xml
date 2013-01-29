@@ -79,7 +79,7 @@
     <property name="authenticator" ref="authenticator" />
   </bean>
 
-  <bean id="authenticator" class="com.stratelia.silverpeas.authentication.AuthenticationService" />
+  <bean id="authenticator" class="org.silverpeas.authentication.AuthenticationService" />
 
   <bean id="organizationController" name="organizationController" class="com.stratelia.webactiv.beans.admin.OrganizationController" />
 
