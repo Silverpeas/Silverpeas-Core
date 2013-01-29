@@ -22,15 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package org.silverpeas.authentication.encryption;
 
 /****************************************************************************
- * Java-based implementation of the unix crypt(3) command
+ * Java-based implementation of the unix encrypt(3) command
  *
  * Based upon C source code written by Eric Young, eay@psych.uq.oz.au
  * Java conversion by John F. Dumas, jdumas@zgs.com
  *
- * Found at http://locutus.kingwoodcable.com/jfd/crypt.html
+ * Found at http://locutus.kingwoodcable.com/jfd/encrypt.html
  * Minor optimizations by Wes Biggs, wes@cacas.org
  *
  * Eric's original code is licensed under the BSD license.  As this is
@@ -42,27 +42,40 @@ package com.silverpeas.util.cryptage;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 /**
+ * A variation of the MD5 algorithm (Message Digest 5) as used in modern Unix systems for hashing
+ * the passwords.
+ * <p/>
+ * This version uses salting to perturb the algorithm in different ways, and hence to be less
+ * vulnerable to attacks.
+ * <p/>
+ * Since the discovery of the vulnerability of the MD5 algorithm, it is now replaced in the
+ * current Unix systems by one of the SHA-2 algorithm (SHA-256 or SHA-512). OpenBSD,
+ * an operating system notorious for being "obsessed with security", uses as its default
+ * password authentication mechanism the bcrypt cryptographic algorithm (a modified version of
+ * Blowfish).
+ * <p/>
  * This class implements the popular MD5Crypt function as used by BSD and most modern Un*x systems.
  * It was basically converted from the C code write by Poul-Henning Kamp.
  */
-public class UnixMD5Crypt {
+public class UnixMD5Encryption implements PasswordEncryption {
 
-  public static final String MAGIC = "$1$";
-  public static final byte[] ITOA64 =
+  private static final String MAGIC = "$1$";
+  private static final byte[] ITOA64 =
       "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
       .getBytes();
 
-  public static void to64(StringBuffer sb, int n, int nCount) {
+  private static final String ILLEGALE_DIGEST = "The digest '''{0}''' isn't a MD5 one!";
+
+  private static void to64(StringBuilder sb, int n, int nCount) {
     while (--nCount >= 0) {
       sb.append((char) ITOA64[n & 0x3f]);
       n >>= 6;
     }
   }
 
-  public static String crypt(String strPassword) {
+  private static String crypt(String strPassword) {
     // Get random salt
     Random random = new Random();
     byte[] salt = new byte[] { ITOA64[random.nextInt(64)],
@@ -70,18 +83,14 @@ public class UnixMD5Crypt {
         ITOA64[random.nextInt(64)], ITOA64[random.nextInt(64)],
         ITOA64[random.nextInt(64)] };
 
-    return crypt(MAGIC + new String(salt) + '$', strPassword);
+    return crypt(salt, strPassword);
   }
 
-  public static String crypt(String strSalt, String strPassword) {
+  private static String crypt(byte[] abySalt, String strPassword) {
 
     String retVal = null;
-
     try {
-      StringTokenizer st = new StringTokenizer(strSalt, "$");
-      st.nextToken();
       byte[] abyPassword = strPassword.getBytes();
-      byte[] abySalt = st.nextToken().getBytes();
 
       MessageDigest _md = MessageDigest.getInstance("MD5");
 
@@ -113,7 +122,7 @@ public class UnixMD5Crypt {
       }
 
       // Build the output string
-      StringBuffer sbPasswd = new StringBuffer();
+      StringBuilder sbPasswd = new StringBuilder();
       sbPasswd.append(MAGIC);
       sbPasswd.append(new String(abySalt));
       sbPasswd.append('$');
@@ -184,4 +193,88 @@ public class UnixMD5Crypt {
 
   }
 
+  /**
+   * Encrypts the specified password by using a random salt (or no salt for some weakness
+   * algorithms).
+   *
+   * @param password the password to encrypt.
+   * @return a digest of the password.
+   */
+  @Override
+  public String encrypt(String password) {
+    return crypt(password);
+  }
+
+  /**
+   * Encrypts the specified password by using the specified salt. If the salt is null or empty, then
+   * a random salt is computed.
+   *
+   * @param password the password to encrypt.
+   * @param salt the salt to use to generate more entropy in the encryption of the password.
+   * @return a digest of the password.
+   */
+  @Override
+  public String encrypt(String password, byte[] salt) {
+    if (salt == null || salt.length == 0) {
+      return crypt(password);
+    }
+    return crypt(salt, password);
+  }
+
+  /**
+   * Checks the specified password matches the specified digest.
+   *
+   * @param password an unencrypted password.
+   * @param digest a digest of a password with which the specified password has to be matched.
+   * @throws AssertionError if the digest wasn't computed from the specified password.
+   */
+  @Override
+  public void check(String password, String digest) throws AssertionError {
+    String encryptedPassword = crypt(getSaltUsedInDigest(digest), password);
+    if (!encryptedPassword.equals(digest)) {
+      throw new AssertionError("The password '" + password + "' doesn't match the digest '" +
+                                   digest + "'");
+    }
+  }
+
+  /**
+   * Gets the salt that was used to compute the specified digest.
+   * <p/>
+   * According to the cryptographic algorithm that computed the digest, the salt used in the
+   * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
+   * an empty one is then returned.
+   *
+   * @param digest the digest from which the salt has to be get.
+   * @return the salt or nothing (an empty salt) if it cannot be get from the digest.
+   */
+  @Override
+  public byte[] getSaltUsedInDigest(String digest) {
+    byte[] salt;
+    if (doUnderstandDigest(digest)) {
+      String[] parts = digest.split("\\$");
+      if (parts.length < 3) {
+        salt = new byte[0];
+      } else {
+        salt = parts[2].getBytes();
+      }
+    } else {
+      salt = new byte[0];
+    }
+    return salt;
+  }
+
+  /**
+   * Does this encryption understand the specified digest?
+   * An encryption understands usually the digest it has itself generated. This method is for
+   * knowing the encryption that has computed a given digest.
+   *
+   * @param digest the digest to analyse.
+   * @return true if the specified digest was computed by this encryption, false if it doesn't
+   *         understand it (either the encryption hasn't generated the digest or it cannot
+   *         analyse it).
+   */
+  @Override
+  public boolean doUnderstandDigest(String digest) {
+    return digest.length() == 32 && digest.matches("\\$1\\$.*");
+  }
 }

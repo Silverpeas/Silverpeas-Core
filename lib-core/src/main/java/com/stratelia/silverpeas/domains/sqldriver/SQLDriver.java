@@ -32,14 +32,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 import org.silverpeas.admin.domain.DomainServiceFactory;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
-import com.silverpeas.util.cryptage.UnixMD5Crypt;
-import com.stratelia.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -178,14 +177,9 @@ public class SQLDriver extends AbstractDomainDriver {
 
   @Override
   public void resetPassword(UserDetail user, String password) throws Exception {
-    String encryptedPassword = password;
-
-    if ( Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) ) {
-      encryptedPassword = UnixMD5Crypt.crypt(password);
-    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption) ) {
-      encryptedPassword = CryptMD5.crypt(password);
-    }
-
+    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    String encryptedPassword = encryption.encrypt(password);
     effectiveResetPassword(user, encryptedPassword);
   }
 
@@ -244,18 +238,10 @@ public class SQLDriver extends AbstractDomainDriver {
       // PWD specific treatment
       if (drvSettings.isUserPasswordAvailable()) {
         if (StringUtil.isDefined(uf.getPassword())) {
-          String fromPwd = localUserMgr.getUserPassword(openedConnection, userId);
-          String toPwd;
-          if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) &&
-              !uf.getPassword().equals(fromPwd)) {
-            toPwd = UnixMD5Crypt.crypt(uf.getPassword());
-          } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption) &&
-              !uf.getPassword().equals(fromPwd)) {
-            toPwd = CryptMD5.crypt(uf.getPassword());
-          } else {
-            toPwd = uf.getPassword();
-          }
-          localUserMgr.updateUserPassword(openedConnection, userId, toPwd);
+          PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+          PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+          String encryptedPassword = encryption.encrypt(uf.getPassword());
+          localUserMgr.updateUserPassword(openedConnection, userId, encryptedPassword);
         }
         localUserMgr.updateUserPasswordValid(openedConnection, userId, uf.isPasswordValid());
       }

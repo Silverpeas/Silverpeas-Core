@@ -22,23 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/****************************************************************************
- * jcrypt.java
- *
- * Java-based implementation of the unix crypt command
- *
- * Based upon C source code written by Eric Young, eay@psych.uq.oz.au
- *
- ****************************************************************************/
-
-package com.stratelia.silverpeas.util;
+package org.silverpeas.authentication.encryption;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
-public class jcrypt {
-  private jcrypt() {
-  }
+/**
+ * A variation of the DES algorithm (Data Encryption Standard) as used in the Unix systems for a
+ * while. It has variations intended to be used for encrypting password and it uses salting to
+ * perturb the algorithm in different ways.
+ * <p/>
+ * This symmetric-key encryption method uses a 56-bit key to encrypt a password and as such it
+ * is now considered as insecure for many applications; in 1999 it was broken in 22 hours and 15
+ * minutes. It was then replaced by the MD5 algorithm.
+ * <p/>
+ * It is no more supported in Silverpeas and it shouldn't be used anymore.
+ * <p/>
+ * It is the Java-based implementation of the unix encrypt command. It is based upon C source code
+ * written by Eric Young, eay@psych.uq.oz.au.
+ * This class is a renaming of the jcrypt class found at http://www.vulcanware.com/java_jcrypt/
+ * @author John F. Dumas
+ */
+public class UnixDESEncryption implements PasswordEncryption {
 
   private static final int ITERATIONS = 16;
 
@@ -506,7 +511,7 @@ public class jcrypt {
     return (out);
   }
 
-  public static final String crypt(String salt, String original) {
+  private static final String crypt(String salt, String original) {
     while (salt.length() < 2) {
       salt += "A";
     }
@@ -563,7 +568,7 @@ public class jcrypt {
     return (buffer.toString());
   }
 
-  public static final String crypt(String original) {
+  private static final String crypt(String original) {
     // Get random salt
     Random random = new Random();
     byte[] salt = new byte[] { legalSaltChars[random.nextInt(64)],
@@ -585,10 +590,85 @@ public class jcrypt {
     legalSaltChars = bb;
   }
 
-  public static void main(String args[]) {
-    if (args.length >= 2) {
-      System.out.println("[" + args[0] + "] [" + args[1] + "] => ["
-          + jcrypt.crypt(args[0], args[1]) + "]");
+
+  /**
+   * Encrypts the specified password by using a random salt (or no salt for some weakness
+   * algorithms).
+   *
+   * @param password the password to encrypt.
+   * @return a digest of the password.
+   */
+  @Override
+  public String encrypt(String password) {
+    return crypt(password);
+  }
+
+  /**
+   * Encrypts the specified password by using the specified salt. If the salt is null or empty, then
+   * a random salt is computed.
+   *
+   * @param password the password to encrypt.
+   * @param salt the salt to use to generate more entropy in the encryption of the password.
+   * @return a digest of the password.
+   */
+  @Override
+  public String encrypt(String password, byte[] salt) {
+    if (salt == null || salt.length == 0) {
+      return crypt(password);
     }
+    return crypt(new String(salt), password);
+  }
+
+  /**
+   * Checks the specified password matches the specified digest.
+   *
+   * @param password an unencrypted password.
+   * @param digest a digest of a password with which the specified password has to be matched.
+   * @throws AssertionError if the digest wasn't computed from the specified password.
+   */
+  @Override
+  public void check(String password, String digest) throws AssertionError {
+    String encryptedPassword = crypt(digest, password);
+    if (!encryptedPassword.equals(digest)) {
+      throw new AssertionError("The password '" + password + "' doesn't match the digest '" +
+                                   digest + "'");
+    }
+  }
+
+  /**
+   * Gets the salt that was used to compute the specified digest.
+   * <p/>
+   * According to the cryptographic algorithm that computed the digest, the salt used in the
+   * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
+   * an empty one is then returned.
+   *
+   * @param digest the digest from which the salt has to be get.
+   * @return the salt or nothing (an empty salt) if it cannot be get from the digest.
+   */
+  @Override
+  public byte[] getSaltUsedInDigest(String digest) {
+    if (digest.length() < 2)
+      return new byte[0];
+    return digest.substring(0, 2).getBytes();
+  }
+
+  /**
+   * Does this encryption understand the specified digest?
+   * An encryption understands usually the digest it has itself generated. This method is for
+   * knowing the encryption that has computed a given digest.
+   * <p/>
+   * The DES encryption is particular in a way that a text in input produces a digest of the same
+   * length; the length of the digest isn't fix and it varies with the input text. So, this method
+   * can return bad response and it is recommended to ask before to others encryption to have a more
+   * accurate in the response.
+   *
+   * @param digest the digest to analyse.
+   * @return true if the specified digest was computed by this encryption, false if it doesn't
+   *         understand it (either the encryption hasn't generated the digest or it cannot
+   *         analyse it).
+   */
+  @Override
+  public boolean doUnderstandDigest(String digest) {
+    return !digest.matches("\\$\\d\\$.*\\$");
   }
 }

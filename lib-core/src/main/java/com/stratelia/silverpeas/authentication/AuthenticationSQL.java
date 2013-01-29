@@ -38,14 +38,12 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
-import com.silverpeas.util.cryptage.UnixMD5Crypt;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.jcrypt;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * This class performs the authentication using an SQL table
@@ -126,106 +124,20 @@ public class AuthenticationSQL extends Authentication {
   protected void doAuthentication(AuthenticationConnection connection,
                                   AuthenticationCredential credential)
       throws AuthenticationException {
-    String loginQuery;
-    String sqlPassword;
-    ResultSet rs = null;
-    PreparedStatement stmt = null;
     String login = credential.getLogin();
     String password = credential.getPassword();
     if (password == null) {
       password = "";
     }
-    try {
-      String thepasswd = password;
-      if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption))
-        thepasswd = CryptMD5.crypt(password);
-
-      if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
-        loginQuery = "SELECT " + m_UserLoginColumnName + ", "
-            + m_UserPasswordColumnName + ", "
-            + m_UserPasswordAvailableColumnName + " FROM "
-            + m_UserTableName + " WHERE " + m_UserLoginColumnName
-            + " = ?";
-      } else {
-        loginQuery = "SELECT " + m_UserLoginColumnName + ", "
-            + m_UserPasswordColumnName + " FROM " + m_UserTableName
-            + " WHERE " + m_UserLoginColumnName + " = ?";
-      }
-
-      stmt = getSQLConnection(connection).prepareStatement(loginQuery);
-      stmt.setString(1, login);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
-          String validString = rs
-              .getString(m_UserPasswordAvailableColumnName);
-
-          if ((validString != null)
-              && (validString.equalsIgnoreCase("N"))) {
-            throw new AuthenticationPwdNotAvailException(
-                "AuthenticationSQL.doAuthentication()",
-                SilverpeasException.ERROR,
-                "authentication.EX_PWD_NOT_AVAILABLE", "User="
-                + login);
-          }
-        }
-        sqlPassword = rs.getString(m_UserPasswordColumnName);
-        if (sqlPassword == null) {
-          if (password.length() > 0) {
-            throw new AuthenticationBadCredentialException(
-                "AuthenticationSQL.doAuthentication()",
-                SilverpeasException.ERROR,
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
-                "User=" + login);
-          }
-        } else {
-          boolean passwordsMatch = true;
-          if (Authentication.ENC_TYPE_UNIX
-              .equals(m_PasswordEncryption)) {
-            // String crypt2Check = jcrypt.crypt(cryptPwdInDB,
-            // clearPwd);
-            // si crypt2Check == cryptPwdInDB alors authentification
-            // OK sinon
-            // notOK
-            String crypt2Check = "";
-            if (sqlPassword.startsWith(UnixMD5Crypt.MAGIC)) {
-              crypt2Check = UnixMD5Crypt.crypt(sqlPassword, password);
-            } else {
-              crypt2Check = jcrypt.crypt(sqlPassword, password);
-            }
-            passwordsMatch = crypt2Check.equals(sqlPassword);
-          } else {
-            passwordsMatch = thepasswd.equals(sqlPassword);
-          }
-          if (!passwordsMatch) {
-            throw new AuthenticationBadCredentialException(
-                "AuthenticationSQL.doAuthentication()",
-                SilverpeasException.ERROR,
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
-                "User=" + login);
-          }
-        }
-      } else {
-        throw new AuthenticationBadCredentialException(
-            "AuthenticationSQL.doAuthentication()",
-            SilverpeasException.ERROR,
-            "authentication.EX_USER_NOT_FOUND", "User=" + login);
-      }
-      SilverTrace.info(module,
-          "AuthenticationSQL.doAuthentication()",
-          "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
-    } catch (UtilException ex) {
-      throw new AuthenticationHostException(
+    String sqlPassword = getPassword(getSQLConnection(connection), login);
+    if (sqlPassword == null && password.length() > 0) {
+      throw new AuthenticationBadCredentialException(
           "AuthenticationSQL.doAuthentication()",
           SilverpeasException.ERROR,
-          "authentication.EX_SQL_ACCESS_ERROR", ex);
-    } catch (SQLException ex) {
-      throw new AuthenticationHostException(
-          "AuthenticationSQL.doAuthentication()",
-          SilverpeasException.ERROR,
-          "authentication.EX_SQL_ACCESS_ERROR", ex);
-    } finally {
-      DBUtil.close(rs, stmt);
+          "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
+          "User=" + login);
+    } else {
+      checkPassword(login, password, sqlPassword);
     }
   }
 
@@ -235,8 +147,7 @@ public class AuthenticationSQL extends Authentication {
     ResultSet rs = null;
     PreparedStatement stmt = null;
 
-    if ((m_UserPasswordAvailableColumnName != null)
-        && (m_UserPasswordAvailableColumnName.length() > 0)) {
+    if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
       loginQuery = "SELECT " + m_UserLoginColumnName + ", "
           + m_UserPasswordColumnName + ", "
           + m_UserPasswordAvailableColumnName + " FROM "
@@ -253,8 +164,7 @@ public class AuthenticationSQL extends Authentication {
       stmt.setString(1, login);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        if ((m_UserPasswordAvailableColumnName != null)
-            && (m_UserPasswordAvailableColumnName.length() > 0)) {
+        if (StringUtil.isDefined(m_UserPasswordAvailableColumnName)) {
           String validString = rs
               .getString(m_UserPasswordAvailableColumnName);
 
@@ -320,73 +230,65 @@ public class AuthenticationSQL extends Authentication {
     String login = credential.getLogin();
     String oldPassword = credential.getPassword();
     String passwordInDB = getPassword(sqlConnection, login);
-    String newPasswordInDB = null;
-    boolean passwordsMatch = true;
-    if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
-      String crypt2Check = "";
-      if (passwordInDB.startsWith(UnixMD5Crypt.MAGIC)) {
-        crypt2Check = UnixMD5Crypt.crypt(passwordInDB, oldPassword);
-        newPasswordInDB = UnixMD5Crypt.crypt(passwordInDB, newPassword);
-      } else {
-        crypt2Check = jcrypt.crypt(passwordInDB, oldPassword);
-        newPasswordInDB = jcrypt.crypt(passwordInDB, newPassword);
-      }
-      passwordsMatch = crypt2Check.equals(passwordInDB);
-    } else if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption)) {
-      try {
-        String thepasswd = CryptMD5.crypt(oldPassword);
-        newPasswordInDB = CryptMD5.crypt(newPassword);
-        passwordsMatch = thepasswd.equals(passwordInDB);
-      } catch (UtilException e) {
-        throw new AuthenticationPwdNotAvailException(
-            "AuthenticationSQL.doChangePassword()",
-            SilverpeasException.ERROR,
-            "authentication.EX_INCORRECT_PASSWORD",
-            "Crypt Md5 impossible");
-      }
-    } else if (Authentication.ENC_TYPE_CLEAR.equals(m_PasswordEncryption)) {
-      newPasswordInDB = newPassword;
-      passwordsMatch = oldPassword.equals(passwordInDB);
-    }
-    if (!passwordsMatch)
-      throw new AuthenticationBadCredentialException(
-          "AuthenticationSQL.doChangePassword()",
-          SilverpeasException.ERROR,
-          "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
-
+    checkPassword(login, oldPassword, passwordInDB);
+    String newPasswordInDB = getNewPasswordDigest(passwordInDB, newPassword);
     updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
   @Override
   protected void doResetPassword(AuthenticationConnection connection, String login,
-                                 String newPassword) throws AuthenticationException {
+      String newPassword) throws AuthenticationException {
     Connection sqlConnection = getSQLConnection(connection);
     String passwordInDB = getPassword(sqlConnection, login);
-    String newPasswordInDB = null;
-    if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
-      if (passwordInDB.startsWith(UnixMD5Crypt.MAGIC)) {
-        newPasswordInDB = UnixMD5Crypt.crypt(passwordInDB, newPassword);
-      } else {
-        newPasswordInDB = jcrypt.crypt(passwordInDB, newPassword);
-      }
-    } else if (Authentication.ENC_TYPE_MD5.equals(m_PasswordEncryption)) {
-      try {
-        newPasswordInDB = CryptMD5.crypt(newPassword);
-      } catch (UtilException e) {
-        throw new AuthenticationPwdNotAvailException(
-            "AuthenticationSQL.doChangePassword()",
-            SilverpeasException.ERROR,
-            "authentication.EX_INCORRECT_PASSWORD",
-            "Crypt Md5 impossible");
-      }
-    } else if (Authentication.ENC_TYPE_CLEAR.equals(m_PasswordEncryption)) {
-      newPasswordInDB = newPassword;
-    }
-
+    String newPasswordInDB = getNewPasswordDigest(passwordInDB, newPassword);
     updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
   private static Connection getSQLConnection(AuthenticationConnection connection) {
     return (Connection) connection.getConnector();
+  }
+
+  /**
+   * Computes the digest of the new password by taking the same salt of the previous password digest.
+   * This method takes care the digest of the previous password could be computed by a different
+   * encryption algorithm.
+   * @param oldPasswordDigest the digest of the password to change.
+   * @param newPassword the new password for which a digest has to be computed.
+   * @return the digest of the new password.
+   */
+  private String getNewPasswordDigest(String oldPasswordDigest, String newPassword) {
+    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    PasswordEncryption previousEncryption = factory.getPasswordEncryption(oldPasswordDigest);
+    String newPasswordDigest;
+    if (previousEncryption != encryption) {
+      newPasswordDigest = encryption.encrypt(newPassword);
+    } else {
+      newPasswordDigest = encryption.encrypt(newPassword, encryption.getSaltUsedInDigest(oldPasswordDigest));
+    }
+    return newPasswordDigest;
+  }
+
+  /**
+   * Checks the specified password associated with the specified login matches the specified
+   * password digest. The encryption having computed the specified digest is used to encrypt the
+   * password in order to compare them.
+   * @param login a user login.
+   * @param password the password associated with the user login.
+   * @param digest the digest of the password by using the current encryption.
+   * @throws AuthenticationBadCredentialException
+   */
+  private void checkPassword(String login, String password, String digest)
+      throws AuthenticationBadCredentialException {
+    try {
+      PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+      PasswordEncryption encryption = factory.getPasswordEncryption(digest);
+      encryption.check(password, digest);
+    } catch(AssertionError error) {
+      throw new AuthenticationBadCredentialException(
+          "AuthenticationSQL.doChangePassword()",
+          SilverpeasException.ERROR,
+          "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
+    }
   }
 }

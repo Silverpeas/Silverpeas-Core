@@ -274,10 +274,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       // user has filled a new login answer
       if (StringUtil.isDefined(userLoginAnswer)) {
         userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
-        // Crypt password if needed
+        // encrypt the answser if needed
         boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
         if (answerCrypted) {
-          userLoginAnswer = CryptMD5.crypt(userLoginAnswer);
+          userLoginAnswer = CryptMD5.encrypt(userLoginAnswer);
         }
       } else {
         userLoginAnswer = currentUser.getLoginAnswer();

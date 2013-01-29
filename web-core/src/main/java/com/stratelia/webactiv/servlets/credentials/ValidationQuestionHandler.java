@@ -53,9 +53,9 @@ public class ValidationQuestionHandler extends FunctionHandler {
       String answer = request.getParameter("answer");
       userDetail.setLoginQuestion(question);
 
-      // Crypt password if needed
+      // encrypt the answer if needed
       if (answerCrypted) {
-        answer = CryptMD5.crypt(answer);
+        answer = CryptMD5.encrypt(answer);
       }
       userDetail.setLoginAnswer(answer);
       getAdmin().updateUser(userDetail);
