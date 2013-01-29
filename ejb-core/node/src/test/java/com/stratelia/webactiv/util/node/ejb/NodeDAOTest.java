@@ -26,20 +26,20 @@ package com.stratelia.webactiv.util.node.ejb;
 
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
-import java.io.IOException;
-import javax.naming.NamingException;
-import org.junit.BeforeClass;
-import java.util.Iterator;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.List;
 import org.dbunit.database.IDatabaseConnection;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.silverpeas.components.model.AbstractJndiCase.executeDDL;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
 public class NodeDAOTest extends AbstractJndiCase {
 
   private static final String INSTANCE_ID = "kmelia60";
-  
+
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
     baseTest = new SilverpeasJndiCase("com/stratelia/webactiv/util/node/ejb/nodes-test-dataset.xml",
@@ -57,10 +57,10 @@ public class NodeDAOTest extends AbstractJndiCase {
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
     executeDDL(databaseConnection, baseTest.getDdlFile());
-    baseTest.getDatabaseTester().closeConnection(databaseConnection);    
+    baseTest.getDatabaseTester().closeConnection(databaseConnection);
   }
 
-  
+
   @AfterClass
   public static void generalTearDown() throws IOException, NamingException, Exception {
     baseTest.shudown();
@@ -1004,7 +1004,7 @@ public class NodeDAOTest extends AbstractJndiCase {
     assertEquals(2, detail.getOrder());
     assertEquals("/0/", detail.getPath());
     assertNull(detail.getType());
-    detail = (NodeDetail) iter.next();
+    detail = iter.next();
     assertNotNull(detail);
     assertEquals(3, detail.getId());
     assertEquals("Theme de Test", detail.getName());
@@ -1028,7 +1028,7 @@ public class NodeDAOTest extends AbstractJndiCase {
     children = NodeDAO.getChildrenDetails(connection, nodePK);
     assertNotNull(children);
     assertEquals(1, children.size());
-    detail = (NodeDetail) children.iterator().next();
+    detail = children.iterator().next();
     assertNotNull(detail);
     assertEquals(4, detail.getId());
     assertEquals("Sous Theme de Test", detail.getName());
@@ -1051,102 +1051,6 @@ public class NodeDAOTest extends AbstractJndiCase {
     baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
-  @Test
-  public void testGetChildrenDetailsConnectionNodePKString() throws Exception {
-    IDatabaseConnection dataSetConnection = baseTest.getDatabaseTester().getConnection();
-    Connection connection = dataSetConnection.getConnection();
-    NodePK nodePK = new NodePK("0", INSTANCE_ID);
-    Collection<NodeDetail> children = NodeDAO.getChildrenDetails(connection, nodePK, "nodename");
-    assertNotNull(children);
-    assertEquals(3, children.size());
-    Iterator iter = children.iterator();
-    NodeDetail detail = (NodeDetail) iter.next();
-    assertNotNull(detail);
-    assertEquals(1, detail.getId());
-    assertEquals("Corbeille", detail.getName());
-    assertEquals(-1, detail.getNbObjects());
-    assertEquals(
-        "Vous trouvez ici les publications que vous avez supprimées", detail.getDescription());
-    assertEquals("2008/04/23", detail.getCreationDate());
-    assertEquals("0", detail.getCreatorId());
-    assertEquals("Invisible", detail.getStatus());
-    assertEquals(2, detail.getLevel());
-    assertEquals("0", detail.getFatherPK().getId());
-    assertEquals("", detail.getModelId());
-    assertEquals(false, detail.haveInheritedRights());
-    assertEquals(false, detail.haveLocalRights());
-    assertEquals(false, detail.haveRights());
-    assertEquals(-1, detail.getRightsDependsOn());
-    assertNull(detail.getChildrenDetails());
-    assertEquals(2, detail.getOrder());
-    assertEquals("/0/", detail.getPath());
-    assertNull(detail.getType());
-    detail = (NodeDetail) iter.next();
-    assertNotNull(detail);
-    assertEquals(2, detail.getId());
-    assertEquals("Déclassées", detail.getName());
-    assertEquals(-1, detail.getNbObjects());
-    assertEquals("Vos publications inaccessibles se retrouvent ici", detail.getDescription());
-    assertEquals("2008/04/23", detail.getCreationDate());
-    assertEquals("0", detail.getCreatorId());
-    assertEquals("Invisible", detail.getStatus());
-    assertEquals(2, detail.getLevel());
-    assertEquals("0", detail.getFatherPK().getId());
-    assertEquals("", detail.getModelId());
-    assertEquals(false, detail.haveInheritedRights());
-    assertEquals(false, detail.haveLocalRights());
-    assertEquals(false, detail.haveRights());
-    assertEquals(-1, detail.getRightsDependsOn());
-    assertNull(detail.getChildrenDetails());
-    assertEquals(1, detail.getOrder());
-    assertEquals("/0/", detail.getPath());
-    assertNull(detail.getType());
-    detail = (NodeDetail) iter.next();
-    assertNotNull(detail);
-    assertEquals(3, detail.getId());
-    assertEquals("Theme de Test", detail.getName());
-    assertEquals(-1, detail.getNbObjects());
-    assertEquals("Vos publications de test se retrouvent ici", detail.getDescription());
-    assertEquals("2008/04/30", detail.getCreationDate());
-    assertEquals("7", detail.getCreatorId());
-    assertEquals("Visible", detail.getStatus());
-    assertEquals(2, detail.getLevel());
-    assertEquals("0", detail.getFatherPK().getId());
-    assertEquals("", detail.getModelId());
-    assertEquals(false, detail.haveInheritedRights());
-    assertEquals(false, detail.haveLocalRights());
-    assertEquals(false, detail.haveRights());
-    assertEquals(-1, detail.getRightsDependsOn());
-    assertNull(detail.getChildrenDetails());
-    assertEquals(3, detail.getOrder());
-    assertEquals("/0/", detail.getPath());
-    assertEquals("default", detail.getType());
-    nodePK = new NodePK("3", INSTANCE_ID);
-    children = NodeDAO.getChildrenDetails(connection, nodePK);
-    assertNotNull(children);
-    assertEquals(1, children.size());
-    detail = (NodeDetail) children.iterator().next();
-    assertNotNull(detail);
-    assertEquals(4, detail.getId());
-    assertEquals("Sous Theme de Test", detail.getName());
-    assertEquals(-1, detail.getNbObjects());
-    assertEquals("Vos publications peuvent se retrouver ici", detail.getDescription());
-    assertEquals("2008/05/10", detail.getCreationDate());
-    assertEquals("7", detail.getCreatorId());
-    assertEquals("Visible", detail.getStatus());
-    assertEquals(3, detail.getLevel());
-    assertEquals("3", detail.getFatherPK().getId());
-    assertEquals("", detail.getModelId());
-    assertEquals(false, detail.haveInheritedRights());
-    assertEquals(false, detail.haveLocalRights());
-    assertEquals(false, detail.haveRights());
-    assertEquals(-1, detail.getRightsDependsOn());
-    assertNull(detail.getChildrenDetails());
-    assertEquals(1, detail.getOrder());
-    assertEquals("/0/3/", detail.getPath());
-    assertEquals("default", detail.getType());
-    baseTest.getDatabaseTester().closeConnection(dataSetConnection);
-  }
 
   @Test
   public void testGetChildrenNumber() throws Exception {

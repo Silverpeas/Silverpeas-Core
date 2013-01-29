@@ -58,8 +58,6 @@ public interface NodeBmBusinessSkeleton {
    */
   public NodeDetail getDetail(NodePK pk) throws RemoteException;
 
-  public NodeDetail getDetail(NodePK pk, String sorting) throws RemoteException;
-
   public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name,
       int nodeFatherId) throws RemoteException;
 
@@ -144,15 +142,6 @@ public interface NodeBmBusinessSkeleton {
    * @since 1.0
    */
   public Collection<NodeDetail> getChildrenDetails(NodePK pk) throws RemoteException;
-  
-  /**
-  * Get the header of each child of the node, order by sorting
-  * @return a NodeDetail collection
-  * @see com.stratelia.webactiv.util.node.model.NodeDetail
-  * @since 1.0
-  */
-    public Collection<NodeDetail> getChildrenDetails(NodePK pk, String sorting) throws RemoteException;
-
 
   /**
    * Get the header of each child of the node this function is to be used with frequently used nodes
@@ -171,7 +160,7 @@ public interface NodeBmBusinessSkeleton {
    *
    * @param pk the node primary key.
    * @return a int
-   * @throws RemoteException 
+   * @throws RemoteException
    * @since 1.0
    */
   public int getChildrenNumber(NodePK pk) throws RemoteException;
@@ -180,7 +169,7 @@ public interface NodeBmBusinessSkeleton {
    * Update the attributes of the node
    *
    * @param nodeDetail the NodeDetail which contains updated data
-   * @throws RemoteException 
+   * @throws RemoteException
    * @since 1.0
    */
   public void setDetail(NodeDetail nodeDetail) throws RemoteException;
@@ -192,7 +181,7 @@ public interface NodeBmBusinessSkeleton {
    * @param fatherDetail the parent of node to be added
    * @return the NodePK of the new Node
    *
-   * @throws RemoteException 
+   * @throws RemoteException
    * @since 1.0
    */
   public NodePK createNode(NodeDetail nodeDetail, NodeDetail fatherDetail)
