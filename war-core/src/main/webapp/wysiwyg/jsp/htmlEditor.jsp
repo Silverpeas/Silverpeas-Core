@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -105,25 +106,30 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         userId			= (String) session.getAttribute("WYSIWYG_UserId");
         fileName		= (String) session.getAttribute("WYSIWYG_FileName");
         path			= (String) session.getAttribute("WYSIWYG_Path");
-		specificURL		= (String) session.getAttribute("WYSIWYG_SpecificURL");
-		indexIt			= (String) session.getAttribute("WYSIWYG_IndexIt");
-		exit			= request.getParameter("Exit");
+        specificURL		= (String) session.getAttribute("WYSIWYG_SpecificURL");
+        indexIt			= (String) session.getAttribute("WYSIWYG_IndexIt");
+        exit			= request.getParameter("Exit");
+        if(!StringUtil.isDefined(userId)) {
+          userId = ((MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
+        }
 
         if ("SaveHtmlAndExit".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg)) {
-        	//For parsing absolute url (Bug FCKEditor)
-        	String server = request.getRequestURL().substring(0,request.getRequestURL().toString().lastIndexOf(URLManager.getApplicationURL()));
-        	int serverPort = request.getServerPort();
-        	
-        	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) { 
-        		codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
-	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
-    			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
-		
-			} else {
-				codeWysiwyg = codeWysiwyg.replaceAll("../../../../", URLManager.getApplicationURL()+"/");
-	    		codeWysiwyg = codeWysiwyg.replaceAll(server+":"+serverPort, "");
-    			codeWysiwyg = codeWysiwyg.replaceAll(server+"/", "/");
-			}
+            //For parsing absolute url (Bug FCKEditor)
+            String server = request.getRequestURL().substring(0, request.getRequestURL().toString()
+                .lastIndexOf(URLManager.getApplicationURL()));
+            int serverPort = request.getServerPort();
+
+            if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+              codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
+              codeWysiwyg = codeWysiwyg.replaceAll(server + ":" + serverPort, "");
+              codeWysiwyg = codeWysiwyg.replaceAll(server + "/", "/");
+
+            } else {
+              codeWysiwyg = codeWysiwyg.replaceAll("../../../../", URLManager.getApplicationURL()
+                  + "/");
+              codeWysiwyg = codeWysiwyg.replaceAll(server + ":" + serverPort, "");
+              codeWysiwyg = codeWysiwyg.replaceAll(server + "/", "/");
+            }
         		
 	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
             	WysiwygController.updateWebsite(path, fileName, codeWysiwyg);
@@ -183,11 +189,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
         fileName = request.getParameter("FileName");
         session.setAttribute("WYSIWYG_FileName", fileName);
-		path = request.getParameter("Path");
+        path = request.getParameter("Path");
         session.setAttribute("WYSIWYG_Path", path);
         SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite",  "fileName= "+fileName+" Path="+path);
        
-		language = request.getParameter("Language");
+        language = request.getParameter("Language");
         if (language == null) {
             language = "en";
         }
@@ -202,12 +208,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
           collectionImages = WysiwygController.getWebsiteImages(path, componentId);
           collectionPages = WysiwygController.getWebsitePages(path, componentId);
-          SilverTrace.info("wysiwyg", "wysiwyg.htmlEditor.jsp", "root.MSG_GEN_PARAM_VALUE", "nb collectionPages = " + collectionPages.length+" nb collectionImages="+collectionImages.length);
-          specificURL = "/website/"+componentId+"/"+objectId+"/";
-		} else {
-			imagesContext = WysiwygController.getImagesFileName(objectId);
-	        collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
-		}
+          SilverTrace.info("wysiwyg", "wysiwyg.htmlEditor.jsp", "root.MSG_GEN_PARAM_VALUE",
+              "nb collectionPages = " + collectionPages.length + " nb collectionImages="
+              + collectionImages.length);
+          specificURL = "/website/" + componentId + "/" + objectId + "/";
+        } else {
+          imagesContext = WysiwygController.getImagesFileName(objectId);
+          collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
+        }
         session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 
         try {
@@ -228,9 +236,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         }
     }
 
-	ResourceLocator 		message 	= new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
-	ResourceLocator 		settings 	= new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", language);
-	GraphicElementFactory 	gef 		= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+	ResourceLocator 		message 	= new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+	ResourceLocator 		settings 	= new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", language);
+	GraphicElementFactory 	gef 		= (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     
     Window 		window 		= gef.getWindow();
     BrowseBar 	browseBar 	= window.getBrowseBar();
