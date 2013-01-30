@@ -67,7 +67,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
 
-
 @Service
 @RequestScoped
 @Path("documents/{componentId}/document/{id}")
@@ -173,11 +172,20 @@ public class SimpleDocumentResource extends RESTWebService {
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService()
+          .updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+      if (document.isVersioned()) {
+        File content = new File(document.getAttachmentPath());
+        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
+            .getId(), document.getLanguage());
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
+            true);
+      } else {
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+      }
     }
     UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
         lang, comment);
