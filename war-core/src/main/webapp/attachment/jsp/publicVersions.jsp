@@ -91,7 +91,11 @@
 ArrayPane arrayPane = gef.getArrayPane("List", "ViewAllVersions?DocId="+id+"&Alias=null&ComponentId="+componentId, request,session);// declare an array
 
 // header of the array
-ArrayColumn arrayColumn_mimeType = arrayPane.addArrayColumn(messages.getString("type"));
+ArrayColumn arrayColumn_mimeType = arrayPane.addArrayColumn(messages.getString("GML.attachments"));
+arrayColumn_mimeType.setSortable(false);
+ArrayColumn arrayColumn_titre = arrayPane.addArrayColumn(messages.getString("GML.title"));
+arrayColumn_mimeType.setSortable(false);
+ArrayColumn arrayColumn_infos = arrayPane.addArrayColumn(messages.getString("description"));
 arrayColumn_mimeType.setSortable(false);
 ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
 arrayColumn_version.setSortable(false);
@@ -128,12 +132,19 @@ for (SimpleDocument publicVersion : vVersions) {
     }
     String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId())+"\"><img src=\""+URLManager.getApplicationURL()+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+
-        FileRepositoryManager.getFileIcon(publicVersion.getFilename()) +"\" border=\"0\"/> " + publicVersion.getTitle() + "</a>");
+        FileRepositoryManager.getFileIcon(publicVersion.getFilename()) +"\" border=\"0\" title=\"" +publicVersion.getFilename() + "\"/> " + publicVersion.getFilename() + "</a>");
+     arrayLine.addArrayCellText(publicVersion.getTitle());
+     arrayLine.addArrayCellText(publicVersion.getDescription());
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
-    arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
-
-   	ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreated()));
-   	cell.setNoWrap(true);
+    if(StringUtil.isDefined(publicVersion.getUpdatedBy())) {
+      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getUpdatedBy())));
+      ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getUpdated()));
+      cell.setNoWrap(true);
+    }else {
+      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
+      ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreated()));
+      cell.setNoWrap(true);
+    }
 
    	String xtraData = "";
   	if (StringUtil.isDefined(publicVersion.getXmlFormId())) {
@@ -143,7 +154,7 @@ for (SimpleDocument publicVersion : vVersions) {
     if(StringUtil.isDefined(publicVersion.getComment())) {
       arrayLine.addArrayCellText(xtraData+publicVersion.getComment());
     } else {
-      arrayLine.addArrayCellText(xtraData+publicVersion.getDescription());
+      arrayLine.addArrayCellText("");
     }
 }
 
