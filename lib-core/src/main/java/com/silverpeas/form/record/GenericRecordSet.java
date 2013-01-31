@@ -216,7 +216,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException {
+      String cloneComponentId, HashMap<String, String> attachmentIds) throws FormException {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
     record.setInternalId(-1);
     record.setId(cloneExternalId);
@@ -231,19 +231,22 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
     
     // clone images and videos
+    // Note : attachments from fields of type file have already been cloned
     AttachmentPK fromPK = new AttachmentPK(originalExternalId, originalComponentId);
     AttachmentPK toPK = new AttachmentPK(cloneExternalId, cloneComponentId);
     try {
-      HashMap<String, String> ids =
+      HashMap<String, String> imageIds =
           AttachmentController.cloneAttachments(fromPK, toPK,
               ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
 
       HashMap<String, String> videoIds =
           AttachmentController.cloneAttachments(fromPK, toPK,
               VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
-      ids.putAll(videoIds);
       
-      replaceIds(ids, record);
+      attachmentIds.putAll(imageIds);
+      attachmentIds.putAll(videoIds);
+      
+      replaceIds(attachmentIds, record);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -253,7 +256,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException {
+      String toComponentId, HashMap<String, String> attachmentIds) throws FormException {
     GenericDataRecord fromRecord = (GenericDataRecord) getRecord(fromExternalId);
     GenericDataRecord toRecord = (GenericDataRecord) getRecord(toExternalId);
 
@@ -272,16 +275,18 @@ public class GenericRecordSet implements RecordSet, Serializable {
     AttachmentPK fromPK = new AttachmentPK(fromExternalId, fromComponentId);
     AttachmentPK toPK = new AttachmentPK(toExternalId, toComponentId);
     try {
-      HashMap<String, String> ids =
+      HashMap<String, String> imageIds =
           AttachmentController.mergeAttachments(toPK, fromPK,
               ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
       
       HashMap<String, String> videoIds =
         AttachmentController.mergeAttachments(toPK, fromPK,
             VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
-      ids.putAll(videoIds);
+      
+      attachmentIds.putAll(imageIds);
+      attachmentIds.putAll(videoIds);
     
-      replaceIds(ids, fromRecord);
+      replaceIds(attachmentIds, fromRecord);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -304,7 +309,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
             if (!StringUtil.isDefined(fieldDisplayerName)) {
               fieldDisplayerName = TypeManager.getInstance().getDisplayerName(fieldType);
             }
-            if ("image".equals(fieldDisplayerName) || "video".equals(fieldDisplayerName)) {
+            if ("image".equals(fieldDisplayerName) || "video".equals(fieldDisplayerName) ||
+                "file".equals(fieldDisplayerName)) {
               if (ids.containsKey(field.getStringValue())) {
                 field.setStringValue(ids.get(field.getStringValue()));
               }
