@@ -24,6 +24,8 @@
 
 package com.silverpeas.form.dummy;
 
+import java.util.HashMap;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -119,12 +121,12 @@ public class DummyRecordSet implements RecordSet {
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException {
+      String cloneComponentId, HashMap<String, String> attachmentIds) throws FormException {
   }
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException {
+      String toComponentId, HashMap<String, String> attachmentIds) throws FormException {
   }
 
   @Override
