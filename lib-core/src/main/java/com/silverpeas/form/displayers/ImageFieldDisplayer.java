@@ -322,7 +322,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       if (param != null && !pageContext.isCreation()) {
         if (param.startsWith("remove_")) {
           // Il faut supprimer le fichier
-          String attachmentId = param.substring("remove_".length());
+          String attachmentId = field.getAttachmentId();
           if (!attachmentId.startsWith("/")) {
             deleteAttachment(attachmentId, pageContext);
           } else {

@@ -254,21 +254,8 @@ function isCorrectForm() {
 }
 
 function toDoOnLoad() {
-	<%
-		int height = 385;
-		if (parameters!=null)
-		{
-			int nbParameters = parameters.size();
-			if (nbParameters >= 5)
-				height = height+15*nbParameters;
-			else
-				height = height+30*nbParameters;
-		}
-	%>
-    window.resizeTo(750,<%=height%>);
     document.infoInstance.NameObject.focus();
 }
-
 </script>
 </HEAD>
 <BODY id="admin-component" onload="javascript:toDoOnLoad()">

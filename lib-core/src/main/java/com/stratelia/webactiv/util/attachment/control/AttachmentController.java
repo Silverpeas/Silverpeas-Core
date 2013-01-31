@@ -1427,9 +1427,9 @@ public class AttachmentController {
     return oc.getUserDetail(userId);
   }
 
-  public static void cloneAttachments(AttachmentPK fromForeignKey,
+  public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
-    cloneAttachments(fromForeignKey, toForeignKey, "Images");
+    return cloneAttachments(fromForeignKey, toForeignKey, "Images");
   }
 
   public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,
@@ -1452,9 +1452,9 @@ public class AttachmentController {
     return ids;
   }
 
-  public static void mergeAttachments(AttachmentPK fromForeignKey,
+  public static HashMap<String, String> mergeAttachments(AttachmentPK fromForeignKey,
       AttachmentPK toForeignKey) throws AttachmentException {
-    mergeAttachments(fromForeignKey, toForeignKey, "Images");
+    return mergeAttachments(fromForeignKey, toForeignKey, "Images");
   }
 
   public static HashMap<String, String> mergeAttachments(AttachmentPK fromForeignKey,
