@@ -50,6 +50,8 @@ import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 /**
  * @author Michael Nikolaenko
  * @version 1.0
@@ -140,8 +142,12 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return List<SimpleDocument>
    */
   public List<SimpleDocument> getPublicDocumentVersions(SimpleDocumentPK documentPK) {
-    return ((HistorisedDocument) AttachmentServiceFactory.getAttachmentService()
-        .searchDocumentById(documentPK, null)).getPublicVersions();
+    SimpleDocument currentDoc = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+        documentPK, null);
+    if (currentDoc.isVersioned()) {
+      return ((HistorisedDocument) currentDoc).getPublicVersions();
+    }
+    return Collections.singletonList(currentDoc);
   }
 
   /**

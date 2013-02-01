@@ -68,10 +68,7 @@ public class HistorisedDocument extends SimpleDocument {
   }
 
   public List<SimpleDocument> getPublicVersions() {
-    List<SimpleDocument> publicVersions = new ArrayList<SimpleDocument>(history.size() + 1);
-    if (this.isPublic()) {
-      publicVersions.add(this);
-    }
+    List<SimpleDocument> publicVersions = new ArrayList<SimpleDocument>(history.size());
     for (SimpleDocument document : history) {
       if (document.isPublic()) {
         publicVersions.add(document);
@@ -92,26 +89,11 @@ public class HistorisedDocument extends SimpleDocument {
     }
     for (SimpleDocument document : history) {
       if (document.isPublic()) {
-        return document;
+        HistorisedDocument historisedDocument = new HistorisedDocument(document);
+        historisedDocument.setHistory(history);
+        return historisedDocument;
       }
     }
     return null;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    return hash + super.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    return super.equals(obj);
   }
 }

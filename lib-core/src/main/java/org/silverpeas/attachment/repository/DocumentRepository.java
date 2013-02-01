@@ -189,9 +189,6 @@ public class DocumentRepository {
     return pk;
   }
 
-
-
-
   /**
    * Copy the document to another attached object.
    *
@@ -367,13 +364,14 @@ public class DocumentRepository {
    */
   public SimpleDocument findDocumentById(Session session, SimpleDocumentPK documentPk, String lang)
       throws RepositoryException {
+    SimpleDocument document = null;
     try {
       Node documentNode = session.getNodeByIdentifier(documentPk.getId());
-      return converter.convertNode(documentNode, lang);
+      document = converter.convertNode(documentNode, lang);
     } catch (ItemNotFoundException infex) {
       SilverTrace.info("attachment", "DocumentRepository.findDocumentById()", "", infex);
     }
-    return null;
+    return document;
   }
 
   /**
@@ -1022,7 +1020,7 @@ public class DocumentRepository {
     String targetDir = copy.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
-    if(target.exists()) {
+    if (target.exists()) {
       FileUtils.cleanDirectory(target);
     }
     File source = new File(originDir).getParentFile();
@@ -1060,16 +1058,16 @@ public class DocumentRepository {
       throws ItemNotFoundException, RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
     Node cloneNode = session.getNodeByIdentifier(clone.getId());
-    for(Node child : new NodeIterable(originalNode.getNodes())) {
+    for (Node child : new NodeIterable(originalNode.getNodes())) {
       child.remove();
     }
-    for(Node child : new NodeIterable(cloneNode.getNodes())) {
+    for (Node child : new NodeIterable(cloneNode.getNodes())) {
       session.move(child.getPath(), originalNode.getPath() + '/' + child.getName());
     }
-    for(Property property : new PropertyIterable(originalNode.getProperties())) {
+    for (Property property : new PropertyIterable(originalNode.getProperties())) {
       property.remove();
     }
-    for(Property property : new PropertyIterable(cloneNode.getProperties())) {
+    for (Property property : new PropertyIterable(cloneNode.getProperties())) {
       originalNode.setProperty(property.getName(), property.getValue());
     }
     converter.addStringProperty(originalNode, SLV_PROPERTY_CLONE, null);

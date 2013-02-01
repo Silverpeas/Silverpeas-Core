@@ -165,8 +165,7 @@ for (SimpleDocument publicVersion : vVersions) {
 </html>
 <% if (spinfireViewerEnable) { %>
 <script language="javascript">
-	if (navigator.appName=='Microsoft Internet Explorer')
-	{
+	if (navigator.appName=='Microsoft Internet Explorer') {
 		for (i=0; document.getElementsByName("switchView")[i].style.display=='none'; i++)
 			document.getElementsByName("switchView")[i].style.display = '';
 	}

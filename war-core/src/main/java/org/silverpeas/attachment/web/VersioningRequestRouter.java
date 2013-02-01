@@ -64,7 +64,6 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
             new SimpleDocumentPK(documentId, versioningSC.getComponentId());
         SimpleDocument document = versioningSC.getDocument(documentPK);
         List<SimpleDocument> publicVersions = versioningSC.getPublicDocumentVersions(documentPK);
-
         request.setAttribute("Document", document);
         request.setAttribute("PublicVersions", publicVersions);
         request.setAttribute("Alias", isAlias);
@@ -96,7 +95,7 @@ public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSe
     List<SimpleDocument> versions;
     if (!versioningSC.isWriter(document, versioningSC.getUserId())) {
       versions = versioningSC.getPublicDocumentVersions(documentPK);
-      if (document.isPublic()) {
+      if (document.isPublic() && !versions.contains(document)) {
         versions.add(document);
       }
     } else {
