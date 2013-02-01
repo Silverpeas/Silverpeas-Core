@@ -68,7 +68,6 @@ import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.password.rule.PasswordRule;
 import org.silverpeas.password.service.PasswordCheck;
 import org.silverpeas.password.service.PasswordServiceFactory;
 import org.silverpeas.quota.exception.QuotaException;
@@ -938,6 +937,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
     refresh();
     setTargetUser(idRet);
+  }
+
+  public void blockUser(String userId) throws JobDomainPeasException {
+    m_AdminCtrl.blockUser(userId);
+  }
+
+  public void unblockUser(String userId) throws JobDomainPeasException {
+    m_AdminCtrl.unblockUser(userId);
   }
 
   public void deleteUser(String idUser) throws JobDomainPeasException {

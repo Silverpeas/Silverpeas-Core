@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -1238,8 +1237,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getUserFull(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull",
-          "admin.EX_ERR_GET_USER_DETAIL", "user Id : '" + sUserId + "'", e);
+      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
+          "user Id : '" + sUserId + "'", e);
       return null;
     }
   }
@@ -1263,8 +1262,7 @@ public class AdminController implements java.io.Serializable {
       return getAdminService().getUserIdByLoginAndDomain(sLogin, sDomainId);
     } catch (Exception e) {
       SilverTrace.warn("admin", "AdminController.getUserIdByLoginAndDomain",
-          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = "
-          + sDomainId, e);
+          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = " + sDomainId, e);
       return null;
     }
   }
@@ -1279,8 +1277,8 @@ public class AdminController implements java.io.Serializable {
       }
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserDetails",
-          "admin.EX_ERR_GET_USER_DETAILS", e);
+      SilverTrace.error("admin", "AdminController.getUserDetails", "admin.EX_ERR_GET_USER_DETAILS",
+          e);
       return null;
     }
   }
@@ -1295,6 +1293,26 @@ public class AdminController implements java.io.Serializable {
       SilverTrace.error("admin", "AdminController.addUser",
           "admin.EX_ERR_ADD_USER", e);
       return "";
+    }
+  }
+
+  /** Block the given user */
+  public void blockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.blockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().blockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.blockUser", "admin.EX_ERR_BLOCK_USER", e);
+    }
+  }
+
+  /** Unblock the given user */
+  public void unblockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.unblockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().unblockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
     }
   }
 

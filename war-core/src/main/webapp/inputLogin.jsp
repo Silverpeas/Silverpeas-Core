@@ -22,14 +22,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <script language=javascript>
-		<!--
-		if (navigator.appName == 'Netscape') {
-					 document.write('<input type="text" name="Login" size="9" maxlength="50">');
-					 } else {
-					 document.write('<input type="text" name="Login" size="14" maxlength="50">');
-		 }
-		//-->
+  <!--
+  if (navigator.appName == 'Netscape') {
+    document.write('<input type="text" name="Login" size="9" maxlength="50">');
+  } else {
+    document.write('<input type="text" name="Login" size="14" maxlength="50">');
+  }
+  //-->
 </script>

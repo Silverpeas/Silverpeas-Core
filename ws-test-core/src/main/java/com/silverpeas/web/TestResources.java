@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.token.TokenKey;
 import org.silverpeas.token.constant.TokenType;
 import org.silverpeas.token.exception.TokenException;
@@ -186,6 +187,7 @@ public abstract class TestResources implements ApplicationContextAware {
     user.setFirstName("Toto");
     user.setLastName("Chez-les-papoos");
     user.setDomainId(DEFAULT_DOMAIN);
+    user.setState(UserState.VALID);
     return user;
   }
 
@@ -202,6 +204,7 @@ public abstract class TestResources implements ApplicationContextAware {
     user.setFirstName(firstName);
     user.setLastName(lastName);
     user.setDomainId(DEFAULT_DOMAIN);
+    user.setState(UserState.VALID);
     return user;
   }
 

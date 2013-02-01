@@ -111,11 +111,7 @@ public abstract class Authentication {
     boolean valret = defaultValue;
     value = resources.getString(propertyName);
     if (value != null) {
-      if ("true".equalsIgnoreCase(value)) {
-        valret = true;
-      } else {
-        valret = false;
-      }
+      valret = "true".equalsIgnoreCase(value);
     }
     return valret;
   }
@@ -127,7 +123,6 @@ public abstract class Authentication {
    * @param newPassword user new password
    * @return true if succeeded
    * @throws AuthenticationException
-   * @see internalChangePassword
    */
   public boolean changePassword(String login, String oldPassword,
       String newPassword) throws AuthenticationException {

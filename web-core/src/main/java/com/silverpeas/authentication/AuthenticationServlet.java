@@ -26,6 +26,7 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
+import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -135,6 +136,10 @@ public class AuthenticationServlet extends HttpServlet {
           url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
         }
       }
+      else if(AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+        storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
+        url = AuthenticationUserStateChecker.getErrorDestination();
+      }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
       }
@@ -200,10 +205,10 @@ public class AuthenticationServlet extends HttpServlet {
     String testKey = request.getParameter("TestKey");
     if (!StringUtil.isDefined(testKey)) {
       if (identificationParameters.isCasMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId, request);
+        return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId);
       } else if (identificationParameters.isSocialNetworkMode()) {
         return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters
-            .getDomainId(), request);
+            .getDomainId());
       }
       return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.
           getClearPassword(),

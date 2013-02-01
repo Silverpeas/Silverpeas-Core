@@ -23,33 +23,45 @@
   --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <html>
-  <head>
-    <title>Infos</title>
-    <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css">
-    <style type="text/css">
-    	.titre {
-			left:490px;
-		}
-    </style>  
-  </head>
-  <body>
-    <div class="page">
-      <div class="titre">Information</div>
-      <div id="background">
-        <div class="cadre">
-          <div id="header">
-            <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
-            <p class="information">Silverpeas version is <b><c:out value="${initParam.SILVERPEAS_VERSION}" /></b></p>
-          </div>
-          <p class="information">
-            Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}" /></b> with the version <b><c:out value="${pageContext.servletContext.majorVersion}" />.<c:out value="${pageContext.servletContext.minorVersion}" /></b> of the Servlet API.<br/><br/>
-            The server is running on <b><%=System.getProperty("os.name") %><%=System.getProperty("os.version")%> <%=System.getProperty("os.arch")%></b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System.getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%></b><br/><br/>
-            Silverpeas is running with the following configuration:<br/><i><%=System.getenv("JAVA_OPTS")%></i></p>
-        </div></div>
+<head>
+  <title>Infos</title>
+  <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    .titre {
+      left: 490px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="titre">Information</div>
+  <div id="background">
+    <div class="cadre">
+      <div id="header">
+        <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
+
+        <p class="information">Silverpeas version is
+          <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
+      </div>
+      <p class="information">
+        Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}"/></b>
+        with the version
+        <b><c:out value="${pageContext.servletContext.majorVersion}"/>.<c:out value="${pageContext.servletContext.minorVersion}"/></b>
+        of the Servlet API.<br/><br/>
+        The server is running on <b><%=System.getProperty("os.name") %><%=System
+          .getProperty("os.version")%> <%=System.getProperty("os.arch")%>
+      </b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System
+          .getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%>
+      </b><br/><br/>
+        Silverpeas is running with the following configuration:<br/><i><%=System
+          .getenv("JAVA_OPTS")%>
+      </i></p>
     </div>
-  </body>
+  </div>
+</div>
+</body>
 </html>

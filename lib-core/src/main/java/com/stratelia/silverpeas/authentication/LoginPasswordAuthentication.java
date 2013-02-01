@@ -122,7 +122,7 @@ public class LoginPasswordAuthentication {
    */
   static protected Connection openConnection() throws AuthenticationException {
     Properties info = new Properties();
-    Driver driverSQL = null;
+    Driver driverSQL;
     Connection con;
 
     try {
@@ -219,8 +219,12 @@ public class LoginPasswordAuthentication {
       // Authentification test
       authenticationServer.authenticate(login, password, request);
 
+      // Verify user state
+      AuthenticationUserStateChecker.verify(login, domainId);
+
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
+
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication",
           "LoginPasswordAuthentication.authenticate()",
@@ -243,6 +247,8 @@ public class LoginPasswordAuthentication {
         errorCause = ERROR_PWD_EXPIRED;
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
+      } else if (ex instanceof AuthenticationUserAccountBlockedException) {
+        errorCause = AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -253,11 +259,12 @@ public class LoginPasswordAuthentication {
   /**
    * Method that authenticates given user and return an authentication key Used in case of ntlm
    * authentication
+   *
    * @param login User login
    * @param domainId User domain Id
    * @return authentication key used by LoginServlet
    */
-  public String authenticate(String login, String domainId, HttpServletRequest request) {
+  public String authenticate(String login, String domainId) {
     // Test data coming from calling page
     if (login == null || domainId == null) {
       return null;
@@ -285,8 +292,7 @@ public class LoginPasswordAuthentication {
     } catch (Exception ex) {
       SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-      String errorCause = "Error_2";
-      return errorCause;
+      return "Error_2";
     } finally {
       DBUtil.close(resultSet, prepStmt);
       closeConnection(m_Connection);
@@ -302,8 +308,7 @@ public class LoginPasswordAuthentication {
         SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
             login, e);
-        String errorCause = "Error_2";
-        return errorCause;
+        return "Error_2";
       }
     }
 
@@ -326,6 +331,9 @@ public class LoginPasswordAuthentication {
       throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
+
+    // Verify user state
+    AuthenticationUserStateChecker.verify(login, domainId);
 
     Connection m_Connection = null;
     try {
@@ -443,6 +451,9 @@ public class LoginPasswordAuthentication {
       throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
+
+    // Verify user state
+    AuthenticationUserStateChecker.verify(login, domainId);
 
     Connection connection = null;
 

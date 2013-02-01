@@ -235,7 +235,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * Please use {@link UserDetail#isValidState()} to retrieve user validity information.
    * Please use {@link UserDetail#isDeletedState()} to retrieve user deletion information.
+   * Please use {@link UserDetail#isBlockedState()} to retrieve user blocked information.
    * Please use {@link UserDetail#isExpiredState()} to retrieve user expiration information.
    * This method returns the stored state information but not the functional information.
    * @return the state of the user (account)
@@ -519,12 +521,32 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * This method is the only one able to indicate the user validity state.
+   * Please do not use {@link UserDetail#getState()} to retrieve user validity information.
+   * @return
+   */
+  public boolean isValidState() {
+    return isAnonymous() ||
+        (!UserState.UNKNOWN.equals(state) && !isDeletedState() && !isBlockedState() &&
+            !isExpiredState());
+  }
+
+  /**
    * This method is the only one able to indicate the user deletion state.
    * Please do not use {@link UserDetail#getState()} to retrieve user deletion information.
    * @return
    */
   public boolean isDeletedState() {
     return UserState.DELETED.equals(state);
+  }
+
+  /**
+   * This method is the only one able to indicate the user blocked state.
+   * Please do not use {@link UserDetail#getState()} to retrieve user blocked information.
+   * @return
+   */
+  public boolean isBlockedState() {
+    return UserState.BLOCKED.equals(state);
   }
 
   /**

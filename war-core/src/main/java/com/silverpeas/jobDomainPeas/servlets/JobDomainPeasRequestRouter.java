@@ -206,6 +206,10 @@ public class JobDomainPeasRequestRouter extends
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request, sendEmail);
+        } else if (function.startsWith("userBlock")) {
+          jobDomainSC.blockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userUnblock")) {
+          jobDomainSC.unblockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {

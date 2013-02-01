@@ -77,7 +77,7 @@ public class ExternalAccessFilter implements Filter {
             securityData.getUserId()))) {
           LoginPasswordAuthentication authentication = new LoginPasswordAuthentication();
           String key = authentication.authenticate(securityData.getUserId(),
-              securityData.getDomainId(), req);
+              securityData.getDomainId());
 
           try {
             controller = new MainSessionController(key, session.getId());
