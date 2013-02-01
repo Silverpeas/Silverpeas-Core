@@ -25,6 +25,7 @@
 package org.silverpeas.authentication.encryption;
 
 import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
 import java.util.Random;
 
 /**
@@ -630,8 +631,7 @@ public class UnixDESEncryption implements PasswordEncryption {
   public void check(String password, String digest) throws AssertionError {
     String encryptedPassword = crypt(digest, password);
     if (!encryptedPassword.equals(digest)) {
-      throw new AssertionError("The password '" + password + "' doesn't match the digest '" +
-                                   digest + "'");
+      throw new AssertionError(MessageFormat.format(BAD_PASSWORD_MESSAGE, password, digest));
     }
   }
 
@@ -671,6 +671,4 @@ public class UnixDESEncryption implements PasswordEncryption {
   public boolean doUnderstandDigest(String digest) {
     return !digest.matches("\\$\\d\\$.*\\$");
   }
-
-  protected UnixDESEncryption() {}
 }

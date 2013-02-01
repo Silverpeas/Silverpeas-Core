@@ -41,6 +41,7 @@ package org.silverpeas.authentication.encryption;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.Random;
 
 /**
@@ -65,8 +66,6 @@ public class UnixMD5Encryption implements PasswordEncryption {
   private static final byte[] ITOA64 =
       "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
       .getBytes();
-
-  private static final String ILLEGALE_DIGEST = "The digest '''{0}''' isn't a MD5 one!";
 
   private static void to64(StringBuilder sb, int n, int nCount) {
     while (--nCount >= 0) {
@@ -232,8 +231,7 @@ public class UnixMD5Encryption implements PasswordEncryption {
   public void check(String password, String digest) throws AssertionError {
     String encryptedPassword = crypt(getSaltUsedInDigest(digest), password);
     if (!encryptedPassword.equals(digest)) {
-      throw new AssertionError("The password '" + password + "' doesn't match the digest '" +
-                                   digest + "'");
+      throw new AssertionError(MessageFormat.format(BAD_PASSWORD_MESSAGE, password, digest));
     }
   }
 
@@ -249,18 +247,14 @@ public class UnixMD5Encryption implements PasswordEncryption {
    */
   @Override
   public byte[] getSaltUsedInDigest(String digest) {
-    byte[] salt;
+    String salt = "";
     if (doUnderstandDigest(digest)) {
       String[] parts = digest.split("\\$");
-      if (parts.length < 3) {
-        salt = new byte[0];
-      } else {
-        salt = parts[2].getBytes();
+      if (parts.length >= 3) {
+        salt = parts[2];
       }
-    } else {
-      salt = new byte[0];
     }
-    return salt;
+    return salt.getBytes();
   }
 
   /**
@@ -275,8 +269,6 @@ public class UnixMD5Encryption implements PasswordEncryption {
    */
   @Override
   public boolean doUnderstandDigest(String digest) {
-    return digest.length() == 32 && digest.matches("\\$1\\$.*");
+    return digest.matches("\\$1\\$.{0,8}\\$.{22}");
   }
-
-  protected UnixMD5Encryption() {}
 }

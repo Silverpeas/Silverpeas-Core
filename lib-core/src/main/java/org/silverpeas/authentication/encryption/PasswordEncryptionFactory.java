@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.silverpeas.authentication.encryption;
 
 /**
@@ -11,17 +34,15 @@ package org.silverpeas.authentication.encryption;
  * method. Getting others encryption can be done in order to work with passwords encrypted with
  * old (and then deprecated) algorithms with the <code>getPasswordEncryption(digest)</code>
  * method.
- *
  * @author mmoquillon
  */
 public class PasswordEncryptionFactory {
 
   private static PasswordEncryptionFactory instance = new PasswordEncryptionFactory();
-  private final PasswordEncryption currentEncryption = new UnixMD5Encryption();
+  private final PasswordEncryption currentEncryption = new UnixSHA512Encryption();
 
   /**
    * Gets an instance of the factory of password encryption.
-   *
    * @return a instance of the PasswordEncryptionFactory class.
    */
   public static PasswordEncryptionFactory getFactory() {
@@ -45,22 +66,25 @@ public class PasswordEncryptionFactory {
    * doesn't contain any algorithm identifier, then the UnixDES is returned (yet it is the only one
    * supported by Silverpeas that doesn't generate an algorithm identifier in the digest). In the
    * case the identifier in the digest isn't known, then a exception is thrown.
-   *
    * @param digest the digest from which the password encryption has be found.
    * @return the password encryption that has computed the specified digest.
    * @throws IllegalArgumentException if the digest was not computed by any of the password
    * encryption supported in Silverpeas.
    */
   public PasswordEncryption getPasswordEncryption(String digest) throws IllegalArgumentException {
-    PasswordEncryption encryption;
-    if (currentEncryption.doUnderstandDigest(digest)) {
-      encryption = currentEncryption;
-    } else {
-      encryption = new UnixDESEncryption();
-      if (!encryption.doUnderstandDigest(digest)) {
-        throw new IllegalArgumentException("Digest '" + digest + "' not understand by any of the" +
-            "available encryption in Silverpeas");
+    PasswordEncryption[] availableEncryption =
+        new PasswordEncryption[]{ currentEncryption, new UnixMD5Encryption(),
+            new UnixDESEncryption() };
+    PasswordEncryption encryption = null;
+    for (PasswordEncryption crypt : availableEncryption) {
+      if (crypt.doUnderstandDigest(digest)) {
+        encryption = crypt;
+        break;
       }
+    }
+    if (encryption == null) {
+      throw new IllegalArgumentException("Digest '" + digest + "' not understand by any of the" +
+          "available encryption in Silverpeas");
     }
     return encryption;
   }
