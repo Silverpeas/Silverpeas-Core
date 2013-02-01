@@ -24,6 +24,8 @@
 
 package com.silverpeas.form;
 
+import java.util.HashMap;
+
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
@@ -103,9 +105,9 @@ public interface RecordSet {
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException;
+      String cloneComponentId, HashMap<String, String> attachmentIds) throws FormException;
 
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException;
+      String toComponentId, HashMap<String, String> attachmentIds) throws FormException;
 
 }

@@ -208,14 +208,19 @@ public class UserField implements Field {
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
+   * Tests equality between this field and the specified field.
    */
   public boolean equals(Object o) {
     String s = getUserId();
-
+    if (s == null) {
+      s = "";
+    }
     if (o instanceof UserField) {
       String t = ((UserField) o).getUserId();
-      return ((s == null && t == null) || s.equals(t));
+      if (t == null) {
+        t = "";
+      }
+      return s.equals(t);
     } else {
       return false;
     }
