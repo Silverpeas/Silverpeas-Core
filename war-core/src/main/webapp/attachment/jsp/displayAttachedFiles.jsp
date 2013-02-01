@@ -562,7 +562,9 @@
       $("#dialog-attachment-add").dialog("open");
     }
 
-    function deleteAttachment(id) {
+    function deleteAttachment(id, filename) {
+      $("#dialog-attachment-delete").dialog("option", 'title', '<fmt:message key="supprimerAttachment" />' + filename + ' ?');
+      $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?' );
       $("#dialog-attachment-delete").data("id", id).dialog("open");
     }
 
@@ -621,7 +623,7 @@
     }
 
     function displayWarning(attachmentId) {
-      var url = '<%=URLManager.getApplicationURL()%>/attachment/jsp/warning_locked.jsp?id=' + attachmentId;
+      var url = '<c:url value="/attachment/jsp/warning_locked.jsp" />' + '?id=' + attachmentId;
       $("#attachmentModalDialog").dialog("open").load(url);
     }
 
@@ -748,7 +750,7 @@
         $("#attachmentModalDialog").dialog({
           autoOpen: false,
           modal: true,
-          title: '<fmt:message key="attachment.dialog.delete" />',
+          title: '<fmt:message key="attachment.dialog.delete" />' ,
           height: 'auto',
           width: 400
         });

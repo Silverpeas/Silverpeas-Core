@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -26,8 +25,11 @@ import java.net.URLEncoder;
 
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
@@ -71,14 +73,14 @@ public class MenuHelper {
         append(")\">").append(resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
     builder.
         append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('").
-        append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('")
+        .append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
         append(");\">").append(resources.getString("attachment.checkOutAndDownload")).append(
         "</a></li>").append(NEW_LINE);
     builder.
         append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('").
-        append(attachment.getId()).append("',").append(attachmentId).append(");\">").
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('")
+        .append(attachment.getId()).append("',").append(attachmentId).append(");\">").
         append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>").append(
         NEW_LINE);
     builder.append(
@@ -91,12 +93,11 @@ public class MenuHelper {
     builder.append("<ul>").append(NEW_LINE);
     builder.
         append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('").
-        append(attachment.getId()).append("', '").append(language).append("');\">").append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('")
+        .append(attachment.getId()).append("', '").append(language).append("');\">").append(
         resources.getString("GML.modify")).append("</a></li>").append(NEW_LINE);
     if (useXMLForm) {
-      builder
-          .append(
+      builder.append(
           "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
       builder.append(attachmentId).append("','").append(language).append("');\">");
       builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(
@@ -104,15 +105,16 @@ public class MenuHelper {
     }
     builder.
         append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('").
-        append(attachment.getId()).append("')\">").append(resources.getString("GML.delete")).append(
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('")
+        .append(attachment.getId()).append("', '").append(StringEscapeUtils.escapeEcmaScript(
+        attachment.getFilename())).append("')\">").append(resources.getString("GML.delete")).append(
         "</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
     builder.
         append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('").
-        append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
+        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('")
+        .append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
         append("</a></li>").append(NEW_LINE);
     builder.append("</ul>").append(NEW_LINE);
     builder.append("<ul>").append(NEW_LINE);
@@ -132,7 +134,7 @@ public class MenuHelper {
 
     builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
-    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), "UTF-8")).
+    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), CharEncoding.UTF_8)).
         append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");

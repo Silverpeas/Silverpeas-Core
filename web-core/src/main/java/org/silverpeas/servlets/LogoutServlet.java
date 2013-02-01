@@ -51,7 +51,7 @@ public class LogoutServlet extends HttpServlet {
     SessionManagement sessionManagement = factory.getSessionManagement();
     sessionManagement.closeSession(session.getId());
     ResourceLocator resource =
-        new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
+        new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
     String postLogoutPage = resource.getString("logout.page", "/Login.jsp?ErrorCode=4&logout=true");
     if (postLogoutPage.startsWith("http")) {
       response.sendRedirect(postLogoutPage);
