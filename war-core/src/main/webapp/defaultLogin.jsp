@@ -84,8 +84,12 @@
     }
 
     function checkForm() {
-      var form = document.getElementById("formLogin");
+      $("form").submit();
+    }
+
+    function checkCookie() {
       <% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
+      var form = document.getElementById("formLogin");
       if (GetCookie("svpPassword") != document.getElementById("formLogin").Password.value) {
         form.cryptedPassword.value = "";
       } else {
@@ -94,8 +98,6 @@
         }
       }
       <% } %>
-      form.action = '<c:url value="/AuthenticationServlet" />';
-      form.submit();
     }
 
     function loginQuestion() {
@@ -141,17 +143,15 @@
         }
       });
 
-      $("#Password").keypress(function(event) {
-        if (event.keyCode == 13) {
-          checkForm();
-        }
+      $("form").submit(function() {
+        checkCookie();
       });
-    })
+    });
     -->
   </script>
 </head>
 <body>
-<form id="formLogin" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
+<form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">
   <% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
   <div id="top">
     <fmt:message key="authentication.logon.newRegistration.tease"/>
@@ -179,12 +179,12 @@
   <div id="login-socialnetwork">
     <% if (linkedInEnabled) { %>
     <a title="<fmt:message key='authentication.logon.with.linkedin' />" href="<c:url value="/SocialNetworkLogin?networkId=LINKEDIN" />">
-      <img src="util/icons/external/btn-login-linkedin.png"/>
+      <img src="util/icons/external/btn-login-linkedin.png" alt=""/>
     </a>
     <% } %>
     <% if (facebookEnabled) { %>
     <a title="<fmt:message key='authentication.logon.with.facebook' />" href="<c:url value="/SocialNetworkLogin?networkId=FACEBOOK" />">
-      <img src="util/icons/external/btn-login-facebook.png"/>
+      <img src="util/icons/external/btn-login-facebook.png" alt=""/>
     </a>
     <% } %>
   </div>
@@ -195,7 +195,7 @@
       <div class="cadre">
         <div id="header" style="display: table; width: 100%">
           <div style="display: table-cell">
-          <img src="<%=logo%>" class="logo" alt="logo"/>
+            <img src="<%=logo%>" class="logo" alt="logo"/>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
             <c:choose>

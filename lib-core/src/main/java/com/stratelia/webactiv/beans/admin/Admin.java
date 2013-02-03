@@ -4542,7 +4542,7 @@ public final class Admin {
       List<String> manageableRootSpaceIds = new ArrayList<String>();
       for (String asManageableSpaceId : asManageableSpaceIds) {
         SpaceInstLight space = TreeCache.getSpaceInstLight(asManageableSpaceId);
-        if (space.isRoot()) {
+        if (space != null && space.isRoot()) {
           manageableRootSpaceIds.add(asManageableSpaceId);
         }
       }
@@ -4573,7 +4573,7 @@ public final class Admin {
       for (String manageableSpaceId : asManageableSpaceIds) {
         find = false;
         SpaceInstLight space = TreeCache.getSpaceInstLight(manageableSpaceId);
-        while (!space.isRoot() && !find) {
+        while (space != null && !space.isRoot() && !find) {
           if (parentSpaceId.equals(space.getFatherId())) {
             manageableRootSpaceIds.add(manageableSpaceId);
             find = true;

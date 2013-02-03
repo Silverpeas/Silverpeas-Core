@@ -325,22 +325,33 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
               String value = processUploadedFile(items, itemName, pageContext, fileHandler);
               String param =
                   FileUploadUtil.getParameter(items, itemName + Field.FILE_PARAM_NAME_SUFFIX);
-              if (param != null) {
-                if (param.startsWith("remove_") && !pageContext.isCreation()) {
-                  // Il faut supprimer le fichier
-                  String attachmentId = param.substring("remove_".length());
-                  deleteAttachment(attachmentId, pageContext);
+              boolean updateValue = true;
+              if (param != null && !pageContext.isCreation()) {
+                // field contained a file
+                boolean deleteAttachment = false;
+                if (param.startsWith("remove_")) {
+                  // user removes explicitly file
+                  deleteAttachment = true;
                 } else if (value != null && StringUtil.isInteger(param)) {
-                  // Y'avait-il un déjà un fichier ?
-                  // Il faut remplacer le fichier donc supprimer l'ancien
-                  deleteAttachment(param, pageContext);
+                  // new file has been uploaded
+                  // existing file must be removed
+                  deleteAttachment = true;
                 } else if (value == null) {
-                  // pas de nouveau fichier, ni de suppression
-                  // le champ ne doit pas être mis à jour
+                  // file has not been updated
+                  // field must not be updated
+                  updateValue = false;
+                }
+                if (deleteAttachment) {
+                  String attachmentId = field.getAttachmentId();
+                  deleteAttachment(attachmentId, pageContext);
                 }
               }
-              if (pageContext.getUpdatePolicy() != PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES ||
-                  StringUtil.isDefined(value)) {
+              if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
+                  && !StringUtil.isDefined(value)) {
+                // do nothing
+                updateValue = false;
+              }
+              if (updateValue) {
                 result.addAll(update(value, field, template, pageContext));
               }
             }
