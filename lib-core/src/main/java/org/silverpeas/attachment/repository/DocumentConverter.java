@@ -23,15 +23,9 @@
  */
 package org.silverpeas.attachment.repository;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import org.apache.jackrabbit.core.state.NoSuchItemStateException;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.jcr.AbstractJcrConverter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -40,9 +34,18 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+import org.apache.jackrabbit.core.state.NoSuchItemStateException;
+
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.jcr.AbstractJcrConverter;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
@@ -93,6 +96,7 @@ class DocumentConverter extends AbstractJcrConverter {
           documentHistory.add(versionDocument);
         }
       }
+      HistoryDocumentSorter.sortHistory(documentHistory);
       return documentHistory;
     } catch (RepositoryException ex) {
       if (ex.getCause() instanceof NoSuchItemStateException) {

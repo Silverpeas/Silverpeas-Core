@@ -21,7 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.model;
+package org.silverpeas.attachment.repository;
+
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -34,8 +36,8 @@ import java.util.List;
  */
 public class HistoryDocumentSorter implements Serializable{
   private static final long serialVersionUID = 4263157996954433938L;
-  
-  private static Comparator<SimpleDocument> comparator = new Comparator<SimpleDocument>() {
+
+  private static final Comparator<SimpleDocument> comparator = new Comparator<SimpleDocument>() {
     @Override
     public int compare(SimpleDocument doc1, SimpleDocument doc2) {
       if (doc1.getMajorVersion() == doc2.getMajorVersion()) {
@@ -44,12 +46,12 @@ public class HistoryDocumentSorter implements Serializable{
       return doc2.getMajorVersion() - doc1.getMajorVersion();
     }
   };
-  
+
   public static void sortHistory(List<SimpleDocument> docs) {
     Collections.sort(docs, comparator);
   }
 
   private HistoryDocumentSorter() {
   }
-  
+
 }

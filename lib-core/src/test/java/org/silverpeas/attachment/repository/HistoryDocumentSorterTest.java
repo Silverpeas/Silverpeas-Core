@@ -21,12 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.attachment.model;
+package org.silverpeas.attachment.repository;
 
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.repository.HistoryDocumentSorter;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
@@ -36,10 +38,10 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 public class HistoryDocumentSorterTest {
-  
+
   public HistoryDocumentSorterTest() {
   }
-  
+
  /**
    * Test of compare method, of class VersionSimpleDocumentComparator.
    */
@@ -47,7 +49,7 @@ public class HistoryDocumentSorterTest {
   public void testSortHistory() {
     SimpleDocument doc1 = new SimpleDocument();
     doc1.setNodeName("doc1");
-    SimpleDocument doc2 = new SimpleDocument();    
+    SimpleDocument doc2 = new SimpleDocument();
     doc2.setNodeName("doc2");
     SimpleDocument doc3 = new SimpleDocument();
     doc3.setNodeName("doc3");
