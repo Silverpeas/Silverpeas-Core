@@ -23,7 +23,7 @@ package com.stratelia.webactiv.util.node.control;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -485,7 +485,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             updateNodeDetail(nd);
           }
         } else {
-          // No i18n managed by this object 
+          // No i18n managed by this object
           NodeDAO.storeRow(con, nd);
         }
       }

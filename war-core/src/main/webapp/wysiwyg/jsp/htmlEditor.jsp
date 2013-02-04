@@ -46,8 +46,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.treeMenu.model.NodeType"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.*"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
@@ -91,7 +91,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     if (actionWysiwyg == null) {
         actionWysiwyg = "Load";
     }
-    
+
     if (actionWysiwyg.equals("SaveHtmlAndExit") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) {
         codeWysiwyg 	= request.getParameter("editor1");
         spaceId 		= (String) session.getAttribute("WYSIWYG_SpaceId");
@@ -130,7 +130,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
               codeWysiwyg = codeWysiwyg.replaceAll(server + ":" + serverPort, "");
               codeWysiwyg = codeWysiwyg.replaceAll(server + "/", "/");
             }
-        		
+
 	        if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
             	WysiwygController.updateWebsite(path, fileName, codeWysiwyg);
             } else {
@@ -183,7 +183,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
         browseInformation = request.getParameter("BrowseInfo");
         session.setAttribute("WYSIWYG_BrowseInfo", browseInformation);
-        
+
         userId = request.getParameter("UserId");
         session.setAttribute("WYSIWYG_UserId", userId);
 
@@ -192,16 +192,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         path = request.getParameter("Path");
         session.setAttribute("WYSIWYG_Path", path);
         SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "createSite",  "fileName= "+fileName+" Path="+path);
-       
+
         language = request.getParameter("Language");
         if (language == null) {
             language = "en";
         }
         session.setAttribute("WYSIWYG_Language", language);
-        
+
         contentLanguage = request.getParameter("ContentLanguage");
         session.setAttribute("WYSIWYG_ContentLanguage", contentLanguage);
-        
+
         indexIt = request.getParameter("IndexIt");
         session.setAttribute("WYSIWYG_IndexIt", indexIt);
 
@@ -239,16 +239,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	ResourceLocator 		message 	= new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 	ResourceLocator 		settings 	= new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", language);
 	GraphicElementFactory 	gef 		= (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    
+
     Window 		window 		= gef.getWindow();
     BrowseBar 	browseBar 	= window.getBrowseBar();
-    
+
 	browseBar.setDomainName(spaceName);
     browseBar.setComponentName(componentName, returnUrl);
     browseBar.setExtraInformation(browseInformation);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -265,7 +265,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <view:includePlugin name="wysiwyg"/>
 </head>
 <body>
-<%  
+<%
     out.println(window.printBefore());
 %>
 
@@ -274,7 +274,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	window.onload = function() {
 		<view:wysiwyg replace="editor1" language="<%=language %>"/>
 	}
-	
+
 	function getCKEditor() {
 		return CKEDITOR.instances.editor1;
 	}
@@ -284,7 +284,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		document.recupHtml.Exit.value = "1";
 		document.recupHtml.submit();
 	}
-	
+
 	function choixImage() {
 		index = document.recupHtml.images.selectedIndex;
 		var str = document.recupHtml.images.options[index].value;
@@ -299,7 +299,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			}
 		}
 	}
-	
+
 	function choixGallery() {
 		index = document.recupHtml.galleries.selectedIndex;
 		var componentId = document.recupHtml.galleries.options[index].value;
@@ -315,11 +315,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 		}
 	}
-	
+
 	function choixImageInGallery(url) {
 		getCKEditor().insertHtml('<img border="0" src="'+url+'" alt=""/>');
 	}
-	
+
 	function choixLien() {
 		index = document.recupHtml.liens.selectedIndex;
 		var str = document.recupHtml.liens.options[index].value;
@@ -331,16 +331,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	function chooseDynamicValuesdefault(){
 		index = document.recupHtml.dynamicValues.selectedIndex;
 		var str = document.recupHtml.dynamicValues.options[index].value;
-		if (index != 0 && str != null){		   
+		if (index != 0 && str != null){
 			getCKEditor().insertHtml('(%'+str+'%)');
 		}
 	}
-	
+
 	var storageFileWindow=window;
 	function openStorageFilemanager(){
 		index = document.getElementById("storageFile").selectedIndex;
 		var componentId = document.getElementById("storageFile").options[index].value;
-		if (index != 0){	
+		if (index != 0){
 			url = "<%=context%>/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=<%=NodeType.COMPONENT%>";
 			windowName = "StorageFileWindow";
 			width = "750";
@@ -367,15 +367,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr class="TB_Expand">
 			<td class="TB_Expand" align="center">
-			
+
 		<% List fileStorage = WysiwygController.getStorageFile(userId);
  		   request.setAttribute("fileStorage",fileStorage);
 		%>
 		<c:if test="<%=!fileStorage.isEmpty()%>">
 			<select id="storageFile" name="componentId" onchange="openStorageFilemanager();this.selectedIndex=0">
 			<option value=""><%=message.getString("storageFile.select.title")%></option>
-			<c:forEach items="${fileStorage}" var="option" > 
-				<option value="${option.id}"><%= ((ComponentInstLight)pageContext.findAttribute("option")).getLabel(language) %></option> 		
+			<c:forEach items="${fileStorage}" var="option" >
+				<option value="${option.id}"><%= ((ComponentInstLight)pageContext.findAttribute("option")).getLabel(language) %></option>
 			</c:forEach>
 			</select>
 	  	</c:if>

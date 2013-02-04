@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.wysiwyg.control;
+package org.silverpeas.wysiwyg.control;
 
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
@@ -26,7 +26,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -60,6 +60,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+
+import org.silverpeas.attachment.model.UnlockContext;
 
 /**
  * @author neysseri
@@ -456,6 +458,8 @@ public class WysiwygController {
       CallBackManager callBackManager = CallBackManager.get();
       callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, componentId, id);
     }
+    AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
+        userId, document.getLanguage()));
   }
 
   /**
@@ -465,7 +469,7 @@ public class WysiwygController {
    * @param textHtml String : contains the text published by the wysiwyg
    * @param componentId String : the id of component.
    * @param id String : for example the id of the publication.
-   * @param userId  the author of the content. 
+   * @param userId the author of the content.
    */
   public static void createFileAndAttachment(String textHtml, String componentId, String id,
       String userId) {

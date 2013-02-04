@@ -1,20 +1,20 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
- * 
+ *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
 * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- * 
+ *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- * 
+ *
 * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -45,8 +45,8 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -58,7 +58,7 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextFiel in HTML the content of a
  * TextFiel to a end user and can retrieve via HTTP any updated value.
- * 
+ *
 * @see Field
  * @see FieldTemplate
  * @see Form
@@ -169,7 +169,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
       ResourceLocator resources = new ResourceLocator(
-          "com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
+          "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
 
       // storage file : HTML select building
       List<ComponentInstLight> fileStorage = null;
