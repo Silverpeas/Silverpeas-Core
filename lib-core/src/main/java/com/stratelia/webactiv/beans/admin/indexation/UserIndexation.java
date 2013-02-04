@@ -66,7 +66,7 @@ public class UserIndexation {
         indexEntry.addField("FirstName", user.getFirstName());
         indexEntry.addField("LastName", user.getLastName());
         indexEntry.addField("DomainId", user.getDomainId());
-        indexEntry.addField("AccessLevel", user.getAccessLevel());
+        indexEntry.addField("AccessLevel", user.getAccessLevel().code());
 
         // index extra informations
         String[] propertyNames = user.getPropertiesNames();

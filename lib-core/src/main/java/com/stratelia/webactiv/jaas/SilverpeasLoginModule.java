@@ -161,7 +161,7 @@ public class SilverpeasLoginModule implements LoginModule {
           // authenticate
           Domain[] domains = controller.getAllDomains();
           for (Domain domain : domains) {
-            String key = authenticator.authenticate(sc.getUsername(), domain.getId(), null);
+            String key = authenticator.authenticate(sc.getUsername(), domain.getId());
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);

@@ -247,7 +247,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       String[] id2 = { "32", "33" };
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);
 
-      if (getUserDetail().isAccessKMManager()
+      if (getUserDetail().isAccessPdcManager()
           && JobManagerSettings.m_IsKMVisible) {
         String[] id1 = { "21", "22" };
         jKM = new JobManagerService("2", "JKM", LEVEL_SERVICE, null, id1, false);
@@ -262,7 +262,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT.getId(), jSTAT);
       services.put(jSTAT2.getId(), jSTAT2);
       services.put(jSTAT3.getId(), jSTAT3);
-    } else if (getUserDetail().isAccessKMManager()
+    } else if (getUserDetail().isAccessPdcManager()
         && JobManagerSettings.m_IsKMVisible) {
       String[] id1 = { "21", "22" };
       jKM = new JobManagerService("1", "JKM", LEVEL_SERVICE, null, id1, false);

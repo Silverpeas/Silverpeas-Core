@@ -50,6 +50,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request.getParameter("GroupId"), request, sendEmail);
@@ -201,15 +202,20 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request, sendEmail);
+        } else if (function.startsWith("userBlock")) {
+          jobDomainSC.blockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userUnblock")) {
+          jobDomainSC.unblockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           String userId = request.getParameter("Iduser");
-          String accessLevel = request.getParameter("userAccessLevel");
+          UserAccessLevel accessLevel =
+              UserAccessLevel.from(request.getParameter("userAccessLevel"));
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);

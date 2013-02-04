@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -33,12 +34,12 @@
     String spaceId = (String) request.getAttribute("SpaceId");
 	Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
-    String userProfile = (String)request.getAttribute("UserProfile");
+    UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
     
     long totalSize = 0;
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A")) {
+	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
@@ -89,7 +90,7 @@
 		String path = "";
 		String separator = "";
 		for (String[] pathItem : vPath) {
-			if (userProfile.equals("A")) {
+			if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 				path += separator + "<a href=\"ViewVolumeSizeServer"+( (pathItem[0]==null) ? "" : ("?SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {
 				path += separator + pathItem[1];
@@ -111,7 +112,7 @@
 		<select name="Display" size="1" onchange="changeDisplay()">
 			<option value="ViewVolumeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<% if (userProfile.equals("A")) { %>
+			<% if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) { %>
 				<option value="ViewEvolutionVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
 			<% } %>
 		</select>

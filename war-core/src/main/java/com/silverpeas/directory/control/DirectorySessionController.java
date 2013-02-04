@@ -419,7 +419,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(stConfig);
     for (Member member : membersToDisplay) {
       template.setAttribute("user", member);
-      template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel()));
+      template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel().code()));
       template.setAttribute("avatar", getAvatarFragment(member));
       template.setAttribute("context", URLManager.getApplicationURL());
       template.setAttribute("notMyself", !member.getId().equals(getUserId()));

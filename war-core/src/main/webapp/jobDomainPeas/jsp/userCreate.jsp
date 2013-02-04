@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -47,8 +48,6 @@
   List<Group> groups = (List) request.getAttribute("GroupsManagedByCurrentUser");
 
   boolean bUserRW = (userRW != null) ? userRW : false;
-
-  String currentUserAccessLevel = currentUser.getAccessLevel();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource),
       "domainContent?Iddomain=" + domObject.getId());
@@ -204,36 +203,31 @@ function selectUnselect()
         <tr>
             <td class="txtlibform"><fmt:message key="JDP.userRights"/> :</td>
             <td>
-              <% if (StringUtil.isDefined(currentUserAccessLevel) && "A".equals(currentUserAccessLevel)) { %>
-                  <input type="radio" name="userAccessLevel" value="A" <%
-                    if ((userObject.getAccessLevel() != null) &&
-                        (userObject.getAccessLevel().equalsIgnoreCase("A"))) {
+              <% if (currentUser.isAccessAdmin()) { %>
+                  <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%
+                    if (userObject.isAccessAdmin()) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
-                  <input type="radio" name="userAccessLevel" value="K" <%
-                    if ((userObject.getAccessLevel() != null) &&
-                        (userObject.getAccessLevel().equalsIgnoreCase("K"))) {
+                  <input type="radio" name="userAccessLevel" value="PDC_MANAGER" <%
+                    if (userObject.isAccessPdcManager()) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
                 <% } %>
-                <% if (StringUtil.isDefined(currentUserAccessLevel) && ("A".equals(currentUserAccessLevel) || "D".equals(currentUserAccessLevel))) { %>
-                  <input type="radio" name="userAccessLevel" value="D" <%
-                    if ((userObject.getAccessLevel() != null) &&
-                        (userObject.getAccessLevel().equalsIgnoreCase("D"))) {
+                <% if (currentUser.isAccessAdmin() || currentUser.isAccessDomainManager()) { %>
+                  <input type="radio" name="userAccessLevel" value="DOMAIN_ADMINISTRATOR" <%
+                    if (userObject.isAccessDomainManager()) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
-                  <input type="radio" name="userAccessLevel" value="U" <%
-                    if ((userObject.getAccessLevel() == null) || (userObject.getAccessLevel().length() <= 0) ||
-                        (userObject.getAccessLevel().equalsIgnoreCase("U"))) {
+                  <input type="radio" name="userAccessLevel" value="USER" <%
+                    if (userObject.isAccessUser()) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
-                  <input type="radio" name="userAccessLevel" value="G" <%
-                    if ((userObject.getAccessLevel() != null) &&
-                        (userObject.getAccessLevel().equalsIgnoreCase("G"))) {
+                  <input type="radio" name="userAccessLevel" value="GUEST" <%
+                    if (userObject.isAccessGuest()) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.guest") %>
                 <% } else { %>
-          <input type="hidden" name="userAccessLevel" value="U"/><fmt:message key="GML.user" />
+          <input type="hidden" name="userAccessLevel" value="USER"/><fmt:message key="GML.user" />
                 <% } %>
             </td>
         </tr>

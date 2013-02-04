@@ -39,6 +39,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -68,7 +71,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
    * Decorates the specified user details with the required WEB exposition features.
    *
    * @param users a list of details on some users.
-   * @param baseURI the URI at which the specified users are defined.
+   * @param usersUri the URI at which the specified users are defined.
    * @return a list of web entities representing the profile of the specified users.
    */
   public static UserProfileEntity[] fromUsers(final List<? extends UserDetail> users, URI usersUri) {
@@ -131,7 +134,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
 
   @Override
   @XmlElement(required=true)
-  public String getAccessLevel() {
+  public UserAccessLevel getAccessLevel() {
     return this.user.getAccessLevel();
   }
 
@@ -168,8 +171,8 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   }
 
   @Override
-  public void setAccessLevel(String sAccessLevel) {
-    this.user.setAccessLevel(sAccessLevel);
+  public void setAccessLevel(UserAccessLevel accessLevel) {
+    this.user.setAccessLevel(accessLevel);
   }
 
   @Override

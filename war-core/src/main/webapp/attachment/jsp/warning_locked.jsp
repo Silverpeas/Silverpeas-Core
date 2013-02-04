@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -36,7 +37,7 @@
 <view:setBundle basename="com.stratelia.webactiv.util.attachment.multilang.attachment" var="attachmentMessages"  />
  <%
   ButtonPane warningButtonPane = gef.getButtonPane();
-   if( "A".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel())) {
+   if(m_MainSessionCtrl.getCurrentUserDetail().isAccessAdmin()) {
      warningButtonPane.addButton(gef.getFormButton(messages.getString("forcer"), "javascript:checkin(" + request.getParameter("id") + ",true, true)", false));
    }
   warningButtonPane.addButton(gef.getFormButton(messages.getString("fermer"), "javascript:onClick=closeMessage()", false));

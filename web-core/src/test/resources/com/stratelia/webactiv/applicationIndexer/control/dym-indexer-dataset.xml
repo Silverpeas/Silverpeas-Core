@@ -26,8 +26,8 @@
 -->
 
 <dataset>
-  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="" login="SilverAdmin" loginmail="" accesslevel="A" loginquestion="Quelle est votre ville de naissance ?" loginanswer="fff"/>
-  <st_user id="1" domainid="0" specificid="1" firstname="Lecteur" lastname="Lecteur" email="" login="lecteur" loginmail="" accesslevel="U" loginquestion="Quelle est le nom de jeune fille de votre mère ?" loginanswer="mere"/>
+  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="" login="SilverAdmin" loginmail="" accesslevel="A" loginquestion="Quelle est votre ville de naissance ?" loginanswer="fff" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Lecteur" lastname="Lecteur" email="" login="lecteur" loginmail="" accesslevel="U" loginquestion="Quelle est le nom de jeune fille de votre mère ?" loginanswer="mere" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_space id="1" name="Java" description="language de programmation Java" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="0" createtime="1265208590802" updatetime="1265208676165" updatedby="0" lang="fr" isinheritanceblocked="0"/>
   <st_space id="2" name="TCP IP" description="" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="1" createtime="1265378986407" updatetime="1265379014037" updatedby="0" lang="fr" isinheritanceblocked="0"/>
   <st_componentinstance id="1" spaceid="1" name="J2EE" componentname="kmelia" description="" createdby="0" ordernum="0" createtime="1265209006921" ispublic="0" ishidden="0" lang="fr" isinheritanceblocked="0"/>

@@ -43,23 +43,14 @@ public enum NotifChannel {
   }
 
   public static NotifChannel decode(final Integer id) {
-    NotifChannel result = null;
     if (id != null) {
-      if (id == SMTP.id) {
-        result = SMTP;
-      } else if (id == SMS.id) {
-        result = SMS;
-      } else if (id == POPUP.id) {
-        result = POPUP;
-      } else if (id == SILVERMAIL.id) {
-        result = SILVERMAIL;
-      } else if (id == REMOVE.id) {
-        result = REMOVE;
-      } else if (id == SERVER.id) {
-        result = SERVER;
+      for (NotifChannel notifChannel : NotifChannel.values()) {
+        if (id == notifChannel.id) {
+          return notifChannel;
+        }
       }
     }
-    return result;
+    return null;
   }
 
   /**

@@ -24,6 +24,9 @@
 
 package com.stratelia.webactiv.servlets;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.authentication.AuthenticationException;
+import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
 import com.stratelia.webactiv.servlets.credentials.*;
 
 import javax.servlet.RequestDispatcher;
@@ -65,6 +68,7 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("ValidateAnswer", new ValidationAnswerHandler());
     handlers.put("ChangePassword", new ChangePasswordHandler());
     handlers.put("ChangePasswordFromLogin", new ChangePasswordFromLoginHandler());
+    handlers.put("EffectiveChangePasswordFromLogin", new EffectiveChangePasswordFromLoginHandler());
     handlers.put("ChangeExpiredPassword", new ChangeExpiredPasswordHandler());
     // Password reset management
     handlers.put("ForgotPassword", new ForgotPasswordHandler());
@@ -87,7 +91,23 @@ public class CredentialsServlet extends HttpServlet {
     String function = getFunction(request);
     FunctionHandler handler = handlers.get(function);
     if (handler != null) {
-      String destinationPage = handler.doAction(request);
+
+      // Verify user state
+      String login = request.getParameter("Login");
+      String domainId = request.getParameter("DomainId");
+      String destinationPage = "";
+      if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+        try {
+          AuthenticationUserStateChecker.verify(login, domainId);
+        } catch (AuthenticationException e) {
+          destinationPage = AuthenticationUserStateChecker.getErrorDestination();
+        }
+      }
+
+      if (!StringUtil.isDefined(destinationPage)) {
+        destinationPage = handler.doAction(request);
+      }
+
       if (destinationPage.startsWith("http")) {
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
         sessionCookie.setMaxAge(-1);

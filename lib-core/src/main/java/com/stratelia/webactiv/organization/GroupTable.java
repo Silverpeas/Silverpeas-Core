@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -104,14 +105,15 @@ public class GroupTable extends Table<GroupRow> {
 */
   public GroupRow getGroupBySpecificId(int domainId, String specificId) throws
           AdminPersistenceException {
-    List<GroupRow> rows = getRows(SELECT_GROUP_BY_SPECIFICID, new int[]{domainId}, new String[]{
-              specificId});
-    GroupRow[] groups = rows.toArray(new GroupRow[rows.size()]);
-    if (groups.length == 0) {
+    List<Object> params = new ArrayList<Object>(2);
+    params.add(domainId);
+    params.add(specificId);
+    List<GroupRow> groups = getRows(SELECT_GROUP_BY_SPECIFICID, params);
+    if (groups.isEmpty()) {
       return null;
     }
-    if (groups.length == 1) {
-      return groups[0];
+    if (groups.size() == 1) {
+      return groups.get(0);
     }
     throw new AdminPersistenceException("GroupTable.getGroupBySpecificId", SilverpeasException.ERROR,
             "admin.EX_ERR_GROUP_SPECIFIC_ID_FOUND_TWICE",
@@ -126,14 +128,12 @@ public class GroupTable extends Table<GroupRow> {
 * @throws AdminPersistenceException
 */
   public GroupRow getRootGroup(String name) throws AdminPersistenceException {
-    List<GroupRow> rows = getRows(SELECT_ROOT_GROUP_BY_NAME, new String[]{name});
-    GroupRow[] groups = rows.toArray(new GroupRow[rows.size()]);
-
-    if (groups.length == 0) {
+    List<GroupRow> groups = getRows(SELECT_ROOT_GROUP_BY_NAME, Collections.singletonList(name));
+    if (groups.isEmpty()) {
       return null;
     }
-    if (groups.length == 1) {
-      return groups[0];
+    if (groups.size() == 1) {
+      return groups.get(0);
     }
     throw new AdminPersistenceException("GroupTable.getRootGroup", SilverpeasException.ERROR,
             "admin.EX_ERR_GROUP_NAME_FOUND_TWICE", "group name: '" + name + "'");
@@ -147,14 +147,15 @@ public class GroupTable extends Table<GroupRow> {
 * @throws AdminPersistenceException
 */
   public GroupRow getGroup(int superGroupId, String name) throws AdminPersistenceException {
-    List<GroupRow> rows = getRows(SELECT_GROUP_BY_NAME, new int[]{superGroupId}, new String[]{
-              name});
-    GroupRow[] groups = rows.toArray(new GroupRow[rows.size()]);
-    if (groups.length == 0) {
+    List<Object> params = new ArrayList<Object>(2);
+    params.add(superGroupId);
+    params.add(name);
+    List<GroupRow> groups = getRows(SELECT_GROUP_BY_NAME, params);
+    if (groups.isEmpty()) {
       return null;
     }
-    if (groups.length == 1) {
-      return groups[0];
+    if (groups.size() == 1) {
+      return groups.get(0);
     }
     throw new AdminPersistenceException("GroupTable.getGroup", SilverpeasException.ERROR,
             "admin.EX_ERR_GROUP_NAME_ID_FOUND_TWICE",
@@ -316,39 +317,12 @@ public class GroupTable extends Table<GroupRow> {
 * @return all the groups in a given userRole (not recursive).
 * @throws AdminPersistenceException
 */
-  public GroupRow[] getDirectGroupsInUserRole(int userRoleId) throws AdminPersistenceException {
-    List<GroupRow> rows = getRows(SELECT_USERROLE_GROUPS, userRoleId);
-    return rows.toArray(new GroupRow[rows.size()]);
-  }
-  static final private String SELECT_USERROLE_GROUPS = "select " + GROUP_COLUMNS
-          + " from ST_Group,ST_UserRole_Group_Rel where id = groupId and userRoleId = ?";
-
-  /**
-* Returns all the groups in a given userRole (not recursive).
-* @param userRoleId
-* @return all the groups in a given userRole (not recursive).
-* @throws AdminPersistenceException
-*/
   public String[] getDirectGroupIdsInUserRole(int userRoleId) throws AdminPersistenceException {
     List<String> ids = getIds(SELECT_USERROLE_GROUP_IDS, userRoleId);
     return ids.toArray(new String[ids.size()]);
   }
   static final private String SELECT_USERROLE_GROUP_IDS =
           "SELECT id FROM st_group, st_userrole_group_rel WHERE id = groupid AND userroleid = ?";
-
-  /**
-* Returns all the groups in a given spaceUserRole (not recursive).
-* @param spaceUserRoleId
-* @return all the groups in a given spaceUserRole (not recursive).
-* @throws AdminPersistenceException
-*/
-  public GroupRow[] getDirectGroupsInSpaceUserRole(int spaceUserRoleId) throws
-          AdminPersistenceException {
-    List<GroupRow> rows = getRows(SELECT_SPACEUSERROLE_GROUPS, spaceUserRoleId);
-    return rows.toArray(new GroupRow[rows.size()]);
-  }
-  static final private String SELECT_SPACEUSERROLE_GROUPS = "SELECT " + GROUP_COLUMNS
-          + " FROM ST_Group,ST_SpaceUserRole_Group_Rel WHERE id = groupId AND spaceUserRoleId = ?";
 
   /**
 * Returns all the group ids in a given spaceUserRole (not recursive).
@@ -432,8 +406,7 @@ public class GroupTable extends Table<GroupRow> {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuilder theQuery;
-    List<Integer> ids = new ArrayList<Integer>();
-    List<String> params = new ArrayList<String>();
+    List<Object> params = new ArrayList<Object>();
 
     if ((aRoleId != null) && (aRoleId.length > 0)) {
       theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID_IN_ROLE);
@@ -442,7 +415,7 @@ public class GroupTable extends Table<GroupRow> {
         theQuery.append("(");
       }
       for (int i = 0; i < aRoleId.length; i++) {
-        ids.add((aRoleId[i]));
+        params.add((aRoleId[i]));
         if (i > 0) {
           theQuery.append(" OR ");
         }
@@ -454,7 +427,7 @@ public class GroupTable extends Table<GroupRow> {
       concatAndOr = true;
     } else if (componentId >= 0) {
       theQuery = new StringBuilder(SELECT_SEARCH_GROUPSID_IN_COMPONENT);
-      ids.add(componentId);
+      params.add(componentId);
       theQuery.append(" WHERE ((ST_UserRole.id = ST_UserRole_Group_Rel.userRoleId) AND (");
       theQuery.append(
               "ST_Group.id = ST_UserRole_Group_Rel.groupId) AND (ST_UserRole.instanceId = ?)");
@@ -472,11 +445,11 @@ public class GroupTable extends Table<GroupRow> {
       }
       theQuery.append("ST_Group.superGroupId IS NULL");
     } else {
-      concatAndOr = addIdToQuery(ids, theQuery, groupModel.superGroupId,
+      concatAndOr = addIdToQuery(params, theQuery, groupModel.superGroupId,
               "ST_Group.superGroupId", concatAndOr, andOr);
     }
-    concatAndOr = addIdToQuery(ids, theQuery, groupModel.id, "ST_Group.id", concatAndOr, andOr);
-    concatAndOr = addIdToQuery(ids, theQuery, groupModel.domainId, "ST_Group.domainId", concatAndOr,
+    concatAndOr = addIdToQuery(params, theQuery, groupModel.id, "ST_Group.id", concatAndOr, andOr);
+    concatAndOr = addIdToQuery(params, theQuery, groupModel.domainId, "ST_Group.domainId", concatAndOr,
             andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.name, "ST_Group.name", concatAndOr,
             andOr);
@@ -489,13 +462,8 @@ public class GroupTable extends Table<GroupRow> {
     }
     theQuery.append(" ORDER BY UPPER(ST_Group.name)");
 
-    int[] idsArray = new int[ids.size()];
-    for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i);
-    }
-
-    return getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).toArray(
-        new String[getIds(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).size()]);
+    List<String> groupIds = getIds(theQuery.toString(), params);
+    return groupIds.toArray(new String[groupIds.size()]);
   }
   static final private String SELECT_SEARCH_GROUPSID =
           "select DISTINCT ST_Group.id, UPPER(ST_Group.name) from ST_Group";
@@ -518,19 +486,18 @@ public class GroupTable extends Table<GroupRow> {
     boolean concatAndOr = false;
     String andOr;
     StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_GROUPS);
-    List<Integer> ids = new ArrayList<Integer>();
-    List<String> params = new ArrayList<String>();
+    List<Object> params = new ArrayList<Object>();
 
     if (isAnd) {
       andOr = ") AND (";
     } else {
       andOr = ") OR (";
     }
-    concatAndOr = addIdToQuery(ids, theQuery, groupModel.id, "id", concatAndOr,
+    concatAndOr = addIdToQuery(params, theQuery, groupModel.id, "id", concatAndOr,
             andOr);
-    concatAndOr = addIdToQuery(ids, theQuery, groupModel.domainId, "domainId",
+    concatAndOr = addIdToQuery(params, theQuery, groupModel.domainId, "domainId",
             concatAndOr, andOr);
-    concatAndOr = addIdToQuery(ids, theQuery, groupModel.superGroupId,
+    concatAndOr = addIdToQuery(params, theQuery, groupModel.superGroupId,
             "superGroupId", concatAndOr, andOr);
     concatAndOr = addParamToQuery(params, theQuery, groupModel.name, "name",
             concatAndOr, andOr);
@@ -543,14 +510,8 @@ public class GroupTable extends Table<GroupRow> {
     }
     theQuery.append(" order by UPPER(name)");
 
-    int[] idsArray = new int[ids.size()];
-    for (int i = 0; i < ids.size(); i++) {
-      idsArray[i] = ids.get(i);
-    }
-
-    return getRows(theQuery.toString(), idsArray, params.toArray(new String[params.size()])).toArray(
-        new GroupRow[getRows(theQuery.toString(), idsArray,
-            params.toArray(new String[params.size()])).size()]);
+    List<GroupRow> groups = getRows(theQuery.toString(), params);
+    return groups.toArray(new GroupRow[groups.size()]);
   }
   static final private String SELECT_SEARCH_GROUPS = "SELECT " + GROUP_COLUMNS
           + ", UPPER(name) FROM ST_Group";

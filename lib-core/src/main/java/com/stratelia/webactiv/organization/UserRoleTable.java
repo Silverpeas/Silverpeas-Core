@@ -33,6 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,9 +92,11 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public UserRoleRow getUserRole(int instanceId, String roleName, int inherited)
       throws AdminPersistenceException {
-    List<UserRoleRow> userRoles =
-        getRows(SELECT_USERROLE_BY_ROLENAME, new int[] { instanceId, inherited },
-        new String[] { roleName });
+    List<Object> params = new ArrayList<Object>(3);
+    params.add(instanceId);
+    params.add(inherited);
+    params.add(roleName);
+    List<UserRoleRow> userRoles = getRows(SELECT_USERROLE_BY_ROLENAME, params);
 
     if (userRoles.isEmpty()) {
       return null;
@@ -104,7 +107,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
           userRoles.size() + ", instanceId = " + instanceId + ", roleName = " + roleName);
     }
     return userRoles.get(0);
-
   }
 
   static final private String SELECT_USERROLE_BY_ROLENAME =
@@ -113,19 +115,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
           USERROLE_COLUMNS
           +
           " from ST_UserRole where instanceId = ? and isInherited = ? and rolename = ? and objectId is null";
-
-  /**
-   * Returns all the UserRoles.
-   * @return all the UserRoles.
-   * @throws AdminPersistenceException
-   */
-  public UserRoleRow[] getAllUserRoles() throws AdminPersistenceException {
-    List<UserRoleRow> rows = getRows(SELECT_ALL_USERROLES);
-    return rows.toArray(new UserRoleRow[rows.size()]);
-  }
-
-  static final private String SELECT_ALL_USERROLES = "select "
-      + USERROLE_COLUMNS + " from ST_UserRole";
 
   /**
    * Returns all the UserRoles of an instance.
@@ -174,9 +163,11 @@ public class UserRoleTable extends Table<UserRoleRow> {
    */
   public String[] getAllUserRoleIdsOfObject(int objectId, String objectType, int instanceId) throws
       AdminPersistenceException {
-    int[] params = new int[] { instanceId, objectId };
-    String[] sParams = new String[] { objectType };
-    List<String> ids = getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params, sParams);
+    List<Object> params = new ArrayList<Object>(3);
+    params.add(instanceId);
+    params.add(objectId);
+    params.add(objectType);
+    List<String> ids = getIds(SELECT_ALL_OBJECT_USERROLE_IDS, params);
     return ids.toArray(new String[ids.size()]);
   }
 
@@ -213,20 +204,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
       + " from ST_UserRole, ST_UserRole_Group_Rel where id = userRoleId" + " and groupId = ? ";
 
   /**
-   * Returns the UserRole whose fields match those of the given sample UserRole fields.
-   * @param sampleUserRole
-   * @return the UserRole whose fields match those of the given sample UserRole fields.
-   * @throws AdminPersistenceException
-   */
-  public UserRoleRow[] getAllMatchingUserRoles(UserRoleRow sampleUserRole) throws
-      AdminPersistenceException {
-    String[] columns = new String[] { "name", "description" };
-    String[] values = new String[] { sampleUserRole.name, sampleUserRole.description };
-    List<UserRoleRow> rows = getMatchingRows(USERROLE_COLUMNS, columns, values);
-    return rows.toArray(new UserRoleRow[rows.size()]);
-  }
-
-  /**
    * Inserts in the database a new userRole row.
    * @param userRole
    * @throws AdminPersistenceException
@@ -251,6 +228,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
       + " ST_UserRole(id,instanceId,name,roleName,description,isInherited,objectId,objectType)"
       + " values     (? ,?         ,?   ,?       ,?			 ,?			 ,?		  ,?)";
 
+  @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, UserRoleRow row) throws
       SQLException {
     if (row.id == -1) {
@@ -323,10 +301,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
   public boolean isUserDirectlyInRole(int userId, int userRoleId) throws AdminPersistenceException {
     int[] ids = new int[] { userId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_USER_REL, ids);
-    if (result == null) {
-      return false;
-    }
-    return result >= 1;
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_USERROLE_USER_REL =
@@ -432,10 +407,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     SilverTrace.debug("admin", "UserRoleTable.isGroupDirectlyInRole()",
         "Le groupe d'ID " + groupId + " et le role d'ID " + userRoleId
         + " ont un nb de lien = " + result);
-    if (result == null) {
-      return false;
-    }
-    return result >= 1;
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_USERROLE_GROUP_REL =
@@ -499,6 +471,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
   /**
    * Fetch the current userRole row from a resultSet.
    */
+  @Override
   protected UserRoleRow fetchRow(ResultSet rs) throws SQLException {
     return fetchUserRole(rs);
   }

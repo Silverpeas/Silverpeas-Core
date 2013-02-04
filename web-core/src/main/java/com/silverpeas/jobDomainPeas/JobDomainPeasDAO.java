@@ -268,7 +268,7 @@ public class JobDomainPeasDAO {
 
   /**
 * Sélection des groupes à synchroniser en insert ou update de la table Domain<domainName>_Group
-* @param domainName
+* @param domain
 * @return Collection de Group
 * @throws SQLException
 * @see
@@ -361,7 +361,7 @@ public class JobDomainPeasDAO {
 
   /**
 * Sélection des utilisateurs à synchroniser en delete de la table Domain<domainName>_User
-* @param domainName
+* @param domain
 * @return Collection de UserDetail
 * @throws SQLException
 * @see
@@ -379,7 +379,7 @@ public class JobDomainPeasDAO {
     UserDetail userDetail;
 
     String query = " SELECT id " + " FROM ST_User " + " WHERE domainId = "
-        + domain.getId() + " AND accessLevel = 'R'";
+        + domain.getId() + " AND state = 'DELETED'";
 
     Statement stmt = null;
     Connection myCon = getConnection();

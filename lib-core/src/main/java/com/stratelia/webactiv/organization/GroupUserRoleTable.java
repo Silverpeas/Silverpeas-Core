@@ -31,7 +31,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * A GroupUserRoleTable object manages the ST_GroupUserRole table.
@@ -76,30 +75,6 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
   static final private String SELECT_GROUPUSERROLE_BY_GROUPID = "select "
       + GROUPUSERROLE_COLUMNS + " from ST_GroupUserRole where groupId = ?";
-
-  /**
-   * Returns the GroupUserRole whith the given RoleName in the given group.
-   */
-  public GroupUserRoleRow getGroupUserRole(int groupId, String roleName) throws
-      AdminPersistenceException {
-    List<GroupUserRoleRow> groupUserRoles = getRows(SELECT_GROUPUSERROLE_BY_ROLENAME, new int[] {
-        groupId },
-        new String[] { roleName });
-
-    if (groupUserRoles.isEmpty()) {
-      return null;
-    }
-    if (groupUserRoles.size() == 1) {
-      return groupUserRoles.get(0);
-    }
-    throw new AdminPersistenceException("GroupUserRoleTable.getGroupUserRole",
-        SilverpeasException.ERROR, "admin.EX_ERR_GROUPUSERROLE_NAME_GROUPID_FOUND_TWICE",
-        "group id : '" + groupId + "', group userrole name: '" + roleName + "'");
-  }
-
-  static final private String SELECT_GROUPUSERROLE_BY_ROLENAME = "select "
-      + GROUPUSERROLE_COLUMNS
-      + " from ST_GroupUserRole where groupId = ? and roleName = ?";
 
   /**
    * Inserts in the database a new groupUserRole row.
@@ -178,10 +153,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
     int[] ids = new int[] { userId, groupUserRoleId };
     Integer result = getInteger(SELECT_COUNT_GROUPUSERROLE_USER_REL, ids);
 
-    if (result == null) {
-      return false;
-    }
-    return result >= 1;
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_GROUPUSERROLE_USER_REL =
@@ -251,10 +223,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
     int[] ids = new int[] { groupId, groupUserRoleId };
     Integer result = getInteger(SELECT_COUNT_GROUPUSERROLE_GROUP_REL, ids);
 
-    if (result == null) {
-      return false;
-    }
-    return result >= 1;
+    return result != null && result >= 1;
   }
 
   static final private String SELECT_COUNT_GROUPUSERROLE_GROUP_REL =
@@ -324,6 +293,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
   /**
    * Fetch the current groupUserRole row from a resultSet.
    */
+  @Override
   protected GroupUserRoleRow fetchRow(ResultSet rs) throws SQLException {
     return fetchGroupUserRole(rs);
   }
