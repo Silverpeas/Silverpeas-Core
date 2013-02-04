@@ -24,12 +24,6 @@
 
 package com.silverpeas.form.record;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -43,11 +37,16 @@ import com.silverpeas.form.displayers.VideoFieldDisplayer;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -216,11 +215,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId, HashMap<String, String> attachmentIds) throws FormException {
+      String cloneComponentId, Map<String, String> attachmentIds) throws FormException {
     GenericDataRecord record = (GenericDataRecord) getRecord(originalExternalId);
     record.setInternalId(-1);
     record.setId(cloneExternalId);
-    
+
     // clone wysiwyg fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
     try {
@@ -229,7 +228,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     } catch (Exception e) {
       SilverTrace.error("form", "AbstractForm.clone", "form.EX_CLONE_FAILURE", null, e);
     }
-    
+
     // clone images and videos
     // Note : attachments from fields of type file have already been cloned
     AttachmentPK fromPK = new AttachmentPK(originalExternalId, originalComponentId);
@@ -242,21 +241,21 @@ public class GenericRecordSet implements RecordSet, Serializable {
       HashMap<String, String> videoIds =
           AttachmentController.cloneAttachments(fromPK, toPK,
               VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
-      
+
       attachmentIds.putAll(imageIds);
       attachmentIds.putAll(videoIds);
-      
+
       replaceIds(attachmentIds, record);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
-    
+
     insert(record);
   }
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId, HashMap<String, String> attachmentIds) throws FormException {
+      String toComponentId, Map<String, String> attachmentIds) throws FormException {
     GenericDataRecord fromRecord = (GenericDataRecord) getRecord(fromExternalId);
     GenericDataRecord toRecord = (GenericDataRecord) getRecord(toExternalId);
 
@@ -270,7 +269,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     } catch (Exception e) {
       SilverTrace.error("form", "AbstractForm.clone", "form.EX_MERGE_FAILURE", null, e);
     }
-    
+
     // merge images and videos
     AttachmentPK fromPK = new AttachmentPK(fromExternalId, fromComponentId);
     AttachmentPK toPK = new AttachmentPK(toExternalId, toComponentId);
@@ -278,28 +277,27 @@ public class GenericRecordSet implements RecordSet, Serializable {
       HashMap<String, String> imageIds =
           AttachmentController.mergeAttachments(toPK, fromPK,
               ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
-      
+
       HashMap<String, String> videoIds =
         AttachmentController.mergeAttachments(toPK, fromPK,
             VideoFieldDisplayer.CONTEXT_FORM_VIDEO);
-      
+
       attachmentIds.putAll(imageIds);
       attachmentIds.putAll(videoIds);
-    
+
       replaceIds(attachmentIds, fromRecord);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
-    
+
     update(fromRecord);
   }
-  
-  private void replaceIds(HashMap<String, String> ids, GenericDataRecord record)
+
+  private void replaceIds(Map<String, String> ids, GenericDataRecord record)
       throws FormException {
     String[] fieldNames = record.getFieldNames();
-    Field field = null;
     for (String fieldName : fieldNames) {
-      field = record.getField(fieldName);
+      Field field = record.getField(fieldName);
       if (field != null) {
         FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
         if (fieldTemplate != null) {
