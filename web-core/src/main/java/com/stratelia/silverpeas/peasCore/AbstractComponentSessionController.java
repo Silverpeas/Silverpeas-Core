@@ -36,6 +36,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -471,7 +472,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     return controller.getPersonalization();
   }
 
-  public String getUserAccessLevel() {
+  public UserAccessLevel getUserAccessLevel() {
     return controller.getUserAccessLevel();
   }
 

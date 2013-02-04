@@ -23,11 +23,6 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -38,23 +33,6 @@ public class ChangePasswordFromLoginHandler extends FunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
-    String login = request.getParameter("login");
-    String domainId = request.getParameter("domainId");
-    String oldPassword = request.getParameter("oldPassword");
-    String newPassword = request.getParameter("newPassword");
-    try {
-      // Change password.
-      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-      auth.changePassword(login, oldPassword, newPassword, domainId);
-      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword
-          + "&DomainId=" + domainId;
-    } catch (AuthenticationException e) {
-        // Error : go back to page
-      SilverTrace.error("peasCore", "ChangePasswordFromLoginHandler.doAction()",
-          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login,e);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
-      ResourceLocator settings = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
-      return settings.getString("changePasswordFromLoginPage")+"?Login="+login+"&DomainId="+domainId;
-    }
+    return getGeneral().getString("changePasswordFromLoginPage", "/defaultChangePassword.jsp");
   }
 }

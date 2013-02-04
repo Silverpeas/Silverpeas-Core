@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -72,10 +73,10 @@
 
 <%  
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
-    String userProfile = (String)request.getAttribute("UserProfile");
+    UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A")) {
+	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
@@ -112,7 +113,7 @@
 		<select name="Display" size="1" onchange="changeDisplay()">
 			<option value="ViewVolumeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<% if (userProfile.equals("A")) { %>
+			<% if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) { %>
 				<option value="ViewEvolutionVolumeSizeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
 			<% } %>
 		</select>

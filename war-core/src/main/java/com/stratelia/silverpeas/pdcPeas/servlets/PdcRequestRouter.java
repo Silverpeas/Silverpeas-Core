@@ -473,7 +473,7 @@ public class PdcRequestRouter extends ComponentRequestRouter<PdcSessionControlle
 
         // get rights for this axis and this user and if user is admin or
         // kmAdmin
-        Boolean KMadmin = Boolean.valueOf((pdcSC.getUserDetail().isAccessKMManager() || pdcSC.
+        Boolean KMadmin = Boolean.valueOf((pdcSC.getUserDetail().isAccessPdcManager() || pdcSC.
             getUserDetail().isAccessAdmin()));
         request.setAttribute("KMAdmin", KMadmin);
         request.setAttribute("UserRights", pdcSC.getRights());

@@ -33,6 +33,8 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.Collection;
 
 /**
@@ -74,7 +76,7 @@ public class Member {
     refreshStatus();
   }
 
-  public String getAccessLevel() {
+  public UserAccessLevel getAccessLevel() {
     return getUserDetail().getAccessLevel();
   }
 

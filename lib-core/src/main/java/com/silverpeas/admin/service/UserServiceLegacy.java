@@ -50,6 +50,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 @Named("silverpeasUserService")
 public class UserServiceLegacy implements UserService {
@@ -67,12 +68,12 @@ public class UserServiceLegacy implements UserService {
   @Override
   public String registerUser(String firstName, String lastName,
       String email, String domainId) throws AdminException {
-    return registerUser(firstName, lastName, email, domainId, UserDetail.USER_ACCESS);
+    return registerUser(firstName, lastName, email, domainId, UserAccessLevel.USER);
   }
 
   @Override
   public String registerUser(String firstName, String lastName,
-      String email, String domainId, String accessLevel) throws AdminException {
+      String email, String domainId, UserAccessLevel accessLevel) throws AdminException {
 
     Admin admin = AdminReference.getAdminService();
 

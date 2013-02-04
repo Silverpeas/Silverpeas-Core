@@ -62,6 +62,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.HashSet;
 
 import static com.silverpeas.util.MimeTypes.*;
@@ -293,7 +295,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
    *
    * @param request the HttpServletRequest Object
-   * @param portletContent the PortletContent Cobject
+   * @param response the HttpServletResponse object
    * @param portletList the List of portlet windows
    * @return a Map of portlet data and title for the portlet windows specified in the portletList
    */
@@ -618,8 +620,9 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) && "U".equals(m_MainSessionCtrl.
-          getUserAccessLevel())) {
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
+          (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
+              m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 

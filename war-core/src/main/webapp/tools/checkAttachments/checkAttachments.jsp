@@ -33,19 +33,15 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.silverpeas.tools.checkAttachments.CheckAttachmentsBatch"%>
-<%@page import="java.util.List"%>
-<%@page
-	import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
-<%@page
-	import="com.stratelia.webactiv.util.publication.model.PublicationPK"%>
-<%@page import="com.stratelia.webactiv.util.node.model.NodePK"%>
-
 <%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="org.silverpeas.admin.user.constant.UserAccessLevel"%>
+<%@page import="java.util.List"%>
+
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
+if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
     String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
 %>

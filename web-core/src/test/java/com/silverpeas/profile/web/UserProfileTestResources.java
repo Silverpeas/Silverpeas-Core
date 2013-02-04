@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.util.ListSlice;
 
 import static org.mockito.Matchers.any;
@@ -314,6 +315,7 @@ public class UserProfileTestResources extends TestResources {
     user.setLastName(lastName);
     user.setId(id);
     user.setDomainId(domainId);
+    user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     return user;
   }
 
