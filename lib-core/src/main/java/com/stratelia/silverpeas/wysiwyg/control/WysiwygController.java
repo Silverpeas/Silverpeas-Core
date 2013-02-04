@@ -24,10 +24,7 @@
 
 package com.stratelia.silverpeas.wysiwyg.control;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,6 +56,8 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
@@ -844,33 +843,13 @@ public class WysiwygController {
    */
   protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier)
       throws WysiwygException {
-    File directory = new File(cheminFichier);
-    SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
 
-    try {
-      if (directory.isDirectory()) {
-
-        /* Creation of a new file under the good tree structure */
-        File file = new File(directory, nomFichier);
-
-        /* writing of the contents of the file */
-        /* if the file were already existing: rewrite of the contents */
-        FileWriter file_write = new FileWriter(file);
-        BufferedWriter flux_out = new BufferedWriter(file_write);
-
-        flux_out.write(contenuFichier);
-        flux_out.close();
-        file_write.close();
-        return file;
-      } else {
-        throw new WysiwygException("WysiwygController.createFile()", SilverpeasException.ERROR,
-            "wysiwyg.TARGET_DIRECTORY_ON_SERVER_DOES_NOT_EXIST");
-      }
-    } catch (IOException exc) {
-      throw new WysiwygException("WysiwygController.createFile()", SilverpeasException.ERROR,
-          "wysiwyg.CREATING_WYSIWYG_DOCUMENT_FAILED");
-    }
+    FileFolderManager.createFile(cheminFichier, nomFichier, contenuFichier);
+    
+    File directory = new File(cheminFichier);
+    return FileUtils.getFile(directory, nomFichier);
   }
 
   /**

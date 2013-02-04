@@ -30,6 +30,8 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import java.util.Map;
+
 /**
  * A dummy record set.
  */
@@ -119,12 +121,12 @@ public class DummyRecordSet implements RecordSet {
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException {
+      String cloneComponentId, Map<String, String> attachmentIds) throws FormException {
   }
 
   @Override
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException {
+      String toComponentId, Map<String, String> attachmentIds) throws FormException {
   }
 
   @Override

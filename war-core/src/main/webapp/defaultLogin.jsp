@@ -87,23 +87,21 @@ function GetCookie (name) {
      return null;
      }
 
-function checkForm()
-{
+function checkForm() {
+	$("form").submit();
+}
+
+function checkCookie() {
+<% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
 	var form = document.getElementById("formLogin");
-	<% if (authenticationSettings.getBoolean("cookieEnabled", false)) { %>
-		if (GetCookie("svpPassword") != document.getElementById("formLogin").Password.value)
-		{
-			form.cryptedPassword.value = "";
-		}
-		else
-		{
-			if (form.storePassword.checked) {
-              form.storePassword.click();
-            }
-		}
-	<% } %>
-    form.action='<c:url value="/AuthenticationServlet" />';
-	form.submit();
+	if (GetCookie("svpPassword") != document.getElementById("formLogin").Password.value) {
+		form.cryptedPassword.value = "";
+	} else {
+		if (form.storePassword.checked) {
+          form.storePassword.click();
+        }
+	}
+<% } %>
 }
 
 function loginQuestion() {
@@ -149,18 +147,16 @@ $(document).ready(function(){
 			checkForm();
 		}
 	});
-
-	$("#Password").keypress(function(event) {
-		if(event.keyCode == 13) {
-			checkForm();
-		}
+	
+	$("form").submit(function() {
+		checkCookie();
 	});
 })
 -->
 </script>
 </head>
 <body>
-      <form id="formLogin" action="javascript:checkForm();" method="post" accept-charset="UTF-8">
+      <form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">
       	<% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
 	        <div id="top">
 				<fmt:message key="authentication.logon.newRegistration.tease" />
