@@ -49,7 +49,6 @@ import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -103,7 +102,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isPDCAdmin() {
     return getUserDetail().isAccessAdmin()
-        || getUserDetail().isAccessKMManager();
+        || getUserDetail().isAccessPdcManager();
   }
 
   public void setCurrentLanguage(String language) {
@@ -631,7 +630,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
 
   public boolean isManager(String axisId, String valueId) throws PdcException,
       SQLException {
-    if (getUserDetail().isAccessKMManager() || getUserDetail().isAccessAdmin()) {
+    if (getUserDetail().isAccessPdcManager() || getUserDetail().isAccessAdmin()) {
       return true;
     }
 

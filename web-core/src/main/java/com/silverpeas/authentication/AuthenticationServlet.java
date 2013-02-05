@@ -26,6 +26,7 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import org.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -139,6 +140,10 @@ public class AuthenticationServlet extends HttpServlet {
         } else {
           url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
+      }
+      else if(AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+        url = AuthenticationUserStateChecker.getErrorDestination();
       }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;

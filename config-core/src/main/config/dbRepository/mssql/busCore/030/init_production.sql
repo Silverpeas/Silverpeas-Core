@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 insert into calendarCategory(categoryId, name) values (1, 'Réunion')
 GO
 insert into calendarCategory(categoryId, name) values (2, 'Déplacement')

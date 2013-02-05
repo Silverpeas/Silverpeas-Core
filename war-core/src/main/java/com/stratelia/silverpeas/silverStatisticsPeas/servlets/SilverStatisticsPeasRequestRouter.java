@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.silverStatisticsPeas.vo.StatisticVO;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.jCharts.Chart;
 import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -90,9 +91,9 @@ public class SilverStatisticsPeasRequestRouter extends
         "root.MSG_GEN_PARAM_VALUE", "User=" + statsSC.getUserId()
         + " Function=" + function);
 
-    String userProfile = statsSC.getUserProfile();
-    if ("A".equals(userProfile)
-        || SilverStatisticsPeasSessionController.SPACE_ADMIN.equals(userProfile)) {
+    UserAccessLevel userProfile = statsSC.getUserProfile();
+    if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)
+        || UserAccessLevel.SPACE_ADMINISTRATOR.equals(userProfile)) {
       request.setAttribute("UserProfile", userProfile);
     } else {
       SilverTrace.info("silverStatisticsPeas",
@@ -476,7 +477,7 @@ public class SilverStatisticsPeasRequestRouter extends
         destination = "/silverStatisticsPeas/jsp/viewEvolutionAccess.jsp";
       } else if (function.startsWith("ViewVolumeServices")) {
         // Onglet Volume
-        if (!userProfile.equals("A")) {
+        if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
           return getDestination("ViewVolumePublication", statsSC, request);
         }
 

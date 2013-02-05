@@ -51,6 +51,7 @@ import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
@@ -351,7 +352,7 @@ public class MainSessionController implements Clipboard {
   /**
    * Return the user accesslevel of the cuurent user
    */
-  public String getUserAccessLevel() {
+  public UserAccessLevel getUserAccessLevel() {
     return getCurrentUserDetail().getAccessLevel();
   }
 
@@ -432,7 +433,7 @@ public class MainSessionController implements Clipboard {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       UserDetail user = getAdminService().getUserDetail(userId);
-      if (user.getAccessLevel().equals("A") || userId.equals("0")) {
+      if (user.isAccessAdmin() || userId.equals("0")) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
         return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(

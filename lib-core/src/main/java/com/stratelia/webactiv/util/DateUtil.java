@@ -151,9 +151,9 @@ public class DateUtil {
     if (date == null) {
       return "";
     }
-    FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat") +
-        " " + getMultilangProperties(language).getString("hourOutputFormat"));
+    FastDateFormat formatter = FastDateFormat.getInstance(
+        getMultilangProperties(language).getString("dateOutputFormat") +
+            " " + getMultilangProperties(language).getString("hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -209,6 +209,22 @@ public class DateUtil {
     } catch (Exception e) {
       throw new ParseException(e.getMessage(), 0);
     }
+  }
+
+  /**
+   * Gets the current date and hour.
+   * @return
+   */
+  public static Date getNow() {
+    return Calendar.getInstance().getTime();
+  }
+
+  /**
+   * Gets the current date with reseted hour.
+   * @return
+   */
+  public static Date getDate() {
+    return resetHour(getNow());
   }
 
   public static Date getDate(Date date, String hour) {
@@ -460,11 +476,33 @@ public class DateUtil {
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result.getTime();
+    return resetHour(result).getTime();
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   */
+  public static Calendar resetHour(Calendar date) {
+    date.set(Calendar.HOUR_OF_DAY, 0);
+    date.set(Calendar.MINUTE, 0);
+    date.set(Calendar.SECOND, 0);
+    date.set(Calendar.MILLISECOND, 0);
+    return date;
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   */
+  public static Date resetHour(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return calendar.getTime();
   }
 
   /**
@@ -515,11 +553,7 @@ public class DateUtil {
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result;
+    return resetHour(result);
   }
 
   /**

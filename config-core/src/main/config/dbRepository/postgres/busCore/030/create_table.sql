@@ -4,19 +4,29 @@ CREATE TABLE ST_AccessLevel
     name varchar(100)  NOT NULL
 );
 
-CREATE TABLE ST_User 
+CREATE TABLE ST_User
 (
-    id          int           NOT NULL,
-    domainId    int           NOT NULL,
-    specificId  varchar(500)  NOT NULL,
-    firstName   varchar(100),
-    lastName    varchar(100)  NOT NULL,
-    email       varchar(100),
-    login       varchar(50)   NOT NULL,
-    loginMail   varchar(100),
-    accessLevel char(1)       DEFAULT 'U' NOT NULL,
-	loginquestion varchar(200),
-  	loginanswer varchar(200)
+  id                            INT                  NOT NULL,
+  domainId                      INT                  NOT NULL,
+  specificId                    VARCHAR(500)         NOT NULL,
+  firstName                     VARCHAR(100),
+  lastName                      VARCHAR(100)         NOT NULL,
+  email                         VARCHAR(100),
+  login                         VARCHAR(50)          NOT NULL,
+  loginMail                     VARCHAR(100),
+  accessLevel                   CHAR(1) DEFAULT 'U'  NOT NULL,
+  loginquestion                 VARCHAR(200),
+  loginanswer                   VARCHAR(200),
+  creationDate                  TIMESTAMP,
+  saveDate                      TIMESTAMP,
+  version                       INT DEFAULT 0        NOT NULL,
+  tosAcceptanceDate             TIMESTAMP,
+  lastLoginDate                 TIMESTAMP,
+  nbSuccessfulLoginAttempts     INT DEFAULT 0        NOT NULL,
+  lastLoginCredentialUpdateDate TIMESTAMP,
+  expirationDate                TIMESTAMP,
+  state                         VARCHAR(30)          NOT NULL,
+  stateSaveDate                 TIMESTAMP            NOT NULL
 );
 
 CREATE TABLE ST_Group
@@ -138,7 +148,7 @@ CREATE TABLE ST_SpaceUserRole
     name          varchar(100)  NULL,
     roleName      varchar(100)  NOT NULL,
     description   varchar(400),
-    isInherited	  int	        default(0) NOT NULL 
+    isInherited	  int	        default(0) NOT NULL
 );
 
 CREATE TABLE ST_SpaceUserRole_User_Rel
@@ -192,21 +202,21 @@ CREATE TABLE ST_Domain (
 	propFileName		varchar (100) NOT NULL ,
 	className		varchar (100) NOT NULL ,
 	authenticationServer	varchar (100) NOT NULL ,
-    theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
-    silverpeasServerURL     varchar (400) NULL 
+  theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
+  silverpeasServerURL     varchar (400) NULL
 );
 
 CREATE TABLE ST_KeyStore (
 	userKey		decimal(18, 0)	NOT NULL ,
 	login		varchar(50)	NOT NULL ,
-	domainId	int		NOT NULL 
+	domainId	int		NOT NULL
 );
 
 
 CREATE TABLE ST_LongText (
 	id int NOT NULL ,
 	orderNum int NOT NULL ,
-	bodyContent varchar(2000) NOT NULL 
+	bodyContent varchar(2000) NOT NULL
 );
 
 CREATE TABLE ST_GroupUserRole
@@ -228,12 +238,12 @@ CREATE TABLE ST_GroupUserRole_Group_Rel
     groupId           int NOT NULL
 );
 
-CREATE TABLE st_instance_modelused 
+CREATE TABLE st_instance_modelused
 (
 	instanceId		varchar(50)     NOT NULL,
 	modelId			varchar(50)     NOT NULL,
 	objectId		varchar(50)	DEFAULT('0') NOT NULL
-) 
+)
 ;
 
 CREATE TABLE ST_UserFavoriteSpaces

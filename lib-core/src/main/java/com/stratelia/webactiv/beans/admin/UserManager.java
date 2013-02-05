@@ -34,6 +34,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
 
 public class UserManager {
@@ -114,9 +117,7 @@ public class UserManager {
     try {
       connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
 
-      ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
-              (UserSearchCriteriaForDAO) criteria);
-      return users;
+      return userDAO.getUsersByCriteria(connection, criteria);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersMatching",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
@@ -218,7 +219,7 @@ public class UserManager {
   }
 
   public String[] getUserIdsOfDomainAndAccessLevel(DomainDriverManager ddManager, String sDomainId,
-          String accessLevel) throws AdminException {
+          UserAccessLevel accessLevel) throws AdminException {
     String[] uids;
 
     try {
@@ -295,8 +296,7 @@ public class UserManager {
           AdminException {
     try {
       ddManager.getOrganizationSchema();
-      String[] asAdminIds = ddManager.getOrganization().user.getAllAdminIds(fromUser);
-      return asAdminIds;
+      return ddManager.getOrganization().user.getAllAdminIds(fromUser);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllAdminIds",
               SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ADMIN_IDS", e);
@@ -732,10 +732,19 @@ public class UserManager {
     ur.firstName = user.getFirstName();
     ur.lastName = user.getLastName();
     ur.eMail = user.geteMail();
-    ur.accessLevel = user.getAccessLevel();
+    ur.accessLevel = user.getAccessLevel().code();
     ur.loginQuestion = user.getLoginQuestion();
     ur.loginAnswer = user.getLoginAnswer();
-
+    ur.creationDate = user.getCreationDate();
+    ur.saveDate = user.getSaveDate();
+    ur.version = user.getVersion();
+    ur.tosAcceptanceDate = user.getTosAcceptanceDate();
+    ur.lastLoginDate = user.getLastLoginDate();
+    ur.nbSuccessfulLoginAttempts = user.getNbSuccessfulLoginAttempts();
+    ur.lastLoginCredentialUpdateDate = user.getLastLoginCredentialUpdateDate();
+    ur.expirationDate = user.getExpirationDate();
+    ur.state = user.getState().name();
+    ur.stateSaveDate = user.getStateSaveDate();
     return ur;
   }
 
@@ -744,7 +753,6 @@ public class UserManager {
    */
   private UserDetail userRow2UserDetail(UserRow ur) {
     UserDetail user = new UserDetail();
-
     user.setId(idAsString(ur.id));
     user.setSpecificId(ur.specificId);
     user.setDomainId(idAsString(ur.domainId));
@@ -752,10 +760,19 @@ public class UserManager {
     user.setFirstName(ur.firstName);
     user.setLastName(ur.lastName);
     user.seteMail(ur.eMail);
-    user.setAccessLevel(ur.accessLevel);
+    user.setAccessLevel(UserAccessLevel.fromCode(ur.accessLevel));
     user.setLoginQuestion(ur.loginQuestion);
     user.setLoginAnswer(ur.loginAnswer);
-
+    user.setCreationDate(ur.creationDate);
+    user.setSaveDate(ur.saveDate);
+    user.setVersion(ur.version);
+    user.setTosAcceptanceDate(ur.tosAcceptanceDate);
+    user.setLastLoginDate(ur.lastLoginDate);
+    user.setNbSuccessfulLoginAttempts(ur.nbSuccessfulLoginAttempts);
+    user.setLastLoginCredentialUpdateDate(ur.lastLoginCredentialUpdateDate);
+    user.setExpirationDate(ur.expirationDate);
+    user.setState(UserState.from(ur.state));
+    user.setStateSaveDate(ur.stateSaveDate);
     return user;
   }
 

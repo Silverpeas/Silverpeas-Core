@@ -151,8 +151,8 @@ public class SilverpeasLoginModule implements LoginModule {
           }
           authenticated = true;
         } else if (creds instanceof SilverpeasCredentials) {
-          String userId = ((SilverpeasCredentials) creds).getUserId();
-          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+          String theUserId = ((SilverpeasCredentials) creds).getUserId();
+          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId);
           fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;

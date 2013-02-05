@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.admin.service.UserService;
@@ -110,13 +112,25 @@ public class SocialNetworkLoginController extends HttpServlet {
         return;
       }
 
-      SocialNetworkService.getInstance().storeAuthorizationToken(req.getSession(true), networkId,
-          authorizationToken);
-
       // Try to retrieve a silverpeas account linked to remote social network account
       String profileId = connector.getUserProfileId(authorizationToken);
       ExternalAccount account =
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
+
+      // Verify user state
+      if (account != null) {
+        try {
+          AuthenticationUserStateChecker.verify(account.getSilverpeasUserId());
+        } catch (AuthenticationException e) {
+          SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
+          resp.sendRedirect(URLManager.getFullApplicationURL(req) +
+              AuthenticationUserStateChecker.getErrorDestination());
+          return;
+        }
+      }
+
+      SocialNetworkService.getInstance()
+          .storeAuthorizationToken(req.getSession(true), networkId, authorizationToken);
 
       // no Silverpeas account yet
       if (account == null) {
@@ -132,6 +146,7 @@ public class SocialNetworkLoginController extends HttpServlet {
 
         // new registration is disabled : redirect user to Login
         else {
+          SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
           resp.sendRedirect(URLManager.getFullApplicationURL(req) +"/Login.jsp?ErrorCode=5");
         }
       }

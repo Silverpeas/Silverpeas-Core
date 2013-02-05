@@ -26,11 +26,11 @@
 -->
 
 <dataset>
-  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A"/>
-  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="3" domainid="0" specificid="3" firstname="Marge" lastname="Simpson" email="" login="msimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="4" domainid="1" specificid="f6632e21-9990-4393-9d65-4bdfebf7163f" firstname="Lisa" lastname="Simpson" email="lisa@simpson.com" login="lsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
+  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="ehu@silverpeas.com" login="SilverAdmin" loginmail="" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="ehu@silverpeas.com" login="bsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="2" domainid="0" specificid="2" firstname="Homer" lastname="Simpson" email="homer@simpson.com" login="homer@simpson.com" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="3" domainid="0" specificid="3" firstname="Marge" lastname="Simpson" email="" login="msimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="4" domainid="1" specificid="f6632e21-9990-4393-9d65-4bdfebf7163f" firstname="Lisa" lastname="Simpson" email="lisa@simpson.com" login="lsimpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_space id="1" domainfatherid="[NULL]" spacestatus="[NULL]" name="Espace de test" description="Pour les composants testés" createdby="0" firstpagetype="2" firstpageextraparam="" ordernum="0" createtime="1280759652574" updatetime="1281450309000" updatedby="0" isinheritanceblocked="0" displayspacefirst="1"/>
   <st_space id="2" domainfatherid="1" spacestatus="[NULL]" name="MyTests" description="Space for test" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="0" createtime="1281941919845" isinheritanceblocked="0" displayspacefirst="1"/>
   <st_space id="3" domainfatherid="2" spacestatus="[NULL]" name="Kmelia" description="" createdby="0" firstpagetype="2" firstpageextraparam="" ordernum="0" createtime="1281941936340" updatetime="1286529406290" updatedby="0" isinheritanceblocked="0" displayspacefirst="1"/>

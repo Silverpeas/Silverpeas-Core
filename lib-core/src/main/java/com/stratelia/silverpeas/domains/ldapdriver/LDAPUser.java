@@ -83,7 +83,7 @@ public class LDAPUser {
 
   /**
    * Return all users found in the baseDN tree
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @return all founded users
    * @throws AdminException if an error occur during LDAP operations
    */
@@ -143,7 +143,7 @@ public class LDAPUser {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id NOTE : the DomainID
    * and the ID are not set.
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param id the user id
    * @return the user object
    * @throws AdminException if an error occur during LDAP operations or if the user is not found
@@ -173,7 +173,7 @@ public class LDAPUser {
   /**
    * Return a UserDetail object filled with the infos of the user having ID = id NOTE : the DomainID
    * and the ID are not set.
-   * @param ld the LDAP connection
+   * @param lds the LDAP connection
    * @param id the user id
    * @return the user object
    * @throws AdminException if an error occur during LDAP operations or if the user is not found

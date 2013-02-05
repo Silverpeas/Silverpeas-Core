@@ -24,17 +24,19 @@
 
 package com.stratelia.webactiv.servlets;
 
+import com.silverpeas.util.StringUtil;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import com.stratelia.webactiv.servlets.credentials.*;
-
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.authentication.AuthenticationException;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -65,6 +67,7 @@ public class CredentialsServlet extends HttpServlet {
     handlers.put("ValidateAnswer", new ValidationAnswerHandler());
     handlers.put("ChangePassword", new ChangePasswordHandler());
     handlers.put("ChangePasswordFromLogin", new ChangePasswordFromLoginHandler());
+    handlers.put("EffectiveChangePasswordFromLogin", new EffectiveChangePasswordFromLoginHandler());
     handlers.put("ChangeExpiredPassword", new ChangeExpiredPasswordHandler());
     // Password reset management
     handlers.put("ForgotPassword", new ForgotPasswordHandler());
@@ -87,7 +90,23 @@ public class CredentialsServlet extends HttpServlet {
     String function = getFunction(request);
     FunctionHandler handler = handlers.get(function);
     if (handler != null) {
-      String destinationPage = handler.doAction(request);
+
+      // Verify user state
+      String login = request.getParameter("Login");
+      String domainId = request.getParameter("DomainId");
+      String destinationPage = "";
+      if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+        try {
+          AuthenticationUserStateChecker.verify(login, domainId);
+        } catch (AuthenticationException e) {
+          destinationPage = AuthenticationUserStateChecker.getErrorDestination();
+        }
+      }
+
+      if (!StringUtil.isDefined(destinationPage)) {
+        destinationPage = handler.doAction(request);
+      }
+
       if (destinationPage.startsWith("http")) {
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
         sessionCookie.setMaxAge(-1);

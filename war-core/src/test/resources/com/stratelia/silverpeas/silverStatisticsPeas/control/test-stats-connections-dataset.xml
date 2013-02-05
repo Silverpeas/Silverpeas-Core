@@ -30,11 +30,11 @@
   <st_group id="2" domainid="0" specificid="B" supergroupid="1" name="Children" description="" synchrorule=""/>
   <st_group id="3" domainid="0" specificid="C" supergroupid="1" name="Parents" description="" synchrorule=""/>
   
-  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.org" login="bart.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="2" domainid="0" specificid="2" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.org" login="lisa.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="3" domainid="0" specificid="3" firstname="Maggie" lastname="Simpson" email="maggie.simpson@silverpeas.org" login="maggie.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="4" domainid="0" specificid="4" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.org" login="homer.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
-  <st_user id="5" domainid="0" specificid="5" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.org" login="marge.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer=""/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.org" login="bart.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="2" domainid="0" specificid="2" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.org" login="lisa.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="3" domainid="0" specificid="3" firstname="Maggie" lastname="Simpson" email="maggie.simpson@silverpeas.org" login="maggie.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="4" domainid="0" specificid="4" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.org" login="homer.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="5" domainid="0" specificid="5" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.org" login="marge.simpson" loginmail="" accesslevel="U" loginquestion="" loginanswer="" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   
   <st_group_user_rel groupid="1" userid="1"/>
   <st_group_user_rel groupid="2" userid="1"/>

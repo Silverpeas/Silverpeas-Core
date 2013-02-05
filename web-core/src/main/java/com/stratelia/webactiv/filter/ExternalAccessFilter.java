@@ -26,8 +26,6 @@ package com.stratelia.webactiv.filter;
 
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.authentication.security.SecurityData;
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -44,6 +42,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 
 public class ExternalAccessFilter implements Filter {
 

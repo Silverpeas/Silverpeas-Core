@@ -4,19 +4,29 @@ CREATE TABLE ST_AccessLevel
     name varchar(100)  NOT NULL
 );
 
-CREATE TABLE ST_User 
+CREATE TABLE ST_User
 (
-    id          int           NOT NULL,
-    domainId    int           NOT NULL,
-    specificId  varchar(500)  NOT NULL,
-    firstName   varchar(100),
-    lastName    varchar(100)  NOT NULL,
-    email       varchar(100),
-    login       varchar(50)   NOT NULL,
-    loginMail   varchar(100),
-    accessLevel char(1)       DEFAULT 'U' NOT NULL,
-	loginquestion varchar(200),
-  	loginanswer varchar(200)
+  id                            INT                 NOT NULL,
+  domainId                      INT                 NOT NULL,
+  specificId                    VARCHAR(500)        NOT NULL,
+  firstName                     VARCHAR(100),
+  lastName                      VARCHAR(100)        NOT NULL,
+  email                         VARCHAR(100),
+  login                         VARCHAR(50)         NOT NULL,
+  loginMail                     VARCHAR(100),
+  accessLevel                   CHAR(1) DEFAULT 'U' NOT NULL,
+  loginquestion                 VARCHAR(200),
+  loginanswer                   VARCHAR(200),
+  creationDate                  TIMESTAMP,
+  saveDate                      TIMESTAMP,
+  version                       INT DEFAULT 0       NOT NULL,
+  tosAcceptanceDate             TIMESTAMP,
+  lastLoginDate                 TIMESTAMP,
+  nbSuccessfulLoginAttempts     INT DEFAULT 0       NOT NULL,
+  lastLoginCredentialUpdateDate TIMESTAMP,
+  expirationDate                TIMESTAMP,
+  state                         VARCHAR(30)         NOT NULL,
+  stateSaveDate                 TIMESTAMP           NOT NULL
 );
 
 CREATE TABLE ST_Group

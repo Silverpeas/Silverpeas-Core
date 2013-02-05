@@ -87,7 +87,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 </head>
 <body>
 <view:window>
-  <c:if test="${fn:contains(userProfile, 'A')}">
+  <c:if test="${fn:startsWith(userProfile.name, 'ADMINISTRATOR')}">
 <view:tabs>
 	<fmt:message var="axisTabLabel" key="silverStatisticsPeas.pdc.axis" />
 	<view:tab label="${axisTabLabel}" selected="false" action="${ctxPath}/RsilverStatisticsPeas/jsp/ViewPDCAccess"></view:tab>

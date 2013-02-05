@@ -5,8 +5,8 @@ insert into ST_AccessLevel(id, name) values ('R', 'Removed');
 insert into ST_AccessLevel(id, name) values ('K', 'KMManager');
 insert into ST_AccessLevel(id, name) values ('D', 'DomainManager');
 
-insert into ST_User(id, specificId, domainId, lastName, login, accessLevel)
-values             (0, '0', 0, 'Administrateur', '${ADMINLOGIN}', 'A');
+INSERT INTO ST_User (id, specificId, domainId, lastName, login, accessLevel, state, stateSaveDate)
+  VALUES (0, '0', 0, 'Administrateur', '${ADMINLOGIN}', 'A', 'VALID', CURRENT_TIMESTAMP);
 
 insert into DomainSP_User(id, lastName, login, password)
 values             (0, 'Administrateur', '${ADMINLOGIN}', '${ADMINPASSWD}');

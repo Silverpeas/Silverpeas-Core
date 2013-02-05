@@ -121,7 +121,7 @@
     </tr>
 	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel()) %></td>
+		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
 		<tr id="oldPassword">
@@ -149,7 +149,6 @@
     <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
-        String userLoginAnswer = userFull.getLoginAnswer();
 %>
         <tr id="question">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginQuestion")%> :</td>

@@ -80,7 +80,7 @@ public class DidYouMeanSearcher {
       Analyzer analyzer = new IndexManager().getAnalyzer(queryDescription.getRequestedLanguage());
       QueryParser queryParser = new QueryParser(Version.LUCENE_36, field, analyzer);
 
-      Query parsedQuery = null;
+      Query parsedQuery;
       try {
         parsedQuery = queryParser.parse(queryDescription.getQuery());
       } catch (ParseException exception) {
@@ -107,7 +107,7 @@ public class DidYouMeanSearcher {
             // create a file object with given path
             File file = new File(path + "Spell");
 
-            if (file != null && file.exists()) {
+            if (file.exists()) {
 
               // create a spellChecker with the file object
               FSDirectory directory = FSDirectory.open(file);
@@ -163,11 +163,9 @@ public class DidYouMeanSearcher {
 
     }
 
-    String[] suggestions =
-        { currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "")
-        .replaceAll("  ", " ").trim() };
-
-    return suggestions;
+    return new String[]{
+        currentSentence.toString().replaceAll("\\+", "").replaceAll("-", "").replaceAll("  ", " ")
+            .trim()};
 
   }
 

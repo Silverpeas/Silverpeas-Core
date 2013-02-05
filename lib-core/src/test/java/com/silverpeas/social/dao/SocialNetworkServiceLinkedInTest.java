@@ -24,12 +24,11 @@
 
 package com.silverpeas.social.dao;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import javax.inject.Inject;
-import javax.sql.DataSource;
-
+import com.silverpeas.social.mock.OrganizationControllerMock;
+import com.silverpeas.socialnetwork.model.ExternalAccount;
+import com.silverpeas.socialnetwork.model.SocialNetworkID;
+import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -38,51 +37,86 @@ import org.dbunit.operation.DatabaseOperation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserState;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.silverpeas.socialnetwork.model.ExternalAccount;
-import com.silverpeas.socialnetwork.model.SocialNetworkID;
-import com.silverpeas.socialnetwork.service.SocialNetworkService;
+import javax.inject.Inject;
+import javax.sql.DataSource;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 
 /**
  * @author lbertin
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/spring-socialnetwork.xml"})
+@ContextConfiguration(locations = {"/spring-socialnetwork.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 public class SocialNetworkServiceLinkedInTest {
 
-	@Inject
-	private SocialNetworkService service = null;
-	@Inject
-	private DataSource dataSource;
+  @Inject
+  private SocialNetworkService service = null;
+  @Inject
+  private DataSource dataSource;
 
-	public SocialNetworkServiceLinkedInTest() {
-	}
+  @Inject
+  OrganizationControllerMock organizationController;
 
-	@Before
-	public void generalSetUp() throws Exception {
-		ReplacementDataSet dataSet = new ReplacementDataSet(
-				new FlatXmlDataSet(
-						SocialNetworkServiceLinkedInTest.class
-								.getClassLoader()
-								.getResourceAsStream(
-										"com/silverpeas/social/dao/socialnetwork-dataset.xml")));
-		dataSet.addReplacementObject("[NULL]", null);
-		IDatabaseConnection connection = new DatabaseConnection(
-				dataSource.getConnection());
-		DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
-	}
+  public SocialNetworkServiceLinkedInTest() {
+  }
 
-	@Test
-	@Transactional
-	public void testReadByPrimaryKey() throws Exception {
-		ExternalAccount account = service.getExternalAccount(
-				SocialNetworkID.LINKEDIN, "1234");
-		assertThat(account.getSilverpeasUserId(), is("11"));
-	}
+  @Before
+  public void generalSetUp() throws Exception {
+    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
+        SocialNetworkServiceLinkedInTest.class.getClassLoader()
+            .getResourceAsStream("com/silverpeas/social/dao/socialnetwork-dataset.xml")));
+    dataSet.addReplacementObject("[NULL]", null);
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    doAnswer(new Answer<UserDetail>() {
+      @Override
+      public UserDetail answer(InvocationOnMock invocation) throws Throwable {
+        UserDetail user = new UserDetail();
+        String userId = (String) invocation.getArguments()[0];
+        if ("11".equals(userId)) {
+          user.setState(UserState.VALID);
+        } else if ("12".equals(userId)) {
+          user.setState(UserState.DELETED);
+        } else {
+          user = null;
+        }
+        return user;
+      }
+    }).when(organizationController.getMock()).getUserDetail(anyString());
+  }
+
+  @Test
+  @Transactional
+  public void testReadByPrimaryKeyUnexistingUser() throws Exception {
+    ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1233");
+    assertThat(account, nullValue());
+  }
+
+  @Test
+  @Transactional
+  public void testReadByPrimaryKeyValidUser() throws Exception {
+    ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1234");
+    assertThat(account.getSilverpeasUserId(), is("11"));
+  }
+
+  @Test
+  @Transactional
+  public void testReadByPrimaryKeyDeletedUser() throws Exception {
+    ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1235");
+    assertThat(account, nullValue());
+  }
 
 }

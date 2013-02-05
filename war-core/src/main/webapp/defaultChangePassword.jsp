@@ -67,7 +67,7 @@
     $(document).ready(function() {
       handlePasswordForm({
         passwordFormId : 'changePwdForm',
-        passwordFormAction : '<c:url value="/CredentialsServlet/ChangePasswordFromLogin"/>',
+        passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
         passwordInputId : 'newPassword'
       })
     });

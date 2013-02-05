@@ -25,40 +25,187 @@
 package com.silverpeas.admin;
 
 import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
-import com.stratelia.webactiv.beans.admin.*;
-import java.util.List;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.GroupProfileInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.springframework.test.context.ContextConfiguration;
 
-@ContextConfiguration(locations = { "classpath:/spring-jpa-datasource.xml",
-    "classpath:/spring-domains.xml" })
+import java.util.Date;
+import java.util.List;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+
+@ContextConfiguration(
+    locations = {"classpath:/spring-jpa-datasource.xml", "classpath:/spring-domains.xml"})
 public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
 
   @Test
   public void shouldAddNewUser() {
+    Date now = new Date();
+    Date tosAcceptanceDate = DateUtils.addDays(now, 1);
+    Date lastLoginDate = DateUtils.addDays(now, 2);
+    Date lastLoginCredentialUpdateDate = DateUtils.addDays(now, 3);
+    Date expirationDate = DateUtils.addDays(now, 4);
+    Date stateSaveDate = DateUtils.addDays(now, 5);
+
     UserDetail user = new UserDetail();
-    user.setAccessLevel("A");
+    user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     user.setDomainId("0");
     user.seteMail("nicolas.eysseric@silverpeas.com");
     user.setFirstName("Nicolas");
     user.setLastName("EYSSERIC");
     user.setLogin("neysseri");
+    user.setTosAcceptanceDate(tosAcceptanceDate);
+    user.setLastLoginDate(lastLoginDate);
+    user.setNbSuccessfulLoginAttempts(7);
+    user.setLastLoginCredentialUpdateDate(lastLoginCredentialUpdateDate);
+    user.setExpirationDate(expirationDate);
+    user.setState(UserState.EXPIRED);
+    user.setStateSaveDate(stateSaveDate);
+
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
     assertThat(userId, is("2"));
+
+    user = ac.getUserDetail("2");
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
+    assertThat(user.getSaveDate(), greaterThan(now));
+    assertThat(user.getVersion(), is(0));
+    assertThat(user.getTosAcceptanceDate().getTime(), is(tosAcceptanceDate.getTime()));
+    assertThat(user.getLastLoginDate().getTime(), is(lastLoginDate.getTime()));
+    assertThat(user.getNbSuccessfulLoginAttempts(), is(7));
+    assertThat(user.getLastLoginCredentialUpdateDate().getTime(),
+        is(lastLoginCredentialUpdateDate.getTime()));
+    assertThat(user.getExpirationDate().getTime(), is(expirationDate.getTime()));
+    assertThat(user.getState(), is(UserState.EXPIRED));
+    assertThat(user.getStateSaveDate(), greaterThan(now));
   }
 
   @Test
   public void shouldUpdateUser() {
+    Date now = new Date();
+    Date tosAcceptanceDate = DateUtils.addDays(now, 1);
+    Date lastLoginDate = DateUtils.addDays(now, 2);
+    Date lastLoginCredentialUpdateDate = DateUtils.addDays(now, 3);
+    Date expirationDate = DateUtils.addDays(now, 4);
+    Date stateSaveDate = DateUtils.addDays(now, 5);
     AdminController ac = getAdminController();
     UserDetail user = ac.getUserDetail("1");
+
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
+    assertThat(user.isAccessAdmin(), is(true));
+    assertThat(user.isAccessDomainManager(), is(false));
+    assertThat(user.isAccessSpaceManager(), is(false));
+    assertThat(user.isAccessPdcManager(), is(false));
+    assertThat(user.isAccessUser(), is(false));
+    assertThat(user.isAccessGuest(), is(false));
+    assertThat(user.getSaveDate(), nullValue());
+    assertThat(user.getVersion(), is(0));
+    assertThat(user.getTosAcceptanceDate(), nullValue());
+    assertThat(user.getLastLoginDate(), nullValue());
+    assertThat(user.getNbSuccessfulLoginAttempts(), is(0));
+    assertThat(user.getLastLoginCredentialUpdateDate(), nullValue());
+    assertThat(user.getExpirationDate(), nullValue());
+    assertThat(user.getState(), is(UserState.VALID));
+    assertThat(user.isExpiredState(), is(false));
+    assertThat(user.getStateSaveDate(), lessThan(now));
+
     String newEmail = "ney@silverpeas.com";
     user.seteMail(newEmail);
+    user.setAccessLevel(UserAccessLevel.USER);
+    user.setTosAcceptanceDate(tosAcceptanceDate);
+    user.setLastLoginDate(lastLoginDate);
+    user.setNbSuccessfulLoginAttempts(7);
+    user.setLastLoginCredentialUpdateDate(lastLoginCredentialUpdateDate);
+    user.setExpirationDate(expirationDate);
     ac.updateUser(user);
+
     user = ac.getUserDetail("1");
     assertThat(user.geteMail(), is(newEmail));
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.USER));
+    assertThat(user.isAccessAdmin(), is(false));
+    assertThat(user.isAccessDomainManager(), is(false));
+    assertThat(user.isAccessSpaceManager(), is(false));
+    assertThat(user.isAccessPdcManager(), is(false));
+    assertThat(user.isAccessUser(), is(true));
+    assertThat(user.isAccessGuest(), is(false));
+    assertThat(user.getSaveDate(), greaterThan(now));
+    assertThat(user.getVersion(), is(1));
+    assertThat(user.getTosAcceptanceDate().getTime(), is(tosAcceptanceDate.getTime()));
+    assertThat(user.getLastLoginDate().getTime(), is(lastLoginDate.getTime()));
+    assertThat(user.getNbSuccessfulLoginAttempts(), is(7));
+    assertThat(user.getLastLoginCredentialUpdateDate().getTime(),
+        is(lastLoginCredentialUpdateDate.getTime()));
+    assertThat(user.getExpirationDate().getTime(), is(expirationDate.getTime()));
+    assertThat(user.getState(), is(UserState.VALID));
+    assertThat(user.isExpiredState(), is(false));
+    assertThat(user.isDeletedState(), is(false));
+    assertThat(user.getStateSaveDate(), lessThan(now));
+
+    expirationDate = DateUtils.addDays(now, -4);
+    user.setExpirationDate(expirationDate);
+    ac.updateUser(user);
+
+    user = ac.getUserDetail("1");
+    assertThat(user.getVersion(), is(2));
+    assertThat(user.isExpiredState(), is(true));
+
+
+    user.setAccessLevel(UserAccessLevel.GUEST);
+    user.setExpirationDate(null);
+    user.setState(UserState.EXPIRED);
+    user.setStateSaveDate(stateSaveDate);
+    ac.updateUser(user);
+
+    user = ac.getUserDetail("1");
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.GUEST));
+    assertThat(user.isAccessAdmin(), is(false));
+    assertThat(user.isAccessDomainManager(), is(false));
+    assertThat(user.isAccessSpaceManager(), is(false));
+    assertThat(user.isAccessPdcManager(), is(false));
+    assertThat(user.isAccessUser(), is(false));
+    assertThat(user.isAccessGuest(), is(true));
+    assertThat(user.getSaveDate(), greaterThan(now));
+    assertThat(user.getVersion(), is(3));
+    assertThat(user.getExpirationDate(), nullValue());
+    assertThat(user.getState(), is(UserState.EXPIRED));
+    assertThat(user.isExpiredState(), is(true));
+    assertThat(user.isDeletedState(), is(false));
+    assertThat(user.getStateSaveDate().getTime(), is(stateSaveDate.getTime()));
+
+    user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
+    ac.updateUser(user);
+
+    user = ac.getUserDetail("1");
+    assertThat(user.getVersion(), is(4));
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
+    assertThat(user.isAccessAdmin(), is(false));
+    assertThat(user.isAccessDomainManager(), is(true));
+    assertThat(user.isAccessSpaceManager(), is(false));
+    assertThat(user.isAccessPdcManager(), is(false));
+    assertThat(user.isAccessUser(), is(false));
+    assertThat(user.isAccessGuest(), is(false));
+
+    user.setAccessLevel(UserAccessLevel.PDC_MANAGER);
+    ac.updateUser(user);
+
+    user = ac.getUserDetail("1");
+    assertThat(user.getVersion(), is(5));
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.PDC_MANAGER));
+    assertThat(user.isAccessAdmin(), is(false));
+    assertThat(user.isAccessDomainManager(), is(false));
+    assertThat(user.isAccessSpaceManager(), is(false));
+    assertThat(user.isAccessPdcManager(), is(true));
+    assertThat(user.isAccessUser(), is(false));
+    assertThat(user.isAccessGuest(), is(false));
   }
 
   @Test
@@ -67,7 +214,9 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     String userId = ac.deleteUser("1");
     assertThat(userId, is("1"));
     UserDetail user = ac.getUserDetail(userId);
-    assertThat(user.getAccessLevel(), is("R"));
+    assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
+    assertThat(user.getState(), is(UserState.DELETED));
+    assertThat(user.isDeletedState(), is(true));
   }
 
   @Test

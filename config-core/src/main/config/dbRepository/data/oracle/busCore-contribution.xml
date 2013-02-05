@@ -242,6 +242,7 @@
   <upgrade version="029">
     <create_table>
       <file name="oracle\busCore\up029\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="oracle\busCore\up029\alter_table_init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
     <create_table>
       <file name="passwordTypeModification.jar" type="javalib" classname="org.silverpeas.migration.sqldomain.PasswordSizeIncrease" methodname="migrate"/>

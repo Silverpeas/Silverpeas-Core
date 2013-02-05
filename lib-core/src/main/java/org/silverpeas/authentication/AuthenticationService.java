@@ -118,7 +118,7 @@ public class AuthenticationService {
    */
   static private Connection openConnection() throws AuthenticationException {
     Properties info = new Properties();
-    Driver driverSQL = null;
+    Driver driverSQL;
     Connection con;
 
     try {
@@ -221,10 +221,12 @@ public class AuthenticationService {
       // Authentication test
       authenticationServer.authenticate(credential);
 
-      // Generate a random key and store it in database
-      String key = getAuthenticationKey(login, domainId);
+      // Verify user state
+      AuthenticationUserStateChecker.verify(login, domainId);
 
-      return key;
+      // Generate a random key and store it in database
+      return getAuthenticationKey(login, domainId);
+
     } catch (AuthenticationException ex) {
       SilverTrace.error(module,
           "AuthenticationService.authenticate()",
@@ -247,6 +249,8 @@ public class AuthenticationService {
         errorCause = ERROR_PWD_EXPIRED;
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
+      } else if (ex instanceof AuthenticationUserAccountBlockedException) {
+        errorCause = AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -291,8 +295,7 @@ public class AuthenticationService {
     } catch (Exception ex) {
       SilverTrace.warn(module, "AuthenticationService.authenticate()",
           "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
-      String errorCause = "Error_2";
-      return errorCause;
+      return "Error_2";
     } finally {
       DBUtil.close(resultSet, prepStmt);
       closeConnection(connection);
@@ -308,8 +311,7 @@ public class AuthenticationService {
         SilverTrace.warn(module, "AuthenticationService.authenticate()",
             "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
             login, e);
-        String errorCause = "Error_2";
-        return errorCause;
+        return "Error_2";
       }
     }
 
@@ -337,6 +339,8 @@ public class AuthenticationService {
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
+    // Verify user state
+    AuthenticationUserStateChecker.verify(login, domainId);
     Connection connection = null;
     try {
       // Open connection
@@ -482,6 +486,9 @@ public class AuthenticationService {
       throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
+
+    // Verify user state
+    AuthenticationUserStateChecker.verify(login, domainId);
 
     Connection connection = null;
 

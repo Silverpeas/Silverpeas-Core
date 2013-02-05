@@ -29,19 +29,20 @@ import com.silverpeas.session.SessionManagement;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
-import org.silverpeas.util.Charsets;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
+import org.silverpeas.token.TokenStringKey;
+import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.model.Token;
+import org.silverpeas.token.service.TokenService;
+import org.silverpeas.util.Charsets;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -107,7 +108,26 @@ public class UserPriviledgeValidation {
     } else {
       userSession = authenticateUser(request);
     }
+
+    // Verify User State
+    verifyUserState(userSession);
+
+    // Returning the user session
     return userSession;
+  }
+
+  /**
+   * Verifies the user state.
+   * @param userSession
+   */
+  private void verifyUserState(SessionInfo userSession) {
+    if (userSession != null && userSession.getUserDetail() != null) {
+      try {
+        AuthenticationUserStateChecker.verify(userSession.getUserDetail());
+      } catch (AuthenticationException e) {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
+    }
   }
 
   /**

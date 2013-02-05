@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 
 import com.silverpeas.look.LookHelper;
@@ -110,6 +112,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
       return GeneralPropertiesManager.getString("sessionTimeout");
     }
+
+    // Verify user state
+    try {
+      AuthenticationUserStateChecker.verify(mainSessionCtrl.getCurrentUserDetail());
+    } catch (AuthenticationException e) {
+      return GeneralPropertiesManager.getString("sessionTimeout");
+    }
+
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "

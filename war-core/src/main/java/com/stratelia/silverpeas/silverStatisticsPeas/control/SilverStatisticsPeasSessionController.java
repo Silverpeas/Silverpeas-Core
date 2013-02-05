@@ -56,6 +56,7 @@ import javax.ejb.CreateException;
 import org.apache.commons.lang.StringUtils;
 import org.jCharts.axisChart.AxisChart;
 import org.jCharts.nonAxisChart.PieChart2D;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
@@ -63,7 +64,6 @@ import org.jCharts.nonAxisChart.PieChart2D;
  */
 public class SilverStatisticsPeasSessionController extends AbstractComponentSessionController {
 
-  public static final String SPACE_ADMIN = "SpaceAdmin";
   public static final int INDICE_VALUE = 0;
   public static final int INDICE_LIB = 1;
   private String monthBegin = null;
@@ -132,15 +132,15 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     initYears();
   }
 
-  public String getUserProfile() {
+  public UserAccessLevel getUserProfile() {
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.getUserProfile()",
         "root.MSG_GEN_ENTER_METHOD");
-    String userProfile = getUserDetail().getAccessLevel();
+    UserAccessLevel userProfile = getUserDetail().getAccessLevel();
     AdminController ac = new AdminController(getUserId());
-    if (!userProfile.equals("A")
+    if (!UserAccessLevel.ADMINISTRATOR.equals(userProfile)
         && ac.getUserManageableSpaceRootIds(getUserId()) != null) {
-      userProfile = SPACE_ADMIN;
+      userProfile = UserAccessLevel.SPACE_ADMINISTRATOR;
     }
     SilverTrace.info("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.getUserProfile()",
