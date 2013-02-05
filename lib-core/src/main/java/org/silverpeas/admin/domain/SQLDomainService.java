@@ -43,7 +43,6 @@ import org.silverpeas.admin.domain.repository.SQLDomainRepository;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -62,8 +61,8 @@ public class SQLDomainService extends AbstractDomainService {
   @PostConstruct
   void init() {
     templateSettings =
-        new ResourceLocator("com.stratelia.silverpeas.domains.templateDomainSQL", "");
-    adminSettings = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin", "");
+        new ResourceLocator("org.silverpeas.domains.templateDomainSQL", "");
+    adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
 
   @Override
@@ -73,8 +72,8 @@ public class SQLDomainService extends AbstractDomainService {
     super.checkDomainName(domainName);
 
     // Check properties files availability
-    // com.stratelia.silverpeas.domains.domain<domainName>.properties
-    // com.stratelia.silverpeas.authentication.autDomain<domainName>.properties
+    // org.silverpeas.domains.domain<domainName>.properties
+    // org.silverpeas.authentication.autDomain<domainName>.properties
     String authenticationPropertiesPath =
         FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
@@ -121,7 +120,7 @@ public class SQLDomainService extends AbstractDomainService {
     if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
       domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
     }
-    domainToCreate.setPropFileName("com.stratelia.silverpeas.domains.domain" + domainName);
+    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + domainName);
     domainToCreate.setAuthenticationServer("autDomain" + domainName);
     domainToCreate.setTheTimeStamp("0");
     String domainId = registerDomain(domainToCreate);

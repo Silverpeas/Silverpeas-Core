@@ -24,9 +24,8 @@
 
 package org.silverpeas.admin.domain.repository;
 
-import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
-
 import com.stratelia.webactiv.beans.admin.Domain;
+import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 
 public interface SQLDomainRepository {
 

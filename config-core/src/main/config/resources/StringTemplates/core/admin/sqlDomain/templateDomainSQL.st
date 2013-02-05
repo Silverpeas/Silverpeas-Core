@@ -72,7 +72,7 @@ ExternalSynchroClass =
 # Property number : from 1 to N
 
 property.Number = 9
-property.ResourceFile = com.stratelia.silverpeas.domains.multilang.templateDomainSQLBundle
+property.ResourceFile = org.silverpeas.domains.multilang.templateDomainSQLBundle
 
 property_1.Name = title
 property_1.Type = STRING
