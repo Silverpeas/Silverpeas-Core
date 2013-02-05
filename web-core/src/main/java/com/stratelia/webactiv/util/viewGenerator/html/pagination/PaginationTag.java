@@ -24,21 +24,22 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.pagination;
 
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class PaginationTag extends TagSupport {
 
   private static final long serialVersionUID = 7931703988418922022L;
   private int currentPage;
   private int nbPages;
+  private String action;
   private String pageParam;
   private String altPreviousAction;
   private String altNextAction;
-  private String action;
+  private String altGoToAction;
 
   public void setCurrentPage(Integer currentPage) {
     this.currentPage = currentPage;
@@ -59,6 +60,10 @@ public class PaginationTag extends TagSupport {
   public void setAltNextAction(String altNextAction) {
     this.altNextAction = altNextAction;
   }
+  
+  public void setAltGoToAction(String altGoToAction) {
+    this.altGoToAction = altGoToAction;
+  }
 
   public void setPageParam(String pageParam) {
     this.pageParam = pageParam;
@@ -66,73 +71,79 @@ public class PaginationTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    if (nbPages <= 1) {
+    if (this.nbPages <= 1) {
       return EVAL_PAGE;
     }
     boolean hasParam = action.indexOf('?') > 0;
     JspWriter out = pageContext.getOut();
     try {
-      out
-          .println(
-          "<table id=\"pagination\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
+      out.println("<table id=\"pagination\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" align=\"center\">");
       out.println("<tr valign=\"middle\" class=\"intfdcolor\">");
       out.println("<td align=\"center\" class=\"ArrayNavigation\">");
-      if (currentPage > 0) {
-        out.print("<a class=\"ArrayNavigation\" href=\"");
-        out.print(getUrl(action, hasParam, (currentPage - 1)));
-        out.print("\">");
-        out.print("<img src=\"");
-        out.print(getIconsPath());
-        out.print("/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\"");
-        out.print(altPreviousAction);
-        out.print("\"/></a>");
-      } else {
-        out.println("&#160;&#160;&#160;");
+      out.println("<div class=\"pageNav\">");
+      out.println("<div class=\"pageNavContent\">");
+
+      // display previous link (or nothing if current page is first one)
+      if (this.currentPage > 0) {
+
+        // display previous page link
+        out.println("<div class=\"pageOff\">");
+        out.println(getUrl(action, hasParam, this.altPreviousAction, (this.currentPage - 1)));
+            out.println("<img src=\""+getIconsPath()+
+            "/arrows/arrowLeft.gif\" border=\"0\" align=\"absmiddle\" alt=\""+
+            this.altPreviousAction+"\"/></a>");
+        out.println("</div>");
       }
-      for (int i = 0; i < nbPages; i++) {
-        if (i == currentPage) {
-          out.print(" <span class=\"ArrayNavigationOn\">&#160;");
-          out.print(i + 1);
-          out.print("&#160;</span>");
+
+      // display all pages
+      for (int i=0; i < this.nbPages; i++) {
+        if (i == this.currentPage) {
+          out.println("<div class=\"pageOn\">");
+          out.println(i+1);
+          out.println("</div>");
         } else {
-          out.print("<a class=\"ArrayNavigation\" href=\"");
-          out.print(getUrl(action, hasParam, (i)));
-          out.print("\">");
-          out.print(i + 1);
-          out.print("</a> ");
+          out.println("<div class=\"pageOff\">");
+          out.println(getUrl(action, hasParam, this.altGoToAction + " " + (i+1), (i)));
+          out.println(i+1);
+          out.println("</a>");
+          out.println("</div>");
         }
       }
-      if ((currentPage + 1) >= nbPages) {
-        out.print("&#160;&#160;&#160;");
-      } else {
-        out.print("<a class=\"ArrayNavigation\" href=\"");
-        out.print(getUrl(action, hasParam, (currentPage + 1)));
-        out.print("\">");
-        out.print("<img src=\"");
-        out.print(getIconsPath());
-        out.print("/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\"");
-        out.print(altNextAction);
-        out.print("\"/></a>");
+
+      // display next link (or nothing if current page is last one)
+      if ((this.currentPage + 1) < this.nbPages) {
+        // display next page link
+        out.println("<div class=\"pageOff\">");
+        out.println(getUrl(action, hasParam, this.altNextAction, (this.currentPage + 1)));
+        out.println("<img src=\""+getIconsPath()+
+            "/arrows/arrowRight.gif\" border=\"0\" align=\"absmiddle\" alt=\""+
+            this.altNextAction+"\"/></a>");
+        out.println("</div>");
       }
+
+      out.println("</div>");
+      out.println("</div>");
       out.println("</td>");
       out.println("</tr>");
       out.println("</table>");
+      
       return EVAL_PAGE;
-
     } catch (IOException e) {
       throw new JspException("Pagination Tag", e);
     }
   }
 
-  public String getUrl(String elAction, boolean hasParam, int page) {
+  public String getUrl(String elAction, boolean hasParam, String title, int page) {
     StringBuilder buffer = new StringBuilder(200);
-    buffer.append(elAction);
+    buffer.append(" <a class=\"ArrayNavigation\"").append(" title=\"").append(title).append("\"");
+    buffer.append(" href=\"").append(elAction);
     if (hasParam) {
       buffer.append('&');
     } else {
       buffer.append('?');
     }
     buffer.append(pageParam).append('=').append(page);
+    buffer.append("\">");
     return buffer.toString();
   }
 
