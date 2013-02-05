@@ -557,7 +557,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         // Cheking password
         PasswordCheck passwordCheck = PasswordServiceFactory.getPasswordService().check(motDePasse);
         if (!passwordCheck.isCorrect()) {
-          boolean isNotFirstError = false;
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse))
               .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
           listErrors.append("<br/>");
@@ -1259,11 +1258,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return groups;
   }
 
-  public String[][] getSubUsers(boolean isParentGroup)
+  public List<UserDetail> getSubUsers(boolean isParentGroup)
       throws JobDomainPeasException {
     final UserDetail[] usDetails;
     if (isParentGroup) {
-      if (m_GroupsPath.size() <= 0) {
+      if (m_GroupsPath.isEmpty()) {
         throw new JobDomainPeasException("JobDomainPeasSessionController.getTargetGroup()",
             SilverpeasException.ERROR, "jobDomainPeas.EX_GROUP_NOT_AVAILABLE");
       }
@@ -1271,23 +1270,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } else { // Domain case
       usDetails = m_TargetDomain.getUserPage();
     }
-    String[][] valret = new String[usDetails.length][4];
-    for (int i = 0; i < usDetails.length; i++) {
-      if (usDetails[i] != null) {
-        valret[i][0] = getSureString(usDetails[i].getId());
-        valret[i][1] =
-            EncodeHelper.javaStringToHtmlString(getSureString(usDetails[i].getLastName()));
-        valret[i][2] = EncodeHelper.javaStringToHtmlString(
-            getSureString(usDetails[i].getFirstName()));
-        valret[i][3] = EncodeHelper.javaStringToHtmlString(getSureString(usDetails[i].getLogin()));
-      } else {
-        valret[i][0] = "";
-        valret[i][1] = "";
-        valret[i][2] = "";
-        valret[i][3] = "";
-      }
-    }
-    return valret;
+    return Arrays.asList(usDetails);
   }
 
   public String getPath(String baseURL, String toAppendAtEnd)

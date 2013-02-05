@@ -33,8 +33,6 @@
 
 <%@ include file="check.jsp" %>
 <%
-  Board board = gef.getBoard();
-
   Domain domObject = (Domain) request.getAttribute("domainObject");
   UserFull userObject = (UserFull) request.getAttribute("userObject");
   String groupsPath = (String) request.getAttribute("groupsPath");
@@ -59,7 +57,7 @@
 
   if (isDomainRW && isUserRW && (!isGroupManager || isUserManageableByGroupManager)) {
     operationPane
-        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("JDP.userUpdate"),
+        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
             "displayUserModify?Iduser=" + thisUserId);
     if (userObject.isBlockedState()) {
       operationPane
@@ -70,13 +68,13 @@
           .addOperation(resource.getIcon("JDP.userBlock"), resource.getString("JDP.userBlock"),
               "userBlock?Iduser=" + thisUserId);
     }
-    operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("JDP.userDel"),
+    operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:ConfirmAndSend('" + resource.getString("JDP.userDelConfirm") +
             "','userDelete?Iduser=" + thisUserId + "')");
   }
   if (isDomainSync && !isGroupManager) {
     operationPane
-        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("JDP.userUpdate"),
+        .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
             "displayUserMS?Iduser=" + thisUserId);
     operationPane
         .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
@@ -93,7 +91,7 @@
 %>
 <html>
 <head>
-  <% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel/>
   <script language="JavaScript">
     function ConfirmAndSend(textToDisplay, targetURL) {
       if (window.confirm(textToDisplay)) {
@@ -105,34 +103,25 @@
 <body>
 <%
   out.println(window.printBefore());
-  out.println(frame.printBefore());
 %>
-<div style="text-align: center;">
-  <%
-    out.println(board.printBefore());
-  %>
-  <table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
+<view:frame>
+<view:board>
+  <table cellpadding="5" cellspacing="0" border="0" width="100%">
     <tr>
-      <td class="textePetitBold"><%=resource.getString("GML.lastName") %> :</td>
-      <td align=left valign="baseline"><%=EncodeHelper
-          .javaStringToHtmlString(userObject.getLastName())%>
-      </td>
+      <td class="txtlibform"><%=resource.getString("GML.lastName") %> :</td>
+      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%></td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("GML.surname") %> :</td>
-      <td align=left valign="baseline"><%=EncodeHelper
-          .javaStringToHtmlString(userObject.getFirstName())%>
-      </td>
+      <td class="txtlibform"><%=resource.getString("GML.surname") %> :</td>
+      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%></td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("GML.eMail") %> :</td>
-      <td align=left valign="baseline"><%=EncodeHelper
-          .javaStringToHtmlString(userObject.geteMail())%>
-      </td>
+      <td class="txtlibform"><%=resource.getString("GML.eMail") %> :</td>
+      <td><%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%></td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("JDP.userRights") %> :</td>
-      <td align=left valign="baseline">
+      <td class="txtlibform"><%=resource.getString("JDP.userRights") %> :</td>
+      <td>
         <%
           switch (userObject.getAccessLevel()) {
             case ADMINISTRATOR:
@@ -154,20 +143,18 @@
       </td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("JDP.userState") %> :</td>
-      <td align=left valign="baseline">
+      <td class="txtlibform"><%=resource.getString("JDP.userState") %> :</td>
+      <td>
         <fmt:message key="GML.user.account.state.${userObject.state.name}"/>
       </td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("GML.login") %> :</td>
-      <td align="left" valign="baseline"><%=EncodeHelper
-          .javaStringToHtmlString(userObject.getLogin())%>
-      </td>
+      <td class="txtlibform"><%=resource.getString("GML.login") %> :</td>
+      <td><%=EncodeHelper.javaStringToHtmlString(userObject.getLogin())%></td>
     </tr>
     <tr>
-      <td class="textePetitBold"><%=resource.getString("JDP.silverPassword") %> :</td>
-      <td align="left" valign="baseline">
+      <td class="txtlibform"><%=resource.getString("JDP.silverPassword") %> :</td>
+      <td>
         <%
           if (userObject.isPasswordAvailable() && userObject.isPasswordValid()) {
             out.print(resource.getString("GML.yes"));
@@ -186,11 +173,11 @@
         if (!property.startsWith("password")) {
     %>
     <tr>
-      <td class="textePetitBold">
+      <td class="txtlibform">
         <%=userObject.getSpecificLabel(resource.getLanguage(), property)%> :
       </td>
 
-      <td align="left" valign="baseline">
+      <td>
         <%
           if ("STRING".equals(userObject.getPropertyType(property)) ||
               "USERID".equals(userObject.getPropertyType(property))) {
@@ -218,13 +205,9 @@
     %>
 
   </table>
-  <%
-    out.println(board.printAfter());
-  %>
-  <br>
-</div>
+  </view:board>
+  </view:frame>
 <%
-  out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
 </body>

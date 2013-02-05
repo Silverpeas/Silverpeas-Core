@@ -44,6 +44,7 @@ public class JobDomainSettings {
   public static boolean m_UserAddingAllowedForGroupManagers = false;
   public static boolean m_UseCommunityManagement = false;
   public static boolean usersInDomainQuotaActivated = false;
+  public static boolean lastConnectionColumnEnabled = true;
 
   static {
     ResourceLocator rs = new ResourceLocator(
@@ -55,6 +56,7 @@ public class JobDomainSettings {
     m_UserAddingAllowedForGroupManagers = rs.getBoolean("UserAddingAllowedForGroupManagers", false);
     m_UseCommunityManagement = rs.getBoolean("UseCommunityManagement", false);
     usersInDomainQuotaActivated = rs.getBoolean("quota.domain.users.activated", false);
+    lastConnectionColumnEnabled = rs.getBoolean("domain.users.columns.lastconnection", true);
   }
 
   static public void sortGroups(Group[] toSort) {

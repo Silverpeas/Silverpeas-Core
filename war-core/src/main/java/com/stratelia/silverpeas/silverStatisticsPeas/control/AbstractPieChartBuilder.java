@@ -32,7 +32,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.jCharts.nonAxisChart.PieChart2D;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import java.util.ArrayList;
 import java.util.Collection;
