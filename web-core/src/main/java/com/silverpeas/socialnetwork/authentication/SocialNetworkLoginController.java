@@ -92,7 +92,7 @@ public class SocialNetworkLoginController extends HttpServlet {
       ServletException {
     String command = req.getParameter("command");
 
-    // First step, check Linked authentication
+    // First step, isUserStateValid Linked authentication
     if (command == null) {
       SocialNetworkID networkId = SocialNetworkID.valueOf(req.getParameter("networkId"));
       String authenticateURL = getAuthenticateURL(networkId, req);
