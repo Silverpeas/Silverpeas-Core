@@ -37,7 +37,7 @@
 %>
 <%@ page import="com.silverpeas.util.i18n.I18NHelper" %>
 <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="java.util.Iterator" %>
 <%
   //initialisation des variables

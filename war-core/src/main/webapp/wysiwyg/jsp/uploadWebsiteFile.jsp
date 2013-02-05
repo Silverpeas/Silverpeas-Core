@@ -41,16 +41,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.File"%>
 <%@ include file="checkScc.jsp" %>
 
-<% 
+<%
 	String language = request.getParameter("Language");
 	String thePath = request.getParameter("Path");
-	
+
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+    ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 
     //Le cadre
     Board board = gef.getBoard();
-		
+
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
     if (FileUploadUtil.isRequestMultipart(request))
@@ -61,9 +61,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		  	String fichierName = FileUploadUtil.getFileName(fileItem);
 		  	File fichier = new File(thePath, fichierName);
 		  	FileUploadUtil.saveToFile(fichier, fileItem);
-		  	
+
 		  	String urlPath = thePath.substring(thePath.indexOf("/website"));
-		  	
+
 		  	%>
 			<script language="javascript">
 				window.opener.document.getElementById('txtUrl').value='<%=EncodeHelper.javaStringToJsString(urlPath+'/'+fichierName)%>';
@@ -86,24 +86,24 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		    }
 		    return true;
 	     }
-	    function B_VALIDER_ONCLICK() {                  
+	    function B_VALIDER_ONCLICK() {
 	        if (checkString(document.descriptionFile.fichier, "<%=message.getString("ErreurmPrefix")+message.getString("FichierUpload")+message.getString("ErreurmSuffix")%>")) {
 	            var file = document.descriptionFile.fichier.value;
 	            var indexPoint = file.lastIndexOf(".");
 	            var ext = file.substring(indexPoint + 1);
-	            if (ext.toLowerCase() != "gif" && ext.toLowerCase()!= "jpg" && 
-	        		ext.toLowerCase() != "bmp" && ext.toLowerCase() != "png" && 
-	        		ext.toLowerCase() != "pcd" && ext.toLowerCase() != "tga" && 
+	            if (ext.toLowerCase() != "gif" && ext.toLowerCase()!= "jpg" &&
+	        		ext.toLowerCase() != "bmp" && ext.toLowerCase() != "png" &&
+	        		ext.toLowerCase() != "pcd" && ext.toLowerCase() != "tga" &&
 	        		ext.toLowerCase() != "tif" && ext.toLowerCase() != "swf")
-	            { 
+	            {
 	            	alert("<%=message.getString("ErreurFichierUpload")%>");
 	            }
 	            else if (!isCorrect(file))
 	            {
 		        	// verif caract�res speciaux contenus dans le nom du fichier
 	            	alert("<%=message.getString("NameFile")%> <%=message.getString("MustNotContainSpecialChar")%>\n<%=EncodeHelper.javaStringToJsString(message.getString("Char7"))%>\n");
-	            }	        
-	            else 
+	            }
+	            else
 		        {
 	            	document.descriptionFile.submit();
 	            }
@@ -114,24 +114,24 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% out.println(board.printBefore()); %>
 
 	  <form name="descriptionFile" action="uploadFile.jsp" method="post" enctype="multipart/form-data">
-		<table>      
+		<table>
 	    <tr>
 	        <td class="txtlibform"><%=message.getString("FichierUpload")%> : </td>
 	        <td valign="top">&nbsp;<input type="file" name="fichier" size="50"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/></td>
 	    </tr>
-        <tr> 
+        <tr>
             <td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5" alt=""/> : <%=message.getString("RequiredField")%>)</td>
         </tr>
         </table>
 	</form>
   <%
   out.println(board.printAfter());
-    
+
 	//fin du code
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = (Button) gef.getFormButton(message.getString("Valider"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
-          
+
   String bodyPart ="<center><br/>";
   bodyPart += buttonPane.print();
   bodyPart +="</center>";

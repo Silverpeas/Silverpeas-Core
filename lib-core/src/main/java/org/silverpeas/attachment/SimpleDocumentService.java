@@ -330,7 +330,7 @@ public class SimpleDocumentService implements AttachmentService {
     Session session = null;
     try {
       session = BasicDaoFactory.getSystemSession();
-      if (StringUtil.isDefined(primaryKey.getId())) {
+      if (StringUtil.isDefined(primaryKey.getId()) && ! StringUtil.isLong(primaryKey.getId())) {
         return repository.findDocumentById(session, primaryKey, lang);
       }
       SimpleDocument doc = repository.findDocumentByOldSilverpeasId(session, primaryKey

@@ -32,7 +32,7 @@ package com.stratelia.webactiv.publication;
 
 import com.silverpeas.admin.components.InstanciationException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygInstanciator;
+import org.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;

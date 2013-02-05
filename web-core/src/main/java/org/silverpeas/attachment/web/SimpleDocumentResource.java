@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -62,11 +63,11 @@ import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
 import com.silverpeas.web.UserPriviledgeValidation;
-
 
 @Service
 @RequestScoped
@@ -173,11 +174,20 @@ public class SimpleDocumentResource extends RESTWebService {
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService()
+          .updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+      if (document.isVersioned()) {
+        File content = new File(document.getAttachmentPath());
+        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), getUserDetail()
+            .getId(), document.getLanguage());
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true,
+            true);
+      } else {
+        AttachmentServiceFactory.getAttachmentService().updateAttachment(document, true, true);
+      }
     }
     UnlockContext unlockContext = new UnlockContext(document.getId(), getUserDetail().getId(),
         lang, comment);
@@ -270,8 +280,6 @@ public class SimpleDocumentResource extends RESTWebService {
 
   /**
    * Lock the specified document for exclusive edition.
-   *
-   * @param language
    * @return JSON status to true if the document was locked successfully - JSON status to false
    * otherwise..
    */
@@ -288,9 +296,57 @@ public class SimpleDocumentResource extends RESTWebService {
         getUserDetail().getId(), I18NHelper.defaultLanguage);
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
+  
+  /**
+   * Move the specified document up in the list.
+   *
+   * @param language
+   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * otherwise..
+   */
+  @PUT
+  @Path("moveUp")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String moveSimpleDocumentUp() {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    if (document == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+        new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
+    int position = docs.indexOf(document);
+    Collections.swap(docs, position, position - 1);
+    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
+    return MessageFormat.format("'{'\"status\":{0}}", true);
+  }
+  
+  /**
+   * Move the specified document down in the list.
+   *
+   * @param language
+   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * otherwise..
+   */
+  @PUT
+  @Path("moveDown")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String moveSimpleDocumentDown() {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    if (document == null) {
+      throw new WebApplicationException(Status.NOT_FOUND);
+    }
+    List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKey(
+        new ForeignPK(document.getForeignId(), componentId), I18NHelper.defaultLanguage);
+    int position = docs.indexOf(document);
+    Collections.swap(docs, position, position + 1);
+    AttachmentServiceFactory.getAttachmentService().reorderDocuments(docs);
+    return MessageFormat.format("'{'\"status\":{0}}", true);
+  }
 
   /**
-   * Lock the specified document for exclusive edition.
+   * Unlock the specified document for exclusive edition.
    *
    * @param force
    * @param webdav

@@ -110,6 +110,7 @@ public class IconWA extends AbstractIcon {
 
     if (StringUtil.isDefined(alt)) {
       str.append(" alt=\"").append(alt).append("\"");
+      str.append(" title=\"").append(alt).append("\"");
     } else {
       str.append(" alt=\"\"");
     }

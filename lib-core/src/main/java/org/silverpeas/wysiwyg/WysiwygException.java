@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.silverpeas.wysiwyg;
+package org.silverpeas.wysiwyg;
 
 import com.stratelia.webactiv.util.exception.*;
 

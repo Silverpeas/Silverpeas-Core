@@ -49,8 +49,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.*"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
 <%@ include file="checkScc.jsp" %>
@@ -95,11 +95,11 @@ if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   imagesContext = DocumentType.image.toString();
   url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
- 
+
 ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

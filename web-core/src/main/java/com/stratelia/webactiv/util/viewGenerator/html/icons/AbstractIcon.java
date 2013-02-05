@@ -24,32 +24,6 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
-/*
- * CVS Informations
- * 
- * $Id: AbstractIcon.java,v 1.3 2004/06/24 17:16:38 neysseri Exp $
- * 
- * $Log: AbstractIcon.java,v $
- * Revision 1.3  2004/06/24 17:16:38  neysseri
- * nettoyage eclipse
- *
- * Revision 1.2  2003/12/03 19:18:37  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:48:19  nchaix
- * no message
- *
- * Revision 1.3  2002/01/04 14:04:24  mmarengo
- * Stabilisation Lot 2
- * SilverTrace
- * Exception
- *
- */
-
-/**
- * Class declaration
- * @author
- */
 public abstract class AbstractIcon implements Icon {
 
   public String iconName;
@@ -120,6 +94,7 @@ public abstract class AbstractIcon implements Icon {
    * @param altText
    * @see
    */
+  @Override
   public void setProperties(String iconName, String altText) {
     this.iconName = iconName;
     this.altText = altText;
@@ -132,6 +107,7 @@ public abstract class AbstractIcon implements Icon {
    * @param action
    * @see
    */
+  @Override
   public void setProperties(String iconName, String altText, String action) {
     this.iconName = iconName;
     this.altText = altText;
@@ -146,6 +122,7 @@ public abstract class AbstractIcon implements Icon {
    * @param imagePath
    * @see
    */
+  @Override
   public void setProperties(String iconName, String altText, String action,
       String imagePath) {
     this.iconName = iconName;
@@ -159,6 +136,7 @@ public abstract class AbstractIcon implements Icon {
    * @param s
    * @see
    */
+  @Override
   public void setRootImagePath(String s) {
     m_RootImagePath = s;
     if (!m_RootImagePath.endsWith("/")) // should use URL separator
@@ -211,11 +189,4 @@ public abstract class AbstractIcon implements Icon {
   public String getRootImagePath() {
     return this.m_RootImagePath;
   }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public abstract String print();
 }
