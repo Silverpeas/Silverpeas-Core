@@ -19,7 +19,7 @@ CREATE TABLE DomainSP_User (
 	position	varchar (100) NULL ,
 	boss		varchar (100) NULL ,
 	login		varchar (50) NOT NULL ,
-	password	varchar (32) NULL ,
+	password	varchar (123) NULL ,
 	passwordValid	char (1) DEFAULT ('Y') NOT NULL ,
 	loginMail	varchar (100) NULL ,
 	email		varchar (100) NULL 

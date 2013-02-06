@@ -222,9 +222,8 @@
 
         <p><label><span><%=authenticationBundle.getString("authentication.logon.password") %></span><input type="password" name="Password" id="Password" onkeydown="checkSubmit(event)"/></label>
         </p>
-
         <% if (!multipleDomains) { %>
-        <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+        <input class="noDisplay" type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/>
         <% } else { %>
         <p><label><span><fmt:message key="authentication.logon.domain"/></span>
           <select id="DomainId" name="DomainId" size="1">

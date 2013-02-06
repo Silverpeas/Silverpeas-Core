@@ -267,9 +267,9 @@ public class ConnectionDAO {
   }
 
   /**
-   * return the crypt String corresponding to the string cryptedString
+   * return the encrypt String corresponding to the string cryptedString
    * @param cryptedString : String
-   * @return the crypt string : byte[]
+   * @return the encrypt string : byte[]
    * @throws CryptageException
    */
   private static byte[] getCryptString(String cryptedString) throws CryptageException {
@@ -278,7 +278,7 @@ public class ConnectionDAO {
   }
 
   /**
-   * return the uncrypt string corresponding to the crypt string cipherText
+   * return the uncrypt string corresponding to the encrypt string cipherText
    * @param cipherText : byte[]
    * @return the uncrypt string : String
    * @throws CryptageException

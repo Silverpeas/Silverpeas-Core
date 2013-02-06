@@ -1,6 +1,6 @@
-insert into calendarCategory(categoryId, name) values (1, 'Réunion')
+insert into calendarCategory(categoryId, name) values (1, 'RÃ©union')
 GO
-insert into calendarCategory(categoryId, name) values (2, 'Déplacement')
+insert into calendarCategory(categoryId, name) values (2, 'DÃ©placement')
 GO
 insert into calendarCategory(categoryId, name) values (3, 'Vacances')
 GO

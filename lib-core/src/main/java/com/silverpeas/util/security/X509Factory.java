@@ -37,9 +37,9 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
+import org.silverpeas.authentication.encryption.UnixDESEncryption;
 import net.sourceforge.jcetaglib.lib.X509Cert;
 
-import com.stratelia.silverpeas.util.jcrypt;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -129,8 +129,8 @@ public class X509Factory {
 
     // Build P12 file
     String p12File = p12Dir + login + "_" + domainId + ".p12";
-
-    String password = jcrypt.crypt(p12Salt, login);
+    UnixDESEncryption desEncryption = new UnixDESEncryption();
+    String password = desEncryption.encrypt(login, p12Salt.getBytes());
 
     try {
       X509Cert.saveAsP12(myCert, null, privateKey, p12File, alias,

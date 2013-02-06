@@ -1,0 +1,1 @@
+ALTER TABLE DomainSP_User MODIFY (password varchar(123));

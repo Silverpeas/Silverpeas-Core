@@ -123,7 +123,7 @@
       </p>
       <fieldset>
         <pre>
-          autServer0.type=com.stratelia.silverpeas.authentication.AuthenticationCAS
+          autServer0.type=org.silverpeas.authentication.AuthenticationCAS
           autServer0.enabled=true
           autServer0.SQLJDBCUrl=jdbc:postgresql://localhost:5432/SilverpeasV5
           autServer0.SQLAccessLogin=postgres

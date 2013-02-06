@@ -30,14 +30,17 @@ import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 
 public class AuthenticationBmEJB implements SessionBean {
 
   public String authenticate(String login, String password, String domainId) {
-    LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-
-    String authenticationKey = lpAuth.authenticate(login, password, domainId, null);
+    AuthenticationService authenticator = new AuthenticationService();
+    AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(login)
+        .withAsPassword(password)
+        .withAsDomainId(domainId);
+    String authenticationKey = authenticator.authenticate(credential);
 
     return authenticationKey;
   }

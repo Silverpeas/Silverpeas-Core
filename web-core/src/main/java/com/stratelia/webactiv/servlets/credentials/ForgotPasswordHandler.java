@@ -24,24 +24,24 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.Domain;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 /**
  * @author ehugonnet
  */
 public class ForgotPasswordHandler extends FunctionHandler {
 
-  private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+  private static AuthenticationService authenticator = new AuthenticationService();
   private ForgottenPasswordMailManager forgottenPasswordMailManager =
       new ForgottenPasswordMailManager();
 
@@ -49,18 +49,18 @@ public class ForgotPasswordHandler extends FunctionHandler {
   public String doAction(HttpServletRequest request) {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
-    String userId = null;
+    String userId;
     try {
       userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
     } catch (AdminException e) {
       // Login incorrect.
       request.setAttribute("login", login);
 
-      Map<String, String> domains = lpAuth.getAllDomains();
+      List<Domain> domains = authenticator.getAllDomains();
       String domain = "";
-      for (Entry<String, String> entry : domains.entrySet()) {
-        if (entry.getKey().equals(domainId)) {
-          domain = entry.getValue();
+      for (Domain aDomain: domains) {
+        if (aDomain.getId().equals(domainId)) {
+          domain = aDomain.getName();
         }
       }
       request.setAttribute("domain", domain);
@@ -68,10 +68,10 @@ public class ForgotPasswordHandler extends FunctionHandler {
     }
 
     try {
-      if (lpAuth.isPasswordChangeAllowed(domainId)) {
-        String authenticationKey = null;
+      if (authenticator.isPasswordChangeAllowed(domainId)) {
+        String authenticationKey;
         try {
-          authenticationKey = lpAuth.getAuthenticationKey(login, domainId);
+          authenticationKey = authenticator.getAuthenticationKey(login, domainId);
         } catch (AuthenticationException e) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.forgotPasswordHandler.doAction()",

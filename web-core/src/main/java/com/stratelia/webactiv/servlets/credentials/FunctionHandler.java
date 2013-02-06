@@ -26,9 +26,9 @@ package com.stratelia.webactiv.servlets.credentials;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
