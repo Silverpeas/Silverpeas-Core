@@ -184,10 +184,10 @@ CREATE TABLE DomainSP_User (
 	position	varchar (100) NULL ,
 	boss		varchar (100) NULL ,
 	login		varchar (50) NOT NULL ,
-	password	varchar (32) NULL ,
+	password	varchar (123) NULL ,
 	passwordValid	char (1) DEFAULT ('Y') NOT NULL ,
 	loginMail	varchar (100) NULL ,
-	email		varchar (100) NULL
+	email		varchar (100) NULL 
 );
 
 CREATE TABLE DomainSP_Group_User_Rel (
@@ -202,8 +202,8 @@ CREATE TABLE ST_Domain (
 	propFileName		varchar (100) NOT NULL ,
 	className		varchar (100) NOT NULL ,
 	authenticationServer	varchar (100) NOT NULL ,
-    theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
-    silverpeasServerURL     varchar (400) NULL
+  theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
+  silverpeasServerURL     varchar (400) NULL
 );
 
 CREATE TABLE ST_KeyStore (

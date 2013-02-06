@@ -25,19 +25,18 @@
 package com.stratelia.webactiv.servlets;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import com.stratelia.webactiv.servlets.credentials.*;
-
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.authentication.AuthenticationException;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)

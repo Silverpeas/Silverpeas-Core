@@ -42,7 +42,7 @@
     <init>
       <file name="postgres\busCore\030\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
       <file name="postgres\busCore\030\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
-      <file name="java\dbBuilder_ep.jar" type="javalib" classname="org.silverpeas.dbbuilder_ep.DbBuilder_ep" methodname="run"/>
+      <file name="java\passwordencryption.jar" type="javalib" classname="org.silverpeas.passwordencryption.UserPasswordEncryption" methodname="run"/>
     </init>
     <drop_table>
       <file name="postgres\busCore\030\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
@@ -235,8 +235,11 @@
 
   <upgrade version="029">
     <create_table>
+      <file name="postgres\busCore\up029\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
       <file name="postgres\busCore\up029\alter_table_init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
+    <create_table>
+      <file name="passwordTypeModification.jar" type="javalib" classname="org.silverpeas.migration.sqldomain.PasswordSizeIncrease" methodname="migrate"/>
+    </create_table>
   </upgrade>
-
 </contribution>

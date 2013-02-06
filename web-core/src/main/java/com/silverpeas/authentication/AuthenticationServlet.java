@@ -25,16 +25,18 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
-import com.stratelia.silverpeas.authentication.EncryptionFactory;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import org.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -44,55 +46,58 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * The class AuthenticationServlet is called to authenticate user in Silverpeas.
+ * This servlet listens for incoming authentication requests for Silverpeas.
+ *
+ * This servlet delegates the authentication process and the HTTP session opening in Silverpeas to
+ * the corresponding services. If the authentication and the session opening succeed, the user behind
+ * the authentication ask is redirected to its user home page. Otherwise, he's redirected to an
+ * authentication failure page (that can the login page enriched with an error message).
  */
 public class AuthenticationServlet extends HttpServlet {
 
-  private static LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+  private static AuthenticationService authService = new AuthenticationService();
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final AuthenticationService AUTHENTICATION_SERVICE = new AuthenticationService();
+  private static final SilverpeasSessionOpenener silverpeasSessionOpener = new SilverpeasSessionOpenener();
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
 
   /**
-   * Method invoked when called from a form or directly by URL
+   * Ask for an authentication for the user behind the incoming HTTP request from a form.
    * @param request the HTTP request.
    * @param response the HTTP response.
-   * @throws IOException when an error occurs while recieving the request or sending the response.
+   * @throws IOException when an error occurs while processing the request or sending the response.
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
-    // Get the session
-    HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding("UTF-8");
     }
-    if (AUTHENTICATION_SERVICE.isAnonymousUser(request)) {
-      AUTHENTICATION_SERVICE.unauthenticate(request);
+    if (silverpeasSessionOpener.isAnonymousUser(request)) {
+      silverpeasSessionOpener.closeSession(request);
     }
 
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
         "com.silverpeas.authentication.settings.authenticationSettings", "");
+    HttpSession session = request.getSession();
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
-    IdentificationParameters identificationParameters = new IdentificationParameters(session,
-        request);
-    session.setAttribute("Silverpeas_pwdForHyperlink", identificationParameters.getClearPassword());
+    AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
+    session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
     String sDomainId = getDomain(request, authenticationSettings,
-        identificationParameters.isCasMode());
+        authenticationParameters.isCasMode());
 
-    String authenticationKey = identify(request, identificationParameters, sDomainId);
+    String authenticationKey = authenticate(request, authenticationParameters, sDomainId);
     String url;
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
       if (sDomainId != null) {
         storeDomain(response, sDomainId);
       }
-      storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
+      storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
 
       // if required by user, store password in cookie
-      storePassword(response, identificationParameters.getStoredPassword(), isNewEncryptMode,
-          identificationParameters.getClearPassword());
+      storePassword(response, authenticationParameters.getStoredPassword(), isNewEncryptMode,
+          authenticationParameters.getClearPassword());
 
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
@@ -100,7 +105,7 @@ public class AuthenticationServlet extends HttpServlet {
         dispatcher.forward(request, response);
         return;
       }
-      String absoluteUrl = AUTHENTICATION_SERVICE.authenticate(request, authenticationKey);
+      String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
 
       final Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
       sessionCookie.setMaxAge(-1);
@@ -112,32 +117,32 @@ public class AuthenticationServlet extends HttpServlet {
     }
     // Authentication failed : remove password from cookies to avoid infinite loop
     removeStoredPassword(response);
-    if (identificationParameters.isCasMode()) {
+    if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       if("Error_1".equals(authenticationKey)) {
         url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
       }
-      else if(LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)){
+      else if(AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)){
           String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
           if(StringUtil.getBooleanValue(allowPasswordChange)){
             ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-            url = settings.getString("passwordExpiredURL")+"?login="+identificationParameters.getLogin()+"&domainId="+sDomainId;
+            url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
           } else {
-            url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+            url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
           }
       }
-      else if(LoginPasswordAuthentication.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)){
+      else if(AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(authenticationKey)){
         String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
         if(StringUtil.getBooleanValue(allowPasswordChange)){
           ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-          url = settings.getString("passwordExpiredURL")+"?login="+identificationParameters.getLogin()+"&domainId="+sDomainId;
+          url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
         } else {
-          url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
+          url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
       }
       else if(AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
-        storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
+        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
         url = AuthenticationUserStateChecker.getErrorDestination();
       }
       else {
@@ -154,15 +159,15 @@ public class AuthenticationServlet extends HttpServlet {
       SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
           "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
-        writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
+        writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().encode(
             sDecodedPassword), -1);
-        writeCookie(response, "var2", EncryptionFactory.getInstance().getEncryption().encode(
+        writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().encode(
             sDecodedPassword), 31536000);
       } else {
-        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
+        writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().getEncryption()
             .encode(
             sDecodedPassword), -1);
-        writeCookie(response, "svpPassword", EncryptionFactory.getInstance().getEncryption()
+        writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().getEncryption()
             .encode(
             sDecodedPassword), 31536000);
       }
@@ -176,9 +181,9 @@ public class AuthenticationServlet extends HttpServlet {
 
   private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin) {
     if (newEncryptMode) {
-      writeCookie(response, "var1", EncryptionFactory.getInstance().getEncryption().encode(sLogin),
+      writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().encode(sLogin),
           -1);
-      writeCookie(response, "var1", EncryptionFactory.getInstance().getEncryption().encode(sLogin),
+      writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().encode(sLogin),
           31536000);
     } else {
       writeCookie(response, "svpLogin", sLogin, -1);
@@ -200,25 +205,33 @@ public class AuthenticationServlet extends HttpServlet {
     return sDomainId;
   }
 
-  private String identify(HttpServletRequest request,
-      IdentificationParameters identificationParameters, String sDomainId) {
-    String testKey = request.getParameter("TestKey");
-    if (!StringUtil.isDefined(testKey)) {
-      if (identificationParameters.isCasMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), sDomainId);
-      } else if (identificationParameters.isSocialNetworkMode()) {
-        return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters
-            .getDomainId());
+  private String authenticate(HttpServletRequest request,
+                              AuthenticationParameters authenticationParameters, String sDomainId) {
+    String key = request.getParameter("TestKey");
+    if (!StringUtil.isDefined(key)) {
+      AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin());
+      if (authenticationParameters.isCasMode()) {
+        key = authService.authenticate(credential.withAsDomainId(sDomainId));
+      } else if (authenticationParameters.isSocialNetworkMode()) {
+        key = authService.authenticate(credential.withAsDomainId(authenticationParameters.getDomainId()));
+      } else {
+        key = authService.authenticate(credential
+            .withAsPassword(authenticationParameters.getClearPassword())
+            .withAsDomainId(sDomainId));
       }
-      return lpAuth.authenticate(identificationParameters.getLogin(), identificationParameters.
-          getClearPassword(),
-          sDomainId, request);
+      HttpSession session = request.getSession();
+      for(Map.Entry<String, Object> capability: credential.getCapabilities().entrySet()) {
+        session.setAttribute(capability.getKey(), capability.getValue());
+      }
+
+      return key;
     }
     return null;
   }
 
   /**
-   * Method invoked when called from a form or directly by URL.
+   * Ask for an authentication for the user behind the incoming HTTP request.
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws ServletException if the servlet fails to answer the request.

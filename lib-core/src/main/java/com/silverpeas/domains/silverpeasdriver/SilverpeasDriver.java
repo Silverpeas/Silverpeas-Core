@@ -25,9 +25,8 @@
 package com.silverpeas.domains.silverpeasdriver;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
-import com.silverpeas.util.cryptage.UnixMD5Crypt;
-import com.stratelia.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.DomainProperty;
@@ -59,7 +58,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   private SPUserDao userDao;
   @Inject
   private SPGroupDao groupDao;
-  private String passwordEncryption = null;
 
   /**
    * Constructor
@@ -74,7 +72,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    */
   @Override
   public void initFromProperties(ResourceLocator rs) throws Exception {
-    passwordEncryption = rs.getString("database.SQLPasswordEncryption");
   }
 
   @Override
@@ -158,15 +155,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
 
     // Only update password when this field has been filled
     if (StringUtil.isDefined(userFull.getPassword())) {
-      if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption)
-          && !userFull.getPassword().equals(oldUser.getPassword())) {
-        oldUser.setPassword(UnixMD5Crypt.crypt(userFull.getPassword()));
-      } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)
-          && !userFull.getPassword().equals(oldUser.getPassword())) {
-        oldUser.setPassword(CryptMD5.crypt(userFull.getPassword()));
-      } else {
-        oldUser.setPassword(userFull.getPassword());
-      }
+       oldUser.setPassword(encrypt(userFull.getPassword()));
     }
     oldUser.setPasswordValid(userFull.isPasswordValid());
     this.userDao.saveAndFlush(oldUser);
@@ -552,13 +541,9 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   private String encrypt(String password) {
-    if (Authentication.ENC_TYPE_UNIX.equals(passwordEncryption) ) {
-      return UnixMD5Crypt.crypt(password);
-    } else if (Authentication.ENC_TYPE_MD5.equals(passwordEncryption)) {
-      return CryptMD5.crypt(password);
-    } else {
-      return password;
-    }
+    PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+    PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+    return encryption.encrypt(password);
   }
 
   @Override
