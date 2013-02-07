@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 
 import com.silverpeas.look.LookHelper;
@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
@@ -115,7 +114,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     // Verify user state
     try {
-      AuthenticationUserStateChecker.verify(mainSessionCtrl.getCurrentUserDetail());
+      AuthenticationUserVerifier.userState(mainSessionCtrl.getCurrentUserDetail()).verify();
     } catch (AuthenticationException e) {
       return GeneralPropertiesManager.getString("sessionTimeout");
     }

@@ -41,7 +41,7 @@ import javax.servlet.http.HttpSession;
  * Navigation case : user has committed change password form.
  * @author ehugonnet
  */
-public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHandler {
+public class EffectiveChangePasswordBeforeExpirationHandler extends ChangePasswordFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -58,9 +58,8 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
     String passwordChangeURL =
         settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
 
+    UserDetail ud = controller.getCurrentUserDetail();
     try {
-      String userId = controller.getUserId();
-      UserDetail ud = AdminReference.getAdminService().getUserDetail(userId);
       String login = ud.getLogin();
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
@@ -77,13 +76,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
     } catch (AuthenticationException e) {
       SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
           "peasCore.EX_USER_KEY_NOT_FOUND", e);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
-      return passwordChangeURL;
-    } catch (AdminException e) {
-      SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", e);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
-      return passwordChangeURL;
+      return performUrlChangePasswordError(request, passwordChangeURL, ud);
     }
   }
 }

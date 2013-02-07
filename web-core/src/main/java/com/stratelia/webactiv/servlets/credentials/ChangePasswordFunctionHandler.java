@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,35 +21,41 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
- * Navigation case : force user to change his password.
- * @author ehugonnet
+ * User: Yohann Chastagnier
+ * Date: 06/02/13
  */
-public class ForcePasswordChangeHandler extends FunctionHandler {
+public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunctionHandler {
 
-  @Override
-  public String doAction(HttpServletRequest request) {
-    HttpSession session = request.getSession(true);
-    String key = (String) session.getAttribute("svplogin_Key");
-    try {
-      String userId = getAdmin().authenticate(key, session.getId(), false, false);
-      UserDetail ud = getAdmin().getUserDetail(userId);
-      request.setAttribute("userDetail", ud);
-      return getGeneral().getString("userLoginForcePasswordChangePage");
-    } catch (AdminException e) {
-      // Error : go back to login page
-      SilverTrace.error("peasCore", "forcePasswordChangeHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
-      return "/Login.jsp";
-    }
+  /**
+   * Handle bad credential error.
+   * @param request
+   * @param originalUrl
+   * @return destination url
+   */
+  protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
+      String login, String domainId) {
+    return performUrlOnBadCredentialError(request, originalUrl,
+        AuthenticationUserVerifier.userConnectionAttempts(login, domainId), "badCredentials");
+  }
+
+  /**
+   * Handle bad credential error.
+   * @param request
+   * @param originalUrl
+   * @param user
+   * @return destination url
+   */
+  protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
+      UserDetail user) {
+    return performUrlOnBadCredentialError(request, originalUrl,
+        AuthenticationUserVerifier.userConnectionAttempts(user), "badCredentials");
   }
 }

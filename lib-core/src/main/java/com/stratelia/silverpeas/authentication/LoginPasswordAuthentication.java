@@ -31,6 +31,10 @@
 package com.stratelia.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
+import com.stratelia.silverpeas.authentication.verifier.exception
+    .AuthenticationUserAccountBlockedException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -216,11 +220,11 @@ public class LoginPasswordAuthentication {
             (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
       }
 
+      // Verify user state
+      AuthenticationUserVerifier.userState(login, domainId).verify();
+
       // Authentification test
       authenticationServer.authenticate(login, password, request);
-
-      // Verify user state
-      AuthenticationUserStateChecker.verify(login, domainId);
 
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
@@ -248,7 +252,7 @@ public class LoginPasswordAuthentication {
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED;
+        errorCause = AuthenticationUserStateVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -333,7 +337,7 @@ public class LoginPasswordAuthentication {
     }
 
     // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
+    AuthenticationUserVerifier.userState(login, domainId).verify();
 
     Connection m_Connection = null;
     try {
@@ -453,7 +457,7 @@ public class LoginPasswordAuthentication {
     }
 
     // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
+    AuthenticationUserVerifier.userState(login, domainId).verify();
 
     Connection connection = null;
 

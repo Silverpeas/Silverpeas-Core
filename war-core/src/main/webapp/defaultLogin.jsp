@@ -200,12 +200,15 @@
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
             <c:choose>
               <c:when test="${!empty param.ErrorCode && '4' != param.ErrorCode && 'null' != param.ErrorCode}">
-                <c:set var="erroMessageKey">authentication.logon.<c:out value="${param.ErrorCode}"/></c:set>
-                <span><fmt:message key="${erroMessageKey}"/></span>
-              </c:when><c:otherwise>
-              <fmt:message key="authentication.logon.subtitle"/>
-            </c:otherwise>
+                <span><fmt:message key="authentication.logon.${param.ErrorCode}"/></span>
+              </c:when>
+              <c:otherwise>
+                <fmt:message key="authentication.logon.subtitle"/>
+              </c:otherwise>
             </c:choose>
+            <c:if test="${not empty sessionScope.WarningMessage}">
+              <br/><span><c:out value="${sessionScope.WarningMessage}"/></span>
+            </c:if>
           </div>
           <div class="clear"></div>
         </div>

@@ -26,9 +26,14 @@ package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.Authentication;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
 import com.stratelia.silverpeas.authentication.EncryptionFactory;
 import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import com.stratelia.silverpeas.authentication.verifier
+    .AuthenticationUserConnectionAttemptsVerifier;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
+import com.stratelia.silverpeas.authentication.verifier.exception
+    .AuthenticationNoMoreUserConnectionAttemptException;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -84,7 +89,18 @@ public class AuthenticationServlet extends HttpServlet {
 
     String authenticationKey = identify(request, identificationParameters, sDomainId);
     String url;
+
+    // User connection attempt verifier.
+    AuthenticationUserConnectionAttemptsVerifier userConnectionAttemptsVerifier =
+        AuthenticationUserVerifier.userConnectionAttempts(identificationParameters.getLogin(),
+            identificationParameters.getDomainId());
+    userConnectionAttemptsVerifier.clearSession(request);
+
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
+
+      // Clearing user connection attempt cache.
+      userConnectionAttemptsVerifier.clearCache();
+
       if (sDomainId != null) {
         storeDomain(response, sDomainId);
       }
@@ -116,7 +132,15 @@ public class AuthenticationServlet extends HttpServlet {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       if("Error_1".equals(authenticationKey)) {
-        url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+        try {
+          if (userConnectionAttemptsVerifier.isActivated()) {
+            storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
+          }
+          url = userConnectionAttemptsVerifier.verify()
+              .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
+        } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
+          url = userConnectionAttemptsVerifier.getErrorDestination();
+        }
       }
       else if(LoginPasswordAuthentication.ERROR_PWD_EXPIRED.equals(authenticationKey)){
           String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
@@ -136,9 +160,8 @@ public class AuthenticationServlet extends HttpServlet {
           url = "/Login.jsp?ErrorCode=" + LoginPasswordAuthentication.ERROR_PWD_EXPIRED;
         }
       }
-      else if(AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
-        storeLogin(response, isNewEncryptMode, identificationParameters.getLogin());
-        url = AuthenticationUserStateChecker.getErrorDestination();
+      else if(AuthenticationUserStateVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+        url = handleBlockedUserAccount(response, isNewEncryptMode, identificationParameters);
       }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
@@ -146,6 +169,36 @@ public class AuthenticationServlet extends HttpServlet {
     }
     response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) +
         url));
+  }
+
+
+  /**
+   * Handles blocked user account.
+   * @param response
+   * @param newEncryptMode
+   * @param identificationParameters
+   * @return
+   */
+  private String handleBlockedUserAccount(HttpServletResponse response, boolean newEncryptMode,
+      IdentificationParameters identificationParameters) {
+    return handleBlockedUserAccount(response, newEncryptMode, AuthenticationUserVerifier
+        .userState(identificationParameters.getLogin(), identificationParameters.getDomainId()));
+  }
+
+
+  /**
+   * Handles blocked user account.
+   * @param response
+   * @param newEncryptMode
+   * @param userStateVerifier
+   * @return
+   */
+  private String handleBlockedUserAccount(HttpServletResponse response, boolean newEncryptMode,
+      AuthenticationUserStateVerifier userStateVerifier) {
+    if (userStateVerifier.getUser() != null) {
+      storeLogin(response, newEncryptMode, userStateVerifier.getUser().getLogin());
+    }
+    return userStateVerifier.getErrorDestination();
   }
 
   private void storePassword(HttpServletResponse response, String sStorePassword,

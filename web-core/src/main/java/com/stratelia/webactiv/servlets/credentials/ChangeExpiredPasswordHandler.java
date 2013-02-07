@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user asks to change his expired password.
  * @author ndupont
  */
-public class ChangeExpiredPasswordHandler extends FunctionHandler {
+public class ChangeExpiredPasswordHandler extends ChangePasswordFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -46,15 +46,17 @@ public class ChangeExpiredPasswordHandler extends FunctionHandler {
       // Change password.
       LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
       auth.changePassword(login, oldPassword, newPassword, domainId);
-      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword
-          + "&DomainId=" + domainId;
+      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
+          domainId;
     } catch (AuthenticationException e) {
-        // Error : go back to page
+      // Error : go back to page
       SilverTrace.error("peasCore", "ChangeExpiredPasswordHandler.doAction()",
-          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login,e);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
-      ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-      return settings.getString("passwordExpiredURL")+"?login="+login+"&domainId="+domainId;
+          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);
+      ResourceLocator settings =
+          new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+      return performUrlChangePasswordError(request,
+          settings.getString("passwordExpiredURL") + "?login=" + login + "&domainId=" + domainId,
+          login, domainId);
     }
   }
 }

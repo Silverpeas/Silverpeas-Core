@@ -26,7 +26,9 @@ package com.stratelia.webactiv.servlets;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.servlets.credentials.*;
 
 import javax.servlet.RequestDispatcher;
@@ -93,14 +95,19 @@ public class CredentialsServlet extends HttpServlet {
     if (handler != null) {
 
       // Verify user state
+      UserDetail user = null;
       String login = request.getParameter("Login");
       String domainId = request.getParameter("DomainId");
       String destinationPage = "";
+      AuthenticationUserVerifier.userConnectionAttempts(user).clearSession(request);
       if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+        AuthenticationUserStateVerifier userStateVerifier =
+            AuthenticationUserVerifier.userState(login, domainId);
         try {
-          AuthenticationUserStateChecker.verify(login, domainId);
+          user = userStateVerifier.getUser();
+          userStateVerifier.verify();
         } catch (AuthenticationException e) {
-          destinationPage = AuthenticationUserStateChecker.getErrorDestination();
+          destinationPage = userStateVerifier.getErrorDestination();
         }
       }
 
@@ -109,6 +116,7 @@ public class CredentialsServlet extends HttpServlet {
       }
 
       if (destinationPage.startsWith("http")) {
+        AuthenticationUserVerifier.userConnectionAttempts(user).clearCache();
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
         sessionCookie.setMaxAge(-1);
         sessionCookie.setSecure(false);

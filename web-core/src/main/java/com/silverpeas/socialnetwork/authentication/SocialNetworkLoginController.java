@@ -33,7 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import org.springframework.social.connect.UserProfile;
 
 import com.silverpeas.admin.service.UserService;
@@ -119,12 +120,14 @@ public class SocialNetworkLoginController extends HttpServlet {
 
       // Verify user state
       if (account != null) {
+        AuthenticationUserStateVerifier userStateVerifier =
+            AuthenticationUserVerifier.userState(account.getSilverpeasUserId());
         try {
-          AuthenticationUserStateChecker.verify(account.getSilverpeasUserId());
+          userStateVerifier.verify();
         } catch (AuthenticationException e) {
           SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
-          resp.sendRedirect(URLManager.getFullApplicationURL(req) +
-              AuthenticationUserStateChecker.getErrorDestination());
+          resp.sendRedirect(
+              URLManager.getFullApplicationURL(req) + userStateVerifier.getErrorDestination());
           return;
         }
       }

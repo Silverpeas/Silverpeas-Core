@@ -27,8 +27,7 @@ import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserAccountBlockedException;
-import com.stratelia.silverpeas.authentication.AuthenticationUserStateChecker;
+import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -125,7 +124,7 @@ public class UserPriviledgeValidation {
   private void verifyUserState(SessionInfo userSession) {
     if (userSession != null && userSession.getUserDetail() != null) {
       try {
-        AuthenticationUserStateChecker.verify(userSession.getUserDetail());
+        AuthenticationUserVerifier.userState(userSession.getUserDetail()).verify();
       } catch (AuthenticationException e) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
