@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.servlets;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
 import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.UserDetail;

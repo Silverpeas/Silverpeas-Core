@@ -221,7 +221,7 @@
         </p>
         <c:choose>
           <c:when test="${!pageScope.multipleDomains}">
-            <input class="noDisplay" type="hidden" name="DomainId" value="<%=domainIds.get(0)%>"/>
+            <input class="noDisplay" type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/>
           </c:when>
           <c:when test="${not empty computedDomainId}">
             <input class="noDisplay" type="hidden" name="DomainId" value="${computedDomainId}"/>

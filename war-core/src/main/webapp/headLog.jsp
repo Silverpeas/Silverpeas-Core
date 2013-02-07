@@ -25,7 +25,7 @@
 <%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication" %>
+<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.Domain" %>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
 <%@ page import="java.util.Hashtable" %>
@@ -72,19 +72,16 @@
   boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
   boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
 
-// Get a LoginPasswordAuthentication object
-  LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
+// Get a AuthenticationService object
+AuthenticationService lpAuth = new AuthenticationService();
 
 // list of domains
-// Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
-  Hashtable domains = lpAuth.getAllDomains();
-  List<Domain> listDomains = lpAuth.getListDomains();
-  pageContext.setAttribute("listDomains", listDomains);
-  boolean multipleDomains = listDomains != null && listDomains.size() > 1;
-  pageContext.setAttribute("multipleDomains", multipleDomains);
-  String submitClass = "submitWithOneDomain";
-  if (multipleDomains) {
-    submitClass = "submit";
-  }
-  List<String> domainIds = lpAuth.getDomainsIds();
+List<Domain> listDomains = lpAuth.getAllDomains();
+pageContext.setAttribute("listDomains", listDomains);
+boolean multipleDomains = listDomains != null && listDomains.size() > 1;
+pageContext.setAttribute("multipleDomains", multipleDomains);
+String submitClass = "submitWithOneDomain";
+if (multipleDomains) {
+  submitClass = "submit";
+}
 %>

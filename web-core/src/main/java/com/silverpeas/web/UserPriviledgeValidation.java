@@ -26,24 +26,23 @@ package com.silverpeas.web;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.token.TokenStringKey;
-import org.silverpeas.token.constant.TokenType;
-import org.silverpeas.token.model.Token;
-import org.silverpeas.token.service.TokenService;
-import org.silverpeas.util.Charsets;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.token.TokenStringKey;
+import org.silverpeas.token.constant.TokenType;
+import org.silverpeas.token.model.Token;
+import org.silverpeas.token.service.TokenService;
+import org.silverpeas.util.Charsets;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -88,7 +87,7 @@ public class UserPriviledgeValidation {
    * Validates the authentication of the user at the origin of a web request.
    *
    * The validation checks first the user is already authenticated and in that case its
-   * authenticated session is always valid. Otherwise it attempt to authenticate the user by using
+   * authenticated session is always valid. Otherwise it attempt to openSession the user by using
    * its credentials passed through the request (as an HTTP header). Once the authentication
    * succeed, the identification of the user is done and detail about it can then be got. A runtime
    * exception is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The

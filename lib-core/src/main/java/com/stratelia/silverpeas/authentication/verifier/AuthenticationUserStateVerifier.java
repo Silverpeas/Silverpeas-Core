@@ -23,7 +23,7 @@
  */
 package com.stratelia.silverpeas.authentication.verifier;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.authentication.verifier.exception
     .AuthenticationUserAccountBlockedException;
 import com.stratelia.webactiv.beans.admin.UserDetail;

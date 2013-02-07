@@ -23,12 +23,12 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import javax.servlet.http.HttpServletRequest;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
 
 /**
  * Navigation case : user asks to change his password from login page.
@@ -44,8 +44,12 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
     String newPassword = request.getParameter("newPassword");
     try {
       // Change password.
-      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-      auth.changePassword(login, oldPassword, newPassword, domainId);
+      AuthenticationCredential credential = AuthenticationCredential
+          .newWithAsLogin(login)
+          .withAsPassword(oldPassword)
+          .withAsDomainId(domainId);
+      AuthenticationService authenticator = new AuthenticationService();
+      authenticator.changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword
           + "&DomainId=" + domainId;
     } catch (AuthenticationException e) {

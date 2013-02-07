@@ -36,8 +36,8 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.AuthenticationException;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
@@ -274,10 +274,10 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       // user has filled a new login answer
       if (StringUtil.isDefined(userLoginAnswer)) {
         userLoginAnswer = EncodeHelper.htmlStringToJavaString(userLoginAnswer);
-        // Crypt password if needed
+        // encrypt the answser if needed
         boolean answerCrypted = authenticationSettings.getBoolean("loginAnswerCrypted", false);
         if (answerCrypted) {
-          userLoginAnswer = CryptMD5.crypt(userLoginAnswer);
+          userLoginAnswer = CryptMD5.encrypt(userLoginAnswer);
         }
       } else {
         userLoginAnswer = currentUser.getLoginAnswer();

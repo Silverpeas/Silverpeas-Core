@@ -232,14 +232,14 @@ fallbackType=always
 
 # Authentication servers
 # Available types are : 
-#     com.stratelia.silverpeas.authentication.AuthenticationNT
-#     com.stratelia.silverpeas.authentication.AuthenticationSQL
-#     com.stratelia.silverpeas.authentication.AuthenticationLDAP
+#     org.silverpeas.authentication.AuthenticationNT
+#     org.silverpeas.authentication.AuthenticationSQL
+#     org.silverpeas.authentication.AuthenticationLDAP
 allowPasswordChange=false
 
 autServersCount=1
 
-autServer0.type=com.stratelia.silverpeas.authentication.AuthenticationLDAP
+autServer0.type=org.silverpeas.authentication.AuthenticationLDAP
 autServer0.enabled=true
 autServer0.LDAPHost=localhost
 autServer0.LDAPPort=1389

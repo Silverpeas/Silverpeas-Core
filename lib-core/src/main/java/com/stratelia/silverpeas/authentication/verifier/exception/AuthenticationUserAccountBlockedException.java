@@ -30,7 +30,7 @@
 
 package com.stratelia.silverpeas.authentication.verifier.exception;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationException;
 
 /**
  *

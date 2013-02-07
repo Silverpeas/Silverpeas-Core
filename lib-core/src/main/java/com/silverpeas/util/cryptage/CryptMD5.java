@@ -35,14 +35,25 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * The MD5 algorithm (Message Digest 5).
+ * <p/>
+ * It is a one-way hashing function that compute a 128-bit digest of a message (generally a
+ * file). It is not for encrypting password but for generating a digest of a content in order to
+ * sign it and to ensure its integrity.
+ * <p/>
+ * A first flaw (possibility to create collisions at the demand) was discovered in 1996. In
+ * 2004, a chinese team broke it by discovering full collisions. Since, it was replaced first by
+ * the SHA-1 algorithm and now the SHA-2 algorithms are used.
+ */
 public class CryptMD5 {
 
-  /*
-   * Encode la chaine passée en paramètre avec l’algorithme MD5
-   * @param original : la chaine à encoder
-   * @return la valeur (string) hexadécimale sur 32 bits
+  /**
+   * Encrypts the specified text in MD5.
+   * @param original the text to encrypt
+   * @return the digest of the text in a 32-bits hexadecimal.
    */
-  public static String crypt(String original) throws UtilException {
+  public static String encrypt(String original) throws UtilException {
 
     byte[] uniqueKey = original.getBytes();
 
@@ -53,7 +64,7 @@ public class CryptMD5 {
     } catch (NoSuchAlgorithmException e) {
       // TODO utiliser le CryptageException
       // throw new CryptageException
-      throw new UtilException("CryptMD5.crypt()", SilverpeasException.ERROR,
+      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
           "root.EX_NO_MESSAGE", e);
     }
 
@@ -76,7 +87,7 @@ public class CryptMD5 {
    * @param file: the file to be MD5 hashed.
    * @return the MD5 hash as a String.
    */
-  public static String hash(File file) throws UtilException {
+  public static String encrypt(File file) throws UtilException {
     MessageDigest digest;
     FileInputStream fileInputStream = null;
     try {
@@ -90,10 +101,10 @@ public class CryptMD5 {
       byte[] signature = digest.digest();
       return getHexString(signature);
     } catch (NoSuchAlgorithmException e) {
-      throw new UtilException("CryptMD5.hash()", SilverpeasException.ERROR,
+      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
           "root.EX_NO_MESSAGE", e);
     } catch (IOException e) {
-      throw new UtilException("CryptMD5.hash()", SilverpeasException.ERROR,
+      throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
           "root.EX_NO_MESSAGE", e);
     } finally {
       if (fileInputStream != null) {
@@ -102,7 +113,7 @@ public class CryptMD5 {
     }
   }
 
-  static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2',
+  protected static final byte[] HEX_CHAR_TABLE = { (byte) '0', (byte) '1', (byte) '2',
       (byte) '3', (byte) '4', (byte) '5', (byte) '6', (byte) '7', (byte) '8',
       (byte) '9', (byte) 'a', (byte) 'b', (byte) 'c', (byte) 'd', (byte) 'e',
       (byte) 'f' };
