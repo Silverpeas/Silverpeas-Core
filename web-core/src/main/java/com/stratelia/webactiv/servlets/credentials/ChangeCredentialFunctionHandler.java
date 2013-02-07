@@ -23,9 +23,8 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.verifier
-    .AuthenticationUserConnectionAttemptsVerifier;
-import com.stratelia.silverpeas.authentication.verifier.exception
+import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
+import org.silverpeas.authentication.verifier.exception
     .AuthenticationNoMoreUserConnectionAttemptException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,24 +39,23 @@ public abstract class ChangeCredentialFunctionHandler extends FunctionHandler {
    * Handle bad credential error.
    * @param request
    * @param originalUrl
-   * @param userConnectionAttemptsVerifier
+   * @param userCanTryAgainToLoginVerifier
    * @param messageBundleKey
    * @return destination url
    */
   protected String performUrlOnBadCredentialError(HttpServletRequest request, String originalUrl,
-      AuthenticationUserConnectionAttemptsVerifier userConnectionAttemptsVerifier,
-      String messageBundleKey) {
+      UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier, String messageBundleKey) {
     try {
       StringBuilder message = new StringBuilder(getM_Multilang().getString(messageBundleKey));
-      String url = userConnectionAttemptsVerifier.verify().performRequestUrl(request, originalUrl);
-      if (userConnectionAttemptsVerifier.isActivated()) {
+      String url = userCanTryAgainToLoginVerifier.verify().performRequestUrl(request, originalUrl);
+      if (userCanTryAgainToLoginVerifier.isActivated()) {
         message.append("<br/>");
-        message.append(userConnectionAttemptsVerifier.getMessage());
+        message.append(userCanTryAgainToLoginVerifier.getMessage());
       }
       request.setAttribute("message", message.toString());
       return url;
     } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
-      return userConnectionAttemptsVerifier.getErrorDestination();
+      return userCanTryAgainToLoginVerifier.getErrorDestination();
     }
   }
 }

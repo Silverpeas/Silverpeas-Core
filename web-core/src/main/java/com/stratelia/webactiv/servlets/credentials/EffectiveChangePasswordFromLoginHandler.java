@@ -42,12 +42,12 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
     String domainId = request.getParameter("domainId");
     String oldPassword = request.getParameter("oldPassword");
     String newPassword = request.getParameter("newPassword");
+    AuthenticationCredential credential = AuthenticationCredential
+        .newWithAsLogin(login)
+        .withAsPassword(oldPassword)
+        .withAsDomainId(domainId);
     try {
       // Change password.
-      AuthenticationCredential credential = AuthenticationCredential
-          .newWithAsLogin(login)
-          .withAsPassword(oldPassword)
-          .withAsDomainId(domainId);
       AuthenticationService authenticator = new AuthenticationService();
       authenticator.changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword
@@ -59,7 +59,7 @@ public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunct
       ResourceLocator settings = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
       return performUrlChangePasswordError(request,
           settings.getString("changePasswordFromLoginPage") + "?Login=" + login + "&DomainId=" +
-              domainId, login, domainId);
+              domainId, credential);
     }
   }
 }

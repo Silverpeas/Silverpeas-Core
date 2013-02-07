@@ -31,10 +31,6 @@
 package org.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
-import com.stratelia.silverpeas.authentication.verifier.exception
-    .AuthenticationUserAccountBlockedException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -42,6 +38,9 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.exception.AuthenticationUserAccountBlockedException;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -49,7 +48,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -222,8 +226,8 @@ public class AuthenticationService {
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Verify user state
-      AuthenticationUserVerifier.userState(login, domainId).verify();
+      // Verify that the user can login
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
       // Authentification test
       authenticationServer.authenticate(credential);
@@ -254,7 +258,7 @@ public class AuthenticationService {
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = AuthenticationUserStateVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+        errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -343,8 +347,8 @@ public class AuthenticationService {
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
-    // Verify user state
-    AuthenticationUserVerifier.userState(login, domainId).verify();
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
     Connection connection = null;
     try {
       // Open connection
@@ -374,7 +378,7 @@ public class AuthenticationService {
    * @return an authentication key.
    */
   public String getAuthenticationKey(String login, String domainId) throws AuthenticationException {
-    String authKey = computeGenerationKey(login, domainId);
+    String authKey = computeGenerationKey(login);
     storeAuthenticationKey(login, domainId, authKey);
     return authKey;
   }
@@ -426,12 +430,10 @@ public class AuthenticationService {
 
   /**
    * Builds a random authentication key.
-   *
    * @param login a user login
-   * @param domainId a user domain identifier.
    * @return the generated authentication key.
    */
-  private String computeGenerationKey(String login, String domainId)
+  private String computeGenerationKey(String login)
       throws AuthenticationException {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
@@ -491,8 +493,8 @@ public class AuthenticationService {
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
-    // Verify user state
-    AuthenticationUserVerifier.userState(login, domainId).verify();
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
     Connection connection = null;
 

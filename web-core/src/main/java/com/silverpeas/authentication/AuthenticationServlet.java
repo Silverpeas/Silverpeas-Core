@@ -25,23 +25,19 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import com.stratelia.silverpeas.authentication.verifier
-    .AuthenticationUserConnectionAttemptsVerifier;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
-import com.stratelia.silverpeas.authentication.verifier.exception
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.exception
     .AuthenticationNoMoreUserConnectionAttemptException;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -49,6 +45,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -89,25 +89,28 @@ public class AuthenticationServlet extends HttpServlet {
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-    String sDomainId = getDomain(request, authenticationSettings,
+    String domainId = getDomain(request, authenticationSettings,
         authenticationParameters.isCasMode());
+    AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin())
+            .withAsPassword(authenticationParameters.getPassword())
+            .withAsDomainId(domainId);
 
-    String authenticationKey = authenticate(request, authenticationParameters, sDomainId);
+    String authenticationKey = authenticate(request, authenticationParameters, domainId);
     String url;
 
-    // User connection attempt verifier.
-    AuthenticationUserConnectionAttemptsVerifier userConnectionAttemptsVerifier =
-        AuthenticationUserVerifier.userConnectionAttempts(authenticationParameters.getLogin(),
-            authenticationParameters.getDomainId());
-    userConnectionAttemptsVerifier.clearSession(request);
+    // Verify if the user can try again to login.
+    UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier =
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
+    userCanTryAgainToLoginVerifier.clearSession(request);
 
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
 
       // Clearing user connection attempt cache.
-      userConnectionAttemptsVerifier.clearCache();
+      userCanTryAgainToLoginVerifier.clearCache();
 
-      if (sDomainId != null) {
-        storeDomain(response, sDomainId);
+      if (domainId != null) {
+        storeDomain(response, domainId);
       }
       storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
 
@@ -138,20 +141,21 @@ public class AuthenticationServlet extends HttpServlet {
     } else {
       if("Error_1".equals(authenticationKey)) {
         try {
-          if (userConnectionAttemptsVerifier.isActivated()) {
+          if (userCanTryAgainToLoginVerifier.isActivated()) {
             storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+            storeDomain(response, domainId);
           }
-          url = userConnectionAttemptsVerifier.verify()
+          url = userCanTryAgainToLoginVerifier.verify()
               .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
         } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
-          url = userConnectionAttemptsVerifier.getErrorDestination();
+          url = userCanTryAgainToLoginVerifier.getErrorDestination();
         }
       }
       else if(AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)){
           String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
           if(StringUtil.getBooleanValue(allowPasswordChange)){
             ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-            url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
+            url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+domainId;
           } else {
             url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
           }
@@ -160,13 +164,23 @@ public class AuthenticationServlet extends HttpServlet {
         String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
         if(StringUtil.getBooleanValue(allowPasswordChange)){
           ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-          url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
+          url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+domainId;
         } else {
           url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
       }
-      else if(AuthenticationUserStateVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
-        url = handleBlockedUserAccount(response, isNewEncryptMode, authenticationParameters);
+      else if(UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+        if (userCanTryAgainToLoginVerifier.isActivated() ||
+            StringUtil.isDefined(userCanTryAgainToLoginVerifier.getUser().getId())) {
+          // If user can try again to login verifier is activated or if the user has been found
+          // from credential, the login and the domain are stored
+          storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+          storeDomain(response, domainId);
+          url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
+              .getErrorDestination();
+        } else {
+          url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+        }
       }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
@@ -174,36 +188,6 @@ public class AuthenticationServlet extends HttpServlet {
     }
     response.sendRedirect(response.encodeRedirectURL(URLManager.getFullApplicationURL(request) +
         url));
-  }
-
-
-  /**
-   * Handles blocked user account.
-   * @param response
-   * @param newEncryptMode
-   * @param authenticationParameters
-   * @return
-   */
-  private String handleBlockedUserAccount(HttpServletResponse response, boolean newEncryptMode,
-      AuthenticationParameters authenticationParameters) {
-    return handleBlockedUserAccount(response, newEncryptMode, AuthenticationUserVerifier
-        .userState(authenticationParameters.getLogin(), authenticationParameters.getDomainId()));
-  }
-
-
-  /**
-   * Handles blocked user account.
-   * @param response
-   * @param newEncryptMode
-   * @param userStateVerifier
-   * @return
-   */
-  private String handleBlockedUserAccount(HttpServletResponse response, boolean newEncryptMode,
-      AuthenticationUserStateVerifier userStateVerifier) {
-    if (userStateVerifier.getUser() != null) {
-      storeLogin(response, newEncryptMode, userStateVerifier.getUser().getLogin());
-    }
-    return userStateVerifier.getErrorDestination();
   }
 
   private void storePassword(HttpServletResponse response, String sStorePassword,

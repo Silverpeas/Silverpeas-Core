@@ -25,11 +25,12 @@
 package com.stratelia.webactiv.servlets;
 
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserStateVerifier;
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.servlets.credentials.*;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -94,15 +95,17 @@ public class CredentialsServlet extends HttpServlet {
     FunctionHandler handler = handlers.get(function);
     if (handler != null) {
 
-      // Verify user state
       UserDetail user = null;
       String login = request.getParameter("Login");
       String domainId = request.getParameter("DomainId");
       String destinationPage = "";
-      AuthenticationUserVerifier.userConnectionAttempts(user).clearSession(request);
+      AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user)
+          .clearSession(request);
       if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
-        AuthenticationUserStateVerifier userStateVerifier =
-            AuthenticationUserVerifier.userState(login, domainId);
+        // Verify that the user can login
+        UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
+            .getUserCanLoginVerifier(
+                AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
         try {
           user = userStateVerifier.getUser();
           userStateVerifier.verify();
@@ -116,7 +119,7 @@ public class CredentialsServlet extends HttpServlet {
       }
 
       if (destinationPage.startsWith("http")) {
-        AuthenticationUserVerifier.userConnectionAttempts(user).clearCache();
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
         sessionCookie.setMaxAge(-1);
         sessionCookie.setSecure(false);

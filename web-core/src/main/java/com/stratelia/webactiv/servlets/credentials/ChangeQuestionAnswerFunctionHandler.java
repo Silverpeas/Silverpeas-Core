@@ -23,8 +23,8 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,6 +44,6 @@ public abstract class ChangeQuestionAnswerFunctionHandler extends ChangeCredenti
   protected String performQuestionAnswerError(HttpServletRequest request, String originalUrl,
       UserDetail user) {
     return performUrlOnBadCredentialError(request, originalUrl,
-        AuthenticationUserVerifier.userConnectionAttempts(user), "invalidAnswer");
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user), "invalidAnswer");
   }
 }

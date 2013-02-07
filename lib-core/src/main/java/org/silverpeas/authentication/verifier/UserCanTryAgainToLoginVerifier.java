@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.authentication.verifier;
+package org.silverpeas.authentication.verifier;
 
 import com.silverpeas.scheduler.Job;
 import com.silverpeas.scheduler.JobExecutionContext;
@@ -31,14 +31,14 @@ import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.authentication.verifier.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.lang.time.DateUtils;
+import org.silverpeas.authentication.verifier.exception
+    .AuthenticationNoMoreUserConnectionAttemptException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -48,14 +48,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Class that provides tools to verify user connexion attempts.
+ * Class that provides tools to verify if the user can try to login one more time after a login
+ * error.
  * User: Yohann Chastagnier
  * Date: 05/02/13
  */
-public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthenticationVerifier {
+public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifier {
 
-  private static final Map<String, AuthenticationUserConnectionAttemptsVerifier> cache =
-      new ConcurrentHashMap<String, AuthenticationUserConnectionAttemptsVerifier>();
+  private static final Map<String, UserCanTryAgainToLoginVerifier> cache =
+      new ConcurrentHashMap<String, UserCanTryAgainToLoginVerifier>();
 
   private static boolean isActivated = false;
   private static boolean isCacheCleanerInitialized = false;
@@ -75,7 +76,7 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
    * Default constructor.
    * @param user
    */
-  private AuthenticationUserConnectionAttemptsVerifier(final UserDetail user) {
+  private UserCanTryAgainToLoginVerifier(final UserDetail user) {
     super(user);
     if (isActivated && !isCacheCleanerInitialized) {
       synchronized (cache) {
@@ -87,7 +88,7 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
                 .scheduleJob(new CacheCleanerJob(), JobTrigger.triggerEvery(10, TimeUnit.MINUTE));
             isCacheCleanerInitialized = true;
           } catch (SchedulerException e) {
-            SilverTrace.error("authentication", "AuthenticationUserConnectionAttemptsVerifier()",
+            SilverTrace.error("authentication", "UserCanTryAgainToLoginVerifier()",
                 "root.MSG_ERR_CACHE_CLEANER_INITIALIZATION");
           }
         }
@@ -146,39 +147,43 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
    * @return
    */
   public String getErrorDestination() {
-    return "/Login.jsp?ErrorCode=" + AuthenticationUserStateVerifier.ERROR_USER_ACCOUNT_BLOCKED;
+    return "/Login.jsp?ErrorCode=" + UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
   }
 
   /**
    * Verify user connection attempts and block user account if necessary.
    */
-  public AuthenticationUserConnectionAttemptsVerifier verify()
+  public UserCanTryAgainToLoginVerifier verify()
       throws AuthenticationNoMoreUserConnectionAttemptException {
     initializationOrLastVerifyDate = DateUtil.getNow();
-    if (!check()) {
+    if (!isAtLeastOneUserConnectionAttempt()) {
       if (getUser() != null && StringUtil.isDefined(getUser().getId())) {
         new AdminController(getUser().getId()).blockUser(getUser().getId());
         clearCache();
       }
       throw new AuthenticationNoMoreUserConnectionAttemptException(
-          "AuthenticationUserConnectionAttemptsVerifier.verify()", SilverpeasException.ERROR,
-          "authentication.EX_VERIFY_USER_CONNECTION_ATTEMPT",
+          "UserCanTryAgainToLoginVerifier.verify()", SilverpeasException.ERROR,
+          "authentication.EX_VERIFY_USER_CAN_TRY_AGAIN_TO_LOGIN",
           getUser() != null ? "Login=" + getUser().getLogin() : "");
     }
     return this;
   }
 
   /**
-   * Check user connection attempts.
+   * Indicates if the user can try to login one more time after an login error.
+   * If the system is not activated (see file settings), this method answers always yes.
+   * If the system is activated, this method answers yes until the try number of login is less than
+   * the maximum number of try set.
+   * @return true if the user can try to login one more time, false otherwise.
    */
-  public synchronized boolean check() {
+  private synchronized boolean isAtLeastOneUserConnectionAttempt() {
     return !isActivated || (getUser() != null && ++nbAttempts < nbMaxAttempts);
   }
 
   /**
    * Clearing the cache associated to the user.
    */
-  public AuthenticationUserConnectionAttemptsVerifier clearCache() {
+  public UserCanTryAgainToLoginVerifier clearCache() {
     clearCache(getUser());
     return this;
   }
@@ -186,7 +191,7 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
   /**
    * Clearing the HTTP session.
    */
-  public AuthenticationUserConnectionAttemptsVerifier clearSession(HttpServletRequest request) {
+  public UserCanTryAgainToLoginVerifier clearSession(HttpServletRequest request) {
     HttpSession session = request.getSession(false);
     if (session != null) {
       session.removeAttribute("WarningMessage");
@@ -199,14 +204,14 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
    * @param user
    * @return
    */
-  protected static synchronized AuthenticationUserConnectionAttemptsVerifier get(UserDetail user) {
+  protected static synchronized UserCanTryAgainToLoginVerifier get(UserDetail user) {
     if (user == null) {
-      return new AuthenticationUserConnectionAttemptsVerifier(user);
+      return new UserCanTryAgainToLoginVerifier(user);
     }
     String userKey = key(user);
-    AuthenticationUserConnectionAttemptsVerifier verifier = cache.get(userKey);
+    UserCanTryAgainToLoginVerifier verifier = cache.get(userKey);
     if (verifier == null) {
-      verifier = new AuthenticationUserConnectionAttemptsVerifier(user);
+      verifier = new UserCanTryAgainToLoginVerifier(user);
       if (isActivated) {
         cache.put(userKey, verifier);
       }
@@ -255,10 +260,9 @@ public class AuthenticationUserConnectionAttemptsVerifier extends AbstractAuthen
     @Override
     public void execute(final JobExecutionContext context) throws Exception {
       Date now = DateUtil.getNow();
-      Iterator<Map.Entry<String, AuthenticationUserConnectionAttemptsVerifier>> it =
-          cache.entrySet().iterator();
+      Iterator<Map.Entry<String, UserCanTryAgainToLoginVerifier>> it = cache.entrySet().iterator();
       while (it.hasNext()) {
-        AuthenticationUserConnectionAttemptsVerifier verifier = it.next().getValue();
+        UserCanTryAgainToLoginVerifier verifier = it.next().getValue();
         if (DateUtils.addHours(verifier.initializationOrLastVerifyDate, 1).compareTo(now) < 0) {
           it.remove();
         }

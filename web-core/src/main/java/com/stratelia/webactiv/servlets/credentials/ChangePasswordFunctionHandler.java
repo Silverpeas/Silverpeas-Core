@@ -23,8 +23,9 @@
  */
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.verifier.AuthenticationUserVerifier;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,12 +39,14 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
    * Handle bad credential error.
    * @param request
    * @param originalUrl
+   * @param credential
    * @return destination url
    */
   protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
-      String login, String domainId) {
+      AuthenticationCredential credential) {
     return performUrlOnBadCredentialError(request, originalUrl,
-        AuthenticationUserVerifier.userConnectionAttempts(login, domainId), "badCredentials");
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential),
+        "badCredentials");
   }
 
   /**
@@ -56,6 +59,7 @@ public abstract class ChangePasswordFunctionHandler extends ChangeCredentialFunc
   protected String performUrlChangePasswordError(HttpServletRequest request, String originalUrl,
       UserDetail user) {
     return performUrlOnBadCredentialError(request, originalUrl,
-        AuthenticationUserVerifier.userConnectionAttempts(user), "badCredentials");
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user),
+        "badCredentials");
   }
 }

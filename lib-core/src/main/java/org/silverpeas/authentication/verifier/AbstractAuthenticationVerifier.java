@@ -21,13 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.authentication.verifier;
+package org.silverpeas.authentication.verifier;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.authentication.AuthenticationCredential;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,19 +71,19 @@ class AbstractAuthenticationVerifier {
   }
 
   /**
-   * Gets a user from its login and a domain.
-   * @param login
-   * @param domainId
+   * Gets a user from its credentials.
+   * @param credential
    * @return
-   * @throws com.stratelia.silverpeas.authentication.AuthenticationException
+   * @throws org.silverpeas.authentication.AuthenticationException
    */
-  protected static UserDetail getUserByLoginAndDomain(String login, String domainId) {
+  protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
     try {
-      return UserDetail
-          .getById(AdminReference.getAdminService().getUserIdByLoginAndDomain(login, domainId));
+      return UserDetail.getById(AdminReference.getAdminService()
+          .getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
     } catch (AdminException e) {
       SilverTrace.error("authentication", "AbstractAuthenticationVerifier.getUser()",
-          "authentication.EX_GET_USER", "Login=" + login + ", domainId=" + domainId, e);
+          "authentication.EX_GET_USER",
+          "Login=" + credential.getLogin() + ", domainId=" + credential.getDomainId(), e);
       return null;
     }
   }

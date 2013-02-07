@@ -60,4 +60,9 @@ public class AuthenticationPwdChangeNotAvailException extends AuthenticationExce
       int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
+
+  @Override
+  public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
+    visitor.visit(this);
+  }
 }

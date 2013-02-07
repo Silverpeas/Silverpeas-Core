@@ -21,27 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.silverpeas.authentication.verifier;
+package org.silverpeas.authentication.verifier;
 
-import org.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.verifier.exception
-    .AuthenticationUserAccountBlockedException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.verifier.exception.AuthenticationUserAccountBlockedException;
 
 /**
- * Class that provides tools to verify user state in relation to authentication.
+ * Class that provides tools to verify if the user can login in relation to its account state.
  * User: Yohann Chastagnier
  * Date: 02/02/13
  */
-public class AuthenticationUserStateVerifier extends AbstractAuthenticationVerifier {
+public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   public static final String ERROR_USER_ACCOUNT_BLOCKED = "Error_UserAccountBlocked";
 
   /**
    * Default constructor.
    * @param user
    */
-  protected AuthenticationUserStateVerifier(final UserDetail user) {
+  protected UserCanLoginVerifier(final UserDetail user) {
     super(user);
   }
 
@@ -57,19 +56,21 @@ public class AuthenticationUserStateVerifier extends AbstractAuthenticationVerif
    * Verify user state.
    */
   public void verify() throws AuthenticationException {
-    if (!check()) {
+    if (!isUserStateValid()) {
       // For now, if user is not valid (BLOCKED, EXPIRED, ...) he is considered as BLOCKED.
-      throw new AuthenticationUserAccountBlockedException(
-          "AuthenticationUserStateVerifier.verify()", SilverpeasException.ERROR,
-          "authentication.EX_VERIFY_USER_STATE",
+      throw new AuthenticationUserAccountBlockedException("UserCanLoginVerifier.verify()",
+          SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
           getUser() != null ? "Login=" + getUser().getLogin() : "");
     }
   }
 
   /**
-   * Check user state.
+   * Is the specified user has a valid state?
+   * A state is valid when the user can open a session in silverpeas, in other words, whether its
+   * account is neither deleted or blocked or expired.
+   * @return true if the user can open a session in Silverpeas, false otherwise.
    */
-  public boolean check() {
+  private boolean isUserStateValid() {
     return getUser() != null && getUser().isValidState();
   }
 }

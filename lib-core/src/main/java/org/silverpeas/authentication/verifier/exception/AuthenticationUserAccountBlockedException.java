@@ -28,7 +28,7 @@
  * Created on 6 aout 2001
  */
 
-package com.stratelia.silverpeas.authentication.verifier.exception;
+package org.silverpeas.authentication.verifier.exception;
 
 import org.silverpeas.authentication.AuthenticationException;
 
