@@ -219,7 +219,7 @@ function selectUnselect()
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.domainManager") %><br/>
                   <input type="radio" name="userAccessLevel" value="USER" <%
-                    if (userObject.isAccessUser()) {
+                    if (userObject.isAccessUser() || UserAccessLevel.UNKNOWN.equals(userObject.getAccessLevel())) {
                       out.print("checked");
                     } %>/>&nbsp;<%=resource.getString("GML.user") %><br/>
                   <input type="radio" name="userAccessLevel" value="GUEST" <%
