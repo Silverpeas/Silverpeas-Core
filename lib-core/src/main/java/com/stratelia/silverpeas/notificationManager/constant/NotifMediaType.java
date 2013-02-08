@@ -49,26 +49,13 @@ public enum NotifMediaType {
   }
 
   public static NotifMediaType decode(final Integer id) {
-    NotifMediaType result = null;
     if (id != null) {
-      if (id.intValue() == DEFAULT.id) {
-        result = DEFAULT;
-      } else if (id.intValue() == COMPONENT_DEFINED.id) {
-        result = COMPONENT_DEFINED;
-      } else if (id.intValue() == BASIC_POPUP.id) {
-        result = BASIC_POPUP;
-      } else if (id.intValue() == BASIC_REMOVE.id) {
-        result = BASIC_REMOVE;
-      } else if (id.intValue() == BASIC_SILVERMAIL.id) {
-        result = BASIC_SILVERMAIL;
-      } else if (id.intValue() == BASIC_SMTP.id) {
-        result = BASIC_SMTP;
-      } else if (id.intValue() == BASIC_SERVER.id) {
-        result = BASIC_SERVER;
-      } else if (id.intValue() == BASIC_USER_COMMUNICATION.id) {
-        result = BASIC_USER_COMMUNICATION;
+      for (NotifMediaType notifMediaType : NotifMediaType.values()) {
+        if (id == notifMediaType.id) {
+          return notifMediaType;
+        }
       }
     }
-    return result;
+    return null;
   }
 }

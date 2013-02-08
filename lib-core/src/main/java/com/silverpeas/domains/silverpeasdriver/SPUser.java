@@ -115,7 +115,7 @@ public class SPUser implements Serializable {
   @Size(min = 1, max = 50)
   @Column(name = "login")
   private String login;
-  @Size(max = 32)
+  @Size(max = 123)
   @Column(name = "password")
   private String password;
   @Basic(optional = false)

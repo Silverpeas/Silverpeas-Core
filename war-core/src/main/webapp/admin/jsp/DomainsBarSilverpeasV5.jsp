@@ -38,6 +38,7 @@
 
 <%@ page import="com.stratelia.silverpeas.authentication.*"%>
 <%@ page import="com.silverpeas.look.LookHelper" %>
+<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -367,9 +368,9 @@ out.println(gef.getLookStyleSheet());
                 <% if (helper.isAnonymousAccess()) {
                     //------------------------------------------------------------------
                     // domains are used by 'selectDomain.jsp.inc'
-                    // Get a LoginPasswordAuthentication object
-                    LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-                    List<Domain> listDomains = lpAuth.getListDomains();
+                    // Get a AuthenticationService object
+                    AuthenticationService lpAuth = new AuthenticationService();
+                    List<Domain> listDomains = lpAuth.getAllDomains();
                     pageContext.setAttribute("listDomains", listDomains);
                     pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);
                     //------------------------------------------------------------------

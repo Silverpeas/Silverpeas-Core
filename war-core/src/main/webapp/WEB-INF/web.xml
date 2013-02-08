@@ -525,10 +525,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.silverpeas.socialnetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>DirectoryServlet</servlet-name>
-    <servlet-class>com.silverpeas.directory.servlets.DirectoryServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>DirectoryJSONServlet</servlet-name>
     <servlet-class>com.silverpeas.directory.servlets.DirectoryJSONServlet</servlet-class>
   </servlet>
@@ -930,10 +926,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>NewsFeedJSONServlet</servlet-name>
     <url-pattern>/RnewsFeedJSONServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DirectoryServlet</servlet-name>
-    <url-pattern>/RdirectoryServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DirectoryJSONServlet</servlet-name>

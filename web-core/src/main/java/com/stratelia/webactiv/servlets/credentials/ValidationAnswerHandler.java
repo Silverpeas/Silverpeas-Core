@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
+import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -40,10 +41,17 @@ public class ValidationAnswerHandler extends FunctionHandler {
     String login = request.getParameter("Login");
     String domainId = request.getParameter("DomainId");
     String answer = request.getParameter("answer");
+    boolean answerCrypted = getAuthenticationSettings().getBoolean("loginAnswerCrypted", false);
+
     try {
       String userId = getAdmin().getUserIdByLoginAndDomain(login, domainId);
       UserDetail userDetail = getAdmin().getUserDetail(userId);
       request.setAttribute("userDetail", userDetail);
+
+      // encrypt answer if needed
+      if (answerCrypted) {
+        answer = CryptMD5.encrypt(answer);
+      }
 
       if (answer.equals(userDetail.getLoginAnswer())) {
         return getGeneral().getString("userResetPasswordPage");

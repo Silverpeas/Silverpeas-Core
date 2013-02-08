@@ -24,8 +24,9 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -56,7 +57,7 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
     ResourceLocator settings =
         new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
     String passwordChangeURL =
-        settings.getString("passwordChangeURL", "/admin/jsp/passwordAboutToExpire.jsp");
+        settings.getString("passwordChangeURL", "/defaultPasswordAboutToExpire.jsp");
 
     try {
       String userId = controller.getUserId();
@@ -65,8 +66,12 @@ public class EffectiveChangePasswordBeforeExpirationHandler extends FunctionHand
       String domainId = ud.getDomainId();
       String oldPassword = request.getParameter("oldPassword");
       String newPassword = request.getParameter("newPassword");
-      LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-      auth.changePassword(login, oldPassword, newPassword, domainId);
+      AuthenticationCredential credential = AuthenticationCredential
+          .newWithAsLogin(login)
+          .withAsPassword(oldPassword)
+          .withAsDomainId(domainId);
+      AuthenticationService authenticator = new AuthenticationService();
+      authenticator.changePassword(credential, newPassword);
 
       GraphicElementFactory gef =
           (GraphicElementFactory) session

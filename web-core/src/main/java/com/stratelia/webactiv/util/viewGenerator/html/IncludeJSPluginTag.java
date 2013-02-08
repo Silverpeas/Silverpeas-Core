@@ -79,6 +79,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includePreview(xhtml);
     } else if (notifier.name().equals(getName())) {
       includeNotifier(xhtml);
+    } else if (password.name().equals(getName())) {
+      includePassword(xhtml);
     } else if (jquery.name().equals(getName())) {
       includeJQuery(xhtml);
     } else if (tags.name().equals(getName())) {

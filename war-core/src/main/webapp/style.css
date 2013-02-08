@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -26,197 +26,228 @@
 /* CSS Document */
 
 * {
-	margin:0px;
-	padding:0px;
-	/*overflow:hidden;*/
-	border:none;
-	text-align:center;
+  margin: 0px;
+  padding: 0px;
+  /*overflow:hidden;*/
+  border: none;
+  text-align: center;
 }
+
 body {
-	background-color:#e6e6e6;
-	font-size:12px;
-	font-family:Arial, Helvetica, sans-serif;
-	/*overflow:hidden;*/
-	color:#666666;
+  background-color: #e6e6e6;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  /*overflow:hidden;*/
+  color: #666666;
 }
+
 #top {
-	background-color:#7eb73b;
-	height:35px;
-	margin-bottom:40px;
-	color: #FFFFFF;
-	line-height: 35px;
+  background-color: #7eb73b;
+  height: 35px;
+  margin-bottom: 40px;
+  color: #FFFFFF;
+  line-height: 35px;
 }
 
 #top a {
-	color: #FFFFFF;
+  color: #FFFFFF;
 }
+
 .clear {
-	clear:both;
+  clear: both;
 }
+
 .page,
-#login-socialnetwork{
-	margin:0px auto;
-	width:960px;
-	position:relative;
-	z-index: 1;
+#login-socialnetwork {
+  margin: 0px auto;
+  width: 960px;
+  position: relative;
+  z-index: 1;
 }
 
 .page {
-	padding-top: 31px;
-	margin-top: 60px;
+  padding-top: 31px;
+  margin-top: 60px;
 }
 
-#login-socialnetwork{
-	text-align:left;
-	padding-left:351px;
-	z-index: 3;
-	margin-bottom: -120px;
-	padding-bottom: 27px;
-	background: transparent url("util/icons/external/deco-login-btn.png") 350px bottom no-repeat;
+#login-socialnetwork {
+  text-align: left;
+  padding-left: 351px;
+  z-index: 3;
+  margin-bottom: -120px;
+  padding-bottom: 27px;
+  background: transparent url("util/icons/external/deco-login-btn.png") 350px bottom no-repeat;
 }
 
 #login-socialnetwork a {
-	display: block;
-	clear: left;
-	width: 164px;
-	padding-left: 30px;
+  display: block;
+  clear: left;
+  width: 164px;
+  padding-left: 30px;
 }
 
 #background {
-	background:url(images/bg.gif) no-repeat;
-	min-height:424px;
+  background: url(images/bg.gif) no-repeat;
+  min-height: 424px;
 }
 
 #backgroundBig {
-	background:url(images/bgBig.gif) no-repeat;
-	min-height:524px;
+  background: url(images/bgBig.gif) no-repeat;
+  min-height: 524px;
 }
 
-#backgroundBig .submit{
-	color: #666666;
-	text-decoration: none;
-	font-weight: bold;
-	position: static;
+#backgroundBig .submit {
+  color: #666666;
+  text-decoration: none;
+  font-weight: bold;
+  position: static;
 }
 
-.cadre{
-	/*height:285px;*/
-	margin:0 auto;
-	padding-top:30px;
-	width:460px;
+.cadre {
+  /*height:285px;*/
+  margin: 0 auto;
+  padding-top: 30px;
+  width: 460px;
 }
-input{
-	background-color:#FAFAFA;
-	border:1px solid #DAD9D9;
-	display:block;
-	padding:5px;
-	width:448px;
-	text-align:left;
+
+input {
+  background-color: #FAFAFA;
+  border: 1px solid #DAD9D9;
+  display: block;
+  padding: 5px;
+  width: 448px;
+  text-align: left;
 }
+
 select {
-	background-color:#fafafa;
-	border:1px solid #dad9d9;
-	padding:5px;
-	width:250px;
-	text-align:left;
-	float:left;
+  background-color: #fafafa;
+  border: 1px solid #dad9d9;
+  padding: 5px;
+  width: 250px;
+  text-align: left;
+  float: left;
 }
+
 select option {
-	text-align:left;
+  text-align: left;
 }
+
 .titre {
-	color: #D2D2D2;
-    display: inline;
-    font-family: Arial,Helvetica,sans-serif;
-    font-size: 48px;
-    position: absolute;
-    right: 242px;
-    text-align: left;
-    top: 0px;
+  color: #D2D2D2;
+  display: inline;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 48px;
+  position: absolute;
+  right: 242px;
+  text-align: left;
+  top: 0px;
 }
 
 #header {
-	margin-bottom:18px;
+  margin-bottom: 18px;
 }
+
 .logo {
-	float:left;
+  float: left;
 }
+
 .information {
-	float:right;
-	margin-top:30px;
-	font-size:14px;
-	text-align:left;
+  float: right;
+  margin-top: 30px;
+  font-size: 14px;
+  text-align: left;
 }
 
 .information span {
-	color:red;
+  color: red;
 }
+
 p label {
-	display:block;
-	margin-bottom:10px;
-	/*padding-bottom:5px;*/
+  display: block;
+  margin-bottom: 10px;
+  /*padding-bottom:5px;*/
 }
+
 p label span {
-	display:block;
-	padding:4px 0px 2px 0px;
-	font-size:11px;
-	font-weight:bold;
-	color:#333333;
-	text-align:left;
+  display: block;
+  padding: 4px 0px 2px 0px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #333333;
+  text-align: left;
 }
+
 .submit {
-	position:relative;
-	text-align:left;
-	top:-10px;
+  position: relative;
+  text-align: left;
+  top: -10px;
 }
+
 .caractere {
-	height:44px;
+  height: 44px;
 }
+
 .noDisplay {
-	display:none;
+  display: none;
 }
 
 .forgottenPwd a {
-	font-size: 10px;
-	color:#999999;
+  font-size: 10px;
+  color: #999999;
 }
 
 .rememberPwd {
-	font-size: 10px;
-	color:#999999;
+  font-size: 10px;
+  color: #999999;
 }
 
-#storePassword{
-	background-color:transparent;
-	border:0px;
-	display:inline;
-	padding-bottom:0px;
-	width:15px;
-	text-align:left;
-	vertical-align: middle;
-	margin-left: 5px;
+.changePwd {
+  font-size: 10px;
+  color: #999999;
+}
+
+.passwordRules {
+  font-size: 10px;
+  color: #999999;
+}
+
+.passwordRules a {
+  font-size: 10px;
+  color: #999999;
+}
+
+#storePassword {
+  background-color: transparent;
+  border: 0px;
+  display: inline;
+  padding-bottom: 0px;
+  width: 15px;
+  text-align: left;
+  vertical-align: middle;
+  margin-left: 5px;
 }
 
 .questionSelection {
-	float:right;
-	margin-top:10px;
-	font-size:14px;
-	text-align:left;
-	width: 300px;
+  float: right;
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: left;
+  width: 300px;
 }
 
 #question {
-	width:400px;
+  width: 400px;
 }
 
 .fnfinformation {
-  float:right;
-  margin-top:30px;
-  font-size:14px;
-  text-align:left;
+  float: right;
+  margin-top: 30px;
+  font-size: 14px;
+  text-align: left;
 }
+
 .fnfinformation ul li {
-  padding-left:5px;
-  margin-left:25px;
-  text-align:left;
+  padding-left: 5px;
+  margin-left: 25px;
+  text-align: left;
 }

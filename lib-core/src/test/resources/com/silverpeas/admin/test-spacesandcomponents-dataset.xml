@@ -30,9 +30,9 @@
   classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
   silverpeasServerURL=""/>
 
-  <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
-  <st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" />
-  <st_user id="3" domainid="0" specificid="3" lastname="Hetfield" login="Hetfield" accesslevel="U" />
+  <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="2" domainid="0" specificid="2" lastname="SimpleUser" login="SimpleUser" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
+  <st_user id="3" domainid="0" specificid="3" lastname="Hetfield" login="Hetfield" accesslevel="U" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
 	
   <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin"/>
   <domainsp_user id="2" lastname="SimpleUser" login="SimpleUser"/>

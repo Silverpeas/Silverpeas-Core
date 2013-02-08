@@ -1,55 +1,56 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.domains.silverpeasdriver;
 
-import javax.inject.Inject;
-import org.junit.Before;
-import java.util.Set;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.silverpeas.jcrutil.RandomGenerator;
+import java.util.List;
+import java.util.Set;
+import javax.inject.Inject;
 import javax.sql.DataSource;
+import javax.validation.ConstraintViolationException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
-import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.silverpeas.authentication.encryption.PasswordEncryption;
+import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import static org.junit.Assert.*;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author ehugonnet
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring-domains-embbed-datasource.xml", "classpath:/spring-domains.xml"})
+@ContextConfiguration(locations = {"classpath:/spring-domains-embbed-datasource.xml",
+  "classpath:/spring-domains.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 @Transactional
 public class SPUserDaoTest {
@@ -58,6 +59,8 @@ public class SPUserDaoTest {
   private SPUserDao dao;
   @Inject
   private DataSource ds;
+
+  static final int PASSWORD_MAX_SIZE = 123;
 
   @Before
   public void generalSetUp() throws Exception {
@@ -70,6 +73,19 @@ public class SPUserDaoTest {
   }
 
   public SPUserDaoTest() {
+  }
+
+  @Test
+  public void testNewValidUser() {
+    SPUser tartempion = getTartempion();
+    dao.saveAndFlush(tartempion);
+  }
+
+  @Test(expected=ConstraintViolationException.class)
+  public void testNewUserWithInvalidPassword() {
+    SPUser tartempion = getTartempion();
+    tartempion.setPassword(tartempion.getPassword() + "b");
+    dao.saveAndFlush(tartempion);
   }
 
   /**
@@ -102,7 +118,7 @@ public class SPUserDaoTest {
    * Test of findByFirstname method, of class SPUserDao.
    */
   @Test
-  public void testFindByFirstname() {;
+  public void testFindByFirstname() {
     String firstName = "bart";
     List<SPUser> result = dao.findByFirstname(firstName);
     assertThat(result, hasSize(1));
@@ -154,30 +170,30 @@ public class SPUserDaoTest {
    * Test of findByAddress method, of class SPUserDao.
    */
   /* @Test
-  public void testFindByAddress() {
-  System.out.println("findByAddress");
-  String address = "";
+   public void testFindByAddress() {
+   System.out.println("findByAddress");
+   String address = "";
   
-  List expResult = null;
-  List result = dao.findByAddress(address);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   List expResult = null;
+   List result = dao.findByAddress(address);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of findByTitle method, of class SPUserDao.
    */
   /*@Test
-  public void testFindByTitle() {
-  System.out.println("findByTitle");
-  String title = "";
+   public void testFindByTitle() {
+   System.out.println("findByTitle");
+   String title = "";
   
-  List expResult = null;
-  List result = dao.findByTitle(title);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   List expResult = null;
+   List result = dao.findByTitle(title);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of findByCompany method, of class SPUserDao.
    */
@@ -255,5 +271,29 @@ public class SPUserDaoTest {
     assertThat(krusty.isPasswordValid(), is(true));
     assertThat(krusty.getLoginmail(), is(nullValue()));
     assertThat(krusty.getEmail(), is("krusty.theklown@silverpeas.org"));
+  }
+
+  private SPUser getTartempion() {
+    PasswordEncryption encryption = PasswordEncryptionFactory.getFactory().
+        getDefaultPasswordEncryption();
+    StringBuilder passwordBuilder = new StringBuilder(encryption.encrypt("tartempion"));
+    for (; passwordBuilder.length() < 123;) {
+      passwordBuilder.append("a");
+    }
+
+    SPUser tartempion = new SPUser();
+    tartempion.setId(2000);
+    tartempion.setFirstname("toto");
+    tartempion.setLastname("tartempion");
+    tartempion.setPosition("elder");
+    tartempion.setPhone("047669084");
+    tartempion.setAddress("18 rue des aiguinards");
+    tartempion.setTitle("student");
+    tartempion.setCompany("Tartempion's family");
+    tartempion.setEmail("toto.tartempion@silverpeas.org");
+    tartempion.setPasswordValid(true);
+    tartempion.setLogin("tartempion");
+    tartempion.setPassword(passwordBuilder.toString());
+    return tartempion;
   }
 }

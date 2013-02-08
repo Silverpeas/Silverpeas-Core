@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,19 +24,8 @@
 
 package com.silverpeas.socialnetwork.myProfil.control;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.jobDomainPeas.JobDomainSettings;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.SocialNetworkException;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
 import com.silverpeas.socialnetwork.invitation.model.InvitationUser;
@@ -49,8 +38,9 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -67,7 +57,13 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Bensalem Nabil
@@ -105,20 +101,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return new ArrayList<String>();
   }
 
-  public boolean isAContact(String userId) {
-    if (StringUtil.isDefined(userId)) {
-      try {
-        return relationShipService.isInRelationShip(Integer.parseInt(getUserId()), Integer
-            .parseInt(
-            userId));
-      } catch (SQLException e) {
-        SilverTrace.error("MyContactProfilSessionController",
-            "MyContactProfilSessionController.getContactsForUser", "", e);
-      }
-    }
-    return false;
-  }
-
   /**
    * get this user with full information
    * @param userId
@@ -126,49 +108,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    */
   public UserFull getUserFul(String userId) {
     return this.getOrganizationController().getUserFull(userId);
-  }
-
-  /**
-   * update the properties of user
-   * @param idUser
-   * @param properties
-   * @throws SocialNetworkException
-   */
-  public void modifyUser(String idUser, Map<String, String> properties) throws
-      SocialNetworkException {
-    UserFull theModifiedUser = null;
-    String idRet = null;
-
-    SilverTrace.info("personalizationPeas",
-        "PersonalizationPeasSessionController.modifyUser()",
-        "root.MSG_GEN_ENTER_METHOD", "UserId=" + idUser);
-
-    theModifiedUser = adminCtrl.getUserFull(idUser);
-    if (theModifiedUser == null) {
-      throw new SocialNetworkException(
-          "MyProfilSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UNKNOWN_USER");
-    }
-    // process extra properties
-    Set<String> keys = properties.keySet();
-    Iterator<String> iKeys = keys.iterator();
-    String key = null;
-    String value = null;
-    while (iKeys.hasNext()) {
-      key = iKeys.next();
-      value = properties.get(key);
-
-      theModifiedUser.setValue(key, value);
-    }
-
-    idRet = adminCtrl.updateUserFull(theModifiedUser);
-    if (idRet == null || idRet.length() <= 0) {
-      throw new SocialNetworkException(
-          "MyProfilSessionController.modifyUser()",
-          SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_USER", "UserId="
-          + idUser);
-    }
-
   }
 
   public boolean isUserDomainRW() {
@@ -186,14 +125,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return domainActions;
   }
 
-  public int getMinLengthPwd() {
-    return JobDomainSettings.m_MinLengthPwd;
-  }
-
-  public boolean isBlanksAllowedInPwd() {
-    return JobDomainSettings.m_BlanksAllowedInPwd;
-  }
-
   public void modifyUser(String idUser, String userLastName, String userFirstName,
       String userEMail, String userAccessLevel, String oldPassword, String newPassword,
       String userLoginQuestion, String userLoginAnswer, Map<String, String> properties)
@@ -205,6 +136,10 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
     UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
 
+    AuthenticationCredential credential = AuthenticationCredential
+        .newWithAsLogin(theModifiedUser.getLogin())
+        .withAsPassword(oldPassword)
+        .withAsDomainId(theModifiedUser.getDomainId());
     if (isUserDomainRW()) {
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
@@ -214,36 +149,28 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
         // In this case, this method checks if oldPassword and actual password match !
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword, theModifiedUser.
-            getDomainId());
+        changePassword(credential, newPassword);
 
         theModifiedUser.setPassword(newPassword);
       }
 
       // process extra properties
-      Set<String> keys = properties.keySet();
-      Iterator<String> iKeys = keys.iterator();
-      String key = null;
-      String value = null;
-      while (iKeys.hasNext()) {
-        key = iKeys.next();
-        value = properties.get(key);
-        theModifiedUser.setValue(key, value);
+      for (Map.Entry<String, String> property : properties.entrySet()) {
+        theModifiedUser.setValue(property.getKey(), property.getValue());
       }
       adminCtrl.updateUserFull(theModifiedUser);
 
     } else {
       if (StringUtil.isDefined(newPassword)) {
-        changePassword(theModifiedUser.getLogin(), oldPassword, newPassword,
-            theModifiedUser.getDomainId());
+        changePassword(credential, newPassword);
       }
     }
   }
 
-  private void changePassword(String login, String oldPassword, String newPassword, String domainId)
+  private void changePassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
-    LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
-    auth.changePassword(login, oldPassword, newPassword, domainId);
+    AuthenticationService authenticator = new AuthenticationService();
+    authenticator.changePassword(credential, newPassword);
   }
 
   public UserPreferences getPreferences() {
@@ -252,10 +179,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public void savePreferences(UserPreferences preferences) {
     SilverpeasServiceProvider.getPersonalizationService().saveUserSettings(preferences);
-  }
-
-  public List<String> getAllLanguages() {
-    return DisplayI18NHelper.getLanguages();
   }
 
   public List<SpaceInstLight> getSpaceTreeview() {
@@ -356,7 +279,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   /**
    * @param id the invitation identifier
-   * @see InvitationService.ignoreInvitation
+   * @see InvitationService#ignoreInvitation(int)
    */
   public void ignoreInvitation(String id) {
     invitationService.ignoreInvitation(Integer.parseInt(id));
@@ -373,7 +296,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param message
+   * @param relationShipId
    */
   private void acceptInvitationNotif(int relationShipId) {
     RelationShip curRelation = invitationService.getRelationShip(relationShipId);

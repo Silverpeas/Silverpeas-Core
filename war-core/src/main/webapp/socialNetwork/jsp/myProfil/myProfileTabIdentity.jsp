@@ -37,29 +37,27 @@
 <%@page import="com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes"%>
 
 <%
-ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", "");
-ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+  ResourceLocator rs = new ResourceLocator("com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings", resource.getLanguage());
+  ResourceLocator authRs = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", resource.getLanguage());
+  ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", resource.getLanguage());
 
-boolean 	updateIsAllowed				= ((Boolean) request.getAttribute("UpdateIsAllowed")).booleanValue();
-boolean 	isAdmin						= ((Boolean) request.getAttribute("isAdmin")).booleanValue();
-boolean 	isPasswordChangeAllowed		= ((Boolean) request.getAttribute("isPasswordChangeAllowed")).booleanValue();
-Integer     minLengthPwd 				= (Integer) request.getAttribute("minLengthPwd");
-Boolean		blanksAllowedInPwd 			= (Boolean) request.getAttribute("blanksAllowedInPwd");
-String 		action 						= (String) request.getAttribute("Action");
-String 		messageOK 					= (String) request.getAttribute("MessageOK");
-String 		messageNOK 					= (String) request.getAttribute("MessageNOK");
+  boolean updateIsAllowed = (Boolean) request.getAttribute("UpdateIsAllowed");
+  boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
+  boolean isPasswordChangeAllowed = (Boolean) request.getAttribute("isPasswordChangeAllowed");
+  String action = (String) request.getAttribute("Action");
+  String messageOK = (String) request.getAttribute("MessageOK");
+  String messageNOK = (String) request.getAttribute("MessageNOK");
 
+  String fieldAttribute = " disabled=\"disabled\" ";
+  if (updateIsAllowed) {
+    fieldAttribute = "";
+  }
 
-String fieldAttribute = " disabled=\"disabled\" ";
-if (updateIsAllowed) {
-	fieldAttribute = "";
-}
-
-boolean updateFirstNameIsAllowed 	= rs.getBoolean("updateFirstName", false);
-boolean updateLastNameIsAllowed 	= rs.getBoolean("updateLastName", false);
-boolean updateEmailIsAllowed 		= rs.getBoolean("updateEmail", false);
-boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
+  boolean updateFirstNameIsAllowed = rs.getBoolean("updateFirstName", false);
+  boolean updateLastNameIsAllowed = rs.getBoolean("updateLastName", false);
+  boolean updateEmailIsAllowed = rs.getBoolean("updateEmail", false);
+  boolean displayInfosLDAP = rs.getBoolean("displayInfosLDAP", false);
 %>
 
 <style type="text/css">
@@ -123,20 +121,20 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
     </tr>
 	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel()) %></td>
+		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
 		<tr id="oldPassword">
 	        <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
 	        <td><input <%=fieldAttribute%> type="password" name="OldPassword" size="50" maxlength="32"/></td>
 	    </tr>
-		<tr id="newPassword">
+		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
-		<tr id="newPasswordConfirmation">
+		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" name="NewPasswordConfirm" size="50" maxlength="32"/>&nbsp;(<%=minLengthPwd.toString()%>&nbsp;<%=resource.getString("myProfile.LengthPwdLabel")%>)</td>
+	        <td><input <%=fieldAttribute%> id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
 	    </tr>
     <%} else { %>
 	    <tr>
@@ -151,7 +149,6 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
     <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
-        String userLoginAnswer = userFull.getLoginAnswer();
 %>
         <tr id="question">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginQuestion")%> :</td>
@@ -169,7 +166,7 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
         </tr>
         <tr id="answer">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginAnswer")%> :</td>
-            <td><input type="text" name="userLoginAnswer" value="<%=userLoginAnswer%>" size="50" maxlength="99"/></td>
+            <td><input type="text" name="userLoginAnswer" value="" size="50" maxlength="99"/></td>
         </tr><%
     }
 %>
@@ -217,6 +214,12 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 %>
 
 <script type="text/javascript">
+
+  // Password
+  $(document).ready(function(){
+    $('#newPassword').password();
+  });
+
 	function submitForm() {
 		var errorMsg = "";
 		<% if (updateLastNameIsAllowed) { %>
@@ -227,17 +230,15 @@ boolean displayInfosLDAP			= rs.getBoolean("displayInfosLDAP", false);
 			}
 		<% } %>
 		<% if (isPasswordChangeAllowed) {%>
-		if (document.UserForm.NewPassword.value != document.UserForm.NewPasswordConfirm.value)
-		{
-			errorMsg += "- <%=resource.getString("myProfile.WrongNewPwd")%>\n";
-		}
-		if (<%=! blanksAllowedInPwd.booleanValue()%> && document.UserForm.NewPassword.value.indexOf(" ") != -1)
-		{
-			errorMsg += "- <%=resource.getString("myProfile.NoSpacesInPassword")%>\n";
-		}
-		else if ((document.UserForm.NewPassword.value.length > 0) &&
-				(document.UserForm.NewPassword.value.length < <%=minLengthPwd.intValue()%>))
-			errorMsg += "- <%=resource.getString("myProfile.WrongLength")%>\n";
+    var $pwdInput = $('#newPassword');
+    if ($pwdInput.val()) {
+      $pwdInput.password('verify', {onError : function() {
+        errorMsg += "- <%=resource.getString("myProfile.Error_bad_credential")%>\n";
+      }});
+      if ($pwdInput.val() != $('#newPasswordConfirmation').val()) {
+        errorMsg += "- <%=resource.getString("myProfile.WrongNewPwd")%>\n";
+      }
+    }
 		<%
 		}
 		%>

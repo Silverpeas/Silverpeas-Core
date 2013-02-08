@@ -24,13 +24,15 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.silverpeas.util.PasswordGenerator;
-import com.stratelia.silverpeas.authentication.AuthenticationException;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.password.service.PasswordServiceFactory;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,8 +40,6 @@ import javax.servlet.http.HttpServletRequest;
  * @author ehugonnet
  */
 public class ResetPasswordHandler extends FunctionHandler {
-
-  private PasswordGenerator passwordGenerator = new PasswordGenerator();
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -52,7 +52,7 @@ public class ResetPasswordHandler extends FunctionHandler {
         return getGeneral().getString("forgottenPasswordResetError");
       }
       if (userId != null) {
-        String password = passwordGenerator.random();
+        String password = PasswordServiceFactory.getPasswordService().generate();
         ForgottenPasswordMailParameters parameters = null;
         try {
           parameters = getMailParameters(userId);
@@ -71,9 +71,12 @@ public class ResetPasswordHandler extends FunctionHandler {
               "forgottenPassword.EX_GET_FULL_USER_DETAIL", "userId=" + userId, e);
         }
 
-        LoginPasswordAuthentication auth = new LoginPasswordAuthentication();
         try {
-          auth.resetPassword(user.getLogin(), password, user.getDomainId());
+          AuthenticationCredential credential = AuthenticationCredential
+              .newWithAsLogin(user.getLogin())
+              .withAsDomainId(user.getDomainId());
+          AuthenticationService authenticator = new AuthenticationService();
+          authenticator.resetPassword(credential, password);
         } catch (AuthenticationException e1) {
           throw new ForgottenPasswordException(
               "CredentialsServlet.resetPasswordHandler.doAction()",

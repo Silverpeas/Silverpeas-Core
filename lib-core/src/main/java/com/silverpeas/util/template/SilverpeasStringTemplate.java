@@ -24,6 +24,12 @@
 
 package com.silverpeas.util.template;
 
+import com.silverpeas.util.template.renderer.DateRenderer;
+import org.antlr.stringtemplate.AutoIndentWriter;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -31,13 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.antlr.stringtemplate.AutoIndentWriter;
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.StringTemplateGroup;
-import org.apache.commons.io.IOUtils;
-
-import com.silverpeas.util.template.renderer.DateRenderer;
 
 public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
@@ -55,7 +54,14 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
     String physicalName = group.getFileNameFromTemplateName(fileName);
     File file = new File(customersRootDir, physicalName);
     if (!file.exists() || !file.isFile()) {
-      group = new StringTemplateGroup(fileName, templateConfig.getProperty(TEMPLATE_ROOT_DIR));
+      String rootRootDir = templateConfig.getProperty(TEMPLATE_ROOT_DIR);
+      file = new File(rootRootDir, physicalName);
+      group = new StringTemplateGroup(fileName, rootRootDir);
+    }
+    // In case the file is empty, StringTemplate is in error because the encoding can't be
+    // guessed ...
+    if (file.exists() && file.length() == 0) {
+      return "";
     }
     group.setFileCharEncoding("UTF-8");
     StringTemplate template = group.getInstanceOf(fileName);
@@ -79,9 +85,9 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
       template.write(out);
     } catch (IOException e) {
       return template.toString();
-    }finally {
+    } finally {
       IOUtils.closeQuietly(writer);
-    }    
+    }
     return writer.toString();
   }
 
@@ -99,9 +105,10 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
   public String applyFileTemplateOnComponent(String componentName, String fileName) {
     return applyFileTemplate("/" + componentName.toLowerCase() + "/" + fileName);
   }
-  
+
+  @Override
   public boolean isCustomTemplateExists(String componentName, String fileName) {
-    String filePath = "/"+componentName.toLowerCase()+"/" + fileName;
+    String filePath = "/" + componentName.toLowerCase() + "/" + fileName;
     String customersRootDir = templateConfig.getProperty(TEMPLATE_CUSTOM_DIR);
     StringTemplateGroup group = new StringTemplateGroup(filePath, customersRootDir);
     String physicalName = group.getFileNameFromTemplateName(filePath);

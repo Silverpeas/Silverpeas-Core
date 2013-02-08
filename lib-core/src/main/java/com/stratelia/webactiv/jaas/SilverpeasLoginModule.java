@@ -28,7 +28,8 @@ import com.silverpeas.jcrutil.security.impl.DigestCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
@@ -62,7 +63,7 @@ public class SilverpeasLoginModule implements LoginModule {
   private Subject subject;
   private CallbackHandler callbackHandler;
   private Set<Principal> principals = new HashSet<Principal>();
-  private LoginPasswordAuthentication authenticator;
+  private AuthenticationService authenticator;
   private OrganizationController controller;
   private Admin administrator;
 
@@ -74,7 +75,7 @@ public class SilverpeasLoginModule implements LoginModule {
     return subject;
   }
 
-  public void setAuthenticator(LoginPasswordAuthentication authenticator) {
+  public void setAuthenticator(AuthenticationService authenticator) {
     this.authenticator = authenticator;
   }
 
@@ -133,8 +134,11 @@ public class SilverpeasLoginModule implements LoginModule {
           // authenticate
           Domain[] domains = controller.getAllDomains();
           for (Domain domain : domains) {
-            String key = authenticator.authenticate(sc.getUserID(), new String(sc.getPassword()),
-                domain.getId(), null);
+            AuthenticationCredential credential = AuthenticationCredential
+                .newWithAsLogin(sc.getUserID())
+                .withAsPassword(new String(sc.getPassword()))
+                .withAsDomainId(domain.getId());
+            String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
@@ -147,8 +151,8 @@ public class SilverpeasLoginModule implements LoginModule {
           }
           authenticated = true;
         } else if (creds instanceof SilverpeasCredentials) {
-          String userId = ((SilverpeasCredentials) creds).getUserId();
-          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+          String theUserId = ((SilverpeasCredentials) creds).getUserId();
+          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId);
           fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;
@@ -161,7 +165,10 @@ public class SilverpeasLoginModule implements LoginModule {
           // authenticate
           Domain[] domains = controller.getAllDomains();
           for (Domain domain : domains) {
-            String key = authenticator.authenticate(sc.getUsername(), domain.getId(), null);
+            AuthenticationCredential credential = AuthenticationCredential
+                .newWithAsLogin(sc.getUsername())
+                .withAsDomainId(domain.getId());
+            String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);

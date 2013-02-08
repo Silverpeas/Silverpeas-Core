@@ -26,9 +26,9 @@ package com.stratelia.webactiv.servlets.credentials;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordException;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailManager;
-import com.stratelia.silverpeas.authentication.password.ForgottenPasswordMailParameters;
+import org.silverpeas.authentication.password.ForgottenPasswordException;
+import org.silverpeas.authentication.password.ForgottenPasswordMailManager;
+import org.silverpeas.authentication.password.ForgottenPasswordMailParameters;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -49,18 +49,18 @@ public abstract class FunctionHandler {
   private ResourceBundle resources;
   private ResourceLocator m_Multilang;
   private ForgottenPasswordMailManager forgottenPasswordMailManager;
-  private ResourceLocator general =
-      new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  private ResourceLocator general = 
+      new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
+  private ResourceLocator authenticationSettings =
+      new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
 
   public FunctionHandler() {
-    resources = FileUtil.loadBundle("com.stratelia.silverpeas.peasCore.SessionManager",
-        Locale.ROOT);
+    resources = FileUtil.loadBundle("org.silverpeas.peasCore.SessionManager", Locale.ROOT);
     String language = resources.getString("language");
     if (!StringUtil.isDefined(language)) {
       language = "fr";
     }
-    m_Multilang = new ResourceLocator("com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle",
-        language);
+    m_Multilang = new ResourceLocator("org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     forgottenPasswordMailManager = new ForgottenPasswordMailManager();
   }
 
@@ -162,4 +162,9 @@ public abstract class FunctionHandler {
   protected void setGeneral(ResourceLocator general) {
     this.general = general;
   }
+
+  public ResourceLocator getAuthenticationSettings() {
+    return authenticationSettings;
+  }
+
 }

@@ -71,6 +71,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
@@ -772,7 +773,7 @@ public class NotificationManager extends AbstractNotification
 
     // First Tests if the user is a guest
     // Then notify himself that he cant notify anyone
-    if ("G".equalsIgnoreCase(getUserAccessLevel(params.iFromUserId))) {
+    if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.iFromUserId))) {
       params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "\n"
           + params.sTitle + "\n\n"
           + m_Multilang.getString("guestNotAllowedBody2");
@@ -916,8 +917,8 @@ public class NotificationManager extends AbstractNotification
     return valret;
   }
 
-  protected String getUserAccessLevel(int userId) {
-    String valret = "";
+  protected UserAccessLevel getUserAccessLevel(int userId) {
+    UserAccessLevel valret = UserAccessLevel.UNKNOWN;
 
     if (userId > -1) {
       try {

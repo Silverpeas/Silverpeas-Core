@@ -49,8 +49,8 @@
     if (grObject.isSynchronized())
     {
     	//Group operations
-        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
+        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
         
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "groupSynchro?Idgroup="+thisGroupId);
@@ -65,8 +65,8 @@
     		
 	        // Group operations
 	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
+	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
+	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
 	
 	        // User operations
 			operationPane.addLine();
@@ -86,10 +86,10 @@
     		{
     			//Group operations
     	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-    	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
+    	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
     	        
     	        if (!isGroupManagerDirectly)
-    	        	operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
+    	        	operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
 
     	        // User operations
     			operationPane.addLine();
@@ -200,7 +200,7 @@ if (showTabs) {
 	out.println("<br/>");
 
   ArrayPane arrayPaneUser = gef.getArrayPane("users", "groupContent.jsp", request, session);
-  String[][] subUsers = (String[][])request.getAttribute("subUsers");
+  List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
   arrayPaneUser.setTitle(resource.getString("GML.users"));
@@ -208,20 +208,22 @@ if (showTabs) {
   arrayPaneUser.addArrayColumn("&nbsp;");
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-  arrayPaneUser.setSortable(false);
+  arrayPaneUser.addArrayColumn(resource.getString("GML.lastConnection"));
 
   if (subUsers != null) {
-      for(int i=0; i<subUsers.length; i++){
-          //cr�ation des ligne de l'arrayPane
-          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-          IconPane iconPane1User = gef.getIconPane();
-          Icon userIcon = iconPane1User.addIcon();
-          userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
-          arrayLineUser.addArrayCellIconPane(iconPane1User);
-          arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
-          arrayLineUser.addArrayCellText(subUsers[i][2]);
-        }
-  } 	
+    for(UserDetail user : subUsers){
+        ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
+        IconPane iconPane1User = gef.getIconPane();
+        Icon userIcon = iconPane1User.addIcon();
+        userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
+        arrayLineUser.addArrayCellIconPane(iconPane1User);
+        arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
+        arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+        Date lastConnection = user.getLastLoginDate();
+        ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
+        cell.setCompareOn(lastConnection);
+      }
+  }
   out.println(arrayPaneUser.print());
 %>
 </view:frame>

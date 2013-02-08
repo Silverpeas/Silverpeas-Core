@@ -24,23 +24,20 @@
 
 package org.silverpeas.admin.domain.repository;
 
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.inject.Named;
 import javax.sql.DataSource;
-
 import org.silverpeas.admin.domain.exception.SQLDomainDAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 
 @Repository
 @Named("sqlInternalDomainRepository")
@@ -131,7 +128,7 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     // Common columns
     createStatement.append("id int NOT NULL , firstName varchar(100) NULL , ");
     createStatement.append("lastName varchar(100) NULL ," + "email varchar(200) NULL , ");
-    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(32) NULL , ");
+    createStatement.append("login varchar(50) NOT NULL ," + "password varchar(123) NULL , ");
     createStatement.append("passwordValid char(1) NULL , ");
 
     // Domain specific columns

@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.AuthenticationUserStateChecker;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 
 import com.silverpeas.look.LookHelper;
@@ -110,6 +112,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
       return GeneralPropertiesManager.getString("sessionTimeout");
     }
+
+    // Verify user state
+    try {
+      AuthenticationUserStateChecker.verify(mainSessionCtrl.getCurrentUserDetail());
+    } catch (AuthenticationException e) {
+      return GeneralPropertiesManager.getString("sessionTimeout");
+    }
+
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
@@ -146,7 +156,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     T component = this.getComponentSessionController(session, componentId);
     if (component == null) {
-      // check that the user has an acces to this component instance
+      // isUserStateValid that the user has an acces to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
@@ -243,7 +253,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     sessionManagement.validateSession(session.getId());
   }
 
-  // check if the user is allowed to access the required component
+  // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
     boolean isAllowed;

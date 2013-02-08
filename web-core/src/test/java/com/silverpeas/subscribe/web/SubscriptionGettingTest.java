@@ -46,6 +46,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.admin.user.constant.UserState;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -88,6 +90,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     user.setLastName("Simpson");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
@@ -112,6 +115,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     user.setLastName("Simpson");
     user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
     user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    user.setState(UserState.VALID);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     List<String> subscribers = Lists.newArrayList("5", "6", "7", "20");

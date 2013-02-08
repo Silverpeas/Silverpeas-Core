@@ -53,6 +53,7 @@
 <%@ page import="com.stratelia.webactiv.util.attachment.ejb.AttachmentException"%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
@@ -62,9 +63,9 @@
         String fileLanguage = request.getParameter("FileLanguage");
         MainSessionController mainSessionController = (MainSessionController) request.getSession(
             ).getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-        boolean update = Boolean.valueOf(request.getParameter("update_attachment")).booleanValue();
-        boolean force = Boolean.valueOf(request.getParameter("force_release")).booleanValue()
-                && "A".equals(mainSessionController.getCurrentUserDetail().getAccessLevel()) ;
+        boolean update = Boolean.valueOf(request.getParameter("update_attachment"));
+        boolean force = Boolean.valueOf(request.getParameter("force_release"))
+                && mainSessionController.getCurrentUserDetail().isAccessAdmin() ;
         if(!AttachmentController.checkinFile(idAttachment, mainSessionController.getUserId(), false, update, force, fileLanguage)) {
           if(url.indexOf('?') > 0) {
             url = url + '&';

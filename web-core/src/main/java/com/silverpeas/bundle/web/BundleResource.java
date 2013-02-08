@@ -24,7 +24,9 @@
 package com.silverpeas.bundle.web;
 
 import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.IOException;
@@ -66,6 +68,24 @@ public class BundleResource extends RESTWebService {
   }
 
   /**
+   * User authentication is not necessary for this WEB Service. The authentication processing is
+   * used here to identify the user behind the call if possible.
+   * @param validation the validation instance to use.
+   * @throws WebApplicationException
+   */
+  @Override
+  public void validateUserAuthentication(final UserPriviledgeValidation validation)
+      throws WebApplicationException {
+    try {
+      super.validateUserAuthentication(validation);
+    } catch (WebApplicationException wae) {
+      if (Response.Status.UNAUTHORIZED.getStatusCode() != wae.getResponse().getStatus()) {
+        throw wae;
+      }
+    }
+  }
+
+  /**
    * Asks for an i18n resource bundle either in the language of the current user in the session or
    * in the specified language. The returned bundle is a merge of both the asked i18n properties and
    * the general Silverpeas i18n texts.
@@ -88,7 +108,7 @@ public class BundleResource extends RESTWebService {
   @Path("{bundle: (com|org)/[a-zA-Z0-9/._$]+}")
   @Produces(MediaType.TEXT_PLAIN)
   public Response getBundle(@PathParam("bundle") final String bundle) throws IOException {
-    String language = getUserPreferences().getLanguage();
+    String language = getLanguage();
     String localizedBundle = bundle;
     if (bundle.endsWith(".properties")) {
       localizedBundle = bundle.substring(0, bundle.indexOf(".properties"));
@@ -117,5 +137,18 @@ public class BundleResource extends RESTWebService {
     } catch (MissingResourceException ex) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
+  }
+
+  /**
+   * Due to the particularity of this WEB Service according to authentication, the language is
+   * handled at this level.
+   * @return
+   */
+  private String getLanguage() {
+    String language = I18NHelper.defaultLanguage;
+    if (getUserDetail() != null) {
+      language = getUserPreferences().getLanguage();
+    }
+    return language;
   }
 }

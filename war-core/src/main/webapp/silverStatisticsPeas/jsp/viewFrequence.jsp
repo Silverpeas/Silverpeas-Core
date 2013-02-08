@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -37,7 +38,7 @@
 	Collection cMonthEnd = (Collection)request.getAttribute("MonthEnd");	
 	Collection cYearEnd = (Collection)request.getAttribute("YearEnd");
 	Collection cFrequenceDetail = (Collection)request.getAttribute("FrequenceDetail");		
-    String userProfile = (String)request.getAttribute("UserProfile");
+    UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
 %>
 
@@ -60,7 +61,7 @@
 <body>
 <%
           out.println(window.printBefore());          
-          if (userProfile.equals("A")) {
+          if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 			out.println(tabbedPane.print());
     	  }
           out.println(frame.printBefore());

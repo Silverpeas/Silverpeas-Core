@@ -93,5 +93,9 @@ public enum SupportedJavaScriptPlugins {
   /**
    * External plugin to manage list of items as tags
    */
-  tags;
+  tags,
+  /**
+   * Silverpeas plugin to manage password.
+   */
+  password;
 }

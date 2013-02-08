@@ -63,8 +63,7 @@ public class JDBCQuotaDAO implements QuotaDAO {
    */
   private Connection openConnection() {
     try {
-      final Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-      return con;
+      return DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
     } catch (final Exception e) {
       throw new QuotaRuntimeException(getClass().getSimpleName() + ".openConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

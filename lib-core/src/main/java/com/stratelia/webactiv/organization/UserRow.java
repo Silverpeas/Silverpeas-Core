@@ -24,6 +24,8 @@
 
 package com.stratelia.webactiv.organization;
 
+import java.util.Date;
+
 public class UserRow {
   public int id = -1;
   public String specificId = "";
@@ -36,4 +38,14 @@ public class UserRow {
   public String accessLevel = "";
   public String loginQuestion = "";
   public String loginAnswer = "";
+  public Date creationDate = null;
+  public Date saveDate = null;
+  public int version = 0;
+  public Date tosAcceptanceDate = null;
+  public Date lastLoginDate = null;
+  public int nbSuccessfulLoginAttempts = 0;
+  public Date lastLoginCredentialUpdateDate = null;
+  public Date expirationDate = null;
+  public String state = "";
+  public Date stateSaveDate  = null;
 }

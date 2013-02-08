@@ -23,24 +23,23 @@
  */
 package com.silverpeas.notification.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
-
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.persistence.TypedParameter;
 import com.silverpeas.util.persistence.TypedParameterUtil;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
 public class NotificationResourceRepositoryImpl implements NotificationResourceRepositoryCustom {
 
-  @Inject
-  private EntityManagerFactory emf;
+  @PersistenceContext
+  private EntityManager em;
 
   /*
    * (non-Javadoc)
@@ -62,12 +61,12 @@ public class NotificationResourceRepositoryImpl implements NotificationResourceR
     query.append(" and resourceType = :");
     query.append(TypedParameterUtil.addNamedParameter(parameters, "resourceType", resourceType));
     query.append(" and componentInstanceId = :");
-    query.append(TypedParameterUtil.addNamedParameter(parameters, "componentInstanceId",
-        componentInstanceId));
+    query.append(TypedParameterUtil
+        .addNamedParameter(parameters, "componentInstanceId", componentInstanceId));
 
     // Typed query
     final TypedQuery<NotificationResourceData> tq =
-        emf.createEntityManager().createQuery(query.toString(), NotificationResourceData.class);
+        em.createQuery(query.toString(), NotificationResourceData.class);
 
     // Parameters
     TypedParameterUtil.computeNamedParameters(tq, parameters);

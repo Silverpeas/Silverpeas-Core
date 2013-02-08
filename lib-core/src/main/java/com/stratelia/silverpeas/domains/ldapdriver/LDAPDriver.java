@@ -28,7 +28,7 @@ import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
-import com.stratelia.silverpeas.authentication.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.AuthenticationBadCredentialException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -62,6 +62,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * class who need it.
    * @param rs name of resource file
    */
+  @Override
   public void initFromProperties(ResourceLocator rs) throws AdminException {
     driverSettings.initFromProperties(rs);
     synchroCache.init(driverSettings);
@@ -71,10 +72,12 @@ public class LDAPDriver extends AbstractDomainDriver {
     groupTranslator.init(driverSettings, synchroCache);
   }
 
+  @Override
   public void addPropertiesToImport(List<DomainProperty> props) {
     addPropertiesToImport(props, null);
   }
 
+  @Override
   public void addPropertiesToImport(List<DomainProperty> props, Map<String, String> descriptions) {
     props.add(getProperty("lastName", driverSettings.getUsersLastNameField(), descriptions));
     props.add(getProperty("firstName", driverSettings.getUsersFirstNameField(), descriptions));
@@ -96,6 +99,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Called when Admin starts the synchronization
    */
+  @Override
   public long getDriverActions() {
     if (x509Enabled) {
       return ACTION_MASK_RO | ACTION_X509_USER | ACTION_UPDATE_USER;
@@ -104,6 +108,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public boolean isSynchroOnLoginEnabled() {
     SilverTrace.info("admin", "LDAPDriver.isSynchroOnLoginEnabled",
         "root.MSG_GEN_ENTER_METHOD", "Enabled = "
@@ -112,6 +117,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.isSynchroAutomatic();
   }
 
+  @Override
   public boolean isSynchroOnLoginRecursToGroups() {
     SilverTrace.info("admin", "LDAPDriver.isSynchroOnLoginRecursToGroups",
         "root.MSG_GEN_ENTER_METHOD", "RecursToGroups = "
@@ -120,6 +126,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.isSynchroRecursToGroups();
   }
 
+  @Override
   public boolean isGroupsInheritProfiles() {
     SilverTrace.info("admin", "LDAPDriver.isGroupsInheritProfiles",
         "root.MSG_GEN_ENTER_METHOD", "GroupsInheritProfiles = "
@@ -128,6 +135,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.isGroupsInheritProfiles();
   }
 
+  @Override
   public boolean mustImportUsers() {
     SilverTrace.info("admin", "LDAPDriver.mustImportUsers",
         "root.MSG_GEN_ENTER_METHOD", "MustImportUsers = "
@@ -136,6 +144,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.mustImportUsers();
   }
 
+  @Override
   public boolean isSynchroThreaded() {
     SilverTrace.info("admin", "LDAPDriver.isGroupsInheritProfiles",
         "root.MSG_GEN_ENTER_METHOD", "GroupsInheritProfiles = "
@@ -144,6 +153,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return driverSettings.isSynchroThreaded();
   }
 
+  @Override
   public String getTimeStamp(String minTimeStamp) throws AdminException {
     if (driverSettings.getTimeStampVar().length() > 0) {
       String ld = LDAPUtility.openConnection(driverSettings);
@@ -170,6 +180,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public String getTimeStampField() {
     String timeStampField = driverSettings.getTimeStampVar();
     if (timeStampField != null && timeStampField.trim().length() > 0) {
@@ -179,6 +190,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp,
       String toTimeStamp) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
@@ -201,6 +213,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     return usersReturned;
   }
 
+  @Override
   public Group[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp)
       throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
@@ -223,6 +236,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Called when Admin starts the synchronization
    */
+  @Override
   public void beginSynchronization() throws Exception {
     synchroInProcess = true;
     synchroCache.beginSynchronization();
@@ -254,6 +268,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userLogin The User Login to import
    * @return The User object that contain new user information
    */
+  @Override
   public UserDetail importUser(String userLogin) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -270,6 +285,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Remove a given user from database
    * @param userId The user id To remove synchro
    */
+  @Override
   public void removeUser(String userId) throws AdminException {
     // In this driver, do nothing
   }
@@ -279,6 +295,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The User Id to synchronize
    * @return The User object that contain new user information
    */
+  @Override
   public UserDetail synchroUser(String userId) throws Exception {
     SilverTrace.info("admin", "LDAPDriver.synchroUser",
         "root.MSG_GEN_ENTER_METHOD", "UserId = " + userId);
@@ -372,6 +389,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
+  @Override
   public UserFull getUserFull(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -389,6 +407,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User object that contain new user information
    */
+  @Override
   public UserDetail getUser(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -405,6 +424,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve all users from the database
    * @return User[] An array of User Objects that contain users information
    */
+  @Override
   public UserDetail[] getAllUsers() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -417,6 +437,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
       String propertyValue) throws AdminException {
     DomainProperty property = getProperty(propertyName);
@@ -435,6 +456,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
     String extraFilter = "";
     for (String propertyName : query.keySet()) {
@@ -454,6 +476,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param userId The user id as stored in the database
    * @return The User's groups specific Ids
    */
+  @Override
   public String[] getUserMemberGroupIds(String userId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -471,6 +494,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupName The group name to import
    * @return The group object that contain new group information
    */
+  @Override
   public Group importGroup(String groupName) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
     SilverTrace.info("admin", "LDAPDriver.getGroup",
@@ -486,6 +510,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Remove a given group from database
    * @param groupId The group id To remove synchro
    */
+  @Override
   public void removeGroup(String groupId) throws AdminException {
     // In this driver, do nothing
   }
@@ -495,6 +520,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group Id to synchronize
    * @return The group object that contain new group information
    */
+  @Override
   public Group synchroGroup(String groupId) throws AdminException {
     SilverTrace.info("admin", "LDAPDriver.importGroup",
         "root.MSG_GEN_ENTER_METHOD", "GroupId = " + groupId);
@@ -521,6 +547,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group id as stored in the database
    * @return The Group object that contains user information
    */
+  @Override
   public Group getGroup(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -543,6 +570,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param groupId The group id as stored in the database
    * @return Group[] An array of Group Objects that contain groups information
    */
+  @Override
   public Group[] getGroups(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -559,6 +587,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve all groups from the database
    * @return Group[] An array of Group Objects that contain groups information
    */
+  @Override
   public Group[] getAllGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -575,6 +604,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Retrieve all root groups from the database
    * @return Group[] An array of Group Objects that contain root groups information
    */
+  @Override
   public Group[] getAllRootGroups() throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -587,6 +617,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
     String ld = LDAPUtility.openConnection(driverSettings);
 
@@ -604,6 +635,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
    * 'commit' statement)
    */
+  @Override
   public void startTransaction(boolean bAutoCommit) {
     // Access in read only -> no need to support transaction mode
   }
@@ -611,6 +643,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Commit transaction
    */
+  @Override
   public void commit() throws AdminException {
     // Access in read only -> no need to support transaction mode
   }
@@ -618,10 +651,12 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Rollback transaction
    */
+  @Override
   public void rollback() throws AdminException {
     // Access in read only -> no need to support transaction mode
   }
 
+  @Override
   public List<String> getUserAttributes() throws AdminException {
     return Arrays.asList(userTranslator.getUserAttributes());
   }

@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,7 +70,7 @@ public class SocialNetworkService {
 
   /**
    * Get social network service implementation specific to given social network
-   * @param networkid enum representing network id
+   * @param networkId enum representing network id
    * @return
    */
   public SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
@@ -102,9 +103,16 @@ public class SocialNetworkService {
     return null;
   }
 
-  public ExternalAccount getExternalAccount(SocialNetworkID networkId,
-      String profileId) {
-    return dao.findOne(new AccountId(networkId, profileId));
+  public ExternalAccount getExternalAccount(SocialNetworkID networkId, String profileId) {
+    ExternalAccount externalAccount = dao.findOne(new AccountId(networkId, profileId));
+    if (externalAccount != null) {
+      UserDetail user = UserDetail.getById(externalAccount.getSilverpeasUserId());
+      if (user == null || user.isDeletedState()) {
+        removeExternalAccount(externalAccount.getSilverpeasUserId(), networkId);
+        externalAccount = null;
+      }
+    }
+    return externalAccount;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -125,6 +133,17 @@ public class SocialNetworkService {
     }
 
     return accounts;
+  }
+
+  public void removeAuthorizationToken(HttpSession session) {
+    if (session != null) {
+      SocialNetworkID networkId =
+          (SocialNetworkID) session.getAttribute(SOCIALNETWORK_ID_SESSION_ATTR);
+      if (networkId != null) {
+        session.setAttribute(SOCIALNETWORK_ID_SESSION_ATTR, null);
+        session.setAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR + networkId, null);
+      }
+    }
   }
 
   public void storeAuthorizationToken(HttpSession session, SocialNetworkID networkId,
@@ -159,17 +178,4 @@ public class SocialNetworkService {
     }
 
   }
-
-  @Transactional
-  public void removeAllExternalAccount(String userId) {
-    List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
-
-    if (accounts != null) {
-      for (ExternalAccount account : accounts) {
-          dao.delete(account);
-      }
-    }
-
-  }
-
 }

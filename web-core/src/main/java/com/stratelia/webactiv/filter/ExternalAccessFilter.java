@@ -26,7 +26,6 @@ package com.stratelia.webactiv.filter;
 
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import com.stratelia.silverpeas.authentication.LoginPasswordAuthentication;
 import com.stratelia.silverpeas.authentication.security.SecurityData;
 import com.stratelia.silverpeas.authentication.security.SecurityHolder;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -34,6 +33,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -42,6 +42,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
 
 public class ExternalAccessFilter implements Filter {
 
@@ -75,9 +77,14 @@ public class ExternalAccessFilter implements Filter {
         if ((controller == null)
             || (!controller.getCurrentUserDetail().getLogin().equals(
             securityData.getUserId()))) {
-          LoginPasswordAuthentication authentication = new LoginPasswordAuthentication();
-          String key = authentication.authenticate(securityData.getUserId(),
-              securityData.getDomainId(), req);
+          AuthenticationService authentication = new AuthenticationService();
+          AuthenticationCredential credential = AuthenticationCredential
+              .newWithAsLogin(securityData.getUserId())
+              .withAsDomainId(securityData.getDomainId());
+          String key = authentication.authenticate(credential);
+          for(Map.Entry<String, Object> capability: credential.getCapabilities().entrySet()) {
+            session.setAttribute(capability.getKey(), capability.getValue());
+          }
 
           try {
             controller = new MainSessionController(key, session.getId());
