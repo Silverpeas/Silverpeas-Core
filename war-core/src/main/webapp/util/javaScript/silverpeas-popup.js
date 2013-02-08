@@ -75,10 +75,14 @@
 
     /**
      * The modal basic dialog. (scroll is deactivated)
-     * It accepts one parameter that is an object with three attributes:
-     * - title : the document title of the dialog box
-     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
-     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the document title of the dialog box,
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing,
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
     basic : function( options ) {
 
@@ -107,12 +111,40 @@
     },
 
     /**
+     * The modal information dialog.
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the title of the dialog box (if it is empty a default title is used),
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing.
+     */
+    information : function( options ) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+      if (!settings.title || settings.title == null || settings.title.length == 0) {
+        settings.title = $.i18n.prop('GML.information.dialog.title');
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonTextNo : $.i18n.prop('GML.ok'),
+        isMaxWidth : true
+      }));
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+
+    /**
      * The modal validation dialog.
-     * It accepts one parameter that is an object with two attributes:
+     * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box,
-     * - callback : the callback to invoke when the user clicks on the validation button.
-     * The callback must returns a boolean indicating that all is ok and the dialog box
-     * can be closed.
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing.
      */
     validation : function( options ) {
 
@@ -122,7 +154,8 @@
       // Internal settings
       $.extend(settings, __buildInternalSettings({
         buttonTextYes : $.i18n.prop('GML.validate'),
-        buttonTextNo : $.i18n.prop('GML.cancel')
+        buttonTextNo : $.i18n.prop('GML.cancel'),
+        isMaxWidth : true
       }));
 
       // Dialog
@@ -132,10 +165,12 @@
     /**
      * The modal confirmation dialog.
      * A warning icon is automatically inserted into the title bar.
-     * It accepts one parameter that is an object with two attributes:
+     * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed.
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing.
      */
     confirmation : function( options ) {
 
@@ -169,10 +204,14 @@
 
     /**
      * The modal preview dialog.
-     * It accepts one parameter that is an object with three attributes:
-     * - title : the document title of the dialog box
-     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
-     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the document title of the dialog box,
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing,
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
     preview : function( options ) {
 
@@ -206,10 +245,14 @@
 
     /**
      * The modal view dialog.
-     * It accepts one parameter that is an object with three attributes:
-     * - title : the document title of the dialog box
-     * - width : width of content. Mandatory for IE7 browser and ignored in other cases
-     * - height : height of content. Mandatory for IE7 browser and ignored in other cases
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the document title of the dialog box,
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing,
+     * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
+     * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
      */
     view : function( options ) {
 
@@ -358,23 +401,32 @@
 
       // Buttons
       if (options.buttonDisplayed) {
-        $_this.dialog("option", "buttons", [ {
-          text : options.buttonTextYes,
-          click : function() {
-            var isok = true;
-            if (options.callback) {
-              isok = options.callback();
+        var buttons = [];
+        if (options.buttonTextYes) {
+          buttons.push({
+            text : options.buttonTextYes,
+            click : function() {
+              var isok = true;
+              if (options.callback) {
+                isok = options.callback();
+              }
+              if (isok) {
+                $_this.dialog("close");
+              }
             }
-            if (isok) {
+          });
+        }
+        if (options.buttonTextNo) {
+          buttons.push({
+            text : options.buttonTextNo,
+            click : function() {
               $_this.dialog("close");
             }
-          }
-        }, {
-          text : options.buttonTextNo,
-          click : function() {
-            $_this.dialog("close");
-          }
-        } ]);
+          });
+        }
+        if (buttons.length > 0) {
+          $_this.dialog("option", "buttons", buttons);
+        }
       }
 
       // Callback on close
@@ -395,11 +447,13 @@
       }
 
       // Width
-      var widthOption = "width";
+      var width = "" + options.width;
+      width = (width != 'auto') ? width.replace(/px/, '') + 'px' : width;
       if (options.isMaxWidth) {
-        widthOption = "maxWidth";
+        $_this.dialog("option", "width", "auto");
+      } else {
+        $_this.dialog("option", "width", width);
       }
-      $_this.dialog("option", widthOption, options.width);
 
       // keydown
       if (options.keydown) {
@@ -410,6 +464,11 @@
 
       // Dialog opening
       $_this.dialog('open');
+      if (options.isMaxWidth) {
+        // If max width is required, resizing and repositioning after the dialog open
+        $_this.dialog("widget").css('max-width', width);
+        $_this.dialog({ position : { my : "center", at : "center", of : window } });
+      }
     })
   }
 
