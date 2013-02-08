@@ -289,6 +289,18 @@
         localeChain : __getFlexPaperLanguage(view)
       }
     });
+    loadFlexPaperHandlers();
+  }
+
+  /**
+   * Loading handlers (dynamic load)
+   */
+  function loadFlexPaperHandlers() {
+    $.ajax({
+      url : webContext + '/util/javaScript/flexpaper/flexpaper_handlers.js',
+      dataType : "script",
+      cache : true
+    });
   }
 
   /**
