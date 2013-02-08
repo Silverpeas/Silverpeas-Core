@@ -64,7 +64,6 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
-  private static final String FLEXPAPER_HANDLERS = "flexpaper_handlers.js";
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
   private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
   private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
@@ -186,8 +185,6 @@ public class JavascriptPluginInclusion {
     popup = new script().setType(JAVASCRIPT_TYPE).setSrc(javascriptPath + SILVERPEAS_VIEW);
     xhtml.addElement(popup);
     popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_FLASH);
-    xhtml.addElement(popup);
-    popup = new script().setType(JAVASCRIPT_TYPE).setSrc(flexPaperPath + FLEXPAPER_HANDLERS);
     xhtml.addElement(popup);
     return xhtml;
   }
