@@ -2680,6 +2680,11 @@ caption {
   margin-right: 5px;
 }
 
+#directory #indexAndSearch #search #help {
+  line-height: 20px;
+  margin-left: 5px;
+}
+
 #directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
   display:none;
 }

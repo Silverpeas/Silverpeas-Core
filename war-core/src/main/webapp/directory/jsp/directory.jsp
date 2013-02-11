@@ -46,7 +46,7 @@
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-    List fragments = (List) request.getAttribute("UserFragments");
+    List<UserFragmentVO> fragments = (List<UserFragmentVO>) request.getAttribute("UserFragments");
     Pagination pagination = (Pagination) request.getAttribute("pagination");
     String breadcrumb = (String) request.getAttribute("BreadCrumb");
     String query = (String) request.getAttribute("Query");
@@ -61,6 +61,7 @@
 	if (!StringUtil.isDefined(para)) {
 	  para = "tous";
 	}
+	boolean showHelp = (Boolean) request.getAttribute("ShowHelp");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -71,6 +72,8 @@
     <view:looknfeel />
     <view:includePlugin name="invitme"/>
     <view:includePlugin name="messageme"/>
+    <view:includePlugin name="popup"/>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
     <script type="text/javascript">
       function viewIndex(index) {
           $.progressMessage();
@@ -108,6 +111,34 @@
     	  location.href="Sort?Type="+val;
       }
       
+      function showAutoHelp() {
+      	var helpCookieName = "Silverpeas_Directory_Help";
+      	var helpCookieValue = $.cookie(helpCookieName);
+      	if ("IKnowIt" != helpCookieValue) {
+      		$( "#help-message" ).dialog({
+      			modal: true,
+      			resizable: false,
+      			width: 570,
+      			dialogClass: 'help-modal-message',
+      			buttons: {
+      				"<fmt:message key="GML.help.cookie.buttons.ok" />": function() {
+      					$.cookie(helpCookieName, "IKnowIt", { expires: 3650, path: '/' });
+      					$( this ).dialog( "close" );
+      				},
+      				"<fmt:message key="GML.help.cookie.buttons.remind" />": function() {
+      					$( this ).dialog( "close" );
+      				}
+      			}
+      		});
+      	}
+      }
+      
+      function showHelp() {
+    	  $('#help-message').popup('help', {
+    		  title: "<fmt:message key="directory.help.title"/>"
+    	  });
+      }
+      
       $(function() {
   		$("#dialog-message" ).dialog({
   			modal: true,
@@ -128,7 +159,10 @@
   	    		return false;
   	      	}
   	     });
-
+  		
+  		<% if (showHelp) { %>
+  			showAutoHelp();
+  		<% } %>
   	});
     </script>
 
@@ -144,6 +178,7 @@
             	<fmt:message key="GML.search" var="buttonLabel"/>
             	<view:button label="${buttonLabel}" action="javascript:search()"/>
             </form>
+            <span id="help"><a href="javascript:onclick=showHelp()"><fmt:message key="GML.help" /></a></span>
           </div>
           <div id="index">
             <%
@@ -195,17 +230,12 @@
         </div>
         <div id="users">
           <ol class="message_list aff_colonnes">
-            <%
-                for (int i = 0; i < fragments.size(); i++) {
-                  UserFragmentVO fragment = (UserFragmentVO) fragments.get(i);
-            %>
-            <li class="intfdcolor" id="user-<%=fragment.getUserId() %>">
-                 <%=fragment.getFragment() %>
-                 <br clear="all" />
-            </li>
-            <%
-                }
-            %>
+            <% for (UserFragmentVO fragment : fragments) { %>
+	            <li class="intfdcolor" id="user-<%=fragment.getUserId() %>">
+	                 <%=fragment.getFragment() %>
+	                 <br clear="all" />
+	            </li>
+            <% } %>
           </ol>
           <div id="pagination">
             <%=pagination.printIndex("doPagination")%>
@@ -219,6 +249,10 @@
 	
 	<div id="dialog-message" title="<fmt:message key="directory.query.error.title"/>">
 		<fmt:message key="directory.query.error.msg"/>
+	</div>
+	
+	<div id="help-message" title="<fmt:message key="directory.help.title"/>" style="display: none;" class="help-modal-message">
+		<view:applyTemplate locationBase="core:directory" name="help" />
 	</div>
   </body>
 </html>

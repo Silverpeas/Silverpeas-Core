@@ -103,6 +103,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         }
 
         destination = doPagination(request, users, directorySC);
+        request.setAttribute("ShowHelp", true);
       } else if ("CommonContacts".equals(function)) {
         String userId = request.getParameter("UserId");
         users = directorySC.getCommonContacts(userId);
@@ -195,6 +196,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
     request.setAttribute("Query", directorySC.getCurrentQuery());
     request.setAttribute("Sort", directorySC.getCurrentSort());
+    request.setAttribute("ShowHelp", false);
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }
