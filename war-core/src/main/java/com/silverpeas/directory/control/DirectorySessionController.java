@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 import org.silverpeas.search.SearchEngineFactory;
@@ -91,7 +90,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private Group currentGroup;
   private List<Domain> currentDomains;
   private SpaceInstLight currentSpace;
-  private Properties stConfig;
   private RelationShipService relationShipService;
   private String currentQuery;
 
@@ -115,12 +113,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
             "org.silverpeas.directory.settings.DirectorySettings");
 
     elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", 10);
-
-    stConfig = new Properties();
-    stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
-            "templatePath"));
-    stConfig.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, getSettings().getString(
-            "customersTemplatePath"));
 
     relationShipService = new RelationShipService();
   }
@@ -474,7 +466,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserFragmentVO> getFragments(List<Member> membersToDisplay) {
     // using StringTemplate to personalize display of members
     List<UserFragmentVO> fragments = new ArrayList<UserFragmentVO>();
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(stConfig);
+    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("directory");
     for (Member member : membersToDisplay) {
       template.setAttribute("user", member);
       template.setAttribute("type", getString("GML.user.type." + member.getAccessLevel().code()));
