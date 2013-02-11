@@ -26,31 +26,31 @@
 -->
 
 <ConnectionInformation  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ConnectionSettings.xsd">
-	<!--
-		three possible choices for the connection type : JNDI,JDBC
-		JNDI : use existing JNDI resource to access database 
-		JDBC : use  JDBC url to access database
-	-->
-	<connectionType>JDBC</connectionType>
-	<JndiName>Silverpeas</JndiName>
-	<!-- complete following information only if you use JDBC to access database --> 
-	<driver>org.postgresql.Driver</driver>
-	<url>jdbc:postgresql://localhost:5432/SilverpeasV5</url>
-	<user>postgres</user>
-	<password>postgres</password>	
-	<!--connection pool parameters-->
-	   <!-- the number of objects to examine during each run of the idle object evictor thread (if any). -->
-	    <numTestsPerEvictionRun>-1</numTestsPerEvictionRun>
-		<!-- The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit.-->
-		<maxActive>10</maxActive>
-		<!--The maximum number of active connections that can remain idle in the pool, without extra ones being released, or negative for no limit.-->
-		<maxIdle>10 </maxIdle>
-		<!-- The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely.-->
-		<maxWait>1000</maxWait>
-		<!--The number of milliseconds to sleep between runs of the idle-object evictor thread. -->
-		<!--When negative, no idle-object evictor thread will run. Use this parameter only when you want the evictor thread to run.-->
-		<timeBetweenEvictionRunsMillis>-1</timeBetweenEvictionRunsMillis>
-		<!--The minimum amount of time an object, if active, may sit idle in the pool before it is eligible -->
-		<!--for eviction by the idle-object evictor. If a negative value is supplied, no objects are evicted due to idle time alone.-->
-		<minEvictableIdleTimeMillis>30000</minEvictableIdleTimeMillis>		
+  <!--
+  		three possible choices for the connection type : JNDI,JDBC
+  		JNDI : use existing JNDI resource to access database
+  		JDBC : use  JDBC url to access database
+ 	-->
+  <connectionType>JDBC</connectionType>
+  <JndiName>Silverpeas</JndiName>
+  <!-- complete following information only if you use JDBC to access database -->
+  <driver>${jdbc_driver}</driver>
+  <url>${jdbc_url}</url>
+  <user>${jdbc_login}</user>
+  <password>${jdbc_password}</password>
+  <!--connection pool parameters-->
+  <!-- the number of objects to examine during each run of the idle object evictor thread (if any). -->
+  <numTestsPerEvictionRun>-1</numTestsPerEvictionRun>
+  <!-- The maximum number of active connections that can be allocated from this pool at the same time, or non-positive for no limit.-->
+  <maxActive>10</maxActive>
+  <!--The maximum number of active connections that can remain idle in the pool, without extra ones being released, or negative for no limit.-->
+  <maxIdle>10 </maxIdle>
+  <!-- The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception, or -1 to wait indefinitely.-->
+  <maxWait>1000</maxWait>
+  <!--The number of milliseconds to sleep between runs of the idle-object evictor thread. -->
+  <!--When negative, no idle-object evictor thread will run. Use this parameter only when you want the evictor thread to run.-->
+  <timeBetweenEvictionRunsMillis>-1</timeBetweenEvictionRunsMillis>
+  <!--The minimum amount of time an object, if active, may sit idle in the pool before it is eligible -->
+  <!--for eviction by the idle-object evictor. If a negative value is supplied, no objects are evicted due to idle time alone.-->
+  <minEvictableIdleTimeMillis>30000</minEvictableIdleTimeMillis>
 </ConnectionInformation>
