@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.directory.control.DirectorySessionController"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -54,6 +55,12 @@
     } else {
       query = EncodeHelper.javaStringToHtmlString(query);
     }
+    String sort = (String) request.getAttribute("Sort");
+    int scope = (Integer) request.getAttribute("Scope");
+    String para = (String) request.getAttribute("View");
+	if (!StringUtil.isDefined(para)) {
+	  para = "tous";
+	}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -96,6 +103,11 @@
     	  }
       }
       
+      function sort(val) {
+    	  $.progressMessage();
+    	  location.href="Sort?Type="+val;
+      }
+      
       $(function() {
   		$("#dialog-message" ).dialog({
   			modal: true,
@@ -136,10 +148,6 @@
           <div id="index">
             <%
                 // afficher la bande d'index alphabetique
-                String para = (String) request.getAttribute("View");
-				if (!StringUtil.isDefined(para)) {
-				  para = "tous";
-				}
 				String indexCSS = "";
                 for (char i = 'A'; i <= 'Z'; ++i) {
                   if (String.valueOf(i).equals(para)) {
@@ -164,7 +172,26 @@
                 }
                 %>
                 <a <%=indexCSS%> href="javascript:viewIndex('connected')"><fmt:message key="directory.scope.connected" /></a>
-         </div>          
+            </div>
+            <% if ((scope == DirectorySessionController.DIRECTORY_DEFAULT || scope == DirectorySessionController.DIRECTORY_DOMAIN) && !DirectorySessionController.SORT_PERTINENCE.equals(sort)) { %>
+            <div id="sort">
+                <fmt:message key="directory.sort" />
+                <%
+                	indexCSS = "";
+                	if (DirectorySessionController.SORT_ALPHA.equals(sort)) {
+                	  indexCSS = "class=\"active\"";
+                	}
+                %>
+                <a <%=indexCSS%> href="javascript:sort('<%=DirectorySessionController.SORT_ALPHA%>')"><fmt:message key="directory.sort.alpha" /></a> -  
+                <%
+                	indexCSS = "";
+                	if (DirectorySessionController.SORT_NEWEST.equals(sort)) {
+                	  indexCSS = "class=\"active\"";
+                	}
+                %>
+                <a <%=indexCSS%> href="javascript:sort('<%=DirectorySessionController.SORT_NEWEST%>')"><fmt:message key="directory.sort.newest" /></a>
+        	</div>
+        	<% } %>
         </div>
         <div id="users">
           <ol class="message_list aff_colonnes">

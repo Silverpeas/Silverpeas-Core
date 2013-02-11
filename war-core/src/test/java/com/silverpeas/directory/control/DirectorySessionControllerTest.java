@@ -37,6 +37,7 @@ import com.silverpeas.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -97,7 +98,7 @@ public class DirectorySessionControllerTest {
     assertEquals(users.get(1), userscalled.get(1));
     assertEquals(users.get(2), userscalled.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
+    userscalled = directoryDSC.getLastListOfUsersCalled();
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
     assertEquals(users.get(0), userscalled.get(0));
@@ -153,7 +154,7 @@ public class DirectorySessionControllerTest {
     assertEquals(usersGroup.get(0), userscalled.get(0));
     assertEquals(usersGroup.get(1), userscalled.get(1));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
+    userscalled = directoryDSC.getLastListOfUsersCalled();
     assertNotNull(userscalled);
     assertEquals(2, userscalled.size());
     assertEquals(usersGroup.get(0), userscalled.get(0));
@@ -187,9 +188,14 @@ public class DirectorySessionControllerTest {
     usersDomain.add(user1);
     usersDomain.add(user2);
     usersDomain.add(user3);
+    Domain domain = new Domain();
+    domain.setId("3");
     MainSessionController controller = mock(MainSessionController.class);
     final OrganizationController organisation = mock(OrganizationController.class);
-    when(organisation.getAllUsers()).thenReturn(usersDomain.toArray(new UserDetail[3]));
+    List<String> domainIds = new ArrayList<String>();
+    domainIds.add("3");
+    when(organisation.getUsersOfDomains(domainIds)).thenReturn(usersDomain);
+    when(organisation.getDomain("3")).thenReturn(domain);
     when(controller.getOrganizationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
@@ -219,7 +225,7 @@ public class DirectorySessionControllerTest {
     assertEquals(usersDomain.get(1), userscalled.get(1));
     assertEquals(usersDomain.get(2), userscalled.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
+    userscalled = directoryDSC.getLastListOfUsersCalled();
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
     assertEquals(usersDomain.get(0), userscalled.get(0));
@@ -302,7 +308,7 @@ public class DirectorySessionControllerTest {
     assertEquals(usersSpace.get(1), userscalled.get(1));
     assertEquals(usersSpace.get(2), userscalled.get(2));
     // pagination
-    userscalled = directoryDSC.getLastListOfUsersCallded();
+    userscalled = directoryDSC.getLastListOfUsersCalled();
     assertNotNull(userscalled);
     assertEquals(3, userscalled.size());
     assertEquals(usersSpace.get(0), userscalled.get(0));

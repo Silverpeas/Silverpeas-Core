@@ -27,17 +27,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import com.silverpeas.session.SessionManagement;
-import com.silverpeas.session.SessionManagementFactory;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.directory.DirectoryException;
 import com.silverpeas.directory.model.Member;
 import com.silverpeas.directory.model.UserFragmentVO;
 import com.silverpeas.session.SessionInfo;
+import com.silverpeas.session.SessionManagement;
+import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -60,10 +66,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import org.silverpeas.search.SearchEngineFactory;
 
 /**
 * @author Nabil Bensalem
@@ -90,6 +93,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private Properties stConfig;
   private RelationShipService relationShipService;
   private String currentQuery;
+  
+  private String initSort = SORT_ALPHA;
+  private String currentSort = SORT_ALPHA;
+  private String previousSort = SORT_ALPHA;
+  public static final String SORT_ALPHA = "ALPHA";
+  public static final String SORT_NEWEST = "NEWEST";
+  public static final String SORT_PERTINENCE = "PERTINENCE";
 
   /**
 * Standard Session Controller Constructeur
@@ -99,11 +109,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.directory.multilang.DirectoryBundle",
-            "com.silverpeas.directory.settings.DirectoryIcons",
-            "com.silverpeas.directory.settings.DirectorySettings");
+    super(mainSessionCtrl, componentContext, "org.silverpeas.directory.multilang.DirectoryBundle",
+            "org.silverpeas.directory.settings.DirectoryIcons",
+            "org.silverpeas.directory.settings.DirectorySettings");
 
-    elementsByPage = Integer.parseInt(getSettings().getString("ELEMENTS_PER_PAGE", "10"));
+    elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", 10);
 
     stConfig = new Properties();
     stConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, getSettings().getString(
@@ -126,10 +136,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
+    return getUsers();
+  }
+  
+  private List<UserDetail> getUsers() {
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
         // all users are visible
-        lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+        lastAlllistUsersCalled = getUsersSorted();
         break;
       case GeneralPropertiesManager.DVIS_EACH:
         // only users of user's domain are visible
@@ -140,19 +154,52 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         // users of other domains can see only users of their domain
         String currentUserDomainId = getUserDetail().getDomainId();
         if ("0".equals(currentUserDomainId)) {
-          lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+          lastAlllistUsersCalled = getUsersSorted();
         } else {
           lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
         }
     }
-
+    setInitialSort(getCurrentSort());
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
+  }
+  
+  private List<UserDetail> getUsersSorted() {
+    if (getCurrentDirectory() == DIRECTORY_DOMAIN) {
+      return getUsersOfDomainsSorted();
+    } else {
+      return getAllUsersSorted();
+    }
+  }
+  
+  private List<UserDetail> getAllUsersSorted() {
+    if (SORT_NEWEST.equals(getCurrentSort())) {
+      return getOrganizationController().getAllUsersFromNewestToOldest();
+    } else {
+      return Arrays.asList(getOrganizationController().getAllUsers());
+    }
+  }
+  
+  private List<UserDetail> getUsersOfDomainsSorted() {
+    List<String> domainIds = getCurrentDomainIds();
+    if (SORT_NEWEST.equals(getCurrentSort())) {
+      return getOrganizationController().getUsersOfDomainsFromNewestToOldest(domainIds);
+    } else {
+      return getOrganizationController().getUsersOfDomains(domainIds);
+    }
+  }
+  
+  private List<String> getCurrentDomainIds() {
+    List<String> ids = new ArrayList<String>();
+    for (Domain domain : getCurrentDomains()) {
+      ids.add(domain.getId());
+    }
+    return ids;
   }
 
   private List<UserDetail> getUsersOfCurrentUserDomain() {
     String currentUserDomainId = getUserDetail().getDomainId();
-    UserDetail[] allUsers = getOrganizationController().getAllUsers();
+    List<UserDetail> allUsers = getAllUsersSorted();
     List<UserDetail> users = new ArrayList<UserDetail>();
     for (UserDetail var : allUsers) {
       if (currentUserDomainId.equals(var.getDomainId())) {
@@ -163,20 +210,28 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*get all Users that their Last Name begin with 'Index'
-* @param index:Alphabetical Index like A,B,C,E......
-* @see
-*/
+   * get all Users that their Last Name begin with 'Index'
+   * @param index:Alphabetical Index like A,B,C,E......
+   * @see
+   */
   public List<UserDetail> getUsersByIndex(String index) {
     setCurrentView(index);
     setCurrentQuery(null);
+    if (getCurrentSort().equals(SORT_PERTINENCE)) {
+      setCurrentSort(getPreviousSort());
+    }
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail varUd : lastAlllistUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
         lastListUsersCalled.add(varUd);
       }
     }
-    return lastListUsersCalled;
+    if (getCurrentSort().equals(getInitialSort())) {
+      return lastListUsersCalled;
+    } else {
+      // force results to be sorted cause original list is used
+      return sort(getCurrentSort());
+    }
   }
 
   /**
@@ -188,6 +243,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
     setCurrentView("query");
     setCurrentQuery(query);
+    setPreviousSort(getCurrentSort());
+    setCurrentSort(SORT_PERTINENCE);
     lastListUsersCalled = new ArrayList<UserDetail>();
 
     QueryDescription queryDescription = new QueryDescription(query);
@@ -233,15 +290,23 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getLastListOfAllUsers() {
     setCurrentView("tous");
     setCurrentQuery(null);
-    lastListUsersCalled = lastAlllistUsersCalled;
-    return lastAlllistUsersCalled;
+    if (getCurrentSort().equals(SORT_PERTINENCE)) {
+      setCurrentSort(getPreviousSort());
+    }
+    if (getCurrentSort().equals(getInitialSort())) {
+      lastListUsersCalled = lastAlllistUsersCalled;
+    } else {
+      // force to sort all users according to current sort
+      getUsers();
+    }
+    return lastListUsersCalled;
   }
 
   /**
-*get the last list of users colled " keep the session"
+*get the last list of users called "keep the session"
 * @see
 */
-  public List<UserDetail> getLastListOfUsersCallded() {
+  public List<UserDetail> getLastListOfUsersCalled() {
     return lastListUsersCalled;
   }
 
@@ -301,21 +366,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public List<UserDetail> getAllUsersByDomains(List<String> domainIds) {
-    getAllUsers();// recuperer tous les users
     setCurrentDirectory(DIRECTORY_DOMAIN);
     setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
     for (String domainId : domainIds) {
       currentDomains.add(getOrganizationController().getDomain(domainId));
     }
-    lastListUsersCalled = new ArrayList<UserDetail>();
-    for (UserDetail var : lastAlllistUsersCalled) {
-      if (domainIds.contains(var.getDomainId())) {
-        lastListUsersCalled.add(var);
-      }
-    }
-    lastAlllistUsersCalled = lastListUsersCalled;
-    return lastAlllistUsersCalled;
+    return getUsers();
   }
 
   public List<UserDetail> getAllContactsOfUser(String userId) {
@@ -386,10 +443,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     notifSender.notifyUser(notifTypeId, notifMetaData);
   }
 
-  public String getPhoto(String filename) {
-    return getUserDetail().getAvatarFileName();
-  }
-
   public void setCurrentView(String currentView) {
     this.currentView = currentView;
   }
@@ -401,6 +454,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getConnectedUsers() {
     setCurrentView("connected");
     setCurrentQuery(null);
+    if (getCurrentSort().equals(SORT_PERTINENCE)) {
+      setCurrentSort(getPreviousSort());
+    }
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
     SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
@@ -452,11 +508,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     sb.append("<a href=\"").append(webcontext).append("/Rprofil/jsp/Main?userId=").append(
             member.getId()).append("\">");
     sb.append("<img src=\"").append(webcontext).append(member.getUserDetail().getAvatar()).append(
-            "\" alt=\"viewUser\"");
-    sb.append("class=\"avatar\"/></a>");
+            "\" alt=\"viewUser\"").append(" class=\"avatar\"/></a>");
     return sb.toString();
   }
-
 
   private void setCurrentDirectory(int currentDirectory) {
     this.currentDirectory = currentDirectory;
@@ -493,4 +547,70 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public String getCurrentQuery() {
     return currentQuery;
   }
+  
+  public String getCurrentSort() {
+    return currentSort;
+  }
+  
+  public void setCurrentSort(String sort) {
+    currentSort = sort;
+  }
+  
+  private String getPreviousSort() {
+    return previousSort;
+  }
+  
+  private void setPreviousSort(String sort) {
+    previousSort = sort;
+  }
+  
+  private String getInitialSort() {
+    return initSort;
+  }
+  
+  private void setInitialSort(String sort) {
+    initSort = sort;
+  }
+  
+  public List<UserDetail> sort(String sort) {
+    setCurrentSort(sort);
+    if ("tous".equalsIgnoreCase(getCurrentView())) {
+      // get users from DB instead of sorting it
+      getUsers();
+    } else {
+      // sort lastListUsersCalled
+      if (getCurrentSort().equals(SORT_ALPHA)) {
+        Collections.sort(lastListUsersCalled, new UserNameComparator());
+      } else {
+        Collections.sort(lastListUsersCalled, new UserIdComparator());
+      }
+    }
+    return lastListUsersCalled;
+  }
+  
+  private class UserNameComparator implements Comparator<UserDetail> {
+
+    @Override
+    public int compare(UserDetail o1, UserDetail o2) {
+      int compare = o1.getLastName().compareToIgnoreCase(o2.getLastName());
+      if (compare != 0) {
+        return compare;
+      }
+      return o1.getFirstName().compareToIgnoreCase(o2.getFirstName());
+    }
+    
+  }
+  
+  /**
+   * Used to sort user id from highest to lowest 
+   */
+  private class UserIdComparator implements Comparator<UserDetail> {
+
+    @Override
+    public int compare(UserDetail o1, UserDetail o2) {
+      return 0 - (Integer.parseInt(o1.getId()) - Integer.parseInt(o2.getId()));
+    }
+    
+  }
+ 
 }

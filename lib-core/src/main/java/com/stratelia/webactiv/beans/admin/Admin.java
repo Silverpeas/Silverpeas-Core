@@ -3163,6 +3163,24 @@ public final class Admin {
     }
     return users.toArray(new UserDetail[users.size()]);
   }
+  
+  /**
+   * Get all users (except delete ones) from all domains.
+   * @return the user details from all domains sort by alphabetical order
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   */
+  public List<UserDetail> getAllUsers() throws AdminException {
+    return userManager.getAllUsers();
+  }
+
+  /**
+   * Get all users (except delete ones) from all domains.
+   * @return the user details from all domains sort by reverse creation order
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   */
+  public List<UserDetail> getAllUsersFromNewestToOldest() throws AdminException {
+    return userManager.getAllUsersFromNewestToOldest();
+  }
 
   /**
    * Checks if an existing user already have the given email
@@ -3379,8 +3397,6 @@ public final class Admin {
    * @throws AdminException
    */
   private void updateUserState(String userId, UserState state) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
       UserDetail user = UserDetail.getById(userId);
       user.setState(state);
@@ -3868,6 +3884,25 @@ public final class Admin {
           SilverpeasException.ERROR, "admin.EX_ERR_GET_DOMAIN", "domain Id : '" + domainId + "'",
           e);
     }
+  }
+  
+  /**
+   * Get all users (except delete ones) from specified domains.
+   * @return the user details from specified domains sort by alphabetical order
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   */
+  public List<UserDetail> getUsersOfDomains(List<String> domainIds) throws AdminException {
+    return userManager.getUsersOfDomains(domainIds);
+  }
+
+  /**
+   * Get all users (except delete ones) from specified domains.
+   * @return the user details from specified domains sort by reverse creation order
+   * @throws com.stratelia.webactiv.beans.admin.AdminException
+   */
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds)
+      throws AdminException {
+    return userManager.getUsersOfDomainsFromNewestToOldest(domainIds);
   }
 
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {

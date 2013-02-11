@@ -77,6 +77,11 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String domainId = request.getParameter("DomainId");
         String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
+        
+        String sort = request.getParameter("Sort");
+        if (StringUtil.isDefined(sort)) {
+          directorySC.setCurrentSort(sort);
+        }
 
         if (StringUtil.isDefined(groupId)) {
           users = directorySC.getAllUsersByGroup(groupId);
@@ -124,7 +129,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
       } else if (function.equalsIgnoreCase("pagination")) {
 
-        users = directorySC.getLastListOfUsersCallded();
+        users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
 
       } else if (function.equalsIgnoreCase("NotificationView")) {
@@ -132,6 +137,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
         destination = "/directory/jsp/notificationUser.jsp";
 
+      } else if ("Sort".equals(function)) {
+        String sort = request.getParameter("Type");
+        users = directorySC.sort(sort);
+        destination = doPagination(request, users, directorySC);
       }
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -190,6 +199,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
     request.setAttribute("Query", directorySC.getCurrentQuery());
+    request.setAttribute("Sort", directorySC.getCurrentSort());
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }
