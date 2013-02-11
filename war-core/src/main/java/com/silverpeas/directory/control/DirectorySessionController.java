@@ -1,26 +1,26 @@
 /**
-* Copyright (C) 2000 - 2012 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection with Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have received a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.directory.control;
 
 import java.sql.SQLException;
@@ -69,8 +69,8 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
-* @author Nabil Bensalem
-*/
+ * @author Nabil Bensalem
+ */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
   private List<UserDetail> lastAlllistUsersCalled;
@@ -79,7 +79,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String currentView = "tous";
   public static final int DIRECTORY_DEFAULT = 0; // all users
   public static final int DIRECTORY_MINE = 1; // contacts of online user
-  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another user
+  public static final int DIRECTORY_COMMON = 2; // common contacts between online user and another
+                                                // user
   public static final int DIRECTORY_OTHER = 3; // contact of another user
   public static final int DIRECTORY_GROUP = 4; // all users of group
   public static final int DIRECTORY_DOMAIN = 5; // all users of domain
@@ -93,7 +94,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private Properties stConfig;
   private RelationShipService relationShipService;
   private String currentQuery;
-  
+
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
   private String previousSort = SORT_ALPHA;
@@ -102,11 +103,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public static final String SORT_PERTINENCE = "PERTINENCE";
 
   /**
-* Standard Session Controller Constructeur
-* @param mainSessionCtrl The user's profile
-* @param componentContext The component's profile
-* @see
-*/
+   * Standard Session Controller Constructeur
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
+   * @see
+   */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.directory.multilang.DirectoryBundle",
@@ -129,16 +130,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-* get All Users
-* @see
-*/
+   * get All Users
+   * @see
+   */
   public List<UserDetail> getAllUsers() {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_DEFAULT);
     setCurrentQuery(null);
     return getUsers();
   }
-  
+
   private List<UserDetail> getUsers() {
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
@@ -163,7 +164,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
-  
+
   private List<UserDetail> getUsersSorted() {
     if (getCurrentDirectory() == DIRECTORY_DOMAIN) {
       return getUsersOfDomainsSorted();
@@ -171,7 +172,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       return getAllUsersSorted();
     }
   }
-  
+
   private List<UserDetail> getAllUsersSorted() {
     if (SORT_NEWEST.equals(getCurrentSort())) {
       return getOrganizationController().getAllUsersFromNewestToOldest();
@@ -179,7 +180,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       return Arrays.asList(getOrganizationController().getAllUsers());
     }
   }
-  
+
   private List<UserDetail> getUsersOfDomainsSorted() {
     List<String> domainIds = getCurrentDomainIds();
     if (SORT_NEWEST.equals(getCurrentSort())) {
@@ -188,7 +189,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       return getOrganizationController().getUsersOfDomains(domainIds);
     }
   }
-  
+
   private List<String> getCurrentDomainIds() {
     List<String> ids = new ArrayList<String>();
     for (Domain domain : getCurrentDomains()) {
@@ -251,7 +252,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     queryDescription.addSpaceComponentPair(null, "users");
     try {
       List<MatchingIndexEntry> plainSearchResults = SearchEngineFactory.getSearchEngine().search(
-        queryDescription).getEntries();
+          queryDescription).getEntries();
 
       for (MatchingIndexEntry result : plainSearchResults) {
         String userId = result.getObjectId();
@@ -269,10 +270,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*get all User of the Group who has Id="groupId"
-* @param groupId:the ID of group
-* @see
-*/
+   * get all User of the Group who has Id="groupId"
+   * @param groupId:the ID of group
+   * @see
+   */
   public List<UserDetail> getAllUsersByGroup(String groupId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
@@ -284,9 +285,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*get all User "we keep the last list of All users"
-* @see
-*/
+   * get all User "we keep the last list of All users"
+   * @see
+   */
   public List<UserDetail> getLastListOfAllUsers() {
     setCurrentView("tous");
     setCurrentQuery(null);
@@ -303,18 +304,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*get the last list of users called "keep the session"
-* @see
-*/
+   * get the last list of users called "keep the session"
+   * @see
+   */
   public List<UserDetail> getLastListOfUsersCalled() {
     return lastListUsersCalled;
   }
 
   /**
-*return All users of Space who has Id="spaceId"
-* @param spaceId:the ID of Space
-* @see
-*/
+   * return All users of Space who has Id="spaceId"
+   * @param spaceId:the ID of Space
+   * @see
+   */
   public List<UserDetail> getAllUsersBySpace(String spaceId) {
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
@@ -324,7 +325,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
             Arrays.asList(
-            getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+                getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
@@ -355,10 +356,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*return All user of Domaine who has Id="domainId"
-* @param domainId:the ID of Domaine
-* @see
-*/
+   * return All user of Domaine who has Id="domainId"
+   * @param domainId:the ID of Domaine
+   * @see
+   */
   public List<UserDetail> getAllUsersByDomain(String domainId) {
     List<String> domainIds = new ArrayList<String>();
     domainIds.add(domainId);
@@ -405,7 +406,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     try {
       List<String> contactsIds =
               relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
-              parseInt(userId));
+                  parseInt(userId));
       for (String contactId : contactsIds) {
         lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
       }
@@ -421,13 +422,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-*
-* @param compoId
-* @param txtTitle
-* @param txtMessage
-* @param selectedUsers
-* @throws NotificationManagerException
-*/
+   * @param compoId
+   * @param txtTitle
+   * @param txtMessage
+   * @param selectedUsers
+   * @throws NotificationManagerException
+   */
   public void sendMessage(String compoId, String txtTitle, String txtMessage,
           UserRecipient[] selectedUsers) throws NotificationManagerException {
     NotificationSender notifSender = new NotificationSender(compoId);
@@ -459,8 +459,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     List<UserDetail> connectedUsers = new ArrayList<UserDetail>();
 
-    SessionManagement sessionManagement = SessionManagementFactory.getFactory().getSessionManagement();
-    Collection<SessionInfo> sessions = sessionManagement.getDistinctConnectedUsersList(getUserDetail());
+    SessionManagement sessionManagement =
+        SessionManagementFactory.getFactory().getSessionManagement();
+    Collection<SessionInfo> sessions =
+        sessionManagement.getDistinctConnectedUsersList(getUserDetail());
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
@@ -547,31 +549,31 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public String getCurrentQuery() {
     return currentQuery;
   }
-  
+
   public String getCurrentSort() {
     return currentSort;
   }
-  
+
   public void setCurrentSort(String sort) {
     currentSort = sort;
   }
-  
+
   private String getPreviousSort() {
     return previousSort;
   }
-  
+
   private void setPreviousSort(String sort) {
     previousSort = sort;
   }
-  
+
   private String getInitialSort() {
     return initSort;
   }
-  
+
   private void setInitialSort(String sort) {
     initSort = sort;
   }
-  
+
   public List<UserDetail> sort(String sort) {
     setCurrentSort(sort);
     if ("tous".equalsIgnoreCase(getCurrentView())) {
@@ -587,7 +589,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     return lastListUsersCalled;
   }
-  
+
   private class UserNameComparator implements Comparator<UserDetail> {
 
     @Override
@@ -598,11 +600,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       }
       return o1.getFirstName().compareToIgnoreCase(o2.getFirstName());
     }
-    
+
   }
-  
+
   /**
-   * Used to sort user id from highest to lowest 
+   * Used to sort user id from highest to lowest
    */
   private class UserIdComparator implements Comparator<UserDetail> {
 
@@ -610,7 +612,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     public int compare(UserDetail o1, UserDetail o2) {
       return 0 - (Integer.parseInt(o1.getId()) - Integer.parseInt(o2.getId()));
     }
-    
+
   }
- 
+
 }

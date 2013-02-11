@@ -77,7 +77,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         String domainId = request.getParameter("DomainId");
         String domainIds = request.getParameter("DomainIds");
         String userId = request.getParameter("UserId");
-        
+
         String sort = request.getParameter("Sort");
         if (StringUtil.isDefined(sort)) {
           directorySC.setCurrentSort(sort);
@@ -131,11 +131,6 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
 
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
-
-      } else if (function.equalsIgnoreCase("NotificationView")) {
-        String userId = request.getParameter("Recipient");
-        request.setAttribute("User", new Member(directorySC.getUserDetail(userId)));
-        destination = "/directory/jsp/notificationUser.jsp";
 
       } else if ("Sort".equals(function)) {
         String sort = request.getParameter("Type");
