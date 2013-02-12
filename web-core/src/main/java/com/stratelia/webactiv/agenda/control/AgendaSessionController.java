@@ -73,10 +73,11 @@ import com.stratelia.webactiv.calendar.model.SchedulableCount;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Class declaration
@@ -152,7 +153,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
             + "&amp;login="
             + URLEncoder.encode(getUserDetail().getLogin(), "UTF-8")
             + "&amp;password="
-            + URLEncoder.encode(getOrganizationController().getUserFull(
+            + URLEncoder.encode(getOrganisationController().getUserFull(
             getUserId()).getPassword(), "UTF-8");
       } catch (UnsupportedEncodingException e) {
         SilverTrace.error("agenda", "AgendaSessionController.getRSSUrl()",
@@ -505,7 +506,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public UserDetail[] getUserList() {
-    return getOrganizationController().getAllUsers();
+    return getOrganisationController().getAllUsers();
   }
 
   /**
@@ -515,7 +516,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**
@@ -1275,7 +1276,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
 
   /**
    * Paramètre le userPannel => tous les users, sélection des users participants.
-   * @return 
+   * @return
    */
   public String initSelectionPeas() {
     String m_context = URLManager.getApplicationURL();
@@ -1727,10 +1728,9 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @return String
    */
   public String getMyAgendaUrl() {
-    OrganizationController oc = new OrganizationController();
     String url = "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId="
         + getUserId() + "&amp;login=" + getUserDetail().getLogin() + "&amp;password="
-        + oc.getUserFull(getUserId()).getPassword();
+        + OrganisationControllerFactory.getOrganizationController().getUserFull(getUserId()).getPassword();
     return url;
   }
 

@@ -28,24 +28,22 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DomainSP2LDAPBatch {
-  private OrganizationController organizationController;
   private AdminController adminController;
   public static final String DOMAIN_SILVERPEAS_ID = "0";
 
-  public OrganizationController getOrganizationController() {
-    if (organizationController == null)
-      organizationController = new OrganizationController();
-    return organizationController;
+  public OrganisationController getOrganizationController() {
+    return OrganisationControllerFactory.getOrganizationController();
   }
 
   public AdminController getAdminController() {

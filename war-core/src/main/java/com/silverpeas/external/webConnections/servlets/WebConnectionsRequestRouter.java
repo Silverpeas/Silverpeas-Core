@@ -33,7 +33,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Hashtable;
@@ -168,8 +168,8 @@ public class WebConnectionsRequestRouter extends
     if (!StringUtil.isDefined(password)) {
       password = "";
     }
-    OrganizationController orga = new OrganizationController();
-    ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganisationControllerFactory.getOrganizationController()
+        .getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("URL");
     Hashtable<String, String> param = new Hashtable<String, String>();
@@ -202,8 +202,8 @@ public class WebConnectionsRequestRouter extends
       connection.setUserId(webConnectionsSC.getUserId());
     }
     request.setAttribute("Connection", connection);
-    OrganizationController orga = new OrganizationController();
-    ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganisationControllerFactory
+        .getOrganizationController().getComponentInst(connection.getComponentId());
     request.setAttribute("ComponentInst", inst);
     request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));
   }

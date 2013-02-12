@@ -637,11 +637,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (theGroup != null && theGroup.length() != 0) {
       setFilterType("0");
       setFilterId(theGroup);
-      setFilterLib(getOrganizationController().getGroup(theGroup).getName());
+      setFilterLib(getOrganisationController().getGroup(theGroup).getName());
     } else if (theUser != null && theUser.length() != 0) {
       setFilterType("1");
       setFilterId(theUser);
-      setFilterLib(getOrganizationController().getUserDetail(theUser).getLastName());
+      setFilterLib(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourUserPanel()",
@@ -752,7 +752,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     // update FilterType and FilterLib, FilterId
     if (theGroup != null && theGroup.length() != 0) {
       setAccessFilterIdGroup(theGroup);
-      setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
+      setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
@@ -775,7 +775,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     if (theUser != null && theUser.length() != 0) {
       setAccessFilterIdUser(theUser);
-      setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
+      setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
@@ -799,7 +799,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     // update FilterType and FilterLib, FilterId
     if (theGroup != null && theGroup.length() != 0) {
       setAccessFilterIdGroup(theGroup);
-      setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
+      setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
@@ -822,7 +822,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     if (theUser != null && theUser.length() != 0) {
       setAccessFilterIdUser(theUser);
-      setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
+      setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
@@ -836,7 +836,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String filterIdUser, String spaceId) {
     UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
         formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, this.getMultilang(), getOrganizationController());
+        spaceId, this.getMultilang(), getOrganisationController());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -980,7 +980,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String filterIdUser, String spaceId) {
     PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
         formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, getOrganizationController(), this.getMultilang());
+        spaceId, getOrganisationController(), this.getMultilang());
     resetPath(spaceId);
     return publiBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -1581,7 +1581,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")
         || componentId.startsWith("kmelia")) {
-      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().
+      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganisationController().
           getComponentParameterValue(componentId, "privateSearch"));
       return !isPrivateSearch;
     } else {

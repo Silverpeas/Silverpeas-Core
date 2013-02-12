@@ -32,6 +32,7 @@ import java.util.List;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.contant.QuotaType;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
@@ -747,7 +748,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
           UnitUtil.memUnit.MB));
     }
     SpaceInstLight space =
-        OrganizationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getFactory().getOrganizationController()
             .getSpaceInstLightById(quotaReached.getResourceId());
     final SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");

@@ -24,20 +24,14 @@
 
 package com.silverpeas.importExport.report;
 
-import java.util.List;
-import java.util.Collection;
-import java.util.Set;
-
 import com.silverpeas.importExport.control.ImportExport;
 import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import java.util.Map;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.head;
@@ -45,6 +39,12 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.script;
 import org.apache.ecs.xhtml.title;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author sdevolder Classe generant le code html du sommaire d une exportation
@@ -262,8 +262,6 @@ public class HtmlExportGenerator {
 
   private String nodeTreeToHTML(List<NodeTreeType> nodeTrees, Set<String> topicIds, String rootId) {
     StringBuilder sb = new StringBuilder();
-    OrganizationController orgaController = new OrganizationController();
-
     for (NodeTreeType nodeTree : nodeTrees) {
       NodeDetail node = nodeTree.getNodeDetail();
       String fatherId = node.getFatherPK().getId();
@@ -273,9 +271,8 @@ public class HtmlExportGenerator {
       }
 
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
-        String componentName =
-            orgaController.getComponentInstLight(node.getNodePK().getInstanceId()).
-                getLabel();
+        String componentName = OrganisationControllerFactory.getOrganizationController()
+            .getComponentInstLight(node.getNodePK().getInstanceId()).getLabel();
 
         // regarder si ce topic contient des publications
         if (topicIds.contains(nodeId)) {

@@ -24,15 +24,15 @@
 
 package com.stratelia.webactiv.servlets;
 
+import com.silverpeas.look.LookHelper;
+import com.silverpeas.peasUtil.GoTo;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.peasUtil.GoTo;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
 public class GoToSpace extends GoTo {
 
@@ -41,8 +41,8 @@ public class GoToSpace extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
-    OrganizationController organization = new OrganizationController();
-    SpaceInstLight space = organization.getSpaceInstLightById(objectId);
+    SpaceInstLight space = OrganisationControllerFactory
+        .getOrganizationController().getSpaceInstLightById(objectId);
     if (space != null && space.getShortId() != null) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

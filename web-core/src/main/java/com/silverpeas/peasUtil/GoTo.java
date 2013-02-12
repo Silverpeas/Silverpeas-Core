@@ -117,7 +117,7 @@ public abstract class GoTo extends HttpServlet {
     if (componentId == null) { // Personal space
       return true;
     }
-    return mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
+    return mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
         mainSessionCtrl.getUserId());
   }
 

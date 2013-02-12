@@ -129,7 +129,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     switch (GeneralPropertiesManager.getDomainVisibility()) {
       case GeneralPropertiesManager.DVIS_ALL:
         // all users are visible
-        lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+        lastAlllistUsersCalled = Arrays.asList(getOrganisationController().getAllUsers());
         break;
       case GeneralPropertiesManager.DVIS_EACH:
         // only users of user's domain are visible
@@ -140,7 +140,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         // users of other domains can see only users of their domain
         String currentUserDomainId = getUserDetail().getDomainId();
         if ("0".equals(currentUserDomainId)) {
-          lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsers());
+          lastAlllistUsersCalled = Arrays.asList(getOrganisationController().getAllUsers());
         } else {
           lastAlllistUsersCalled = getUsersOfCurrentUserDomain();
         }
@@ -152,7 +152,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private List<UserDetail> getUsersOfCurrentUserDomain() {
     String currentUserDomainId = getUserDetail().getDomainId();
-    UserDetail[] allUsers = getOrganizationController().getAllUsers();
+    UserDetail[] allUsers = getOrganisationController().getAllUsers();
     List<UserDetail> users = new ArrayList<UserDetail>();
     for (UserDetail var : allUsers) {
       if (currentUserDomainId.equals(var.getDomainId())) {
@@ -220,8 +220,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
-    currentGroup = getOrganizationController().getGroup(groupId);
-    lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
+    currentGroup = getOrganisationController().getGroup(groupId);
+    lastAlllistUsersCalled = Arrays.asList(getOrganisationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
@@ -254,19 +254,19 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
-    currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
+    currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
     List<String> lus = new ArrayList<String>();
     lus = getAllUsersBySpace(lus, spaceId);
     lastAlllistUsersCalled =
             Arrays.asList(
-            getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+            getOrganisationController().getUserDetails(lus.toArray(new String[lus.size()])));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
   }
 
   private List<String> getAllUsersBySpace(List<String> lus, String spaceId) {
-    SpaceInst si = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst si = getOrganisationController().getSpaceInstById(spaceId);
     for (String ChildSpaceVar : si.getSubSpaceIds()) {
       getAllUsersBySpace(lus, ChildSpaceVar);
     }
@@ -306,7 +306,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
     for (String domainId : domainIds) {
-      currentDomains.add(getOrganizationController().getDomain(domainId));
+      currentDomains.add(getOrganisationController().getDomain(domainId));
     }
     lastListUsersCalled = new ArrayList<UserDetail>();
     for (UserDetail var : lastAlllistUsersCalled) {
@@ -331,7 +331,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     try {
       List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
       SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
@@ -350,7 +350,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
               relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
               parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
       SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
@@ -360,7 +360,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public UserFull getUserFul(String userId) {
-    return getOrganizationController().getUserFull(userId);
+    return getOrganisationController().getUserFull(userId);
   }
 
   /**

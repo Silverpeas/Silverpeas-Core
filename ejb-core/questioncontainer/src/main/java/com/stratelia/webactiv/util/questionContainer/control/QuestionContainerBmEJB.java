@@ -24,29 +24,7 @@
 
 package com.stratelia.webactiv.util.questionContainer.control;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-
 import com.silverpeas.util.ForeignPK;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -77,6 +55,27 @@ import com.stratelia.webactiv.util.score.control.ScoreBm;
 import com.stratelia.webactiv.util.score.control.ScoreBmHome;
 import com.stratelia.webactiv.util.score.model.ScoreDetail;
 import com.stratelia.webactiv.util.score.model.ScorePK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class declaration
@@ -1389,7 +1388,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
     List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
     StringBuffer csvRow = new StringBuffer();
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = getOrganizationController();
     try {
       if (questionContainer.getHeader().isAnonymous()) {
         // anonymes
@@ -1618,8 +1617,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     return componentLabel;
   }
 
-  private OrganizationController getOrganizationController() {
-    return new OrganizationController();
+  private OrganisationController getOrganizationController() {
+    return OrganisationControllerFactory.getOrganizationController();
   }
 
   /**************************************************************************************************************************/

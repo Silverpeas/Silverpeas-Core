@@ -34,12 +34,13 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -52,7 +53,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
 
 /**
  * Class declaration
@@ -156,9 +156,9 @@ public class ImportDragAndDrop extends HttpServlet {
         }
       }
       MassiveReport massiveReport = new MassiveReport();
-      OrganizationController controller = new OrganizationController();
-      UserDetail userDetail = controller.getUserDetail(userId);
-      
+      UserDetail userDetail = OrganisationControllerFactory
+          .getOrganizationController().getUserDetail(userId);
+
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         List<PublicationDetail> importedPublications =

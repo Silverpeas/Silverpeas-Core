@@ -54,7 +54,7 @@ public class ProfilSessionController extends AbstractComponentSessionController 
    * @return UserFull
    */
   public UserFull getUserFul(String userId) {
-    return this.getOrganizationController().getUserFull(userId);
+    return this.getOrganisationController().getUserFull(userId);
   }
 
   /*

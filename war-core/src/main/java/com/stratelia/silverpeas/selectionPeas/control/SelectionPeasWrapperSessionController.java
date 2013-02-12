@@ -24,9 +24,6 @@
 
 package com.stratelia.silverpeas.selectionPeas.control;
 
-import java.util.List;
-import java.util.StringTokenizer;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -35,9 +32,11 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * A simple wrapper to the userpanel.
@@ -201,21 +200,21 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (isGroupSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedSets();
-        selectedGroups = organizationController.getGroups(ids);
+        selectedGroups = OrganisationControllerFactory.getOrganizationController().getGroups(ids);
       } else {
         String id = sel.getFirstSelectedSet();
         if (StringUtil.isDefined(id)) {
-          selectedGroup = organizationController.getGroup(id);
+          selectedGroup = OrganisationControllerFactory.getOrganizationController().getGroup(id);
         }
       }
     } else {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
-        selectedUsers = organizationController.getUserDetails(ids);
+        selectedUsers = OrganisationControllerFactory.getOrganizationController().getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
         if (StringUtil.isDefined(id)) {
-          selectedUser = organizationController.getUserDetail(id);
+          selectedUser = OrganisationControllerFactory.getOrganizationController().getUserDetail(id);
         }
       }
     }
@@ -260,10 +259,6 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     }
   }
 
-  /**
-   * A private OrganizationController.
-   */
-  static private OrganizationController organizationController = new OrganizationController();
 
   /**
    * The HTML form name whose user element must be set.

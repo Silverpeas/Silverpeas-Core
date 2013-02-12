@@ -22,7 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.beans.admin;
+package org.silverpeas.core.admin;
+
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 import javax.inject.Inject;
 
@@ -31,22 +33,36 @@ import javax.inject.Inject;
  * in Silverpeas and it provides an access the managed OrganizationController instances for the
  * beans not taken in charge by the IoC container.
  */
-public class OrganizationControllerFactory {
+public class OrganisationControllerFactory {
 
-  private static OrganizationControllerFactory instance = new OrganizationControllerFactory();
+  private static OrganisationControllerFactory instance = new OrganisationControllerFactory();
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organisationController ;
 
-  public static OrganizationControllerFactory getFactory() {
+  public static OrganisationControllerFactory getFactory() {
     return instance;
   }
 
-  public OrganizationController getOrganizationController() {
-    return organizationController;
+  public static OrganisationController getOrganizationController() {
+    return instance.getController();
   }
 
-  private OrganizationControllerFactory() {
+  private synchronized OrganisationController getController() {
+    if(organisationController == null) {
+      organisationController = new OrganizationController();
+    }
+    return organisationController;
+  }
 
+  private OrganisationControllerFactory() {
+    this.organisationController = new OrganizationController();
+  }
+  
+  /**
+   * For tests purpose ONLY.
+   */
+  public void clearFactory() {
+    this.organisationController = null;    
   }
 }

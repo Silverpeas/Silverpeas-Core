@@ -29,7 +29,7 @@ import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A GroupField stores a group reference.
@@ -39,7 +39,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 public class GroupField implements Field {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 3278935449715773819L;
   /**
@@ -96,7 +96,7 @@ public class GroupField implements Field {
       return "";
     }
 
-    Group group = organizationController.getGroup(getGroupId());
+    Group group =  OrganisationControllerFactory.getOrganizationController().getGroup(getGroupId());
 
     if (group == null) {
       return "group(" + getGroupId() + ")";
@@ -147,7 +147,7 @@ public class GroupField implements Field {
       return null;
     }
 
-    return organizationController.getGroup(getGroupId());
+    return  OrganisationControllerFactory.getOrganizationController().getGroup(getGroupId());
   }
 
   /**
@@ -267,10 +267,4 @@ public class GroupField implements Field {
    * The referenced groupId.
    */
   private String groupId = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
-
 }

@@ -55,7 +55,6 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -68,7 +67,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -85,6 +83,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -106,7 +106,6 @@ import java.util.List;
 public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
-  private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
@@ -1151,8 +1150,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail =
-          organizationController.getUserDetail(publicationDetail.getCreatorId());
+      UserDetail userDetail = OrganisationControllerFactory.getOrganizationController()
+          .getUserDetail(publicationDetail.getCreatorId());
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();
         publicationDetail.setCreatorName(nomPrenomCreator);

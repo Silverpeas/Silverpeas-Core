@@ -95,7 +95,7 @@ public class GetNodes extends HttpServlet {
       // retain only available instances for current user
       List<String> availableComponentIds = new ArrayList<String>();
       for (String componentId : componentIds) {
-        if (mainSessionCtrl.getOrganizationController().isComponentAvailable(componentId,
+        if (mainSessionCtrl.getOrganisationController().isComponentAvailable(componentId,
             mainSessionCtrl.getUserId())) {
           availableComponentIds.add(componentId);
         }
@@ -151,7 +151,7 @@ public class GetNodes extends HttpServlet {
       throws RemoteException, CreateException {
     NodeDetail node = getNodeBm().getHeader(new NodePK("0", componentId));
     ComponentInstLight component =
-        session.getOrganizationController().getComponentInstLight(componentId);
+        session.getOrganisationController().getComponentInstLight(componentId);
     if (component != null) {
       node.setName(component.getLabel(session.getFavoriteLanguage()));
     }
@@ -170,7 +170,7 @@ public class GetNodes extends HttpServlet {
       } else {
         int rightsDependsOn = child.getRightsDependsOn();
         boolean nodeAvailable =
-            session.getOrganizationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
+            session.getOrganisationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE,
             child.getNodePK().getInstanceId(), session.getUserId());
         if (nodeAvailable) {
           availableChildren.add(child);
@@ -184,7 +184,7 @@ public class GetNodes extends HttpServlet {
               // same rights of father (which is not available) so it is not available too
             } else {
               // different rights of father check if it is available
-              if (session.getOrganizationController().isObjectAvailable(
+              if (session.getOrganisationController().isObjectAvailable(
                   descendant.getRightsDependsOn(), ObjectType.NODE, child.getNodePK().
                   getInstanceId(), session.getUserId())) {
                 childAllowed = true;
@@ -242,17 +242,17 @@ public class GetNodes extends HttpServlet {
       return SilverpeasRole.user.toString();
     }
     if (!isRightsEnabled(session, node.getNodePK().getInstanceId())) {
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId(), rightsDependsOn, ObjectType.NODE));
     } else {
-      return getProfile(session.getOrganizationController().getUserProfiles(session.getUserId(),
+      return getProfile(session.getOrganisationController().getUserProfiles(session.getUserId(),
           node.getNodePK().getInstanceId()));
     }
   }

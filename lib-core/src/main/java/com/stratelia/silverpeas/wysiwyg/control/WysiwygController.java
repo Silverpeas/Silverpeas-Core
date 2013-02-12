@@ -24,6 +24,28 @@
 
 package com.stratelia.silverpeas.wysiwyg.control;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.search.indexEngine.model.FullIndexEntry;
+
+import javax.ejb.FinderException;
+import javax.naming.NamingException;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,29 +58,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.ejb.FinderException;
-import javax.naming.NamingException;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetailI18N;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 /**
  * @author neysseri
@@ -847,7 +846,7 @@ public class WysiwygController {
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
 
     FileFolderManager.createFile(cheminFichier, nomFichier, contenuFichier);
-    
+
     File directory = new File(cheminFichier);
     return FileUtils.getFile(directory, nomFichier);
   }
@@ -1090,7 +1089,8 @@ public class WysiwygController {
 
   public static List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController = new OrganizationController();
+    OrganisationController orgaController =  OrganisationControllerFactory
+        .getOrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoId,
@@ -1114,7 +1114,7 @@ public class WysiwygController {
   public static List<ComponentInstLight> getStorageFile(String userId) {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    OrganizationController controller = new OrganizationController();
+    OrganisationController controller =  OrganisationControllerFactory.getOrganizationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {

@@ -31,9 +31,10 @@ import com.silverpeas.node.importexport.NodeTreeType;
 import com.silverpeas.node.importexport.NodeTreesType;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -67,7 +68,6 @@ public class NodeTreesTypeManager {
         ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
     List<NodeTreeType> listNodeTreeType = nodeTreesType.getListNodeTreeType();
     if (!listNodeTreeType.isEmpty()) {
-      OrganizationController orgaController = new OrganizationController();
       // On parcours les objets NodeTreeType
       for (NodeTreeType nodeTreeType : listNodeTreeType) {
 
@@ -83,7 +83,8 @@ public class NodeTreesTypeManager {
         UnitReport unitReport = new UnitReport("<topicTree> #" + nbTopicTree);
         ImportReportManager.addUnitReport(unitReport, componentId);
 
-        ComponentInst component = orgaController.getComponentInst(componentId);
+        ComponentInst component = OrganisationControllerFactory
+            .getOrganizationController().getComponentInst(componentId);
         if (component == null) {
           // le composant n'existe pas
           unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);

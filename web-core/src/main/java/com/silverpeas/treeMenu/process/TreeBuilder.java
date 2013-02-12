@@ -29,7 +29,6 @@ import com.silverpeas.treeMenu.model.MenuRuntimeException;
 import com.silverpeas.treeMenu.model.NodeType;
 import com.silverpeas.treeMenu.model.TreeFilter;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -38,6 +37,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class TreeBuilder {
    * @throws RemoteException throws if a error occurred during a ejb call
    */
   public static MenuItem buildLevelMenu(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganizationController controller) throws RemoteException {
+      String language, OrganisationController controller) throws RemoteException {
     if (father == null) {
       // build the first level of menu
       return buildFirstLevel(filter, userId, language, controller);
@@ -89,7 +89,7 @@ public class TreeBuilder {
    * @throws RemoteException
    */
   private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganizationController controller) throws RemoteException {
+      String language, OrganisationController controller) throws RemoteException {
 
     ArrayList<MenuItem> children = new ArrayList<MenuItem>();
     father.setChildren(children);
@@ -190,7 +190,7 @@ public class TreeBuilder {
    * @return the first level of the menu
    */
   private static MenuItem buildFirstLevel(TreeFilter filter, String userId,
-      String language, OrganizationController controller) {
+      String language, OrganisationController controller) {
     MenuItem item = new MenuItem("root");
     ArrayList<MenuItem> children = new ArrayList<MenuItem>();
     item.setChildren(children);

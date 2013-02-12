@@ -29,8 +29,9 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +40,7 @@ import java.util.StringTokenizer;
 /**
  * A UserField stores user references.
  * @see Field
- * @see FieldDisplayer
+ * @see com.silverpeas.form.FieldDisplayer
  */
 public class MultipleUserField implements Field {
 
@@ -110,7 +111,8 @@ public class MultipleUserField implements Field {
     }
 
     StringBuilder value = new StringBuilder();
-    UserDetail[] users = organizationController.getUserDetails(getUserIds());
+    UserDetail[] users =  OrganisationControllerFactory.getOrganizationController()
+        .getUserDetails(getUserIds());
     for (int i = 0; i < users.length; i++) {
       if (i > 0) {
         value.append("\n");
@@ -185,7 +187,7 @@ public class MultipleUserField implements Field {
     if (this.userIds == null || this.userIds.length == 0) {
       return null;
     }
-    return organizationController.getUserDetails(getUserIds());
+    return  OrganisationControllerFactory.getOrganizationController().getUserDetails(getUserIds());
   }
 
   /**
@@ -330,10 +332,5 @@ public class MultipleUserField implements Field {
    * The referenced userId.
    */
   private String[] userIds = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 
 }

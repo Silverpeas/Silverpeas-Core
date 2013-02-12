@@ -303,7 +303,7 @@ public class GraphicElementFactory {
       StringBuilder specificComponentCSS = null;
       if (StringUtil.isDefined(componentId) && mainSessionController != null) {
         ComponentInstLight component =
-            mainSessionController.getOrganizationController().getComponentInstLight(componentId);
+            mainSessionController.getOrganisationController().getComponentInstLight(componentId);
         if (component != null) {
           String componentName = component.getName();
           String genericComponentName = getGenericComponentName(componentName);
@@ -399,7 +399,7 @@ public class GraphicElementFactory {
   private void appendSpecificCSS(StringBuilder code) {
     if (StringUtil.isDefined(this.spaceId)) {
       SpaceInstLight curSpace =
-          mainSessionController.getOrganizationController().getSpaceInstLightById(
+          mainSessionController.getOrganisationController().getSpaceInstLightById(
           this.spaceId);
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
@@ -428,7 +428,7 @@ public class GraphicElementFactory {
       if (!curSpace.isRoot()) {
         String fatherSpaceId = curSpace.getFatherId();
         SpaceInstLight fatherSpace =
-            mainSessionController.getOrganizationController().getSpaceInstLightById(fatherSpaceId);
+            mainSessionController.getOrganisationController().getSpaceInstLightById(fatherSpaceId);
         spaceLookStyle = fatherSpace.getLook();
         getSpaceLook(code, fatherSpace, spaceLookStyle);
       } else {

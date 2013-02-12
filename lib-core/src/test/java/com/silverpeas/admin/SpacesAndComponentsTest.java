@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.quota.exception.QuotaException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,7 +42,6 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -58,7 +58,7 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
   @Inject
   Admin admin;
   @Inject
-  OrganizationController organizationController;
+  OrganisationController organizationController;
   String userId = "1";
 
   private AdminController getAdminController() {

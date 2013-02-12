@@ -34,7 +34,6 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.WithNested;
@@ -55,6 +54,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.jackrabbit.util.Text;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class SilverpeasLoginModule implements LoginModule {
 
@@ -64,7 +64,7 @@ public class SilverpeasLoginModule implements LoginModule {
   private CallbackHandler callbackHandler;
   private Set<Principal> principals = new HashSet<Principal>();
   private AuthenticationService authenticator;
-  private OrganizationController controller;
+  private OrganisationController controller;
   private Admin administrator;
 
   public String getUserId() {
@@ -79,7 +79,7 @@ public class SilverpeasLoginModule implements LoginModule {
     this.authenticator = authenticator;
   }
 
-  public void setController(OrganizationController controller) {
+  public void setController(OrganisationController controller) {
     this.controller = controller;
   }
 

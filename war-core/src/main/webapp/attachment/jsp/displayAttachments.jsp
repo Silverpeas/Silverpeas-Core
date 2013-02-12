@@ -55,7 +55,7 @@
       String profile = request.getParameter("Profile");
       String sIndexIt = request.getParameter("IndexIt");
       String callbackURL = request.getParameter("CallbackUrl");
-      String xmlForm = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(
+      String xmlForm = m_MainSessionCtrl.getOrganisationController().getComponentParameterValue(
           componentId, "XmlFormForFiles");
 
       boolean useXMLForm = StringUtil.isDefined(xmlForm);
@@ -508,7 +508,7 @@
               menuCheckin(id);
           }
         });
-      
+
         pageMustBeReloadingAfterSorting = true;
       }
     }

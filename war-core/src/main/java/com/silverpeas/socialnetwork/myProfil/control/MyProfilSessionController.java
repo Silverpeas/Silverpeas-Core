@@ -107,7 +107,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @return UserFull
    */
   public UserFull getUserFul(String userId) {
-    return this.getOrganizationController().getUserFull(userId);
+    return this.getOrganisationController().getUserFull(userId);
   }
 
   public boolean isUserDomainRW() {
@@ -182,7 +182,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public List<SpaceInstLight> getSpaceTreeview() {
-    return getOrganizationController().getSpaceTreeview(getUserId());
+    return getOrganisationController().getSpaceTreeview(getUserId());
   }
 
   /**

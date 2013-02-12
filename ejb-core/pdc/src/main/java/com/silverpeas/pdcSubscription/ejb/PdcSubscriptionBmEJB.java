@@ -28,18 +28,6 @@
  */
 package com.silverpeas.pdcSubscription.ejb;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ejb.CreateException;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
@@ -61,6 +49,19 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.ejb.CreateException;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PdcSubscriptionBmEJB implements SessionBean {
 
@@ -217,7 +218,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
-      OrganizationController ocontroller = new OrganizationController();
+      OrganisationController ocontroller = OrganisationControllerFactory.getOrganizationController();
       int adminId;
 
       for (int i = 0; i < subscriptions.size(); i++) {
@@ -262,7 +263,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
       int[] removeIds = new int[subscriptions.size()];
       int removeLength = 0;
-      OrganizationController ocontroller = new OrganizationController();
+      OrganisationController ocontroller = OrganisationControllerFactory.getOrganizationController();
       int adminId;
 
       for (PDCSubscription subscription : subscriptions) {
@@ -306,7 +307,8 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     SilverContentInterface silverContent = null;
     List<String> spaceAndInstanceNames = null;
     int firstAdminId = -1;
-    OrganizationController organizationController = new OrganizationController();
+    OrganisationController organizationController = OrganisationControllerFactory
+        .getOrganizationController();
 
     try {
       conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);
@@ -388,7 +390,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
    * @return ArrayList 1 - spaceName 2 - instanceName 3 - spaceId
    */
   private List<String> getSpaceAndInstanceNames(String componentId,
-      OrganizationController organizationController) {
+      OrganisationController organizationController) {
     ComponentInst componentInstance = organizationController.getComponentInst(componentId);
     String instanceName = componentInstance.getLabel();
     String workSpaceId = componentInstance.getDomainFatherId();
@@ -405,7 +407,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
   /**
    * @return first administrator id
    */
-  private int getFirstAdministrator(OrganizationController organizationController, int userId) {
+  private int getFirstAdministrator(OrganisationController organizationController, int userId) {
     int fromUserID = -1;
     String[] admins = organizationController.getAdministratorUserIds(Integer.toString(userId));
     if (admins != null && admins.length > 0) {

@@ -31,7 +31,6 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -54,6 +53,8 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -98,7 +99,7 @@ public class CheckAttachmentsBatch {
     }
 
     List<OrphanAttachment> orphansList = new ArrayList<OrphanAttachment>();
-    OrganizationController oc = new OrganizationController();
+    OrganisationController oc = OrganisationControllerFactory.getOrganizationController();
 
     // Get all spaces
     String[] spaces = oc.getAllRootSpaceIds();
@@ -201,7 +202,8 @@ public class CheckAttachmentsBatch {
         "select attachmentId, attachmentPhysicalName, attachmentLogicalName, instanceId, attachmentcontext from sb_attachment_attachment order by attachmentLogicalName";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    OrganizationController orgaController = new OrganizationController();
+    OrganisationController orgaController = OrganisationControllerFactory
+        .getOrganizationController();
     try {
       prepStmt = con.prepareStatement(query);
       rs = prepStmt.executeQuery();

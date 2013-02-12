@@ -40,6 +40,8 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.silverpeas.attachment.notification.AttachmentNotificationService;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.process.ProcessFactory;
 import org.silverpeas.process.io.file.FileBasePath;
 import org.silverpeas.process.io.file.FileHandler;
@@ -472,7 +474,7 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to search
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    */
   // méthode pour wysiwig pb de gestion d'exception
   public static Vector<AttachmentDetail> searchAttachmentByPKAndContext(WAPrimaryKey foreignKey,
@@ -495,7 +497,7 @@ public class AttachmentController {
    * @return void
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    */
   public static void attachmentIndexer(WAPrimaryKey fk) {
     try {
@@ -688,7 +690,7 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    */
   public static void deleteAttachment(Vector<AttachmentDetail> vectorAttachmentDetail) {
     for (AttachmentDetail aD : vectorAttachmentDetail) {
@@ -704,7 +706,7 @@ public class AttachmentController {
    * @throws AttachmentRuntimeException when is impossible to delete
    * @author Jean-Claude Groccia
    * @version 1.0
-   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail.
+   * @see com.stratelia.webactiv.util.attachment.model.AttachmentDetail
    */
   public static void deleteFileAndIndex(AttachmentDetail attachDetail) {
     try {
@@ -1366,12 +1368,12 @@ public class AttachmentController {
       attachmentDetail.setReservationDate(cal.getTime());
 
       // 1. rechercher le nombre de jours avant expiration dans le composant
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga =  OrganisationControllerFactory.getOrganizationController();
       SilverTrace.info("attachment", "getExpiryDate", "root.MSG_GEN_PARAM_VALUE", "instanceId = "
           + attachmentDetail.getInstanceId());
 
-      String day =
-          orga.getComponentParameterValue(attachmentDetail.getInstanceId(), "nbDayForReservation");
+      String day = orga.getComponentParameterValue(attachmentDetail.getInstanceId(),
+          "nbDayForReservation");
 
       if (StringUtil.isDefined(day)) {
         int nbDay = Integer.parseInt(day);
@@ -1421,10 +1423,8 @@ public class AttachmentController {
    * @return the UserDetail.
    * @throws AttachmentException
    */
-  public static UserDetail getUserDetail(String userId)
-      throws AttachmentException {
-    OrganizationController oc = new OrganizationController();
-    return oc.getUserDetail(userId);
+  public static UserDetail getUserDetail(String userId) throws AttachmentException {
+    return  OrganisationControllerFactory.getOrganizationController().getUserDetail(userId);
   }
 
   public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,

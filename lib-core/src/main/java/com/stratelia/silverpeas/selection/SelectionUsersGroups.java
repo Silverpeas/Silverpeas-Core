@@ -26,16 +26,19 @@ package com.stratelia.silverpeas.selection;
 
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
-  static OrganizationController organizationController = new OrganizationController();
+  static OrganisationController organizationController =  OrganisationControllerFactory
+      .getOrganizationController();
 
   public final static int USER = 0;
   public final static int GROUP = 1;
@@ -53,7 +56,7 @@ public class SelectionUsersGroups implements SelectionExtraParams {
     }
     return null;
   }
-  
+
   public String getJoinedProfileNames() {
     if (profileNames != null && !profileNames.isEmpty()) {
       StringBuilder names = new StringBuilder();

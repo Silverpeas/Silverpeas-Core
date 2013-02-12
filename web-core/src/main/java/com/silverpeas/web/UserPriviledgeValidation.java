@@ -26,7 +26,6 @@ package com.silverpeas.web;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import javax.inject.Inject;
@@ -38,6 +37,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.silverpeas.authentication.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationUserStateChecker;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.token.TokenStringKey;
 import org.silverpeas.token.constant.TokenType;
 import org.silverpeas.token.model.Token;
@@ -63,7 +63,7 @@ public class UserPriviledgeValidation {
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
   @Inject
   private TokenService tokenService;
   /**

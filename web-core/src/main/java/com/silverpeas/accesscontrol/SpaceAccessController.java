@@ -26,7 +26,7 @@ package com.silverpeas.accesscontrol;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * Check the access to a space for a user.
@@ -36,7 +36,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 public class SpaceAccessController implements AccessController<String> {
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   public SpaceAccessController() {
   }

@@ -24,20 +24,22 @@
 
 package com.stratelia.silverpeas.selectionPeas;
 
-import java.util.Set;
-
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelMiniFilterSelect;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.util.Set;
 
 abstract public class BrowsePanelProvider extends PanelProvider {
 
   protected CacheManager cacheManager = null;
   protected ResourceLocator resource = null;
-  protected OrganizationController organizationCOntroller = new OrganizationController();
+  protected OrganisationController organizationCOntroller = OrganisationControllerFactory
+      .getOrganizationController();
   protected String parentGroupId = "";
   protected String parentGroupName = "";
   protected CacheType m_what;

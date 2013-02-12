@@ -25,11 +25,12 @@
 package com.silverpeas.attachment;
 
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
-import javax.servlet.jsp.JspWriter;
 
 /**
  * @author ehugonnet
@@ -38,10 +39,10 @@ public class MenuHelper {
 
   static final String NEW_LINE = System.getProperty("line.separator");
   private final static String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
-  private static OrganizationController organisation = new OrganizationController();
 
   public static boolean isAdmin(String userId) {
-    return organisation.getUserDetail(userId).isAccessAdmin();
+    return OrganisationControllerFactory.getOrganizationController().getUserDetail(userId)
+        .isAccessAdmin();
   }
 
   public static boolean isWorker(String userId, AttachmentDetail attachment) {

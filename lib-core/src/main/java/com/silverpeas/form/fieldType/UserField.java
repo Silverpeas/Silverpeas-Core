@@ -24,17 +24,17 @@
 
 package com.silverpeas.form.fieldType;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A UserField stores a user reference.
  * @see Field
- * @see FieldDisplayer
+ * @see com.silverpeas.form.FieldDisplayer
  */
 public class UserField implements Field {
 
@@ -91,7 +91,8 @@ public class UserField implements Field {
       return userId;
     }
 
-    UserDetail user = organizationController.getUserDetail(getUserId());
+    UserDetail user =  OrganisationControllerFactory.getOrganizationController().getUserDetail(
+        getUserId());
     if (user == null) {
       return "user(" + getUserId() + ")";
     }
@@ -140,7 +141,7 @@ public class UserField implements Field {
     if (getUserId() == null) {
       return null;
     }
-    return organizationController.getUserDetail(getUserId());
+    return  OrganisationControllerFactory.getOrganizationController().getUserDetail(getUserId());
   }
 
   /**
@@ -265,10 +266,5 @@ public class UserField implements Field {
    * The referenced userId.
    */
   private String userId = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 
 }

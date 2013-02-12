@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
@@ -261,7 +260,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
+      isAllowed = controller.getOrganisationController().isComponentAvailable(
           componentId, controller.getUserId());
     }
     return isAllowed;

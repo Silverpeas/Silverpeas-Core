@@ -27,8 +27,10 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.admin.web.tools.AbstractTool;
 import org.silverpeas.admin.web.tools.ToolDelegate;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.look.web.delegate.LookWebDelegate;
 
 import com.silverpeas.admin.components.WAComponent;
@@ -36,8 +38,6 @@ import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -48,7 +48,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class AdminPersonalWebDelegate {
 
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   private final UserDetail user;
   private final UserPreferences userPreference;
@@ -261,10 +261,10 @@ public class AdminPersonalWebDelegate {
     return user.getId();
   }
 
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganizationController() {
     if (organizationController == null) {
       organizationController =
-          OrganizationControllerFactory.getFactory().getOrganizationController();
+          OrganisationControllerFactory.getFactory().getOrganizationController();
     }
     return organizationController;
   }

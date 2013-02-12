@@ -24,8 +24,6 @@
 
 package com.silverpeas.comment.service;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.List;
 import com.silverpeas.comment.dao.CommentDAO;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -33,12 +31,17 @@ import com.silverpeas.comment.model.CommentedPublicationInfo;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
@@ -379,8 +382,8 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Gets an organization controller.
    * @return an OrganizationController instance.
    */
-  protected OrganizationController getOrganizationController() {
-    return new OrganizationController();
+  protected OrganisationController getOrganizationController() {
+    return  OrganisationControllerFactory.getOrganizationController();
   }
 
   @Override

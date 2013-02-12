@@ -23,7 +23,6 @@
 */
 package com.silverpeas.lookV5;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -44,7 +43,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -55,6 +53,7 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -87,7 +86,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
             GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-    OrganizationController orgaController = mainSessionController.getOrganizationController();
+    OrganisationController orgaController = mainSessionController.getOrganisationController();
 
     String userId = mainSessionController.getUserId();
     UserPreferences preferences = mainSessionController.getPersonalization();
@@ -229,7 +228,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private List<String> getSpaceIdsPath(String spaceId, String componentId,
-          OrganizationController orgaController) {
+          OrganisationController orgaController) {
     List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
     if (StringUtil.isDefined(spaceId)) {
       spacePath = orgaController.getSpacePath(spaceId);
@@ -257,7 +256,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 * @return true if the current space contains user favorites sub space, false else if
 */
   private boolean containsFavoriteSubSpace(String spaceId, List<UserFavoriteSpaceVO> listUFS,
-          OrganizationController orgaController, String userId) {
+          OrganisationController orgaController, String userId) {
     return UserFavoriteSpaceManager.containsFavoriteSubSpace(spaceId, listUFS, orgaController,
             userId);
   }
@@ -291,7 +290,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   private void displaySpace(String spaceId, String componentId, List<String> spacePath,
           String userId, String language, String defaultLook,
           boolean displayPDC, boolean displayTransverse,
-          OrganizationController orgaController, LookHelper helper, Writer writer,
+          OrganisationController orgaController, LookHelper helper, Writer writer,
           List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode, boolean restrictedPath)
       throws IOException {
     boolean isTransverse = false;
@@ -349,7 +348,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 * @param helper
 * @return an XML user favorite space attribute only if User Favorite Space is enable
 */
-  private String getFavoriteSpaceAttribute(String userId, OrganizationController orgaController,
+  private String getFavoriteSpaceAttribute(String userId, OrganisationController orgaController,
           List<UserFavoriteSpaceVO> listUFS, SpaceInstLight space, LookHelper helper) {
     StringBuilder favSpace = new StringBuilder(20);
     if (UserMenuDisplay.DISABLE != helper.getDisplayUserMenu()) {
@@ -374,7 +373,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private void displayTree(String userId, String targetComponentId,
           List<String> spacePath, String language, String defaultLook,
-          OrganizationController orgaController, LookHelper helper, Writer out,
+          OrganisationController orgaController, LookHelper helper, Writer out,
           List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
       throws IOException {
     // Then get all first level spaces
@@ -398,7 +397,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private String getSpaceAttributes(SpaceInstLight space, String language,
-          String defaultLook, LookHelper helper, OrganizationController orga) {
+          String defaultLook, LookHelper helper, OrganisationController orga) {
     String spaceLook = getSpaceLookAttribute(space, defaultLook, orga);
     String spaceWallpaper = getWallPaper(space.getFullId());
 
@@ -424,7 +423,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 * @return the space style according to the space hierarchy
 */
   private String getSpaceLookAttribute(SpaceInstLight space, String defaultLook,
-          OrganizationController orga) {
+          OrganisationController orga) {
     String spaceLook = space.getLook();
     if (!StringUtil.isDefined(spaceLook)) {
       if (!space.isRoot()) {
@@ -438,7 +437,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private void displayFirstLevelSpaces(String userId, String language,
-          String defaultLook, OrganizationController orgaController, LookHelper helper,
+          String defaultLook, OrganisationController orgaController, LookHelper helper,
           Writer out, List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
           throws IOException {
     String[] availableSpaceIds = getRootSpaceIds(userId, orgaController, helper);
@@ -470,7 +469,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 
   private void getSubSpaces(String spaceId, String userId, List<String> spacePath,
           String targetComponentId, String language, String defaultLook,
-          OrganizationController orgaController, LookHelper helper, Writer out,
+          OrganisationController orgaController, LookHelper helper, Writer out,
           List<UserFavoriteSpaceVO> listUFS, UserMenuDisplay userMenuDisplayMode)
           throws IOException {
     String[] spaceIds = orgaController.getAllSubSpaceIds(spaceId, userId);
@@ -525,7 +524,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private void getComponents(String spaceId, String targetComponentId,
-          String userId, String language, OrganizationController orgaController,
+          String userId, String language, OrganisationController orgaController,
           Writer out, UserMenuDisplay userMenuDisplayMode, List<UserFavoriteSpaceVO> listUFS)
           throws IOException {
     boolean loadCurComponent =
@@ -579,7 +578,7 @@ public class AjaxServletLookV5 extends HttpServlet {
       List<String> cmps = null;
       if (StringUtil.isDefined(spaceId)) {
         // L'item courant est un espace
-        cmps = getAvailableComponents(spaceId, userId, mainSC.getOrganizationController());
+        cmps = getAvailableComponents(spaceId, userId, mainSC.getOrganisationController());
       } else {
         cmps = Arrays.asList(mainSC.getUserAvailComponentIds());
       }
@@ -606,7 +605,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private List<String> getAvailableComponents(String spaceId, String userId,
-          OrganizationController orgaController) {
+          OrganisationController orgaController) {
     String a[] = orgaController.getAvailCompoIds(spaceId, userId);
     return Arrays.asList(a);
   }
@@ -649,7 +648,7 @@ public class AjaxServletLookV5 extends HttpServlet {
                   axisId, valuePath, componentId);
         } else {
           List<String> cmps = getAvailableComponents(spaceId, userId, mainSC.
-                  getOrganizationController());
+              getOrganisationController());
           daughters = pdc.getPertinentDaughterValuesByInstanceIds(
                   searchContext, axisId, valuePath, cmps);
         }
@@ -695,7 +694,7 @@ public class AjaxServletLookV5 extends HttpServlet {
     return "0";
   }
 
-  private String[] getRootSpaceIds(String userId, OrganizationController orgaController,
+  private String[] getRootSpaceIds(String userId, OrganisationController orgaController,
           LookHelper helper) {
     List<String> rootSpaceIds = new ArrayList<String>();
     List<String> topSpaceIds = helper.getTopSpaceIds();
@@ -713,7 +712,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   protected void serializePersonalSpace(Writer writer, String userId, String language,
-          OrganizationController orgaController, LookHelper helper, ResourceLocator settings,
+          OrganisationController orgaController, LookHelper helper, ResourceLocator settings,
           ResourceLocator message) throws IOException {
     // Affichage de l'espace perso
     writer.write("<spacePerso id=\"spacePerso\" type=\"space\" level=\"0\">");
@@ -871,7 +870,7 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   protected boolean isLoadingContentNeeded(UserMenuDisplay userMenuDisplayMode, String userId,
-          String spaceId, List<UserFavoriteSpaceVO> listUFS, OrganizationController orgaController) {
+          String spaceId, List<UserFavoriteSpaceVO> listUFS, OrganisationController orgaController) {
     switch (userMenuDisplayMode) {
       case DISABLE:
       case ALL:
@@ -892,7 +891,7 @@ public class AjaxServletLookV5 extends HttpServlet {
 * @return true or false
 */
   protected boolean isSpaceVisible(String userId, String spaceId,
-          OrganizationController orgaController, LookHelper helper) {
+          OrganisationController orgaController, LookHelper helper) {
     if (helper.getSettings("displaySpaceContainingOnlyHiddenComponents", true)) {
       return true;
     }

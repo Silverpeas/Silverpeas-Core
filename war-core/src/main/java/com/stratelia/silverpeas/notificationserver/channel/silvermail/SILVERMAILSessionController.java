@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
@@ -45,6 +45,8 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Class declaration
@@ -153,11 +155,11 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   private String getSource(String componentId) {
     ResourceLocator m_Multilang = new ResourceLocator(
-        "com.stratelia.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
+        "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         getLanguage());
     String source = m_Multilang.getString("UserNotification");
     if (StringUtil.isDefined(componentId)) {
-      OrganizationController orga = new OrganizationController();
+      OrganisationController orga = OrganisationControllerFactory.getOrganizationController();
       ComponentInst instance = orga.getComponentInst(componentId);
 
       // Sometimes, source could not be found

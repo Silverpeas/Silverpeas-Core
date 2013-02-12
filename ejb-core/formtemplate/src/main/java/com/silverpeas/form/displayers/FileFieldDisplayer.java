@@ -24,23 +24,6 @@
 
 package com.silverpeas.form.displayers;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.process.ProcessFactory;
-import org.silverpeas.process.io.file.FileBasePath;
-import org.silverpeas.process.io.file.FileHandler;
-import org.silverpeas.process.io.file.HandledFile;
-import org.silverpeas.process.management.AbstractFileProcess;
-import org.silverpeas.process.management.ProcessExecutionContext;
-import org.silverpeas.process.session.ProcessSession;
-import org.silverpeas.viewer.ViewerFactory;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FieldTemplate;
@@ -63,7 +46,6 @@ import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.model.Worker;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -72,6 +54,24 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.process.ProcessFactory;
+import org.silverpeas.process.io.file.FileBasePath;
+import org.silverpeas.process.io.file.FileHandler;
+import org.silverpeas.process.io.file.HandledFile;
+import org.silverpeas.process.management.AbstractFileProcess;
+import org.silverpeas.process.management.ProcessExecutionContext;
+import org.silverpeas.process.session.ProcessSession;
+import org.silverpeas.viewer.ViewerFactory;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -497,7 +497,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   private List<Worker> getWorkers(String componentId, int creatorId) {
     List<Worker> workers = new ArrayList<Worker>();
 
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga =  OrganisationControllerFactory.getOrganizationController();
     ComponentInst component = orga.getComponentInst(componentId);
 
     List<ProfileInst> profilesInst = component.getAllProfilesInst();

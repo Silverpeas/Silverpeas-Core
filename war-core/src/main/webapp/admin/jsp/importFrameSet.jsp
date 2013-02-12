@@ -37,7 +37,6 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page import="java.util.Date"%>
 <%@ page import="java.lang.String"%>
 <%@ page import="java.util.*"%>
 
@@ -58,10 +57,11 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 
 <%
 MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-OrganizationController 	organizationCtrl 	= null;
+OrganisationController organizationCtrl 	= null;
 GraphicElementFactory 	gef 				= null;
 String 					language 			= null;
 ResourceLocator 		message 			= null;
@@ -70,20 +70,20 @@ String 					m_sContext 			= null;
 if (m_MainSessionCtrl == null)
 {
 %>
-	<script> 
+	<script>
 		top.location="../../Login.jsp";
 	</script>
 <%
 }
 else
 {
-	organizationCtrl 	= m_MainSessionCtrl.getOrganizationController();
+	organizationCtrl 	= m_MainSessionCtrl.getOrganisationController();
 	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	
+
 	language 			= m_MainSessionCtrl.getFavoriteLanguage();
 	message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
 	homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
-	
+
 	m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 }
 %>

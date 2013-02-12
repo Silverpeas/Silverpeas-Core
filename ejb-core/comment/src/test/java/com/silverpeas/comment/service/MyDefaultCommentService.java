@@ -31,6 +31,8 @@ import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
+
 import java.util.ArrayList;
 import javax.inject.Named;
 import static org.mockito.Mockito.*;
@@ -43,7 +45,7 @@ import static org.mockito.Mockito.*;
 public class MyDefaultCommentService extends DefaultCommentService {
 
   private CommentDAO mockedDAO = null;
-  private OrganizationController mockedController = null;
+  private OrganisationController mockedController = null;
 
   /**
    * Constructs a new comment service and mocks some of the underlying resource.
@@ -75,7 +77,7 @@ public class MyDefaultCommentService extends DefaultCommentService {
   }
 
   @Override
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganizationController() {
     return mockedController;
   }
 

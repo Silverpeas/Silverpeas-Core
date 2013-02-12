@@ -27,11 +27,20 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Named;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
+
 import com.silverpeas.admin.components.WAComponent;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import java.util.*;
-import org.silverpeas.util.ListSlice;
 
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -47,7 +56,8 @@ import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
  * container and published under the name 'organizationController' so that the initialization of the
  * static Admin instance can be performed correctly within the execution context of IoC container.
  */
-public class OrganizationController implements java.io.Serializable {
+@Named("organizationController")
+public class OrganizationController implements OrganisationController {
 
   private static final long serialVersionUID = 3435241972671610107L;
 
@@ -60,11 +70,7 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------
   // SPACES QUERIES
   // -------------------------------------------------------------------
-  /**
-   * Return all the spaces Id available in silverpeas
-   *
-   * @return
-   */
+  @Override
   public String[] getAllSpaceIds() {
     try {
       return getAdminService().getAllSpaceIds();
@@ -75,9 +81,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the subSpaces Id available in silverpeas given a space id (driver format)
-   */
+  @Override
   public String[] getAllSubSpaceIds(String sSpaceId) {
     try {
       String[] asSubSpaceIds = getAdminService().getAllSubSpaceIds(sSpaceId);
@@ -90,16 +94,10 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the the spaces name corresponding to the given space ids.
-   *
-   * @param asSpaceIds
-   * @return
-   */
+  @Override
   public String[] getSpaceNames(String[] asSpaceIds) {
     try {
       String[] asSpaceNames = getAdminService().getSpaceNames(asSpaceIds);
-
       return asSpaceNames;
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceNames",
@@ -108,12 +106,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the space light corresponding to the given space id
-   *
-   * @param spaceId
-   * @return
-   */
+  @Override
   public SpaceInstLight getSpaceInstLightById(String spaceId) {
     try {
       SpaceInstLight spaceLight = getAdminService().getSpaceInstLightById(spaceId);
@@ -126,12 +119,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
+  @Override
   public String getGeneralSpaceId() {
     try {
       return getAdminService().getGeneralSpaceId();
@@ -142,9 +130,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the space Instance corresponding to the given space id
-   */
+  @Override
   public SpaceInst getSpaceInstById(String sSpaceId) {
     try {
       return getAdminService().getSpaceInstById(sSpaceId);
@@ -155,9 +141,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the component ids available for the cuurent user Id in the given space id
-   */
+  @Override
   public String[] getAvailCompoIds(String sClientSpaceId, String sUserId) {
     try {
       return getAdminService().getAvailCompoIds(sClientSpaceId, sUserId);
@@ -169,9 +153,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the component ids available for the cuurent user Id in the given space id
-   */
+  @Override
   public String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId) {
     try {
       String[] asCompoIds = getAdminService().getAvailCompoIdsAtRoot(sClientSpaceId,
@@ -187,9 +169,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the components of silverpeas read in the xmlComponent directory
-   */
+  @Override
   public Map<String, WAComponent> getAllComponents() {
     try {
       return getAdminService().getAllComponents();
@@ -202,9 +182,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the components names available in webactiv
-   */
+  @Override
   public Map<String, String> getAllComponentsNames() {
     try {
       return getAdminService().getAllComponentsNames();
@@ -218,9 +196,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the driver component ids available for the cuurent user Id in the given space id
-   */
+  @Override
   public String[] getAvailDriverCompoIds(String sClientSpaceId, String sUserId) {
     try {
       return getAdminService().getAvailDriverCompoIds(sClientSpaceId, sUserId);
@@ -232,13 +208,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the tuples (space id, compo id) allowed for the given user and given component name
-   *
-   * @param sUserId
-   * @param sCompoName
-   * @return
-   */
+  @Override
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
       return getAdminService().getCompoForUser(sUserId, sCompoName);
@@ -250,13 +220,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * gets the available component for a given user
-   *
-   * @param userId user identifier used to get component
-   * @param componentName type of component to retrieve ( for example : kmelia, forums, blog)
-   * @return a list of ComponentInstLight object
-   */
+  @Override
   public List<ComponentInstLight> getAvailComponentInstLights(String userId, String componentName) {
     try {
       return getAdminService().getAvailComponentInstLights(userId, componentName);
@@ -269,6 +233,7 @@ public class OrganizationController implements java.io.Serializable {
 
   }
 
+  @Override
   public String[] getComponentIdsForUser(String sUserId, String sCompoName) {
     try {
       return getAdminService().getComponentIdsByNameAndUserId(sUserId, sCompoName);
@@ -280,12 +245,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the compo id for the given component name
-   *
-   * @param sCompoName
-   * @return
-   */
+  @Override
   public String[] getCompoId(String sCompoName) {
     try {
       return getAdminService().getCompoId(sCompoName);
@@ -297,17 +257,15 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  public String getComponentParameterValue(String sComponentId,
-      String parameterName) {
+  @Override
+  public String getComponentParameterValue(String sComponentId, String parameterName) {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
 
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------
-  /**
-   * Return the component Instance corresponding to the given component id
-   */
+  @Override
   public ComponentInst getComponentInst(String sComponentId) {
     try {
       return getAdminService().getComponentInst(sComponentId);
@@ -318,15 +276,12 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * @param spaceId - id of the space or subSpace
-   * @return a List of SpaceInst ordered from root to subSpace
-   * @throws Exception
-   */
+  @Override
   public List<SpaceInst> getSpacePath(String spaceId) {
     return getSpacePath(new ArrayList<SpaceInst>(), spaceId);
   }
 
+  @Override
   public List<SpaceInst> getSpacePathToComponent(String componentId) {
     ComponentInstLight componentInstLight = getComponentInstLight(componentId);
     if (componentInstLight != null) {
@@ -351,9 +306,7 @@ public class OrganizationController implements java.io.Serializable {
     return path;
   }
 
-  /**
-   * Return the component Instance Light corresponding to the given component id
-   */
+  @Override
   public ComponentInstLight getComponentInstLight(String sComponentId) {
     try {
       return getAdminService().getComponentInstLight(sComponentId);
@@ -367,23 +320,17 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------
   // USERS QUERIES
   // -------------------------------------------------------------------
-  /**
-   * Return the database id of the user with the given ldap Id
-   */
+  @Override
   public int getUserDBId(String sUserId) {
     return idAsInt(sUserId);
   }
 
-  /**
-   * Return the ldapId of the user with the given db Id
-   */
+  @Override
   public String getUserDetailByDBId(int id) {
     return idAsString(id);
   }
 
-  /**
-   * Return the UserDetail of the user with the given ldap Id
-   */
+  @Override
   public UserFull getUserFull(String sUserId) {
     try {
       return getAdminService().getUserFull(sUserId);
@@ -394,9 +341,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return the UserDetail of the user with the given ldap Id
-   */
+  @Override
   public UserDetail getUserDetail(String sUserId) {
     try {
       UserDetail userDetail = getAdminService().getUserDetail(sUserId);
@@ -409,9 +354,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return an array of UserDetail corresponding to the given user Id array
-   */
+  @Override
   public UserDetail[] getUserDetails(String[] asUserIds) {
     try {
       return getAdminService().getUserDetails(asUserIds);
@@ -422,10 +365,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * @deprecated use getAllUsers(String componentId) Return all the users allowed to acces the given
-   * component of the given space
-   */
+  @Override
   public UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName) {
     try {
       if (sComponentName != null) {
@@ -440,9 +380,7 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * Return all the users allowed to acces the given component
-   */
+  @Override
   public UserDetail[] getAllUsers(String componentId) {
     try {
       if (componentId != null) {
@@ -455,12 +393,7 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * Gets all the users that belong to the specified domain.
-   *
-   * @param domainId the unique identifier of the domain.
-   * @return an array of UserDetail objects or null if no such domain exists.
-   */
+  @Override
   public UserDetail[] getAllUsersInDomain(String domainId) {
     try {
       if (domainId != null) {
@@ -473,13 +406,7 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * Searches the users that match the specified criteria.
-   *
-   * @param criteria the criteria in searching of user details.
-   * @return a slice of the list of user details matching the criteria or an empty list of no ones are found.
-   * @throws AdminException if an error occurs while getting the user details.
-   */
+  @Override
   public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria criteria) {
     try {
       return getAdminService().searchUsers(criteria);
@@ -490,12 +417,7 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * Gets all the user groups that belong to the specified domain.
-   *
-   * @param domainId the unique identifier of the domain.
-   * @return an array of Group objects or null if no such domain exists.
-   */
+  @Override
   public Group[] getAllRootGroupsInDomain(String domainId) {
     try {
       if (domainId != null) {
@@ -508,11 +430,8 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * For use in userPanel : return the users that are direct child of a given group
-   */
-  public UserDetail[] getFiltredDirectUsers(String sGroupId,
-      String sUserLastNameFilter) {
+  @Override
+  public UserDetail[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter) {
     try {
       return getAdminService().getFiltredDirectUsers(sGroupId, sUserLastNameFilter);
     } catch (Exception e) {
@@ -523,9 +442,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return an array of UserDetail corresponding to the founded users
-   */
+  @Override
   public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) {
     try {
       return getAdminService().searchUsers(modelUser, isAnd);
@@ -536,12 +453,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Searches the groups that match the specified criteria.
-   * @param criteria the criteria in searching of user groups.
-   * @return a slice of the list of user groups matching the criteria or an empty list of no ones are found.
-   * @throws AdminException if an error occurs while getting the user groups.
-   */
+  @Override
   public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
     try {
       return getAdminService().searchGroups(criteria);
@@ -552,9 +464,7 @@ public class OrganizationController implements java.io.Serializable {
     return null;
   }
 
-  /**
-   * Return an array of Group corresponding to the founded groups
-   */
+  @Override
   public Group[] searchGroups(Group modelGroup, boolean isAnd) {
     try {
       return getAdminService().searchGroups(modelGroup, isAnd);
@@ -565,9 +475,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * For use in userPanel : return the total number of users recursivly contained in a group
-   */
+  @Override
   public int getAllSubUsersNumber(String sGroupId) {
     try {
       return getAdminService().getAllSubUsersNumber(sGroupId);
@@ -578,9 +486,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * For use in userPanel : return the direct sub-groups
-   */
+  @Override
   public Group[] getAllSubGroups(String parentGroupId) {
     try {
       return getAdminService().getAllSubGroups(parentGroupId);
@@ -591,9 +497,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the users of Silverpeas
-   */
+  @Override
   public UserDetail[] getAllUsers() {
     try {
       UserDetail[] aUserDetail = null;
@@ -610,12 +514,8 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the users with the given profile allowed to access the given component of the given
-   * space
-   */
-  public UserDetail[] getUsers(String sPrefixTableName, String sComponentName,
-      String sProfile) {
+  @Override
+  public UserDetail[] getUsers(String sPrefixTableName, String sComponentName, String sProfile) {
     try {
       UserDetail[] aUserDetail = null;
 
@@ -633,6 +533,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public String[] getUserProfiles(String userId, String componentId) {
     try {
       return getAdminService().getCurrentProfiles(userId, componentId);
@@ -646,8 +547,9 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  public String[] getUserProfiles(String userId, String componentId,
-      int objectId, ObjectType objectType) {
+  @Override
+  public String[] getUserProfiles(String userId, String componentId, int objectId,
+      ObjectType objectType) {
     try {
       return getAdminService().getProfilesByObjectAndUserId(objectId, objectType.getCode(),
           componentId, userId);
@@ -659,6 +561,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
     try {
       return getAdminService().getProfilesByObject(objectId, objectType, componentId);
@@ -670,6 +573,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public ProfileInst getUserProfile(String profileId) {
     try {
       return getAdminService().getProfileInst(profileId);
@@ -680,9 +584,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all administrators ids
-   */
+  @Override
   public String[] getAdministratorUserIds(String fromUserId) {
     try {
       return getAdminService().getAdministratorUserIds(fromUserId);
@@ -697,9 +599,7 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------
   // GROUPS QUERIES
   // -------------------------------------------------------------------
-  /**
-   * Return the Group of the group with the given Id
-   */
+  @Override
   public Group getGroup(String sGroupId) {
     try {
       Group group = getAdminService().getGroup(sGroupId);
@@ -712,9 +612,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all groups specified by the groupsIds
-   */
+  @Override
   public Group[] getGroups(String[] groupsId) {
     Group[] retour = null;
     try {
@@ -726,9 +624,7 @@ public class OrganizationController implements java.io.Serializable {
     return retour;
   }
 
-  /**
-   * Return all the groups of silverpeas
-   */
+  @Override
   public Group[] getAllGroups() {
     try {
       Group[] aGroup = null;
@@ -746,9 +642,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all root groups of silverpeas or null if an error occured when getting the root groups.
-   */
+  @Override
   public Group[] getAllRootGroups() {
     try {
       return getAdminService().getAllRootGroups();
@@ -759,9 +653,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Get ALL the users that are in a group or his sub groups
-   */
+  @Override
   public UserDetail[] getAllUsersOfGroup(String groupId) {
     SilverTrace.info("admin", "OrganizationController.getAllUsersOfGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
@@ -774,9 +666,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Get path to Group
-   */
+  @Override
   public List<String> getPathToGroup(String groupId) {
     SilverTrace.info("admin", "OrganizationController.getPathToGroup",
         "root.MSG_GEN_ENTER_METHOD", "groupId = " + groupId);
@@ -814,6 +704,7 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------
   // RE-INDEXATION
   // -------------------------------------------------------------------
+  @Override
   public String[] getAllSpaceIds(String sUserId) {
     try {
       return getAdminService().getAllSpaceIds(sUserId);
@@ -824,9 +715,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the spaces Id manageable by given user in Silverpeas
-   */
+  @Override
   public String[] getUserManageableSpaceIds(String sUserId) {
     try {
       String[] asSpaceIds = getAdminService().getUserManageableSpaceIds(sUserId);
@@ -840,9 +729,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the root spaceIds
-   */
+  @Override
   public String[] getAllRootSpaceIds() {
     try {
       return getAdminService().getAllRootSpaceIds();
@@ -853,9 +740,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the root spaceIds available for the user sUserId
-   */
+  @Override
   public String[] getAllRootSpaceIds(String sUserId) {
     try {
       return getAdminService().getAllRootSpaceIds(sUserId);
@@ -866,9 +751,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the subSpaces Id available in webactiv given a space id (driver format)
-   */
+  @Override
   public String[] getAllSubSpaceIds(String sSpaceId, String sUserId) {
     try {
       return getAdminService().getAllSubSpaceIds(sSpaceId, sUserId);
@@ -880,9 +763,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the components Id available in webactiv given a space id (driver format)
-   */
+  @Override
   public String[] getAllComponentIds(String sSpaceId) {
     try {
       return getAdminService().getAllComponentIds(sSpaceId);
@@ -893,9 +774,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the components Id recursively available in webactiv given a space id (driver format)
-   */
+  @Override
   public String[] getAllComponentIdsRecur(String sSpaceId) {
     try {
       return getAdminService().getAllComponentIdsRecur(sSpaceId);
@@ -906,18 +785,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the components Id recursively in (Space+subspaces, or only subspaces or all
-   * silverpeas) available in silverpeas given a userId and a componentNameRoot
-   *
-   * @author dlesimple
-   * @param sSpaceId
-   * @param sUserId
-   * @param sComponentRootName
-   * @param inCurrentSpace
-   * @param inAllSpaces
-   * @return Array of componentsIds
-   */
+  @Override
   public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId,
       String sComponentRootName, boolean inCurrentSpace, boolean inAllSpaces) {
     try {
@@ -928,6 +796,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public List<SpaceInstLight> getRootSpacesContainingComponent(String userId, String componentName) {
     try {
       return getAdminService().getRootSpacesContainingComponent(userId, componentName);
@@ -940,6 +809,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,
       String componentName) {
     try {
@@ -953,6 +823,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public boolean isToolAvailable(String toolId) {
     boolean isToolAvailable;
     try {
@@ -966,6 +837,7 @@ public class OrganizationController implements java.io.Serializable {
     return isToolAvailable;
   }
 
+  @Override
   public boolean isComponentAvailable(String componentId, String userId) {
     try {
       return getAdminService().isComponentAvailable(componentId, userId);
@@ -977,6 +849,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public boolean isComponentExist(String componentId) {
     try {
       return getAdminService().getComponentInstLight(componentId) != null;
@@ -987,6 +860,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public boolean isComponentManageable(String componentId, String userId) {
     try {
       return getAdminService().isComponentManageable(componentId, userId);
@@ -998,6 +872,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public boolean isSpaceAvailable(String spaceId, String userId) {
     try {
       return getAdminService().isSpaceAvailable(userId, spaceId);
@@ -1009,8 +884,9 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  public boolean isObjectAvailable(int objectId, ObjectType objectType,
-      String componentId, String userId) {
+  @Override
+  public boolean isObjectAvailable(int objectId, ObjectType objectType, String componentId,
+      String userId) {
     try {
       return getAdminService().isObjectAvailable(componentId, objectId, objectType.getCode(),
           userId);
@@ -1022,6 +898,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public List<SpaceInstLight> getSpaceTreeview(String userId) {
     try {
       return getAdminService().getUserSpaceTreeview(userId);
@@ -1032,6 +909,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) {
     try {
       return getAdminService().getAllowedSubSpaceIds(userId, spaceFatherId);
@@ -1043,6 +921,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public SpaceInstLight getRootSpace(String spaceId) {
     try {
       return getAdminService().getRootSpace(spaceId);
@@ -1056,9 +935,7 @@ public class OrganizationController implements java.io.Serializable {
   // -------------------------------------------------------------------------
   // For SelectionPeas
   // -------------------------------------------------------------------------
-  /**
-   * Return all the users of Silverpeas
-   */
+  @Override
   public String[] getAllUsersIds() {
     try {
       return getAdminService().getAllUsersIds();
@@ -1069,11 +946,9 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return all the users of Silverpeas
-   */
-  public String[] searchUsersIds(String groupId, String componentId,
-      String[] profileId, UserDetail filterUser) {
+  @Override
+  public String[] searchUsersIds(String groupId, String componentId, String[] profileId,
+      UserDetail filterUser) {
     try {
       return getAdminService().searchUsersIds(groupId, componentId, profileId, filterUser);
     } catch (Exception e) {
@@ -1083,13 +958,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Return userIds according to a list of profile names
-   *
-   * @param componentId the instance id
-   * @param profileNames the list which contains the profile names
-   * @return a string array of user id
-   */
+  @Override
   public String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames) {
     try {
       ComponentInst componentInst = getComponentInst(componentId);
@@ -1121,8 +990,9 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  public String[] getUsersIdsByRoleNames(String componentId, String objectId,
-      ObjectType objectType, List<String> profileNames) {
+  @Override
+  public String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
+      List<String> profileNames) {
     SilverTrace.info("admin", "OrganizationController.getUsersIdsByRoleNames",
         "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId + ", objectId = " + objectId);
     try {
@@ -1155,8 +1025,9 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  public String[] searchGroupsIds(boolean isRootGroup, String componentId,
-      String[] profileId, Group modelGroup) {
+  @Override
+  public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
+      Group modelGroup) {
     try {
       return getAdminService().searchGroupsIds(isRootGroup, componentId, profileId, modelGroup);
     } catch (Exception e) {
@@ -1166,9 +1037,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Get a domain with given id
-   */
+  @Override
   public Domain getDomain(String domainId) {
     try {
       return getAdminService().getDomain(domainId);
@@ -1178,9 +1047,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
-  /**
-   * Get all domains
-   */
+  @Override
   public Domain[] getAllDomains() {
     try {
       return getAdminService().getAllDomains();
@@ -1191,6 +1058,7 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public String[] getDirectGroupIdsOfUser(String userId) {
     try {
       return getAdminService().getDirectGroupsIdsOfUser(userId);
@@ -1211,6 +1079,7 @@ public class OrganizationController implements java.io.Serializable {
     return listRes;
   }
 
+  @Override
   public String[] getAllGroupIdsOfUser(String userId) {
     try {
       ArrayList<String> listRes = new ArrayList<String>();
@@ -1226,21 +1095,17 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  @Override
   public void reloadAdminCache() {
     getAdminService().reloadCache();
   }
 
-  /**
-   * Is the anonymous access is activated for the running Silverpeas? When the anonymous access is
-   * activated, then a specific user for anonymous access should be set; all anonym accesses to the
-   * running Silverpeas are done with this user profile.
-   *
-   * @return true if the anonym access is activated, false otherwise.
-   */
+  @Override
   public boolean isAnonymousAccessActivated() {
     return UserDetail.isAnonymousUserExist();
   }
 
+  @Override
   public String[] getAllowedComponentIds(String userId) {
     try {
       return getAdminService().getAvailCompoIds(userId);

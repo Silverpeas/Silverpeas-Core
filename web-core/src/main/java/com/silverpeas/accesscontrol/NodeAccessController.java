@@ -26,13 +26,15 @@ package com.silverpeas.accesscontrol;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -44,7 +46,7 @@ import javax.inject.Named;
 public class NodeAccessController implements AccessController<NodePK> {
 
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public NodeAccessController() {
   }
@@ -53,7 +55,7 @@ public class NodeAccessController implements AccessController<NodePK> {
    * For tests only.
    * @param controller
    */
-  NodeAccessController(OrganizationController controller) {
+  NodeAccessController(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -87,9 +89,9 @@ public class NodeAccessController implements AccessController<NodePK> {
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganizationController() {
     if (controller == null) {
-      controller = new OrganizationController();
+      controller = OrganisationControllerFactory.getOrganizationController();
     }
     return controller;
   }

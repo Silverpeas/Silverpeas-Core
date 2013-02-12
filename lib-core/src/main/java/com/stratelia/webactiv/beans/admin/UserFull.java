@@ -24,9 +24,6 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +31,10 @@ import java.util.Map.Entry;
 import org.silverpeas.profile.token.UserTokenKey;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
 
 public class UserFull extends UserDetail {
 

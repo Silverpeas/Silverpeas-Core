@@ -1,29 +1,26 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.applicationIndexer.control;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import com.silverpeas.pdc.PdcIndexer;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -112,7 +109,8 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    ComponentInstLight compoInst = organizationController.getComponentInstLight(componentId);
+    ComponentInstLight compoInst = OrganisationControllerFactory.getOrganizationController()
+        .getComponentInstLight(componentId);
     indexComponent(spaceId, compoInst);
   }
 
@@ -132,7 +130,7 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   ComponentIndexerInterface getIndexer(ComponentInstLight compoInst) {
     ComponentIndexerInterface componentIndexer;
-    String compoName= firstLetterToUpperCase(compoInst.getName());
+    String compoName = firstLetterToUpperCase(compoInst.getName());
     String className = getClassName(compoInst);
     String packageName = getPackage(compoInst);
     try {
@@ -159,8 +157,7 @@ public class ApplicationIndexer extends AbstractIndexer {
       SilverTrace.warn(silvertraceModule, "ApplicationIndexer.getIndexer()",
           "applicationIndexer.EX_INDEXER_COMPONENT_NOT_FOUND",
           "component = " + compoName + " with classes com.stratelia.webactiv." + packageName + "."
-          + className + "Indexer and com.silverpeas." + packageName + "." + className +
-          "Indexer");
+          + className + "Indexer and com.silverpeas." + packageName + "." + className + "Indexer");
       return new ComponentIndexerAdapter();
     }
     return componentIndexer;
@@ -207,9 +204,8 @@ public class ApplicationIndexer extends AbstractIndexer {
     if ("pollingStation".equalsIgnoreCase(packageName)) {
       return "survey";
     }
-    if ("webPages".equalsIgnoreCase(packageName) ||
-        "resourcesManager".equalsIgnoreCase(packageName) || "mydb".equalsIgnoreCase(packageName) ||
-        "formsOnline".equalsIgnoreCase(packageName)) {
+    if ("webPages".equalsIgnoreCase(packageName) || "resourcesManager".equalsIgnoreCase(packageName)
+        || "mydb".equalsIgnoreCase(packageName) || "formsOnline".equalsIgnoreCase(packageName)) {
       return packageName.toLowerCase();
     }
     return packageName;

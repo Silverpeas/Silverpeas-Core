@@ -24,13 +24,13 @@
 
 package com.silverpeas.look;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -38,6 +38,8 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -48,12 +50,13 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-look.xml")
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SilverpeasLookTest {
 
   @Inject
   private SilverpeasLook look;
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   public SilverpeasLookTest() {
   }

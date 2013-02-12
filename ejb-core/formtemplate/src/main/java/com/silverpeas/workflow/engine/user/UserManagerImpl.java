@@ -35,12 +35,12 @@ import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -50,10 +50,6 @@ import java.util.Hashtable;
  */
 public class UserManagerImpl implements UserManager {
 
-  /**
-   * The UserManagerImpl shares a silverpeas OrganisationController
-   */
-  static private final OrganizationController organizationController = new OrganizationController();
 
   static final private Hashtable<String, UserSettings> userSettings =
       new Hashtable<String, UserSettings>();
@@ -73,7 +69,8 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getUser(String userId) throws WorkflowException {
     UserImpl user = new UserImpl(getUserDetail(userId));
-    String[] groupIds = organizationController.getAllGroupIdsOfUser(userId);
+    String[] groupIds =  OrganisationControllerFactory.getOrganizationController()
+        .getAllGroupIdsOfUser(userId);
     if (groupIds != null) {
       user.setGroupIds(Arrays.asList(groupIds));
     }
@@ -133,7 +130,8 @@ public class UserManagerImpl implements UserManager {
     try {
       // the modelId is the peasId.
       ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
-      userDetails = organizationController.getUsers(peas.getDomainFatherId(),
+      userDetails =  OrganisationControllerFactory.getOrganizationController().getUsers(
+          peas.getDomainFatherId(),
           modelId, roleName);
     } catch (AdminException e) {
       throw new WorkflowException("UserManagerImpl.getUserInRole",
@@ -148,7 +146,8 @@ public class UserManagerImpl implements UserManager {
 
   @Override
   public User[] getUsersInGroup(String groupId) {
-    UserDetail[] userDetails = organizationController.getAllUsersOfGroup(groupId);
+    UserDetail[] userDetails =  OrganisationControllerFactory.getOrganizationController()
+        .getAllUsersOfGroup(groupId);
 
     if (userDetails == null) {
       userDetails = new UserDetail[0];
@@ -170,7 +169,8 @@ public class UserManagerImpl implements UserManager {
    * returns the userDetail of a userId.
    */
   private UserDetail getUserDetail(String userId) throws WorkflowException {
-    UserDetail userDetail = organizationController.getUserDetail(userId);
+    UserDetail userDetail =  OrganisationControllerFactory.getOrganizationController()
+        .getUserDetail(userId);
     if (userDetail == null) {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
     }
@@ -184,7 +184,8 @@ public class UserManagerImpl implements UserManager {
     UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
       users[i] = new UserImpl(userDetails[i]);
-      String[] groupIds = organizationController.getAllGroupIdsOfUser(userDetails[i].getId());
+      String[] groupIds =  OrganisationControllerFactory.getOrganizationController()
+          .getAllGroupIdsOfUser(userDetails[i].getId());
       if (groupIds != null) {
         users[i].setGroupIds(Arrays.asList(groupIds));
       }

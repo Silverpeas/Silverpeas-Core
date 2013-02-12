@@ -73,7 +73,6 @@
          com.stratelia.webactiv.util.viewGenerator.html.buttons.Button,
          com.stratelia.webactiv.util.viewGenerator.html.board.Board,
          com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane,
-         com.stratelia.webactiv.util.viewGenerator.html.window.Window,
          com.stratelia.silverpeas.versioning.model.Document,
          com.stratelia.silverpeas.versioning.model.DocumentPK,
          com.stratelia.silverpeas.versioning.model.DocumentVersion,
@@ -198,7 +197,7 @@
   }
 
   private boolean isFileSharingEnable(MainSessionController msc, String componentId) {
-    String param = msc.getOrganizationController().getComponentParameterValue(componentId, "useFileSharing");
+    String param = msc.getOrganisationController().getComponentParameterValue(componentId, "useFileSharing");
     return "yes".equalsIgnoreCase(param);
   }
 %>
@@ -232,6 +231,6 @@
 
       ResourceLocator attMessages = new ResourceLocator("com.stratelia.silverpeas.versioningPeas.multilang.versioning", m_MainSessionCtrl.getFavoriteLanguage());
       ResourcesWrapper attResources = new ResourcesWrapper(attMessages, null, attachmentSettings, m_MainSessionCtrl.getFavoriteLanguage());
-      
+
       boolean useContextualMenu = attResources.getSetting("ui.useContextualMenu", false);
 %>

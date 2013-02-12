@@ -26,6 +26,9 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.util.ArrayUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +49,7 @@ public class Group implements Serializable, Comparable<Group> {
 
   private int nbUsers = -1;
   private int nbTotalUsers = -1;
-  
+
   /**
    * Gets the group with the specified unique identifier.
    * @param id the unique identifier of the group to get.
@@ -55,7 +58,7 @@ public class Group implements Serializable, Comparable<Group> {
   public static Group getById(String id) {
     return getOrganizationController().getGroup(id);
   }
-  
+
   /**
    * Gets all root groups available in Silverpeas, whatever their domain.
    * @return a list with all the groups in the Silverpeas portal.
@@ -63,7 +66,7 @@ public class Group implements Serializable, Comparable<Group> {
   public static List<Group> getAllRoots() {
     return Arrays.asList(getOrganizationController().getAllRootGroups());
   }
-  
+
   /**
    * Gets all root groups available in the specified domain in Silverpeas.
    * @param domainId the unique identifier of the domain to which the root groups belong.
@@ -242,7 +245,7 @@ public class Group implements Serializable, Comparable<Group> {
     }
     return nbUsers;
   }
-  
+
   /**
    * Gets the total number of users in this group and in its subgroups.
    * @return the total number of users.
@@ -262,8 +265,8 @@ public class Group implements Serializable, Comparable<Group> {
     this.nbTotalUsers = count;
   }
 
-  protected static OrganizationController getOrganizationController() {
-    return OrganizationControllerFactory.getFactory().getOrganizationController();
+  protected static OrganisationController getOrganizationController() {
+    return OrganisationControllerFactory.getFactory().getOrganizationController();
   }
 
   /**
@@ -327,7 +330,7 @@ public class Group implements Serializable, Comparable<Group> {
     hash = 97 * hash + this.nbUsers;
     return hash;
   }
-  
+
   /**
    * Gets the direct subgroups of this user group.
    * @return a list with its direct subgroups. If this group hasn't children group, then the
@@ -336,7 +339,7 @@ public class Group implements Serializable, Comparable<Group> {
   public List<? extends Group> getSubGroups() {
     return Arrays.asList(getOrganizationController().getAllSubGroups(getId()));
   }
-  
+
   /**
    * Gets the detail about all the users that are in this group (and in the subgroups of this group).
    * @return a list of all the user details in this group.

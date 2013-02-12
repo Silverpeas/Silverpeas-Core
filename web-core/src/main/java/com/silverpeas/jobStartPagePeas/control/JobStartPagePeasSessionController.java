@@ -276,7 +276,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public boolean isComponentManageable(String componentId) {
-    return getOrganizationController().isComponentManageable(componentId, getUserId());
+    return getOrganisationController().isComponentManageable(componentId, getUserId());
   }
 
   public void setManagedProfile(ProfileInst sProfile) {
@@ -610,7 +610,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         return false;
       } else {
         // Check if user manages this space or one of its parent
-        List<SpaceInst> spaces = getOrganizationController().getSpacePath(spaceId);
+        List<SpaceInst> spaces = getOrganisationController().getSpacePath(spaceId);
         for (SpaceInst spaceInPath : spaces) {
           if (spaceIds.contains(spaceInPath.getId())) {
             return true;
@@ -772,7 +772,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   private List<SpaceInst> getCurrentSpacePath(boolean excludeSpace) {
-    List<SpaceInst> path = getOrganizationController().getSpacePath(getSpaceInstById().getId());
+    List<SpaceInst> path = getOrganisationController().getSpacePath(getSpaceInstById().getId());
     if (!excludeSpace) {
       return path;
     }
@@ -909,7 +909,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String name = null;
     for (int s = 0; removedSpaces != null && s < removedSpaces.size(); s++) {
       space = removedSpaces.get(s);
-      space.setRemoverName(getOrganizationController().getUserDetail(String.valueOf(space.
+      space.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(space.
           getRemovedBy())).getDisplayedName());
       space.setPath(adminController.getPathToSpace(space.getFullId(), false));
 
@@ -927,7 +927,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     String name = null;
     for (int s = 0; removedComponents != null && s < removedComponents.size(); s++) {
       component = removedComponents.get(s);
-      component.setRemoverName(getOrganizationController().getUserDetail(String.valueOf(component.
+      component.setRemoverName(getOrganisationController().getUserDetail(String.valueOf(component.
           getRemovedBy())).getDisplayedName());
       component.setPath(adminController.getPathToComponent(component.getId()));
 
@@ -1588,7 +1588,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       return JobStartPagePeasSessionController.MAINTENANCE_THISSPACE;
     }
     // check if a parent is is maintenance
-    List<SpaceInst> spaces = getOrganizationController().getSpacePath(getManagedSpaceId());
+    List<SpaceInst> spaces = getOrganisationController().getSpacePath(getManagedSpaceId());
     for (SpaceInst space : spaces) {
       if (isSpaceInMaintenance(space.getId())) {
         return JobStartPagePeasSessionController.MAINTENANCE_ONEPARENT;

@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.silverpeas.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -41,6 +40,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class DirectorySessionControllerTest {
 
@@ -70,9 +70,9 @@ public class DirectorySessionControllerTest {
     users.add(user3);
 
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganizationController organisation = mock(OrganizationController.class);
+    final OrganisationController organisation = mock(OrganizationController.class);
     when(organisation.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
-    when(controller.getOrganizationController()).thenReturn(organisation);
+    when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -123,9 +123,9 @@ public class DirectorySessionControllerTest {
     usersGroup.add(user3);
 
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganizationController organisation = mock(OrganizationController.class);
+    final OrganisationController organisation = mock(OrganizationController.class);
     when(organisation.getAllUsersOfGroup("2")).thenReturn(usersGroup.toArray(new UserDetail[2]));
-    when(controller.getOrganizationController()).thenReturn(organisation);
+    when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -159,7 +159,7 @@ public class DirectorySessionControllerTest {
     assertEquals(usersGroup.get(0), userscalled.get(0));
     assertEquals(usersGroup.get(1), userscalled.get(1));
   }
-  
+
   @Test
   public void testGetAllUsersByDomain() throws Exception {
     List<UserDetail> usersDomain = new ArrayList<UserDetail>();
@@ -188,9 +188,9 @@ public class DirectorySessionControllerTest {
     usersDomain.add(user2);
     usersDomain.add(user3);
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganizationController organisation = mock(OrganizationController.class);
+    final OrganisationController organisation = mock(OrganizationController.class);
     when(organisation.getAllUsers()).thenReturn(usersDomain.toArray(new UserDetail[3]));
-    when(controller.getOrganizationController()).thenReturn(organisation);
+    when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -235,7 +235,7 @@ public class DirectorySessionControllerTest {
     user1.setLastName("durand");
     user1.setFirstName("julien");
     user1.seteMail("julien.durand@gmail.com");
-    user1.setLogin("julin");    
+    user1.setLogin("julin");
     UserDetail user2 = new UserDetail();
     user2.setId("2");
     user2.setLastName("groland");
@@ -256,7 +256,7 @@ public class DirectorySessionControllerTest {
     tableau.add("1");
     tableau.add("2");
     tableau.add("3");
-    
+
     when(pi.getAllUsers()).thenReturn(tableau);
     ComponentInst ci = mock(ComponentInst.class);
     ArrayList<ProfileInst> tableau_test = new ArrayList<ProfileInst>();
@@ -268,10 +268,10 @@ public class DirectorySessionControllerTest {
     ArrayList<ComponentInst> tableau_test2 = new ArrayList<ComponentInst>();
     tableau_test2.add(ci);
     when(s.getAllComponentsInst()).thenReturn(tableau_test2);
-    
+
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganizationController organisation = mock(OrganizationController.class);
-    when(controller.getOrganizationController()).thenReturn(organisation);
+    final OrganisationController organisation = mock(OrganizationController.class);
+    when(controller.getOrganisationController()).thenReturn(organisation);
     when(organisation.getSpaceInstById("0")).thenReturn(s);
     when(organisation.getUserDetails(tableau.toArray(new String[tableau.size()]))).thenReturn(usersSpace.toArray(new UserDetail[usersSpace.size()]));
     ComponentContext context = mock(ComponentContext.class);
@@ -309,12 +309,12 @@ public class DirectorySessionControllerTest {
     assertEquals(usersSpace.get(1), userscalled.get(1));
     assertEquals(usersSpace.get(2), userscalled.get(2));
   }
-  
+
   @Test
   public void testFillList(){
     MainSessionController controller = mock(MainSessionController.class);
-    final OrganizationController organisation = mock(OrganizationController.class);
-    when(controller.getOrganizationController()).thenReturn(organisation);
+    final OrganisationController organisation = mock(OrganizationController.class);
+    when(controller.getOrganisationController()).thenReturn(organisation);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -334,6 +334,6 @@ public class DirectorySessionControllerTest {
     assertEquals(resultat.get(2), ol.get(2));
     assertEquals(resultat.get(3), nl.get(1));
     assertEquals(resultat.get(4), nl.get(2));
-    
+
   }
 }

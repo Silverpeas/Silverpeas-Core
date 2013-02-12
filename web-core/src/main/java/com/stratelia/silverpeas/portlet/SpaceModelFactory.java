@@ -51,6 +51,9 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +66,8 @@ import java.util.Map;
  */
 public class SpaceModelFactory {
 
-  static final protected OrganizationController oc = new OrganizationController();
+  static final protected OrganisationController oc = OrganisationControllerFactory
+      .getOrganizationController();
   static final protected Map<String, WAComponent> compoDescriptors = (new AdminController(null)).
       getAllComponents();
 

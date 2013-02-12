@@ -27,9 +27,9 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -48,12 +48,12 @@ public class PubliPieChartBuilder extends AbstractPieChartBuilder {
   private String filterIdGroup;
   private String filterIdUser;
   private String spaceId;
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
   private ResourceLocator message;
 
   public PubliPieChartBuilder(String dateStat, String dateFormate, String currentUserId,
       String filterIdGroup, String filterIdUser, String spaceId,
-      OrganizationController organizationController, ResourceLocator message) {
+      OrganisationController organizationController, ResourceLocator message) {
     this.dateStat = dateStat;
     this.dateFormate = dateFormate;
     this.currentUserId = currentUserId;
