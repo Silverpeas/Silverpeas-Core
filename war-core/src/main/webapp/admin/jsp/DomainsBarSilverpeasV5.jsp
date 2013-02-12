@@ -31,7 +31,6 @@
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@ page import="com.silverpeas.look.LookSilverpeasV5Helper"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
@@ -99,9 +98,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_sContext%>/util/ajax/ricoAjax.js"></script>
 
 <!-- Add jQuery javascript library -->
-<script type="text/javascript" src="/silverpeas/util/javaScript/jquery/jquery-1.3.2.min.js"></script> <!-- do not remove this line while rico is used -->
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.loadmask.js"></script>
-<script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.ajaxQueue.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_sContext%>/util/javaScript/jquery/jquery.bgiframe.min.js"></script>
 
@@ -259,20 +256,23 @@ out.println(gef.getLookStyleSheet());
         }
     }
 
-    
-  	//used by keyword autocompletion
-    <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
-    	$(document).ready(function(){
-            $("#query").autocomplete("<%=m_sContext%>/AutocompleteServlet", {
-                        minChars: <%=autocompletionMinChars%>,
-                        max: 50,
-                        autoFill: false,
-                        mustMatch: false,
-                        matchContains: false,
-                        scrollHeight: 220
-                });
-          });
-    <%}%>
+  /**
+   * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+   * javascript plugin.
+   */
+  //used by keyword autocompletion
+  <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
+  jQuery(document).ready(function() {
+    jQuery("#query").autocomplete("<%=m_sContext%>/AutocompleteServlet", {
+      minChars : <%=autocompletionMinChars%>,
+      max : 50,
+      autoFill : false,
+      mustMatch : false,
+      matchContains : false,
+      scrollHeight : 220
+    });
+  });
+  <%}%>
 
 </script>
 </head>
