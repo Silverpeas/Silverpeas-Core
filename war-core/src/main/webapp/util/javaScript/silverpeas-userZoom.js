@@ -269,12 +269,18 @@
   
 })( jQuery );
 
-$(function() {
-  $('.userToZoom').each(function() {
-    var $this = $(this);
-    if ($this.data('userZoom') == null)
+
+/**
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * javascript plugin.
+ */
+jQuery(document).ready(function() {
+  jQuery('.userToZoom').each(function() {
+    var $this = jQuery(this);
+    if ($this.data('userZoom') == null) {
       $this.userZoom({
-        id: $this.attr('rel')
+        id : $this.attr('rel')
       });
-  });
+    }
+  })
 });

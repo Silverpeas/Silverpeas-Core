@@ -36,7 +36,7 @@ var currentWallpaper = "0";
 
 var notContextualPDCDisplayed = false;
 var notContextualPDCLoaded = false;
-//User favorite space variable true/false => enable/disable
+// User favorite space variable true/false => enable/disable
 var displayUserFavoriteSpace = false;
 // When user favorite space is enabled, this following parameter enable/disable the "contains sub favorite space" state.
 var enableAllUFSStates = false;
@@ -250,7 +250,7 @@ function openComponent(componentId, componentLevel, componentURL) {
   }
   
   //Remove active class on subtree
-  $("#"+componentId).parent().find(".spaceOn").removeClass("spaceOn");
+  jQuery("#"+componentId).parent().find(".spaceOn").removeClass("spaceOn");
 
   currentAxisId = "-1";
   currentValuePath = "-1";
@@ -455,7 +455,7 @@ function getUserMenuDisplayMode() {
     if (userMenuDispMode == "BOOKMARKS" || userMenuDispMode == "ALL") {
       displayUserFavoriteSpace = true;
       // Check contains user favorite space mode
-      enableAllUFSStates = ($("#enableAllUFSpaceStatesId").val() == "true") ? true : false;
+      enableAllUFSStates = (jQuery("#enableAllUFSpaceStatesId").val() == "true") ? true : false;
     }
     return userMenuDispMode;
   }
@@ -471,26 +471,26 @@ function getUserMenuDisplayMode() {
 function openTab(tabId) {
   //alert("opentTab(" + tabId + ") call");
   // Check tab change
-  if (tabId != $("#userMenuDisplayModeId").val()) {
+  if (tabId != jQuery("#userMenuDisplayModeId").val()) {
     // Check tab change
     if (tabId == 'ALL') {
-      $("#tabsBookMarkSelectedDivId").hide();
-      $("#tabsAllSelectedDivId").show();
+      jQuery("#tabsBookMarkSelectedDivId").hide();
+      jQuery("#tabsAllSelectedDivId").show();
     } else {
-      $("#tabsAllSelectedDivId").hide();
-      $("#tabsBookMarkSelectedDivId").show();
+      jQuery("#tabsAllSelectedDivId").hide();
+      jQuery("#tabsBookMarkSelectedDivId").show();
     }
-    $("#userMenuDisplayModeId").val(tabId);
-    $("#spaceMenuDivId").mask($("#loadingMessageId").val());
+    jQuery("#userMenuDisplayModeId").val(tabId);
+    jQuery("#spaceMenuDivId").mask(jQuery("#loadingMessageId").val());
 
-    $.ajax({
+    jQuery.ajax({
       url: getContext() + '/RAjaxSilverpeasV5/dummy',
       data: {ResponseId: 'spaceUpdater',
         Init:1,
         UserMenuDisplayMode: tabId},
       success: function(data) {
-        if ($("#spaceMenuDivId").isMasked()) {
-          $("#spaceMenuDivId").unmask();
+        if (jQuery("#spaceMenuDivId").isMasked()) {
+          jQuery("#spaceMenuDivId").unmask();
         }
         //alert("Success Data Loaded: data=" + data);
         spaceUpdater = new SpaceUpdater();
@@ -503,27 +503,6 @@ function openTab(tabId) {
       },
       dataType: 'xml'
     });
-
-
-//		$.get(getContext()+'/RAjaxSilverpeasV5/dummy',
-//			{ ResponseId:'spaceUpdater',
-//			  Init:1,
-//			  UserMenuDisplayMode: tabId
-//			},
-//		   function(data){
-//			 if($("#spaceMenuDivId").isMasked()) {
-//				 $("#spaceMenuDivId").unmask();
-//			 }
-//		     alert("Data Loaded: " + data);
-//			 spaceUpdater = new SpaceUpdater();
-//			 var xmlResponse = data.childNodes[0].childNodes[0];
-//		     spaceUpdater.ajaxUpdate(xmlResponse);
-//		     spaceUpdater.displayTree(xmlResponse.childNodes[0]);
-//		     /*$(data).find('spaces').each(function(){
-//		    	 spaceUpdater.displayTree($(this));
-//				});*/
-//		   }
-//		);
   }
 }
 
@@ -534,7 +513,7 @@ function openTab(tabId) {
  * @param spaceId : the space identifier we have to change
  */
 function changeFavoriteSpace(spaceId) {
-  var curImg = $("#favoriteimg" + spaceId);
+  var curImg = jQuery("#favoriteimg" + spaceId);
   var curState = curImg.attr("title");
   if (curState == "favorite") {
     removeFavoriteSpace(spaceId);
@@ -551,18 +530,18 @@ function changeFavoriteSpace(spaceId) {
 function addFavoriteSpace(spaceId) {
   //alert("addFavoriteSpace(" + spaceId + ") call");
 
-  $.ajax({
+  jQuery.ajax({
     url: getContext() + '/RAjaxAction/userMenu',
     data: {Action: 'addSpace',
       SpaceId: spaceId},
     success: function(data) {
       //updateUserFavoriteSpaceStatus
-      $.each(data.spaceids, function(i, item) {
+      jQuery.each(data.spaceids, function(i, item) {
         enableUserFavoriteSpaceStatus(item.spaceid);
       });
       // Check if contains states is enabled to update parent space status
       if (enableAllUFSStates) {
-        $.each(data.parentids, function(i, item) {
+        jQuery.each(data.parentids, function(i, item) {
           enableUserFavoriteParentStatus(item.spaceid);
         });
       }
@@ -585,7 +564,7 @@ var messageBox = null;
 function removeFavoriteSpace(spaceId) {
   //alert("removeFavoriteSpace(" + spaceId + ") call");
 
-  $.ajax({
+  jQuery.ajax({
     url: getContext() + '/RAjaxAction/userMenu',
     data: {Action: 'removeSpace',
       SpaceId: spaceId},
@@ -608,7 +587,7 @@ function removeFavoriteSpace(spaceId) {
 }
 
 function updateUserFavoriteSpaceStatus(spaceId) {
-  var curDiv = $("#favoriteimg" + spaceId);
+  var curDiv = jQuery("#favoriteimg" + spaceId);
   var curState = curDiv.attr("title");
   if (curState == "favorite") {
     curDiv.addClass("favorite_empty");
@@ -623,7 +602,7 @@ function updateUserFavoriteSpaceStatus(spaceId) {
  * Disable user favorite space status
  */
 function disableUserFavoriteSpaceStatus(spaceId, data) {
-  var curDiv = $("#favoriteimg" + spaceId);
+  var curDiv = jQuery("#favoriteimg" + spaceId);
   if (enableAllUFSStates) {
     if (data.spacestate == "contains") {
       curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
@@ -632,7 +611,7 @@ function disableUserFavoriteSpaceStatus(spaceId, data) {
       curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_empty_12px.gif");
       curDiv.attr("title", "favorite_empty");
     }
-    $.each(data.parentids, function(i, item) {
+    jQuery.each(data.parentids, function(i, item) {
       disableParentSpaceStatus(item.spaceid, item.spacestate);
     });
   } else {
@@ -642,7 +621,7 @@ function disableUserFavoriteSpaceStatus(spaceId, data) {
 }
 
 function disableParentSpaceStatus(spaceId, spaceStatus) {
-  var curDiv = $("#favoriteimg" + spaceId);
+  var curDiv = jQuery("#favoriteimg" + spaceId);
   if (spaceStatus == "contains") {
     curDiv.attr("src", "/silverpeas/util/icons/iconlook_contains_favorites_12px.gif");
     curDiv.attr("title", "favorite_contains");
@@ -656,7 +635,7 @@ function disableParentSpaceStatus(spaceId, spaceStatus) {
 }
 
 function enableUserFavoriteSpaceStatus(spaceId) {
-  var curDiv = $("#favoriteimg" + spaceId);
+  var curDiv = jQuery("#favoriteimg" + spaceId);
 
   if (curDiv) {
     curDiv.attr("src", "/silverpeas/util/icons/iconlook_favorites_12px.gif");
@@ -665,7 +644,7 @@ function enableUserFavoriteSpaceStatus(spaceId) {
 }
 
 function enableUserFavoriteParentStatus(spaceId) {
-  var curDiv = $("#favoriteimg" + spaceId);
+  var curDiv = jQuery("#favoriteimg" + spaceId);
   if (curDiv) {
     //alert("curDiv.attr(title) = " + curDiv.attr("title"));
     if (curDiv.attr("title") == "favorite_empty") {
@@ -678,7 +657,7 @@ function enableUserFavoriteParentStatus(spaceId) {
 var spaceUpdater;
 
 //Event.observe(window, 'load', function(){
-$(document).ready(function() {
+jQuery(document).ready(function() {
 
   // Handler for .ready() called.
   currentLook = getLook();
@@ -689,29 +668,6 @@ $(document).ready(function() {
   spaceUpdater = new SpaceUpdater();
   ajaxEngine.registerRequest('getSpaceInfo', getContext() + '/RAjaxSilverpeasV5/dummy');
   ajaxEngine.registerAjaxObject('spaceUpdater', spaceUpdater);
-
-//	$.get(getContext()+'/RAjaxSilverpeasV5/dummy',
-//		{ ResponseId:'spaceUpdater',
-//		  Init:1,
-//		  GetPDC: displayPDC(),
-//		  SpaceId: getSpaceIdToInit(),
-//		  ComponentId:getComponentIdToInit(),
-//		  UserMenuDisplayMode: getUserMenuDisplayMode()
-//		},
-//	   function(data){
-//		 if($("#spaceMenuDivId").isMasked()) {
-//			 $("#spaceMenuDivId").unmask();
-//		 }
-//	     //alert("Data Loaded: " + data);
-//		 spaceUpdater = new SpaceUpdater();
-//		 var xmlResponse = data.childNodes[0].childNodes[0];
-//	     spaceUpdater.ajaxUpdate(xmlResponse);
-//	     //spaceUpdater.displayTree(xmlResponse.childNodes[0]);
-//	     /*$(data).find('spaces').each(function(){
-//	    	 spaceUpdater.displayTree($(this));
-//			});*/
-//	   }
-//	);
 
   //Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=1',
@@ -728,7 +684,7 @@ $(document).ready(function() {
 });
 
 function displayFavoriteSpaceIcon(space, spaceId, newSpace) {
-  if (displayUserFavoriteSpace && $("#userMenuDisplayModeId").val() == "ALL") {
+  if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() == "ALL") {
     var favSpace = space.getAttribute("favspace");
     var favDiv = document.createElement("div");
     favDiv.setAttribute("id", "favdiv");
@@ -838,7 +794,7 @@ SpaceUpdater.prototype = {
     document.getElementById("spaces").innerHTML = "";
     var nbSpaces = tree.childNodes.length;
     //alert("nb spaces = "+nbSpaces);
-    for (i = 0; i < nbSpaces; i++) {
+    for (var i = 0; i < nbSpaces; i++) {
       var space = tree.childNodes[i];
 
       //create new entry
@@ -884,8 +840,8 @@ SpaceUpdater.prototype = {
       }
     }
     // Add alert message if user is in display favorite space mode without favorite space selected.
-    if (displayUserFavoriteSpace && $("#userMenuDisplayModeId").val() == "BOOKMARKS" && nbSpaces == 0) {
-      $('#spaces').html("<span class='noFavoriteSpace'>" + $('#noFavoriteSpaceMsgId').val() + "</span> ");
+    if (displayUserFavoriteSpace && jQuery("#userMenuDisplayModeId").val() == "BOOKMARKS" && nbSpaces == 0) {
+      jQuery('#spaces').html("<span class='noFavoriteSpace'>" + jQuery('#noFavoriteSpaceMsgId').val() + "</span> ");
     }
 
     try {
@@ -954,7 +910,7 @@ SpaceUpdater.prototype = {
       spaceHeader.setAttribute("class", "spaceLevel1On");
       spaceHeader.setAttribute("className", "spaceLevel1On");
     } else {
-      $('#' + currentSpaceId).addClass("spaceOn");
+      jQuery('#' + currentSpaceId).addClass("spaceOn");
     }
 
     if (init == "true") {
@@ -982,16 +938,6 @@ SpaceUpdater.prototype = {
     spaceContentDiv.setAttribute("className", "contentSpace");
 
     document.getElementById(currentSpaceId).appendChild(spaceContentDiv);
-
-    /*if (currentSpaceLevel == 0)
-     {
-     if (document.getElementById("pdc") == null)
-     {
-     var pdcDiv = document.createElement("div");
-     pdcDiv.setAttribute("id", "pdc");
-     document.getElementById(currentSpaceId).appendChild(pdcDiv);
-     }
-     }*/
 
     var item = spaceContent.firstChild;
 
@@ -1179,11 +1125,6 @@ SpaceUpdater.prototype = {
       var axisLabel = document.createTextNode(axis.getAttribute("name") + " (" + nbObj + ")");
       axisURL.appendChild(axisLabel);
 
-      //var axisClass = document.createElement("span");
-      //axisClass.setAttribute("class", "browseAxis");
-      //axisClass.setAttribute("className", "browseAxis");
-      //axisClass.appendChild(axisURL);
-
       var newAxis = document.createElement("div");
       newAxis.setAttribute("id", "axis" + axisId);
       newAxis.appendChild(iconURL);
@@ -1238,11 +1179,6 @@ SpaceUpdater.prototype = {
       var valueLabel = document.createTextNode(value.getAttribute("name") + " (" + nbObj + ")");
       valueURL.appendChild(valueLabel);
 
-      //var valueClass = document.createElement("span");
-      //valueClass.setAttribute("class", "browseValue");
-      //valueClass.setAttribute("className", "browseValue");
-      //valueClass.appendChild(valueURL);
-
       var newValue = document.createElement("div");
       newValue.setAttribute("id", "value" + valuePath);
 
@@ -1273,7 +1209,6 @@ SpaceUpdater.prototype = {
             //alert("ancetre = "+ancetre);
 
             var iconIndent = document.createElement("img");
-            //iconIndent.setAttribute("src", "<%=m_sContext%>/util/icons/minusTreeI.gif");
             iconIndent.setAttribute("align", "absmiddle");
             iconIndent.setAttribute("border", "0");
             iconIndent.setAttribute("width", "15");
@@ -1297,7 +1232,6 @@ SpaceUpdater.prototype = {
 
       newValue.appendChild(iconT);
       newValue.appendChild(iconURL);
-      //newValue.appendChild(valueClass);
       newValue.appendChild(valueURL);
 
       var newValueContent = document.createElement("div");
