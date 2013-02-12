@@ -25,25 +25,18 @@
 package com.silverpeas.publicationTemplate;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.InputSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -53,6 +46,11 @@ import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -74,10 +72,10 @@ public class PublicationTemplateManager {
   // map templateFileName -> PublicationTemplate to avoid multiple marshalling
   private final Map<String, PublicationTemplateImpl> templates =
       new HashMap<String, PublicationTemplateImpl>();
-  public static String mappingPublicationTemplateFilePath = null;
   public static String mappingRecordTemplateFilePath = null;
   public static String templateDir = null;
   public static String defaultTemplateDir = null;
+  private static JAXBContext JAXB_CONTEXT = null;
 
   static {
     ResourceLocator templateSettings =
@@ -89,11 +87,15 @@ public class PublicationTemplateManager {
     defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
 
     String mappingDir = mappingSettings.getString("mappingDir");
-    String mappingPublicationTemplateFileName = mappingSettings.getString("templateFilesMapping");
     String mappingRecordTemplateFileName = mappingSettings.getString("templateMapping");
 
-    mappingPublicationTemplateFilePath = makePath(mappingDir, mappingPublicationTemplateFileName);
     mappingRecordTemplateFilePath = makePath(mappingDir, mappingRecordTemplateFileName);
+    
+    try {
+      JAXB_CONTEXT = JAXBContext.newInstance(com.silverpeas.publicationTemplate.PublicationTemplateImpl.class);
+    } catch (JAXBException e) {
+      SilverTrace.fatal("form", "PublicationTemplateManager.init", "CANT_GET_JAXB_CONTEXT", e);
+    }
   }
 
   private PublicationTemplateManager() {
@@ -212,37 +214,19 @@ public class PublicationTemplateManager {
         xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
         xmlFile = new File(xmlFilePath);
       }
-
-      // Load mapping and instantiate a Marshaller
-      Mapping mapping = new Mapping();
-      mapping.loadMapping(mappingPublicationTemplateFilePath);
-      Unmarshaller unmar = new Unmarshaller(mapping);
-
-      // Unmarshall the process model
-      publicationTemplate = (PublicationTemplateImpl) unmar.unmarshal(new InputSource(
-          new FileInputStream(xmlFile)));
+      
+      Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
+      publicationTemplate = (PublicationTemplateImpl) unmarshaller.unmarshal(xmlFile);
       publicationTemplate.setFileName(xmlFileName);
 
       templates.put(xmlFileName, publicationTemplate);
 
       return publicationTemplate.basicClone();
-    } catch (MappingException me) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName,
-          me);
-    } catch (MarshalException me) {
+    } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, me);
-    } catch (ValidationException ve) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
-          "Publication Template FileName : " + xmlFileName, ve);
-    } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, ioe);
-    }
+          + xmlFileName, e);
+    } 
   }
 
   /**
@@ -255,55 +239,21 @@ public class PublicationTemplateManager {
     SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
 
-    FileWriter writer = null;
     String xmlFileName = template.getFileName();
 
     try {
       // Format these url
       String xmlFilePath = makePath(templateDir, xmlFileName);
-
-      // Load mapping and instantiate a Marshaller
-      Mapping mapping = new Mapping();
-      mapping.loadMapping(mappingPublicationTemplateFilePath);
-
-      String encoding = "UTF-8";
-
-      FileOutputStream fos = new FileOutputStream(xmlFilePath);
-      OutputStreamWriter osw = new OutputStreamWriter(fos, encoding);
-
-      // writer = new FileWriter(xmlFilePath);
-      // Marshaller mar = new Marshaller(writer);
-      Marshaller mar = new Marshaller(osw);
-
-      mar.setEncoding(encoding);
-      mar.setMapping(mapping);
-
-      // Marshall the template
-      mar.marshal(template);
-    } catch (MappingException me) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_XML_MAPPING", "Publication Template FileName : " + xmlFileName,
-          me);
-    } catch (MarshalException me) {
+      
+      Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      marshaller.marshal(template, new File(xmlFilePath));
+      
+    } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
           "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, me);
-    } catch (ValidationException ve) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_INVALID_XML_PUBLICATION_TEMPLATE",
-          "Publication Template FileName : " + xmlFileName, ve);
-    } catch (IOException ioe) {
-      throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "Publication Template FileName : "
-          + xmlFileName, ioe);
-    } finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        } catch (IOException e) {
-          // do nothing
-        }
-      }
+          + xmlFileName, e);
     }
   }
 
@@ -357,6 +307,96 @@ public class PublicationTemplateManager {
       throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
+  
+  /**
+   * @param globalContext componentName It can be null. It is usefull when componentId is not defined.
+   * @return
+   * @throws PublicationTemplateException
+   */
+  public List<PublicationTemplate> getPublicationTemplates(GlobalContext globalContext)
+      throws PublicationTemplateException {
+    List<PublicationTemplate> templates = getPublicationTemplates(true);
+    if (globalContext == null) {
+      return templates;
+    }
+    List<PublicationTemplate> allowedTemplates = new ArrayList<PublicationTemplate>();
+    for (PublicationTemplate template : templates) {
+      if (isPublicationTemplateVisible(template, globalContext)) {
+        allowedTemplates.add(template);
+      }
+    }
+    return allowedTemplates;
+  }
+  
+  public boolean isPublicationTemplateVisible(String templateName, GlobalContext globalContext)
+      throws PublicationTemplateException {
+    PublicationTemplate template = loadPublicationTemplate(templateName);
+    return isPublicationTemplateVisible(template, globalContext);
+  }
+  
+  private boolean isPublicationTemplateVisible(PublicationTemplate template, GlobalContext globalContext) {
+    if (!template.isRestrictedVisibility()) {
+      return true;
+    } else {
+      // template is restricted
+      // check it according to current space and component
+      if (template.isRestrictedVisibilityToInstance()) {
+        if (isTemplateVisibleAccordingToInstance(template, globalContext)) {
+          return true;
+        }
+      } else {
+        OrganizationController oc =
+          OrganizationControllerFactory.getFactory().getOrganizationController();
+        boolean allowed = true;
+        if (template.isRestrictedVisibilityToApplication()) {
+          if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
+            allowed = false;
+          }
+        }
+        if (allowed) {
+          if (!template.isRestrictedVisibilityToSpace()) {
+            return true;
+          } else {
+            if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+  
+  private boolean isTemplateVisibleAccordingToInstance(PublicationTemplate template, GlobalContext context) {
+    List<String> restrictedInstanceIds = template.getInstances();
+    return restrictedInstanceIds.contains(context.getComponentId());
+  }
+  
+  private boolean isTemplateVisibleAccordingToApplication(PublicationTemplate template,
+      GlobalContext context, OrganizationController oc) {
+    List<String> restrictedApplications = template.getApplications();
+    String componentName = context.getComponentName();
+    if (StringUtil.isDefined(context.getComponentId())) {
+      ComponentInstLight component = oc.getComponentInstLight(context.getComponentId());
+      componentName = component.getName();
+    }
+    return restrictedApplications.contains(componentName);
+  }
+  
+  private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template, GlobalContext context, OrganizationController oc) {
+    List<String> restrictedSpaceIds = template.getSpaces();
+    List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
+    for (SpaceInst space : spacePath) {
+      String spaceId = space.getId();
+      if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
+        spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
+      }
+      if (restrictedSpaceIds.contains(spaceId)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * @return the list of PublicationTemplate which contains a search form
@@ -367,10 +407,7 @@ public class PublicationTemplateManager {
     List<PublicationTemplate> searchableTemplates = new ArrayList<PublicationTemplate>();
 
     List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
-    Iterator<PublicationTemplate> iterator = publicationTemplates.iterator();
-    PublicationTemplate template = null;
-    while (iterator.hasNext()) {
-      template = iterator.next();
+    for (PublicationTemplate template : publicationTemplates) {
       try {
         if (template.getSearchForm() != null) {
           searchableTemplates.add(template);
