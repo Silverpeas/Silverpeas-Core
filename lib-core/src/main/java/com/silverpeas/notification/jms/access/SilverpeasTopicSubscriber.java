@@ -35,13 +35,15 @@ import javax.jms.*;
 class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> implements TopicSubscriber {
   
   private String id;
+  private String topicName;
 
   /**
    * Decorates the specified JMS topic subscriber.
    * @param subscriber the subscriber to decorate.
    * @return the decorator of the topic subscriber.
    */
-  public static SilverpeasTopicSubscriber decorateTopicSubscriber(final TopicSubscriber subscriber) {
+  public static SilverpeasTopicSubscriber decorateTopicSubscriber(final TopicSubscriber subscriber)
+      throws JMSException {
     return new SilverpeasTopicSubscriber(subscriber);
   }
 
@@ -66,7 +68,12 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
 
   @Override
   public Topic getTopic() throws JMSException {
-    return getDecoratedObject().getTopic();
+    return new Topic() {
+      @Override
+      public String getTopicName() throws JMSException {
+        return topicName;
+      }
+    };
   }
 
   @Override
@@ -109,7 +116,8 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
     getDecoratedObject().close();
   }
 
-  private SilverpeasTopicSubscriber(final TopicSubscriber subscriber) {
+  private SilverpeasTopicSubscriber(final TopicSubscriber subscriber) throws JMSException {
     setDecoratedObject(subscriber);
+    topicName = subscriber.getTopic().getTopicName();
   }
 }

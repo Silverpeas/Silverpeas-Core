@@ -29,13 +29,23 @@ import com.silverpeas.notification.NotificationSubscriber;
 import com.silverpeas.notification.NotificationTopic;
 import com.silverpeas.notification.SubscriptionException;
 import static com.silverpeas.notification.jms.SilverpeasMessageListener.mapMessageListenerTo;
+
+import com.silverpeas.notification.jms.access.ConnectionFailureListener;
 import com.silverpeas.notification.jms.access.JMSAccessObject;
 import com.silverpeas.util.ExecutionAttempts;
+
 import static com.silverpeas.util.ExecutionAttempts.retry;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.jms.TopicSubscriber;
+import javax.naming.NamingException;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of the subscribing service using the JMS API. This service is managed by the IoC
@@ -43,10 +53,15 @@ import javax.jms.TopicSubscriber;
  * system is injected as a dependency by the IoC container.
  */
 @Named("messageSubscribingService")
-public class JMSSubscribingService implements MessageSubscribingService {
+public class JMSSubscribingService implements MessageSubscribingService, ConnectionFailureListener {
 
   @Inject
   private JMSAccessObject jmsService;
+
+  @PostConstruct
+  public void initialize() {
+    jmsService.addConnectionFailureListener(this);
+  }
 
   @Override
   public synchronized void subscribe(final NotificationSubscriber subscriber,
@@ -68,11 +83,8 @@ public class JMSSubscribingService implements MessageSubscribingService {
         public void execute() throws Exception {
           if (!topicsSubscriber.isSubscribedTo(topicName)) {
             String id = topicsSubscriber.getId();
-            String subscriptionId = id + "::" + topicName;
             MessageListener listener = mapMessageListenerTo(subscriber).forTopic(topicName);
-            TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName,
-                    subscriptionId, listener);
-            topicsSubscriber.addSubscription(jmsSubscriber);
+            createSubscription(topicsSubscriber, topicName, listener);
             topicsSubscriber.save();
             subscriber.setId(id);
           }
@@ -110,4 +122,40 @@ public class JMSSubscribingService implements MessageSubscribingService {
     }
   }
 
+  @Override
+  public void onConnectionFailure() {
+    Collection<ManagedTopicsSubscriber> subscribers =
+        ManagedTopicsSubscriber.getAllManagedTopicSubscribers();
+    for (final ManagedTopicsSubscriber subscriber: subscribers) {
+      Collection<TopicSubscriber> subscriptions = subscriber.getAllSubscriptions();
+      for (final TopicSubscriber subscription: subscriptions) {
+        try {
+          retry(2, new ExecutionAttempts.Job() {
+
+            @Override
+            public void execute() throws Exception {
+              MessageListener listener = subscription.getMessageListener();
+              String topicName = subscription.getTopic().getTopicName();
+              createSubscription(subscriber, topicName, listener);
+              subscriber.removeSubscription(subscription);
+            }
+          });
+        } catch (Exception ex) {
+          Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage());
+        }
+      }
+    }
+  }
+
+  private String getSubscriptionId(ManagedTopicsSubscriber subscriber, String topicName) {
+    return subscriber.getId() + "::" + topicName;
+  }
+
+  private void createSubscription(ManagedTopicsSubscriber subscriber, String topicName, MessageListener listener)
+      throws NamingException, JMSException {
+    String subscriptionId = getSubscriptionId(subscriber, topicName);
+    TopicSubscriber jmsSubscriber = jmsService.createTopicSubscriber(topicName,
+        subscriptionId, listener);
+    subscriber.addSubscription(jmsSubscriber);
+  }
 }
