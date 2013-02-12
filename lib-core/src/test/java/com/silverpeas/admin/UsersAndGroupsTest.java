@@ -30,13 +30,18 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,12 +75,14 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setExpirationDate(expirationDate);
     user.setState(UserState.EXPIRED);
     user.setStateSaveDate(stateSaveDate);
+    
+    String newUserId = "5";
 
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
-    assertThat(userId, is("2"));
+    assertThat(userId, is(newUserId));
 
-    user = ac.getUserDetail("2");
+    user = ac.getUserDetail(newUserId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.getSaveDate(), greaterThan(now));
     assertThat(user.getVersion(), is(0));
@@ -98,7 +105,9 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     Date expirationDate = DateUtils.addDays(now, 4);
     Date stateSaveDate = DateUtils.addDays(now, 5);
     AdminController ac = getAdminController();
-    UserDetail user = ac.getUserDetail("1");
+    
+    String updatedUserId = "1";
+    UserDetail user = ac.getUserDetail(updatedUserId);
 
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(true));
@@ -128,7 +137,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setExpirationDate(expirationDate);
     ac.updateUser(user);
 
-    user = ac.getUserDetail("1");
+    user = ac.getUserDetail(updatedUserId);
     assertThat(user.geteMail(), is(newEmail));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.USER));
     assertThat(user.isAccessAdmin(), is(false));
@@ -154,7 +163,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setExpirationDate(expirationDate);
     ac.updateUser(user);
 
-    user = ac.getUserDetail("1");
+    user = ac.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(2));
     assertThat(user.isExpiredState(), is(true));
 
@@ -165,7 +174,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setStateSaveDate(stateSaveDate);
     ac.updateUser(user);
 
-    user = ac.getUserDetail("1");
+    user = ac.getUserDetail(updatedUserId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.GUEST));
     assertThat(user.isAccessAdmin(), is(false));
     assertThat(user.isAccessDomainManager(), is(false));
@@ -184,7 +193,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     ac.updateUser(user);
 
-    user = ac.getUserDetail("1");
+    user = ac.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(4));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
     assertThat(user.isAccessAdmin(), is(false));
@@ -197,7 +206,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setAccessLevel(UserAccessLevel.PDC_MANAGER);
     ac.updateUser(user);
 
-    user = ac.getUserDetail("1");
+    user = ac.getUserDetail(updatedUserId);
     assertThat(user.getVersion(), is(5));
     assertThat(user.getAccessLevel(), is(UserAccessLevel.PDC_MANAGER));
     assertThat(user.isAccessAdmin(), is(false));
@@ -211,12 +220,43 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
   @Test
   public void shouldDeleteUser() {
     AdminController ac = getAdminController();
-    String userId = ac.deleteUser("1");
-    assertThat(userId, is("1"));
+    String userIdToDelete = "1";
+    String userId = ac.deleteUser(userIdToDelete);
+    assertThat(userId, is(userIdToDelete));
     UserDetail user = ac.getUserDetail(userId);
     assertThat(user.getAccessLevel(), is(UserAccessLevel.ADMINISTRATOR));
     assertThat(user.getState(), is(UserState.DELETED));
     assertThat(user.isDeletedState(), is(true));
+  }
+  
+  @Test
+  public void testGetUsers() {
+    OrganizationController oc = new OrganizationController();
+    @SuppressWarnings("unchecked")
+    List<UserDetail> users = Arrays.asList(oc.getAllUsers());
+    assertThat(users.size(), is(3));
+    assertThat(users.get(0).getId(), is("1"));
+    assertThat(users.get(1).getId(), is("3"));
+    assertThat(users.get(2).getId(), is("2"));
+    
+    users = oc.getAllUsersFromNewestToOldest();
+    assertThat(users.size(), is(3));
+    assertThat(users.get(0).getId(), is("3"));
+    assertThat(users.get(1).getId(), is("2"));
+    assertThat(users.get(2).getId(), is("1"));
+    
+    List<String> domainIds = new ArrayList<String>();
+    domainIds.add("0");
+    users = oc.getUsersOfDomains(domainIds);
+    assertThat(users.size(), is(3));
+    assertThat(users.get(0).getId(), is("1"));
+    assertThat(users.get(1).getId(), is("3"));
+    assertThat(users.get(2).getId(), is("2"));
+    
+    users = oc.getUsersOfDomainsFromNewestToOldest(domainIds);
+    assertThat(users.get(0).getId(), is("3"));
+    assertThat(users.get(1).getId(), is("2"));
+    assertThat(users.get(2).getId(), is("1"));
   }
 
   @Test
