@@ -587,7 +587,10 @@ function UserProfileManagement(params) {
         loaded(self.users);
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+        window.console &&
+        window.console.log(('Silverpeas Profile JQuery Plugin - UserProfileManagement - ERROR - ' +
+            (errorThrown && errorThrown.length > 0 ? errorThrown :
+                'Unknown error, could be reload of javascript while an ajax request is being ...')));
       }
     });
     return self;
@@ -751,7 +754,10 @@ function UserGroupManagement(params) {
         loaded(self.groups);
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
+        window.console &&
+        window.console.log(('Silverpeas Profile JQuery Plugin - UserGroupManagement - ERROR - ' + (
+            errorThrown && errorThrown.length > 0 ? errorThrown :
+                'Unknown error, could be reload of javascript while an ajax request is being ...')));
       }
     });
     return self;
