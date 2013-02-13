@@ -76,7 +76,7 @@ public class AuthenticationServer {
    */
   private AuthenticationServer(String authServerName) {
     try {
-      ResourceLocator serverSettings = new ResourceLocator("org.silverpeas.authentication."
+      ResourceLocator serverSettings = new ResourceLocator("com.stratelia.silverpeas.authentication."
           + authServerName, "");
       fallbackMode = serverSettings.getString("fallbackType");
       passwordChangeAllowed = serverSettings.getBoolean("allowPasswordChange", false);
