@@ -43,6 +43,8 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -114,7 +116,7 @@ public class TemplateDesignerRequestRouter extends
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
-        destination = root + "templateHeader.jsp";
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
       } else if (function.equals("EditTemplate")) {
         String fileName = request.getParameter("FileName");
         PublicationTemplate template;
@@ -125,6 +127,9 @@ public class TemplateDesignerRequestRouter extends
         }
         request.setAttribute("Template", template);
 
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
+      } else if ("GoToTemplateHeader".equals(function)) {
+        request.setAttribute("ComponentsUsingForms", templateDesignerSC.getComponentsUsingForms());
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
@@ -292,7 +297,26 @@ public class TemplateDesignerRequestRouter extends
     } else {
       template.setSearchFileName(null);
     }
-
+    String paramSpaceIds = request.getParameter("Visibility_Spaces");
+    if (StringUtil.isDefined(paramSpaceIds)) {
+      String[] spaceIds = paramSpaceIds.split(" ");
+      if (spaceIds != null) {
+        template.setSpaces(Arrays.asList(spaceIds));
+      }
+    }
+    
+    String[] applications = request.getParameterValues("Visibility_Applications");
+    if (applications != null) {
+      template.setApplications(Arrays.asList(applications));
+    }
+    
+    String paramInstances = request.getParameter("Visibility_Instances");
+    if (StringUtil.isDefined(paramInstances)) {
+      String[] instanceIds = paramInstances.split(" ");
+      if (instanceIds != null) {
+        template.setInstances(Arrays.asList(instanceIds));
+      }
+    }
     return template;
   }
 

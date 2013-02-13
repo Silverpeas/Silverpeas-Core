@@ -42,6 +42,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.PathTestUtil;
@@ -69,8 +70,6 @@ public class InstanciateurTest {
   public void setUp() {
     PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH
         + File.separatorChar + "templateMapping.xml";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = MAPPINGS_PATH
-        + File.separatorChar + "templateFilesMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 
@@ -138,11 +137,14 @@ public class InstanciateurTest {
       }
     }
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
-    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(true).size(), is(1));
+    GlobalContext context = new GlobalContext("WA1");
+    context.setComponentName("kmelia");
+    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(context).size(),
+        is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
-    assertThat(paramWithXMLTemplate.getOptions().size(), is(1));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getValue(), is("template.xml"));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getName().get("fr"), is("template"));
+    assertThat(paramWithXMLTemplate.getOptions().size(), is(2));
+    assertThat(paramWithXMLTemplate.getOptions().get(1).getValue(), is("template.xml"));
+    assertThat(paramWithXMLTemplate.getOptions().get(1).getName().get("fr"), is("template"));
   }
   
   @Test

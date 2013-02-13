@@ -384,8 +384,9 @@ public class Parameter implements Cloneable {
     param.setLabel((HashMap<String, String>) getLabel().clone());
     param.setMandatory(mandatory);
     param.setName(name);
-    List<Option> newOptions = new ArrayList<Option>(getOptions().size());
-    for (Option option : getOptions()) {
+    List<Option> options = getOptions();
+    List<Option> newOptions = new ArrayList<Option>(options.size());
+    for (Option option : options) {
       newOptions.add(option.clone());
     }
     param.setOptions(newOptions);
@@ -416,4 +417,5 @@ public class Parameter implements Cloneable {
           "root.EX_IGNORED", "ParameterName=" + name, ex);
     }
   }
+
 }
