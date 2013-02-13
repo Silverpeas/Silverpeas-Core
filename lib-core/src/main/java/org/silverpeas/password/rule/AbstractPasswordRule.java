@@ -41,7 +41,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   protected static final int DEFAULT_LENGTH = 8;
   protected static ResourceLocator settings =
       new ResourceLocator("org.silverpeas.password.settings.password", "");
-  private static Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
+  private static final Map<String, ResourceLocator> multilang = new HashMap<String, ResourceLocator>();
 
   private PasswordRuleType passwordRuleType;
 

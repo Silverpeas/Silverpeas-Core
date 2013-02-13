@@ -79,22 +79,18 @@
   <div class="page">
     <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
     </div>
-    <div id="background">
+    <div id="backgroundBig">
       <div class="cadre">
-        <div id="header">
-          <img src="<%=logo%>" class="logo" alt=""/>
-
-          <p class="information"><%=authenticationBundle
-              .getString("authentication.password.init") %><br/>
-            <%
-              String message = (String) request.getAttribute("message");
-              if (message != null) {
-            %>
-            <span><%=message%></span><br/>
-            <%
-              }
-            %></p>
-
+        <div id="header" style="display: table; width: 100%">
+          <div style="display: table-cell">
+            <img src="<%=logo%>" class="logo" alt="logo"/>
+          </div>
+          <div class="information" style="display: table-cell; width: 100%; text-align: right">
+            <%=authenticationBundle.getString("authentication.password.init")%>
+            <c:if test="${not empty requestScope.message}">
+              <br/><span><c:out value="${requestScope.message}" escapeXml="false"/></span>
+            </c:if>
+          </div>
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(

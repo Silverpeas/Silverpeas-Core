@@ -44,8 +44,7 @@ public class ForcePasswordChangeHandler extends FunctionHandler {
       String userId = getAdmin().authenticate(key, session.getId(), false, false);
       UserDetail ud = getAdmin().getUserDetail(userId);
       request.setAttribute("userDetail", ud);
-      String changePasswordPage = getGeneral().getString("userLoginForcePasswordChangePage");
-      return changePasswordPage;
+      return getGeneral().getString("userLoginForcePasswordChangePage");
     } catch (AdminException e) {
       // Error : go back to login page
       SilverTrace.error("peasCore", "forcePasswordChangeHandler.doAction()",

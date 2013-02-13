@@ -23,6 +23,7 @@
   --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -41,8 +42,9 @@
   </title>
   <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
+  <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
   <!--[if lt IE 8]>
-  <style>
+  <style type="text/css">
     input {
       background-color: #FAFAFA;
       border: 1px solid #DAD9D9;
@@ -51,38 +53,42 @@
       margin-left: -10px;
       height: 26px;
       line-height: 24px;
-      padding: 0px 60px;
       display: block;
-      padding: 0px;
+      padding: 0;
     }
   </style>
   <![endif]-->
   <script type="text/javascript">
-    function checkForm() {
-      var form = document.getElementById("questionForm");
-      if (form.elements["answer"].value.length == 0) {
-        alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
-        return false;
-      } else {
-        form.submit();
-      }
-    }
+    var webContext = '<%=m_context%>';
+    $(document).ready(function() {
+      $('#questionForm').submit(function() {
+        var answer = $(this).find('#answer').val();
+        if (!answer || answer.length == 0) {
+          alert("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
+          return false;
+        }
+        this.action = '<c:url value="/CredentialsServlet/ValidateAnswer"/>';
+        return true;
+      });
+    });
   </script>
 </head>
 <body>
-<form id="questionForm" action="<%=m_context%>/CredentialsServlet/ValidateAnswer" method="post">
+<form id="questionForm" action="#" method="post">
   <div id="top"></div>
-  <!-- Backgroud fonc� -->
-  <div class="page"> <!-- Centrage horizontal des �l�ments (960px) -->
+  <div class="page">
     <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
     </div>
-    <div id="background"> <!-- image de fond du formulaire -->
+    <div id="background">
       <div class="cadre">
         <div id="header">
-          <img src="<%=logo%>" class="logo"/>
+          <img src="<%=logo%>" class="logo" alt=""/>
 
           <p class="information"><%=authenticationBundle
               .getString("authentication.reminder.label") %>
+            <c:if test="${not empty requestScope.message}">
+              <br/><span><c:out value="${requestScope.message}" escapeXml="false"/></span>
+            </c:if>
           </p>
 
           <div class="clear"></div>
@@ -91,7 +97,9 @@
           <input type="password" name="answer" id="answer"/></label></p>
         <br/>
 
-        <p><a href="#" class="submit" onclick="checkForm();"><img src="../images/bt-login.png"/></a>
+        <p>
+          <input type="submit" style="width:0; height:0; border:0; padding:0"/>
+          <a href="#" class="submit" onclick="$('#questionForm').submit()"><img src="<%=m_context%>/images/bt-login.png" alt=""/></a>
         </p>
       </div>
     </div>
