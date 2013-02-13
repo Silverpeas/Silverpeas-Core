@@ -37,11 +37,13 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.UnitUtil;
 
+import com.silverpeas.admin.components.Option;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
+import com.silverpeas.admin.localized.LocalizedOption;
 import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -1026,16 +1028,6 @@ public class JobStartPagePeasRequestRouter extends
     }
   }
 
-  private List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
-    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
-    for (LocalizedParameter parameter : parameters) {
-      if (parameter.isVisible()) {
-        visibleParameters.add(parameter);
-      }
-    }
-    return visibleParameters;
-  }
-
   private List<LocalizedParameter> getHiddenParameters(List<LocalizedParameter> parameters) {
     List<LocalizedParameter> hiddenParameters = new ArrayList<LocalizedParameter>();
     for (LocalizedParameter parameter : parameters) {
@@ -1210,7 +1202,7 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1243,8 +1235,8 @@ public class JobStartPagePeasRequestRouter extends
     LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
         getComponentByName(componentName), sessionController.getLanguage());
     setSpacesNameInRequest(sessionController, request);
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(componentInstSelected.
-        getSortedParameters());
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(componentInstSelected.getSortedParameters());
     Parameter hiddenParam = createIsHiddenParam("no");
     visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
@@ -1274,7 +1266,8 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
