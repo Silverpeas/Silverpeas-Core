@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
  * Navigation case : user validates his answer to his login question.
  * @author ehugonnet
  */
-public class ValidationAnswerHandler extends FunctionHandler {
+public class ValidationAnswerHandler extends ChangeQuestionAnswerFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -57,8 +57,8 @@ public class ValidationAnswerHandler extends FunctionHandler {
         return getGeneral().getString("userResetPasswordPage");
       } else {
         // Invalid answer.
-        request.setAttribute("message", getM_Multilang().getString("invalidAnswer"));
-        return getGeneral().getString("userLoginQuestionPage");
+        return performQuestionAnswerError(request, getGeneral().getString("userLoginQuestionPage"),
+            userDetail);
       }
     } catch (AdminException e) {
       // Error : go back to login page
