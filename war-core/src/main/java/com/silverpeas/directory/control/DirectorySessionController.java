@@ -236,7 +236,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public List<UserDetail> getUsersByQuery(String query) throws DirectoryException {
     setCurrentView("query");
     setCurrentQuery(query);
-    setPreviousSort(getCurrentSort());
+    if (!getCurrentSort().equals(SORT_PERTINENCE)) {
+      setPreviousSort(getCurrentSort());
+    }
     setCurrentSort(SORT_PERTINENCE);
     lastListUsersCalled = new ArrayList<UserDetail>();
 

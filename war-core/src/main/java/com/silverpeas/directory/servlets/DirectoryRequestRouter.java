@@ -109,10 +109,13 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if (function.equalsIgnoreCase("searchByKey")) {
-
-        users = directorySC.getUsersByQuery(request.getParameter("key"));
-        destination = doPagination(request, users, directorySC);
-
+        String query = request.getParameter("key");
+        if (StringUtil.isDefined(query)) {
+          users = directorySC.getUsersByQuery(query);
+          destination = doPagination(request, users, directorySC);
+        } else {
+          destination = getDestination("tous", directorySC, request);
+        }
       } else if (function.equalsIgnoreCase("tous")) {
 
         users = directorySC.getLastListOfAllUsers();
