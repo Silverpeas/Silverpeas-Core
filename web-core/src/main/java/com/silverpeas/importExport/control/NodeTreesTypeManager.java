@@ -84,7 +84,7 @@ public class NodeTreesTypeManager {
         ImportReportManager.addUnitReport(unitReport, componentId);
 
         ComponentInst component = OrganisationControllerFactory
-            .getOrganizationController().getComponentInst(componentId);
+            .getOrganisationController().getComponentInst(componentId);
         if (component == null) {
           // le composant n'existe pas
           unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);

@@ -218,7 +218,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
         return;
       }
       int[] pdcIds = new int[subscriptions.size()];
-      OrganisationController ocontroller = OrganisationControllerFactory.getOrganizationController();
+      OrganisationController ocontroller = OrganisationControllerFactory.getOrganisationController();
       int adminId;
 
       for (int i = 0; i < subscriptions.size(); i++) {
@@ -263,7 +263,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
 
       int[] removeIds = new int[subscriptions.size()];
       int removeLength = 0;
-      OrganisationController ocontroller = OrganisationControllerFactory.getOrganizationController();
+      OrganisationController ocontroller = OrganisationControllerFactory.getOrganisationController();
       int adminId;
 
       for (PDCSubscription subscription : subscriptions) {
@@ -308,7 +308,7 @@ public class PdcSubscriptionBmEJB implements SessionBean {
     List<String> spaceAndInstanceNames = null;
     int firstAdminId = -1;
     OrganisationController organizationController = OrganisationControllerFactory
-        .getOrganizationController();
+        .getOrganisationController();
 
     try {
       conn = DBUtil.makeConnection(JNDINames.PDC_SUBSCRIPTION_DATASOURCE);

@@ -313,7 +313,7 @@ public class SilverStatisticsPeasDAOConnexion {
     try {
       myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
       UserDetail[] users = OrganisationControllerFactory
-          .getOrganizationController().getAllUsersOfGroup(groupId);
+          .getOrganisationController().getAllUsersOfGroup(groupId);
       stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION);
       for (UserDetail userDetail : users) {
         stmt.setString(1, startDate);
@@ -347,7 +347,7 @@ public class SilverStatisticsPeasDAOConnexion {
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
         "root.MSG_GEN_ENTER_METHOD");
     List<String[]> result = new ArrayList<String[]>();
-    Group[] groups = OrganisationControllerFactory.getOrganizationController().getAllGroups();
+    Group[] groups = OrganisationControllerFactory.getOrganisationController().getAllGroups();
     for (Group group : groups) {
       result.addAll(getStatsConnexionGroupUser(dateBegin, dateEnd, group));
     }
@@ -368,7 +368,7 @@ public class SilverStatisticsPeasDAOConnexion {
   public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin,
       String dateEnd, int groupId) throws SQLException, UtilException {
     return getStatsConnexionGroupUser(dateBegin, dateEnd, OrganisationControllerFactory
-        .getOrganizationController().getGroup(String.valueOf(groupId)));
+        .getOrganisationController().getGroup(String.valueOf(groupId)));
   }
 
   static Collection<String[]> getStatsConnexionGroupUser(String dateBegin, String dateEnd,
@@ -385,7 +385,7 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt = myCon.prepareStatement(SELECT_COUNTS_FOR_USER);
       long countConnection = 0L;
       long duration = 0L;
-      UserDetail[] users = OrganisationControllerFactory.getOrganizationController()
+      UserDetail[] users = OrganisationControllerFactory.getOrganisationController()
           .getAllUsersOfGroup(group.getId());
       for (UserDetail userDetail : users) {
         stmt.setString(1, dateBegin);

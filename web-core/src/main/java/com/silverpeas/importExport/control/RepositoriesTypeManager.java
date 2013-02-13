@@ -93,7 +93,7 @@ public class RepositoriesTypeManager {
       ImportReportManager.addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganizationController()
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas

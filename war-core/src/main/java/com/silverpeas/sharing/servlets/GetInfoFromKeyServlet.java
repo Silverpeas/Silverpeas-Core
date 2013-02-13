@@ -90,7 +90,7 @@ public class GetInfoFromKeyServlet extends HttpServlet {
 * @return the URL of the wallpaper.
 */
   private String getWallpaperFor(final Ticket ticket) {
-    ComponentInstLight component = OrganisationControllerFactory.getOrganizationController()
+    ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
         .getComponentInstLight(ticket.getComponentId());
     return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.
         getDomainFatherId());

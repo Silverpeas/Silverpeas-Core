@@ -79,7 +79,7 @@ public class CommentEditionTag extends CommentWidget {
    */
   protected String getCommentEditionScript() {
     UserDetail user = OrganisationControllerFactory
-        .getOrganizationController().getUserDetail(getUserId());
+        .getOrganisationController().getUserDetail(getUserId());
     String edition = "";
     if (!user.isAccessGuest() && !user.isAnonymous()) {
       edition =

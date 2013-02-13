@@ -1730,7 +1730,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
   public String getMyAgendaUrl() {
     String url = "/SubscribeAgenda/" + AGENDA_FILENAME_PREFIX + "?userId="
         + getUserId() + "&amp;login=" + getUserDetail().getLogin() + "&amp;password="
-        + OrganisationControllerFactory.getOrganizationController().getUserFull(getUserId()).getPassword();
+        + OrganisationControllerFactory.getOrganisationController().getUserFull(getUserId()).getPassword();
     return url;
   }
 

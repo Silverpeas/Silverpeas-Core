@@ -51,7 +51,7 @@ public class UserFull extends UserDetail {
    * @return the full profile of the user.
    */
   public static UserFull getById(String userId) {
-    return getOrganizationController().getUserFull(userId);
+    return getOrganisationController().getUserFull(userId);
   }
 
   /** Creates new UserFull */

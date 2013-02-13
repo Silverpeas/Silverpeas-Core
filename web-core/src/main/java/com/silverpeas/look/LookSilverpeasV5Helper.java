@@ -247,7 +247,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return mainSC;
   }
 
-  protected OrganisationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return orga;
   }
 
@@ -624,13 +624,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
-    SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceStruct = getOrganisationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
     if (spaceStruct != null
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
         && spaceStruct.getFirstPageExtraParam() != null
         && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganizationController().isComponentAvailable(
+      if (getOrganisationController().isComponentAvailable(
           spaceStruct.getFirstPageExtraParam(), getUserId())) {
         return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());

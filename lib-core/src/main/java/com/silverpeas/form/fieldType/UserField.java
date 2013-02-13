@@ -91,7 +91,7 @@ public class UserField implements Field {
       return userId;
     }
 
-    UserDetail user =  OrganisationControllerFactory.getOrganizationController().getUserDetail(
+    UserDetail user =  OrganisationControllerFactory.getOrganisationController().getUserDetail(
         getUserId());
     if (user == null) {
       return "user(" + getUserId() + ")";
@@ -141,7 +141,7 @@ public class UserField implements Field {
     if (getUserId() == null) {
       return null;
     }
-    return  OrganisationControllerFactory.getOrganizationController().getUserDetail(getUserId());
+    return  OrganisationControllerFactory.getOrganisationController().getUserDetail(getUserId());
   }
 
   /**

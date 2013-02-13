@@ -38,7 +38,7 @@ import java.util.List;
 
 public class SelectionUsersGroups implements SelectionExtraParams {
   static OrganisationController organizationController =  OrganisationControllerFactory
-      .getOrganizationController();
+      .getOrganisationController();
 
   public final static int USER = 0;
   public final static int GROUP = 1;

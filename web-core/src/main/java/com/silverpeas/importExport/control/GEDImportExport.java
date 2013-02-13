@@ -1150,7 +1150,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail = OrganisationControllerFactory.getOrganizationController()
+      UserDetail userDetail = OrganisationControllerFactory.getOrganisationController()
           .getUserDetail(publicationDetail.getCreatorId());
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();

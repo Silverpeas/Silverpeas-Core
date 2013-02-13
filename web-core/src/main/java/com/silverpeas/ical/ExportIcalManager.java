@@ -364,7 +364,7 @@ public class ExportIcalManager {
       Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedulable.getId());
       for (Attendee attendee : attendees) {
         UserDetail user = OrganisationControllerFactory
-            .getOrganizationController().getUserDetail(attendee.getUserId());
+            .getOrganisationController().getUserDetail(attendee.getUserId());
         if (user != null) {
           String email = user.geteMail();
           if (StringUtil.isDefined(email)) {

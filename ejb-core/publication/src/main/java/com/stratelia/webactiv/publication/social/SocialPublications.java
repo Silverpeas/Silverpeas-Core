@@ -98,7 +98,7 @@ public class SocialPublications implements SocialPublicationsInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me and my contacts
-    OrganisationController oc = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
     List<String> options = new ArrayList<String>();
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));

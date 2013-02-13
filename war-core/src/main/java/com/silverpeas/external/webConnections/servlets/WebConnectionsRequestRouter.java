@@ -168,7 +168,7 @@ public class WebConnectionsRequestRouter extends
     if (!StringUtil.isDefined(password)) {
       password = "";
     }
-    ComponentInst inst = OrganisationControllerFactory.getOrganizationController()
+    ComponentInst inst = OrganisationControllerFactory.getOrganisationController()
         .getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("URL");
@@ -203,7 +203,7 @@ public class WebConnectionsRequestRouter extends
     }
     request.setAttribute("Connection", connection);
     ComponentInst inst = OrganisationControllerFactory
-        .getOrganizationController().getComponentInst(connection.getComponentId());
+        .getOrganisationController().getComponentInst(connection.getComponentId());
     request.setAttribute("ComponentInst", inst);
     request.setAttribute("IsAnonymousAccess", isAnonymousAccess(request));
   }

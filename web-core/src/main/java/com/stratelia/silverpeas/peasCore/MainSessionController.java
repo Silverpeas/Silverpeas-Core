@@ -345,7 +345,7 @@ public class MainSessionController implements Clipboard {
   // ------------------- Other functions -----------------------------
   public OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerFactory.getOrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }

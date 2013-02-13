@@ -96,7 +96,7 @@ public class GroupField implements Field {
       return "";
     }
 
-    Group group =  OrganisationControllerFactory.getOrganizationController().getGroup(getGroupId());
+    Group group =  OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
 
     if (group == null) {
       return "group(" + getGroupId() + ")";
@@ -147,7 +147,7 @@ public class GroupField implements Field {
       return null;
     }
 
-    return  OrganisationControllerFactory.getOrganizationController().getGroup(getGroupId());
+    return  OrganisationControllerFactory.getOrganisationController().getGroup(getGroupId());
   }
 
   /**

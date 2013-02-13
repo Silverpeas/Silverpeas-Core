@@ -126,7 +126,7 @@ public class PublicationsTypeManager {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
       ComponentInst componentInst = OrganisationControllerFactory
-          .getOrganizationController().getComponentInst(componentId);
+          .getOrganisationController().getComponentInst(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
       // Récupération du PublicationType
       PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
@@ -442,7 +442,7 @@ public class PublicationsTypeManager {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
       PublicationPK pk = new PublicationPK(pubId, componentId);
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganizationController()
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
     }
@@ -460,7 +460,7 @@ public class PublicationsTypeManager {
     for (WAAttributeValuePair attValue : listItemsToExport) {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganizationController()
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
@@ -594,7 +594,7 @@ public class PublicationsTypeManager {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
       ImportReportManager.addUnitReport(unitReport, componentId);
-      ComponentInst componentInst = OrganisationControllerFactory.getOrganizationController()
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
           .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas

@@ -41,7 +41,7 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 public class SilverpeasWebUtil {
 
   private OrganisationController organizationController = OrganisationControllerFactory
-      .getOrganizationController();
+      .getOrganisationController();
 
   public SilverpeasWebUtil() {
   }
@@ -50,7 +50,7 @@ public class SilverpeasWebUtil {
     organizationController = controller;
   }
 
-  public OrganisationController getOrganizationController() {
+  public OrganisationController getOrganisationController() {
     return organizationController;
   }
 

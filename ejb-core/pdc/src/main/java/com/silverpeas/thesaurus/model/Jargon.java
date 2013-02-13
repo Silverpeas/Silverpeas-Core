@@ -52,12 +52,12 @@ public class Jargon extends SilverpeasBean {
     String userName = null;
     if (type == 0) {// user
       UserDetail userDetail = OrganisationControllerFactory
-          .getOrganizationController().getUserDetail(getIdUser());
+          .getOrganisationController().getUserDetail(getIdUser());
       if (userDetail != null) {
         userName = userDetail.getLastName() + " " + userDetail.getFirstName();
       }
     } else { // group
-      Group group = OrganisationControllerFactory.getOrganizationController().getGroup(getIdUser());
+      Group group = OrganisationControllerFactory.getOrganisationController().getGroup(getIdUser());
       if (group != null) {
         userName = group.getName();
       }

@@ -79,7 +79,7 @@ public class ScheduledImport implements SchedulerEventListener {
     String userId = resources.getString("userIdAsCreatorId");
     ImportExport importExport = new ImportExport();
     UserDetail user = OrganisationControllerFactory
-        .getOrganizationController().getUserDetail(userId);
+        .getOrganisationController().getUserDetail(userId);
     ResourceLocator multilang = new ResourceLocator(
         "com.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
     ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");

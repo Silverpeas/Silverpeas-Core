@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -43,8 +44,6 @@ import static org.mockito.Mockito.*;
  *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-jdbc-datasource.xml"})
 public class SilverStatisticsPeasDAOVolumeTest extends AbstractTestDao {
 
   private static final String dateBegin = "2010-12-01";
@@ -54,6 +53,25 @@ public class SilverStatisticsPeasDAOVolumeTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-stats-volume-dataset.xml";
   }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
+  
+  
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    new ClassPathXmlApplicationContext(new String[]{"/spring-jdbc-datasource.xml"});
+  }
+  
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+  }
+  
 
   /**
    * Test of getYears method, of class SilverStatisticsPeasDAOAccesVolume.

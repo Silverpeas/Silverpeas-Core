@@ -42,7 +42,7 @@ public class GoToSpace extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     SpaceInstLight space = OrganisationControllerFactory
-        .getOrganizationController().getSpaceInstLightById(objectId);
+        .getOrganisationController().getSpaceInstLightById(objectId);
     if (space != null && space.getShortId() != null) {
       HttpSession session = req.getSession(true);
       GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(

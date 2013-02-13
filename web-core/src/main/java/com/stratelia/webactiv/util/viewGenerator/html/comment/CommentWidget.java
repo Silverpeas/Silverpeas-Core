@@ -227,7 +227,7 @@ public abstract class CommentWidget extends TagSupport {
   private String setUpJQueryCommentPlugin() throws JspTagException {
     String context = URLManager.getApplicationURL();
 
-    OrganisationController controller = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
     ResourcesWrapper settings = getSettings();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());

@@ -98,7 +98,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
     Quota quota = super.verify(key, countingOffset);
     while (key.isValid() && !key.getSpace().isRoot()) {
       key =
-          createKeyFrom(OrganisationControllerFactory.getFactory().getOrganizationController()
+          createKeyFrom(OrganisationControllerFactory.getFactory().getOrganisationController()
               .getSpaceInstById(key.getSpace().getDomainFatherId()));
       quota = super.verify(key, countingOffset);
     }

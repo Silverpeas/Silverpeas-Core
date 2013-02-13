@@ -59,12 +59,12 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
     assertEquals(org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath(),
         indexDirectory + separatorChar);
     OrganisationControllerFactory.getFactory().clearFactory();
-    OrganisationControllerFactory.getOrganizationController().reloadAdminCache();
+    OrganisationControllerFactory.getOrganisationController().reloadAdminCache();
   }
 
-  @Before
-  public void prepareTest() throws Exception {
-    setUp();
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
   }
 
   /**
@@ -181,5 +181,10 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
 
   private String getIndexPath(String application) {
     return indexDirectory + separatorChar + application + separatorChar + "indexSpell";
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

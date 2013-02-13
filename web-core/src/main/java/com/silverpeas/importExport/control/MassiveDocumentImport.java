@@ -79,7 +79,7 @@ public class MassiveDocumentImport {
 
   private boolean isVersioningUsed(String componentId) {
     ComponentInst componentInst = OrganisationControllerFactory
-        .getOrganizationController().getComponentInst(componentId);
+        .getOrganisationController().getComponentInst(componentId);
     return ImportExportHelper.isVersioningUsed(componentInst);
 
   }

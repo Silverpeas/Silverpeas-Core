@@ -40,7 +40,7 @@ public class DefaultCommentServiceMock extends DefaultCommentService {
   private OrganisationController organizationController;
 
   @Override
-  protected OrganisationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return organizationController;
   }
 }

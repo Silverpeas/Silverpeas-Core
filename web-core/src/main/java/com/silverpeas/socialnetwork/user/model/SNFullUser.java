@@ -52,7 +52,7 @@ public class SNFullUser {
   private String phone;
 
   public SNFullUser(String userId) {
-    userFull = OrganisationControllerFactory.getOrganizationController().getUserFull(userId);
+    userFull = OrganisationControllerFactory.getOrganisationController().getUserFull(userId);
     this.phone = userFull.getValue("phone");
 
     // return the url of profil Photo

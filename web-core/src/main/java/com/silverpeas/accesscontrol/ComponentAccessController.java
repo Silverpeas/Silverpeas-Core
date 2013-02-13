@@ -60,7 +60,7 @@ public class ComponentAccessController implements AccessController<String> {
    * @return
    */
   public boolean isRightOnTopicsEnabled(String userId, String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganizationController().
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "rightsOnTopics"));
   }
 
@@ -71,23 +71,23 @@ public class ComponentAccessController implements AccessController<String> {
   @Override
   public boolean isUserAuthorized(String userId, String componentId) {
     // Personal space or user tool
-    if (componentId == null || getOrganizationController().isToolAvailable(componentId)) {
+    if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       return true;
     }
-    if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+    if (StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
         componentId, "publicFiles"))) {
       return true;
     }
-    return getOrganizationController().isComponentAvailable(componentId, userId);
+    return getOrganisationController().isComponentAvailable(componentId, userId);
   }
 
   /**
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = OrganisationControllerFactory.getOrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

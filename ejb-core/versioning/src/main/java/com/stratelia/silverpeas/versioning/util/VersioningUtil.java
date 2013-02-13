@@ -220,7 +220,7 @@ public class VersioningUtil {
   }
 
   public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
-    OrganisationController orgCntr = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orgCntr = OrganisationControllerFactory.getOrganisationController();
     ComponentInst componentInst =
         orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 

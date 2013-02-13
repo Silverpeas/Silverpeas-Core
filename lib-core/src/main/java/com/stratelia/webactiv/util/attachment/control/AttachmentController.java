@@ -1368,7 +1368,7 @@ public class AttachmentController {
       attachmentDetail.setReservationDate(cal.getTime());
 
       // 1. rechercher le nombre de jours avant expiration dans le composant
-      OrganisationController orga =  OrganisationControllerFactory.getOrganizationController();
+      OrganisationController orga =  OrganisationControllerFactory.getOrganisationController();
       SilverTrace.info("attachment", "getExpiryDate", "root.MSG_GEN_PARAM_VALUE", "instanceId = "
           + attachmentDetail.getInstanceId());
 
@@ -1424,7 +1424,7 @@ public class AttachmentController {
    * @throws AttachmentException
    */
   public static UserDetail getUserDetail(String userId) throws AttachmentException {
-    return  OrganisationControllerFactory.getOrganizationController().getUserDetail(userId);
+    return  OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
   }
 
   public static HashMap<String, String> cloneAttachments(AttachmentPK fromForeignKey,

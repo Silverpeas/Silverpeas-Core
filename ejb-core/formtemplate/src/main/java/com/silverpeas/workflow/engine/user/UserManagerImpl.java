@@ -69,7 +69,7 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getUser(String userId) throws WorkflowException {
     UserImpl user = new UserImpl(getUserDetail(userId));
-    String[] groupIds =  OrganisationControllerFactory.getOrganizationController()
+    String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
         .getAllGroupIdsOfUser(userId);
     if (groupIds != null) {
       user.setGroupIds(Arrays.asList(groupIds));
@@ -130,7 +130,7 @@ public class UserManagerImpl implements UserManager {
     try {
       // the modelId is the peasId.
       ComponentInst peas = AdminReference.getAdminService().getComponentInst(modelId);
-      userDetails =  OrganisationControllerFactory.getOrganizationController().getUsers(
+      userDetails =  OrganisationControllerFactory.getOrganisationController().getUsers(
           peas.getDomainFatherId(),
           modelId, roleName);
     } catch (AdminException e) {
@@ -146,7 +146,7 @@ public class UserManagerImpl implements UserManager {
 
   @Override
   public User[] getUsersInGroup(String groupId) {
-    UserDetail[] userDetails =  OrganisationControllerFactory.getOrganizationController()
+    UserDetail[] userDetails =  OrganisationControllerFactory.getOrganisationController()
         .getAllUsersOfGroup(groupId);
 
     if (userDetails == null) {
@@ -169,7 +169,7 @@ public class UserManagerImpl implements UserManager {
    * returns the userDetail of a userId.
    */
   private UserDetail getUserDetail(String userId) throws WorkflowException {
-    UserDetail userDetail =  OrganisationControllerFactory.getOrganizationController()
+    UserDetail userDetail =  OrganisationControllerFactory.getOrganisationController()
         .getUserDetail(userId);
     if (userDetail == null) {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
@@ -184,7 +184,7 @@ public class UserManagerImpl implements UserManager {
     UserImpl[] users = new UserImpl[userDetails.length];
     for (int i = 0; i < userDetails.length; i++) {
       users[i] = new UserImpl(userDetails[i]);
-      String[] groupIds =  OrganisationControllerFactory.getOrganizationController()
+      String[] groupIds =  OrganisationControllerFactory.getOrganisationController()
           .getAllGroupIdsOfUser(userDetails[i].getId());
       if (groupIds != null) {
         users[i].setGroupIds(Arrays.asList(groupIds));

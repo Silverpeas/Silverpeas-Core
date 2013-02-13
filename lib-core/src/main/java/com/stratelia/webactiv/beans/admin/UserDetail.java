@@ -87,7 +87,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
   public static UserDetail getById(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**
@@ -96,7 +96,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return a list with all the users in Silverpeas.
    */
   public static List<UserDetail> getAll() {
-    return Arrays.asList(getOrganizationController().getAllUsers());
+    return Arrays.asList(getOrganisationController().getAllUsers());
   }
 
   /**
@@ -107,7 +107,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * domain exists.
    */
   public static List<UserDetail> getAllInDomain(String domainId) {
-    return Arrays.asList(getOrganizationController().getAllUsersInDomain(domainId));
+    return Arrays.asList(getOrganisationController().getAllUsersInDomain(domainId));
   }
 
   /**
@@ -583,7 +583,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
-      anonymousUser =  OrganisationControllerFactory.getOrganizationController().getUserDetail(
+      anonymousUser =  OrganisationControllerFactory.getOrganisationController().getUserDetail(
           getAnonymousUserId());
     }
     return anonymousUser;
@@ -730,7 +730,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
 
-  protected static OrganisationController getOrganizationController() {
-    return OrganisationControllerFactory.getFactory().getOrganizationController();
+  protected static OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getFactory().getOrganisationController();
   }
 }

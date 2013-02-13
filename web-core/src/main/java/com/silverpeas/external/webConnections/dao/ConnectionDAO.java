@@ -222,7 +222,7 @@ public class ConnectionDAO {
     Map<String, String> param = new HashMap<String, String>();
     String login = rs.getString("paramLogin");
     byte[] password = rs.getBytes("paramPassword");
-    ComponentInst inst = OrganisationControllerFactory.getOrganizationController()
+    ComponentInst inst = OrganisationControllerFactory.getOrganisationController()
         .getComponentInst(connection.getComponentId());
     String nameLogin = inst.getParameterValue("login");
     String namePassword = inst.getParameterValue("password");
@@ -252,7 +252,7 @@ public class ConnectionDAO {
     prepStmt.setInt(2, Integer.parseInt(connection.getUserId()));
     prepStmt.setString(3, connection.getComponentId());
     ComponentInst inst = OrganisationControllerFactory
-        .getOrganizationController().getComponentInst(connection.getComponentId());
+        .getOrganisationController().getComponentInst(connection.getComponentId());
     String login = connection.getParam().get(inst.getParameterValue("login"));
     String password = connection.getParam().get(inst.getParameterValue("password"));
     byte[] crypPassword = null;

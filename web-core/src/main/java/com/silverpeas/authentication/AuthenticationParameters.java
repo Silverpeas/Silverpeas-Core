@@ -110,7 +110,7 @@ public class AuthenticationParameters {
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
       UserDetail user = OrganisationControllerFactory
-          .getOrganizationController().getUserDetail(account.getSilverpeasUserId());
+          .getOrganisationController().getUserDetail(account.getSilverpeasUserId());
       this.domainId = user.getDomainId();
       this.login = user.getLogin();
       this.socialNetworkMode = (user != null);

@@ -748,7 +748,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
           UnitUtil.memUnit.MB));
     }
     SpaceInstLight space =
-        OrganisationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getFactory().getOrganisationController()
             .getSpaceInstLightById(quotaReached.getResourceId());
     final SilverpeasTemplate template =
         SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("admin/space/quota");

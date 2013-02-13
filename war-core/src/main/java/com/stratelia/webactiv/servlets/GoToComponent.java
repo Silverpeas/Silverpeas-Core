@@ -38,7 +38,7 @@ public class GoToComponent extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     ComponentInstLight component = OrganisationControllerFactory
-        .getOrganizationController().getComponentInstLight(objectId);
+        .getOrganisationController().getComponentInstLight(objectId);
 
     if (component != null) {
       setGefSpaceId(req, objectId);

@@ -77,7 +77,7 @@ public class MyDefaultCommentService extends DefaultCommentService {
   }
 
   @Override
-  protected OrganisationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return mockedController;
   }
 

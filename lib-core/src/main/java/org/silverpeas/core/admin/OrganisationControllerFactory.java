@@ -44,7 +44,7 @@ public class OrganisationControllerFactory {
     return instance;
   }
 
-  public static OrganisationController getOrganizationController() {
+  public static OrganisationController getOrganisationController() {
     return instance.getController();
   }
 
@@ -58,11 +58,11 @@ public class OrganisationControllerFactory {
   private OrganisationControllerFactory() {
     this.organisationController = new OrganizationController();
   }
-  
+
   /**
    * For tests purpose ONLY.
    */
   public void clearFactory() {
-    this.organisationController = null;    
+    this.organisationController = null;
   }
 }

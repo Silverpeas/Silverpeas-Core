@@ -167,7 +167,7 @@ public class LdapField extends TextField {
     // parsing filter -> dynamic variable
     if (filter.contains(VARIABLE_LOGIN)) {
       try {
-        String valueLogin =  OrganisationControllerFactory.getOrganizationController()
+        String valueLogin =  OrganisationControllerFactory.getOrganisationController()
             .getUserDetail(currentUserId).getLogin();
         filter = filter.replaceAll(VARIABLE_REGEX_LOGIN, valueLogin);
       } catch (Exception e) {

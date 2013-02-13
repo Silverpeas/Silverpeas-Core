@@ -44,7 +44,7 @@ public class AllUserPanel extends PanelProvider {
   protected static final int COL_FIRSTNAME = 1;
   protected static final int COL_EMAIL = 2;
 
-  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganizationController();
+  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganisationController();
 
   protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
 

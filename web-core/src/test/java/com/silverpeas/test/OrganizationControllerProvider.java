@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
 @Named("organizationControllerProvider")
 public class OrganizationControllerProvider {
 
-  public OrganisationController getOrganizationController() {
+  public OrganisationController getOrganisationController() {
     OrganisationController organizationController = mock(OrganizationController.class);
     return organizationController;
   }

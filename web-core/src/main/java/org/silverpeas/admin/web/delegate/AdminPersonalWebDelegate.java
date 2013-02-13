@@ -162,7 +162,7 @@ public class AdminPersonalWebDelegate {
     if (indexedNotUsedComponents == null) {
       indexedNotUsedComponents = new LinkedHashMap<String, WAComponent>();
       for (final WAComponent component : getPersonalSpaceController().getVisibleComponents(
-          getOrganizationController())) {
+          getOrganisationController())) {
         if (!isComponentUsed(component)) {
           indexedNotUsedComponents.put(component.getName().toLowerCase(), component);
         }
@@ -261,10 +261,10 @@ public class AdminPersonalWebDelegate {
     return user.getId();
   }
 
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerFactory.getFactory().getOrganizationController();
+          OrganisationControllerFactory.getFactory().getOrganisationController();
     }
     return organizationController;
   }

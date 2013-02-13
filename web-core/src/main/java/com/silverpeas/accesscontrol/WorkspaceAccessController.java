@@ -50,7 +50,7 @@ public class WorkspaceAccessController implements AccessController<String> {
     if (spaceId == null) { // Personal space
       isAuthorized = true;
     } else {
-      String[] componentIds = getOrganizationController().getAllComponentIds(spaceId);
+      String[] componentIds = getOrganisationController().getAllComponentIds(spaceId);
       for (String componentId : componentIds) {
         if (getComponentAccessController().isUserAuthorized(userId, componentId)) {
           isAuthorized = true;
@@ -76,9 +76,9 @@ public class WorkspaceAccessController implements AccessController<String> {
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = OrganisationControllerFactory.getOrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }

@@ -60,7 +60,7 @@ public class DefaultComponentSpaceQuotaService extends
     // space could be null if user space is performed
     if (key.getSpace() != null) {
       currentCount =
-          OrganisationControllerFactory.getFactory().getOrganizationController()
+          OrganisationControllerFactory.getFactory().getOrganisationController()
               .getAllComponentIdsRecur(key.getResourceId()).length;
     }
 

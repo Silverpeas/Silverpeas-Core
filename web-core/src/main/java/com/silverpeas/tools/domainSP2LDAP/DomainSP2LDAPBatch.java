@@ -42,8 +42,8 @@ public class DomainSP2LDAPBatch {
   private AdminController adminController;
   public static final String DOMAIN_SILVERPEAS_ID = "0";
 
-  public OrganisationController getOrganizationController() {
-    return OrganisationControllerFactory.getOrganizationController();
+  public OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   public AdminController getAdminController() {
@@ -82,7 +82,7 @@ public class DomainSP2LDAPBatch {
         return returnListLDAPUsers;
 
       for (String listLDAPUsersId : listLDAPUsersIds) {
-        UserDetail userDetailLDAP = getOrganizationController().getUserDetail(listLDAPUsersId);
+        UserDetail userDetailLDAP = getOrganisationController().getUserDetail(listLDAPUsersId);
         String keyName =
             (userDetailLDAP.getFirstName() + userDetailLDAP.getLastName()).toLowerCase();
         listLDAPUsers.put(keyName, userDetailLDAP);
@@ -92,7 +92,7 @@ public class DomainSP2LDAPBatch {
       String[] listSilverpeasUsersIds = adminController.getUserIdsOfDomain(DOMAIN_SILVERPEAS_ID);
       boolean processGroups = false;
       for (String listSilverpeasUsersId : listSilverpeasUsersIds) {
-        UserDetail userDetail = getOrganizationController().getUserDetail(listSilverpeasUsersId);
+        UserDetail userDetail = getOrganisationController().getUserDetail(listSilverpeasUsersId);
         String keyName = (userDetail.getFirstName() + userDetail.getLastName()).toLowerCase();
         // user to migrate
         if (listLDAPUsers.containsKey(keyName)) {
@@ -115,7 +115,7 @@ public class DomainSP2LDAPBatch {
 
       if (processGroups) {
         // Move groups from domainSP to mixtDomain
-        Group[] groups = getOrganizationController().getAllGroups();
+        Group[] groups = getOrganisationController().getAllGroups();
         SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
             "DEBUT Migration des groupes du domaine SP vers le domaine mixte...", null);
         for (Group group : groups) {
@@ -173,7 +173,7 @@ public class DomainSP2LDAPBatch {
    * @throws AdminException
    */
   public Domain[] getDomains() throws AdminException {
-    return getOrganizationController().getAllDomains();
+    return getOrganisationController().getAllDomains();
   }
 
   public int getNbUsers(String domainId) {

@@ -157,7 +157,7 @@ public class ImportDragAndDrop extends HttpServlet {
       }
       MassiveReport massiveReport = new MassiveReport();
       UserDetail userDetail = OrganisationControllerFactory
-          .getOrganizationController().getUserDetail(userId);
+          .getOrganisationController().getUserDetail(userId);
 
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();

@@ -82,7 +82,7 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
           ConnectionDetail connection = (ConnectionDetail) it.next();
           line.addArrayCellText(connection.getComponentName());
           ComponentInst inst = OrganisationControllerFactory
-              .getOrganizationController().getComponentInst(connection.getComponentId());
+              .getOrganisationController().getComponentInst(connection.getComponentId());
           String nameLogin = inst.getParameterValue("login");
           String name =  connection.getParam().get(nameLogin);
           line.addArrayCellText(name);

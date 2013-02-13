@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
  * Unit tests on the SilverpeasLook operations.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-look.xml")
+@ContextConfiguration(locations = {"/spring-look.xml"})
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SilverpeasLookTest {
 

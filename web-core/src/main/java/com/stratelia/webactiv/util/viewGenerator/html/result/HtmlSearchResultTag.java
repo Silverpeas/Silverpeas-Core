@@ -175,7 +175,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
       // Check if this component has a specific template result
       ComponentInstLight component = OrganisationControllerFactory
-          .getOrganizationController().getComponentInstLight(instanceId);
+          .getOrganisationController().getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();
 

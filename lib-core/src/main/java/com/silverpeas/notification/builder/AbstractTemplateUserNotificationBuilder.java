@@ -131,9 +131,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
-    if (OrganisationControllerFactory.getFactory().getOrganizationController()
+    if (OrganisationControllerFactory.getFactory().getOrganisationController()
         .isComponentExist(getComponentInstanceId()) ||
-        OrganisationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getFactory().getOrganisationController()
             .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {

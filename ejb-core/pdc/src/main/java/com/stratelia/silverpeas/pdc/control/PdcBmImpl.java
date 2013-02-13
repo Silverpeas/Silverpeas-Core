@@ -879,7 +879,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
       if (!isManager) {
         // If not, check if at least one of his groups it is
         String[] groupIds = OrganisationControllerFactory
-            .getOrganizationController().getAllGroupIdsOfUser(userId);
+            .getOrganisationController().getAllGroupIdsOfUser(userId);
 
         isManager = isGroupManager(groupIds);
       }

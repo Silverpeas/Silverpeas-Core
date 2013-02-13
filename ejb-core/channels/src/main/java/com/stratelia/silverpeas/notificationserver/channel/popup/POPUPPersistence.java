@@ -139,7 +139,7 @@ public class POPUPPersistence {
     String result = "";
 
     try {
-      UserDetail ud = OrganisationControllerFactory.getOrganizationController().getUserDetail(
+      UserDetail ud = OrganisationControllerFactory.getOrganisationController().getUserDetail(
           Long.toString(userId));
       if (ud != null) {
         result = ud.getLogin();

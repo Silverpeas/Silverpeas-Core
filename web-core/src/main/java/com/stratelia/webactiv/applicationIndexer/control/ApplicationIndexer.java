@@ -109,7 +109,7 @@ public class ApplicationIndexer extends AbstractIndexer {
 
   @Override
   public void indexComponent(String spaceId, String componentId) throws Exception {
-    ComponentInstLight compoInst = OrganisationControllerFactory.getOrganizationController()
+    ComponentInstLight compoInst = OrganisationControllerFactory.getOrganisationController()
         .getComponentInstLight(componentId);
     indexComponent(spaceId, compoInst);
   }

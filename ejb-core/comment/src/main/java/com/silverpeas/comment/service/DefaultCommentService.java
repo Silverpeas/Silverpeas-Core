@@ -374,7 +374,7 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
   }
 
   private void setOwnerDetail(Comment comment) {
-    comment.setOwnerDetail(getOrganizationController().getUserDetail(
+    comment.setOwnerDetail(getOrganisationController().getUserDetail(
         Integer.toString(comment.getOwnerId())));
   }
 
@@ -382,8 +382,8 @@ public class DefaultCommentService extends CommentActionNotifier implements Comm
    * Gets an organization controller.
    * @return an OrganizationController instance.
    */
-  protected OrganisationController getOrganizationController() {
-    return  OrganisationControllerFactory.getOrganizationController();
+  protected OrganisationController getOrganisationController() {
+    return  OrganisationControllerFactory.getOrganisationController();
   }
 
   @Override

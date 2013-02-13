@@ -497,7 +497,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   private List<Worker> getWorkers(String componentId, int creatorId) {
     List<Worker> workers = new ArrayList<Worker>();
 
-    OrganisationController orga =  OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orga =  OrganisationControllerFactory.getOrganisationController();
     ComponentInst component = orga.getComponentInst(componentId);
 
     List<ProfileInst> profilesInst = component.getAllProfilesInst();

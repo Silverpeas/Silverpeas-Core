@@ -159,7 +159,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
         getLanguage());
     String source = m_Multilang.getString("UserNotification");
     if (StringUtil.isDefined(componentId)) {
-      OrganisationController orga = OrganisationControllerFactory.getOrganizationController();
+      OrganisationController orga = OrganisationControllerFactory.getOrganisationController();
       ComponentInst instance = orga.getComponentInst(componentId);
 
       // Sometimes, source could not be found

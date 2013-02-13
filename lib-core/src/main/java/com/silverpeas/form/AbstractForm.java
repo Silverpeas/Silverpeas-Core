@@ -109,7 +109,7 @@ public abstract class AbstractForm implements Form {
 
       boolean jsAdded = false;
       if (StringUtil.isDefined(pagesContext.getComponentId()) && StringUtil.isDefined(getName())) {
-        ComponentInstLight component =  OrganisationControllerFactory.getOrganizationController()
+        ComponentInstLight component =  OrganisationControllerFactory.getOrganisationController()
             .getComponentInstLight(pagesContext.getComponentId());
         if (component != null && component.isWorkflow()) {
           out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")

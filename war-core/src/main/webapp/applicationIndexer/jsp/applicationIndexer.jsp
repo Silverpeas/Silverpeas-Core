@@ -116,7 +116,7 @@ if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSes
 }
 
 OrganisationController m_OrganizationController = OrganisationControllerFactory
-    .getOrganizationController();
+    .getOrganisationController();
 
 ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 

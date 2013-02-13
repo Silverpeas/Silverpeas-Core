@@ -147,7 +147,7 @@ public class SpaceWallpaperTest {
    * Gets a mock of the organization controller.
    * @return a mock
    */
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return organizationController;
   }
 
@@ -174,7 +174,7 @@ public class SpaceWallpaperTest {
       when(space.getId()).thenReturn(spaceId);
       spaces.add(space);
     }
-    OrganisationController controller = getOrganizationController();
+    OrganisationController controller = getOrganisationController();
     when(controller.getSpacePath(anyString())).thenReturn(spaces);
   }
 }

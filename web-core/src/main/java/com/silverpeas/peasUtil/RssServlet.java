@@ -138,7 +138,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public String getChannelTitle(String instanceId) {
-    ComponentInstLight instance = OrganisationControllerFactory.getOrganizationController()
+    ComponentInstLight instance = OrganisationControllerFactory.getOrganisationController()
         .getComponentInstLight(instanceId);
     if (instance != null) {
       return instance.getLabel();
@@ -152,7 +152,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public boolean isComponentRss(String instanceId) {
-    String paramRssValue = OrganisationControllerFactory.getOrganizationController()
+    String paramRssValue = OrganisationControllerFactory.getOrganisationController()
         .getComponentParameterValue(instanceId, "rss");
     // rechercher si le composant a bien le flux RSS autorisé
     return "yes".equalsIgnoreCase(paramRssValue);

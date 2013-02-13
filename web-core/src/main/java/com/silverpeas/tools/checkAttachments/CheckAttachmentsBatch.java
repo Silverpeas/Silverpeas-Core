@@ -99,7 +99,7 @@ public class CheckAttachmentsBatch {
     }
 
     List<OrphanAttachment> orphansList = new ArrayList<OrphanAttachment>();
-    OrganisationController oc = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
 
     // Get all spaces
     String[] spaces = oc.getAllRootSpaceIds();
@@ -203,7 +203,7 @@ public class CheckAttachmentsBatch {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     OrganisationController orgaController = OrganisationControllerFactory
-        .getOrganizationController();
+        .getOrganisationController();
     try {
       prepStmt = con.prepareStatement(query);
       rs = prepStmt.executeQuery();

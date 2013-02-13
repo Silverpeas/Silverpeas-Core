@@ -71,7 +71,7 @@ public class LookWebDelegate {
       if (getUserFavoriteSpaceIds().contains(space.getShortId())) {
         favorite = "true";
       } else if (UserFavoriteSpaceManager.containsFavoriteSubSpace(space.getShortId(),
-          getUserFavoriteSpaces(), getOrganizationController(), getUserId())) {
+          getUserFavoriteSpaces(), getOrganisationController(), getUserId())) {
         favorite = "contains";
       }
     }
@@ -106,7 +106,7 @@ public class LookWebDelegate {
   public String getLook(SpaceInstLight space) {
     String look = space.getLook();
     while (!space.isRoot() && !StringUtil.isDefined(look)) {
-      space = getOrganizationController().getSpaceInstLightById(space.getFatherId());
+      space = getOrganisationController().getSpaceInstLightById(space.getFatherId());
       look = space.getLook();
     }
     if (!StringUtil.isDefined(look)) {
@@ -248,10 +248,10 @@ public class LookWebDelegate {
     return gef;
   }
 
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (organizationController == null) {
       organizationController =
-          OrganisationControllerFactory.getFactory().getOrganizationController();
+          OrganisationControllerFactory.getFactory().getOrganisationController();
     }
     return organizationController;
   }

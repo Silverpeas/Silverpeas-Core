@@ -276,7 +276,7 @@ public class SILVERMAILPersistence {
 
     try {
       UserDetail ud =  OrganisationControllerFactory
-          .getOrganizationController().getUserDetail(Long.toString(userId));
+          .getOrganisationController().getUserDetail(Long.toString(userId));
       if (ud != null) {
         result = ud.getLogin();
       }

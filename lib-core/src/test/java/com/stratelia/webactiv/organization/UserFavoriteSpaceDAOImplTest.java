@@ -87,4 +87,10 @@ public class UserFavoriteSpaceDAOImplTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-favoritespace-dataset.xml";
   }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

@@ -101,13 +101,13 @@ public class AccessPathField extends TextField {
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
       List<SpaceInst> listSpaces =  OrganisationControllerFactory
-          .getOrganizationController().getSpacePathToComponent(componentId);
+          .getOrganisationController().getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         currentAccessPath += space.getName() + " > ";
       }
 
       // Service
-      currentAccessPath +=  OrganisationControllerFactory.getOrganizationController()
+      currentAccessPath +=  OrganisationControllerFactory.getOrganisationController()
           .getComponentInstLight(componentId).getLabel();
 
       // Theme > SubTheme

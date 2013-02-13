@@ -67,7 +67,7 @@ import java.util.Map;
 public class SpaceModelFactory {
 
   static final protected OrganisationController oc = OrganisationControllerFactory
-      .getOrganizationController();
+      .getOrganisationController();
   static final protected Map<String, WAComponent> compoDescriptors = (new AdminController(null)).
       getAllComponents();
 

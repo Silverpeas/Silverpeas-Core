@@ -39,7 +39,7 @@ abstract public class BrowsePanelProvider extends PanelProvider {
   protected CacheManager cacheManager = null;
   protected ResourceLocator resource = null;
   protected OrganisationController organizationCOntroller = OrganisationControllerFactory
-      .getOrganizationController();
+      .getOrganisationController();
   protected String parentGroupId = "";
   protected String parentGroupName = "";
   protected CacheType m_what;

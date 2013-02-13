@@ -68,7 +68,7 @@ public class AgendaRssServlet extends RssServlet {
     UserPreferences preferences =
         SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
     UserDetail user = OrganisationControllerFactory
-        .getOrganizationController().getUserDetail(userId);
+        .getOrganisationController().getUserDetail(userId);
     ResourceLocator message = new ResourceLocator("org.silverpeas.agenda.multilang.agenda",
         preferences.getLanguage());
     return message.getStringWithParam("agenda.userAgenda", user.getLastName());

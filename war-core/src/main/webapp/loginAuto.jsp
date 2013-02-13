@@ -60,7 +60,7 @@
   if (redirection == null && componentId == null && spaceId == null) {
     isAnonymousAccessAuthorized = true;
   } else {
-    OrganisationController organization = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController organization = OrganisationControllerFactory.getOrganisationController();
     if (organization.isAnonymousAccessActivated()) {
       if (componentId != null) {
         if (organization.isComponentAvailable(componentId, anonymousUser.getId())) {

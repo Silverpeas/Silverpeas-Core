@@ -75,7 +75,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
   private void addParamToConnection(ConnectionDetail connection) {
     // ajouter les données venue de hyperlink
     ComponentInst inst = OrganisationControllerFactory
-        .getOrganizationController().getComponentInst(connection.getComponentId());
+        .getOrganisationController().getComponentInst(connection.getComponentId());
     String componentName = inst.getLabel();
     String url = inst.getParameterValue("Url");
     Map<String, String> param = connection.getParam();

@@ -111,7 +111,7 @@ public class MultipleUserField implements Field {
     }
 
     StringBuilder value = new StringBuilder();
-    UserDetail[] users =  OrganisationControllerFactory.getOrganizationController()
+    UserDetail[] users =  OrganisationControllerFactory.getOrganisationController()
         .getUserDetails(getUserIds());
     for (int i = 0; i < users.length; i++) {
       if (i > 0) {
@@ -187,7 +187,7 @@ public class MultipleUserField implements Field {
     if (this.userIds == null || this.userIds.length == 0) {
       return null;
     }
-    return  OrganisationControllerFactory.getOrganizationController().getUserDetails(getUserIds());
+    return  OrganisationControllerFactory.getOrganisationController().getUserDetails(getUserIds());
   }
 
   /**

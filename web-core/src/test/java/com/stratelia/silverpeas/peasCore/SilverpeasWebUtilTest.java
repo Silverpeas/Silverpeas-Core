@@ -53,10 +53,10 @@ public class SilverpeasWebUtilTest {
    * Test of getMainSessionController method, of class SilverpeasWebUtil.
    */
   @Test
-  public void checkDefaultOrganizationController() {    
+  public void checkDefaultOrganizationController() {
     OrganisationControllerFactory.getFactory().clearFactory();
     SilverpeasWebUtil util = new SilverpeasWebUtil();
-    assertEquals(OrganizationController.class.getName(), util.getOrganizationController().getClass().getName());
+    assertEquals(OrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
   }
 
   /**

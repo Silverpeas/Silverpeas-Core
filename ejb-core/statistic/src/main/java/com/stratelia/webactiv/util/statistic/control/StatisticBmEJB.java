@@ -212,7 +212,7 @@ public class StatisticBmEJB implements SessionBean {
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType) {
     UserDetail[] allUsers = OrganisationControllerFactory
-        .getOrganizationController().getAllUsers(foreignPK.getInstanceId());
+        .getOrganisationController().getAllUsers(foreignPK.getInstanceId());
     return getHistoryByObject(foreignPK, action, objectType, allUsers);
   }
 
@@ -221,7 +221,7 @@ public class StatisticBmEJB implements SessionBean {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     } else {
-      UserDetail[] users = OrganisationControllerFactory.getOrganizationController()
+      UserDetail[] users = OrganisationControllerFactory.getOrganisationController()
           .getUserDetails(userIds.toArray(new String[userIds.size()]));
       return getHistoryByObject(foreignPK, action, objectType, users);
     }
@@ -251,7 +251,7 @@ public class StatisticBmEJB implements SessionBean {
       i++;
     }
     UserDetail[] allUsersByComponent = users;
-    UserDetail[] controlledUsers = OrganisationControllerFactory.getOrganizationController()
+    UserDetail[] controlledUsers = OrganisationControllerFactory.getOrganisationController()
         .getUserDetails(readerIds);
 
     // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant

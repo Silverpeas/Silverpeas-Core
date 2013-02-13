@@ -102,7 +102,7 @@ public class NotificationSender implements java.io.Serializable {
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {
 
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
 
     // String[] allUsers;
     Set<UserRecipient> usersSet = new HashSet<UserRecipient>();
@@ -212,7 +212,7 @@ public class NotificationSender implements java.io.Serializable {
 
   private boolean displayGroup(ResourceLocator settings, String groupId) {
     String threshold = settings.getString("notif.receiver.displayUser.threshold");
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
     Group group = orgaController.getGroup(groupId);
     int nbUsers = group.getNbUsers();
     boolean res1 = settings.getBoolean("notif.receiver.displayGroup", false);
@@ -239,7 +239,7 @@ public class NotificationSender implements java.io.Serializable {
   private String addReceiverUsers(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
       String language,
       ResourceLocator settings) {
-    OrganisationController orgaController =  OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;
@@ -257,7 +257,7 @@ public class NotificationSender implements java.io.Serializable {
   private String addReceiverGroups(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
       String language, ResourceLocator settings) {
     OrganisationController orgaController =  OrganisationControllerFactory
-        .getOrganizationController();
+        .getOrganisationController();
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
       boolean first = true;

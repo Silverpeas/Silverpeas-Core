@@ -271,7 +271,7 @@ public class HtmlExportGenerator {
       }
 
       if (NodePK.ROOT_NODE_ID.equals(rootId)) {
-        String componentName = OrganisationControllerFactory.getOrganizationController()
+        String componentName = OrganisationControllerFactory.getOrganisationController()
             .getComponentInstLight(node.getNodePK().getInstanceId()).getLabel();
 
         // regarder si ce topic contient des publications

@@ -1388,7 +1388,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   public String exportCSV(QuestionContainerDetail questionContainer, boolean addScore) {
     List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
     StringBuffer csvRow = new StringBuffer();
-    OrganisationController orga = getOrganizationController();
+    OrganisationController orga = getOrganisationController();
     try {
       if (questionContainer.getHeader().isAnonymous()) {
         // anonymes
@@ -1599,7 +1599,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
 
   private String getSpacesPath(String componentId) {
     String spacesPath = "";
-    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
+    List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(componentId);
     for (SpaceInst spaceInst : spaces) {
       spacesPath += spaceInst.getName();
       spacesPath += " > ";
@@ -1608,7 +1608,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
   }
 
   private String getComponentLabel(String componentId) {
-    ComponentInstLight component = getOrganizationController()
+    ComponentInstLight component = getOrganisationController()
         .getComponentInstLight(componentId);
     String componentLabel = "";
     if (component != null) {
@@ -1617,8 +1617,8 @@ public class QuestionContainerBmEJB implements QuestionContainerBmSkeleton, Sess
     return componentLabel;
   }
 
-  private OrganisationController getOrganizationController() {
-    return OrganisationControllerFactory.getOrganizationController();
+  private OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   /**************************************************************************************************************************/

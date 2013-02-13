@@ -52,9 +52,9 @@ public class DataStorageSpaceQuotaKey extends AbstractSpaceQuotaKey {
     final SpaceInst space =
         OrganisationControllerFactory
             .getFactory()
-            .getOrganizationController()
+            .getOrganisationController()
             .getSpaceInstById(
-                OrganisationControllerFactory.getFactory().getOrganizationController()
+                OrganisationControllerFactory.getFactory().getOrganisationController()
                     .getComponentInst(componentInstanceId).getDomainFatherId());
     return from(space);
   }

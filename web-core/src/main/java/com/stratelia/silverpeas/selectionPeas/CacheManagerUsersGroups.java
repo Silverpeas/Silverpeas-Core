@@ -54,7 +54,7 @@ public class CacheManagerUsersGroups extends CacheManager {
   protected static final int COL_GROUP_DESCRIPTION = 1;
   protected static final int COL_GROUP_NBUSERS = 2;
 
-  protected OrganisationController m_oc = OrganisationControllerFactory.getOrganizationController();
+  protected OrganisationController m_oc = OrganisationControllerFactory.getOrganisationController();
   protected AdminController adminController = new AdminController(null);
   protected UserDetail userDetail = null;
 

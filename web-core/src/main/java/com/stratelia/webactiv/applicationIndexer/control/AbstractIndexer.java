@@ -49,7 +49,7 @@ public abstract class AbstractIndexer {
     SilverTrace.info(silvertraceModule, "AbstractIndexer.index()", "root.MSG_GEN_ENTER_METHOD");
     if (currentSpaceId == null) {
       // index whole application
-      String[] spaceIds = OrganisationControllerFactory.getOrganizationController().getAllSpaceIds();
+      String[] spaceIds = OrganisationControllerFactory.getOrganisationController().getAllSpaceIds();
       SilverTrace.info(silvertraceModule, "AbstractIndexer.index()",
           "applicationIndexer.MSG_INDEXING_ALL_SPACES");
       for (String spaceId : spaceIds) {
@@ -86,14 +86,14 @@ public abstract class AbstractIndexer {
     admin.indexSpace(Integer.parseInt(currentSpaceId));
 
     // index components
-    String[] componentIds = OrganisationControllerFactory.getOrganizationController()
+    String[] componentIds = OrganisationControllerFactory.getOrganisationController()
         .getAllComponentIds(currentSpaceId);
     for (String componentId : componentIds) {
       indexComponent(currentSpaceId, componentId);
     }
 
     // index sub spaces
-    String[] subSpaceIds = OrganisationControllerFactory.getOrganizationController()
+    String[] subSpaceIds = OrganisationControllerFactory.getOrganisationController()
         .getAllSubSpaceIds(currentSpaceId);
     for (String subSpaceId : subSpaceIds) {
       indexSpace(subSpaceId);

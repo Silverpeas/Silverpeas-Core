@@ -109,7 +109,7 @@ public class PdcUserField implements Field {
         userCardId = userCardIdUserId.substring(0, index);
         userId = userCardIdUserId.substring(index + 1);
 
-        user =  OrganisationControllerFactory.getOrganizationController().getUserDetail(userId);
+        user =  OrganisationControllerFactory.getOrganisationController().getUserDetail(userId);
         if (user == null) {
           names.append("userCardId(").append(userCardId).append(")");
         } else {

@@ -41,7 +41,7 @@ public class MenuHelper {
   private final static String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
 
   public static boolean isAdmin(String userId) {
-    return OrganisationControllerFactory.getOrganizationController().getUserDetail(userId)
+    return OrganisationControllerFactory.getOrganisationController().getUserDetail(userId)
         .isAccessAdmin();
   }
 

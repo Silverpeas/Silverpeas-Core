@@ -166,7 +166,7 @@ public class VersioningBmEJB implements SessionBean {
     // mise à jour de la date d'expiration
 
     // 1. rechercher le nombre de jours avant expiration dans le composant
-    OrganisationController orga = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orga = OrganisationControllerFactory.getOrganisationController();
     String day = orga.getComponentParameterValue(doc.getInstanceId(),
         "nbDayForReservation");
     if (StringUtil.isDefined(day)) {
@@ -1282,7 +1282,7 @@ public class VersioningBmEJB implements SessionBean {
     StringBuilder message = new StringBuilder();
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
-    OrganisationController orgCtr = OrganisationControllerFactory.getOrganizationController();
+    OrganisationController orgCtr = OrganisationControllerFactory.getOrganisationController();
 
     String space_label = "";
     String component_label = "";

@@ -200,21 +200,21 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     if (isGroupSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedSets();
-        selectedGroups = OrganisationControllerFactory.getOrganizationController().getGroups(ids);
+        selectedGroups = OrganisationControllerFactory.getOrganisationController().getGroups(ids);
       } else {
         String id = sel.getFirstSelectedSet();
         if (StringUtil.isDefined(id)) {
-          selectedGroup = OrganisationControllerFactory.getOrganizationController().getGroup(id);
+          selectedGroup = OrganisationControllerFactory.getOrganisationController().getGroup(id);
         }
       }
     } else {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
-        selectedUsers = OrganisationControllerFactory.getOrganizationController().getUserDetails(ids);
+        selectedUsers = OrganisationControllerFactory.getOrganisationController().getUserDetails(ids);
       } else {
         String id = sel.getFirstSelectedElement();
         if (StringUtil.isDefined(id)) {
-          selectedUser = OrganisationControllerFactory.getOrganizationController().getUserDetail(id);
+          selectedUser = OrganisationControllerFactory.getOrganisationController().getUserDetail(id);
         }
       }
     }

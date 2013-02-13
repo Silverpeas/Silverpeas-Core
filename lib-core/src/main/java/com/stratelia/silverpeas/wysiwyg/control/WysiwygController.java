@@ -1090,7 +1090,7 @@ public class WysiwygController {
   public static List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
     OrganisationController orgaController =  OrganisationControllerFactory
-        .getOrganizationController();
+        .getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoId,
@@ -1114,7 +1114,7 @@ public class WysiwygController {
   public static List<ComponentInstLight> getStorageFile(String userId) {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    OrganisationController controller =  OrganisationControllerFactory.getOrganizationController();
+    OrganisationController controller =  OrganisationControllerFactory.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {

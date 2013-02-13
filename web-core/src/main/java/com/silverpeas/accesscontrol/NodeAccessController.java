@@ -73,7 +73,7 @@ public class NodeAccessController implements AccessController<NodePK> {
       if (!node.haveRights()) {
         return true;
       }
-      return getOrganizationController().isObjectAvailable(node.getRightsDependsOn(),
+      return getOrganisationController().isObjectAvailable(node.getRightsDependsOn(),
           ObjectType.NODE, nodePK.getInstanceId(), userId);
     }
     return false;
@@ -89,9 +89,9 @@ public class NodeAccessController implements AccessController<NodePK> {
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganisationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = OrganisationControllerFactory.getOrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

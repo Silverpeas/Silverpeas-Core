@@ -878,7 +878,7 @@ public class ImportExport {
 
         // Create unbalanced file html index
         ComponentInst componentInst = OrganisationControllerFactory
-            .getOrganizationController().getComponentInst(componentId);
+            .getOrganisationController().getComponentInst(componentId);
         gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
         String unbalancedFileNameRelativePath = "index-2.html";

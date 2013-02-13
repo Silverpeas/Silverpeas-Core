@@ -282,14 +282,14 @@ public class ExplorerField implements Field {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces =  OrganisationControllerFactory.getOrganizationController()
+      List<SpaceInst> listSpaces =  OrganisationControllerFactory.getOrganisationController()
           .getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         path += space.getName(language) + " > ";
       }
 
       // Service
-      path +=  OrganisationControllerFactory.getOrganizationController().getComponentInstLight(
+      path +=  OrganisationControllerFactory.getOrganisationController().getComponentInstLight(
           componentId).getLabel(language);
 
       // Theme > SubTheme

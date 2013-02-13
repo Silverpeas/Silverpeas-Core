@@ -41,7 +41,7 @@ public class AllGroupPanel extends PanelProvider {
 
   protected static final int COL_NAME = 0;
 
-  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganizationController();
+  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganisationController();
 
   protected Hashtable<String, Group> m_AllGroup = new Hashtable<String, Group>();
 
