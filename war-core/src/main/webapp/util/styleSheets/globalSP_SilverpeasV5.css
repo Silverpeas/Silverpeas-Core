@@ -2628,7 +2628,8 @@ caption {
   color: blue;
 }
 
-#directory #index {
+#directory #index,
+#directory #sort {
   float:none;
   margin:0 auto;
   padding:4px;
@@ -2637,7 +2638,8 @@ caption {
   color:#AFAFAF;
 }
 
-#directory #indexAndSearch #index a {
+#directory #indexAndSearch #index a,
+#directory #indexAndSearch #sort a {
   border:1px solid #CECECE;
   padding:2px 4px;
   margin-right:3px;
@@ -2647,18 +2649,20 @@ caption {
   text-decoration: none;
   line-height:220%;
 }
-#directory #indexAndSearch #index a.active {
+#directory #indexAndSearch #index a.active,
+#directory #indexAndSearch #sort a.active {
   background-color:#B5B5B5;
   color:#FFF;
 }
 
-#directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus {
+#directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus,
+#directory #indexAndSearch #sort a:hover, #directory #indexAndSearch #sort a:focus {
   background-color:#BFBFBF;
   color:#FFF;
 }
 
 #directory #indexAndSearch #search {
-  margin:5px 10px 10px auto;
+  margin:0px 10px 0px auto;
   padding:5px;
   text-align:left;
   width:100%;
@@ -2670,9 +2674,15 @@ caption {
   float:left;
 }
 
-#directory #indexAndSearch #search input{
+#directory #indexAndSearch #search input {
   height:16px;
   width:30%;
+  margin-right: 5px;
+}
+
+#directory #indexAndSearch #search #help {
+  line-height: 20px;
+  margin-left: 5px;
 }
 
 #directory #indexAndSearch .gaucheBoutonV5 , #directory #indexAndSearch .droiteBoutonV5{
@@ -5309,4 +5319,24 @@ input.search:focus {
 	vertical-align:middle;
 	margin:0;
 	border:0;
+}
+
+/*******************************/
+/** Tagit **/
+/*******************************/
+ul.tagit {
+    padding: 1px !important;
+    border: 1px solid #999999 !important;
+}
+
+ul.tagit li {
+    margin: 1px 5px 1px 0px !important;
+}
+
+ul.tagit li.tagit-choice {
+	padding: 1px 15px 1px 4px !important;
+}
+
+ul.tagit li.tagit-choice a.tagit-close {
+    padding: 0px 0px 2px 3px !important;
 }

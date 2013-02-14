@@ -73,8 +73,6 @@ public interface PublicationTemplate {
 
   public void setExternalId(String externalId);
 
-  public Form getEditForm(String name) throws PublicationTemplateException;
-
   public String getExternalId();
 
   public String getName();
@@ -107,5 +105,19 @@ public interface PublicationTemplate {
    * @return a List of field name
    */
   public List<String> getFieldsForFacets();
+  
+  public boolean isRestrictedVisibility();
+  
+  public List<String> getSpaces();
+  
+  public boolean isRestrictedVisibilityToSpace();
+
+  public List<String> getApplications();
+  
+  public boolean isRestrictedVisibilityToApplication();
+
+  public List<String> getInstances();
+  
+  public boolean isRestrictedVisibilityToInstance();
 
 }

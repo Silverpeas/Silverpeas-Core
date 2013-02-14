@@ -719,6 +719,82 @@ public class UserManager {
       ddManager.releaseOrganizationSchema();
     }
   }
+  
+  /**
+   * Get all users (except deleted ones) from all domains
+   * @return a List of UserDetail sort by alphabetical order
+   * @throws AdminException
+   */
+  public List<UserDetail> getAllUsers() throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getAllUsers(con);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsers",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from all domains
+   * @return a List of UserDetail sort by reverse creation order
+   * @throws AdminException
+   */
+  public List<UserDetail> getAllUsersFromNewestToOldest() throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getAllUsersFromNewestToOldest(con);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsersFromNewestToOldest",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from specified domains
+   * @return a List of UserDetail sort by alphabetical order
+   * @throws AdminException
+   */
+  public List<UserDetail> getUsersOfDomains(List<String> domainIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getUsersOfDomains(con, domainIds);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getUsersOfDomains",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from specified domains
+   * @return a List of UserDetail sort by reverse creation order
+   * @throws AdminException
+   */
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getUsersOfDomainsFromNewestToOldest(con, domainIds);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getUsersOfDomains",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   /**
    * Convert UserDetail to UserRow

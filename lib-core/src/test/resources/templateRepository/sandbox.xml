@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<publicationTemplate>
+    <name>Sandbox</name>
+    <description></description>
+    <visible>true</visible>
+    <instances>
+        <instance>kmelia12</instance>
+		<instance>kmelia24</instance>
+    </instances>
+    <viewFileName>sandbox\view.xml</viewFileName>
+    <updateFileName>sandbox\update.xml</updateFileName>
+    <dataFileName>sandbox\data.xml</dataFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateTypeFile></updateTypeFile>
+</publicationTemplate>

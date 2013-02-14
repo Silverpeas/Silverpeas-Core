@@ -36,12 +36,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.GlobalContext;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.PathTestUtil;
@@ -69,8 +73,6 @@ public class InstanciateurTest {
   public void setUp() {
     PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH
         + File.separatorChar + "templateMapping.xml";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = MAPPINGS_PATH
-        + File.separatorChar + "templateFilesMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 
@@ -138,11 +140,30 @@ public class InstanciateurTest {
       }
     }
     assertThat(paramWithXMLTemplate.isXmlTemplate(), is(true));
-    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(true).size(), is(1));
+    GlobalContext context = new GlobalContext("WA1");
+    context.setComponentName("kmelia");
+    assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(context).size(),
+        is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
-    assertThat(paramWithXMLTemplate.getOptions().size(), is(1));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getValue(), is("template.xml"));
-    assertThat(paramWithXMLTemplate.getOptions().get(0).getName().get("fr"), is("template"));
+    List<Option> options = paramWithXMLTemplate.getOptions();
+    assertThat(options.size(), is(2));
+    
+    Collections.sort(options, new OptionComparator());
+    Option option = options.get(0);
+    assertThat(option.getValue(), is("sandbox.xml"));
+    assertThat(option.getName().get("fr"), is("Sandbox"));
+    option = options.get(1);
+    assertThat(option.getValue(), is("template.xml"));
+    assertThat(option.getName().get("fr"), is("template"));
+  }
+  
+  private class OptionComparator implements Comparator<Option> {
+
+    @Override
+    public int compare(Option o1, Option o2) {
+      return o1.getValue().compareTo(o2.getValue());
+    }
+    
   }
   
   @Test

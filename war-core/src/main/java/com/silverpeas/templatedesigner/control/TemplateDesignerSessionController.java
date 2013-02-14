@@ -25,9 +25,15 @@
 package com.silverpeas.templatedesigner.control;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.admin.localized.LocalizedComponent;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.record.GenericFieldTemplate;
 import com.silverpeas.form.record.GenericRecordTemplate;
@@ -41,6 +47,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Arrays;
 
@@ -54,6 +61,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   private final static int SCOPE_SEARCH = 3;
   private final static int SCOPE_SEARCHRESULT = 4;
   private List<String> languages = null;
+  private final AdminController adminController;
 
   /**
    * Standard Session Controller Constructeur
@@ -66,6 +74,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.templatedesigner.multilang.templateDesignerBundle",
         "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
+    adminController = new AdminController(getUserId());
   }
 
   public List<String> getLanguages() {
@@ -187,6 +196,10 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     } else {
       this.template.setSearchFileName(null);
     }
+    
+    this.template.setSpaces(updatedTemplate.getSpaces());
+    this.template.setApplications(updatedTemplate.getApplications());
+    this.template.setInstances(updatedTemplate.getInstances());
 
     updateInProgress = true;
 
@@ -402,5 +415,25 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
    */
   private boolean isAReadOnlyField(final String fieldName) {
     return Arrays.asList("wysiwyg", "url", "image", "file", "video").contains(fieldName);
+  }
+  
+  public List<LocalizedComponent> getComponentsUsingForms() {
+    Map<String, WAComponent> components = adminController.getAllComponents();
+    String[] names = { "kmelia", "kmax", "classifieds", "gallery", "formsOnline",
+          "resourcesManager", "webPages", "yellowpages" };
+    List<LocalizedComponent> result = new ArrayList<LocalizedComponent>();
+    for (String name : names) {
+      WAComponent component = components.get(name);
+      result.add(new LocalizedComponent(component, getLanguage()));
+    }
+    Collections.sort(result, new Comparator<LocalizedComponent>() {
+      @Override
+      public int compare(LocalizedComponent o1, LocalizedComponent o2) {
+        String valcomp1 = o1.getSuite() + o1.getLabel();
+        String valcomp2 = o2.getSuite() + o2.getLabel();
+        return valcomp1.toUpperCase().compareTo(valcomp2.toUpperCase());
+      }
+    });
+    return result;
   }
 }
