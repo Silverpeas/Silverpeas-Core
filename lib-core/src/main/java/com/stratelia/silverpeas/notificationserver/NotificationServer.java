@@ -90,28 +90,52 @@ public class NotificationServer {
   /**
    * Send the NotificationMessage in a JMS Queue
    */
-  private static void jmsSendToQueue(String notificationMessage, String jmsFactory,
-      String jmsQueue,
+  private static void jmsSendToQueue(String notificationMessage, String jmsFactory, String jmsQueue,
       Map<String, String> p_JmsHeaders) throws JMSException, NamingException, IOException {
-    InitialContext ic = new InitialContext();
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(jmsFactory);
-    QueueConnection qcon = qconFactory.createQueueConnection();
-    QueueSession qsession = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-    Queue queue = (Queue) ic.lookup(jmsQueue);
-    QueueSender qsender = qsession.createSender(queue);
-    TextMessage textMsg = qsession.createTextMessage();
-    qcon.start();
+    QueueConnection qcon = null;
+    QueueSession qsession = null;
+    QueueSender qsender = null;
+    try {
 
-    // Add notificationMessage as message
-    textMsg.setText(notificationMessage);
-    // Add property
-    for (Map.Entry<String, String> entry : p_JmsHeaders.entrySet()) {
-      textMsg.setStringProperty(entry.getKey(), entry.getValue());
+      // Initialization
+      InitialContext ic = new InitialContext();
+      QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(jmsFactory);
+      qcon = qconFactory.createQueueConnection();
+      qsession = qcon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+      Queue queue = (Queue) ic.lookup(jmsQueue);
+      qsender = qsession.createSender(queue);
+      TextMessage textMsg = qsession.createTextMessage();
+      qcon.start();
+
+      // Add notificationMessage as message
+      textMsg.setText(notificationMessage);
+
+      // Add property
+      for (Map.Entry<String, String> entry : p_JmsHeaders.entrySet()) {
+        textMsg.setStringProperty(entry.getKey(), entry.getValue());
+      }
+
+      // Send
+      qsender.send(textMsg);
+
+    } finally {
+
+      // Closing
+      try {
+        if (qsender != null) {
+          qsender.close();
+        }
+      } finally {
+        try {
+          if (qsession != null) {
+            qsession.close();
+          }
+        } finally {
+          if (qcon != null) {
+            qcon.close();
+          }
+        }
+      }
     }
-    qsender.send(textMsg);
-    qsender.close();
-    qsession.close();
-    qcon.close();
   }
-
 }
