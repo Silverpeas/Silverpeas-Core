@@ -41,6 +41,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.comparator.NameFileComparator;
+
+import org.silverpeas.search.indexEngine.model.FilenameComparator;
+
 public class FileFolderManager {
 
   /**
@@ -76,22 +82,15 @@ public class FileFolderManager {
    * @return
    * @throws UtilException
    */
-  public static Collection<File> getAllFile(String chemin) throws UtilException {
+  public static Collection<File> getAllFile(String chemin) throws UtilException {   
     List<File> resultat = new ArrayList<File>();
-
     File directory = new File(chemin);
     if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isFile()) {
-          resultat.add(file);
-        }
-      }
+       resultat = new ArrayList<File>(FileUtils.listFiles(directory, null, false));
+       Collections.sort(resultat, new NameFileComparator(IOCase.INSENSITIVE));
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllFile",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllFile",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      SilverTrace.error("util", "FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException("FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
     }
     return resultat;
   }

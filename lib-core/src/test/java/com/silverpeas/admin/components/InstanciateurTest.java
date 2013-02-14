@@ -36,6 +36,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
@@ -142,9 +145,25 @@ public class InstanciateurTest {
     assertThat(PublicationTemplateManager.getInstance().getPublicationTemplates(context).size(),
         is(1));
     assertThat(paramWithXMLTemplate, is(notNullValue()));
-    assertThat(paramWithXMLTemplate.getOptions().size(), is(2));
-    assertThat(paramWithXMLTemplate.getOptions().get(1).getValue(), is("template.xml"));
-    assertThat(paramWithXMLTemplate.getOptions().get(1).getName().get("fr"), is("template"));
+    List<Option> options = paramWithXMLTemplate.getOptions();
+    assertThat(options.size(), is(2));
+    
+    Collections.sort(options, new OptionComparator());
+    Option option = options.get(0);
+    assertThat(option.getValue(), is("sandbox.xml"));
+    assertThat(option.getName().get("fr"), is("Sandbox"));
+    option = options.get(1);
+    assertThat(option.getValue(), is("template.xml"));
+    assertThat(option.getName().get("fr"), is("template"));
+  }
+  
+  private class OptionComparator implements Comparator<Option> {
+
+    @Override
+    public int compare(Option o1, Option o2) {
+      return o1.getValue().compareTo(o2.getValue());
+    }
+    
   }
   
   @Test
