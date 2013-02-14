@@ -472,6 +472,26 @@ public class OrganizationController implements java.io.Serializable {
     }
     return null;
   }
+  
+  public List<UserDetail> getUsersOfDomains(List<String> domainIds) {
+    try {
+      return getAdminService().getUsersOfDomains(domainIds);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "OrganizationController.getUsersOfDomains",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainIds = " + domainIds.toString(), e);
+    }
+    return null;
+  }
+  
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
+    try {
+      return getAdminService().getUsersOfDomainsFromNewestToOldest(domainIds);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "OrganizationController.getUsersOfDomainsFromNewestToOldest",
+          "admin.EX_ERR_GET_USER_DETAILS", "domainIds = " + domainIds.toString(), e);
+    }
+    return null;
+  }
 
   /**
    * Searches the users that match the specified criteria.
@@ -596,15 +616,22 @@ public class OrganizationController implements java.io.Serializable {
    */
   public UserDetail[] getAllUsers() {
     try {
-      UserDetail[] aUserDetail = null;
-      String[] asUserIds = getAdminService().getAllUsersIds();
-      if (asUserIds != null) {
-        aUserDetail = getAdminService().getUserDetails(asUserIds);
-
-      }
-      return aUserDetail;
+      return getAdminService().getAllUsers().toArray(new UserDetail[0]);
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllUsers",
+          "admin.MSG_ERR_GET_ALL_USERS", e);
+      return null;
+    }
+  }
+  
+  /**
+   * Return all the users of Silverpeas
+   */
+  public List<UserDetail> getAllUsersFromNewestToOldest() {
+    try {
+      return getAdminService().getAllUsersFromNewestToOldest();
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getAllUsersFromNewestToOldest",
           "admin.MSG_ERR_GET_ALL_USERS", e);
       return null;
     }

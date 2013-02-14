@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
@@ -145,7 +146,47 @@ public class UserDAO {
       DBUtil.close(rs, stmt);
     }
   }
+  
+  public List<UserDetail> getAllUsers(Connection con) throws SQLException {
+    return getAllUsers(con, null, null);
+  }
+  
+  public List<UserDetail> getAllUsersFromNewestToOldest(Connection con) throws SQLException {
+    return getAllUsers(con, null, "id DESC");
+  }
+  
+  private List<UserDetail> getAllUsers(Connection con, List<String> domainIds, String orderBy) throws SQLException {
+    Statement stmt = null;
+    ResultSet rs = null;
+    try {
+      String query = "SELECT " + USER_COLUMNS
+          + " FROM st_user "
+          + " WHERE state <> 'DELETED' ";
+      if (domainIds != null && !domainIds.isEmpty()) {
+        query += " AND domainId IN (" + list2String(domainIds) +")";  
+      }
+      if (StringUtil.isDefined(orderBy)) {
+          query += " ORDER BY "+orderBy;
+      } else {
+          query += " ORDER BY lastName";
+      }
+      stmt = con.createStatement();
+      rs = stmt.executeQuery(query);
 
+      return theUserDetailsFrom(rs);
+    } finally {
+      DBUtil.close(rs, stmt);
+    }
+  }
+  
+  public List<UserDetail> getUsersOfDomains(Connection con, List<String> domainIds) throws SQLException {
+    return getAllUsers(con, domainIds, null);
+  }
+  
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(Connection con, List<String> domainIds) throws SQLException {
+    return getAllUsers(con, domainIds, "id DESC");
+  }
+  
   private static String list2String(List<String> ids) {
     StringBuilder str = new StringBuilder();
     for (int i = 0; i < ids.size(); i++) {
