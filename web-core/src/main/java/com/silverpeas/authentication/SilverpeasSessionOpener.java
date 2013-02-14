@@ -37,7 +37,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -56,11 +55,11 @@ import java.util.Enumeration;
  *
  * @author ehugonnet
  */
-public class SilverpeasSessionOpenener {
+public class SilverpeasSessionOpener {
 
   private static final int HTTP_DEFAULT_PORT = 80;
 
-  public SilverpeasSessionOpenener() {
+  public SilverpeasSessionOpener() {
   }
 
   /**

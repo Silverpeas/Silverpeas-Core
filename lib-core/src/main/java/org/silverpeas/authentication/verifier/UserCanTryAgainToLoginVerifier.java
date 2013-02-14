@@ -63,7 +63,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   private static int nbMaxAttempts = 0;
 
   static {
-    nbMaxAttempts = settings.getInteger("nbConnexionAttemptsBeforeBlockingUser", 0);
+    nbMaxAttempts = settings.getInteger("nbConnectionAttemptsBeforeBlockingUser", 0);
     if (nbMaxAttempts > 0) {
       isActivated = true;
     }

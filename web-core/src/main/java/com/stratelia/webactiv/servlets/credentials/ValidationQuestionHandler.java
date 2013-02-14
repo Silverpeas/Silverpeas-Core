@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import com.silverpeas.authentication.SilverpeasSessionOpenener;
+import com.silverpeas.authentication.SilverpeasSessionOpener;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -38,7 +38,7 @@ import javax.servlet.http.HttpSession;
  * @author ehugonnet
  */
 public class ValidationQuestionHandler extends FunctionHandler {
-  private static final SilverpeasSessionOpenener sessionOpenener = new SilverpeasSessionOpenener();
+  private static final SilverpeasSessionOpener sessionOpenener = new SilverpeasSessionOpener();
 
   @Override
   public String doAction(HttpServletRequest request) {

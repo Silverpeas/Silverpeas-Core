@@ -62,7 +62,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   private static AuthenticationService authService = new AuthenticationService();
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final SilverpeasSessionOpenener silverpeasSessionOpener = new SilverpeasSessionOpenener();
+  private static final SilverpeasSessionOpener silverpeasSessionOpener = new SilverpeasSessionOpener();
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
 
