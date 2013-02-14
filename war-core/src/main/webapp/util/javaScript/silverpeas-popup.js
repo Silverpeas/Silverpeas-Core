@@ -136,6 +136,34 @@
       // Dialog
       return __openPopup($(this), settings);
     },
+    
+    /**
+     * The modal help dialog.
+     * It accepts one parameter that is an object with following attributes:
+     * - title : the title of the dialog box (if it is empty a default title is used),
+     * - callback : the callback to invoke when the user clicks on the yes button. The callback must
+     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * - keydown : the callback on keydown event on the dialog box,
+     * - callbackOnClose : the callback on dialog box closing.
+     */
+    help : function( options ) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+	  if (!settings.title || settings.title == null || settings.title.length == 0) {
+	    settings.title = $.i18n.prop('GML.help.dialog.title');
+	  }
+	
+	  // Internal settings
+	  $.extend(settings, __buildInternalSettings({
+	    buttonTextNo : $.i18n.prop('GML.ok'),
+	    isMaxWidth : true,
+	    dialogClass : 'help-modal-message'
+	  }));
+	
+	  // Dialog
+	  return __openPopup($(this), settings);
+    },
 
     /**
      * The modal validation dialog.
@@ -359,7 +387,8 @@
       buttonTextNo : '',
       isMaxWidth : false,
       width : 570,
-      height : 'auto'
+      height : 'auto',
+      dialogClass : ''
     }
     if (options) {
       $.extend(settings, options);
@@ -391,7 +420,8 @@
         autoOpen : false,
         modal : true,
         resizable : false,
-        height : options.height
+        height : options.height,
+        dialogClass : options.dialogClass
       });
 
       // Removing the title if requested
