@@ -83,6 +83,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       includePassword(xhtml);
     } else if (jquery.name().equals(getName())) {
       includeJQuery(xhtml);
+    } else if (tags.name().equals(getName())) {
+      includeTags(xhtml);
     }
     xhtml.output(getJspContext().getOut());
   }

@@ -40,15 +40,20 @@ import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
+import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.UnitUtil;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
+import com.silverpeas.admin.localized.LocalizedOption;
+import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.jobStartPagePeas.DisplaySorted;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasException;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.NavBarManager;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
@@ -1117,6 +1122,40 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       }
     }
     return null;
+  }
+  
+  public List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
+    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
+    for (LocalizedParameter parameter : parameters) {
+      if (parameter.isVisible()) {
+        if (parameter.isXmlTemplate()) {
+          // display only templates allowed according to context
+          parameter.setOptions(getVisibleTemplateOptions(parameter));
+        }
+        visibleParameters.add(parameter);
+      }
+    }
+    return visibleParameters;
+  }
+  
+  private List<LocalizedOption> getVisibleTemplateOptions(LocalizedParameter parameter) {
+    GlobalContext context = new GlobalContext(getManagedSpaceId(), getManagedInstanceId());
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    List<LocalizedOption> options = parameter.getOptions();
+    List<LocalizedOption> visibleOptions = new ArrayList<LocalizedOption>();
+    for (LocalizedOption option : options) {
+      String templateName = option.getValue();
+      try {
+        if (templateManager.isPublicationTemplateVisible(templateName, context)) {
+          visibleOptions.add(option);
+        }
+      } catch (PublicationTemplateException e) {
+        SilverTrace.error("jobStartPagePeas",
+            "JobStartPagePeasSessionController.getVisibleParameters",
+            "ERR_CANT_LOAD_TEMPLATE", "templateName = " + templateName);
+      }
+    }
+    return visibleOptions;
   }
 
   public String addComponentInst(ComponentInst componentInst) throws QuotaException {

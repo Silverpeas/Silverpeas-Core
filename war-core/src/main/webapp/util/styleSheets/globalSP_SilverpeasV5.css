@@ -5320,3 +5320,23 @@ input.search:focus {
 	margin:0;
 	border:0;
 }
+
+/*******************************/
+/** Tagit **/
+/*******************************/
+ul.tagit {
+    padding: 1px !important;
+    border: 1px solid #999999 !important;
+}
+
+ul.tagit li {
+    margin: 1px 5px 1px 0px !important;
+}
+
+ul.tagit li.tagit-choice {
+	padding: 1px 15px 1px 4px !important;
+}
+
+ul.tagit li.tagit-choice a.tagit-close {
+    padding: 0px 0px 2px 3px !important;
+}

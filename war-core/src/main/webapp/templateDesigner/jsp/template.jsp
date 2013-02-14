@@ -45,7 +45,7 @@ browseBar.setComponentName(resource.getString("templateDesigner.templateList"), 
 browseBar.setPath(resource.getString("templateDesigner.template"));
 
 TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resource.getString("GML.preview"), "#", true);
+tabbedPane.addTab(resource.getString("templateDesigner.preview"), "#", true);
 tabbedPane.addTab(resource.getString("templateDesigner.template"), "EditTemplate", false);
 tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewFields", false);
 
