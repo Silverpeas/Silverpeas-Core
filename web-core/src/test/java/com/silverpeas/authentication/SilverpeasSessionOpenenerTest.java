@@ -81,7 +81,7 @@ public class SilverpeasSessionOpenenerTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
-    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
+    SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     boolean result = instance.isAnonymousUser(request);
     assertThat(result, is(false));
     MainSessionController controller = mock(MainSessionController.class);
@@ -112,7 +112,7 @@ public class SilverpeasSessionOpenenerTest {
     when(request.getSession()).thenReturn(session);
     when(session.getId()).thenReturn("mysessionid");    
     
-    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
+    SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(request);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     String sKey = RandomGenerator.getRandomString();
@@ -132,7 +132,7 @@ public class SilverpeasSessionOpenenerTest {
     when(request.getScheme()).thenReturn("http");
     when(request.getServerPort()).thenReturn(80);    
     when(request.getServerName()).thenReturn("www.silverpeas.org");
-    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
+    SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(request);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
     
@@ -155,7 +155,7 @@ public class SilverpeasSessionOpenenerTest {
     when(request.getSession()).thenReturn(session);
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(
             Lists.newArrayList("test1", "test2")));    
-    SilverpeasSessionOpenener instance = new SilverpeasSessionOpenener();
+    SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     instance.closeSession(request);
     verify(session, times(1)).removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     verify(session, times(1)).removeAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);

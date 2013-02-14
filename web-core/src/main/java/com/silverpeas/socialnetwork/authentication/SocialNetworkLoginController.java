@@ -24,18 +24,6 @@
 
 package com.silverpeas.socialnetwork.authentication;
 
-import java.io.IOException;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.authentication.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationUserStateChecker;
-import org.springframework.social.connect.UserProfile;
-
 import com.silverpeas.admin.service.UserService;
 import com.silverpeas.admin.service.UserServiceProvider;
 import com.silverpeas.socialnetwork.connectors.SocialNetworkConnector;
@@ -48,6 +36,17 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.springframework.social.connect.UserProfile;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Controller to log remote social network users into Silverpeas
@@ -117,14 +116,16 @@ public class SocialNetworkLoginController extends HttpServlet {
       ExternalAccount account =
           SocialNetworkService.getInstance().getExternalAccount(networkId, profileId);
 
-      // Verify user state
+      // Verify that the user can login
       if (account != null) {
+        UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
+            .getUserCanLoginVerifier(account.getSilverpeasUserId());
         try {
-          AuthenticationUserStateChecker.verify(account.getSilverpeasUserId());
+          userStateVerifier.verify();
         } catch (AuthenticationException e) {
           SocialNetworkService.getInstance().removeAuthorizationToken(req.getSession(false));
-          resp.sendRedirect(URLManager.getFullApplicationURL(req) +
-              AuthenticationUserStateChecker.getErrorDestination());
+          resp.sendRedirect(
+              URLManager.getFullApplicationURL(req) + userStateVerifier.getErrorDestination());
           return;
         }
       }
@@ -190,7 +191,7 @@ public class SocialNetworkLoginController extends HttpServlet {
   }
 
   private String getRedirectURL(SocialNetworkID networkId, HttpServletRequest request) {
-    StringBuffer redirectURL = new StringBuffer();
+    StringBuilder redirectURL = new StringBuilder();
     redirectURL.append(URLManager.getFullApplicationURL(request));
     redirectURL
         .append("/SocialNetworkLogin?command=backFromSocialNetworkAuthentication&networkId=");

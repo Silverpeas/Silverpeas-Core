@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.admin.user.constant.UserState"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -47,7 +48,7 @@
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   boolean isDomainSql = "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
-  boolean mixedDomain = "-1".equals(domObject.getId());
+  boolean mixedDomain = domObject.isMixedOne();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
@@ -58,8 +59,7 @@
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
 	{
-	    if (!domObject.getId().equals("-1"))
-	    {
+	    if (!mixedDomain) {
 		    operationPane.addLine();
 	    	if(isDomainSql) {
 		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");
@@ -231,7 +231,7 @@ out.println(window.printBefore());
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 	  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
-	  arrayPaneUser.addArrayColumn("&nbsp;");
+	  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
 	  
@@ -240,12 +240,14 @@ out.println(window.printBefore());
 	  }
 
 	  if (subUsers != null) {
+	      String icon = "";
+	      String iconAltText = "";
 	      for(UserDetail user : subUsers){
 	          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-	          IconPane iconPane1User = gef.getIconPane();
-	          Icon userIcon = iconPane1User.addIcon();
-	          userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
-	          arrayLineUser.addArrayCellIconPane(iconPane1User);
+	          icon = resource.getIcon("JDP.user.state."+user.getState().getName());
+	          iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
+	          ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\""+icon+"\" alt=\""+iconAltText+"\" title=\""+iconAltText+"\"/>");
+	          cellIcon.setCompareOn(user.getState().name());
 	          arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
 	          arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
 	          if (JobDomainSettings.lastConnectionColumnEnabled) {
@@ -253,7 +255,7 @@ out.println(window.printBefore());
 		          ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
 		          cell.setCompareOn(lastConnection);
 	          }
-	        }
+	      }
 	  }
 	  out.println(arrayPaneUser.print());
   }

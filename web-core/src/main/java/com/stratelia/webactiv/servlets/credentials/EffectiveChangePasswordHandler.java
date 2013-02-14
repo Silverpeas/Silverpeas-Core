@@ -38,7 +38,7 @@ import javax.servlet.http.HttpSession;
  * Navigation case : user has committed change password form.
  * @author ehugonnet
  */
-public class EffectiveChangePasswordHandler extends FunctionHandler {
+public class EffectiveChangePasswordHandler extends ChangePasswordFunctionHandler {
   private static final AuthenticationService authenticator = new AuthenticationService();
 
   private ForcePasswordChangeHandler forcePasswordChangeHandler = new ForcePasswordChangeHandler();
@@ -51,26 +51,28 @@ public class EffectiveChangePasswordHandler extends FunctionHandler {
     try {
       String userId = getAdmin().authenticate(key, session.getId(), false, false);
       UserDetail ud = getAdmin().getUserDetail(userId);
-      String login = ud.getLogin();
-      String domainId = ud.getDomainId();
-      String oldPassword = request.getParameter("oldPassword");
-      String newPassword = request.getParameter("newPassword");
-      AuthenticationCredential credential = AuthenticationCredential
-          .newWithAsLogin(login)
-          .withAsPassword(oldPassword)
-          .withAsDomainId(domainId);
-      authenticator.changePassword(credential, newPassword);
+      try {
+        String login = ud.getLogin();
+        String domainId = ud.getDomainId();
+        String oldPassword = request.getParameter("oldPassword");
+        String newPassword = request.getParameter("newPassword");
+        AuthenticationCredential credential = AuthenticationCredential
+            .newWithAsLogin(login)
+            .withAsPassword(oldPassword)
+            .withAsDomainId(domainId);
+        authenticator.changePassword(credential, newPassword);
 
-      return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
-          domainId;
+        return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword + "&DomainId=" +
+            domainId;
+      } catch (AuthenticationException e) {
+        SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
+            "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
+        return performUrlChangePasswordError(request, forcePasswordChangeHandler.doAction(request),
+            ud);
+      }
     } catch (AdminException e) {
       SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
           "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
-      return forcePasswordChangeHandler.doAction(request);
-    } catch (AuthenticationException e) {
-      SilverTrace.error("peasCore", "effectiveChangePasswordHandler.doAction()",
-          "peasCore.EX_USER_KEY_NOT_FOUND", "key=" + key);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
       return forcePasswordChangeHandler.doAction(request);
     }
   }

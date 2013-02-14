@@ -205,18 +205,20 @@ if (showTabs) {
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
   arrayPaneUser.setTitle(resource.getString("GML.users"));
 
-  arrayPaneUser.addArrayColumn("&nbsp;");
+  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastConnection"));
 
   if (subUsers != null) {
+    String icon = "";
+    String iconAltText = "";
     for(UserDetail user : subUsers){
         ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-        IconPane iconPane1User = gef.getIconPane();
-        Icon userIcon = iconPane1User.addIcon();
-        userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
-        arrayLineUser.addArrayCellIconPane(iconPane1User);
+        icon = resource.getIcon("JDP.user.state."+user.getState().getName());
+        iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
+        ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\""+icon+"\" alt=\""+iconAltText+"\" title=\""+iconAltText+"\"/>");
+        cellIcon.setCompareOn(user.getState().name());
         arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
         arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
         Date lastConnection = user.getLastLoginDate();

@@ -34,7 +34,7 @@ import org.silverpeas.authentication.AuthenticationService;
  * Navigation case : user asks to change his password from login page.
  * @author ndupont
  */
-public class EffectiveChangePasswordFromLoginHandler extends FunctionHandler {
+public class EffectiveChangePasswordFromLoginHandler extends ChangePasswordFunctionHandler {
 
   @Override
   public String doAction(HttpServletRequest request) {
@@ -42,12 +42,12 @@ public class EffectiveChangePasswordFromLoginHandler extends FunctionHandler {
     String domainId = request.getParameter("domainId");
     String oldPassword = request.getParameter("oldPassword");
     String newPassword = request.getParameter("newPassword");
+    AuthenticationCredential credential = AuthenticationCredential
+        .newWithAsLogin(login)
+        .withAsPassword(oldPassword)
+        .withAsDomainId(domainId);
     try {
       // Change password.
-      AuthenticationCredential credential = AuthenticationCredential
-          .newWithAsLogin(login)
-          .withAsPassword(oldPassword)
-          .withAsDomainId(domainId);
       AuthenticationService authenticator = new AuthenticationService();
       authenticator.changePassword(credential, newPassword);
       return "/AuthenticationServlet?Login=" + login + "&Password=" + newPassword
@@ -55,10 +55,11 @@ public class EffectiveChangePasswordFromLoginHandler extends FunctionHandler {
     } catch (AuthenticationException e) {
         // Error : go back to page
       SilverTrace.error("peasCore", "ChangePasswordFromLoginHandler.doAction()",
-          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login,e);
-      request.setAttribute("message", getM_Multilang().getString("badCredentials"));
+          "peasCore.EX_CANNOT_CHANGE_PWD", "login=" + login, e);
       ResourceLocator settings = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
-      return settings.getString("changePasswordFromLoginPage")+"?Login="+login+"&DomainId="+domainId;
+      return performUrlChangePasswordError(request,
+          settings.getString("changePasswordFromLoginPage") + "?Login=" + login + "&DomainId=" +
+              domainId, credential);
     }
   }
 }

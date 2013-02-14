@@ -36,7 +36,9 @@ import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
@@ -53,11 +55,11 @@ import java.util.Enumeration;
  *
  * @author ehugonnet
  */
-public class SilverpeasSessionOpenener {
+public class SilverpeasSessionOpener {
 
   private static final int HTTP_DEFAULT_PORT = 80;
 
-  public SilverpeasSessionOpenener() {
+  public SilverpeasSessionOpener() {
   }
 
   /**
@@ -119,6 +121,7 @@ public class SilverpeasSessionOpenener {
           SessionManagementFactory factory = SessionManagementFactory.getFactory();
           SessionManagement sessionManagement = factory.getSessionManagement();
           sessionManagement.openSession(controller.getCurrentUserDetail(), request);
+          registerSuccessfulConnexion(controller);
         }
         // Put the main session controller in the session
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
@@ -131,6 +134,19 @@ public class SilverpeasSessionOpenener {
           "session id=" + session.getId(), e);
     }
     return getErrorPageUrl(request, authKey);
+  }
+
+  /**
+   * Some treatments in case of successful login
+   * @param controller
+   */
+  private void registerSuccessfulConnexion(MainSessionController controller) {
+
+    // Last login date + nb successful login (reloading user data explicitly)
+    UserDetail user = UserDetail.getById(controller.getUserId());
+    user.setLastLoginDate(DateUtil.getNow());
+    user.setNbSuccessfulLoginAttempts(user.getNbSuccessfulLoginAttempts() + 1);
+    new AdminController(user.getId()).updateUser(user);
   }
 
   /**

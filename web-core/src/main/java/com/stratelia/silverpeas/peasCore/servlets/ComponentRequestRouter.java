@@ -20,30 +20,14 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.util.Date;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.authentication.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationUserStateChecker;
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-
-import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
@@ -53,6 +37,19 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     HttpServlet {
@@ -113,9 +110,10 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       return GeneralPropertiesManager.getString("sessionTimeout");
     }
 
-    // Verify user state
+    // Verify that the user can login
     try {
-      AuthenticationUserStateChecker.verify(mainSessionCtrl.getCurrentUserDetail());
+      AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
     } catch (AuthenticationException e) {
       return GeneralPropertiesManager.getString("sessionTimeout");
     }

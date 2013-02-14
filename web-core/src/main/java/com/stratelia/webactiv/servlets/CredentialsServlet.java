@@ -25,18 +25,22 @@
 package com.stratelia.webactiv.servlets;
 
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.authentication.AuthenticationUserStateChecker;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.servlets.credentials.*;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.silverpeas.authentication.AuthenticationException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller tier for credential management (called by MandatoryQuestionChecker)
@@ -91,15 +95,22 @@ public class CredentialsServlet extends HttpServlet {
     FunctionHandler handler = handlers.get(function);
     if (handler != null) {
 
-      // Verify user state
+      UserDetail user = null;
       String login = request.getParameter("Login");
       String domainId = request.getParameter("DomainId");
       String destinationPage = "";
+      AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user)
+          .clearSession(request);
       if (StringUtil.isDefined(login) && StringUtil.isDefined(domainId)) {
+        // Verify that the user can login
+        UserCanLoginVerifier userStateVerifier = AuthenticationUserVerifierFactory
+            .getUserCanLoginVerifier(
+                AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId));
         try {
-          AuthenticationUserStateChecker.verify(login, domainId);
+          user = userStateVerifier.getUser();
+          userStateVerifier.verify();
         } catch (AuthenticationException e) {
-          destinationPage = AuthenticationUserStateChecker.getErrorDestination();
+          destinationPage = userStateVerifier.getErrorDestination();
         }
       }
 
@@ -108,6 +119,7 @@ public class CredentialsServlet extends HttpServlet {
       }
 
       if (destinationPage.startsWith("http")) {
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user).clearCache();
         final Cookie sessionCookie = new Cookie("JSESSIONID", request.getSession().getId());
         sessionCookie.setMaxAge(-1);
         sessionCookie.setSecure(false);

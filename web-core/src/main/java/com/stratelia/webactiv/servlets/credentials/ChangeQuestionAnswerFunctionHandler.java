@@ -21,39 +21,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.stratelia.webactiv.servlets.credentials;
 
-/*
- * AuthenticationBadCredentialException.java
- *
- * Created on 6 aout 2001
- */
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
-package org.silverpeas.authentication;
-
-import org.silverpeas.authentication.AuthenticationException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- *
+ * User: Yohann Chastagnier
+ * Date: 06/02/13
  */
-public class AuthenticationUserAccountBlockedException extends AuthenticationException {
+public abstract class ChangeQuestionAnswerFunctionHandler extends ChangeCredentialFunctionHandler {
 
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public AuthenticationUserAccountBlockedException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  /**
+   * Handle bad credential error.
+   * @param request
+   * @param originalUrl
+   * @param user
+   * @return destination url
+   */
+  protected String performQuestionAnswerError(HttpServletRequest request, String originalUrl,
+      UserDetail user) {
+    return performUrlOnBadCredentialError(request, originalUrl,
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(user), "invalidAnswer");
   }
 }
