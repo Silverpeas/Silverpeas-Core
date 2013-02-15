@@ -36,6 +36,7 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
   
   private String id;
   private String topicName;
+  private MessageListener messageListener;
 
   /**
    * Decorates the specified JMS topic subscriber.
@@ -88,12 +89,13 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
 
   @Override
   public MessageListener getMessageListener() throws JMSException {
-    return getDecoratedObject().getMessageListener();
+    return this.messageListener;
   }
 
   @Override
   public void setMessageListener(MessageListener ml) throws JMSException {
     getDecoratedObject().setMessageListener(ml);
+    this.messageListener = ml;
   }
 
   @Override
@@ -118,6 +120,7 @@ class SilverpeasTopicSubscriber extends JMSObjectDecorator<TopicSubscriber> impl
 
   private SilverpeasTopicSubscriber(final TopicSubscriber subscriber) throws JMSException {
     setDecoratedObject(subscriber);
-    topicName = subscriber.getTopic().getTopicName();
+    this.topicName = subscriber.getTopic().getTopicName();
+    this.messageListener = subscriber.getMessageListener();
   }
 }

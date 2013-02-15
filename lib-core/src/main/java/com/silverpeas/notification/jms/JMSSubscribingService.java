@@ -124,6 +124,9 @@ public class JMSSubscribingService implements MessageSubscribingService, Connect
 
   @Override
   public void onConnectionFailure() {
+    Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING,
+        "Connection failure detected: the subscriptions on the topics are lost. " +
+            "I'm going to recreate the subscriptions");
     Collection<ManagedTopicsSubscriber> subscribers =
         ManagedTopicsSubscriber.getAllManagedTopicSubscribers();
     for (final ManagedTopicsSubscriber subscriber: subscribers) {
@@ -141,7 +144,14 @@ public class JMSSubscribingService implements MessageSubscribingService, Connect
             }
           });
         } catch (Exception ex) {
-          Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage());
+          try {
+            String topicName = subscription.getTopic().getTopicName();
+            Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE,
+                "The subscription on '" + topicName + "' topic has failed!\n" + ex.getMessage());
+          } catch (JMSException e) {
+            Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE,
+                "The subscription on a topic has failed!\n" + ex.getMessage());
+          }
         }
       }
     }

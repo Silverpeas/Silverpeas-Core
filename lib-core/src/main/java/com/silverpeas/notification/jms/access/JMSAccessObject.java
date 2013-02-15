@@ -25,6 +25,7 @@
 package com.silverpeas.notification.jms.access;
 
 import com.stratelia.webactiv.util.JNDINames;
+import org.omg.PortableInterceptor.TRANSPORT_RETRY;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -77,7 +78,15 @@ public final class JMSAccessObject {
    * @throws NamingException if no such topic exists with the specified name.
    */
   public Topic getExistingTopic(final String name) throws NamingException {
-    return InitialContext.doLookup(PREFIX_TOPIC_JNDI + name);
+    try {
+      return InitialContext.doLookup(PREFIX_TOPIC_JNDI + name);
+    } catch(NamingException ex) {
+      NamingException namingException = new NamingException("No such topic '" + name +
+          "' or its name doesn't match its JNDI name according to the pattern '" +
+          PREFIX_TOPIC_JNDI + "TOPIC_NAME' with TOPIC_NAME the topic name");
+      namingException.initCause(ex);
+      throw namingException;
+    }
   }
 
   /**
@@ -243,6 +252,8 @@ public final class JMSAccessObject {
 
     @Override
     public void onException(JMSException jmse) {
+      Logger.getLogger(getClass().getSimpleName()).log(Level.WARNING,
+          "The connection with the remote JMS server was unexpectedly closed! I'm going to reopen it.");
       try {
         closeConnection();
       } catch (Exception ex) {
