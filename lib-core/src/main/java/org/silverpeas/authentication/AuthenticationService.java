@@ -32,9 +32,11 @@ package org.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -222,7 +224,7 @@ public class AuthenticationService {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
-        // Store information about password change capabilities
+      // Store information about password change capabilities
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
@@ -365,6 +367,9 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
+
+    // Reset the counter of number of successful connections for the given user.
+    resetNbSuccessfulConnectionAttempsCounter(credential);
   }
 
   /**
@@ -514,6 +519,21 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
+
+    // Reset the counter of number of successful connections for the given user.
+    resetNbSuccessfulConnectionAttempsCounter(credential);
+  }
+
+  /**
+   * Reset the counter of number of successful connections for the given user.
+   * @param credential
+   */
+  public void resetNbSuccessfulConnectionAttempsCounter(AuthenticationCredential credential) {
+    AdminController admin = new AdminController(null);
+    UserDetail user = UserDetail
+        .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+    user.setNbSuccessfulLoginAttempts(0);
+    admin.updateUser(user);
   }
 
   /**

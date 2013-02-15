@@ -53,7 +53,7 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   }
 
   /**
-   * Verify user state.
+   * Verify if the user can login.
    */
   public void verify() throws AuthenticationException {
     if (!isUserStateValid()) {

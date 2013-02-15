@@ -126,7 +126,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Gets (warning) message the message according to connexion attempts.
+   * Gets (warning) message the message according to connection attempts.
    * @return
    */
   public String getMessage() {
