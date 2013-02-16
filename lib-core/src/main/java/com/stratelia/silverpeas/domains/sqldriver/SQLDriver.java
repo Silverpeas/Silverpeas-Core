@@ -236,10 +236,13 @@ public class SQLDriver extends AbstractDomainDriver {
       // PWD specific treatment
       if (drvSettings.isUserPasswordAvailable()) {
         if (StringUtil.isDefined(uf.getPassword())) {
-          PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
-          PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
-          String encryptedPassword = encryption.encrypt(uf.getPassword());
-          localUserMgr.updateUserPassword(openedConnection, userId, encryptedPassword);
+          String existingPassword = localUserMgr.getUserPassword(openedConnection, userId);
+          if (!existingPassword.equals(uf.getPassword())) {
+            PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
+            PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
+            String encryptedPassword = encryption.encrypt(uf.getPassword());
+            localUserMgr.updateUserPassword(openedConnection, userId, encryptedPassword);
+          }
         }
         localUserMgr.updateUserPasswordValid(openedConnection, userId, uf.isPasswordValid());
       }

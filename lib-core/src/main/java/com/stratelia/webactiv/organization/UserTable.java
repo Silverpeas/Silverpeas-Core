@@ -458,7 +458,9 @@ public class UserTable extends Table<UserRow> {
     concatAndOr =
         addParamToQuery(params, query, getSqlTimestamp(userModel.expirationDate), "expirationDate",
             concatAndOr, andOr);
-    concatAndOr = addParamToQuery(params, query, userModel.state, "state", concatAndOr, andOr);
+    if (!UserState.UNKNOWN.equals(UserState.from(userModel.state))) {
+      concatAndOr = addParamToQuery(params, query, userModel.state, "state", concatAndOr, andOr);
+    }
     concatAndOr =
         addParamToQuery(params, query, getSqlTimestamp(userModel.stateSaveDate), "stateSaveDate",
             concatAndOr, andOr);
