@@ -28,6 +28,13 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationExceptionVisitor;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.authentication.exception.AuthenticationPwdChangeNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,9 +114,10 @@ public class AuthenticationServer {
    * Authenticates the user with the specified authentication credential.
    *
    * @param credential the authentication credential to use to authenticate the user.
-   * @throws AuthenticationException if the authentication fails.
+   * @throws org.silverpeas.authentication.exception.AuthenticationException if the authentication fails.
    */
-  public void authenticate(final AuthenticationCredential credential) throws AuthenticationException {
+  public void authenticate(final AuthenticationCredential credential) throws
+      AuthenticationException {
     doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION, credential) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {

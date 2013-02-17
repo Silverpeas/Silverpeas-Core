@@ -23,55 +23,47 @@
  */
 
 /*
- * AuthenticationException.java
+ * AuthenticationBadCredentialException.java
  *
  * Created on 6 aout 2001
  */
 
-package org.silverpeas.authentication;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+package org.silverpeas.authentication.exception;
 
 /**
  * @author tleroi
  * @version
  */
-public class AuthenticationException extends SilverpeasException {
+public class AuthenticationBadCredentialException extends AuthenticationException {
 
-  private static final long serialVersionUID = 8552020923204390308L;
+  private static final long serialVersionUID = -6224596419804291843L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message) {
+  public AuthenticationBadCredentialException(String callingClass,
+      int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public AuthenticationBadCredentialException(String callingClass,
+      int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public AuthenticationBadCredentialException(String callingClass,
+      int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public AuthenticationBadCredentialException(String callingClass,
+      int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
+  @Override
   public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
     visitor.visit(this);
-  }
-
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
-  public String getModule() {
-    return "authentication";
   }
 }

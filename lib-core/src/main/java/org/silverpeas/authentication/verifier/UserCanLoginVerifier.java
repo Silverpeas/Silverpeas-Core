@@ -25,8 +25,8 @@ package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.authentication.AuthenticationException;
-import org.silverpeas.authentication.verifier.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 
 /**
  * Class that provides tools to verify if the user can login in relation to its account state.

@@ -40,9 +40,15 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.exception.AuthenticationUserAccountBlockedException;
 
 import java.sql.Connection;
 import java.sql.Driver;

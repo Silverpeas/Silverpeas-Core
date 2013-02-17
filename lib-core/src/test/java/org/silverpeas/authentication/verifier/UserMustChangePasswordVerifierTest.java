@@ -25,9 +25,9 @@ package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.junit.Test;
-import org.silverpeas.authentication.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.authentication.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

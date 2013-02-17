@@ -25,9 +25,9 @@ package org.silverpeas.authentication.verifier;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.authentication.AuthenticationException;
-import org.silverpeas.authentication.AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.authentication.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 
 /**
  * Class that provides tools to verify if the user have to change his password or if the user will

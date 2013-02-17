@@ -39,7 +39,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;

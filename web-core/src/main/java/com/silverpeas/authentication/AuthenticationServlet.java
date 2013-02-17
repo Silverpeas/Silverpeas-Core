@@ -35,8 +35,7 @@ import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

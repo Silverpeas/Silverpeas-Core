@@ -23,41 +23,40 @@
  */
 
 /*
- * AuthenticationPwdNotAvailException.java
+ * AuthenticationPwdChangeNotAvailException
  *
  * Created on 6 aout 2001
  */
 
-package org.silverpeas.authentication;
+package org.silverpeas.authentication.exception;
 
 /**
- * @author tleroi
- * @version
+ * @author Ludovic Bertin
  */
-public class AuthenticationPwdNotAvailException extends AuthenticationException {
+public class AuthenticationPwdChangeNotAvailException extends AuthenticationException {
 
-  private static final long serialVersionUID = 3338040913682812355L;
+  private static final long serialVersionUID = -5828893849246684442L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationPwdNotAvailException(String callingClass,
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
       int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationPwdNotAvailException(String callingClass,
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
       int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationPwdNotAvailException(String callingClass,
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
       int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationPwdNotAvailException(String callingClass,
+  public AuthenticationPwdChangeNotAvailException(String callingClass,
       int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }

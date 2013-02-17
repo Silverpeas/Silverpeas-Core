@@ -24,8 +24,7 @@
 package com.stratelia.webactiv.servlets.credentials;
 
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
-import org.silverpeas.authentication.verifier.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 
 import javax.servlet.http.HttpServletRequest;
 
