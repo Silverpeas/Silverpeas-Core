@@ -727,6 +727,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
       }
       if (destination.equals("domainContent.jsp")) {
+        jobDomainSC.refresh();
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
