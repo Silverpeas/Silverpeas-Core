@@ -22,31 +22,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package org.silverpeas.util.crypto;
 
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SilverCryptKeysSymetric {
+/**
+ * A representation of a symmetric key used in the BLowfish cipher.
+ * It is a wrapper of the actual key it generates from a plain text representation of the key.
+ */
+public class BlowfishKey implements Key {
 
   private Key key = null;
 
-  public SilverCryptKeysSymetric() {
+  /**
+   * Constructs a new symmetric key for the Blowfish cipher. The key is computed from a default
+   * code; that is to say two instances created by using this constructor are equal.
+   */
+  public BlowfishKey() {
     if (key == null) {
       byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
+      key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
     }
   }
 
-  public SilverCryptKeysSymetric(String keyCode) {
+  /**
+   * Constructs a new symmetric key for the Blowfish cypher from the specified key code.
+   * @param keyCode the code of the key.
+   */
+  public BlowfishKey(String keyCode) {
     if (key == null) {
       byte[] keybyte = getKeyBytes(keyCode);
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
+      key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
     }
   }
 
-  protected final byte[] getKeyBytes(String keyCode) {
+  private final byte[] getKeyBytes(String keyCode) {
     byte[] keybyte;
     try {
       keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");
@@ -56,8 +68,18 @@ public class SilverCryptKeysSymetric {
     return keybyte;
   }
 
-  public Key getKey() {
-    return key;
+  @Override
+  public String getAlgorithm() {
+    return this.key.getAlgorithm();
   }
 
+  @Override
+  public String getFormat() {
+    return this.getFormat();
+  }
+
+  @Override
+  public byte[] getEncoded() {
+    return this.key.getEncoded();
+  }
 }

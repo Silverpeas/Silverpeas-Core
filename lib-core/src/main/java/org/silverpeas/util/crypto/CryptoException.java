@@ -22,20 +22,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package org.silverpeas.util.crypto;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class CryptageException extends SilverpeasException {
+/**
+ * An exception thrown when the encryption or the decryption of a data failed.
+ */
+public class CryptoException extends SilverpeasException {
 
   private static final long serialVersionUID = -390725088083708882L;
 
-  public CryptageException(String callingClass, int errorLevel, String message,
-      Exception nested) {
+  public CryptoException(String callingClass, int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public CryptageException(String callingClass, int errorLevel, String message) {
+  public CryptoException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 

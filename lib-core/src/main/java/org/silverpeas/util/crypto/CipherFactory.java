@@ -1,0 +1,39 @@
+package org.silverpeas.util.crypto;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * A factory of the ciphers supported by Silverpeas.
+ */
+public class CipherFactory {
+
+  private static final CipherFactory instance = new CipherFactory();
+  private static final Map<CryptographicAlgorithmName, Cipher> ciphers =
+      new HashMap<CryptographicAlgorithmName, Cipher>();
+
+  // we load all the supported ciphers
+  static {
+    try {
+      ciphers.put(CryptographicAlgorithmName.Blowfish, new BlowfishCipher());
+    } catch (Exception ex) {
+      Logger.getLogger(CipherFactory.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
+    }
+  }
+
+  public static CipherFactory getFactory() {
+    return instance;
+  }
+
+  /**
+   * Gets the cipher identified by the specified cryptographic algorithm name.
+   * @param cipherName a name of a cryptographic cipher.
+   * @return the cipher that matches the specified name or null if no such cipher exists with the
+   * given algorithm name.
+   */
+  public Cipher getCipher(CryptographicAlgorithmName cipherName) {
+    return ciphers.get(cipherName);
+  }
+}

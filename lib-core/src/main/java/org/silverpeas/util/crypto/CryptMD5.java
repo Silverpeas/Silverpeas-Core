@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package org.silverpeas.util.crypto;
 
 import com.google.common.io.Closeables;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -44,7 +44,7 @@ import java.security.NoSuchAlgorithmException;
  * <p/>
  * A first flaw (possibility to create collisions at the demand) was discovered in 1996. In
  * 2004, a chinese team broke it by discovering full collisions. Since, it was replaced first by
- * the SHA-1 algorithm and now the SHA-2 algorithms are used.
+ * the SHA-1 algorithm and now the SHA-2 algorithms are used (SHA-256, SHA-512).
  */
 public class CryptMD5 {
 
@@ -62,8 +62,8 @@ public class CryptMD5 {
     try {
       hash = MessageDigest.getInstance("MD5").digest(uniqueKey);
     } catch (NoSuchAlgorithmException e) {
-      // TODO utiliser le CryptageException
-      // throw new CryptageException
+      // TODO utiliser le CryptoException
+      // throw new CryptoException
       throw new UtilException("CryptMD5.encrypt()", SilverpeasException.ERROR,
           "root.EX_NO_MESSAGE", e);
     }
@@ -82,9 +82,9 @@ public class CryptMD5 {
     return hashString.toString();
   }
 
-  /*
-   * Compute the MD5 hash of a file.
-   * @param file: the file to be MD5 hashed.
+  /**
+   * Computes the MD5 hash of a file.
+   * @param file the file to be MD5 hashed.
    * @return the MD5 hash as a String.
    */
   public static String encrypt(File file) throws UtilException {

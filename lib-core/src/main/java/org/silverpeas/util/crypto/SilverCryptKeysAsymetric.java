@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package org.silverpeas.util.crypto;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;

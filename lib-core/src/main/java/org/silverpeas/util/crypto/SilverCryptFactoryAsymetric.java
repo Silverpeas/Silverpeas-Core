@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.util.cryptage;
+package org.silverpeas.util.crypto;
 
 import java.io.FileInputStream;
 import java.util.Collection;
@@ -58,7 +58,7 @@ public class SilverCryptFactoryAsymetric {
     return factory;
   }
 
-  public byte[] goCrypting(String stringUnCrypted, String fileName) throws CryptageException {
+  public byte[] goCrypting(String stringUnCrypted, String fileName) throws CryptoException {
     try {
       // Chargement de la chaine à crypter
       byte[] buffer = stringToByteArray(stringUnCrypted);
@@ -81,17 +81,17 @@ public class SilverCryptFactoryAsymetric {
       CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(buffer), encryptor);
       byte[] pkcs7envelopedData = envData.getEncoded();
       return pkcs7envelopedData;
-    } catch (CryptageException e) {
+    } catch (CryptoException e) {
       throw e;
     } catch (Exception e) {
 
-      throw new CryptageException("SilverCryptFactory.goCrypting", SilverpeasException.ERROR,
+      throw new CryptoException("SilverCryptFactory.goCrypting", SilverpeasException.ERROR,
           "util.CRYPT_FAILED", e);
     }
   }
 
   public String goUnCrypting(byte[] stringCrypted, String fileName)
-      throws CryptageException {
+      throws CryptoException {
     try {
       // Chargement de la chaine à déchiffrer
       byte[] pkcs7envelopedData = stringCrypted;
@@ -107,19 +107,19 @@ public class SilverCryptFactoryAsymetric {
       byte[] contents = rinfo.getContent(new JceKeyTransEnvelopedRecipient(this.getKeys(fileName).
           getPrivatekey()));
       return byteArrayToString(contents);
-    } catch (CryptageException e) {
+    } catch (CryptoException e) {
       throw e;
     } catch (Exception e) {
-      throw new CryptageException("SilverCryptFactory.goUnCrypting",
+      throw new CryptoException("SilverCryptFactory.goUnCrypting",
           SilverpeasException.ERROR, "util.UNCRYPT_FAILED", e);
     }
   }
 
   public synchronized void addKeys(String filename, String password)
-      throws CryptageException {// ajout d'une trousseau de clé à partir d'un
+      throws CryptoException {// ajout d'une trousseau de clé à partir d'un
     // chemin d'un fichier p12 + password
     if (this.keyMap.containsKey(filename)) {
-      throw new CryptageException("SilverCryptFactory.addKeys",
+      throw new CryptoException("SilverCryptFactory.addKeys",
           SilverpeasException.ERROR, "util.KEY_ALREADY_IN");
     } else {
       try {
@@ -128,18 +128,18 @@ public class SilverCryptFactoryAsymetric {
             file, password);
         this.keyMap.put(filename, silverkeys);
       } catch (Exception e) {
-        throw new CryptageException("SilverCryptFactory.addKeys",
+        throw new CryptoException("SilverCryptFactory.addKeys",
             SilverpeasException.ERROR, "util.KEYS_CREATION_FAILED");
       }
     }
   }
 
   private synchronized SilverCryptKeysAsymetric getKeys(String filename)
-      throws CryptageException {// récupération du trousseau de clé!
+      throws CryptoException {// récupération du trousseau de clé!
     if (this.keyMap.containsKey(filename)) {
       return this.keyMap.get(filename);
     } else {
-      throw new CryptageException("SilverCryptFactory.addKeys",
+      throw new CryptoException("SilverCryptFactory.addKeys",
           SilverpeasException.ERROR, "util.KEY_NOT_FOUND");
     }
   }
