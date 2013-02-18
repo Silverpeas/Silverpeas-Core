@@ -23,41 +23,42 @@
  */
 
 /*
- * AuthenticationPwdChangeNotAvailException
+ * AuthenticationHostException.java
  *
  * Created on 6 aout 2001
  */
 
-package org.silverpeas.authentication;
+package org.silverpeas.authentication.exception;
 
 /**
- * @author Ludovic Bertin
+ * @author tleroi
+ * @version
  */
-public class AuthenticationPwdChangeNotAvailException extends AuthenticationException {
+public class AuthenticationHostException extends AuthenticationException {
 
-  private static final long serialVersionUID = -5828893849246684442L;
+  private static final long serialVersionUID = 3318090264755986318L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationPwdChangeNotAvailException(String callingClass,
-      int errorLevel, String message) {
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationPwdChangeNotAvailException(String callingClass,
-      int errorLevel, String message, String extraParams) {
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationPwdChangeNotAvailException(String callingClass,
-      int errorLevel, String message, Exception nested) {
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationPwdChangeNotAvailException(String callingClass,
-      int errorLevel, String message, String extraParams, Exception nested) {
+  public AuthenticationHostException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 

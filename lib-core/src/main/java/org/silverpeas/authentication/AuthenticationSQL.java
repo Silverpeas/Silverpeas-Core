@@ -44,6 +44,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 /**
  * This class performs the authentication using an SQL table
@@ -137,6 +142,10 @@ public class AuthenticationSQL extends Authentication {
     } else {
       checkPassword(login, password, sqlPassword);
     }
+
+    // Verifying if the user must change his password or if user will soon have to change his
+    // password
+    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
   }
 
   private String getPassword(Connection connection, String login) throws AuthenticationException {

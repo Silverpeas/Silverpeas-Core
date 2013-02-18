@@ -83,7 +83,7 @@
       <div class="cadre">
         <div id="header" style="display: table; width: 100%">
           <div style="display: table-cell">
-            <img src="<%=logo%>" class="logo" alt="logo"/>
+            <img src="<%=logo%>" class="logo" alt=""/>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
             <%=authenticationBundle.getString("authentication.password.init")%>

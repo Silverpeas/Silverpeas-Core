@@ -23,42 +23,42 @@
  */
 
 /*
- * AuthenticationHostException.java
+ * AuthenticationPwdNotAvailException.java
  *
  * Created on 6 aout 2001
  */
 
-package org.silverpeas.authentication;
+package org.silverpeas.authentication.exception;
 
 /**
  * @author tleroi
  * @version
  */
-public class AuthenticationHostException extends AuthenticationException {
+public class AuthenticationPwdNotAvailException extends AuthenticationException {
 
-  private static final long serialVersionUID = 3318090264755986318L;
+  private static final long serialVersionUID = 3338040913682812355L;
 
   /**
    * -------------------------------------------------------------------------- constructor
    * constructor
    */
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message) {
+  public AuthenticationPwdNotAvailException(String callingClass,
+      int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams) {
+  public AuthenticationPwdNotAvailException(String callingClass,
+      int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, Exception nested) {
+  public AuthenticationPwdNotAvailException(String callingClass,
+      int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationHostException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
+  public AuthenticationPwdNotAvailException(String callingClass,
+      int errorLevel, String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
