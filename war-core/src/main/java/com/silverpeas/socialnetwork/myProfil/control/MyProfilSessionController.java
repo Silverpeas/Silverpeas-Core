@@ -134,13 +134,22 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         + " userFirstName=" + userFirstName + " userEMail=" + userEMail + " userAccessLevel="
         + userAccessLevel);
 
-    UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
+    UserDetail user = UserDetail.getById(idUser);
 
     AuthenticationCredential credential = AuthenticationCredential
-        .newWithAsLogin(theModifiedUser.getLogin())
+        .newWithAsLogin(user.getLogin())
         .withAsPassword(oldPassword)
-        .withAsDomainId(theModifiedUser.getDomainId());
+        .withAsDomainId(user.getDomainId());
     if (isUserDomainRW()) {
+      // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
+      if (newPassword != null && newPassword.length() != 0) {
+        // In this case, this method checks if oldPassword and actual password match !
+        changePassword(credential, newPassword);
+      }
+
+      // It is important to load user data the most later possible because of potential updates
+      // of user data by password management services
+      UserFull theModifiedUser = adminCtrl.getUserFull(idUser);
       theModifiedUser.setLastName(userLastName);
       theModifiedUser.setFirstName(userFirstName);
       theModifiedUser.seteMail(userEMail);
@@ -148,9 +157,6 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       theModifiedUser.setLoginAnswer(userLoginAnswer);
       // Si l'utilisateur n'a pas entré de nouveau mdp, on ne le change pas
       if (newPassword != null && newPassword.length() != 0) {
-        // In this case, this method checks if oldPassword and actual password match !
-        changePassword(credential, newPassword);
-
         theModifiedUser.setPassword(newPassword);
       }
 

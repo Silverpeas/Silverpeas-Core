@@ -43,6 +43,8 @@ class AbstractAuthenticationVerifier {
       new HashMap<String, ResourceLocator>();
   protected final static ResourceLocator settings =
       new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
+  protected final static ResourceLocator otherSettings =
+      new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
 
   private UserDetail user;
 

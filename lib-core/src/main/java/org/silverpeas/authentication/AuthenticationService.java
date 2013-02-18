@@ -45,10 +45,12 @@ import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
 import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
 import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -265,6 +267,8 @@ public class AuthenticationService {
         errorCause = ERROR_PWD_EXPIRED;
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
+      } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
+        errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
         errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
@@ -374,8 +378,8 @@ public class AuthenticationService {
       closeConnection(connection);
     }
 
-    // Reset the counter of number of successful connections for the given user.
-    resetNbSuccessfulConnectionAttempsCounter(credential);
+    // Treatments on password change
+    onPasswordChanged(credential);
   }
 
   /**
@@ -526,19 +530,30 @@ public class AuthenticationService {
       closeConnection(connection);
     }
 
-    // Reset the counter of number of successful connections for the given user.
-    resetNbSuccessfulConnectionAttempsCounter(credential);
+    // Treatments on password change
+    onPasswordChanged(credential);
   }
 
   /**
-   * Reset the counter of number of successful connections for the given user.
+   * Treatments on password change.
    * @param credential
    */
-  public void resetNbSuccessfulConnectionAttempsCounter(AuthenticationCredential credential) {
+  private void onPasswordChanged(AuthenticationCredential credential) {
     AdminController admin = new AdminController(null);
     UserDetail user = UserDetail
         .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+
+    // Notify that the user has changed his password.
+    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
+        .notifyPasswordChange();
+
+    // Reset the counter of number of successful connections for the given user.
     user.setNbSuccessfulLoginAttempts(0);
+
+    // Register the date of credential change
+    user.setLastLoginCredentialUpdateDate(new Date());
+
+    // Persisting user data changes.
     admin.updateUser(user);
   }
 

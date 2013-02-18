@@ -28,6 +28,9 @@ import org.junit.Test;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
 import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+
+import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,13 +48,13 @@ public class UserMustChangePasswordVerifierTest {
   public void verifierNotActivated() throws AuthenticationException {
     UserDetail user = createUser(0);
 
-    UserMustChangePasswordVerifier verifier = createVerifierInstance(user, 0, 0);
+    UserMustChangePasswordVerifier verifier = createVerifierInstance(user, false, 0, 0);
     for (int i = 0; i < 1000; i++) {
       verifier.verify();
       user.setNbSuccessfulLoginAttempts(i + 1);
     }
 
-    verifier = createVerifierInstance(user, -1, 20);
+    verifier = createVerifierInstance(user, false, -1, 20);
     for (int i = 0; i < 1000; i++) {
       verifier.verify();
       user.setNbSuccessfulLoginAttempts(i + 1);
@@ -62,7 +65,7 @@ public class UserMustChangePasswordVerifierTest {
   public void verifyFromFirstUserConnectionWithoutProposing() throws AuthenticationException {
     UserDetail user = createUser(0);
     UserMustChangePasswordVerifier verifier =
-        createVerifierInstance(user, MAX_CONNECTIONS_FORCING, 0);
+        createVerifierInstance(user, false, MAX_CONNECTIONS_FORCING, 0);
     int nbAsserts = 0;
     for (int i = 0; i < 1000; i++) {
       try {
@@ -83,7 +86,7 @@ public class UserMustChangePasswordVerifierTest {
   public void verifyFromFirstUserConnectionWithProposing() throws AuthenticationException {
     UserDetail user = createUser(0);
     UserMustChangePasswordVerifier verifier =
-        createVerifierInstance(user, MAX_CONNECTIONS_FORCING, MAX_CONNECTIONS_PROPOSING);
+        createVerifierInstance(user, false, MAX_CONNECTIONS_FORCING, MAX_CONNECTIONS_PROPOSING);
     int nbAssertsForForcing = 0;
     int nbAssertsForProposing = 0;
     for (int i = 0; i < 1000; i++) {
@@ -107,6 +110,23 @@ public class UserMustChangePasswordVerifierTest {
         (MAX_CONNECTIONS_FORCING - MAX_CONNECTIONS_PROPOSING)));
   }
 
+  @Test(expected = AuthenticationPasswordMustBeChangedOnFirstLogin.class)
+  public void verifyUserMustChangePasswordOnFirstLogin() throws AuthenticationException {
+    UserDetail user = createUser(0);
+    user.setLastLoginDate(null);
+    UserMustChangePasswordVerifier verifier = createVerifierInstance(user, true, 0, 0);
+    verifier.verify();
+  }
+
+  @Test
+  public void verifyUserMustChangePasswordOnFirstLoginButNotTheFirstUserLogin()
+      throws AuthenticationException {
+    UserDetail user = createUser(0);
+    user.setLastLoginDate(new Date());
+    UserMustChangePasswordVerifier verifier = createVerifierInstance(user, true, 0, 0);
+    verifier.verify();
+  }
+
   /**
    * Gets a new verifier instance.
    * @param user
@@ -115,11 +135,13 @@ public class UserMustChangePasswordVerifierTest {
    * @return
    */
   private UserMustChangePasswordVerifier createVerifierInstance(UserDetail user,
+      boolean userMustChangePasswordOnFirstLogin,
       int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
       int nbSuccessfulUserConnectionsBeforeProposingToChangePassword) {
     UserMustChangePasswordVerifierForTest verifier =
         new UserMustChangePasswordVerifierForTest(user);
-    verifier.initialize(nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
+    verifier.initialize(userMustChangePasswordOnFirstLogin,
+        nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
         nbSuccessfulUserConnectionsBeforeProposingToChangePassword);
     return verifier;
   }
@@ -131,6 +153,7 @@ public class UserMustChangePasswordVerifierTest {
    */
   private UserDetail createUser(int withXSuccessfulConnections) {
     UserDetail user = new UserDetail();
+    user.setId("0");
     user.setNbSuccessfulLoginAttempts(withXSuccessfulConnections);
     return user;
   }
@@ -148,9 +171,11 @@ public class UserMustChangePasswordVerifierTest {
       super(user);
     }
 
-    public void initialize(int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
+    public void initialize(boolean userMustChangePasswordOnFirstLogin,
+        int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
         int nbSuccessfulUserConnectionsBeforeProposingToChangePassword) {
-      setup(nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
+      setup(userMustChangePasswordOnFirstLogin,
+          nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
           nbSuccessfulUserConnectionsBeforeProposingToChangePassword);
     }
   }
