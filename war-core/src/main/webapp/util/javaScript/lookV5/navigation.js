@@ -32,7 +32,7 @@ var displayMySpace = "off";
 var displayComponentIcons = false;
 
 var currentLook = "none";
-var currentWallpaper = "0";
+var currentSpaceWithCSSApplied = "null";
 
 var notContextualPDCDisplayed = false;
 var notContextualPDCLoaded = false;
@@ -80,7 +80,7 @@ function openMySpace() {
   }
 }
 
-function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper) {
+function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
   var mainFrame = "";
   try {
     mainFrame = getMainFrame();
@@ -90,11 +90,8 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWallpaper) {
   } catch(err) {
     mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
   }
-  if (spaceLook != currentLook) {
-    top.location = getContext() + mainFrame + "?RedirectToSpaceId=" + spaceId;
-  }
-
-  if (spaceWallpaper != currentWallpaper) {
+  
+  if (spaceLook != currentLook || spaceWithCSSToApply != currentSpaceWithCSSApplied) {
     top.location = getContext() + mainFrame + "?RedirectToSpaceId=" + spaceId;
   }
 
@@ -682,36 +679,18 @@ $(document).ready(function() {
 
   // Handler for .ready() called.
   currentLook = getLook();
-  currentWallpaper = getWallpaper();
-
+  try {
+	  currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
+	  //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
+  } catch (e) {
+	  // look do not provide getSpaceCSS() function
+  }
+  
   hideTransverseSpace();
 
   spaceUpdater = new SpaceUpdater();
   ajaxEngine.registerRequest('getSpaceInfo', getContext() + '/RAjaxSilverpeasV5/dummy');
   ajaxEngine.registerAjaxObject('spaceUpdater', spaceUpdater);
-
-//	$.get(getContext()+'/RAjaxSilverpeasV5/dummy',
-//		{ ResponseId:'spaceUpdater',
-//		  Init:1,
-//		  GetPDC: displayPDC(),
-//		  SpaceId: getSpaceIdToInit(),
-//		  ComponentId:getComponentIdToInit(),
-//		  UserMenuDisplayMode: getUserMenuDisplayMode()
-//		},
-//	   function(data){
-//		 if($("#spaceMenuDivId").isMasked()) {
-//			 $("#spaceMenuDivId").unmask();
-//		 }
-//	     //alert("Data Loaded: " + data);
-//		 spaceUpdater = new SpaceUpdater();
-//		 var xmlResponse = data.childNodes[0].childNodes[0];
-//	     spaceUpdater.ajaxUpdate(xmlResponse);
-//	     //spaceUpdater.displayTree(xmlResponse.childNodes[0]);
-//	     /*$(data).find('spaces').each(function(){
-//	    	 spaceUpdater.displayTree($(this));
-//			});*/
-//	   }
-//	);
 
   //Check displayUserMenuDisplayMode in order to enable/disable user favorite space feature
   ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=1',
@@ -845,11 +824,11 @@ SpaceUpdater.prototype = {
       var spaceId = space.getAttribute("id");
       var open = space.getAttribute("open");
       var look = space.getAttribute("look");
-      var wallpaper = space.getAttribute("wallpaper");
+      var css = space.getAttribute("css");
 
       var newSpaceURL = document.createElement("a");
       newSpaceURL.setAttribute("href",
-          "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + wallpaper + "')");
+          "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '"+css+"')");
       newSpaceURL.setAttribute("onfocus", "this.blur()");
       newSpaceURL.setAttribute("class", "spaceURL");
       newSpaceURL.setAttribute("className", "spaceURL");
@@ -902,11 +881,11 @@ SpaceUpdater.prototype = {
     var spaceId = space.getAttribute("id");
     var open = "true";
     var look = space.getAttribute("look");
-    var wallpaper = space.getAttribute("wallpaper");
+    var css = space.getAttribute("css");
 
     var newSpaceURL = document.createElement("a");
     newSpaceURL.setAttribute("href",
-        "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + wallpaper + "')");
+        "javaScript:openSpace('" + spaceId + "', 0, '" + look + "', '" + css + "')");
     newSpaceURL.setAttribute("onfocus", "this.blur()");
     newSpaceURL.setAttribute("class", "spaceURL");
     newSpaceURL.setAttribute("className", "spaceURL");
@@ -1047,14 +1026,12 @@ SpaceUpdater.prototype = {
         }
       } else {
         var look = item.getAttribute("look");
-        var wallpaper = item.getAttribute("wallpaper");
+        var css = item.getAttribute("css");
 
         newEntryIcon.setAttribute("id", "img" + itemId);
         newEntryIcon.setAttribute("src", "icons/1px.gif");
         newEntryURL.setAttribute("href",
-            "javaScript:openSpace('" + itemId + "'," + itemLevel + ",'" + look + "', '" + wallpaper + "')");
-        /*newEntryURL.setAttribute("class", "browseSpace");
-         newEntryURL.setAttribute("className", "browseSpace");*/
+            "javaScript:openSpace('" + itemId + "'," + itemLevel + ",'" + look + "', '" + css + "')");
       }
       var newEntryLabel = document.createTextNode(item.getAttribute("name"));
       newEntryURL.appendChild(newEntryLabel);

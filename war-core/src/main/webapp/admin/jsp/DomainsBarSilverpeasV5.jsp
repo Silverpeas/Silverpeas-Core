@@ -208,9 +208,9 @@ out.println(gef.getLookStyleSheet());
       return "<%=gef.getCurrentLookName()%>";
     }
 
-    function getWallpaper()
+    function getSpaceWithCSSToApply()
     {
-      return "<%=helper.getWallPaper(spaceId)%>";
+      return "<%=helper.getSpaceWithCSSToApply()%>";
     }
 
     function displayPDC()
