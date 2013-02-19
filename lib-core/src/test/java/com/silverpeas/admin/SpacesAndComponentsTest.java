@@ -176,6 +176,24 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     String[] subSpaceIds = ac.getAllSubSpaceIds("WA1");
     assertEquals(2, subSpaceIds.length);
   }
+  
+  @Test
+  public void testGetSubSpaces() throws AdminException {
+    AdminController ac = getAdminController();
+    String[] spaceIds = ac.getAllSubSpaceIds("WA1");
+    assertEquals(1, spaceIds.length);
+    
+    SpaceInstLight subSpace = ac.getSpaceInstLight(spaceIds[0]);
+    assertEquals("Space 1-2", subSpace.getName());
+    assertEquals("Space 1-2 in english", subSpace.getName("en"));
+    
+    List<SpaceInstLight> subSpaces = admin.getSubSpaces("WA1");
+    assertEquals(1, subSpaces.size());
+    
+    subSpace = subSpaces.get(0);
+    assertEquals("Space 1-2", subSpace.getName());
+    assertEquals("Space 1-2 in english", subSpace.getName("en"));
+  }
 
   @Test
   public void testUpdateComponent() {
