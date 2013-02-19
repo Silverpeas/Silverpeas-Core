@@ -1,3 +1,4 @@
+<%@ page import="com.silverpeas.pdcSubscriptionPeas.bean.NodeSubscriptionBean" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -29,19 +30,19 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-Collection 				subscribeThemes 	= (Collection) request.getAttribute("SubscribeThemeList");
-String 					userId 				= (String) request.getAttribute("userId");
-String 					action				= (String) request.getAttribute("action");
+  Collection<NodeSubscriptionBean> subscriptions = (Collection) request.getAttribute("subscriptions");
+  String userId = (String) request.getAttribute("userId");
+  String action = (String) request.getAttribute("action");
 
-OrganizationController 	organizationCtrl 	= sessionController.getOrganizationController();
-final String 			rootPath			= resource.getString("Path");
+  OrganizationController organizationCtrl = sessionController.getOrganizationController();
+  final String rootPath = resource.getString("Path");
 
-boolean isReadOnly = false;
-if (action != null && action.equals("showUserSubscriptions")) {
+  boolean isReadOnly = false;
+  if (action != null && action.equals("showUserSubscriptions")) {
     isReadOnly = true;
-}
+  }
 
-String language = resource.getLanguage();
+  String language = resource.getLanguage();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -50,27 +51,27 @@ String language = resource.getLanguage();
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript">
-function deleteSelectThemeConfirm() {
-	var boxItems = document.readForm.themeCheck;
-	if (boxItems != null) {
-		var nbBox = boxItems.length;
-		var sendIt = false;
-        if ((nbBox == null) && (boxItems.checked == true)){
-        	sendIt = true;
-        } else{
-        	for (i=0;i<boxItems.length ;i++ ){
-            	if (boxItems[i].checked == true){
-            		sendIt = true;
-            	}
-            }
+  function confirmDelete() {
+    var boxItems = document.readForm.themeCheck;
+    if (boxItems != null) {
+      var nbBox = boxItems.length;
+      var sendIt = false;
+      if ((nbBox == null) && (boxItems.checked == true)) {
+        sendIt = true;
+      } else {
+        for (var i = 0; i < boxItems.length; i++) {
+          if (boxItems[i].checked == true) {
+            sendIt = true;
+          }
         }
+      }
 
-		if (sendIt && areYouSure()) {
-	    	document.readForm.mode.value = 'delete';
-	    	document.readForm.submit();
-	  	}
-	}
-}
+      if (sendIt && areYouSure()) {
+        document.readForm.mode.value = 'delete';
+        document.readForm.submit();
+      }
+    }
+  }
 
 function areYouSure() {
     return confirm("<%=resource.getString("confirmDeleteSubscription")%>");
@@ -81,83 +82,86 @@ function areYouSure() {
 <form name="readForm" action="DeleteTheme" method="post">
 <input type="hidden" name="mode"/>
 
-<%
-	browseBar.setComponentName(rootPath);
+  <%
+    browseBar.setComponentName(rootPath);
 
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("pdc"), "subscriptionList.jsp?userId="+userId, false);
-	tabbedPane.addTab(resource.getString("thematique"), "#", true);
+    TabbedPane tabbedPane = gef.getTabbedPane();
+    tabbedPane.addTab(resource.getString("pdc"), "subscriptionList.jsp?userId=" + userId, false);
+    tabbedPane.addTab(resource.getString("thematique"), "#", true);
+    tabbedPane.addTab(resource.getString("application"),
+        "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
 
-	if (!isReadOnly) {
-		operationPane.addOperation(resource.getIcon("icoDelete") , resource.getString("DeleteSC"),"javascript:deleteSelectThemeConfirm()");
-	}
+    if (!isReadOnly) {
+      operationPane.addOperation(resource.getIcon("icoDelete"), resource.getString("DeleteSC"),
+          "javascript:confirmDelete()");
+    }
 
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
+    out.println(window.printBefore());
+    out.println(tabbedPane.print());
     out.println(frame.printBefore());
 
-	ArrayPane arrayPane = gef.getArrayPane("ViewSubscriptionTheme", "ViewSubscriptionTheme", request, session);
-	arrayPane.addArrayColumn(resource.getString("emplacement"));
-	if (!isReadOnly)
-	{
-		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("Operations"));
-		columnOp.setSortable(false);
-	}
+    ArrayPane arrayPane =
+        gef.getArrayPane("ViewSubscriptionTheme", "ViewSubscriptionTheme", request, session);
+    arrayPane.addArrayColumn(resource.getString("SubscriptionType"));
+    arrayPane.addArrayColumn(resource.getString("emplacement"));
+    if (!isReadOnly) {
+      arrayPane.addArrayColumn(resource.getString("Operations")).setSortable(false);
+    }
 
-	// remplissage de l'ArrayPane avec les abonnements
-	if (subscribeThemes != null && subscribeThemes.size() != 0)
-	{
-		Iterator it = (Iterator) subscribeThemes.iterator();
-		while (it.hasNext())
-		{
-			Collection path = (Collection) it.next();
-			Iterator j = path.iterator();
-			String rootName = "";
-			String link = "";
-			String delete = "";
-			String spaceId = null;
-            String componentId = null;
-            ComponentInstLight componentInst = null;
-			ArrayLine line = arrayPane.addArrayLine();
-			while (j.hasNext())
-			{
-				NodeDetail node = (NodeDetail) j.next();
-				String name = "";
-				if (link.equals(""))
-				{
-					link = node.getLink();
-					delete = node.getNodePK().getId() + "-" + node.getNodePK().getComponentName();
-				}
-				if (node.getNodePK().getId().equals("0"))
-				{
-					// on est a la racine, on recherche le nom de l'espace et de l'instance du composant
-					componentId = node.getNodePK().getComponentName();
-					if (componentInst == null)
-	              		componentInst = organizationCtrl.getComponentInstLight(componentId);
-					SpaceInstLight spaceInst = organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
-					name = spaceInst.getName() + " > " + componentInst.getLabel();
-				}
-				else
-					name = node.getName(language);
-				if (rootName.length() == 0)
-					rootName = name;
-				else
-					rootName = name + " > " + rootName;
-			}
-			if (!isReadOnly)
-				line.addArrayCellLink(rootName,link);
-			else
-				line.addArrayCellText(rootName);
-			IconPane iconPane = gef.getIconPane();
-			if (!isReadOnly)
-        		line.addArrayCellText("&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"themeCheck\" value=\""+ delete +"\">");
-		}
-	}
+    // remplissage de l'ArrayPane avec les abonnements
+    if (!subscriptions.isEmpty()) {
+      for (NodeSubscriptionBean subscription : subscriptions) {
+        String rootName = "";
+        String link = "";
+        String delete = "";
+        ComponentInstLight componentInst = null;
+        ArrayLine line = arrayPane.addArrayLine();
+        line.addArrayCellText(resource.getString(
+            "SubscriptionType." + subscription.getSubscription().getSubscriber().getType()) +
+            " " + resource.getString(
+            "SubscriptionMethod." + subscription.getSubscription().getSubscriptionMethod()));
+        for (NodeDetail node : subscription.getPath()) {
+          String name;
+          if (link.equals("")) {
+            link = node.getLink();
+            delete = node.getNodePK().getId() + "-" + node.getNodePK().getComponentName() + "-" +
+                subscription.getSubscription().getCreatorId();
+          }
+          if (node.getNodePK().getId().equals("0")) {
+            // on est a la racine, on recherche le nom de l'espace et de l'instance du composant
+            String componentId = node.getNodePK().getComponentName();
+            if (componentInst == null) {
+              componentInst = organizationCtrl.getComponentInstLight(componentId);
+            }
+            SpaceInstLight spaceInst =
+                organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
+            name = spaceInst.getName() + " > " + componentInst.getLabel();
+          } else {
+            name = node.getName(language);
+          }
+          if (rootName.length() == 0) {
+            rootName = name;
+          } else {
+            rootName = name + " > " + rootName;
+          }
+        }
+        if (!isReadOnly) {
+          line.addArrayCellLink(rootName, link);
+        } else {
+          line.addArrayCellText(rootName);
+        }
+        if (!isReadOnly && !subscription.isReadOnly()) {
+          line.addArrayCellText(
+              "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"themeCheck\" value=\"" +
+                  delete + "\">");
+        }
+      }
+    }
 
-	out.println(arrayPane.print());
+    out.println(arrayPane.print());
 
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
+    out.println(frame.printAfter());
+    out.println(window.printAfter());
   %>
 
 </form>

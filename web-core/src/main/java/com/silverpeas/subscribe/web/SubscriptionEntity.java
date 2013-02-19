@@ -24,13 +24,15 @@
 
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.web.Exposable;
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.web.Exposable;
 
-import java.net.URI;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
 
 /**
  * @author ehugonnet
@@ -41,26 +43,30 @@ public class SubscriptionEntity implements Exposable {
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(required = true)
-  private int id = 0;
+  private String id = "0";
   @XmlElement(required = true)
   private String componentId;
+  @XmlElement(defaultValue = "true")
+  private boolean userSubscriber = true;
   @XmlElement(defaultValue = "true")
   private boolean componentSubscription = true;
   @XmlElement()
   private String name;
   @XmlElement()
-  private String userId;
+  private String subscriberId;
   @XmlElement()
-  private String userName;
+  private String subscriberName;
   @XmlTransient
   private static final long serialVersionUID = -621014423925580476L;
 
   static SubscriptionEntity fromSubscription(Subscription subscription) {
     SubscriptionEntity entity = new SubscriptionEntity();
-    entity.id = Integer.parseInt(subscription.getTopic().getId());
-    entity.componentId = subscription.getTopic().getComponentName();
-    entity.componentSubscription = subscription.isComponentSubscription();
-    entity.userId = subscription.getSubscriber();
+    entity.id = subscription.getResource().getId();
+    entity.componentId = subscription.getResource().getPK().getComponentName();
+    entity.userSubscriber = SubscriberType.USER.equals(subscription.getSubscriber().getType());
+    entity.componentSubscription =
+        SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType());
+    entity.subscriberId = subscription.getSubscriber().getId();
     return entity;
   }
 
@@ -83,11 +89,15 @@ public class SubscriptionEntity implements Exposable {
     return componentId;
   }
 
+  public boolean isUserSubscriber() {
+    return userSubscriber;
+  }
+
   public boolean isComponentSubscription() {
     return componentSubscription;
   }
 
-  public int getId() {
+  public String getId() {
     return id;
   }
 
@@ -95,11 +105,11 @@ public class SubscriptionEntity implements Exposable {
     return name;
   }
 
-  public String getUserId() {
-    return userId;
+  public String getSubscriberId() {
+    return subscriberId;
   }
 
-  public String getUserName() {
-    return userName;
+  public String getSubscriberName() {
+    return subscriberName;
   }
 }

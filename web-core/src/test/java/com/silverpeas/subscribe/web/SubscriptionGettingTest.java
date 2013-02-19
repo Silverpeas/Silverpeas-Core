@@ -29,25 +29,28 @@ import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
-import com.silverpeas.util.ForeignPK;
+import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebServiceTest;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import java.util.Collection;
-import java.util.List;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserState;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,23 +59,24 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
   public SubscriptionGettingTest() {
     super("com.silverpeas.subscribe.web", "spring-subscription-webservice.xml");
   }
-  
+
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[] {COMPONENT_ID};
+    return new String[]{COMPONENT_ID};
   }
 
   @Before
   public void setup() {
     assertThat(getTestResources().getMockableSubscriptionService(),
-            is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
+        is(SubscriptionServiceFactory.getFactory().getSubscribeService()));
   }
 
   @Test
   public void getSubscriptionsByANonAuthenticatedUser() {
     WebResource resource = resource();
     try {
-      resource.path(SUBSCRIPTION_RESOURCE_PATH).accept(MediaType.APPLICATION_JSON).get(String.class);
+      resource.path(SUBSCRIPTION_RESOURCE_PATH).accept(MediaType.APPLICATION_JSON)
+          .get(String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -94,18 +98,21 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
-    Collection<ComponentSubscription> subscriptions = Lists.newArrayList(subscription);
-    when((Collection<ComponentSubscription>) mockedSubscriptionService.
-            getUserSubscriptionsByComponent(user.getId(), COMPONENT_ID)).thenReturn(subscriptions);
-    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
-    SubscriptionEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
+    Collection<Subscription> subscriptions = Lists.newArrayList((Subscription) subscription);
+    when(mockedSubscriptionService.
+        getBySubscriberAndComponent(UserSubscriptionSubscriber.from(user.getId()), COMPONENT_ID))
+        .thenReturn(subscriptions);
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    SubscriptionEntity[] entities =
+        resource.path(SUBSCRIPTION_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).get(SubscriptionEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(1));
-    assertThat(entities[0], SubscriptionEntityMatcher.matches((Subscription) subscription));
+    assertThat(entities[0], SubscriptionEntityMatcher.matches(subscription));
   }
-  
-  
+
+
   @Test
   @SuppressWarnings("unchecked")
   public void getComponentSubscribersByAnAuthenticatedUser() throws Exception {
@@ -118,10 +125,18 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     user.setState(UserState.VALID);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    List<String> subscribers = Lists.newArrayList("5", "6", "7", "20");
-    when(mockedSubscriptionService.getSubscribers(new ForeignPK("0", COMPONENT_ID))).thenReturn(subscribers);
-    getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
-    String[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/0").header(HTTP_SESSIONKEY, sessionKey).
+    List<String> subscribers = new ArrayList<String>();
+    subscribers.add("5");
+    subscribers.add("6");
+    subscribers.add("7");
+    subscribers.add("20");
+    when(mockedSubscriptionService
+        .getUserSubscribers(ComponentSubscriptionResource.from(COMPONENT_ID)))
+        .thenReturn(subscribers);
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    String[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/")
+        .header(HTTP_SESSIONKEY, sessionKey).
             accept(MediaType.APPLICATION_JSON).get(String[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(4));

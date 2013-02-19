@@ -25,13 +25,11 @@
 package com.silverpeas.subscribe;
 
 import com.silverpeas.util.Default;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import java.util.Collection;
+
 import javax.inject.Named;
+import java.util.Collection;
 
 /**
- *
  * @author ehugonnet
  */
 
@@ -39,7 +37,7 @@ import javax.inject.Named;
 @Default
 public class MockableSubscriptionService implements SubscriptionService {
   private SubscriptionService realService;
-  
+
   public void setImplementation(SubscriptionService service) {
     this.realService = service;
   }
@@ -55,34 +53,76 @@ public class MockableSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public void unsubscribe(String userId) {
-    realService.unsubscribe(userId);
+  public void unsubscribe(SubscriptionSubscriber subscriber) {
+    realService.unsubscribe(subscriber);
   }
 
   @Override
-  public void unsubscribeByPath(NodePK node, String path) {
-    realService.unsubscribeByPath(node, path);
+  public void unsubscribe(final SubscriptionResource resource) {
+    realService.unsubscribe(resource);
   }
 
   @Override
-  public Collection<? extends Subscription> getUserSubscriptions(String userId) {
-    return realService.getUserSubscriptions(userId);
+  public void unsubscribe(final Collection<? extends SubscriptionResource> resources) {
+    realService.unsubscribe(resources);
   }
 
   @Override
-  public Collection<? extends Subscription> getUserSubscriptionsByComponent(String userId,
-          String componentName) {
-    return realService.getUserSubscriptionsByComponent(userId, componentName);
+  public boolean existsSubscription(final Subscription subscription) {
+    return realService.existsSubscription(subscription);
   }
 
   @Override
-  public Collection<String> getSubscribers(WAPrimaryKey pk) {
-    return realService.getSubscribers(pk);
+  public Collection<Subscription> getByResource(final SubscriptionResource resource) {
+    return realService.getByResource(resource);
   }
 
   @Override
-  public boolean isSubscribedToComponent(String user, String componentName) {
-    return realService.isSubscribedToComponent(user, componentName);
+  public Collection<Subscription> getByUserSubscriber(final String userId) {
+    return realService.getByUserSubscriber(userId);
   }
-  
+
+  @Override
+  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber) {
+    return realService.getBySubscriber(subscriber);
+  }
+
+  @Override
+  public Collection<Subscription> getBySubscriberAndComponent(
+      final SubscriptionSubscriber subscriber, final String instanceId) {
+    return realService.getBySubscriberAndComponent(subscriber, instanceId);
+  }
+
+  @Override
+  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+      SubscriptionResource resource) {
+    return realService.getBySubscriberAndResource(subscriber, resource);
+  }
+
+  @Override
+  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource) {
+    return realService.getSubscribers(resource);
+  }
+
+  @Override
+  public Collection<String> getUserSubscribers(SubscriptionResource resource) {
+    return realService.getUserSubscribers(resource);
+  }
+
+  @Override
+  public Collection<SubscriptionSubscriber> getSubscribers(
+      final Collection<? extends SubscriptionResource> resources) {
+    return realService.getSubscribers(resources);
+  }
+
+  @Override
+  public boolean isSubscriberSubscribedToResource(final SubscriptionSubscriber subscriber,
+      final SubscriptionResource resource) {
+    return realService.isSubscriberSubscribedToResource(subscriber, resource);
+  }
+
+  @Override
+  public boolean isUserSubscribedToResource(String user, SubscriptionResource resource) {
+    return realService.isUserSubscribedToResource(user, resource);
+  }
 }

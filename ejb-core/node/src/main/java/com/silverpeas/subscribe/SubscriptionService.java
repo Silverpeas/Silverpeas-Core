@@ -24,9 +24,6 @@
 
 package com.silverpeas.subscribe;
 
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
-
 import java.util.Collection;
 
 /**
@@ -36,63 +33,141 @@ import java.util.Collection;
 public interface SubscriptionService {
 
   /**
-   * Subscribe to a specific node
+   * Register a subscription. The informations of creator identifier and creation date are ignored.
+   * If subscription already exists, nothing is registered.
    * @param subscription
    */
   public void subscribe(Subscription subscription);
 
   /**
-   * Method declaration
+   * Unregister a subscription.
    * @param subscription
    */
   public void unsubscribe(Subscription subscription);
 
   /**
-   * Method declaration
-   * @param userId
-   * @see
+   * Unregister all subscription in relation to the given subscriber. If the given subscriber is a
+   * user, no subscription by a group is deleted even if the user is part of the group
+   * @param subscriber
    */
-  public void unsubscribe(String userId);
+  public void unsubscribe(SubscriptionSubscriber subscriber);
 
   /**
-   * Method declaration
-   * @param node
-   * @param path
+   * Unregister all subscriptions in relation to the given resource.
+   * If given resource is a node, please notice that subscriptions of linked nodes (sub nodes) are
+   * not deleted
+   * @param resource the aimed resource
    * @see
    */
-  public void unsubscribeByPath(NodePK node, String path);
+  public void unsubscribe(SubscriptionResource resource);
 
   /**
-   * Method declaration
-   * @param userId
+   * Unregister all subscriptions in relation to the given resources.
+   * If it exists one or several resources of nodes, please notice that subscriptions of linked
+   * nodes (sub nodes) are not deleted
+   * @param resources the aimed resources
+   * @see
+   */
+  public void unsubscribe(Collection<? extends SubscriptionResource> resources);
+
+  /**
+   * Checks if the given subscription already exists.
+   * If the given subscription subscriber is a user but that this user is subscribed only through
+   * a group subscription, the method will return false.
+   * @param subscription
    * @return
-   * @see
    */
-  public Collection<? extends Subscription> getUserSubscriptions(String userId);
+  public boolean existsSubscription(Subscription subscription);
 
   /**
-   * Method declaration
+   * Gets all subscriptions in relation to the given resource.
+   * @param resource
+   * @return list of subscriptions
+   */
+  public Collection<Subscription> getByResource(SubscriptionResource resource);
+
+  /**
+   * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a user.
    * @param userId
-   * @param componentName
-   * @return
-   * @see
+   * @return list of subscriptions of users that have subscribed themselves,
+   *         of users that are subscribed through a subscribed group and of users that have been
+   *         subscribed by an other user
    */
-  public Collection<? extends Subscription> getUserSubscriptionsByComponent(String userId,
-      String componentName);
+  public Collection<Subscription> getByUserSubscriber(String userId);
 
   /**
-   * Method declaration
-   * @param pk
-   * @return a Collection of userId
-   * @see
+   * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber.
+   * @param subscriber
+   * @return list of subscriptions
    */
-  public Collection<String> getSubscribers(WAPrimaryKey pk);
+  public Collection<Subscription> getBySubscriber(SubscriptionSubscriber subscriber);
 
   /**
+   * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
+   * and a component (NODE or COMPONENT resources).
+   * @param subscriber
+   * @param instanceId
+   * @return list of subscriptions
+   */
+  public Collection<Subscription> getBySubscriberAndComponent(SubscriptionSubscriber subscriber,
+      String instanceId);
+
+  /**
+   * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a subscriber
+   * and a resource.
+   * @param subscriber
+   * @param resource
+   * @return list of subscriptions
+   */
+  public Collection<Subscription> getBySubscriberAndResource(SubscriptionSubscriber subscriber,
+      SubscriptionResource resource);
+
+  /**
+   * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
+   * If a group subscriber is returned into result, caller has to perform it. User subscribers
+   * depending to a group subscription are not returned.
+   * @param resource
+   * @return list of subscription subscribers
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(SubscriptionResource resource);
+
+  /**
+   * Gets all users that are subscribed to a resource.
+   * If user and/or group subscribers are required, please use {@link
+   * SubscriptionService#getSubscribers(SubscriptionResource)}.
+   * @param resource the aimed resource
+   * @return identifiers of users that have subscribed themselves, of users that are subscribed
+   *         through a subscribed group and of users that have been subscribed by an other user
+   */
+  public Collection<String> getUserSubscribers(SubscriptionResource resource);
+
+  /**
+   * Gets all subscribers (USER and/or GROUP) that are subscribed to given resources.
+   * If a group subscriber is returned into result, caller has to perform it. User subscribers
+   * depending to a group subscription are not returned.
+   * @param resources
+   * @return list of subscription subscribers
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(
+      Collection<? extends SubscriptionResource> resources);
+
+  /**
+   * Indicates if a subscriber is subscribed to a resource.
+   * If user subscriber is searched but that the user is subscribed only through a group
+   * subscription, the method will return false.
+   * @param subscriber
+   * @param resource
+   * @return true if the given subscriber is subscribed to given resource
+   */
+  public boolean isSubscriberSubscribedToResource(SubscriptionSubscriber subscriber,
+      SubscriptionResource resource);
+
+  /**
+   * Indicates if a user is subscribed to a resource.
    * @param user
-   * @param componentName
-   * @return
+   * @param resource
+   * @return true if user has subscribed himself, or if user is subscribed through a subscribed
+   *         group or if user has been subscribed by an other user
    */
-  public boolean isSubscribedToComponent(String user, String componentName);
-
+  public boolean isUserSubscribedToResource(String user, SubscriptionResource resource);
 }

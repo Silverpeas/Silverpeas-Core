@@ -25,6 +25,8 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
@@ -49,9 +51,13 @@ public class SubscriptionEntityMatcher extends BaseMatcher<SubscriptionEntity> {
     boolean match = false;
     if (item instanceof SubscriptionEntity) {
       SubscriptionEntity actual = (SubscriptionEntity) item;
-      match = subscription.isComponentSubscription() == actual.isComponentSubscription()
-              && subscription.getTopic().getId().equals(String.valueOf(actual.getId())) && subscription.
-              getSubscriber().equals(actual.getUserId()) && subscription.getTopic().getComponentName().
+      match = SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType()) ==
+          actual.isComponentSubscription() &&
+          subscription.getResource().getId().equals(actual.getId()) && subscription.
+          getSubscriber().getId().equals(actual.getSubscriberId()) &&
+          SubscriberType.USER.equals(subscription.
+              getSubscriber().getType()) == actual.isUserSubscriber() &&
+          subscription.getResource().getPK().getComponentName().
               equals(actual.getComponentId());
     }
     return match;

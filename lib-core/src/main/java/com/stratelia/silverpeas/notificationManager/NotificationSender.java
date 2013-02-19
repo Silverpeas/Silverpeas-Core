@@ -150,14 +150,11 @@ public class NotificationSender implements java.io.Serializable {
           SilverpeasTemplate template = templates.get(language);
           if (template != null) {
             try {
-              String receiver_users = addReceiverUsers(getUserSet(metaData, settings),
-                  getGroupSet(metaData, settings), language, settings);
+              String receiver_users = addReceiverUsers(getUserSet(metaData, settings));
               if (StringUtil.isDefined(receiver_users)) {
                 template.setAttribute(notification_receiver_users.toString(), receiver_users);
               }
-              String receiver_groups =
-                  addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
-                  settings), language, settings);
+              String receiver_groups = addReceiverGroups(getGroupSet(metaData,settings));
               if (StringUtil.isDefined(receiver_groups)) {
                 template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
               }
@@ -235,9 +232,7 @@ public class NotificationSender implements java.io.Serializable {
     return groupsSet;
   }
 
-  private String addReceiverUsers(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
-      String language,
-      ResourceLocator settings) {
+  private String addReceiverUsers(Set<UserRecipient> usersSet) {
     OrganizationController orgaController = new OrganizationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
@@ -253,8 +248,7 @@ public class NotificationSender implements java.io.Serializable {
     return users.toString();
   }
 
-  private String addReceiverGroups(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
-      String language, ResourceLocator settings) {
+  private String addReceiverGroups(Set<GroupRecipient> groupsSet) {
     OrganizationController orgaController = new OrganizationController();
     StringBuilder groups = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {

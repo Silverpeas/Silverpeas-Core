@@ -25,17 +25,25 @@
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.SubscriptionResource;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,23 +54,43 @@ import java.util.Set;
  */
 public class SubscriptionDao {
 
-  public static final String ADD_SUBSCRIPTION =
-      "INSERT INTO subscribe (actorId, nodeId, space, componentName) VALUES (?, ?, ?, ? )";
-  public static final String REMOVE_SUBSCRIPTION =
-      "DELETE FROM subscribe WHERE actorId = ? AND nodeId = ? AND componentName = ?";
-  public static final String REMOVE_USER_SUBSCRIPTIONS = "DELETE FROM subscribe WHERE actorId = ?";
-  public static final String SELECT_SUBSCRIPTIONS_BY_USER =
-      "SELECT nodeId, componentName, space FROM subscribe WHERE actorId = ?";
-  public static final String SELECT_SUBSCRIBERS_FOR_NODE =
-      "SELECT actorId FROM subscribe WHERE nodeId = ? AND componentName = ?";
-  public static final String SELECT_NODE_FOR_COMPONENT_BY_USER =
-      "SELECT nodeId, space FROM subscribe WHERE actorId = ? AND componentName = ?";
-  public static final String REMOVE_SUBSCRIPTIONS_BY_PATH =
-      "DELETE FROM subscribe WHERE componentName = ? AND nodeId IN ( "
-      + "	SELECT nodeId FROM sb_node_node WHERE nodePath LIKE ? AND instanceId = ?)";
+  private static final String SUBSCRIBE_COLUMNS =
+      "subscriberId, subscriberType, subscriptionMethod, resourceId, resourceType, space, " +
+          "instanceId, creatorId, creationDate";
 
-  SubscriptionDao() {
-  }
+  public static final String ADD_SUBSCRIPTION =
+      "INSERT INTO subscribe (" + SUBSCRIBE_COLUMNS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+  public static final String REMOVE_SUBSCRIPTION =
+      "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod" +
+          " = ? AND resourceId = ? AND resourceType = ? AND instanceId = ?";
+
+  public static final String REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER =
+      "DELETE FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
+
+  public static final String REMOVE_SUBSCRIPTIONS_BY_RESOURCE =
+      "DELETE FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
+
+  public static final String SELECT_SUBSCRIBERS_BY_RESOURCE =
+      "SELECT subscriberId, subscriberType FROM subscribe " +
+          "WHERE resourceId = ? AND resourceType = ? AND instanceId = ?";
+
+  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION = "SELECT " + SUBSCRIBE_COLUMNS +
+      " FROM subscribe WHERE subscriberId = ? AND subscriberType = ? AND subscriptionMethod = ? " +
+      "AND resourceId = ? AND resourceType = ? AND instanceId = ?";
+
+  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER = "SELECT " + SUBSCRIBE_COLUMNS +
+      " FROM subscribe WHERE subscriberId = ? AND subscriberType = ?";
+
+  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT =
+      SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER + " AND instanceId = ?";
+
+  public static final String SELECT_SUBSCRIPTIONS_BY_RESOURCE = "SELECT " + SUBSCRIBE_COLUMNS +
+      " FROM subscribe WHERE instanceId = ? AND resourceId = ? AND resourceType = ?";
+
+  public static final String SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE =
+      SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER +
+          "  AND instanceId = ? AND resourceId = ? AND resourceType = ?";
 
   /**
    * Method declaration
@@ -71,15 +99,30 @@ public class SubscriptionDao {
    * @throws SQLException
    * @see
    */
-  public void add(Connection con, Subscription subscription) throws SQLException {
+  public void add(Connection con, Subscription subscription) throws SQLException, AssertionError {
     SilverTrace.info("subscribe", "SubscriptionDao.add", "root.MSG_GEN_ENTER_METHOD");
+
+    if (SubscriberType.UNKNOWN.equals(subscription.getSubscriber().getType()) ||
+        SubscriptionMethod.UNKNOWN.equals(subscription.getSubscriptionMethod()) ||
+        SubscriptionResourceType.UNKNOWN.equals(subscription.getResource().getType())) {
+      throw new AssertionError(
+          "Subscriber type, subscription method or resource type is unknown ...");
+    }
+
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(ADD_SUBSCRIPTION);
-      prepStmt.setString(1, subscription.getSubscriber());
-      prepStmt.setInt(2, Integer.parseInt(subscription.getTopic().getId()));
-      prepStmt.setString(3, subscription.getTopic().getSpace());
-      prepStmt.setString(4, subscription.getTopic().getComponentName());
+      prepStmt.setString(1, subscription.getSubscriber().getId());
+      prepStmt.setString(2, subscription.getSubscriber().getType().getName());
+      prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
+      prepStmt.setString(4, subscription.getResource().getId());
+      prepStmt.setString(5, subscription.getResource().getType().getName());
+      prepStmt.setString(6, subscription.getResource().getPK().getSpace());
+      prepStmt.setString(7, subscription.getResource().getPK().getInstanceId());
+      prepStmt.setString(8, subscription.getCreatorId());
+      prepStmt.setTimestamp(9, new Timestamp(
+          subscription.getCreationDate() == null ? DateUtil.getNow().getTime() :
+              subscription.getCreationDate().getTime()));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -98,9 +141,12 @@ public class SubscriptionDao {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTION);
-      prepStmt.setString(1, subscription.getSubscriber());
-      prepStmt.setInt(2, Integer.parseInt(subscription.getTopic().getId()));
-      prepStmt.setString(3, subscription.getTopic().getComponentName());
+      prepStmt.setString(1, subscription.getSubscriber().getId());
+      prepStmt.setString(2, subscription.getSubscriber().getType().getName());
+      prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
+      prepStmt.setString(4, subscription.getResource().getId());
+      prepStmt.setString(5, subscription.getResource().getType().getName());
+      prepStmt.setString(6, subscription.getResource().getPK().getInstanceId());
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -110,161 +156,345 @@ public class SubscriptionDao {
   /**
    * Method declaration
    * @param con
-   * @param userId
+   * @param subscriber
    * @throws SQLException
    * @see
    */
-  public void remove(Connection con, String userId) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.removeByUser",
-        "root.MSG_GEN_ENTER_METHOD");
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(REMOVE_USER_SUBSCRIPTIONS);
-      prepStmt.setString(1, userId);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param componentName
-   * @param path
-   * @throws SQLException
-   * @see
-   */
-  public void removeByNodePath(Connection con, String componentName, String path) throws
-      SQLException {
-    String likePath = path + '%';
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_PATH);
-      prepStmt.setString(1, componentName);
-      prepStmt.setString(2, likePath);
-      prepStmt.setString(3, componentName);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param userId
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  public Collection<? extends Subscription> getSubscriptionsBySubscriber(Connection con,
-      String userId) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getNodePKsByActor", "root.MSG_GEN_ENTER_METHOD");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_USER);
-      prepStmt.setString(1, userId);
-      rs = prepStmt.executeQuery();
-      List<NodeSubscription> list = new ArrayList<NodeSubscription>();
-      while (rs.next()) {
-        NodePK nodePK = new NodePK(String.valueOf(rs.getInt("nodeId")), rs.getString("space"), rs.
-            getString("componentName"));
-        list.add(new NodeSubscription(userId, nodePK));
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param userId
-   * @param componentName
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  public Collection<? extends Subscription> getSubscriptionsBySubscriberAndComponent(
-      Connection con,
-      String userId,
-      String componentName) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getNodePKsBySubscriberComponent",
-        "root.MSG_GEN_ENTER_METHOD");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_NODE_FOR_COMPONENT_BY_USER);
-      prepStmt.setString(1, userId);
-      prepStmt.setString(2, componentName);
-      rs = prepStmt.executeQuery();
-      List<NodeSubscription> list = new ArrayList<NodeSubscription>();
-      while (rs.next()) {
-        NodePK nodePK =
-            new NodePK(String.valueOf(rs.getInt("nodeId")), rs.getString("space"), componentName);
-        list.add(new NodeSubscription(userId, nodePK));
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-  }
-
-  /**
-   * Method declaration
-   * @param con
-   * @param key
-   * @return
-   * @throws SQLException
-   * @see
-   */
-  public Collection<String> getSubscribers(Connection con, WAPrimaryKey key) throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.getActorPKsByNodePK",
-        "root.MSG_GEN_ENTER_METHOD");
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_FOR_NODE);
-      prepStmt.setInt(1, Integer.parseInt(key.getId()));
-      prepStmt.setString(2, key.getComponentName());
-      rs = prepStmt.executeQuery();
-      List<String> list = new ArrayList<String>();
-      while (rs.next()) {
-        list.add(rs.getString(1));
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-  }
-
-  public Collection<String> getSubscribers(Connection con, Collection<? extends WAPrimaryKey> pks)
+  public void removeBySubscriber(Connection con, SubscriptionSubscriber subscriber)
       throws SQLException {
-    Set<String> result = new HashSet<String>();
-    for (WAPrimaryKey pk : pks) {
-      findSubscribers(con, pk, result);
+    SilverTrace
+        .info("subscribe", "SubscriptionDao.removeBySubscriber", "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER);
+      prepStmt.setString(1, subscriber.getId());
+      prepStmt.setString(2, subscriber.getType().getName());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @throws SQLException
+   * @see
+   */
+  public void removeByResource(Connection con, SubscriptionResource resource) throws SQLException {
+    PreparedStatement prepStmt = null;
+    try {
+      prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_RESOURCE);
+      prepStmt.setString(1, resource.getPK().getInstanceId());
+      prepStmt.setString(2, resource.getId());
+      prepStmt.setString(3, resource.getType().getName());
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param subscription
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
+    SilverTrace
+        .info("subscribe", "SubscriptionDao.existsSubscription", "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIPTION);
+      prepStmt.setString(1, subscription.getSubscriber().getId());
+      prepStmt.setString(2, subscription.getSubscriber().getType().getName());
+      prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
+      prepStmt.setString(4, subscription.getResource().getId());
+      prepStmt.setString(5, subscription.getResource().getType().getName());
+      prepStmt.setString(6, subscription.getResource().getPK().getInstanceId());
+      rs = prepStmt.executeQuery();
+      return rs.next();
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param subscriber
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public Collection<Subscription> getSubscriptionsBySubscriber(Connection con,
+      SubscriptionSubscriber subscriber) throws SQLException {
+    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriber",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER);
+      prepStmt.setString(1, subscriber.getId());
+      prepStmt.setString(2, subscriber.getType().getName());
+      rs = prepStmt.executeQuery();
+      return toList(rs);
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param subscriber
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public Collection<Subscription> getSubscriptionsBySubscriberAndComponent(Connection con,
+      SubscriptionSubscriber subscriber, String instanceId) throws SQLException {
+    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndComponent",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_COMPONENT);
+      prepStmt.setString(1, subscriber.getId());
+      prepStmt.setString(2, subscriber.getType().getName());
+      prepStmt.setString(3, instanceId);
+      rs = prepStmt.executeQuery();
+      return toList(rs);
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param resource
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public Collection<Subscription> getSubscriptionsByResource(Connection con,
+      SubscriptionResource resource) throws SQLException {
+    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsByResource",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_RESOURCE);
+      prepStmt.setString(1, resource.getPK().getInstanceId());
+      prepStmt.setString(2, resource.getId());
+      prepStmt.setString(3, resource.getType().getName());
+      rs = prepStmt.executeQuery();
+      return toList(rs);
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param subscriber
+   * @param resource
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public Collection<Subscription> getSubscriptionsBySubscriberAndResource(Connection con,
+      SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
+    SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsBySubscriberAndResource",
+        "root.MSG_GEN_ENTER_METHOD");
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE);
+      prepStmt.setString(1, subscriber.getId());
+      prepStmt.setString(2, subscriber.getType().getName());
+      prepStmt.setString(3, resource.getPK().getInstanceId());
+      prepStmt.setString(4, resource.getId());
+      prepStmt.setString(5, resource.getType().getName());
+      rs = prepStmt.executeQuery();
+      return toList(rs);
+    } finally {
+      DBUtil.close(rs, prepStmt);
+    }
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param resource
+   * @return
+   * @throws SQLException
+   * @see
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
+      SubscriptionResource resource) throws SQLException {
+    return getSubscribers(con, Collections.singletonList(resource));
+  }
+
+  /**
+   * Method declaration
+   * @param con
+   * @param resources
+   * @return
+   * @throws SQLException
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
+      Collection<? extends SubscriptionResource> resources) throws SQLException {
+    SilverTrace.info("subscribe", "SubscriptionDao.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
+    Set<SubscriptionSubscriber> result = new HashSet<SubscriptionSubscriber>();
+    for (SubscriptionResource resource : resources) {
+      findSubscribers(con, resource, result);
     }
     return result;
   }
 
-  void findSubscribers(Connection con, WAPrimaryKey pk, Collection<String> result)
-      throws SQLException {
-    SilverTrace.info("subscribe", "SubscriptionDao.findSubscribers", "root.MSG_GEN_ENTER_METHOD");
+  /**
+   * Centralied method.
+   * @param con
+   * @param resource
+   * @param result
+   * @throws SQLException
+   */
+  private void findSubscribers(Connection con, SubscriptionResource resource,
+      Collection<SubscriptionSubscriber> result) throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_FOR_NODE);
-      prepStmt.setInt(1, Integer.parseInt(pk.getId()));
-      prepStmt.setString(2, pk.getComponentName());
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_BY_RESOURCE);
+      prepStmt.setString(1, resource.getId());
+      prepStmt.setString(2, resource.getType().getName());
+      prepStmt.setString(3, resource.getPK().getInstanceId());
       rs = prepStmt.executeQuery();
+      SubscriptionSubscriber subscriber;
       while (rs.next()) {
-        result.add(rs.getString(1));
+        subscriber = createSubscriberInstance(rs.getString("subscriberId"),
+            SubscriberType.from(rs.getString("subscriberType")));
+        if (subscriber != null) {
+          result.add(subscriber);
+        }
       }
     } finally {
       DBUtil.close(rs, prepStmt);
     }
+  }
+
+  /**
+   * Transforms a result set into a subscription collection
+   * @param rs
+   * @return
+   * @throws SQLException
+   */
+  private Collection<Subscription> toList(ResultSet rs) throws SQLException {
+    List<Subscription> list = new ArrayList<Subscription>();
+    Subscription subscription;
+    while (rs.next()) {
+      subscription = createSubscriptionInstance(rs);
+      if (subscription != null) {
+        list.add(subscription);
+      }
+    }
+    return list;
+  }
+
+  /**
+   * Create a subscription from a result set.
+   * @param rs the result set
+   * @return null if it is not possible to instance a subscription object.
+   * @throws SQLException
+   */
+  private Subscription createSubscriptionInstance(ResultSet rs) throws SQLException {
+    SubscriberType subscriberType = SubscriberType.from(rs.getString("subscriberType"));
+    SubscriptionSubscriber subscriber =
+        createSubscriberInstance(rs.getString("subscriberId"), subscriberType);
+    SubscriptionMethod subscriptionMethod =
+        SubscriptionMethod.from(rs.getString("subscriptionMethod"));
+    SubscriptionResourceType resourceType =
+        SubscriptionResourceType.from(rs.getString("resourceType"));
+    SubscriptionResource resource =
+        createResourceInstance(rs.getString("resourceId"), resourceType, rs.getString("space"),
+            rs.getString("instanceId"));
+
+    // Checking that data are not corrupted
+    if (SubscriptionMethod.UNKNOWN.equals(subscriptionMethod) || subscriber == null ||
+        resource == null) {
+      SilverTrace.warn("subscribe", "SubscriptionDao.createFrom",
+          "EX_SUBSCRIBE_TABLE_CONTAINS_CORRUPTED_DATA");
+      return null;
+    }
+
+    String creatorId = rs.getString("creatorId");
+    Date creationDate = rs.getTimestamp("creationDate");
+
+    final Subscription subscription;
+    switch (resourceType) {
+      case NODE:
+        subscription =
+            new NodeSubscription(subscriber, resource, subscriptionMethod, creatorId, creationDate);
+        break;
+      case COMPONENT:
+        subscription =
+            new ComponentSubscription(subscriber, resource, subscriptionMethod, creatorId,
+                creationDate);
+        break;
+      default:
+        throw new AssertionError("There is no reason to be here !");
+    }
+    return subscription;
+  }
+
+  /**
+   * Create a resource.
+   * @param resourceId identifier of the aimed resource
+   * @param resourceType type of the aimed resource
+   * @param space space from which comes the resource
+   * @param instanceId component instance identifier from which comes the resource
+   * @return null resource type is unknown.
+   */
+  private SubscriptionResource createResourceInstance(String resourceId,
+      SubscriptionResourceType resourceType, String space, String instanceId) {
+    final SubscriptionResource resource;
+    switch (resourceType) {
+      case NODE:
+        resource = new NodeSubscriptionResource(new NodePK(resourceId, space, instanceId));
+        break;
+      case COMPONENT:
+        resource = new ComponentSubscriptionResource(instanceId);
+        break;
+      default:
+        resource = null;
+    }
+    return resource;
+  }
+
+  /**
+   * Create a subscriber.
+   * @param subscriberId identifier of a subscriber
+   * @param subscriberType type of a subscriber
+   * @return null if subscriber type is unknown.
+   */
+  private SubscriptionSubscriber createSubscriberInstance(String subscriberId,
+      SubscriberType subscriberType) {
+    final SubscriptionSubscriber subscriber;
+    switch (subscriberType) {
+      case USER:
+        subscriber = new UserSubscriptionSubscriber(subscriberId);
+        break;
+      case GROUP:
+        subscriber = new GroupSubscriptionSubscriber(subscriberId);
+        break;
+      default:
+        subscriber = null;
+    }
+    return subscriber;
   }
 }

@@ -92,7 +92,6 @@ public class DBUtil {
     synchronized (DBUtil.class) {
       if (connectionForTest != null) {
         instance = new DBUtil(connectionForTest);
-        
       }
     }
     return instance;
