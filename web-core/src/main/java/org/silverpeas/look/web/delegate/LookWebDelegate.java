@@ -125,6 +125,16 @@ public class LookWebDelegate {
         SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(space.getShortId());
     return wallpaper == null ? "" : wallpaper;
   }
+  
+  /**
+   * Gets the right URL CSS
+   * @param spaceId
+   * @return
+   */
+  public String getCSS(final SpaceInstLight space) {
+    final String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(space.getShortId());
+    return css == null ? "" : css;
+  }
 
   /**
    * Gets the user display menu behaviour
