@@ -1822,11 +1822,13 @@ public final class Admin {
       // reset caches
       cache.resetSpaceInst();
       TreeCache.removeSpace(shortSpaceId);
-      TreeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
+      TreeCache.setSubspaces(shortOldSpaceId,
+          spaceManager.getSubSpaces(domainDriverManager, shortOldSpaceId));
       addSpaceInTreeCache(spaceManager.getSpaceInstLightById(domainDriverManager, shortSpaceId),
           false);
       if (!moveOnTop) {
-        TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
+        TreeCache.setSubspaces(shortFatherId,
+            spaceManager.getSubSpaces(domainDriverManager, shortFatherId));
       }
 
     } catch (Exception e) {
@@ -4152,17 +4154,12 @@ public final class Admin {
     }
   }
 
-  public List<SpaceInstLight> getSubSpaces(String spaceId)
-      throws AdminException {
-    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = "
-        + spaceId);
-    try {
-      return spaceManager.getSubSpaces(getDriverSpaceId(spaceId));
-    } catch (Exception e) {
-      throw new AdminException("Admin.getSubSpaces",
-          SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES",
-          "spaceId = " + spaceId, e);
-    }
+  public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
+    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = " +
+        spaceId);
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    return spaceManager.getSubSpaces(domainDriverManager, getDriverSpaceId(spaceId));
   }
 
   /**
