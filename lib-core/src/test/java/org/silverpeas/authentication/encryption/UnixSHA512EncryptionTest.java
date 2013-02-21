@@ -1,8 +1,8 @@
 package org.silverpeas.authentication.encryption;
 
-import org.apache.commons.codec.digest.Crypt;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.util.Charsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -18,8 +18,8 @@ public class UnixSHA512EncryptionTest {
   static final String MD5_DIGEST = "$1$saltstring$cV2aCPNGeOcei00Op3/Oo/";
 
   static final String password = "Hello World!";
-  static final byte[] salt = "saltstring".getBytes();
-  static final byte[] saltWithRounds = "rounds=10000$saltstring".getBytes();
+  static final byte[] salt = "saltstring".getBytes(Charsets.UTF_8);
+  static final byte[] saltWithRounds = "rounds=10000$saltstring".getBytes(Charsets.UTF_8);
   static final byte[] emptySalt = new byte[0];
 
   private UnixSHA512Encryption encryption;
