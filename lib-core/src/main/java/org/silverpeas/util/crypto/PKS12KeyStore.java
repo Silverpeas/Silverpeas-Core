@@ -24,7 +24,6 @@
 
 package org.silverpeas.util.crypto;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.FileInputStream;
@@ -57,6 +56,9 @@ public class PKS12KeyStore {
   private PrivateKey privatekey = null;
   private PublicKey publickey = null;
 
+  private static final String LOAD_FAILURE = "The load of the public and secret keys, and of the" +
+      " X509 certificate failed!";
+
   /**
    * Constructs a new PKS#12 key store from the specified key store file.
    *
@@ -79,8 +81,7 @@ public class PKS12KeyStore {
       try {
         ks.load(new FileInputStream(p12FilePath), password.toCharArray());
       } catch (Exception ex) {
-        throw new CryptoException("PKS12KeyStore.init", SilverpeasException.ERROR,
-            "util.KEYS_CREATION_FAILED", ex);
+        throw new CryptoException(LOAD_FAILURE, ex);
       }
     }
 
@@ -104,11 +105,9 @@ public class PKS12KeyStore {
       cert = (X509Certificate) ks.getCertificate(alias);
       publickey = ks.getCertificate(alias).getPublicKey();
     } catch (NoSuchAlgorithmException ex) {
-      throw new CryptoException("PKS12KeyStore.init", SilverpeasException.ERROR,
-          "util.KEYS_CREATION_FAILED", ex);
+      throw new CryptoException(LOAD_FAILURE, ex);
     } catch (UnrecoverableEntryException ex) {
-      throw new CryptoException("PKS12KeyStore.init", SilverpeasException.ERROR,
-          "util.KEYS_CREATION_FAILED", ex);
+      throw new CryptoException(LOAD_FAILURE, ex);
     }
   }
 

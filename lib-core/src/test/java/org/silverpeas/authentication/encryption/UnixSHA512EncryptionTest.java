@@ -1,5 +1,6 @@
 package org.silverpeas.authentication.encryption;
 
+import org.apache.commons.codec.digest.Crypt;
 import org.junit.Before;
 import org.junit.Test;
 

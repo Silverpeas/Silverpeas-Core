@@ -29,7 +29,7 @@ import java.security.Key;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * A representation of a symmetric key used in the BLowfish cipher.
+ * A representation of a symmetric key used in the Blowfish cipher.
  * It is a wrapper of the actual key it generates from a plain text representation of the key.
  */
 public class BlowfishKey implements Key {
@@ -48,7 +48,7 @@ public class BlowfishKey implements Key {
   }
 
   /**
-   * Constructs a new symmetric key for the Blowfish cypher from the specified key code.
+   * Constructs a new symmetric key for the Blowfish cypher from the specified key code in text.
    * @param keyCode the code of the key.
    */
   public BlowfishKey(String keyCode) {
@@ -57,6 +57,17 @@ public class BlowfishKey implements Key {
       key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
     }
   }
+
+  /**
+    * Constructs a new symmetric key for the Blowfish cypher from the specified binary key code.
+    * @param keyCode the code of the key.
+    */
+   public BlowfishKey(byte[] keyCode) {
+     if (key == null) {
+       byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
+       key = new SecretKeySpec(keybyte, CryptographicAlgorithmName.Blowfish.name());
+     }
+   }
 
   private final byte[] getKeyBytes(String keyCode) {
     byte[] keybyte;

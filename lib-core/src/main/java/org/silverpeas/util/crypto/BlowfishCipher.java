@@ -65,49 +65,51 @@ public class BlowfishCipher implements Cipher {
   }
 
   @Override
-  public String encrypt(String data, String keyCode) throws CryptoException {
+  public byte[] encrypt(String data, CipherKey keyCode) throws CryptoException {
     SilverTrace.info("util", "BlowfishCipher.encrypt", "root.MSG_GEN_ENTER_METHOD",
         "stringUnCrypted = " + data);
     byte[] cipherText;
     try {
       byte[] cipherBytes = data.getBytes();
-      BlowfishKey key = new BlowfishKey(keyCode);
+      BlowfishKey key;
       if (keyCode == null) {
         key = this.getSymmetricKey();
+      } else {
+        key = new BlowfishKey(keyCode.getKey());
       }
       synchronized (cipher) {
         cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, key);
         cipherText = cipher.doFinal(cipherBytes);
       }
     } catch (Exception e) {
-      throw new CryptoException("SilverCryptFactory.encrypt", SilverpeasException.ERROR,
-          "util.CRYPT_FAILED", e);
+      throw new CryptoException(CryptoException.ENCRYPTION_FAILURE, e);
     }
     SilverTrace.info("util", "BlowfishCipher.encrypt", "root.MSG_GEN_EXIT_METHOD",
         "cipherText = " + Arrays.toString(cipherText));
-    return new String(cipherText, Charsets.UTF_8);
+    return cipherText;
   }
 
   @Override
-  public String decrypt(String cipher, String keyCode) throws CryptoException {
+  public String decrypt(byte[] cipher, CipherKey keyCode) throws CryptoException {
     SilverTrace
         .info("util", "BlowfishCipher.decrypt", "root.MSG_GEN_ENTER_METHOD");
     String uncrypted;
     byte[] newPlainText;
     try {
-      BlowfishKey key = new BlowfishKey(keyCode);
+      BlowfishKey key;
       if (keyCode == null) {
         key = this.getSymmetricKey();
+      } else {
+        key = new BlowfishKey(keyCode.getKey());
       }
       synchronized (cipher) {
         this.cipher.init(javax.crypto.Cipher.DECRYPT_MODE, key);
-        newPlainText = this.cipher.doFinal(cipher.getBytes(Charsets.UTF_8));
+        newPlainText = this.cipher.doFinal(cipher);
       }
       uncrypted = new String(newPlainText, Charsets.UTF_8);
 
     } catch (Exception e) {
-      throw new CryptoException("SilverCryptFactory.decrypt", SilverpeasException.ERROR,
-          "util.UNCRYPT_FAILED", e);
+      throw new CryptoException(CryptoException.DECRYPTION_FAILURE, e);
     }
     SilverTrace.info("util", "BlowfishCipher.decrypt",
         "root.MSG_GEN_EXIT_METHOD", "uncrypted = " + uncrypted);

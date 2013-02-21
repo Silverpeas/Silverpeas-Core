@@ -41,17 +41,17 @@ public interface Cipher {
    * The String objects handled by the encryption is done according the UTF-8 charset.
    * @param data the data to encode.
    * @param keyCode the key to use in the encryption.
-   * @return the encrypted data.
+   * @return the encrypted data in bytes.
    */
-  String encrypt(String data, String keyCode) throws CryptoException;
+  byte[] encrypt(String data, CipherKey keyCode) throws CryptoException;
 
   /**
    * Decrypt the specified code or cipher by using the specified cryptographic key.
    *
    * The String objects handled by the encryption is done according the UTF-8 charset.
-   * @param encryptedData the data encrypted by this cipher.
+   * @param encryptedData the data in bytes encrypted by this cipher.
    * @param keyCode the key to use in the decryption.
    * @return the decrypted data.
    */
-  String decrypt(String encryptedData, String keyCode) throws CryptoException;
+  String decrypt(byte[] encryptedData, CipherKey keyCode) throws CryptoException;
 }

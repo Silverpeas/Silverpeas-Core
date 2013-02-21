@@ -33,6 +33,7 @@ import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.silverpeas.util.Charsets;
 
+import java.io.FileNotFoundException;
 import java.util.Collection;
 
 /**
@@ -76,10 +77,10 @@ public class CMSCipher implements Cipher {
    * The String objects handled by the encryption is done according the UTF-8 charset.
    * @param data the data to encode.
    * @param keyFilePath the file in which is stored the public key to use in the encryption.
-   * @return the encrypted data.
+   * @return the encrypted data in bytes.
    */
   @Override
-  public String encrypt(String data, String keyFilePath) throws CryptoException {
+  public byte[] encrypt(String data, CipherKey keyFilePath) throws CryptoException {
     try {
       // Chargement de la chaine à crypter
       byte[] buffer = stringToByteArray(data);
@@ -89,8 +90,11 @@ public class CMSCipher implements Cipher {
       // La variable cert correspond au certificat du destinataire
       // La clé publique de ce certificat servira à chiffrer la clé
       // symétrique
+      if (!keyFilePath.isInFile()) {
+        throw new FileNotFoundException("The PKS#12 file '" + keyFilePath + "' doesn't exist!");
+      }
       PKS12KeyStoreWallet wallet = PKS12KeyStoreWallet.getInstance();
-      PKS12KeyStore keyStore = wallet.getKeyStore(keyFilePath);
+      PKS12KeyStore keyStore = wallet.getKeyStore(keyFilePath.getKeyFilePath());
       RecipientInfoGenerator generator =
           new JceKeyTransRecipientInfoGenerator(keyStore.getCertificate()).setProvider("BC");
       gen.addRecipientInfoGenerator(generator);
@@ -102,13 +106,11 @@ public class CMSCipher implements Cipher {
       OutputEncryptor encryptor =
           new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider("BC").build();
       CMSEnvelopedData envData = gen.generate(new CMSProcessableByteArray(buffer), encryptor);
-      byte[] pkcs7envelopedData = envData.getEncoded();
-      return new String(pkcs7envelopedData, Charsets.UTF_8);
+      return envData.getEncoded();
     } catch (CryptoException e) {
       throw e;
     } catch (Exception e) {
-      throw new CryptoException("SilverCryptFactory.encrypt", SilverpeasException.ERROR,
-          "util.CRYPT_FAILED", e);
+      throw new CryptoException(CryptoException.ENCRYPTION_FAILURE, e);
     }
   }
 
@@ -116,34 +118,33 @@ public class CMSCipher implements Cipher {
    * Decrypt the specified code or cipher by using the specified cryptographic key.
    * <p/>
    * The String objects handled by the encryption is done according the UTF-8 charset.
-   * @param encryptedData the data encrypted by this cipher.
+   * @param encryptedData the data in bytes that was encrypted by this cipher.
    * @param keyFilePath the file in which is stored the secret key to use in the decryption.
    * @return the decrypted data.
    */
   @Override
-  public String decrypt(String encryptedData, String keyFilePath) throws CryptoException {
+  public String decrypt(byte[] encryptedData, CipherKey keyFilePath) throws CryptoException {
     try {
-      // Chargement de la chaine à déchiffrer
-      byte[] pkcs7envelopedData = encryptedData.getBytes(Charsets.UTF_8);
-
       // Déchiffrement de la chaine
-      CMSEnvelopedData ced = new CMSEnvelopedData(pkcs7envelopedData);
+      CMSEnvelopedData ced = new CMSEnvelopedData(encryptedData);
       @SuppressWarnings("unchecked")
       Collection<KeyTransRecipientInformation> recip = ced.getRecipientInfos().getRecipients();
 
       KeyTransRecipientInformation rinfo = recip.iterator().next();
       // privatekey est la clé privée permettant de déchiffrer la clé
       // secrète (symétrique)
+      if (!keyFilePath.isInFile()) {
+        throw new FileNotFoundException("The PKS#12 file '" + keyFilePath + "' doesn't exist!");
+      }
       PKS12KeyStoreWallet wallet = PKS12KeyStoreWallet.getInstance();
-      PKS12KeyStore keyStore = wallet.getKeyStore(keyFilePath);
+      PKS12KeyStore keyStore = wallet.getKeyStore(keyFilePath.getKeyFilePath());
       byte[] contents =
           rinfo.getContent(new JceKeyTransEnvelopedRecipient(keyStore.getPrivatekey()));
       return byteArrayToString(contents);
     } catch (CryptoException e) {
       throw e;
     } catch (Exception e) {
-      throw new CryptoException("SilverCryptFactory.decrypt", SilverpeasException.ERROR,
-          "util.UNCRYPT_FAILED", e);
+      throw new CryptoException(CryptoException.DECRYPTION_FAILURE, e);
     }
   }
 

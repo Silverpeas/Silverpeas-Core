@@ -42,8 +42,8 @@ public class PKS12KeyStoreWallet {
       keyMap.put(keyFilePath, silverkeys);
 
     } catch (Exception e) {
-      throw new CryptoException("PKS12KeyStoreWallet.addKeyStore", SilverpeasException.ERROR,
-          "util.KEYS_CREATION_FAILED", e);
+      throw new CryptoException("Cannot create a PKS#12 key store from the file '" + keyFilePath +
+          "'", e);
     }
   }
 
@@ -59,8 +59,7 @@ public class PKS12KeyStoreWallet {
     if (keyStore != null) {
       return keyStore;
     } else {
-      throw new CryptoException("PKS12KeyStoreWallet.getKeyStore", SilverpeasException.ERROR,
-          "util.KEY_NOT_FOUND");
+      throw new CryptoException("PKS#12 key store not found");
     }
   }
 }

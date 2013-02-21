@@ -14,13 +14,16 @@ public class CipherFactory {
   private static final Map<CryptographicAlgorithmName, Cipher> ciphers =
       new HashMap<CryptographicAlgorithmName, Cipher>();
 
-  // we load all the supported ciphers
+  // we load all the ciphers supported by the Silverpeas Cryptography API
   static {
     try {
       ciphers.put(CryptographicAlgorithmName.Blowfish, new BlowfishCipher());
     } catch (Exception ex) {
       Logger.getLogger(CipherFactory.class.getSimpleName()).log(Level.SEVERE, ex.getMessage());
     }
+    ciphers.put(CryptographicAlgorithmName.CMS, new CMSCipher());
+    ciphers.put(CryptographicAlgorithmName.CAST5, new CAST5Cipher());
+    ciphers.put(CryptographicAlgorithmName.AES, new AESCipher());
   }
 
   public static CipherFactory getFactory() {

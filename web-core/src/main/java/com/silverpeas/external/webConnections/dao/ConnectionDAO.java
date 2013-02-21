@@ -38,6 +38,7 @@ import org.silverpeas.util.Charsets;
 import org.silverpeas.util.crypto.BlowfishCipher;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
+import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -51,6 +52,7 @@ public class ConnectionDAO {
   private static ResourceLocator settings =
       new ResourceLocator("com.silverpeas.external.webConnections.settings.webConnectionsSettings",
       "fr");
+  // warning: the key code should be in hexadecimal!
   private static String keyCode = settings.getString("keycode");
 
   /**
@@ -276,8 +278,7 @@ public class ConnectionDAO {
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
-    String encyptedText = blowfish.encrypt(text, keyCode);
-    return encyptedText.getBytes(Charsets.UTF_8);
+    return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
   }
 
   /**
@@ -289,7 +290,7 @@ public class ConnectionDAO {
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
-    return blowfish.decrypt(new String(cipherText, Charsets.UTF_8), keyCode);
+    return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
   }
 
 }
