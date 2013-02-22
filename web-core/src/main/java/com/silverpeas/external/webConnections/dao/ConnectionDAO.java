@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -278,7 +279,11 @@ public class ConnectionDAO {
   private static byte[] getCryptString(String text) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
-    return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
+    try {
+      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
+    } catch (ParseException e) {
+      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+    }
   }
 
   /**
@@ -290,7 +295,11 @@ public class ConnectionDAO {
   private static String getUncryptString(byte[] cipherText) throws CryptoException {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
-    return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
+    try {
+      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
+    } catch (ParseException e) {
+      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+    }
   }
 
 }

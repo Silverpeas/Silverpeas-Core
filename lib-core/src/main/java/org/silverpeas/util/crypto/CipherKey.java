@@ -3,6 +3,7 @@ package org.silverpeas.util.crypto;
 import com.silverpeas.util.StringUtil;
 
 import java.io.File;
+import java.text.ParseException;
 
 /**
  * A key used in a cryptographic algorithm to encrypt a plain text or to decrypt a cipher text.
@@ -29,8 +30,8 @@ public class CipherKey {
    * @param hexKey the text with hexadecimal-based characters.
    * @return the cipher key.
    */
-  public static CipherKey aKeyFromHexText(String hexKey) {
-    return new CipherKey(StringUtil.fromBase64(hexKey));
+  public static CipherKey aKeyFromHexText(String hexKey) throws ParseException {
+    return new CipherKey(StringUtil.fromHex(hexKey));
   }
 
   /**
