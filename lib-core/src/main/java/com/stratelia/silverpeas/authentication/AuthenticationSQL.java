@@ -184,13 +184,7 @@ public class AuthenticationSQL extends Authentication {
           }
         } else {
           boolean passwordsMatch = true;
-          if (Authentication.ENC_TYPE_UNIX
-              .equals(m_PasswordEncryption)) {
-            // String crypt2Check = jcrypt.crypt(cryptPwdInDB,
-            // clearPwd);
-            // si crypt2Check == cryptPwdInDB alors authentification
-            // OK sinon
-            // notOK
+          if (Authentication.ENC_TYPE_UNIX.equals(m_PasswordEncryption)) {
             String crypt2Check = "";
             if (sqlPasswd.startsWith(UnixMD5Crypt.MAGIC)) {
               crypt2Check = UnixMD5Crypt.crypt(sqlPasswd, passwd);
@@ -204,19 +198,16 @@ public class AuthenticationSQL extends Authentication {
           if (!passwordsMatch) {
             throw new AuthenticationBadCredentialException(
                 "AuthenticationSQL.internalAuthentication()",
-                SilverpeasException.ERROR,
-                "authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
+                SilverpeasException.ERROR,"authentication.EX_AUTHENTICATION_BAD_CREDENTIAL",
                 "User=" + login);
           }
         }
       } else {
         throw new AuthenticationBadCredentialException(
             "AuthenticationSQL.internalAuthentication()",
-            SilverpeasException.ERROR,
-            "authentication.EX_USER_NOT_FOUND", "User=" + login);
+            SilverpeasException.ERROR, "authentication.EX_USER_NOT_FOUND", "User=" + login);
       }
-      SilverTrace.info("authentication",
-          "AuthenticationSQL.internalAuthentication()",
+      SilverTrace.info("authentication", "AuthenticationSQL.internalAuthentication()",
           "authentication.MSG_USER_AUTHENTIFIED", "User=" + login);
     } catch (UtilException ex) {
       throw new AuthenticationHostException(

@@ -33,7 +33,7 @@
 <%@ include file="headLog.jsp" %>
 
 <%
-ResourceLocator authenticationBundle = new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+ResourceLocator authenticationBundle = new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
 pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 String errorCode = request.getParameter("ErrorCode");
 if (!com.silverpeas.util.StringUtil.isDefined(errorCode)) {
@@ -143,8 +143,8 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-      <form id="formLogin" action="<c:url value="/AuthenticationServlet" />" method="post" accept-charset="UTF-8">
-      	<% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
+  <form id="formLogin" action='<c:url value="/AuthenticationServlet" />' method="post" accept-charset="UTF-8">
+    <% if (newRegistrationActive || facebookEnabled || linkedInEnabled) { %>
 	        <div id="top">
 				<fmt:message key="authentication.logon.newRegistration.tease" /> 
 				<% if (newRegistrationActive) { %> 

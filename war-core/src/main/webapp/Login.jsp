@@ -43,7 +43,7 @@ if(StringUtil.isInteger(request.getParameter("DomainId"))) {
   domainId = request.getParameter("DomainId");
 }
 
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+ResourceLocator general = new ResourceLocator("org.silverpeas.lookAndFeel.generalLook", "");
 String loginPage = general.getString("loginPage");
 if (! StringUtil.isDefined(loginPage)){
   loginPage = request.getContextPath()+"/defaultLogin.jsp";

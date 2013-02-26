@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.authentication;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,45 +30,40 @@ import java.util.List;
 
 /**
  * This class manage the authentication for a given domain
+ *
  * @author tleroi
  * @version
  */
 public class AuthenticationServer {
+
   protected String m_FallbackType;
   protected int m_nbServers;
   protected List<Authentication> m_AutServers;
   protected boolean m_allowPasswordChange;
 
   public AuthenticationServer(String authServerName) {
-    int nbServers;
-    int i;
-    Authentication autObj;
-    String serverName;
-    ResourceLocator propFile;
-
     m_nbServers = 0;
     try {
-      propFile = new ResourceLocator("com.stratelia.silverpeas.authentication."
+      ResourceLocator propFile = new ResourceLocator("com.stratelia.silverpeas.authentication."
           + authServerName, "");
       m_FallbackType = propFile.getString("fallbackType");
       m_allowPasswordChange = getBooleanProperty(propFile, "allowPasswordChange", false);
-      nbServers = Integer.parseInt(propFile.getString("autServersCount"));
+      int nbServers = Integer.parseInt(propFile.getString("autServersCount"));
       m_AutServers = new ArrayList<Authentication>();
-      for (i = 0; i < nbServers; i++) {
-        serverName = "autServer" + i;
+      for (int i = 0; i < nbServers; i++) {
+        String serverName = "autServer" + i;
         if (getBooleanProperty(propFile, serverName + ".enabled", true)) {
           try {
-            autObj = (Authentication) Class.forName(
+            Authentication autObj = (Authentication) Class.forName(
                 propFile.getString(serverName + ".type")).newInstance();
             autObj.init(serverName, propFile);
             autObj.setEnabled(true);
             m_AutServers.add(autObj);
             m_nbServers++;
           } catch (Exception ex) {
-            SilverTrace.error("authentication",
-                "AuthenticationServer.AuthenticationServer",
-                "authentication.EX_CANT_INSTANCIATE_SERVER_CLASS",
-                authServerName + " / " + serverName, ex);
+            SilverTrace.error("authentication", "AuthenticationServer.AuthenticationServer",
+                "authentication.EX_CANT_INSTANCIATE_SERVER_CLASS", authServerName + " / "
+                + serverName, ex);
           }
         }
       }
@@ -85,8 +76,6 @@ public class AuthenticationServer {
 
   public void authenticate(String login, String passwd,
       HttpServletRequest request) throws AuthenticationException {
-    int i;
-    Authentication autObj;
     boolean bNotFound = true;
     AuthenticationException lastException = null;
 
@@ -94,9 +83,9 @@ public class AuthenticationServer {
       throw new AuthenticationException("AuthenticationServer.authenticate",
           SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
     }
-    i = 0;
+    int i = 0;
     while ((i < m_nbServers) && bNotFound) {
-      autObj = m_AutServers.get(i);
+      Authentication autObj = m_AutServers.get(i);
       if (autObj.getEnabled()) {
         try {
           autObj.authenticate(login, passwd, request);
