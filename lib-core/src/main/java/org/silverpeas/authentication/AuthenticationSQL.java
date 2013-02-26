@@ -30,25 +30,27 @@
 
 package org.silverpeas.authentication;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.Md5Crypt;
+
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.cryptage.CryptMD5;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class performs the authentication using an SQL table
@@ -142,6 +144,10 @@ public class AuthenticationSQL extends Authentication {
     } else {
       checkPassword(login, password, sqlPassword);
     }
+
+    // Verifying if the user must change his password or if user will soon have to change his
+    // password
+    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
   }
 
   private String getPassword(Connection connection, String login) throws AuthenticationException {

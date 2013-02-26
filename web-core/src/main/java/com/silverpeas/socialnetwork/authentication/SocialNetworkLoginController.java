@@ -36,7 +36,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.springframework.social.connect.UserProfile;

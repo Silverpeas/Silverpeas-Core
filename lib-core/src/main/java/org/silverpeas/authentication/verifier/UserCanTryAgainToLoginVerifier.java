@@ -37,8 +37,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.lang.time.DateUtils;
-import org.silverpeas.authentication.verifier.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -126,7 +125,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
   }
 
   /**
-   * Gets (warning) message the message according to connexion attempts.
+   * Gets (warning) message the message according to connection attempts.
    * @return
    */
   public String getMessage() {
