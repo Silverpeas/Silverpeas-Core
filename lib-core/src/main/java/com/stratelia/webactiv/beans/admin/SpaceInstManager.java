@@ -412,18 +412,18 @@ public class SpaceInstManager {
    * Return subspaces of a space
    * @return a List of SpaceInstLight
    */
-  public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
-    Connection con = null;
+  public List<SpaceInstLight> getSubSpaces(DomainDriverManager ddManager, String spaceId) throws AdminException {
     try {
-      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-
-      return SpaceDAO.getSubSpaces(con, Integer.parseInt(spaceId));
+      ddManager.getOrganizationSchema();
+      List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(Integer.parseInt(spaceId));
+      
+      return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[0]));
 
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getSubSpaces",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_SUBSPACES", e);
     } finally {
-      DBUtil.close(con);
+      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -465,13 +465,12 @@ public class SpaceInstManager {
   private List<SpaceInstLight> spaceRows2SpaceInstLights(DomainDriverManager ddManager,
       SpaceRow[] spaceRows) {
     List<SpaceInstLight> spaces = new ArrayList<SpaceInstLight>();
-    SpaceInstLight spaceLight = null;
-    for (int s = 0; spaceRows != null && s < spaceRows.length; s++) {
-      SpaceRow row = spaceRows[s];
-      spaceLight = new SpaceInstLight(row);
-
+    if (spaceRows == null) {
+      return spaces;
+    }
+    for (SpaceRow row : spaceRows) {
+      SpaceInstLight spaceLight = new SpaceInstLight(row);
       setTranslations(ddManager, spaceLight, row);
-
       spaces.add(spaceLight);
     }
     return spaces;

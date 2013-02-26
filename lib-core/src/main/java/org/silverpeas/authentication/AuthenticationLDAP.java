@@ -52,6 +52,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
 
 /**
  * This class performs the LDAP authentication
@@ -118,7 +124,8 @@ public class AuthenticationLDAP extends Authentication {
   }
 
   @Override
-  protected AuthenticationConnection<LDAPConnection> openConnection() throws AuthenticationException {
+  protected AuthenticationConnection<LDAPConnection> openConnection() throws
+      AuthenticationException {
     LDAPConnection ldapConnection;
     if (m_IsSecured) {
       ldapConnection = new LDAPConnection(new LDAPJSSESecureSocketFactory());
@@ -247,10 +254,11 @@ public class AuthenticationLDAP extends Authentication {
   /**
    * Given an user ldap entry, compute the numbers of days before password expiration
    * @param fe the user ldap entry
-   * @throws AuthenticationPasswordMustBeChangedAtNextLogon
+   * @throws org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon
    * @return duration in days
    */
-  private int calculateDaysBeforeExpiration(LDAPEntry fe) throws AuthenticationPasswordMustBeChangedAtNextLogon {
+  private int calculateDaysBeforeExpiration(LDAPEntry fe) throws
+      AuthenticationPasswordMustBeChangedAtNextLogon {
     SilverTrace.debug(module,
         "AuthenticationLDAP.calculateDaysBeforeExpiration()",
         "root.MSG_GEN_ENTER_METHOD");
