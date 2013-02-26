@@ -1,19 +1,27 @@
 package com.silverpeas.util.security;
 
 import com.silverpeas.SilverpeasContent;
+import com.silverpeas.calendar.DateTime;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A content of text to use in the tests on the content encryption.
  */
 public class TextContent implements SilverpeasContent {
 
+  public static enum Properties {
+    Title,
+    Description,
+    Text;
+  }
+
   private String id;
   private String componentInstanceId;
   private UserDetail author;
-  private Date creationDate;
+  private DateTime creationDate;
   private String title;
   private String description;
   private String text;
@@ -22,7 +30,7 @@ public class TextContent implements SilverpeasContent {
     this.id = id;
     this.componentInstanceId = componentInstanceId;
     this.author = author;
-    this.creationDate = new Date();
+    this.creationDate = DateTime.now();
   }
 
   /**
@@ -85,7 +93,7 @@ public class TextContent implements SilverpeasContent {
    * @return the date at which this content was created.
    */
   @Override
-  public Date getCreationDate() {
+  public DateTime getCreationDate() {
     return this.creationDate;
   }
 
@@ -133,5 +141,13 @@ public class TextContent implements SilverpeasContent {
 
   public String getText() {
     return text;
+  }
+
+  public Map<String, String> getProperties() {
+    Map<String, String> properties = new HashMap<String, String>();
+    properties.put(Properties.Title.name(), getTitle());
+    properties.put(Properties.Description.name(), getDescription());
+    properties.put(Properties.Text.name(), getText());
+    return properties;
   }
 }

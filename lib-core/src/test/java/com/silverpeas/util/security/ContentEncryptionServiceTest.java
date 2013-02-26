@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
+import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
 import javax.crypto.KeyGenerator;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.Security;
+import java.text.ParseException;
 
 /**
  * The base class of all tests on the services provided by the ContentEncryptionService instances.
@@ -27,6 +29,20 @@ import java.security.Security;
  * a ContentEncryptionService instance ready to be tested.
  */
 public class ContentEncryptionServiceTest {
+
+  protected static final String ACTUAL_KEY_FILE_PATH =
+      FileRepositoryManager.getSecurityDirPath() + ".aid_key";
+  protected static final String DEPRECATED_KEY_FILE_PATH =
+      FileRepositoryManager.getSecurityDirPath() + ".did_key";
+  protected static final CipherKey CIPHER_KEY;
+
+  static {
+    try {
+      CIPHER_KEY = CipherKey.aKeyFromHexText("06277d1ce530c94bd9a13a72a58342be");
+    } catch (ParseException e) {
+      throw new RuntimeException("Cannot create the cryptographic key!", e);
+    }
+  }
 
   private ContentEncryptionService service;
 
@@ -52,7 +68,7 @@ public class ContentEncryptionServiceTest {
     String securityPath = FileRepositoryManager.getSecurityDirPath();
     File securityDir = new File(securityPath);
     if (securityDir.exists()) {
-      File keyFile = new File(ContentEncryptionService.ACTUAL_KEY_FILE_PATH);
+      File keyFile = new File(ACTUAL_KEY_FILE_PATH);
       if (keyFile.exists()) {
         keyFile.setWritable(true);
         FileUtils.forceDelete(keyFile);
@@ -68,7 +84,7 @@ public class ContentEncryptionServiceTest {
 
   @After
   public void deleteKeyFile() throws Exception {
-    File keyFile = new File(ContentEncryptionService.ACTUAL_KEY_FILE_PATH);
+    File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     if (keyFile.exists()) {
       keyFile.setWritable(true);
       FileUtils.forceDelete(keyFile);
@@ -92,12 +108,12 @@ public class ContentEncryptionServiceTest {
   }
 
   /**
-   * Creates a key file with the specified key in hexadecimal.
+   * Creates the key file with the specified actual key in hexadecimal.
    * @param key the key used in a content encryption and to store in the key file.
    * @throws Exception if the key file creation failed.
    */
-  public static void createKeyFileWithTheKey(String key) throws Exception {
-    File keyFile = new File(ContentEncryptionService.ACTUAL_KEY_FILE_PATH);
+  public static void createKeyFileWithTheActualKey(String key) throws Exception {
+    File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     if (keyFile.exists()) {
       keyFile.setWritable(true);
     }
@@ -106,10 +122,25 @@ public class ContentEncryptionServiceTest {
     keyFile.setReadOnly();
   }
 
+  /**
+   * Creates the key file with the specified deprecated key in hexadecimal.
+   * @param key the key used in a content encryption and to store in the old key file.
+   * @throws Exception if the key file creation failed.
+   */
+  public static void createKeyFileWithTheDeprecatedKey(String key) throws Exception {
+    File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+    if (keyFile.exists()) {
+      keyFile.setWritable(true);
+    }
+    String encryptedKey = encryptKey(key);
+    FileUtil.writeFile(keyFile, new StringReader(encryptedKey));
+      keyFile.setReadOnly();
+  }
+
   private static String encryptKey(String key) throws Exception {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher cast5 = cipherFactory.getCipher(CryptographicAlgorithmName.CAST5);
-    byte[] encryptedKey = cast5.encrypt(key, ContentEncryptionService.CIPHER_KEY);
+    byte[] encryptedKey = cast5.encrypt(key, CIPHER_KEY);
     return StringUtil.asBase64(encryptedKey);
   }
 }

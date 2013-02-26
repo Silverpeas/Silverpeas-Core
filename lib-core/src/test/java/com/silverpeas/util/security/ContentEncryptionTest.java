@@ -15,7 +15,11 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -28,14 +32,10 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   // the AES key in hexadecimal stored in the key file.
   private String key;
 
-  private static final String CONTENT_TITLE = "title";
-  private static final String CONTENT_DESCRIPTION = "description";
-  private static final String CONTENT_TEXT = "text";
-
   @Before
   public void generateKeyFile() throws Exception {
     key = generateAESKey();
-    createKeyFileWithTheKey(key);
+    createKeyFileWithTheActualKey(key);
   }
 
   @Test
@@ -55,10 +55,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   public void encryptAContent() throws Exception {
     TextContent[] contents = generateTextContents(1);
 
-    Map<String, String> content = new HashMap<String, String>();
-    content.put(CONTENT_TITLE, contents[0].getTitle());
-    content.put(CONTENT_DESCRIPTION, contents[0].getDescription());
-    content.put(CONTENT_TEXT, contents[0].getText());
+    Map<String, String> content = contents[0].getProperties();
     Map<String, String> encryptedContent = getContentEncryptionService().encryptContent(content);
 
     assertThat(encryptedContent.size(), is(content.size()));
@@ -68,27 +65,23 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   @Test
   public void encryptSeveralContentsInBatch() throws Exception {
     final int count = 10;
-    getContentEncryptionService().encryptContents(new ContentProvider() {
+    getContentEncryptionService().encryptContents(new EncryptionContentIterator() {
 
       TextContent[] contents = generateTextContents(count);
       int current = -1;
 
       @Override
-      public Map<String, String> getContent() {
-        Map<String, String> content = new HashMap<String, String>();
-        content.put(CONTENT_TITLE, contents[current].getTitle());
-        content.put(CONTENT_DESCRIPTION, contents[current].getDescription());
-        content.put(CONTENT_TEXT, contents[current].getText());
-        return content;
+      public Map<String, String> next() {
+        return contents[current].getProperties();
       }
 
       @Override
-      public boolean hasNextContent() {
+      public boolean hasNext() {
         return ++current < contents.length;
       }
 
       @Override
-      public void setUpdatedContent(final Map<String, String> updatedContent) {
+      public void update(final Map<String, String> updatedContent) {
         assertContentIsCorrectlyEncrypted(contents[current], updatedContent);
       }
 
@@ -96,41 +89,47 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       public void onError(Map<String, String> content, final CryptoException ex) {
         fail(ex.getMessage());
       }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
     });
   }
 
   @Test
   public void encryptSeveralContentsFromSeveralProvidersInBatch() throws Exception {
-    final int count = 100;
-    ContentProvider[] providers = new ContentProvider[count];
+    final int count = 10;
+    EncryptionContentIterator[] providers = new EncryptionContentIterator[count];
     for (int i = 0; i < count; i++) {
-      providers[i] = new ContentProvider() {
+      providers[i] = new EncryptionContentIterator() {
 
         TextContent[] contents = generateTextContents(count);
         int current = -1;
 
         @Override
-        public Map<String, String> getContent() {
-          Map<String, String> content = new HashMap<String, String>();
-          content.put(CONTENT_TITLE, contents[current].getTitle());
-          content.put(CONTENT_DESCRIPTION, contents[current].getDescription());
-          content.put(CONTENT_TEXT, contents[current].getText());
-          return content;
+        public Map<String, String> next() {
+          return contents[current].getProperties();
         }
 
         @Override
-        public boolean hasNextContent() {
+        public boolean hasNext() {
           return ++current < contents.length;
         }
 
         @Override
-        public void setUpdatedContent(final Map<String, String> updatedContent) {
+        public void update(final Map<String, String> updatedContent) {
           assertContentIsCorrectlyEncrypted(contents[current], updatedContent);
         }
 
         @Override
         public void onError(Map<String, String> content, final CryptoException ex) {
           fail(ex.getMessage());
+        }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException();
         }
       };
     }
@@ -149,7 +148,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
         encryptedContents[0].getText());
 
     assertThat(encryptedContents.length, is(contents.length));
-    assertContentIsCorrectlyDecrypted(contents[0], contentFields);
+    assertContentIsCorrect(contents[0], contentFields);
   }
 
   @Test
@@ -157,47 +156,45 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
     TextContent[] contents = generateTextContents(1);
     TextContent[] encryptedContents = encryptTextContents(contents);
 
-    Map<String, String> encryptedContent = new HashMap<String, String>();
-    encryptedContent.put(CONTENT_TITLE, encryptedContents[0].getTitle());
-    encryptedContent.put(CONTENT_DESCRIPTION, encryptedContents[0].getDescription());
-    encryptedContent.put(CONTENT_TEXT, encryptedContents[0].getText());
+    Map<String, String> encryptedContent = encryptedContents[0].getProperties();
     Map<String, String> content = getContentEncryptionService().decryptContent(encryptedContent);
 
     assertThat(content.size(), is(encryptedContent.size()));
-    assertContentIsCorrectlyDecrypted(contents[0], content);
+    assertThat(content, is(contents[0].getProperties()));
   }
 
   @Test
   public void decryptSeveralContentsInBatch() throws Exception {
-    final int count = 100;
-    getContentEncryptionService().decryptContents(new ContentProvider() {
+    final int count = 10;
+    getContentEncryptionService().decryptContents(new EncryptionContentIterator() {
 
       TextContent[] contents = generateTextContents(count);
       TextContent[] encryptedContents = encryptTextContents(contents);
       int current = -1;
 
       @Override
-      public Map<String, String> getContent() {
-        Map<String, String> encryptedContent = new HashMap<String, String>();
-        encryptedContent.put(CONTENT_TITLE, encryptedContents[current].getTitle());
-        encryptedContent.put(CONTENT_DESCRIPTION, encryptedContents[current].getDescription());
-        encryptedContent.put(CONTENT_TEXT, encryptedContents[current].getText());
-        return encryptedContent;
+      public Map<String, String> next() {
+        return encryptedContents[current].getProperties();
       }
 
       @Override
-      public boolean hasNextContent() {
+      public boolean hasNext() {
         return ++current < encryptedContents.length;
       }
 
       @Override
-      public void setUpdatedContent(final Map<String, String> updatedContent) {
-        assertContentIsCorrectlyDecrypted(contents[current], updatedContent);
+      public void update(final Map<String, String> updatedContent) {
+        assertThat(updatedContent, is(contents[current].getProperties()));
       }
 
       @Override
       public void onError(Map<String, String> content, final CryptoException ex) {
         fail(ex.getMessage());
+      }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
       }
     });
   }
@@ -205,47 +202,163 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   @Test
   public void decryptSeveralContentsFromSeveralProvidersInBatch() throws Exception {
     final int count = 10;
-    ContentProvider[] providers = new ContentProvider[count];
+    EncryptionContentIterator[] providers = new EncryptionContentIterator[count];
     for (int i = 0; i < count; i++) {
-      providers[i] = new ContentProvider() {
+      providers[i] = new EncryptionContentIterator() {
 
         TextContent[] contents = generateTextContents(count);
         TextContent[] encryptedContents = encryptTextContents(contents);
         int current = -1;
 
         @Override
-        public Map<String, String> getContent() {
-          Map<String, String> encryptedContent = new HashMap<String, String>();
-          encryptedContent.put(CONTENT_TITLE, encryptedContents[current].getTitle());
-          encryptedContent.put(CONTENT_DESCRIPTION, encryptedContents[current].getDescription());
-          encryptedContent.put(CONTENT_TEXT, encryptedContents[current].getText());
-          return encryptedContent;
+        public Map<String, String> next() {
+          return encryptedContents[current].getProperties();
         }
 
         @Override
-        public boolean hasNextContent() {
+        public boolean hasNext() {
           return ++current < encryptedContents.length;
         }
 
         @Override
-        public void setUpdatedContent(final Map<String, String> updatedContent) {
-          assertContentIsCorrectlyDecrypted(contents[current], updatedContent);
+        public void update(final Map<String, String> updatedContent) {
+          assertThat(updatedContent, is(contents[current].getProperties()));
         }
 
         @Override
         public void onError(Map<String, String> content, final CryptoException ex) {
           fail(ex.getMessage());
         }
+
+        @Override
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
       };
     }
     getContentEncryptionService().decryptContents(providers);
   }
 
+  @Test
+  public void renewContentCipher() throws Exception {
+    final int count = 10;
+    final String newKey = generateAESKey();
+    createKeyFileWithTheDeprecatedKey(this.key);
+    createKeyFileWithTheActualKey(newKey);
+
+    getContentEncryptionService().renewCipherOfContents(new EncryptionContentIterator() {
+
+      TextContent[] expectedContents = generateTextContents(count);
+      TextContent[] encryptedContents = encryptTextContents(expectedContents);
+      int current = -1;
+
+      @Override
+      public Map<String, String> next() {
+        return encryptedContents[current].getProperties();
+      }
+
+      @Override
+      public boolean hasNext() {
+        return ++current < encryptedContents.length;
+      }
+
+      @Override
+      public void update(final Map<String, String> newEncryptedContent) {
+        assertContentIsCorrectlyEncrypted(expectedContents[current], newEncryptedContent, newKey);
+      }
+
+      @Override
+      public void onError(final Map<String, String> content, final CryptoException ex) {
+        fail(ex.getMessage());
+      }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
+    });
+  }
+
+  @Test
+  public void testTheCipherRenewingIsBlocking() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          renewContentCipher();
+        } catch (Exception e) {
+          fail(e.getMessage());
+        }
+      }
+    });
+
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          TextContent[] contents = generateTextContents(1);
+          Map<String, String> content = contents[0].getProperties();
+          getContentEncryptionService().encryptContent(content);
+          fail("An error should be thrown");
+        } catch (Exception e) {
+          assertThat(e instanceof IllegalStateException, is(true));
+        }
+      }
+    });
+
+    executor.shutdown();
+    while(!executor.isTerminated()) {
+
+    }
+  }
+
+  @Test
+  public void testTheCipherRenewingIsBlockedWhenAContentIsEncrypted() {
+    ExecutorService executor = Executors.newCachedThreadPool();
+    final long[] time = new long[1];
+    final Future future = executor.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          TextContent[] contents = generateTextContents(1);
+          Map<String, String> content = contents[0].getProperties();
+          getContentEncryptionService().encryptContent(content);
+          time[0] = System.currentTimeMillis();
+        } catch (Exception e) {
+          fail(e.getMessage());
+        }
+      }
+    });
+
+    executor.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          assertThat(future.isDone(), is(false));
+          renewContentCipher();
+          assertThat(System.currentTimeMillis(), greaterThan(time[0]));
+          assertThat(future.isDone(), is(true));
+        } catch (Exception e) {
+          fail(e.getMessage());
+        }
+      }
+    });
+
+    executor.shutdown();
+    while(!executor.isTerminated()) {
+
+    }
+  }
+
   private  static TextContent[] generateTextContents(int count) {
     TextContent[] contents = new TextContent[count];
+    UserDetail creator = new UserDetail();
+    creator.setFirstName("Bart");
+    creator.setLastName("Simpson");
     Random random = new Random();
     for(int i = 0; i < count; i++) {
-      TextContent aContent = new TextContent(String.valueOf(i), "", new UserDetail());
+      TextContent aContent = new TextContent(String.valueOf(i), "", creator);
       aContent.setTitle(RandomStringUtils.randomAscii(random.nextInt(32)));
       aContent.setDescription(RandomStringUtils.randomAscii(random.nextInt(128)));
       aContent.setText(RandomStringUtils.randomAscii(random.nextInt(1024)));
@@ -263,7 +376,8 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       TextContent content = new TextContent(contents[i].getId(),
           contents[i].getComponentInstanceId(), contents[i].getCreator());
       content.setTitle(StringUtil.asBase64(aes.encrypt(contents[i].getTitle(), cipherKey)));
-      content.setDescription(StringUtil.asBase64(aes.encrypt(contents[i].getDescription(), cipherKey)));
+      content.setDescription(
+          StringUtil.asBase64(aes.encrypt(contents[i].getDescription(), cipherKey)));
       content.setText(StringUtil.asBase64(aes.encrypt(contents[i].getText(), cipherKey)));
       encryptedContents[i] = content;
     }
@@ -285,45 +399,38 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
     } catch (CryptoException e) {
       throw new AssertionError(e);
     }
-    assertThat(content.getTitle(), is(title));
-    assertThat(content.getDescription(), is(description));
-    assertThat(content.getText(), is(text));
+
+    assertContentIsCorrect(content, title, description, text);
   }
 
   private void assertContentIsCorrectlyEncrypted(TextContent content,
-        Map<String, String> encryptedContent) {
-      CipherFactory cipherFactory = CipherFactory.getFactory();
-      Cipher aes = cipherFactory.getCipher(CryptographicAlgorithmName.AES);
-      String title, description, text;
-      try {
-        CipherKey cipherKey = CipherKey.aKeyFromHexText(this.key);
-        title = aes.decrypt(
-            StringUtil.fromBase64(encryptedContent.get(CONTENT_TITLE)), cipherKey);
-        description = aes.decrypt(
-            StringUtil.fromBase64(encryptedContent.get(CONTENT_DESCRIPTION)), cipherKey);
-        text = aes.decrypt(
-            StringUtil.fromBase64(encryptedContent.get(CONTENT_TEXT)), cipherKey);
-      } catch (ParseException e) {
-        throw new AssertionError(e);
-      } catch (CryptoException e) {
-        throw new AssertionError(e);
+        Map<String, String> encryptedContent, String key) {
+    CipherFactory cipherFactory = CipherFactory.getFactory();
+    Cipher aes = cipherFactory.getCipher(CryptographicAlgorithmName.AES);
+    Map<String, String> actualProperties = new HashMap<String, String>();
+    try {
+      CipherKey cipherKey = CipherKey.aKeyFromHexText(key);
+      for(Map.Entry<String, String> aProperty: encryptedContent.entrySet()) {
+        String value = aes.decrypt(StringUtil.fromBase64(aProperty.getValue()), cipherKey);
+        actualProperties.put(aProperty.getKey(), value);
       }
-      assertThat(content.getTitle(), is(title));
-      assertThat(content.getDescription(), is(description));
-      assertThat(content.getText(), is(text));
+    } catch (ParseException e) {
+      throw new AssertionError(e);
+    } catch (CryptoException e) {
+      throw new AssertionError(e);
+    }
+
+    assertThat(actualProperties, is(content.getProperties()));
   }
 
-  private void assertContentIsCorrectlyDecrypted(TextContent expectedContent,
-      String ... actualContent) {
-    assertThat(actualContent[0], is(expectedContent.getTitle()));
-    assertThat(actualContent[1], is(expectedContent.getDescription()));
-    assertThat(actualContent[2], is(expectedContent.getText()));
+  private void assertContentIsCorrectlyEncrypted(TextContent content,
+      Map<String, String> encryptedContent) {
+    assertContentIsCorrectlyEncrypted(content, encryptedContent, this.key);
   }
 
-  private void assertContentIsCorrectlyDecrypted(TextContent expectedContent,
-      Map<String, String> actualContent) {
-    assertThat(actualContent.get(CONTENT_TITLE), is(expectedContent.getTitle()));
-    assertThat(actualContent.get(CONTENT_DESCRIPTION), is(expectedContent.getDescription()));
-    assertThat(actualContent.get(CONTENT_TEXT), is(expectedContent.getText()));
+  private static void assertContentIsCorrect(TextContent content, String ... fields) {
+    assertThat(fields[0], is(content.getTitle()));
+    assertThat(fields[1], is(content.getDescription()));
+    assertThat(fields[2], is(content.getText()));
   }
 }
