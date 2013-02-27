@@ -51,8 +51,6 @@ if (goToFavoriteSpaceOnHomeLink) {
 
 List<TopItem> topItems = helper.getTopItems();
 
-String homePage = new String (settings.getString("defaultHomepage"));
-
 boolean isAnonymousAccess 	= helper.isAnonymousAccess();
 
 String wallPaper = helper.getSpaceWallPaper();

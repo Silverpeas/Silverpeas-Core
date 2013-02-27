@@ -1537,6 +1537,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           "root.MSG_GEN_PARAM_VALUE", "clipboard = " + getClipboardName() + " count="
           + getClipboardCount());
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      boolean refreshCache = false;
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(ComponentSelection.ComponentDetailFlavor)) {
@@ -1547,6 +1548,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             } else {
               pasteComponent(compo.getId());
             }
+            refreshCache = true;
           } else if (clipObject.isDataFlavorSupported(SpaceSelection.SpaceFlavor)) {
             SpaceInst space = (SpaceInst) clipObject.getTransferData(SpaceSelection.SpaceFlavor);
             if (clipObject.isCutted()) {
@@ -1554,11 +1556,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
             } else {
               pasteSpace(space.getId());
             }
-          }
-          if (clipObject.isCutted()) {
-            m_NavBarMgr.resetAllCache();
+            refreshCache = true;
           }
         }
+      }
+      if (refreshCache) {
+        m_NavBarMgr.resetAllCache();
       }
     } catch (Exception e) {
       throw new JobStartPagePeasException("JobStartPagePeasSessionController.paste()",

@@ -94,4 +94,25 @@ public class AuthenticationUserVerifierFactory {
       UserDetail user) {
     return UserCanTryAgainToLoginVerifier.get(user);
   }
+
+  /**
+   * Gets user must change his password verifier from credentials.
+   * @param user
+   * @return the verifier that checks if the user must change his password or if the user will soon
+   *         have to change his password
+   */
+  public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(UserDetail user) {
+    return new UserMustChangePasswordVerifier(user);
+  }
+
+  /**
+   * Gets user must change his password verifier from credentials.
+   * @param credential
+   * @return the verifier that checks if the user must change his password or if the user will soon
+   *         have to change his password
+   */
+  public static UserMustChangePasswordVerifier getUserMustChangePasswordVerifier(
+      AuthenticationCredential credential) {
+    return getUserMustChangePasswordVerifier(getUserByCredential(credential));
+  }
 }

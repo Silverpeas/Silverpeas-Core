@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2000 - 2013 Silverpeas
+/**
+ * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,37 +23,55 @@
  */
 
 /*
- * AuthenticationBadCredentialException.java
+ * AuthenticationException.java
  *
  * Created on 6 aout 2001
  */
 
-package org.silverpeas.authentication.verifier.exception;
+package org.silverpeas.authentication.exception;
 
-import org.silverpeas.authentication.AuthenticationException;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- *
+ * @author tleroi
+ * @version
  */
-public class AuthenticationNoMoreUserConnectionAttemptException extends AuthenticationException {
+public class AuthenticationException extends SilverpeasException {
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
+  private static final long serialVersionUID = 8552020923204390308L;
+
+  /**
+   * -------------------------------------------------------------------------- constructor
+   * constructor
+   */
+  public AuthenticationException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
+  public AuthenticationException(String callingClass, int errorLevel,
       String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
+  public AuthenticationException(String callingClass, int errorLevel,
       String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  public AuthenticationNoMoreUserConnectionAttemptException(String callingClass, int errorLevel,
+  public AuthenticationException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public void accept(AuthenticationExceptionVisitor visitor) throws AuthenticationException {
+    visitor.visit(this);
+  }
+
+  /**
+   * -------------------------------------------------------------------------- getModule getModule
+   */
+  public String getModule() {
+    return "authentication";
   }
 }

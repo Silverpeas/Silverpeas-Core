@@ -35,8 +35,8 @@ import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.exception
-    .AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -168,6 +168,17 @@ public class AuthenticationServlet extends HttpServlet {
         } else {
           url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
+      } else if (UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN
+          .equals(authenticationKey)) {
+        // User has been successfully authenticated, but he has to change his password on his
+        // first login and login / domain id can be stored
+        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+        storeDomain(response, domainId);
+        url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
+            .getDestinationOnFirstLogin(request);
+        RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+        dispatcher.forward(request, response);
+        return;
       }
       else if(UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
         if (userCanTryAgainToLoginVerifier.isActivated() ||

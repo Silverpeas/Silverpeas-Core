@@ -1,4 +1,4 @@
-package org.silverpeas.authentication;
+package org.silverpeas.authentication.exception;
 
 public class AuthenticationPasswordExpired extends AuthenticationException {
   public AuthenticationPasswordExpired(String extraParams) {

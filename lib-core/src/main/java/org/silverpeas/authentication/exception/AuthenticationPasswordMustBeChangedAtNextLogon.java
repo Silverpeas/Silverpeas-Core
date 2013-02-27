@@ -1,4 +1,4 @@
-package org.silverpeas.authentication;
+package org.silverpeas.authentication.exception;
 
 public class AuthenticationPasswordMustBeChangedAtNextLogon extends AuthenticationException {
   public AuthenticationPasswordMustBeChangedAtNextLogon(String extraParams) {

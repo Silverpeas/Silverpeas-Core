@@ -195,6 +195,6 @@ var Rico = {
     else if (window.opera) window.opera.postError(this.timeStamp()+msg);
   }
 
-}
+};
 
 Rico.init();
