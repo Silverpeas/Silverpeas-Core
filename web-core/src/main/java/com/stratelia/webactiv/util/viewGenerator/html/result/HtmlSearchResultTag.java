@@ -44,6 +44,9 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -245,10 +248,7 @@ public class HtmlSearchResultTag extends TagSupport {
         "\"/>";
 
     String sName = EncodeHelper.javaStringToHtmlString(gsr.getName());
-    String sDescription = gsr.getDescription();
-    if (sDescription != null && sDescription.length() > 400) {
-      sDescription = sDescription.substring(0, 400) + "...";
-    }
+    String sDescription = StringUtils.abbreviate(gsr.getDescription(), 400);
     String sURL = gsr.getTitleLink();
     String sDownloadURL = gsr.getDownloadLink();
     String sLocation = gsr.getLocation();
@@ -413,12 +413,12 @@ public class HtmlSearchResultTag extends TagSupport {
   private ResourcesWrapper getSettings() throws JspTagException {
     if (settings == null) {
       String language = getUserPreferences().getLanguage();
-      ResourceLocator messages = new ResourceLocator(
-          "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
+      ResourceLocator messages =
+          new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
       settings =
           new ResourcesWrapper(messages,
-          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
           language);
     }
     return settings;
