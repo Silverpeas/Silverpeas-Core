@@ -51,8 +51,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 
-<%@ include file="checkScc.jsp" %>
+<%
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+  WysiwygController scc = (WysiwygController) request.getAttribute("wysiwyg");
+%>
 <%!
 String EncodeURL(String javastring) {
     String res="";
@@ -94,11 +100,11 @@ if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   imagesContext = WysiwygController.getImagesFileName(context);
   url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
- 
+
 ResourceLocator message = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
