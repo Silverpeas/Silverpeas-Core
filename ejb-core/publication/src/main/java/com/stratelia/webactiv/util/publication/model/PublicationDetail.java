@@ -1038,7 +1038,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getWysiwyg() {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getComponentName(),
+      wysiwygContent = WysiwygController.load(getPK().getComponentName(),
           getPK().getId(), getLanguage());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";

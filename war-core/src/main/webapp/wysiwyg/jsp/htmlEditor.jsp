@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -358,9 +359,11 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 <% } else if (actionWysiwyg.equals("Load") || actionWysiwyg.equals("Refresh") || actionWysiwyg.equals("SaveHtml")) { %>
 	<form method="post" name="recupHtml" action="<%=context%>/wysiwyg/jsp/htmlEditor.jsp">
     <table border="0" cellpadding="0" cellspacing="0">
+      <% if (I18NHelper.isI18N && StringUtil.isDefined(contentLanguage)) { %>
       <tr class="TB_Expand">
-        <td class="TB_Expand" align="center"><%=com.silverpeas.util.i18n.I18NHelper.getLanguageLabel(contentLanguage, language)%></td>
+        <td class="TB_Expand" align="center"><%=I18NHelper.getLanguageLabel(contentLanguage, language)%></td>
       </tr>
+      <% } %>
       <tr class="TB_Expand">
 			<td class="TB_Expand" align="center">
 

@@ -33,6 +33,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<view:displayWysiwyg objectId="${params.ObjectId}" componentId="${params.ComponentId}" 
-                     language="${params.Language}" axisId="${params.axisId}"
-                     highlightFirst="${params.highlightFirst}" />
+<view:displayWysiwyg objectId="${param.ObjectId}" componentId="${param.ComponentId}" 
+                     language="${param.Language}" axisId="${param.axisId}"
+                     highlightFirst="${param.highlightFirst}" />
