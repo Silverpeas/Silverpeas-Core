@@ -434,6 +434,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     
     if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
       // all connected users must be filtered according to directory scope
+      lastListUsersCalled = new ArrayList<UserDetail>();
       for (UserDetail connectedUser : connectedUsers) {
         if (lastAlllistUsersCalled.contains(connectedUser)) {
           lastListUsersCalled.add(connectedUser);
