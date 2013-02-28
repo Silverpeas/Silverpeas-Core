@@ -1460,6 +1460,52 @@
     </attribute>
   </tag>
 
+
+  <tag>
+    <description>
+      Display the content of a Wysiwyg.
+    </description>
+    <name>displayWysiwyg</name>
+    <tag-class>org.silverpeas.jstl.view.WysiwygDisplayerTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The language of the wysiwyg to display.</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the component to which this wysiwyg is attached.</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the object to which this wysiwyg is attached.</description>
+      <name>objectId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The id of the classification scheme axis to which this wysiwyg is attached for highlighting.</description>
+      <name>axisId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>To indicate if the highlight is first or not.</description>
+      <name>highlightFirst</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+
+
   <function>
     <description>Function that returns the value of a class constant.</description>
     <name>constantValue</name>

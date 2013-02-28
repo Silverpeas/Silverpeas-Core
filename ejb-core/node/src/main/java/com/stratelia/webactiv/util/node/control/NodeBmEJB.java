@@ -544,9 +544,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
         @Override
         public void invoke(NodePK pk) throws Exception {
-          // remove wysiwyg attached to node
-          WysiwygController.deleteWysiwygAttachments(null, pk.getInstanceId(),
-              "Node_" + pk.getId());
+          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(),  "Node_" + pk.getId());
         }
       });
     } catch (Exception re) {
