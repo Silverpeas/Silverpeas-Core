@@ -351,9 +351,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
       if (detail.isRemoveTranslation()) {
         // remove wysiwyg content
-        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(), detail
-            .
-            getLanguage());
+        WysiwygController.deleteFile(detail.getPK().getInstanceId(), detail.getPK().getId(),
+            detail.getLanguage());
 
         // remove xml content
         String infoId = detail.getInfoId();
@@ -2028,7 +2027,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       freeConnection(con);
     }
   }
-  
+
   private static final boolean useTagCloud;
   private static final boolean useNotation;
   private static final boolean indexAuthorName;

@@ -51,6 +51,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
@@ -68,7 +69,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -85,6 +85,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -329,9 +330,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId) throws ImportExportException {
+      PublicationContentType pubContent, String userId, String language)
+      throws ImportExportException {
     createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
-        getApplicationContext());
+        getApplicationContext(), language);
   }
 
   /**
@@ -345,7 +347,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId, String webContext) throws
+      PublicationContentType pubContent, String userId, String webContext, String language) throws
       ImportExportException {
 
     DBModelContentType dbModelType = pubContent.getDBModelContentType();
@@ -353,9 +355,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
       if (dbModelType != null) { // Contenu DBModel
-        createDBModelContent(unitReport, dbModelType, java.lang.Integer.toString(pubId));
+        createDBModelContent(unitReport, dbModelType, String.valueOf(pubId));
       } else if (wysiwygType != null) { // Contenu Wysiwyg
-        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext);
+        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext, language);
       } else if (xmlModel != null) {
         createXMLModelContent(unitReport, xmlModel, java.lang.Integer.toString(pubId), userId);
       }
@@ -505,7 +507,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // le modele existant n'est pas le meme que l'importe
         unitReport.setError(UnitReport.ERROR_CANT_UPDATE_CONTENT);
       }
-    } else if (!WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), pubId)) {
+    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId, I18NHelper.defaultLanguage)) {
       // on ne remplace pas un type de contenu par un autre
       // Preparation des donnees DBModel a  creer
       if (modelDetail == null) {
@@ -582,14 +584,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
    * Wysiwyg
    */
-  private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType,
-      String userId, String webContext) throws UtilException, WysiwygException,
+  private void createWysiwygContent(UnitReport unitReport, int pubId, WysiwygContentType wysiwygType,
+      String userId, String webContext, String language) throws UtilException, WysiwygException,
       ImportExportException {
-
-    String wysiwygFileName =
-        WysiwygController.getWysiwygFileName(java.lang.Integer.toString(pubId));
-    String wysiwygPath = AttachmentController.createPath(getCurrentComponentId(), "wysiwyg");
+    String wysiwygFileName = WysiwygController.getWysiwygFileName(String.valueOf(pubId), language);
+    String wysiwygPath = AttachmentController.createPath(getCurrentComponentId(),
+        WysiwygController.WYSIWYG_CONTEXT);
 
     // Recuperation du nouveau contenu wysiwyg
     File f = null;
@@ -616,29 +616,28 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
 
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), java.lang.Integer.
-        toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId), language)) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(),
-            java.lang.Integer.toString(pubId));
+            String.valueOf(pubId));
       } catch (WysiwygException ex) {/*
                                       * TODO: gerer l exception
                                       */
 
       }
-      File file = new File(wysiwygPath + File.separator + wysiwygFileName);
+      File file = new File(wysiwygPath, wysiwygFileName);
       file.delete();
     }
 
     // Creation du fichier de contenu wysiwyg sur les serveur
-    String imagesContext = WysiwygController.getImagesFileName(java.lang.Integer.toString(pubId));
+    String imagesContext = WysiwygController.getImagesFileName(String.valueOf(pubId));
     String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, f.getParent(),
         wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
-    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, "useless",
-        getCurrentComponentId(), "wysiwyg", java.lang.Integer.toString(pubId), userId);
+    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, getCurrentComponentId(),
+        WysiwygController.WYSIWYG_CONTEXT, String.valueOf(pubId), userId, language);
   }
 
   /**
@@ -1138,10 +1137,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg("useless", componentId, pubId)) {
+      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
-        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId);
+        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()));
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }

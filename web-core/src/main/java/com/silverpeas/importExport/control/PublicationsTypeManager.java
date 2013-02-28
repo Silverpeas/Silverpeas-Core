@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
@@ -86,6 +82,7 @@ import static java.io.File.separator;
 
 /**
  * Classe manager des importations unitaires du moteur d'importExport de silverPeas
+ *
  * @author sdevolder
  */
 public class PublicationsTypeManager {
@@ -93,6 +90,7 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant une exportation pour toutes les publications
    * spécifiées en paramètre. passé en paramètre au moteur d'importExport.
+   *
    * @param exportReport
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param listItemsToExport - liste des WAAttributeValuePair contenant les id des publications à
@@ -177,7 +175,8 @@ public class PublicationsTypeManager {
           modelDetail = gedIE.getModelDetail(dbModelContent.getId());
         } else if (wysiwygContent != null) {
           wysiwygText = exportWysiwygContent(pubId, componentId, gedIE,
-              exportPublicationRelativePath, exportPublicationPath, wysiwygContent);
+              exportPublicationRelativePath, exportPublicationPath, wysiwygContent, publicationType.
+              getPublicationDetail().getLanguage());
         } else if (xmlModel != null) {
           exportXmlForm(componentId, exportPublicationRelativePath, exportPublicationPath,
               xmlModel);
@@ -202,13 +201,13 @@ public class PublicationsTypeManager {
 
   String exportWysiwygContent(String pubId, String componentId, GEDImportExport gedIE,
       String exportPublicationRelativePath, String exportPublicationPath,
-      WysiwygContentType wysiwygContent) throws ImportExportException {
+      WysiwygContentType wysiwygContent, String language) throws ImportExportException {
     String wysiwygText;
     String wysiwygFileName = wysiwygContent.getPath();
     gedIE.copyWysiwygImageForExport(pubId, componentId, exportPublicationPath);
 
     try {
-      wysiwygText = WysiwygController.loadFileAndAttachment("useless", componentId, pubId);
+      wysiwygText = WysiwygController.load(componentId, pubId, language);
       wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
       if (wysiwygText == null) {
         wysiwygText = ""; // To avoid exception in createFile below
@@ -216,12 +215,10 @@ public class PublicationsTypeManager {
       // Enregistrement du nouveau fichier généré
       FileFolderManager.createFile(exportPublicationPath, wysiwygFileName, wysiwygText);
     } catch (Exception e) {
-      throw new ImportExportException("importExport",
-          "importExport.EX_CANT_GET_WYSIWYG", e);
+      throw new ImportExportException("importExport", "importExport.EX_CANT_GET_WYSIWYG", e);
     }
 
-    wysiwygContent.setPath(exportPublicationRelativePath + separator
-        + wysiwygFileName);
+    wysiwygContent.setPath(exportPublicationRelativePath + separator + wysiwygFileName);
     return wysiwygText;
   }
 
@@ -362,6 +359,7 @@ public class PublicationsTypeManager {
 
   /**
    * Méthode créant l'arboresence des répertoires pour une publication exportée
+   *
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
@@ -498,6 +496,7 @@ public class PublicationsTypeManager {
 
   /**
    * Méthode créant l'arborescence des répertoires pour une publication exportée
+   *
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
    * @param positionPath - ensemble des noeuds sur laquelle la publication est classée
    * @param componentId - id du composant de la publication
@@ -561,6 +560,7 @@ public class PublicationsTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
+   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param publicationsType - objet mappé par castor contenant toutes les informations de création
    * des publications de type unitaire
@@ -674,8 +674,7 @@ public class PublicationsTypeManager {
                               coordinatePointType.getAxisId()), componentId);
                           SilverTrace.debug("importExport",
                               "PublicationsTypeManager.processImport",
-                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " +
-                              nodeDetail);
+                              "root.MSG_GEN_PARAM_VALUE", "nodeDetail apres création= " + nodeDetail);
                         }
                         if (nodeDetail != null) {
                           if (first) {
@@ -690,8 +689,7 @@ public class PublicationsTypeManager {
                       }
                     }
                     SilverTrace.debug("importExport", "PublicationsTypeManager.processImport",
-                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " +
-                        coordinatePointsPath);
+                        "root.MSG_GEN_PARAM_VALUE", "coordinatePointsPath = " + coordinatePointsPath);
                     // Add coordinate (set of coordinatePoints)
                     int coordinateId = coordinateIE.addPositions(componentId, coordinatePointsPath.
                         toString());
@@ -725,7 +723,8 @@ public class PublicationsTypeManager {
               if (pubType.getPublicationContentType() != null) {
                 try {
                   gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getId()),
-                      pubType.getPublicationContentType(), userDetail.getId());
+                      pubType.getPublicationContentType(), userDetail.getId(), pubDetail.
+                      getLanguage());
                 } catch (ImportExportException ex) {
                   if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
                     unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
