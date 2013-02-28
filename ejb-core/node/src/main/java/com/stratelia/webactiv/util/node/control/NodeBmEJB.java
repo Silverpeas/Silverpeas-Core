@@ -957,6 +957,10 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
+        
+        if (processWysiwygContent) {
+          updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), language);
+        }
       }
 
       indexEntry.setCreationDate(nodeDetail.getCreationDate());
@@ -985,23 +989,19 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           // do not index on user name
         }
       }
-
-      if (processWysiwygContent) {
-        indexEntry = updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK());
-      }
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private FullIndexEntry updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry,
-      NodePK nodePK) {
+  private void updateIndexEntryWithWysiwygContent(FullIndexEntry indexEntry, NodePK nodePK,
+      String language) {
     SilverTrace.info("node", "NodeBmEJB.updateIndexEntryWithWysiwygContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
         + ", nodePK = " + nodePK.toString());
     try {
       if (nodePK != null) {
-        String wysiwygContent = WysiwygController.loadFileAndAttachment(nodePK.getSpace(), nodePK.
-            getComponentName(), "Node_" + nodePK.getId());
+        String wysiwygContent =
+            WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK.getId(), language);
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
         }
@@ -1009,7 +1009,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     } catch (Exception e) {
       // No wysiwyg associated
     }
-    return indexEntry;
   }
 
   /**

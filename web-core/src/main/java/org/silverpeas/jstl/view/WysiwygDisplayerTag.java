@@ -33,7 +33,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import static javax.servlet.jsp.tagext.Tag.SKIP_BODY;
 
 /**
  *
@@ -95,7 +94,7 @@ public class WysiwygDisplayerTag extends TagSupport {
       String content = WysiwygController.load(getComponentId(), getObjectId(), currentLang);
       //if content not found in specified language, check other ones
       if (!StringUtil.isDefined(content) && I18NHelper.isI18N) {
-        Iterator languages = I18NHelper.getLanguages();
+        Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext() && !StringUtil.isDefined(content)) {
           currentLang = (String) languages.next();
           content = WysiwygController.load(getComponentId(), getObjectId(), currentLang);

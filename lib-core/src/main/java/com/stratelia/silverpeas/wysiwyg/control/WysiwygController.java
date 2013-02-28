@@ -588,7 +588,7 @@ public class WysiwygController {
    * @throws WysiwygException
    * @see AttachmentController
    */
-  public static String loadFileAndAttachment(String fileName, String componentId, String context)
+  public static String loadFile(String fileName, String componentId, String context)
       throws WysiwygException {
     String path = AttachmentController.createPath(componentId, context);
     try {
@@ -612,10 +612,10 @@ public class WysiwygController {
       throws WysiwygException {
     String currentLanguage = I18NHelper.checkLanguage(language);
     String fileName = getWysiwygFileName(objectId, currentLanguage);
-    String content =  loadFileAndAttachment(fileName, componentId, WYSIWYG_CONTEXT);
+    String content =  loadFile(fileName, componentId, WYSIWYG_CONTEXT);
     if(!StringUtil.isDefined(content)) {
       fileName = getOldWysiwygFileName(objectId);
-      content = loadFileAndAttachment(fileName, componentId, WYSIWYG_CONTEXT);
+      content = loadFile(fileName, componentId, WYSIWYG_CONTEXT);
     }
     if (content == null) {
       content = "";
