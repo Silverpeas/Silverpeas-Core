@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -142,6 +143,34 @@ public class SilverpeasLookTest {
     prepareSpaces("WA2", "WA11", "WA111");
     String wallpaper = look.getWallpaperOfSpaceOrDefaultOne("WA111");
     assertThat(wallpaper, equalTo("/silverpeas/admin/jsp/icons/silverpeas_light/bandeauTop.jpg"));
+  }
+  
+  /**
+   * When a root space has a CSS specifically set, this CSS should be returned.
+   */
+  @Test
+  public void getCSSOfARootSpace() {
+    prepareSpaces("WA1");
+    String spaceId = look.getSpaceWithCSS("WA1");
+    assertThat(spaceId, is("1"));
+  }
+  
+  /**
+   * When a space has no specifically CSS set, the one of the fist parent having a CSS
+   * specifically set is returned
+   */
+  @Test
+  public void getCSSOfTheFirstParentSpace() {
+    prepareSpaces("WA1", "WA11", "WA111");
+    String url = look.getCSSOfSpace("WA111");
+    assertThat(url, is("/silverpeas/OnlineFileServer/styles.css?ComponentId=Space1" +
+        "&SourceFile=styles.css&MimeType=text/css&Directory=look"));
+  }
+  
+  @Test
+  public void spaceWithoutASpecificCSS() {
+    prepareSpaces("WA3");
+    assertThat(look.getCSSOfSpace("WA3"), is(nullValue()));
   }
 
   /**

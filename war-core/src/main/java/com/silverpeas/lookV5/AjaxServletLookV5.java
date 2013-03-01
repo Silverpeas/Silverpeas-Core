@@ -23,11 +23,11 @@
 */
 package com.silverpeas.lookV5;
 
-import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.external.webConnections.dao.WebConnectionService;
 import com.silverpeas.external.webConnections.model.WebConnectionsInterface;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.look.LookHelper;
+import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.personalization.UserMenuDisplay;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.sharing.services.SharingServiceFactory;
@@ -52,7 +52,6 @@ import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.stratelia.webactiv.organization.DAOFactory;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 
@@ -61,7 +60,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -401,6 +399,7 @@ public class AjaxServletLookV5 extends HttpServlet {
           String defaultLook, LookHelper helper, OrganizationController orga) {
     String spaceLook = getSpaceLookAttribute(space, defaultLook, orga);
     String spaceWallpaper = getWallPaper(space.getFullId());
+    String spaceCSS = SilverpeasLook.getSilverpeasLook().getSpaceWithCSS(space.getFullId());
 
     boolean isTransverse = helper.getTopSpaceIds().contains(space.getFullId());
 
@@ -413,7 +412,8 @@ public class AjaxServletLookV5 extends HttpServlet {
             + EncodeHelper.escapeXml(space.getName(language)) + "\" description=\""
             + EncodeHelper.escapeXml(space.getDescription()) + "\" type=\""
             + attributeType + "\" kind=\"space\" level=\"" + space.getLevel()
-            + "\" look=\"" + spaceLook + "\" wallpaper=\"" + spaceWallpaper + "\"";
+            + "\" look=\"" + spaceLook + "\" wallpaper=\"" + spaceWallpaper + "\""
+            + " css=\""+spaceCSS+"\"";
   }
 
   /**
@@ -680,18 +680,9 @@ public class AjaxServletLookV5 extends HttpServlet {
   }
 
   private String getWallPaper(String spaceId) {
-    String path = FileRepositoryManager.getAbsolutePath("Space" + spaceId.substring(2),
-            new String[] { "look" });
-    File file = new File(path + "wallPaper.jpg");
-    if (file.isFile()) {
+    if (SilverpeasLook.getSilverpeasLook().hasSpaceWallpaper(spaceId)) {
       return "1";
-    } else {
-      file = new File(path + "wallPaper.gif");
-      if (file.isFile()) {
-        return "1";
-      }
     }
-
     return "0";
   }
 

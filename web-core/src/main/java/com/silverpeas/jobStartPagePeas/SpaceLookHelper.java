@@ -29,6 +29,10 @@ import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.silverpeas.look.SilverpeasLook;
+
 public class SpaceLookHelper implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -44,10 +48,8 @@ public class SpaceLookHelper implements Serializable {
     if (files != null) {
       for (File file : files) {
         SpaceLookItem item = new SpaceLookItem(file, spaceId);
-
         if (item != null) {
-          items.put(item.getName()
-              .substring(0, item.getName().lastIndexOf(".")), item);
+          items.put(FilenameUtils.getBaseName(item.getName()), item);
         }
       }
     }
@@ -56,4 +58,14 @@ public class SpaceLookHelper implements Serializable {
   public SpaceLookItem getItem(String name) {
     return items.get(name);
   }
+  
+  public SpaceLookItem getWallpaper() {
+    return items.get(SilverpeasLook.DEFAULT_WALLPAPER_PROPERTY);
+  }
+  
+  public SpaceLookItem getCSS() {
+    return items.get(SilverpeasLook.SPACE_CSS);
+  }
+  
+  
 }

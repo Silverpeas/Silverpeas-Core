@@ -519,15 +519,30 @@ public class LookSilverpeasV5Helper implements LookHelper {
    */
   @Override
   public String getSpaceWallPaper() {
-    String wallpaperURL = null;
+    String theSpaceId = getCurrentDeepestSpaceId();
+    if (StringUtil.isDefined(theSpaceId)) {
+      return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
+    }
+    return null;
+  }
+  
+  @Override
+  public String getSpaceWithCSSToApply() {
+    String spaceId = getCurrentDeepestSpaceId();
+    if (StringUtil.isDefined(spaceId)) {
+      return SilverpeasLook.getSilverpeasLook().getSpaceWithCSS(spaceId);
+    }
+    return null;
+  }
+  
+  private String getCurrentDeepestSpaceId() {
     String theSpaceId = getSpaceId();
     if (StringUtil.isDefined(theSpaceId)) {
       if (StringUtil.isDefined(getSubSpaceId())) {
         theSpaceId = getSubSpaceId();
       }
-      wallpaperURL = SilverpeasLook.getSilverpeasLook().getWallpaperOfSpace(theSpaceId);
     }
-    return wallpaperURL;
+    return theSpaceId;
   }
 
   public String getComponentURL(String key, String function) {
