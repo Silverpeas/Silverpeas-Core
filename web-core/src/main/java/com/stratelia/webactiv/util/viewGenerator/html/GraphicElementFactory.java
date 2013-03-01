@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html;
 
+import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -404,6 +405,11 @@ public class GraphicElementFactory {
       if (curSpace != null) {
         String spaceLookStyle = curSpace.getLook();
         getSpaceLook(code, curSpace, spaceLookStyle);
+        String css = SilverpeasLook.getSilverpeasLook().getCSSOfSpace(this.spaceId);
+        if (StringUtil.isDefined(css)) {
+          code.append("<link id=\"spaceCSSid\" rel=\"stylesheet\" type=\"text/css\" href=\"")
+              .append(css).append("\"/>\n");
+        }
         return;
       }
     }
