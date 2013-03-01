@@ -2,8 +2,10 @@ package com.silverpeas.util.security;
 
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,12 +23,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.security.Security;
 import java.text.ParseException;
+import java.util.Random;
 
 /**
- * The base class of all tests on the services provided by the ContentEncryptionService instances.
+ * The base class of all tests on the services provided by the DefaultContentEncryptionService instances.
  * It allocates all the required resources for the tests and frees them once the tests are done.
  * It creates the security directory to receive the key file, but the key file and it constructs
- * a ContentEncryptionService instance ready to be tested.
+ * a DefaultContentEncryptionService instance ready to be tested.
  */
 public class ContentEncryptionServiceTest {
 
@@ -44,7 +47,7 @@ public class ContentEncryptionServiceTest {
     }
   }
 
-  private ContentEncryptionService service;
+  private DefaultContentEncryptionService service;
 
   @BeforeClass
   public static void createSecurityDirectoryAndSetupJCEProviders() throws IOException {
@@ -73,13 +76,18 @@ public class ContentEncryptionServiceTest {
         keyFile.setWritable(true);
         FileUtils.forceDelete(keyFile);
       }
+      keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+      if (keyFile.exists()) {
+        keyFile.setWritable(true);
+        FileUtils.forceDelete(keyFile);
+      }
       FileUtils.forceDelete(securityDir);
     }
   }
 
   @Before
   public void setUpContentEncryptionService() throws Exception {
-    service = new ContentEncryptionService();
+    service = new DefaultContentEncryptionService();
   }
 
   @After
@@ -89,9 +97,14 @@ public class ContentEncryptionServiceTest {
       keyFile.setWritable(true);
       FileUtils.forceDelete(keyFile);
     }
+    keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+    if (keyFile.exists()) {
+      keyFile.setWritable(true);
+      FileUtils.forceDelete(keyFile);
+    }
   }
 
-  public ContentEncryptionService getContentEncryptionService() {
+  public DefaultContentEncryptionService getContentEncryptionService() {
     return service;
   }
 
@@ -134,7 +147,54 @@ public class ContentEncryptionServiceTest {
     }
     String encryptedKey = encryptKey(key);
     FileUtil.writeFile(keyFile, new StringReader(encryptedKey));
-      keyFile.setReadOnly();
+    keyFile.setReadOnly();
+  }
+
+  /**
+   * Generates the specified count of text contents for testing purpose.
+   * @param count the number of text contents to generate.
+   * @return an array with the generated text contents.
+   */
+  public static TextContent[] generateTextContents(int count) {
+    TextContent[] contents = new TextContent[count];
+    UserDetail creator = new UserDetail();
+    creator.setFirstName("Bart");
+    creator.setLastName("Simpson");
+    Random random = new Random();
+    for (int i = 0; i < count; i++) {
+      TextContent aContent = new TextContent(String.valueOf(i), "", creator);
+      aContent.setTitle(RandomStringUtils.randomAscii(random.nextInt(32)));
+      aContent.setDescription(RandomStringUtils.randomAscii(random.nextInt(128)));
+      aContent.setText(RandomStringUtils.randomAscii(random.nextInt(1024)));
+      contents[i] = aContent;
+    }
+    return contents;
+  }
+
+  /**
+   * Encrypts the specified text contents by using the specified cipher key in hexadecimal.
+   * @param contents the contents to encrypt.
+   * @param key the cipher key to use in hexadecimal.
+   * @return an array with the encrypted text contents.
+   * @throws Exception if an error occurs while encrypting the contents.
+   */
+  public static TextContent[] encryptTextContents(TextContent[] contents, String key)
+      throws Exception {
+    CipherFactory cipherFactory = CipherFactory.getFactory();
+    Cipher aes = cipherFactory.getCipher(CryptographicAlgorithmName.AES);
+    CipherKey cipherKey = CipherKey.aKeyFromHexText(key);
+    TextContent[] encryptedContents = new TextContent[contents.length];
+    for (int i = 0; i < contents.length; i++) {
+      TextContent content =
+          new TextContent(contents[i].getId(), contents[i].getComponentInstanceId(),
+              contents[i].getCreator());
+      content.setTitle(StringUtil.asBase64(aes.encrypt(contents[i].getTitle(), cipherKey)));
+      content.setDescription(
+          StringUtil.asBase64(aes.encrypt(contents[i].getDescription(), cipherKey)));
+      content.setText(StringUtil.asBase64(aes.encrypt(contents[i].getText(), cipherKey)));
+      encryptedContents[i] = content;
+    }
+    return encryptedContents;
   }
 
   private static String encryptKey(String key) throws Exception {

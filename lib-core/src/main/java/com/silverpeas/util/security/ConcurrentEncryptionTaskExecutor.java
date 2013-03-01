@@ -2,10 +2,7 @@ package com.silverpeas.util.security;
 
 import org.silverpeas.util.crypto.CryptoException;
 
-import java.io.IOException;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Executor of concurrent encryption tasks for the ContentEncryptionService instances.

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Unit tests on encryption management done by the ContentEncryptionService instances.
+ * Unit tests on encryption management done by the DefaultContentEncryptionService instances.
  */
 public class KeyManagementTest extends ContentEncryptionServiceTest {
 
@@ -86,102 +86,12 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     assertTheContentCipherIsRenewed(iterators, key);
   }
 
-  @Test
-  public void testTheKeyUpdateIsBlocking() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          String key = generateAESKey();
-          getContentEncryptionService().updateCipherKey(key);
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          TextContent[] contents = generateTextContents(1);
-          Map<String, String> content = contents[0].getProperties();
-          getContentEncryptionService().encryptContent(content);
-          fail("An error should be thrown");
-        } catch (Exception e) {
-          assertThat(e instanceof IllegalStateException, is(true));
-        }
-      }
-    });
-
-    executor.shutdown();
-    while (!executor.isTerminated()) {
-
-    }
-  }
-
-  @Test
-  public void testTheKeyUpdateIsBlockedWhenAContentIsEncrypted() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    final long[] time = new long[1];
-    final Future future = executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          TextContent[] contents = generateTextContents(1);
-          Map<String, String> content = contents[0].getProperties();
-          getContentEncryptionService().encryptContent(content);
-          time[0] = System.currentTimeMillis();
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          assertThat(future.isDone(), is(false));
-          String key = generateAESKey();
-          getContentEncryptionService().updateCipherKey(key);
-          assertThat(System.currentTimeMillis(), greaterThan(time[0]));
-          assertThat(future.isDone(), is(true));
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.shutdown();
-    while (!executor.isTerminated()) {
-
-    }
-  }
-
   private static MyOwnContentIterator[] getEncryptionContentIterators(final int count) {
     MyOwnContentIterator[] iterators = new MyOwnContentIterator[count];
     for (int i = 0; i < count; i++) {
       iterators[i] = new MyOwnContentIterator(count);
     }
     return iterators;
-  }
-
-  private static TextContent[] generateTextContents(int count) {
-    TextContent[] contents = new TextContent[count];
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Bart");
-    creator.setLastName("Simpson");
-    Random random = new Random();
-    for (int i = 0; i < count; i++) {
-      TextContent aContent = new TextContent(String.valueOf(i), "", creator);
-      aContent.setTitle(RandomStringUtils.randomAscii(random.nextInt(32)));
-      aContent.setDescription(RandomStringUtils.randomAscii(random.nextInt(128)));
-      aContent.setText(RandomStringUtils.randomAscii(random.nextInt(1024)));
-      contents[i] = aContent;
-    }
-    return contents;
   }
 
   private static void assertKeyFileExistsWithKey(File keyFile, String expectedKey)

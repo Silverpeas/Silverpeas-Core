@@ -75,6 +75,12 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
  */
 public final class Admin {
 
+  /**
+   * Identifier of the administration component in Silverpeas. It identifies any administrative tool
+   * or service belonging to the administration component. It can be then passed where an identifier
+   * of a component or of an application instance (named also component instance) is expected.
+   */
+  public static final String ADMIN_COMPONENT_ID = "ADMIN";
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
   static private final Object semaphore = new Object();

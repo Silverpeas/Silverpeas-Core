@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * A cryptographic task the ContentEncryptionService instances can perform on the contents
+ * A cryptographic task the DefaultContentEncryptionService instances can perform on the contents
  * provided by some iterators on content: content encryption, content decryption or content
  * encryption renewing.
  * </p>
- * This class is to be used only by the ContentEncryptionService instances for their inner
+ * This class is to be used only by the DefaultContentEncryptionService instances for their inner
  * operations.
  * </p>
  * A cryptographic task is a concurrent one so it can be executed concurrently along other
@@ -79,10 +79,10 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
 
   @Override
   public Void execute() throws CryptoException {
-    final Cipher cipher = ContentEncryptionService.getCipherForContentEncryption();
-    final CipherKey actualKey = ContentEncryptionService.getActualCipherKey();
+    final Cipher cipher = DefaultContentEncryptionService.getCipherForContentEncryption();
+    final CipherKey actualKey = DefaultContentEncryptionService.getActualCipherKey();
     final CipherKey previousKey =
-        this.task == Type.RENEW ? ContentEncryptionService.getPreviousCipherKey() : null;
+        this.task == Type.RENEW ? DefaultContentEncryptionService.getPreviousCipherKey() : null;
     if (iterators.length > 1) {
       final ExecutorService executor = getTaskExecutor(iterators.length);
       for (final EncryptionContentIterator someContents : iterators) {
@@ -109,14 +109,14 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
       try {
         switch (task) {
           case ENCRYPTION:
-            content = ContentEncryptionService.encryptContent(content, cipher, actualKey);
+            content = DefaultContentEncryptionService.encryptContent(content, cipher, actualKey);
             break;
           case DECRYPTION:
-            content = ContentEncryptionService.decryptContent(content, cipher, actualKey);
+            content = DefaultContentEncryptionService.decryptContent(content, cipher, actualKey);
             break;
           case RENEW:
-            content = ContentEncryptionService.decryptContent(content, cipher, previousKey);
-            content = ContentEncryptionService.encryptContent(content, cipher, actualKey);
+            content = DefaultContentEncryptionService.decryptContent(content, cipher, previousKey);
+            content = DefaultContentEncryptionService.encryptContent(content, cipher, actualKey);
             break;
         }
         theContents.update(content);

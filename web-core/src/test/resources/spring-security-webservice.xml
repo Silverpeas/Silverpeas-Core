@@ -25,6 +25,17 @@
 
 -->
 
-<jboss-web>
-  <depends>org.hornetq:module=JMS,name="comment",type=Topic</depends>
-</jboss-web>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <ctx:annotation-config/>
+  <ctx:component-scan base-package="com.silverpeas.util.security"/>
+  <ctx:component-scan base-package="org.silverpeas.security.web"/>
+        
+  <import resource="spring-webservice.xml" />
+</beans>
+

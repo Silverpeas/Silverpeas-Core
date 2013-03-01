@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Unit tests on the encryption of contents done by the ContentEncryptionService instances.
+ * Unit tests on the encryption of contents done by the DefaultContentEncryptionService instances.
  */
 public class ContentEncryptionTest extends ContentEncryptionServiceTest {
 
@@ -140,7 +140,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   @Test
   public void decryptInlineAContent() throws Exception {
     TextContent[] contents = generateTextContents(1);
-    TextContent[] encryptedContents = encryptTextContents(contents);
+    TextContent[] encryptedContents = encryptTextContents(contents, this.key);
 
     String[] contentFields = getContentEncryptionService().decryptContent(
         encryptedContents[0].getTitle(),
@@ -154,7 +154,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
   @Test
   public void decryptAContent() throws Exception {
     TextContent[] contents = generateTextContents(1);
-    TextContent[] encryptedContents = encryptTextContents(contents);
+    TextContent[] encryptedContents = encryptTextContents(contents, this.key);
 
     Map<String, String> encryptedContent = encryptedContents[0].getProperties();
     Map<String, String> content = getContentEncryptionService().decryptContent(encryptedContent);
@@ -169,7 +169,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
     getContentEncryptionService().decryptContents(new EncryptionContentIterator() {
 
       TextContent[] contents = generateTextContents(count);
-      TextContent[] encryptedContents = encryptTextContents(contents);
+      TextContent[] encryptedContents = encryptTextContents(contents, key);
       int current = -1;
 
       @Override
@@ -207,7 +207,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       providers[i] = new EncryptionContentIterator() {
 
         TextContent[] contents = generateTextContents(count);
-        TextContent[] encryptedContents = encryptTextContents(contents);
+        TextContent[] encryptedContents = encryptTextContents(contents, key);
         int current = -1;
 
         @Override
@@ -249,7 +249,7 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
     getContentEncryptionService().renewCipherOfContents(new EncryptionContentIterator() {
 
       TextContent[] expectedContents = generateTextContents(count);
-      TextContent[] encryptedContents = encryptTextContents(expectedContents);
+      TextContent[] encryptedContents = encryptTextContents(expectedContents, key);
       int current = -1;
 
       @Override
@@ -277,111 +277,6 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
         throw new UnsupportedOperationException();
       }
     });
-  }
-
-  @Test
-  public void testTheCipherRenewingIsBlocking() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          renewContentCipher();
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          TextContent[] contents = generateTextContents(1);
-          Map<String, String> content = contents[0].getProperties();
-          getContentEncryptionService().encryptContent(content);
-          fail("An error should be thrown");
-        } catch (Exception e) {
-          assertThat(e instanceof IllegalStateException, is(true));
-        }
-      }
-    });
-
-    executor.shutdown();
-    while(!executor.isTerminated()) {
-
-    }
-  }
-
-  @Test
-  public void testTheCipherRenewingIsBlockedWhenAContentIsEncrypted() {
-    ExecutorService executor = Executors.newCachedThreadPool();
-    final long[] time = new long[1];
-    final Future future = executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          TextContent[] contents = generateTextContents(1);
-          Map<String, String> content = contents[0].getProperties();
-          getContentEncryptionService().encryptContent(content);
-          time[0] = System.currentTimeMillis();
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          assertThat(future.isDone(), is(false));
-          renewContentCipher();
-          assertThat(System.currentTimeMillis(), greaterThan(time[0]));
-          assertThat(future.isDone(), is(true));
-        } catch (Exception e) {
-          fail(e.getMessage());
-        }
-      }
-    });
-
-    executor.shutdown();
-    while(!executor.isTerminated()) {
-
-    }
-  }
-
-  private  static TextContent[] generateTextContents(int count) {
-    TextContent[] contents = new TextContent[count];
-    UserDetail creator = new UserDetail();
-    creator.setFirstName("Bart");
-    creator.setLastName("Simpson");
-    Random random = new Random();
-    for(int i = 0; i < count; i++) {
-      TextContent aContent = new TextContent(String.valueOf(i), "", creator);
-      aContent.setTitle(RandomStringUtils.randomAscii(random.nextInt(32)));
-      aContent.setDescription(RandomStringUtils.randomAscii(random.nextInt(128)));
-      aContent.setText(RandomStringUtils.randomAscii(random.nextInt(1024)));
-      contents[i] = aContent;
-    }
-    return contents;
-  }
-
-  private TextContent[] encryptTextContents(TextContent[] contents) throws Exception {
-    CipherFactory cipherFactory = CipherFactory.getFactory();
-    Cipher aes = cipherFactory.getCipher(CryptographicAlgorithmName.AES);
-    CipherKey cipherKey = CipherKey.aKeyFromHexText(this.key);
-    TextContent[] encryptedContents = new TextContent[contents.length];
-    for (int i = 0; i < contents.length; i++) {
-      TextContent content = new TextContent(contents[i].getId(),
-          contents[i].getComponentInstanceId(), contents[i].getCreator());
-      content.setTitle(StringUtil.asBase64(aes.encrypt(contents[i].getTitle(), cipherKey)));
-      content.setDescription(
-          StringUtil.asBase64(aes.encrypt(contents[i].getDescription(), cipherKey)));
-      content.setText(StringUtil.asBase64(aes.encrypt(contents[i].getText(), cipherKey)));
-      encryptedContents[i] = content;
-    }
-    return encryptedContents;
   }
 
   private void assertContentIsCorrectlyEncrypted(TextContent content,

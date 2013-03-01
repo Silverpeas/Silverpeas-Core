@@ -1,0 +1,113 @@
+<%--
+
+    Copyright (C) 2000 - 2012 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+--%>
+
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle basename="org.silverpeas.crypto.multilang.cryptoBundle" />
+
+<fmt:message var="title"       key="crypto.cipherKeyImport"/>
+<fmt:message var="description" key="crypto.importDescription"/>
+<fmt:message var="label"       key="crypto.cipherKey"/>
+<fmt:message var="buttonLabel" key="crypto.import"/>
+<fmt:message var="hexaError"   key="crypto.keyNotInHexadecimal"/>
+<fmt:message var="sizeError"   key="crypto.invalidKeySize"/>
+<html>
+<head>
+  <view:looknfeel/>
+  <script type="text/javascript">
+    function isInHexadecimal(key) {
+      var hexa = /^[0-9A-F]+$/gi;
+      return key.match(hexa) !== null;
+    }
+
+    function isIn256Bits(key) {
+      /* 256 bits = 64 characters in hexadecimal */
+      return key.length === 64;
+    }
+
+    function printError(msg) {
+      $("#error").html(msg.replace("\n", "<br/>"));
+    }
+
+    function printMessage(msg) {
+      $("#message").html(msg.replace("\n", "<br/>"));
+    }
+
+    function importCipherKey() {
+      var key = $("#cipherKey").val();
+      if (!isInHexadecimal(key)) {
+        printError("${hexaError}");
+      }
+      else if (!isIn256Bits(key)) {
+        printError("${sizeError}");
+      }
+      else {
+        $.ajax(webContext + "/services/security/cipherkey", {
+          type: 'PUT',
+          data: key,
+          contentType:"text/plain",
+          dataType: "text/plain",
+          processData: false,
+          success: function(status) {
+            printMessage(status);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            printError(errorThrown);
+          }
+        });
+      }
+    }
+  </script>
+</head>
+<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<view:browseBar ignoreComponentLink="true" componentId="${title}"/>
+<view:window>
+  <view:frame>
+    <view:board>
+
+      <p id="help">${description}</p>
+
+      <form>
+        <label for="cipherKey">${label}</label>
+        <input type="text" size="64" maxlength="64" name="cipherKey" id="cipherKey"/>
+      </form>
+
+      <p id="message"></p>
+      <p id="error"></p>
+
+      <view:buttonPane horizontalPosition="center">
+        <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
+      </view:buttonPane>
+
+    </view:board>
+  </view:frame>
+</view:window>
+</body>
+</html>

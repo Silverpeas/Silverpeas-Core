@@ -1,6 +1,7 @@
 package org.silverpeas.util.crypto;
 
 import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
