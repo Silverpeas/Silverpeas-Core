@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.silverpeas.search.PlainSearchResult;
-import org.silverpeas.search.SearchEngine;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
@@ -1183,7 +1182,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           } else {
             titleLink +=
                 "document.location.href='"
-                + getUrl(URLManager.getApplicationURL(), componentId, "useless", result.getURL())
+                + getUrl(URLManager.getApplicationURL(), componentId, result.getURL())
                 + "';";
           }
         }
@@ -2563,13 +2562,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * ******************************************************************************************
    */
   public String getUrl(String urlBase, MatchingIndexEntry indexEntry) {
-    return getUrl(urlBase, indexEntry.getComponent(), indexEntry.getParams(),
-        indexEntry.getPageAndParams());
+    return getUrl(urlBase, indexEntry.getComponent(), indexEntry.getPageAndParams());
   }
 
-  public String getUrl(String urlBase, String componentId, String params,
-      String pageAndParams) {
-    return urlBase + URLManager.getURL(null, componentId) + pageAndParams;
+  public String getUrl(String urlBase, String componentId, String pageAndParams) {
+    String url = urlBase + URLManager.getURL(null, componentId) + pageAndParams;
+    if (url.contains("?")) {
+      url += "&From=Search";
+    } else {
+      url += "?From=Search";
+    }
+    return url;
   }
 
   private boolean isExportLicenseOK() {
