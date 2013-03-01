@@ -25,6 +25,7 @@
 package com.silverpeas.look;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.util.FileUtil;
@@ -53,6 +54,7 @@ public class SilverpeasLook {
    * default wallpaper, with SILVERPEAS_CONTEXT the web context at which Silverpeas is deployed.
    */
   public static final String DEFAULT_WALLPAPER_PROPERTY = "wallPaper";
+  public static final String SPACE_CSS = "styles";
   private static SilverpeasLook look = new SilverpeasLook();
   @Inject
   private OrganizationController organizationController;
@@ -83,16 +85,15 @@ public class SilverpeasLook {
    * space and for any of its parent spaces.
    */
   public String getWallpaperOfSpace(String spaceId) {
-    String wallpaperURL = null;
     List<SpaceInst> path = organizationController.getSpacePath(spaceId);
     for (int i = path.size() - 1; i >= 0; i--) {
       SpaceInst space = path.get(i);
-      wallpaperURL = getWallPaperURL(space.getId());
+      String wallpaperURL = getWallPaperURL(space.getId());
       if (isDefined(wallpaperURL)) {
-        break;
+        return wallpaperURL;
       }
     }
-    return wallpaperURL;
+    return null;
   }
 
   /**
@@ -118,28 +119,85 @@ public class SilverpeasLook {
   }
 
   private String getWallPaperURL(String spaceId) {
-    String wallpaperURL = null;
-    String id = spaceId;
-    if (id.startsWith(SPACE_KEY_PREFIX)) {
-      id = id.substring(2);
-    }
-    String basePath =
-        FileRepositoryManager.getAbsolutePath("Space" + id, new String[] { "look" });
+    String id = getShortSpaceId(spaceId);
+    String basePath = getSpaceBasePath(id);
     File dir = new File(basePath);
     if (dir.exists() && dir.isDirectory()) {
       Collection<File> wallpapers = FileUtils.listFiles(dir, FileFilterUtils.prefixFileFilter(
           "wallPaper", IOCase.INSENSITIVE), null);
       for (File wallpaper : wallpapers) {
         if (wallpaper.isFile() && FileUtil.isImage(wallpaper.getName())) {
-          wallpaperURL = FileServerUtils.getOnlineURL(
-              "Space" + id, wallpaper.getName(),
-              wallpaper.getName(),
-              FileUtil.getMimeType(wallpaper.getName()), "look");
-          break;
+          return getURLOfElement(id, wallpaper.getName());
         }
       }
     }
-    return wallpaperURL;
+    return null;
+  }
+  
+  /**
+   * return the first space id with a specific CSS in path of given space
+   * This space can be the given space itself or one of its parents
+   * @param spaceId
+   * @return the first space id (from given space to root) with a specific CSS. If no space
+   * in path have got specific CSS, returns null.
+   */
+  public String getSpaceWithCSS(String spaceId) {
+    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    Collections.reverse(path);
+    for (SpaceInst space : path) {
+      String url = getSpaceCSSURL(space.getId());
+      if (isDefined(url)) {
+        return getShortSpaceId(space.getId());
+      }
+    }
+    return null;
+  }
+
+  /**
+   * return the CSS URL of space with a specific CSS. This space can be the given space itself or one
+   * of its parents. It is this URL which must be applied to given space.
+   * @param spaceId
+   * @return the CSS URL of first space (from given space to root) with a specific CSS. If no space
+   * in path have got specific CSS, returns null.
+   */
+  public String getCSSOfSpace(String spaceId) {
+    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    Collections.reverse(path);
+    for (SpaceInst space : path) {
+      String url = getSpaceCSSURL(space.getId());
+      if (isDefined(url)) {
+        return url;
+      }
+    }
+    return null;
+  }
+  
+  private String getSpaceCSSURL(String spaceId) {
+    String id = getShortSpaceId(spaceId);
+    File dir = new File(getSpaceBasePath(id));
+    if (dir.exists() && dir.isDirectory()) {
+      String filename = SPACE_CSS + ".css";
+      File css = new File(dir, filename);
+      if (css != null && css.exists()) {
+        return getURLOfElement(id, filename);
+      }
+    }
+    return null;
+  }
+  
+  public String getSpaceBasePath(String spaceId) {
+    return FileRepositoryManager.getAbsolutePath("Space" + spaceId, new String[] { "look" });
+  }
+  
+  private String getURLOfElement(String spaceId, String filename) {
+    return FileServerUtils.getOnlineURL("Space" + spaceId, filename, filename, FileUtil.getMimeType(filename), "look");
+  }
+  
+  private String getShortSpaceId(String spaceId) {
+    if (spaceId.startsWith(SPACE_KEY_PREFIX)) {
+      return spaceId.substring(2);
+    }
+    return spaceId;
   }
 
   private SilverpeasLook() {

@@ -30,7 +30,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.token.TokenStringKey;
 import org.silverpeas.token.constant.TokenType;

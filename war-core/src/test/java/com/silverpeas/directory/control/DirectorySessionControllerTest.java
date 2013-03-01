@@ -24,23 +24,22 @@
 
 package com.silverpeas.directory.control;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
-import com.silverpeas.directory.control.DirectorySessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class DirectorySessionControllerTest {
@@ -257,29 +256,22 @@ public class DirectorySessionControllerTest {
     usersSpace.add(user1);
     usersSpace.add(user2);
     usersSpace.add(user3);
-    ProfileInst pi = mock(ProfileInst.class);
-    ArrayList<String> tableau =  new ArrayList<String>();
-    tableau.add("1");
-    tableau.add("2");
-    tableau.add("3");
-    
-    when(pi.getAllUsers()).thenReturn(tableau);
-    ComponentInst ci = mock(ComponentInst.class);
-    ArrayList<ProfileInst> tableau_test = new ArrayList<ProfileInst>();
-    tableau_test.add(pi);
-    when(ci.getAllProfilesInst()).thenReturn(tableau_test);
-    SpaceInst s = mock(SpaceInst.class);
-    String[] tab = new String [0];
-    when(s.getSubSpaceIds()).thenReturn(tab);
-    ArrayList<ComponentInst> tableau_test2 = new ArrayList<ComponentInst>();
-    tableau_test2.add(ci);
-    when(s.getAllComponentsInst()).thenReturn(tableau_test2);
     
     MainSessionController controller = mock(MainSessionController.class);
     final OrganizationController organisation = mock(OrganizationController.class);
     when(controller.getOrganizationController()).thenReturn(organisation);
-    when(organisation.getSpaceInstById("0")).thenReturn(s);
-    when(organisation.getUserDetails(tableau.toArray(new String[tableau.size()]))).thenReturn(usersSpace.toArray(new UserDetail[usersSpace.size()]));
+    
+    String[] componentIds = {"kmelia12", "webPages245"};
+    when(organisation.getAllComponentIdsRecur("0")).thenReturn(componentIds);
+    
+    UserDetail[] component1 = {user1, user2};
+    UserDetail[] component2 = {user1, user3};
+    Map<String, UserDetail[]> components = new HashMap<String, UserDetail[]>();
+    components.put("kmelia12", component1);
+    components.put("webPages245", component2);
+    when(organisation.getAllUsers("kmelia12")).thenReturn(components.get("kmelia12"));
+    when(organisation.getAllUsers("webPages245")).thenReturn(components.get("webPages245"));
+    
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -324,22 +316,30 @@ public class DirectorySessionControllerTest {
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
-    List<String> ol = new ArrayList<String>();
-    List<String> nl = new ArrayList<String>();
-    ol.add("1");
-    ol.add("2");
-    ol.add("5");
-    nl.add("5");
-    nl.add("3");
-    nl.add("4");
-    List<String> resultat = directoryDSC.fillList(ol, nl);
-    assertNotNull(resultat);
-    assertEquals("size 5", resultat.size(), 5);
-    assertEquals(resultat.get(0), ol.get(0));
-    assertEquals(resultat.get(1), ol.get(1));
-    assertEquals(resultat.get(2), ol.get(2));
-    assertEquals(resultat.get(3), nl.get(1));
-    assertEquals(resultat.get(4), nl.get(2));
-    
+    List<UserDetail> ol = new ArrayList<UserDetail>();
+    UserDetail[] nl = new UserDetail[3];
+    UserDetail u1 = new UserDetail();
+    u1.setId("1");
+    UserDetail u2 = new UserDetail();
+    u2.setId("2");
+    UserDetail u5 = new UserDetail();
+    u5.setId("5");
+    ol.add(u1);
+    ol.add(u2);
+    ol.add(u5);
+    nl[0] = new UserDetail();
+    nl[0].setId("5");
+    nl[1] = new UserDetail();
+    nl[1].setId("3");
+    nl[2] = new UserDetail();
+    nl[2].setId("4");
+    directoryDSC.fillList(ol, nl);
+    assertNotNull(ol);
+    assertEquals("size 5", ol.size(), 5);
+    assertEquals(ol.get(0), ol.get(0));
+    assertEquals(ol.get(1), ol.get(1));
+    assertEquals(ol.get(2), ol.get(2));
+    assertEquals(ol.get(3), nl[1]);
+    assertEquals(ol.get(4), nl[2]);
   }
 }

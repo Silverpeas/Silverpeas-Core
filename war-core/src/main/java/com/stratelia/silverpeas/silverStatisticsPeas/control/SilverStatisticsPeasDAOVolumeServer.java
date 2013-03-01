@@ -37,6 +37,7 @@ import java.util.Map;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import java.util.HashMap;
@@ -144,13 +145,13 @@ public class SilverStatisticsPeasDAOVolumeServer {
 
     Map<String, String> intermedHash = getHashtableFromQuery(selectQuery);
     AdminController myAdminController = new AdminController("");
-    String[] values;
+    boolean isAdmin = UserDetail.getById(currentUserId).isAccessAdmin();
     for (Map.Entry<String, String> entry : intermedHash.entrySet()) {
       String cmpId = entry.getKey();
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
-      if (myAdminController.isComponentAvailable(cmpId, currentUserId)) {
-        values = new String[3];
+      if (isAdmin || myAdminController.isComponentAvailable(cmpId, currentUserId)) {
+        String[] values = new String[3];
         values[0] = entry.getValue();
         resultat.put(cmpId, values);
       }
@@ -169,10 +170,7 @@ public class SilverStatisticsPeasDAOVolumeServer {
         "silverStatisticsPeas",
         "SilverStatisticsPeasDAOVolumeServer.getStatsVersionnedAttachmentsVentil",
         "root.MSG_GEN_ENTER_METHOD");
-    // key=componentId, value=new
-    // String[3] {nb, null, null}
-    Hashtable<String, String[]> resultat = new Hashtable<String, String[]>();
-
+    
     String selectQuery = "SELECT v.instanceId, COUNT(*) "
         + "FROM SB_Version_Version v , SB_Version_Document d "
         + "WHERE v.documentId = d.documentId " + "GROUP BY v.instanceId "
@@ -225,6 +223,9 @@ public class SilverStatisticsPeasDAOVolumeServer {
     // value=new String[3] {nb, null, null}
     Map<String, String> intermedHash = getHashtableFromQuery(selectQuery);
     AdminController myAdminController = new AdminController("");
+    boolean isAdmin = UserDetail.getById(currentUserId).isAccessAdmin();
+    String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
+        currentUserId);
     for (Map.Entry<String, String> entry : intermedHash.entrySet()) {
       boolean ok = false;
       String cmpId = entry.getKey();
@@ -232,15 +233,16 @@ public class SilverStatisticsPeasDAOVolumeServer {
       ComponentInst compInst = myAdminController.getComponentInst(cmpId);
       String spaceId = compInst.getDomainFatherId(); // ex : WA123
 
-      String[] tabManageableSpaceIds = myAdminController.getUserManageableSpaceClientIds(
-          currentUserId);
-
       // filtre les composants autorisés selon les droits de l'utilisateur
       // (Admin ou Gestionnaire d'espace)
-      for (String tabManageableSpaceId : tabManageableSpaceIds) {
-        if (spaceId.equals(tabManageableSpaceId)) {
-          ok = true;
-          break;
+      if (isAdmin) {
+        ok = true;
+      } else {
+        for (String tabManageableSpaceId : tabManageableSpaceIds) {
+          if (spaceId.equals(tabManageableSpaceId)) {
+            ok = true;
+            break;
+          }
         }
       }
       if (ok) {

@@ -25,7 +25,7 @@
 package com.stratelia.webactiv.servlets.credentials;
 
 import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;

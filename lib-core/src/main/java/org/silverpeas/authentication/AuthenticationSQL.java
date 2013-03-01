@@ -37,9 +37,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import com.silverpeas.util.StringUtil;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -137,6 +144,10 @@ public class AuthenticationSQL extends Authentication {
     } else {
       checkPassword(login, password, sqlPassword);
     }
+
+    // Verifying if the user must change his password or if user will soon have to change his
+    // password
+    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
   }
 
   private String getPassword(Connection connection, String login) throws AuthenticationException {
@@ -229,7 +240,7 @@ public class AuthenticationSQL extends Authentication {
     String oldPassword = credential.getPassword();
     String passwordInDB = getPassword(sqlConnection, login);
     checkPassword(login, oldPassword, passwordInDB);
-    String newPasswordInDB = getNewPasswordDigest(passwordInDB, newPassword);
+    String newPasswordInDB = getNewPasswordDigest(newPassword);
     updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
@@ -237,8 +248,7 @@ public class AuthenticationSQL extends Authentication {
   protected void doResetPassword(AuthenticationConnection connection, String login,
       String newPassword) throws AuthenticationException {
     Connection sqlConnection = getSQLConnection(connection);
-    String passwordInDB = getPassword(sqlConnection, login);
-    String newPasswordInDB = getNewPasswordDigest(passwordInDB, newPassword);
+    String newPasswordInDB = getNewPasswordDigest(newPassword);
     updatePassword(sqlConnection, login, newPasswordInDB);
   }
 
@@ -247,30 +257,24 @@ public class AuthenticationSQL extends Authentication {
   }
 
   /**
-   * Computes the digest of the new password by taking the same salt of the previous password digest.
-   * This method takes care the digest of the previous password could be computed by a different
-   * encryption algorithm.
-   * @param oldPasswordDigest the digest of the password to change.
+   * Computes the digest of the new password with a new random salt.
    * @param newPassword the new password for which a digest has to be computed.
    * @return the digest of the new password.
    */
-  private String getNewPasswordDigest(String oldPasswordDigest, String newPassword) {
+  private String getNewPasswordDigest(String newPassword) {
     PasswordEncryptionFactory factory = PasswordEncryptionFactory.getFactory();
     PasswordEncryption encryption = factory.getDefaultPasswordEncryption();
-    PasswordEncryption previousEncryption = factory.getPasswordEncryption(oldPasswordDigest);
-    String newPasswordDigest;
-    if (previousEncryption != encryption) {
-      newPasswordDigest = encryption.encrypt(newPassword);
-    } else {
-      newPasswordDigest = encryption.encrypt(newPassword, encryption.getSaltUsedInDigest(oldPasswordDigest));
-    }
-    return newPasswordDigest;
+    return encryption.encrypt(newPassword);
   }
 
   /**
    * Checks the specified password associated with the specified login matches the specified
-   * password digest. The encryption having computed the specified digest is used to encrypt the
-   * password in order to compare them.
+   * password digest.
+   *
+   * As some passwords have been errorly computed in a pure MD5 encryption, this method takes care
+   * of this situation. In the case the password was encrypted with a correct cryptographic function
+   * (that is to say with another a MD5 hash function), the encryption having computed the specified
+   * digest is then used to encrypt the password in order to compare them.
    * @param login a user login.
    * @param password the password associated with the user login.
    * @param digest the digest of the password by using the current encryption.
@@ -283,10 +287,14 @@ public class AuthenticationSQL extends Authentication {
       PasswordEncryption encryption = factory.getPasswordEncryption(digest);
       encryption.check(password, digest);
     } catch(AssertionError error) {
-      throw new AuthenticationBadCredentialException(
-          "AuthenticationSQL.doChangePassword()",
-          SilverpeasException.ERROR,
-          "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
+      // the password doesn't match the digest. It is then possible the digest was a pure MD5 one!
+      String actualDigest = CryptMD5.encrypt(password);
+      if (!actualDigest.equals(digest)) {
+        throw new AuthenticationBadCredentialException(
+            "AuthenticationSQL.doChangePassword()",
+            SilverpeasException.ERROR,
+            "authentication.EX_INCORRECT_PASSWORD", "User=" + login);
+      }
     }
   }
 }

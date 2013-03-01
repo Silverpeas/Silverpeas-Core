@@ -24,7 +24,7 @@
 
 package com.stratelia.webactiv.servlets.credentials;
 
-import org.silverpeas.authentication.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.authentication.password.ForgottenPasswordException;
 import org.silverpeas.authentication.password.ForgottenPasswordMailManager;

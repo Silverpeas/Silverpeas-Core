@@ -23,15 +23,6 @@
 */
 package com.stratelia.webactiv.util.publication.model;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
 import com.google.common.base.Objects;
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.form.DataRecord;
@@ -66,11 +57,20 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
 * This object contains the description of a publication
@@ -109,7 +109,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   private String silverObjectId; // added for the components - PDC integration
   private String iconUrl;
   private int explicitRank = -1;
-  
+
   // added for the taglib
   private InfoDetail infoDetail = null;
   private List<XMLField> xmlFields = null;
@@ -130,7 +130,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
   public static final String CLONE = "Clone";
-  
+
   public static final String TYPE = "Publication";
 
   /**
@@ -588,7 +588,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getCreatorId() {
     return creatorId;
   }
-  
+
   @Override
   public UserDetail getCreator() {
     return UserDetail.getById(getCreatorId());
@@ -822,7 +822,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     }
     return xmlFields;
   }
-  
+
   public HashMap<String, String> getFormValues(String language) {
     HashMap<String, String> formValues = new HashMap<String, String>();
     if ("0".equals(getInfoId())) {
@@ -895,7 +895,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
         "root.MSG_GEN_EXIT_METHOD", "fieldValue = " + fieldValue);
     return fieldValue;
   }
-  
+
   private String getValueOfField(XMLField xmlField, String language) {
     String fieldValue = xmlField.getValue();
     if (fieldValue == null) {
@@ -1038,8 +1038,8 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getWysiwyg() {
     String wysiwygContent = null;
     try {
-      wysiwygContent = WysiwygController.loadFileAndAttachment(getPK().getSpace(), getPK().
-          getComponentName(), getPK().getId());
+      wysiwygContent = WysiwygController.load(getPK().getComponentName(),
+          getPK().getId(), getLanguage());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";
     }
@@ -1252,7 +1252,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public boolean isIndexable() {
     return VALID.equals(this.status);
   }
-  
+
   public boolean isPublicationEditor(String userId) {
     return Objects.equal(creatorId, userId) || Objects.equal(updaterId, userId);
   }
@@ -1282,7 +1282,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public String getContributionType() {
     return TYPE;
   }
-  
+
   /**
    * The type of this resource
    * @return the same value returned by getContributionType()

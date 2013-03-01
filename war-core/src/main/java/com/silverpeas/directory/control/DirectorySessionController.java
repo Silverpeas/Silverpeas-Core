@@ -57,11 +57,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -315,38 +312,23 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
     currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
-    List<String> lus = new ArrayList<String>();
-    lus = getAllUsersBySpace(lus, spaceId);
-    lastAlllistUsersCalled =
-            Arrays.asList(
-                getOrganizationController().getUserDetails(lus.toArray(new String[lus.size()])));
+    List<UserDetail> lus = new ArrayList<UserDetail>();
+    String[] componentIds = getOrganizationController().getAllComponentIdsRecur(spaceId);
+    for (String componentId : componentIds) {
+      fillList(lus, getOrganizationController().getAllUsers(componentId));
+    }
+    lastAlllistUsersCalled = lus;
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
   }
 
-  private List<String> getAllUsersBySpace(List<String> lus, String spaceId) {
-    SpaceInst si = getOrganizationController().getSpaceInstById(spaceId);
-    for (String ChildSpaceVar : si.getSubSpaceIds()) {
-      getAllUsersBySpace(lus, ChildSpaceVar);
-    }
-    for (ComponentInst ciVar : si.getAllComponentsInst()) {
-      for (ProfileInst piVar : ciVar.getAllProfilesInst()) {
-        lus = fillList(lus, piVar.getAllUsers());
-
-      }
-    }
-    return lus;
-  }
-
-  public List<String> fillList(List<String> ol, List<String> nl) {
-
-    for (String var : nl) {
+  public void fillList(List<UserDetail> ol, UserDetail[] nl) {
+    for (UserDetail var : nl) {
       if (!ol.contains(var)) {
         ol.add(var);
       }
     }
-    return ol;
   }
 
   /**
@@ -460,8 +442,19 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (SessionInfo session : sessions) {
       connectedUsers.add(session.getUserDetail());
     }
+    
+    if (getCurrentDirectory() != DIRECTORY_DEFAULT) {
+      // all connected users must be filtered according to directory scope
+      lastListUsersCalled = new ArrayList<UserDetail>();
+      for (UserDetail connectedUser : connectedUsers) {
+        if (lastAlllistUsersCalled.contains(connectedUser)) {
+          lastListUsersCalled.add(connectedUser);
+        }
+      }
+    } else {
+      lastListUsersCalled = connectedUsers;
+    }
 
-    lastListUsersCalled = connectedUsers;
     return lastListUsersCalled;
   }
 

@@ -43,6 +43,8 @@ class AbstractAuthenticationVerifier {
       new HashMap<String, ResourceLocator>();
   protected final static ResourceLocator settings =
       new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
+  protected final static ResourceLocator otherSettings =
+      new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
 
   private UserDetail user;
 
@@ -74,7 +76,7 @@ class AbstractAuthenticationVerifier {
    * Gets a user from its credentials.
    * @param credential
    * @return
-   * @throws org.silverpeas.authentication.AuthenticationException
+   * @throws org.silverpeas.authentication.exception.AuthenticationException
    */
   protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
     try {
