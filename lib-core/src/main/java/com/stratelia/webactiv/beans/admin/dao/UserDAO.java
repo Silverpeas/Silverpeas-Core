@@ -1,30 +1,34 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
  *
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.silverpeas.util.ListSlice;
@@ -33,7 +37,8 @@ public class UserDAO {
 
   static final private String USER_COLUMNS =
       "distinct(id),specificId,domainId,login,firstName,lastName,loginMail,email,accessLevel,loginQuestion,loginAnswer";
-
+  private static final String SELECT_DOMAINS_BY_LOGIN = "SELECT DISTINCT(domainId) AS domain FROM "
+      + "st_user WHERE accessLevel <> 'R' AND  login = ? ORDER BY domainId";
   public UserDAO() {
   }
 
@@ -49,13 +54,37 @@ public class UserDAO {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
-      String query = "select " + USER_COLUMNS
-          + " from st_user"
-          + " where accessLevel <> 'R'"
-          + " order by lastName";
+      String query = "SELECT " + USER_COLUMNS
+          + " FROM st_user WHERE accessLevel <> 'R' ORDER by lastName";
       statement = connection.prepareStatement(query);
       resultSet = statement.executeQuery();
       return theUserDetailsFrom(resultSet);
+    } finally {
+      DBUtil.close(resultSet, statement);
+    }
+  }
+
+  /**
+   * Get all the domains id in which a user with the specified login exists.
+   *
+   * @param connection the connection with the data source to use.
+   * @param login the login for which we want the domains.
+   * @return a list of domain ids.
+   * @throws SQLException if an error occurs while getting the user details from the data source.
+   */
+  public List<String> getDomainsContainingLogin(Connection connection, String login) throws
+      SQLException {
+    List<String> domainIds = new ArrayList<String>();
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+    try {
+      statement = connection.prepareStatement(SELECT_DOMAINS_BY_LOGIN);
+      statement.setString(1, login);
+      resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        domainIds.add(resultSet.getString("domain"));
+      }
+      return domainIds;
     } finally {
       DBUtil.close(resultSet, statement);
     }
@@ -72,11 +101,9 @@ public class UserDAO {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
-      String query = "select " + USER_COLUMNS
-          + " from st_user u, st_group_user_rel g"
-          + " where u.id = g.userid"
-          + " and accessLevel <> 'R'"
-          + " order by lastName";
+      String query = "SELECT " + USER_COLUMNS
+          + " FROM st_user u, st_group_user_rel g WHERE u.id = g.userid AND accessLevel <> 'R'"
+          + " ORDER BY lastName";
       statement = connection.prepareStatement(query);
       resultSet = statement.executeQuery();
       return theUserDetailsFrom(resultSet);
@@ -127,12 +154,12 @@ public class UserDAO {
    * built.
    * @return the number of users that match the specified criteria.
    */
-  public int getUserCountByCriteria(Connection connection,
-      UserSearchCriteriaForDAO criteria) throws SQLException {
+  public int getUserCountByCriteria(Connection connection, UserSearchCriteriaForDAO criteria) throws
+      SQLException {
     PreparedStatement statement = null;
     ResultSet resultSet = null;
     try {
-      String query = criteria.toSQLQuery("count(*)");
+      String query = criteria.toSQLQuery("COUNT(*)");
       statement = connection.prepareStatement(query);
       resultSet = statement.executeQuery();
       resultSet.next();
@@ -150,14 +177,13 @@ public class UserDAO {
       throw new NullPointerException("The group identifier is null!");
     }
     try {
-      StringBuilder query =
-          new StringBuilder(
-          "select distinct st_user.id from st_user, st_group_user_rel where st_group_user_rel.groupId = ").
-          append(groupId);
+      StringBuilder query = new StringBuilder(200);
+      query.append("SELECT DISTINCT st_user.id FROM st_user, st_group_user_rel");
+      query.append(" WHERE st_group_user_rel.groupId = ").append(groupId);
       if (StringUtil.isDefined(domainId)) {
-        query.append(" and st_user.domainId = ").append(domainId);
+        query.append(" AND st_user.domainId = ").append(domainId);
       }
-      query.append(" and accessLevel <> 'R' order by lastName");
+      query.append(" AND accessLevel <> 'R' ORDER BY lastName");
       statement = connection.prepareStatement(query.toString());
       resultSet = statement.executeQuery();
       return getIds(resultSet);
@@ -171,16 +197,12 @@ public class UserDAO {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      String query = "select " + USER_COLUMNS
-          + " from st_user u, st_group_user_rel g"
-          + " where g.userid = u.id"
-          + " and g.groupid IN (" + list2String(groupIds) + ")"
-          + " and accessLevel <> 'R'"
-          + " order by lastName";
-
+      String query = "SELECT " + USER_COLUMNS
+          + " FROM st_user u, st_group_user_rel g WHERE g.userid = u.id"
+          + " AND g.groupid IN (" + StringUtil.join(groupIds, ',') + ") AND accessLevel <> 'R'"
+          + " ORDER BY lastName";
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
-
       return theUserDetailsFrom(rs);
     } finally {
       DBUtil.close(rs, stmt);
@@ -193,16 +215,11 @@ public class UserDAO {
     ResultSet rs = null;
 
     try {
-      String query = "select distinct(u.id), u.lastname"
-          + " from st_user u, st_group_user_rel g"
-          + " where g.userid = u.id"
-          + " and g.groupid IN (" + list2String(groupIds) + ")"
-          + " and u.accessLevel <> 'R'"
-          + " order by u.lastName";
-
+      String query = "SELECT DISTINCT(u.id), u.lastname FROM st_user u, st_group_user_rel g"
+          + " WHERE g.userid = u.id AND g.groupid IN (" + StringUtil.join(groupIds, ',') + ")"
+          + " AND u.accessLevel <> 'R' ORDER BY u.lastName";
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
-
       List<String> ids = new ArrayList<String>();
       while (rs.next()) {
         ids.add(Integer.toString(rs.getInt(1)));
@@ -211,17 +228,6 @@ public class UserDAO {
     } finally {
       DBUtil.close(rs, stmt);
     }
-  }
-
-  private static String list2String(List<String> ids) {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < ids.size(); i++) {
-      if (i != 0) {
-        str.append(",");
-      }
-      str.append(ids.get(i));
-    }
-    return str.toString();
   }
 
   private static List<UserDetail> theUserDetailsFrom(final ResultSet resultSet) throws SQLException {
