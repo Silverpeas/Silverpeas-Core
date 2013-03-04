@@ -102,9 +102,9 @@ public class SubscriptionDao {
   public void add(Connection con, Subscription subscription) throws SQLException, AssertionError {
     SilverTrace.info("subscribe", "SubscriptionDao.add", "root.MSG_GEN_ENTER_METHOD");
 
-    if (SubscriberType.UNKNOWN.equals(subscription.getSubscriber().getType()) ||
-        SubscriptionMethod.UNKNOWN.equals(subscription.getSubscriptionMethod()) ||
-        SubscriptionResourceType.UNKNOWN.equals(subscription.getResource().getType())) {
+    if (!subscription.getSubscriber().getType().isValid() ||
+        !subscription.getSubscriptionMethod().isValid() ||
+        !subscription.getResource().getType().isValid()) {
       throw new AssertionError(
           "Subscriber type, subscription method or resource type is unknown ...");
     }
@@ -425,7 +425,7 @@ public class SubscriptionDao {
             rs.getString("instanceId"));
 
     // Checking that data are not corrupted
-    if (SubscriptionMethod.UNKNOWN.equals(subscriptionMethod) || subscriber == null ||
+    if (!subscriptionMethod.isValid() || subscriber == null ||
         resource == null) {
       SilverTrace.warn("subscribe", "SubscriptionDao.createFrom",
           "EX_SUBSCRIBE_TABLE_CONTAINS_CORRUPTED_DATA");

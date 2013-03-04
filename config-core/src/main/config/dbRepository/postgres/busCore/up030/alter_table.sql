@@ -35,5 +35,24 @@ INSERT INTO subscribe
     '1970-01-01 00:00:00.0'
   FROM subscribe_tmp;
 
+-- Copy subscriptions of infoletter into new structure
+INSERT INTO subscribe
+(subscriberId, subscriberType, subscriptionMethod, resourceId, resourceType, space, instanceId, creatorId, creationDate)
+  SELECT
+    REPLACE(REPLACE(userid,'G', ''), 'U', ''),
+    case when (userid like 'U%') then 'USER' else 'GROUP' end,
+    case when (userid like 'U%') then 'SELF_CREATION' else 'FORCED' end,
+    '0',
+    'COMPONENT',
+    'component',
+    instanceId,
+    REPLACE(REPLACE(userid,'G', ''), 'U', ''),
+    '1970-01-01 00:00:00.0'
+  FROM SC_IL_IntSus;
+
 -- Drop temporary subscribe table
 DROP TABLE subscribe_tmp;
+
+-- Drop unnecessary tables of infoletter component
+DROP TABLE SC_IL_IntSus;
+DROP TABLE SC_IL_Pubs;

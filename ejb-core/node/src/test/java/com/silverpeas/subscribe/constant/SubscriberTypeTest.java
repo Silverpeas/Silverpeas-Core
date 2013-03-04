@@ -26,7 +26,7 @@ package com.silverpeas.subscribe.constant;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * User: Yohann Chastagnier
@@ -35,11 +35,14 @@ import static org.hamcrest.Matchers.is;
 public class SubscriberTypeTest {
 
   @Test
-  public void testFrom() {
+  public void test() {
     assertThat(SubscriberType.from(null), is(SubscriberType.UNKNOWN));
     assertThat(SubscriberType.from("toto"), is(SubscriberType.UNKNOWN));
     for (final SubscriberType subscriberType : SubscriberType.values()) {
       assertThat(SubscriberType.from(subscriberType.name()), is(subscriberType));
+      assertThat(subscriberType.isValid(), is(!SubscriberType.UNKNOWN.equals(subscriberType)));
     }
+    assertThat(SubscriberType.getValidValues(), hasSize(SubscriberType.values().length - 1));
+    assertThat(SubscriberType.getValidValues(), not(hasItem(SubscriberType.UNKNOWN)));
   }
 }

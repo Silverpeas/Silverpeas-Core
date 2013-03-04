@@ -72,12 +72,19 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public void subscribe(Subscription subscription) {
+    subscribe(Collections.singletonList(subscription));
+  }
+
+  @Override
+  public void subscribe(final Collection<? extends Subscription> subscriptions) {
     SilverTrace.info("subscribe", "SubscriptionService.subscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      if (!subscriptionDao.existsSubscription(con, subscription)) {
-        subscriptionDao.add(con, subscription);
+      for (Subscription subscription : subscriptions) {
+        if (!subscriptionDao.existsSubscription(con, subscription)) {
+          subscriptionDao.add(con, subscription);
+        }
       }
     } catch (SQLException e) {
       DBUtil.rollback(con);
@@ -90,11 +97,18 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public void unsubscribe(Subscription subscription) {
+    unsubscribe(Collections.singletonList(subscription));
+  }
+
+  @Override
+  public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
     SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      subscriptionDao.remove(con, subscription);
+      for (Subscription subscription : subscriptions) {
+        subscriptionDao.remove(con, subscription);
+      }
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscriptionService.unsubscribe()",
@@ -105,12 +119,20 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public void unsubscribe(SubscriptionSubscriber subscriber) {
+  public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber) {
+    unsubscribeBySubscribers(Collections.singletonList(subscriber));
+  }
+
+  @Override
+  public void unsubscribeBySubscribers(
+      final Collection<? extends SubscriptionSubscriber> subscribers) {
     SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      subscriptionDao.removeBySubscriber(con, subscriber);
+      for (SubscriptionSubscriber subscriber : subscribers) {
+        subscriptionDao.removeBySubscriber(con, subscriber);
+      }
     } catch (SQLException e) {
       DBUtil.rollback(con);
       throw new SubscribeRuntimeException("SubscriptionService.unsubscribe()",
@@ -121,12 +143,12 @@ public class SimpleSubscriptionService implements SubscriptionService {
   }
 
   @Override
-  public void unsubscribe(SubscriptionResource resource) {
-    unsubscribe(Collections.singletonList(resource));
+  public void unsubscribeByResource(SubscriptionResource resource) {
+    unsubscribeByResources(Collections.singletonList(resource));
   }
 
   @Override
-  public void unsubscribe(final Collection<? extends SubscriptionResource> resources) {
+  public void unsubscribeByResources(final Collection<? extends SubscriptionResource> resources) {
     SilverTrace.info("subscribe", "SubscriptionService.unsubscribe", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {

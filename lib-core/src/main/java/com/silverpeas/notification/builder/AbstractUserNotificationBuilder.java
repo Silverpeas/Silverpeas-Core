@@ -146,12 +146,21 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
 
   protected abstract Collection<String> getUserIdsToNotify();
 
+  /**
+   * Collection of identifiers of users that don't have to be notified ...
+   * @return
+   */
+  protected Collection<String> getUserIdsToExcludeFromNotifying() {
+    return null;
+  }
+
   protected Collection<String> getGroupIdsToNotify() {
     return null;
   }
 
   protected final void performUsersToBeNotified() {
     final Collection<String> userIdsToNotify = getUserIdsToNotify();
+    final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
     final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
 
     // Stopping the process if no user to notify
@@ -166,6 +175,13 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
         getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
+      }
+    }
+
+    if (CollectionUtil.isNotEmpty(userIdsToExcludeFromNotifying)) {
+      // There is at least one user to notify
+      for (final String userId : userIdsToExcludeFromNotifying) {
+        getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(userId));
       }
     }
 

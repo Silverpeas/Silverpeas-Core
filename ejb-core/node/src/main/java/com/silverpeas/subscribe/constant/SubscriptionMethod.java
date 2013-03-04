@@ -26,6 +26,10 @@ package com.silverpeas.subscribe.constant;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * User: Yohann Chastagnier
  * Date: 19/02/13
@@ -34,6 +38,21 @@ public enum SubscriptionMethod {
   UNKNOWN,
   SELF_CREATION,
   FORCED;
+
+  private static final Collection<SubscriptionMethod> VALID_VALUES;
+
+  static {
+    VALID_VALUES = new ArrayList<SubscriptionMethod>(Arrays.asList(SubscriptionMethod.values()));
+    VALID_VALUES.remove(SubscriptionMethod.UNKNOWN);
+  }
+
+  /**
+   * Valid if current instance is not the one of UNKNOWN.
+   * @return
+   */
+  public boolean isValid() {
+    return !this.equals(UNKNOWN);
+  }
 
   @JsonValue
   public String getName() {
@@ -50,5 +69,13 @@ public enum SubscriptionMethod {
       }
     }
     return UNKNOWN;
+  }
+
+  /**
+   * All SubscriptionMethod are returned into a Collection excepted UNKNOWN type.
+   * @return
+   */
+  public static Collection<SubscriptionMethod> getValidValues() {
+    return VALID_VALUES;
   }
 }

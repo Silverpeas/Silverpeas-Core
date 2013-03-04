@@ -53,9 +53,11 @@ public class SubscriptionCallBack implements CallBack {
       return;
     }
     if (CallBackManager.ACTION_BEFORE_REMOVE_USER == action) {
-      getSubscribeBm().unsubscribe(UserSubscriptionSubscriber.from(String.valueOf(iParam)));
+      getSubscribeBm().unsubscribeBySubscriber(
+          UserSubscriptionSubscriber.from(String.valueOf(iParam)));
     } else if(CallBackManager.ACTION_BEFORE_REMOVE_GROUP == action) {
-      getSubscribeBm().unsubscribe(GroupSubscriptionSubscriber.from(String.valueOf(iParam)));
+      getSubscribeBm().unsubscribeBySubscriber(
+          GroupSubscriptionSubscriber.from(String.valueOf(iParam)));
     }
   }
 

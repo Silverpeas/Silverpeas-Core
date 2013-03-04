@@ -26,6 +26,10 @@ package com.silverpeas.subscribe.constant;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonValue;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * User: Yohann Chastagnier
  * Date: 19/02/13
@@ -34,6 +38,22 @@ public enum SubscriptionResourceType {
   UNKNOWN,
   COMPONENT,
   NODE;
+
+  private static final Collection<SubscriptionResourceType> VALID_VALUES;
+
+  static {
+    VALID_VALUES =
+        new ArrayList<SubscriptionResourceType>(Arrays.asList(SubscriptionResourceType.values()));
+    VALID_VALUES.remove(SubscriptionResourceType.UNKNOWN);
+  }
+
+  /**
+   * Valid if current instance is not the one of UNKNOWN.
+   * @return
+   */
+  public boolean isValid() {
+    return !this.equals(UNKNOWN);
+  }
 
   @JsonValue
   public String getName() {
@@ -50,5 +70,13 @@ public enum SubscriptionResourceType {
       }
     }
     return UNKNOWN;
+  }
+
+  /**
+   * All SubscriptionResourceType are returned into a Collection excepted UNKNOWN type.
+   * @return
+   */
+  public static Collection<SubscriptionResourceType> getValidValues() {
+    return VALID_VALUES;
   }
 }

@@ -205,7 +205,7 @@ public class SubscriptionServiceTest {
     Collection<Subscription> result = subscriptionService.getBySubscriber(userSubscriber);
     assertThat(result, hasSize(10));
 
-    subscriptionService.unsubscribe(userSubscriber);
+    subscriptionService.unsubscribeBySubscriber(userSubscriber);
 
     // Verifying that subscription doesn't exist
     result = subscriptionService.getBySubscriber(userSubscriber);
@@ -228,7 +228,8 @@ public class SubscriptionServiceTest {
     result = subscriptionService.getBySubscriberAndComponent(user11Subscriber, INSTANCE_ID);
     assertThat(result, hasSize(2));
 
-    subscriptionService.unsubscribe(NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)));
+    subscriptionService.unsubscribeByResource(
+        NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)));
 
     // Verifying the deleted subscriptions
     result = subscriptionService.getBySubscriberAndComponent(userSubscriber, INSTANCE_ID);
@@ -236,7 +237,7 @@ public class SubscriptionServiceTest {
     result = subscriptionService.getBySubscriberAndComponent(user11Subscriber, INSTANCE_ID);
     assertThat(result, hasSize(2));
 
-    subscriptionService.unsubscribe(Arrays
+    subscriptionService.unsubscribeByResources(Arrays
         .asList(NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)),
             NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)),
             NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID)),

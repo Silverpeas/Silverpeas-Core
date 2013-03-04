@@ -69,7 +69,7 @@ public abstract class AbstractSubscription implements Subscription {
       SubscriptionMethod subscriptionMethod, String creatorId, Date creationDate) {
     this.subscriber = subscriber;
     this.resource = resource;
-    if (SubscriptionMethod.UNKNOWN.equals(subscriptionMethod) || subscriptionMethod == null) {
+    if (!subscriptionMethod.isValid() || subscriptionMethod == null) {
       // Guessing the method if it is unknown
       if (SubscriberType.GROUP.equals(subscriber.getType()) ||
           !subscriber.getId().equals(creatorId)) {

@@ -40,17 +40,37 @@ public interface SubscriptionService {
   public void subscribe(Subscription subscription);
 
   /**
+   * Register given subscriptions. The informations of creator identifier and creation date are
+   * ignored. If a subscription already exists, nothing is registered for it.
+   * @param subscriptions
+   */
+  public void subscribe(Collection<? extends Subscription> subscriptions);
+
+  /**
    * Unregister a subscription.
    * @param subscription
    */
   public void unsubscribe(Subscription subscription);
 
   /**
+   * Unregister given subscriptions.
+   * @param subscriptions
+   */
+  public void unsubscribe(Collection<? extends Subscription> subscriptions);
+
+  /**
    * Unregister all subscription in relation to the given subscriber. If the given subscriber is a
    * user, no subscription by a group is deleted even if the user is part of the group
    * @param subscriber
    */
-  public void unsubscribe(SubscriptionSubscriber subscriber);
+  public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber);
+
+  /**
+   * Unregister all subscription in relation to given subscribers. If a given subscriber is a
+   * user, no subscription by a group is deleted even if the user is part of the group
+   * @param subscribers
+   */
+  public void unsubscribeBySubscribers(Collection<? extends SubscriptionSubscriber> subscribers);
 
   /**
    * Unregister all subscriptions in relation to the given resource.
@@ -59,7 +79,7 @@ public interface SubscriptionService {
    * @param resource the aimed resource
    * @see
    */
-  public void unsubscribe(SubscriptionResource resource);
+  public void unsubscribeByResource(SubscriptionResource resource);
 
   /**
    * Unregister all subscriptions in relation to the given resources.
@@ -68,7 +88,7 @@ public interface SubscriptionService {
    * @param resources the aimed resources
    * @see
    */
-  public void unsubscribe(Collection<? extends SubscriptionResource> resources);
+  public void unsubscribeByResources(Collection<? extends SubscriptionResource> resources);
 
   /**
    * Checks if the given subscription already exists.

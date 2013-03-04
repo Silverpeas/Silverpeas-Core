@@ -48,23 +48,39 @@ public class MockableSubscriptionService implements SubscriptionService {
   }
 
   @Override
+  public void subscribe(final Collection<? extends Subscription> subscriptions) {
+    realService.subscribe(subscriptions);
+  }
+
+  @Override
   public void unsubscribe(Subscription subscription) {
     realService.unsubscribe(subscription);
   }
 
   @Override
-  public void unsubscribe(SubscriptionSubscriber subscriber) {
-    realService.unsubscribe(subscriber);
+  public void unsubscribe(final Collection<? extends Subscription> subscriptions) {
+    realService.unsubscribe(subscriptions);
   }
 
   @Override
-  public void unsubscribe(final SubscriptionResource resource) {
-    realService.unsubscribe(resource);
+  public void unsubscribeBySubscriber(SubscriptionSubscriber subscriber) {
+    realService.unsubscribeBySubscriber(subscriber);
   }
 
   @Override
-  public void unsubscribe(final Collection<? extends SubscriptionResource> resources) {
-    realService.unsubscribe(resources);
+  public void unsubscribeBySubscribers(
+      final Collection<? extends SubscriptionSubscriber> subscribers) {
+    realService.unsubscribeBySubscribers(subscribers);
+  }
+
+  @Override
+  public void unsubscribeByResource(final SubscriptionResource resource) {
+    realService.unsubscribeByResource(resource);
+  }
+
+  @Override
+  public void unsubscribeByResources(final Collection<? extends SubscriptionResource> resources) {
+    realService.unsubscribeByResources(resources);
   }
 
   @Override
