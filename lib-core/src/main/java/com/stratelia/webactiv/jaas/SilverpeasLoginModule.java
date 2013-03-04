@@ -51,6 +51,7 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.jackrabbit.util.Text;
@@ -131,10 +132,10 @@ public class SilverpeasLoginModule implements LoginModule {
         if (creds instanceof SimpleCredentials) {
           SimpleCredentials sc = (SimpleCredentials) creds;
           // authenticate
-          Domain[] domains = controller.getAllDomains();
-          for (Domain domain : domains) {
+          List<String> domains = administrator.getAllDomainIdsForLogin(sc.getUserID());
+          for (String domainId : domains) {
             String key = authenticator.authenticate(sc.getUserID(), new String(sc.getPassword()),
-                domain.getId(), null);
+                domainId, null);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
@@ -159,9 +160,9 @@ public class SilverpeasLoginModule implements LoginModule {
         } else if (creds instanceof DigestCredentials) {
           DigestCredentials sc = (DigestCredentials) creds;
           // authenticate
-          Domain[] domains = controller.getAllDomains();
-          for (Domain domain : domains) {
-            String key = authenticator.authenticate(sc.getUsername(), domain.getId(), null);
+          List<String> domains = administrator.getAllDomainIdsForLogin(sc.getUsername());
+          for (String domainId : domains) {
+            String key = authenticator.authenticate(sc.getUsername(), domainId, null);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
