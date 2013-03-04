@@ -38,6 +38,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -64,13 +65,13 @@ public class NodeAccessControl implements ShareableAccessControl {
         autorizedNodes.add(nodePk);
         if (resource.getAccessedObject() instanceof AttachmentDetail) {
           AttachmentDetail attachment = (AttachmentDetail) resource.getAccessedObject();
-          Collection<NodePK> fathers = getPublicationFathers(attachment.getForeignKey());
-          return CollectionUtils.containsAny(autorizedNodes, fathers);
+          return isPublicationReadable(attachment.getForeignKey(), nodePk.getInstanceId(),
+              autorizedNodes);
         }
         if (resource.getAccessedObject() instanceof Document) {
           Document document = (Document) resource.getAccessedObject();
-          Collection<NodePK> fathers = getPublicationFathers(document.getForeignKey());
-          return CollectionUtils.containsAny(autorizedNodes, fathers);
+          return isPublicationReadable(document.getForeignKey(), nodePk.getInstanceId(),
+              autorizedNodes);
         }
         if (resource.getAccessedObject() instanceof NodeDetail) {
           NodeDetail node = (NodeDetail) resource.getAccessedObject();
@@ -87,12 +88,35 @@ public class NodeAccessControl implements ShareableAccessControl {
       throws CreateException, RemoteException {
     return findPublicationBm().getAllFatherPK(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
+  
+  protected Collection<Alias> getPublicationAliases(WAPrimaryKey pk)
+      throws CreateException, RemoteException {
+    return findPublicationBm().getAlias(new PublicationPK(pk.getId(), pk.getInstanceId()));
+  }
 
   protected Collection<NodePK> getNodeDescendants(NodePK pk)
       throws CreateException, RemoteException {
     return findNodeBm().getDescendantPKs(pk);
   }
-
+  
+  private boolean isPublicationReadable(WAPrimaryKey pk, String instanceId,
+      Collection<NodePK> autorizedNodes) throws RemoteException, CreateException {
+    if (pk.getInstanceId().equals(instanceId)) {
+      Collection<NodePK> fathers = getPublicationFathers(pk);
+      return CollectionUtils.containsAny(autorizedNodes, fathers);
+    } else {
+      // special case of an alias between two ECM applications
+      // check if publication which contains attachment is an alias into this node
+      Collection<Alias> aliases = getPublicationAliases(pk);
+      for (Alias alias : aliases) {
+        NodePK aliasPK = new NodePK(alias.getId(), alias.getInstanceId());
+        if (autorizedNodes.contains(aliasPK)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   private PublicationBm findPublicationBm() throws CreateException, RemoteException {
     if (publicationBm == null) {
