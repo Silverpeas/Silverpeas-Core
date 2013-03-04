@@ -1,33 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Ludovic BERTIN
- * @version 1.0
- * date 21/9/2001
- */
-
 package com.stratelia.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
@@ -58,26 +48,26 @@ import java.util.Random;
  * The class AuthenticationServlet is called to authenticate user in Silverpeas
  */
 public class LoginPasswordAuthentication {
-  static final protected String m_JDBCUrl;
-  static final protected String m_AccessLogin;
-  static final protected String m_AccessPasswd;
-  static final protected String m_DriverClass;
-  static final protected String m_DomainTableName;
-  static final protected String m_DomainIdColumnName;
-  static final protected String m_DomainNameColumnName;
-  static final protected String m_DomainAuthenticationServerColumnName;
-  static final protected String m_KeyStoreTableName;
-  static final protected String m_KeyStoreKeyColumnName;
-  static final protected String m_KeyStoreLoginColumnName;
-  static final protected String m_KeyStoreDomainIdColumnName;
+
+  protected final static String jdbcUrl;
+  protected final static String accessLogin;
+  protected final static String accessPassword;
+  protected final static String driverClass;
+  protected final static String domainTableName;
+  protected final static String domainIdColumnName;
+  protected final static String domainNameColumnName;
+  protected final static String domainAuthenticationServerColumnName;
+  protected final static String m_KeyStoreTableName;
+  protected final static String m_KeyStoreKeyColumnName;
+  protected final static String m_KeyStoreLoginColumnName;
+  protected final static String m_KeyStoreDomainIdColumnName;
   static protected Hashtable<String, String> m_Domains = new Hashtable<String, String>();
   static protected List<Domain> domains = new ArrayList<Domain>();
   static protected List<String> m_DomainsIds = new ArrayList<String>();
-  static final protected String m_UserTableName;
-  static final protected String m_UserIdColumnName;
-  static final protected String m_UserLoginColumnName;
-  static final protected String m_UserDomainColumnName;
-
+  protected final static String userTableName;
+  protected final static String m_UserIdColumnName;
+  protected final static String m_UserLoginColumnName;
+  protected final static String m_UserDomainColumnName;
   static protected int m_AutoInc = 1;
   public static final String ERROR_PWD_EXPIRED = "Error_PwdExpired";
 
@@ -86,15 +76,15 @@ public class LoginPasswordAuthentication {
         "com.stratelia.silverpeas.authentication.domains", "");
 
     // Lecture du fichier de proprietes
-    m_JDBCUrl = propFile.getString("SQLDomainJDBCUrl");
-    m_AccessLogin = propFile.getString("SQLDomainAccessLogin");
-    m_AccessPasswd = propFile.getString("SQLDomainAccessPasswd");
-    m_DriverClass = propFile.getString("SQLDomainDriverClass");
+    jdbcUrl = propFile.getString("SQLDomainJDBCUrl");
+    accessLogin = propFile.getString("SQLDomainAccessLogin");
+    accessPassword = propFile.getString("SQLDomainAccessPasswd");
+    driverClass = propFile.getString("SQLDomainDriverClass");
 
-    m_DomainTableName = propFile.getString("SQLDomainTableName");
-    m_DomainIdColumnName = propFile.getString("SQLDomainIdColumnName");
-    m_DomainNameColumnName = propFile.getString("SQLDomainNameColumnName");
-    m_DomainAuthenticationServerColumnName =
+    domainTableName = propFile.getString("SQLDomainTableName");
+    domainIdColumnName = propFile.getString("SQLDomainIdColumnName");
+    domainNameColumnName = propFile.getString("SQLDomainNameColumnName");
+    domainAuthenticationServerColumnName =
         propFile.getString("SQLDomainAuthenticationServerColumnName");
 
     m_KeyStoreTableName = propFile.getString("SQLKeyStoreTableName");
@@ -102,7 +92,7 @@ public class LoginPasswordAuthentication {
     m_KeyStoreLoginColumnName = propFile.getString("SQLKeyStoreLoginColumnName");
     m_KeyStoreDomainIdColumnName = propFile.getString("SQLKeyStoreDomainIdColumnName");
 
-    m_UserTableName = propFile.getString("SQLUserTableName");
+    userTableName = propFile.getString("SQLUserTableName");
     m_UserIdColumnName = propFile.getString("SQLUserIdColumnName");
     m_UserLoginColumnName = propFile.getString("SQLUserLoginColumnName");
     m_UserDomainColumnName = propFile.getString("SQLUserDomainColumnName");
@@ -123,21 +113,20 @@ public class LoginPasswordAuthentication {
     Properties info = new Properties();
     Driver driverSQL = null;
     Connection con;
-
     try {
-      info.setProperty("user", m_AccessLogin);
-      info.setProperty("password", m_AccessPasswd);
-      driverSQL = (Driver) Class.forName(m_DriverClass).newInstance();
+      info.setProperty("user", accessLogin);
+      info.setProperty("password", accessPassword);
+      driverSQL = (Driver) Class.forName(driverClass).newInstance();
     } catch (Exception iex) {
       throw new AuthenticationHostException("LoginPasswordAuthentication.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" +
-          m_DriverClass, iex);
+          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" + driverClass,
+          iex);
     }
     try {
-      con = driverSQL.connect(m_JDBCUrl, info);
+      con = driverSQL.connect(jdbcUrl, info);
     } catch (SQLException ex) {
       throw new AuthenticationHostException("LoginPasswordAuthentication.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + m_JDBCUrl, ex);
+          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", "JDBCUrl=" + jdbcUrl, ex);
     }
     return con;
   }
@@ -151,6 +140,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Get list of domains
+   *
    * @return hashtable object (keys=domain ids, values=domain name)
    * @deprecated use getListDomains method instead
    */
@@ -160,6 +150,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Use this method instead of m_Domains Hashtable class attributes
+   *
    * @return a list of domains
    */
   public List<Domain> getListDomains() {
@@ -189,6 +180,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Main method that authenticates given user and return an authantication key
+   *
    * @param login User login
    * @param password User password
    * @param domainId User domain Id
@@ -223,10 +215,8 @@ public class LoginPasswordAuthentication {
 
       return key;
     } catch (AuthenticationException ex) {
-      SilverTrace.error("authentication",
-          "LoginPasswordAuthentication.authenticate()",
-          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User="
-          + login, ex);
+      SilverTrace.error("authentication", "LoginPasswordAuthentication.authenticate()",
+          "authentication.EX_USER_REJECTED", "DomainId=" + domainId + ";User=" + login, ex);
       String errorCause = "Error_2";
       Exception nested = ex.getNested();
       if (nested != null) {
@@ -252,6 +242,7 @@ public class LoginPasswordAuthentication {
   /**
    * Method that authenticates given user and return an authentication key Used in case of ntlm
    * authentication
+   *
    * @param login User login
    * @param domainId User domain Id
    * @return authentication key used by LoginServlet
@@ -270,8 +261,8 @@ public class LoginPasswordAuthentication {
       // Open connection
       m_Connection = openConnection();
 
-      String query = "select " + m_UserIdColumnName + " from "
-          + m_UserTableName + " where " + m_UserLoginColumnName + " = ? and "
+      String query = "SELECT " + m_UserIdColumnName + " FROM "
+          + userTableName + " WHERE " + m_UserLoginColumnName + " = ? AND "
           + m_UserDomainColumnName + " = ?";
       prepStmt = m_Connection.prepareStatement(query);
 
@@ -299,8 +290,8 @@ public class LoginPasswordAuthentication {
         key = getAuthenticationKey(login, domainId);
       } catch (Exception e) {
         SilverTrace.warn("authentication", "LoginPasswordAuthentication.authenticate()",
-            "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
-            login, e);
+            "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User="
+            + login, e);
         String errorCause = "Error_2";
         return errorCause;
       }
@@ -311,6 +302,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Main method that change user password
+   *
    * @param login User login
    * @param oldPassword User old password
    * @param newPassword User new password
@@ -346,6 +338,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Get the Authentication Server name for the given domain
+   *
    * @param domainId Domain Id
    * @return authentication server name
    */
@@ -353,8 +346,8 @@ public class LoginPasswordAuthentication {
       throws AuthenticationException {
     Statement stmt = null;
     ResultSet rs = null;
-    String query = "SELECT " + m_DomainAuthenticationServerColumnName
-        + " FROM " + m_DomainTableName + " WHERE " + m_DomainIdColumnName
+    String query = "SELECT " + domainAuthenticationServerColumnName
+        + " FROM " + domainTableName + " WHERE " + domainIdColumnName
         + " = " + domainId + "";
 
     SilverTrace.info("authentication", "LoginPasswordAuthentication.getAuthenticationServerName()",
@@ -363,7 +356,7 @@ public class LoginPasswordAuthentication {
       stmt = con.createStatement();
       rs = stmt.executeQuery(query);
       if (rs.next()) {
-        String serverName = rs.getString(m_DomainAuthenticationServerColumnName);
+        String serverName = rs.getString(domainAuthenticationServerColumnName);
         if (!StringUtil.isDefined(serverName)) {
           throw new AuthenticationException(
               "LoginPasswordAuthentication.getAuthenticationServerName()",
@@ -390,6 +383,7 @@ public class LoginPasswordAuthentication {
 
   /**
    * Build a random authentication key, store it in Silverpeas database and return it.
+   *
    * @param login user login
    * @param domainId user domain id
    * @return generated authentication key
@@ -442,16 +436,12 @@ public class LoginPasswordAuthentication {
       throw new AuthenticationBadCredentialException("LoginPasswordAuthentication.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
-
     Connection connection = null;
-
     try {
       // Open connection
       connection = openConnection();
-
       // Build a AuthenticationServer instance
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
-
       // Authentification test
       authenticationServer.resetPassword(login, newPassword);
     } catch (AuthenticationException ex) {
@@ -464,21 +454,19 @@ public class LoginPasswordAuthentication {
   }
 
   public boolean isPasswordChangeAllowed(String domainId) {
-    Connection m_Connection = null;
+    Connection connection = null;
     try {
       // Open connection
-      m_Connection = openConnection();
-
+      connection = openConnection();
       // Build a AuthenticationServer instance
-      AuthenticationServer authenticationServer = getAuthenticationServer(m_Connection, domainId);
-
+      AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
       return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
       SilverTrace.error("authentication", "LoginPasswordAuthentication.isPasswordChangeAllowed()",
-          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
-          ex.getMessage());
+          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception="
+          + ex.getMessage());
     } finally {
-      closeConnection(m_Connection);
+      closeConnection(connection);
     }
     return false;
   }
@@ -487,9 +475,7 @@ public class LoginPasswordAuthentication {
       throws AuthenticationException {
     // Get authentication server name
     String authenticationServerName = getAuthenticationServerName(con, domainId);
-
     // Build a AuthenticationServer instance
     return new AuthenticationServer(authenticationServerName);
   }
-
 }

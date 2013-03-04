@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -27,36 +24,36 @@
  *
  * Created on 6 aout 2001
  */
-
 package com.stratelia.silverpeas.authentication;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class must be extended by all classes that can perform authentication of users.
+ *
  * @author tleroi
  * @version
  */
 public abstract class Authentication {
-  protected boolean m_Enabled = true;
 
+  protected boolean enabled = true;
   public final static String ENC_TYPE_UNIX = "CryptUnix";
   public final static String ENC_TYPE_MD5 = "CryptMd5";
   public final static String ENC_TYPE_CLEAR = "ClearText";
-
   public static final String PASSWORD_IS_ABOUT_TO_EXPIRE = "Svp_Pwd_About_To_Expire";
   public static final String PASSWORD_CHANGE_ALLOWED = "Svp_Password_Change_Allowed";
 
   void setEnabled(boolean enabled) {
-    m_Enabled = enabled;
+    this.enabled = enabled;
   }
 
   boolean getEnabled() {
-    return m_Enabled;
+    return enabled;
   }
 
   abstract public void init(String authenticationServerName,
@@ -68,10 +65,17 @@ public abstract class Authentication {
    * the reason. If the authentication could not be performed because the credentials are invalid
    * (e.g. wrong password), the AuthenticationException code should be set to
    * EXCEPTION_BAD_CREDENTIALS.
+   *
+   *
+   * @param login
+   * @param passwd
+   * @param request
+   * @return
+   * @throws AuthenticationException
    */
   public boolean authenticate(String login, String passwd,
       HttpServletRequest request) throws AuthenticationException {
-    if ((login == null) || (login.length() <= 0)) {
+    if (!StringUtil.isDefined(login)) {
       throw new AuthenticationException("AuthenticationServer.authenticate",
           SilverpeasException.ERROR, "authentication.EX_LOGIN_EMPTY");
     }
@@ -84,8 +88,7 @@ public abstract class Authentication {
       try {
         closeConnection();
       } catch (AuthenticationException closeEx) {
-        // The exception that could occur in the emergency stop is not
-        // interesting
+        // The exception that could occur in the emergency stop is not interesting
         SilverTrace.error("authentication", "Authentication.authenticate",
             "root.EX_EMERGENCY_CONNECTION_CLOSE_FAILED", "", closeEx);
       }
@@ -105,23 +108,9 @@ public abstract class Authentication {
     internalAuthentication(login, passwd);
   }
 
-  protected boolean getBooleanProperty(ResourceLocator resources,
-      String propertyName, boolean defaultValue) {
-    String value;
-    boolean valret = defaultValue;
-    value = resources.getString(propertyName);
-    if (value != null) {
-      if ("true".equalsIgnoreCase(value)) {
-        valret = true;
-      } else {
-        valret = false;
-      }
-    }
-    return valret;
-  }
-
   /**
    * Change user password
+   *
    * @param login user login
    * @param oldPassword user old password
    * @param newPassword user new password
@@ -179,6 +168,7 @@ public abstract class Authentication {
   /**
    * This method systematically throws UnsupportedOperationException ! So you have to override this
    * method to offer password update capabilities
+   *
    * @param login user login
    * @param oldPassword user old password
    * @param newPassword user new password
@@ -197,5 +187,4 @@ public abstract class Authentication {
         "AuthenticationServer.internalResetPassword", SilverpeasException.ERROR,
         "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
   }
-
 }
