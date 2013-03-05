@@ -46,11 +46,11 @@ import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailExceptio
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.crypto.CryptMD5;
 
 /**
  * This class performs the authentication using an SQL table

@@ -1,6 +1,6 @@
 package org.silverpeas.util.crypto;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +12,7 @@ public class CipherFactory {
 
   private static final CipherFactory instance = new CipherFactory();
   private static final Map<CryptographicAlgorithmName, Cipher> ciphers =
-      new HashMap<CryptographicAlgorithmName, Cipher>();
+      new EnumMap<CryptographicAlgorithmName, Cipher>(CryptographicAlgorithmName.class);
 
   // we load all the ciphers supported by the Silverpeas Cryptography API
   static {

@@ -26,6 +26,7 @@
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -53,11 +54,15 @@
     }
 
     function printError(msg) {
-      $("#error").html(msg.replace("\n", "<br/>"));
+      var status = $("#status");
+      status.children().remove();
+      $("<p>").addClass("inlineMessage-nok").html(msg.replace("\n", "<br/>")).appendTo(status);
     }
 
     function printMessage(msg) {
-      $("#message").html(msg.replace("\n", "<br/>"));
+      var status = $("#status");
+      status.children().remove();
+      $("<p>").addClass("inlineMessage-ok").html(msg.replace("\n", "<br/>")).appendTo(status);
     }
 
     function importCipherKey() {
@@ -73,13 +78,16 @@
           type: 'PUT',
           data: key,
           contentType:"text/plain",
-          dataType: "text/plain",
+          dataType: "text",
           processData: false,
           success: function(status) {
             printMessage(status);
           },
           error: function(jqXHR, textStatus, errorThrown) {
-            printError(errorThrown);
+            if (jqXHR.responseText)
+              printError(jqXHR.responseText);
+            else
+              printError(errorThrown);
           }
         });
       }
@@ -92,19 +100,27 @@
   <view:frame>
     <view:board>
 
-      <p id="help">${description}</p>
+      <div id="help" class="inlineMessage">
+        <p>${description}</p>
+      </div>
+
+      <br clear="all"/>
 
       <form>
         <label for="cipherKey">${label}</label>
         <input type="text" size="64" maxlength="64" name="cipherKey" id="cipherKey"/>
+
+        <div id="status">
+        </div>
+
+        <br clear="all"/>
+
+        <div align="center">
+          <view:buttonPane>
+            <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
+          </view:buttonPane>
+        </div>
       </form>
-
-      <p id="message"></p>
-      <p id="error"></p>
-
-      <view:buttonPane horizontalPosition="center">
-        <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
-      </view:buttonPane>
 
     </view:board>
   </view:frame>

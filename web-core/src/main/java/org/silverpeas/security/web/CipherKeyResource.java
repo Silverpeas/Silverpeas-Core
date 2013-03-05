@@ -2,6 +2,7 @@ package org.silverpeas.security.web;
 
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.util.security.CipherKeyUpdateException;
+import com.silverpeas.util.security.ContentEncryptionService;
 import com.silverpeas.util.security.DefaultContentEncryptionService;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -17,7 +18,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ws.rs.GET;
 
 /**
  * A WEB resource representing the cipher key used in Silverpeas to encrypt and decrypt content.
@@ -32,13 +35,11 @@ public class CipherKeyResource extends RESTWebService {
    * The path at which this REST-based web service is published, relative to the root URI of all
    * REST-based web services in Silverpeas.
    */
-  public static final String WEB_PATH                   = "security/cipherkey";
-
-  protected static final String INVALID_CIPHER_KEY        = "crypto.invalidKey";
+  public static final String WEB_PATH = "security/cipherkey";
+  protected static final String INVALID_CIPHER_KEY = "crypto.invalidKey";
   protected static final String CIPHER_KEY_UPDATE_FAILURE = "crypto.keyUpdateFailure";
-  protected static final String CIPHER_RENEW_FAILURE      = "crypto.cipherRenewFailure";
+  protected static final String CIPHER_RENEW_FAILURE = "crypto.cipherRenewFailure";
   protected static final String CIPHER_KEY_IMPORT_SUCCESS = "crypto.importOk";
-
   @Inject
   private DefaultContentEncryptionService contentEncryptionService;
 
@@ -47,11 +48,18 @@ public class CipherKeyResource extends RESTWebService {
     return Admin.ADMIN_COMPONENT_ID;
   }
 
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response getToto() {
+    return Response.ok("Toto").build();
+  }
+
   /**
    * Sets the specified cipher key to encrypt and decrypt the content in Silverpeas.
    * </p>
    * If a cipher key was already defined, then this new one will replace it and in a such case, any
    * content that was encrypted with the previous key will be encrypted again but with the new key.
+   *
    * @param cipherKey the cipher key in hexadecimal.
    * @return the status of the cipher key setting.
    */
@@ -64,25 +72,36 @@ public class CipherKeyResource extends RESTWebService {
     Response status;
     try {
       getContentEncryptionService().updateCipherKey(cipherKey);
-      status = Response.status(Response.Status.OK).entity(CIPHER_KEY_IMPORT_SUCCESS).build();
+      status = Response.ok(messages.getString(CIPHER_KEY_IMPORT_SUCCESS)).build();
     } catch (AssertionError e) {
+      logError(e);
       String message = formatMessage(messages.getString(INVALID_CIPHER_KEY), e.getMessage());
       status = Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     } catch (CipherKeyUpdateException e) {
+      logError(e);
       String message = formatMessage(messages.getString(CIPHER_KEY_UPDATE_FAILURE), e.getMessage());
       status = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
     } catch (CryptoException e) {
+      logError(e);
       String message = formatMessage(messages.getString(CIPHER_RENEW_FAILURE), e.getMessage());
       status = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(message).build();
     }
     return status;
   }
 
-  private DefaultContentEncryptionService getContentEncryptionService() {
+  private ContentEncryptionService getContentEncryptionService() {
     return contentEncryptionService;
   }
 
   private static String formatMessage(String pattern, String value) {
-    return MessageFormat.format(pattern, value);
+    String msg = pattern;
+    if (!pattern.endsWith("\n")) {
+      msg += " ";
+    }
+    return msg + value;
+  }
+
+  private static void logError(final Throwable ex) {
+    Logger.getLogger(CipherKeyResource.class.getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
   }
 }
