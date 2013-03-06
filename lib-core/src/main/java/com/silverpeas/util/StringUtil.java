@@ -23,6 +23,8 @@ package com.silverpeas.util;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import com.silverpeas.util.i18n.I18NHelper;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.mail.internet.AddressException;
@@ -37,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.codec.binary.Base64;
 
 public class StringUtil extends StringUtils {
 
@@ -350,6 +353,49 @@ public class StringUtil extends StringUtils {
     }
     NumberFormat numberFormat = NumberFormat.getInstance(new Locale(lang));
     return numberFormat.parse(value).floatValue();
+  }
+
+  /**
+   * Encodes the specified binary data into a text of Base64 characters.
+   * @param binaryData the binary data to convert in Base64-based String.
+   * @return a String representation of the binary data in Base64 characters.
+   */
+  public static String asBase64(byte[] binaryData) {
+    return Base64.encodeBase64String(binaryData);
+  }
+
+  /**
+   * Decodes the specified text with Base64 characters in binary.
+   * @param base64Text the text in Base64.
+   * @return the binary representation of the text.
+   */
+  public static byte[] fromBase64(String base64Text) {
+    return Base64.decodeBase64(base64Text);
+  }
+
+  /**
+   * Encodes the specified binary data into a String representing the hexadecimal values of each
+   * byte in order. The String is in the UTF-8 charset.
+   * @param binaryData the binary data to concert in hexadecimal-based String.
+   * @return a String representation of the binary data in Hexadecimal characters.
+   */
+  public static String asHex(byte[] binaryData) {
+    return Hex.encodeHexString(binaryData);
+  }
+
+  /**
+   * Decodes the specified text with hexadecimal values in bytes of those same values. The text is
+   * considered to be in the UTF-8 charset.
+   * @param hexText the text with hexadecimal-based characters.
+   * @return the binary representation of the text.
+   * @throws ParseException if an odd number or illegal of characters is supplied.
+   */
+  public static byte[] fromHex(String hexText) throws ParseException {
+    try {
+      return Hex.decodeHex(hexText.toCharArray());
+    } catch(DecoderException ex) {
+      throw new ParseException(ex.getMessage(), -1);
+    }
   }
 
   private StringUtil() {

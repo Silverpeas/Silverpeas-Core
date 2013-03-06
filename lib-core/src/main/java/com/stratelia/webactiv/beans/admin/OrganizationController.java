@@ -980,6 +980,28 @@ public class OrganizationController implements java.io.Serializable {
     }
   }
 
+  /**
+   * Is the specified tool belongs to the administration component?
+   * </p>
+   * The administration component (or administrive console) forms a particular component made up
+   * of several tools, each of them providing an administrative feature. Each tool in the
+   * administration component have the same identifier that refers in fact the administration
+   * console.
+   * @param toolId the unique identifier of the tool.
+   * @return true if the tool belongs to the administration component.
+   */
+  public boolean isAdminTool(String toolId) {
+    return getAdminService().isAnAdminTool(toolId);
+  }
+
+  /**
+   * Is the specified tool is available in Silverpeas?
+   * </p>
+   * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool
+   * is identified by a unique identifier and it is unique to each user.
+   * @param toolId the unique identifier of a tool.
+   * @return true if the tool is available, false otherwise.
+   */
   public boolean isToolAvailable(String toolId) {
     boolean isToolAvailable;
     try {
@@ -993,6 +1015,18 @@ public class OrganizationController implements java.io.Serializable {
     return isToolAvailable;
   }
 
+  /**
+   * Is the specified component instance available among the components instances accessibles by
+   * the specified user?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some resources.
+   * Each component in Silverpeas can be instanciated several times, each of them corresponding then
+   * to a running application in Silverpeas and it is uniquely identified from others instances by
+   * a given identifier.
+   * @param componentId the unique identifier of a component instance.
+   * @param userId the unique identifier of a user.
+   * @return true if the component instance is available, false otherwise.
+   */
   public boolean isComponentAvailable(String componentId, String userId) {
     try {
       return getAdminService().isComponentAvailable(componentId, userId);

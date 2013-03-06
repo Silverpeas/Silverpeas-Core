@@ -158,6 +158,16 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
+   * Read the content of a file as text (the text is supposed to be in the UTF-8 charset).
+   * @param file the file to read.
+   * @return the file content as a String.
+   * @throws IOException if an error occurs while reading the file.
+   */
+  public static String readFileToString(final File file) throws IOException {
+    return FileUtils.readFileToString(file);
+  }
+
+  /**
    * Write a stream into a file.
    *
    * @param file the file to be written.
@@ -309,6 +319,31 @@ public class FileUtil implements MimeTypes {
     }
     return FileUtils.listFiles(directory, filter, (recursive ? TrueFileFilter.INSTANCE
         : FalseFileFilter.INSTANCE));
+  }
+
+  /**
+   * Forces the deletion of the specified file.
+   * @param fileToDelete file to delete.
+   * @throws IOException if the deletion failed or if the file doesn't exist.
+   */
+  public static void forceDeletion(File fileToDelete) throws IOException {
+    FileUtils.forceDelete(fileToDelete);
+  }
+
+  /**
+   * Moves the specified source file to the specified destination. If the destination exists, it is
+   * then replaced by the source; if the destination is a directory, then it is deleted with all of
+   * its contain.
+   * @param source the file to move.
+   * @param destination the destination file of the move.
+   * @throws IOException if the source or the destination is invalid or if an error occurs while
+   * moving the file.
+   */
+  public static void moveFile(File source, File destination) throws IOException {
+    if (destination.exists()) {
+      FileUtils.forceDelete(destination);
+    }
+    FileUtils.moveFile(source, destination);
   }
 
   private FileUtil() {

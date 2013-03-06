@@ -58,23 +58,6 @@ public class UserProfileExtendedEntity extends UserProfileEntity {
     return new UserProfileExtendedEntity(user);
   }
 
-  /**
-   * Decorates the specified user full details with the required WEB exposition features.
-   * @param users a list of full details on some users.
-   * @param baseURI the URI at which the specified users are defined.
-   * @return a list of web entities representing the complete profile of the specified users.
-   */
-  public static UserProfileExtendedEntity[] fromUsers(final List<? extends UserFull> users,
-      final URI usersUri) {
-    final UserProfileExtendedEntity[] selectableUsers = new UserProfileExtendedEntity[users.size()];
-    final String fromUsersUri = usersUri.toString();
-    int i = 0;
-    for (final UserFull aUser : users) {
-      selectableUsers[i++] = fromUser(aUser).withAsUri(uriOfUser(aUser, fromUsersUri));
-    }
-    return selectableUsers;
-  }
-
   private UserFull user = null;
 
   private UserProfileExtendedEntity(final UserFull user) {

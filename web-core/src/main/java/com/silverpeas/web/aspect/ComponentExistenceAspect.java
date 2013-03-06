@@ -39,7 +39,8 @@ import org.springframework.stereotype.Component;
  * implicitly for each web resources managed by a given component instance. If a web resource
  * doesn't belong to any component instance, then nothing is done.
  */
-@Component @Aspect
+@Component
+@Aspect
 public class ComponentExistenceAspect {
 
   @Pointcut("@within(javax.ws.rs.Path) && this(com.silverpeas.web.RESTWebService)")
@@ -63,8 +64,8 @@ public class ComponentExistenceAspect {
   }
 
   @Before("webServices() && (methodAnnotatedWithGET() || "
-  + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
-  + "&& this(service)")
+      + "methodAnnotatedWithPOST() || methodAnnotatedWithDELETE() || methodAnnotatedWithPUT()) "
+      + "&& this(service)")
   public void checkComponentInstanceExistence(RESTWebService service) throws Throwable {
     String instanceId = null;
     try {
@@ -73,8 +74,9 @@ public class ComponentExistenceAspect {
     }
     if (isDefined(instanceId)) {
       OrganizationController controller = OrganizationControllerFactory.getFactory().
-              getOrganizationController();
-      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId)) {
+          getOrganizationController();
+      if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId)
+          && !controller.isAdminTool(instanceId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
     }

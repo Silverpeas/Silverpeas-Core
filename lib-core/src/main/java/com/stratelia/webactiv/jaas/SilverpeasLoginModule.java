@@ -29,7 +29,6 @@ import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -52,8 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.silverpeas.util.cryptage.CryptMD5;
 import org.apache.jackrabbit.util.Text;
+import org.silverpeas.util.crypto.CryptMD5;
 
 public class SilverpeasLoginModule implements LoginModule {
 

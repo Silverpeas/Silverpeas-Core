@@ -26,12 +26,17 @@ package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * Check the access to a component for a user.
+ * It controls the access of a user to a given Silverpeas component. A Silverpeas component can be
+ * either a Silverpeas application instance (like a KMelia instance for example) or a user
+ * personal tool or an administrative tool.
  * @author ehugonnet
  */
 @Named
@@ -71,6 +76,9 @@ public class ComponentAccessController implements AccessController<String> {
     // Personal space or user tool
     if (componentId == null || getOrganizationController().isToolAvailable(componentId)) {
       return true;
+    }
+    if (Admin.ADMIN_COMPONENT_ID.equals(componentId)) {
+      return UserDetail.getById(userId).isAccessAdmin();
     }
     if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
         componentId, "publicFiles"))) {

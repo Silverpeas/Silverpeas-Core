@@ -24,9 +24,9 @@ import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
 import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
 
-import com.silverpeas.util.cryptage.CryptMD5;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.silverpeas.util.crypto.CryptMD5;
 
 public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
