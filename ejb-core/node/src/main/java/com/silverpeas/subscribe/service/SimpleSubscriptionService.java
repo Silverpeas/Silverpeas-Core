@@ -28,6 +28,7 @@ import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -184,12 +185,18 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public Collection<Subscription> getByResource(final SubscriptionResource resource) {
+    return getByResource(resource, SubscriptionMethod.UNKNOWN);
+  }
+
+  @Override
+  public Collection<Subscription> getByResource(final SubscriptionResource resource,
+      final SubscriptionMethod method) {
     SilverTrace.info("subscribe", "SubscriptionService.getByResource", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
       con = getConnection();
-      return subscriptionDao.getSubscriptionsByResource(con, resource);
+      return subscriptionDao.getSubscriptionsByResource(con, resource, method);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscriptionService.getByResource()",
           SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_USER_SUBSCRIBES", e);
@@ -264,12 +271,18 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource) {
+    return getSubscribers(resource, SubscriptionMethod.UNKNOWN);
+  }
+
+  @Override
+  public Collection<SubscriptionSubscriber> getSubscribers(final SubscriptionResource resource,
+      final SubscriptionMethod method) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      return subscriptionDao.getSubscribers(con, resource);
+      return subscriptionDao.getSubscribers(con, resource, method);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscriptionService.getSubscribers()",
           SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_SUBSCRIBERS", e);
@@ -280,11 +293,17 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
   @Override
   public Collection<String> getUserSubscribers(SubscriptionResource resource) {
+    return getUserSubscribers(resource, SubscriptionMethod.UNKNOWN);
+  }
+
+  @Override
+  public Collection<String> getUserSubscribers(final SubscriptionResource resource,
+      final SubscriptionMethod method) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getUserSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Set<String> userIds = new HashSet<String>();
     Set<String> groupIds = new HashSet<String>();
-    for (SubscriptionSubscriber subscriber : getSubscribers(resource)) {
+    for (SubscriptionSubscriber subscriber : getSubscribers(resource, method)) {
       switch (subscriber.getType()) {
         case USER:
           userIds.add(subscriber.getId());
@@ -308,12 +327,18 @@ public class SimpleSubscriptionService implements SubscriptionService {
   @Override
   public Collection<SubscriptionSubscriber> getSubscribers(
       final Collection<? extends SubscriptionResource> resources) {
+    return getSubscribers(resources, SubscriptionMethod.UNKNOWN);
+  }
+
+  @Override
+  public Collection<SubscriptionSubscriber> getSubscribers(
+      final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
     SilverTrace
         .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
-      return subscriptionDao.getSubscribers(con, resources);
+      return subscriptionDao.getSubscribers(con, resources, method);
     } catch (Exception e) {
       throw new SubscribeRuntimeException("SubscriptionService.getSubscribers()",
           SilverpeasRuntimeException.ERROR, "subscribe.CANNOT_GET_SUBSCRIBERS", e);

@@ -25,6 +25,7 @@ package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -69,6 +70,11 @@ public abstract class AbstractSubscriptionResource<T extends WAPrimaryKey>
   @Override
   public SubscriptionResourceType getType() {
     return type;
+  }
+
+  @Override
+  public String getInstanceId() {
+    return (pk != null && StringUtil.isDefined(pk.getInstanceId())) ? pk.getInstanceId() : "";
   }
 
   /**

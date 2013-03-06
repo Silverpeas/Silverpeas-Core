@@ -85,7 +85,7 @@ public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
         Collection<SubscriptionSubscriber> result =
-            subscriptionDao.getSubscribers(connection, nodePks);
+            subscriptionDao.getSubscribers(connection, nodePks, null);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));
@@ -118,7 +118,7 @@ public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
         Collection<SubscriptionSubscriber> result =
-            subscriptionDao.getSubscribers(connection, nodePks);
+            subscriptionDao.getSubscribers(connection, nodePks, null);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));

@@ -37,6 +37,7 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.subscription.SubscriptionContext;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -486,6 +487,10 @@ public class AbstractComponentSessionController implements ComponentSessionContr
 
   public Selection getSelection() {
     return controller.getSelection();
+  }
+
+  public SubscriptionContext getSubscriptionContext() {
+    return controller.getSubscriptionContext();
   }
 
   public AlertUser getAlertUser() {

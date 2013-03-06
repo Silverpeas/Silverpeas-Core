@@ -24,59 +24,42 @@
 
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriberType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
-import java.util.Date;
 
 /**
- * @author ehugonnet
+ * User: Yohann Chastagnier
  */
 @XmlRootElement
-public class SubscriptionEntity {
+public class SubscriberEntity {
 
   @XmlElement(required = true)
-  private SubscriptionResourceEntity resource;
+  private String id = "0";
   @XmlElement(required = true)
-  private SubscriberEntity subscriber;
-  @XmlElement(defaultValue = "true")
-  private boolean forced = true;
-  @XmlElement(defaultValue = "true")
-  private boolean selfCreation = true;
-  @XmlElement(defaultValue = "true")
-  private Date creationDate;
+  private boolean group = false;
+  @XmlElement(required = true)
+  private boolean user = true;
 
-  static SubscriptionEntity from(Subscription subscription) {
-    SubscriptionEntity entity = new SubscriptionEntity();
-    entity.resource = SubscriptionResourceEntity.from(subscription.getResource());
-    entity.subscriber = SubscriberEntity.from(subscription.getSubscriber());
-    entity.forced = SubscriptionMethod.FORCED.equals(subscription.getSubscriptionMethod());
-    entity.selfCreation =
-        SubscriptionMethod.SELF_CREATION.equals(subscription.getSubscriptionMethod());
-    entity.creationDate = subscription.getCreationDate();
+  static SubscriberEntity from(SubscriptionSubscriber subscriber) {
+    SubscriberEntity entity = new SubscriberEntity();
+    entity.group = SubscriberType.GROUP.equals(subscriber.getType());
+    entity.user = SubscriberType.USER.equals(subscriber.getType());
+    entity.id = subscriber.getId();
     return entity;
   }
 
-  public SubscriptionResourceEntity getResource() {
-    return resource;
+  public String getId() {
+    return id;
   }
 
-  public SubscriberEntity getSubscriber() {
-    return subscriber;
+  public boolean isGroup() {
+    return group;
   }
 
-  public boolean isForced() {
-    return forced;
-  }
-
-  public boolean isSelfCreation() {
-    return selfCreation;
-  }
-
-  public Date getCreationDate() {
-    return creationDate;
+  public boolean isUser() {
+    return user;
   }
 }

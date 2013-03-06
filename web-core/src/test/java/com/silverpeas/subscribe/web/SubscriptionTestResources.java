@@ -37,14 +37,10 @@ import static org.junit.Assert.*;
 public class SubscriptionTestResources extends TestResources {
   
   public static final String COMPONENT_ID = "questionReply12";
-  public static final String KMELIA_ID = "kmelia12";
   public static final String SUBSCRIBE_RESOURCE_PATH = "subscribe/" + COMPONENT_ID;
-  public static final String KMELIA_SUBSCRIBE_RESOURCE_PATH = "subscribe/" + COMPONENT_ID;
   public  static final String SUBSCRIPTION_RESOURCE_PATH = "subscriptions/" + COMPONENT_ID;
-  public static final String KMELIA_SUBSCRIPTION_RESOURCE_PATH = "subscriptions/" + COMPONENT_ID;
   public static final String UNSUBSCRIBE_RESOURCE_PATH = "unsubscribe/" + COMPONENT_ID;
-  public static final String KMELIA_UNSUBSCRIBE_RESOURCE_PATH = "unsubscribe/" + COMPONENT_ID;
-  
+
   @Inject
   private MockableSubscriptionService subscriptionService;
   

@@ -21,40 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.silverpeas.subscribe;
-
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+package org.silverpeas.subscription.constant;
 
 /**
  * User: Yohann Chastagnier
- * Date: 20/02/13
+ * Date: 04/03/13
  */
-public interface SubscriptionResource {
+public enum SubscriptionFunction {
+  Main,
+  ToUserPanel,
+  FromUserPanel;
 
-  /**
-   * Gets the identifier of the resource aimed by subscription
-   * @return
-   */
-  public String getId();
-
-  /**
-   * Gets the type of the resource aimed by the subscription
-   * @return
-   */
-  public SubscriptionResourceType getType();
-
-  /**
-   * Gets the instance identifier of component
-   * @return
-   */
-  public String getInstanceId();
-
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @param <T>
-   * @return
-   */
-  public <T extends WAPrimaryKey> T getPK();
+  public static SubscriptionFunction from(String name) {
+    if (name != null) {
+      for (SubscriptionFunction subscriptionFunction : SubscriptionFunction.values()) {
+        if (name.equals(subscriptionFunction.name())) {
+          return subscriptionFunction;
+        }
+      }
+    }
+    return Main;
+  }
 }

@@ -30,6 +30,7 @@ import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.mock.OrganizationControllerMock;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -286,6 +287,9 @@ public class SubscriptionServiceTest {
     Collection<Subscription> subscriptions = subscriptionService.getByResource(resource);
     assertThat(subscriptions, hasSize(15));
 
+    subscriptions = subscriptionService.getByResource(resource, SubscriptionMethod.SELF_CREATION);
+    assertThat(subscriptions, hasSize(5));
+
     resource = NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID));
     subscriptions = subscriptionService.getByResource(resource);
     assertThat(subscriptions, hasSize(3));
@@ -380,6 +384,16 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+
+    result = subscriptionService
+        .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
+            SubscriptionMethod.SELF_CREATION);
+    assertThat(result, hasSize(5));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("4")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
   }
 
   /**
@@ -413,6 +427,16 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem("4"));
     assertThat(result, hasItem("5"));
     assertThat(result, hasItem(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5));
+
+    result = subscriptionService
+        .getUserSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
+            SubscriptionMethod.SELF_CREATION);
+    assertThat(result, hasSize(5));
+    assertThat(result, hasItem("1"));
+    assertThat(result, hasItem("2"));
+    assertThat(result, hasItem("3"));
+    assertThat(result, hasItem("4"));
+    assertThat(result, hasItem("5"));
   }
 
   /**
@@ -451,6 +475,14 @@ public class SubscriptionServiceTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+
+    result = subscriptionService.getSubscribers(resources, SubscriptionMethod.SELF_CREATION);
+    assertThat(result, hasSize(5));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("4")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
   }
 
   /**

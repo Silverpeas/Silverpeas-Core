@@ -21,40 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.subscribe.web;
 
-package com.silverpeas.subscribe;
 
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.util.StringUtil;
+
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/02/13
+ * Base URIs from which the REST-based ressources representing subscription/subscriber entities are
+ * defined.
+ * @author Yohann Chastagnier
  */
-public interface SubscriptionResource {
+public final class SubscriptionResourceURIs {
 
-  /**
-   * Gets the identifier of the resource aimed by subscription
-   * @return
-   */
-  public String getId();
-
-  /**
-   * Gets the type of the resource aimed by the subscription
-   * @return
-   */
-  public SubscriptionResourceType getType();
-
-  /**
-   * Gets the instance identifier of component
-   * @return
-   */
-  public String getInstanceId();
-
-  /**
-   * Gets the Silverpeas Primary Key of the aimed resource
-   * @param <T>
-   * @return
-   */
-  public <T extends WAPrimaryKey> T getPK();
+  public static final String SUBSCRIPTION_BASE_URI = "subscriptions";
+  public static final String SUBSCRIPTION_SUBSCRIBER_URI_PART = "subscribers";
 }

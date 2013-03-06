@@ -107,11 +107,19 @@ public class SubscriptionDaoTest {
   public void testGetSubscriptionsByNodeResource() throws Exception {
     SubscriptionResource resource = NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID));
     Collection<Subscription> subscriptions =
-        subscriptionDao.getSubscriptionsByResource(getConnection(), resource);
+        subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(15));
 
+    subscriptions = subscriptionDao
+        .getSubscriptionsByResource(getConnection(), resource, SubscriptionMethod.UNKNOWN);
+    assertThat(subscriptions, hasSize(15));
+
+    subscriptions = subscriptionDao
+        .getSubscriptionsByResource(getConnection(), resource, SubscriptionMethod.FORCED);
+    assertThat(subscriptions, hasSize(10));
+
     resource = NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID));
-    subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource);
+    subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(3));
   }
 
@@ -123,11 +131,11 @@ public class SubscriptionDaoTest {
   public void testGetSubscriptionsByComponentResource() throws Exception {
     SubscriptionResource resource = ComponentSubscriptionResource.from(INSTANCE_ID);
     Collection<Subscription> subscriptions =
-        subscriptionDao.getSubscriptionsByResource(getConnection(), resource);
+        subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(9));
 
     resource = NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID));
-    subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource);
+    subscriptions = subscriptionDao.getSubscriptionsByResource(getConnection(), resource, null);
     assertThat(subscriptions, hasSize(3));
   }
 
@@ -269,7 +277,7 @@ public class SubscriptionDaoTest {
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
     assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
-    assertThat(subscription.getResource().getPK().getInstanceId(), is(INSTANCE_ID));
+    assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
   }
@@ -289,7 +297,7 @@ public class SubscriptionDaoTest {
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
     assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
-    assertThat(subscription.getResource().getPK().getInstanceId(), is(INSTANCE_ID));
+    assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.SELF_CREATION));
     assertThat(subscription.getCreatorId(), is("100"));
   }
@@ -308,7 +316,7 @@ public class SubscriptionDaoTest {
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.USER));
     assertThat(subscription.getResource().getId(), is("0"));
     assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
-    assertThat(subscription.getResource().getPK().getInstanceId(), is(INSTANCE_ID));
+    assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
   }
@@ -327,7 +335,7 @@ public class SubscriptionDaoTest {
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("0"));
     assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
-    assertThat(subscription.getResource().getPK().getInstanceId(), is(INSTANCE_ID));
+    assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("100"));
   }
@@ -345,7 +353,7 @@ public class SubscriptionDaoTest {
     assertThat(subscription.getSubscriber().getType(), is(SubscriberType.GROUP));
     assertThat(subscription.getResource().getId(), is("0"));
     assertThat(subscription.getResource().getType(), is(SubscriptionResourceType.COMPONENT));
-    assertThat(subscription.getResource().getPK().getInstanceId(), is(INSTANCE_ID));
+    assertThat(subscription.getResource().getInstanceId(), is(INSTANCE_ID));
     assertThat(subscription.getSubscriptionMethod(), is(SubscriptionMethod.FORCED));
     assertThat(subscription.getCreatorId(), is("200"));
   }
@@ -638,7 +646,7 @@ public class SubscriptionDaoTest {
   @Test
   public void testGetSubscribersForNodeResource() throws Exception {
     Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(getConnection(),
-        NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)));
+        NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)), null);
     assertThat(result, hasSize(10));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
@@ -659,7 +667,7 @@ public class SubscriptionDaoTest {
   @Test
   public void testGetSubscribersForComponentResource() throws Exception {
     Collection<SubscriptionSubscriber> result = subscriptionDao
-        .getSubscribers(getConnection(), ComponentSubscriptionResource.from(INSTANCE_ID));
+        .getSubscribers(getConnection(), ComponentSubscriptionResource.from(INSTANCE_ID), null);
     assertThat(result, hasSize(6));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
@@ -680,7 +688,7 @@ public class SubscriptionDaoTest {
             new SubscriptionResource[]{
                 NodeSubscriptionResource.from(new NodePK("10", "100", INSTANCE_ID))});
     Collection<SubscriptionSubscriber> result =
-        subscriptionDao.getSubscribers(getConnection(), resources);
+        subscriptionDao.getSubscribers(getConnection(), resources, null);
     assertThat(result, hasSize(10));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
@@ -692,6 +700,28 @@ public class SubscriptionDaoTest {
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
     assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+
+    result = subscriptionDao.getSubscribers(getConnection(), resources, SubscriptionMethod.UNKNOWN);
+    assertThat(result, hasSize(10));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("4")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("1")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("2")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("3")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("4")));
+    assertThat(result, hasItem(GroupSubscriptionSubscriber.from("5")));
+
+    result = subscriptionDao
+        .getSubscribers(getConnection(), resources, SubscriptionMethod.SELF_CREATION);
+    assertThat(result, hasSize(5));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("4")));
+    assertThat(result, hasItem(UserSubscriptionSubscriber.from("5")));
   }
 
   /**

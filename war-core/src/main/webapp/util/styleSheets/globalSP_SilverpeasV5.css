@@ -4827,12 +4827,15 @@ li.application  .applicationName {
 }
 
 #filter_userPanel .title,
-#selected_userPanel .title{
+#selected_userPanel .title,
+.subscription-management .title{
   background-color:#353535;
   color:#FFF;
   font-size:120%;
   line-height:28px;
   padding-left:9px;
+  position:relative;
+  height:28px;
 }
 
 #results_userPanel {
@@ -4954,7 +4957,7 @@ input.search:focus {
 .userPanel .remove  {
   background:transparent url(../icons/deleteFiche.png) top left;
 }
-.userPanel  .avatar {
+.userPanel .avatar {
   width:30px;
   height:30px;
   border:1px solid #bcbcbc;
@@ -4964,7 +4967,7 @@ input.search:focus {
   left:6px;
 }
 
-.userPanel  .avatar img{
+.userPanel .avatar img{
   width:30px;
   height:auto;
 }
@@ -5004,6 +5007,73 @@ input.search:focus {
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
 	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
+
+/* subscription-management */
+
+.individual-subscription .title .infoBulle {
+  position:absolute;
+  top:7px;
+  right:5px;
+}
+
+.subscription-management {
+  height: 100%;
+  overflow: auto;
+}
+
+.subscription-management .compulsory-subscription-management {
+  float:left;
+  width:58%;
+  border:1px solid #eaeaea;
+}
+
+.subscription-management .individual-subscription {
+  float:left;
+  width:39%;
+  margin-left:2%;
+  border:1px solid #eaeaea;
+}
+
+.compulsory-subscription-management .listing_groups ,
+.compulsory-subscription-management .listing_users,
+.individual-subscription .listing_groups ,
+.individual-subscription .listing_users {
+  margin:0 8px 8px;
+  clear:right;
+}
+
+.compulsory-subscription-management .action,
+.individual-subscription .action {
+  background: url("../icons/delete.gif") repeat scroll left top transparent;
+  height: 16px;
+  position: absolute;
+  right: 12px;
+  text-indent: -3000px;
+  top: 12px;
+  width: 16px;
+}
+
+.compulsory-subscription-management .unsubscribe,
+.individual-subscription .unsubscribe {
+  cursor: pointer;
+}
+
+.userPanel .listing_users .unsubscribed .name_user,
+.userPanel .listing_groups .unsubscribed .name_group,
+.compulsory-subscription-management .unsubscribed,
+.individual-subscription .unsubscribed {
+  color: #d2d2d2 !important;
+}
+
+.compulsory-subscription-management .unsubscribed img,
+.individual-subscription .unsubscribed img {
+  opacity: 0.3;
+}
+
+.compulsory-subscription-management .buttonPane{
+  float:right;
+  margin:8px -92px 0 0;
 }
 
 /* userzoom-tooltip-profilPhoto */

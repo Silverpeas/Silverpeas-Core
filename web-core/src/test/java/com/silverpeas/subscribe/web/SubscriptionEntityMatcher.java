@@ -25,8 +25,7 @@
 package com.silverpeas.subscribe.web;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 
@@ -48,19 +47,62 @@ public class SubscriptionEntityMatcher extends BaseMatcher<SubscriptionEntity> {
 
   @Override
   public boolean matches(Object item) {
-    boolean match = false;
     if (item instanceof SubscriptionEntity) {
       SubscriptionEntity actual = (SubscriptionEntity) item;
-      match = SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType()) ==
-          actual.isComponentSubscription() &&
-          subscription.getResource().getId().equals(actual.getId()) && subscription.
-          getSubscriber().getId().equals(actual.getSubscriberId()) &&
-          SubscriberType.USER.equals(subscription.
-              getSubscriber().getType()) == actual.isUserSubscriber() &&
-          subscription.getResource().getPK().getComponentName().
-              equals(actual.getComponentId());
+      EqualsBuilder match = new EqualsBuilder();
+
+      // Resource
+      match.append(subscription.getResource().getId(), actual.getResource().getId());
+      match
+          .append(subscription.getResource().getInstanceId(), actual.getResource().getInstanceId());
+      switch (subscription.getResource().getType()) {
+        case NODE:
+          match.appendSuper(!actual.getResource().isComponent());
+          match.appendSuper(actual.getResource().isNode());
+          break;
+        case COMPONENT:
+          match.appendSuper(actual.getResource().isComponent());
+          match.appendSuper(!actual.getResource().isNode());
+          break;
+        default:
+          match.appendSuper(false);
+          break;
+      }
+
+      // Subscriber
+      match.append(subscription.getSubscriber().getId(), actual.getSubscriber().getId());
+      switch (subscription.getSubscriber().getType()) {
+        case USER:
+          match.appendSuper(!actual.getSubscriber().isGroup());
+          match.appendSuper(actual.getSubscriber().isUser());
+          break;
+        case GROUP:
+          match.appendSuper(actual.getSubscriber().isGroup());
+          match.appendSuper(!actual.getSubscriber().isUser());
+          break;
+        default:
+          match.appendSuper(false);
+          break;
+      }
+
+      // Method
+      switch (subscription.getSubscriptionMethod()) {
+        case FORCED:
+          match.appendSuper(actual.isForced());
+          match.appendSuper(!actual.isSelfCreation());
+          break;
+        case SELF_CREATION:
+          match.appendSuper(!actual.isForced());
+          match.appendSuper(actual.isSelfCreation());
+          break;
+        default:
+          match.appendSuper(false);
+          break;
+      }
+
+      return match.isEquals();
     }
-    return match;
+    return false;
   }
 
   @Override

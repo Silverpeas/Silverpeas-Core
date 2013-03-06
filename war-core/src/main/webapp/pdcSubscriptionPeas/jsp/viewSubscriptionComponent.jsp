@@ -112,10 +112,10 @@
     if (!subscriptions.isEmpty()) {
       for (ComponentSubscriptionBean subscriptionBean : subscriptions) {
         String delete =
-            subscriptionBean.getSubscription().getResource().getPK().getInstanceId() + "-" +
+            subscriptionBean.getSubscription().getResource().getInstanceId() + "-" +
                 subscriptionBean.getSubscription().getCreatorId();
         ComponentInstLight componentInst = organizationCtrl.getComponentInstLight(
-            subscriptionBean.getSubscription().getResource().getPK().getInstanceId());
+            subscriptionBean.getSubscription().getResource().getInstanceId());
         SpaceInstLight spaceInst =
             organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
         ArrayLine line = arrayPane.addArrayLine();
@@ -126,7 +126,7 @@
         String name = spaceInst.getName() + " > " + componentInst.getLabel();
         if (!isReadOnly) {
           String link = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
-              subscriptionBean.getSubscription().getResource().getPK().getInstanceId());
+              subscriptionBean.getSubscription().getResource().getInstanceId());
           line.addArrayCellLink(name, link);
         } else {
           line.addArrayCellText(name);

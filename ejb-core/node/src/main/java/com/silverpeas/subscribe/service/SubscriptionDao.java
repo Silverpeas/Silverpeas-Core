@@ -30,6 +30,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -118,7 +119,7 @@ public class SubscriptionDao {
       prepStmt.setString(4, subscription.getResource().getId());
       prepStmt.setString(5, subscription.getResource().getType().getName());
       prepStmt.setString(6, subscription.getResource().getPK().getSpace());
-      prepStmt.setString(7, subscription.getResource().getPK().getInstanceId());
+      prepStmt.setString(7, subscription.getResource().getInstanceId());
       prepStmt.setString(8, subscription.getCreatorId());
       prepStmt.setTimestamp(9, new Timestamp(
           subscription.getCreationDate() == null ? DateUtil.getNow().getTime() :
@@ -146,7 +147,7 @@ public class SubscriptionDao {
       prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
       prepStmt.setString(4, subscription.getResource().getId());
       prepStmt.setString(5, subscription.getResource().getType().getName());
-      prepStmt.setString(6, subscription.getResource().getPK().getInstanceId());
+      prepStmt.setString(6, subscription.getResource().getInstanceId());
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -185,7 +186,7 @@ public class SubscriptionDao {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_RESOURCE);
-      prepStmt.setString(1, resource.getPK().getInstanceId());
+      prepStmt.setString(1, resource.getInstanceId());
       prepStmt.setString(2, resource.getId());
       prepStmt.setString(3, resource.getType().getName());
       prepStmt.executeUpdate();
@@ -214,7 +215,7 @@ public class SubscriptionDao {
       prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
       prepStmt.setString(4, subscription.getResource().getId());
       prepStmt.setString(5, subscription.getResource().getType().getName());
-      prepStmt.setString(6, subscription.getResource().getPK().getInstanceId());
+      prepStmt.setString(6, subscription.getResource().getInstanceId());
       rs = prepStmt.executeQuery();
       return rs.next();
     } finally {
@@ -275,23 +276,32 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param resource
+   * @param method
    * @return
    * @throws SQLException
    * @see
    */
   public Collection<Subscription> getSubscriptionsByResource(Connection con,
-      SubscriptionResource resource) throws SQLException {
+      SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscriptionsByResource",
         "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
+    String methodQueryPart = "";
+    if (method != null && !SubscriptionMethod.UNKNOWN.equals(method)) {
+      methodQueryPart = " AND subscriptionMethod = ?";
+    }
     try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_RESOURCE);
-      prepStmt.setString(1, resource.getPK().getInstanceId());
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_RESOURCE + methodQueryPart);
+      prepStmt.setString(1, resource.getInstanceId());
       prepStmt.setString(2, resource.getId());
       prepStmt.setString(3, resource.getType().getName());
+      if (StringUtil.isDefined(methodQueryPart)) {
+        prepStmt.setString(4, method.getName());
+      }
       rs = prepStmt.executeQuery();
       return toList(rs);
     } finally {
@@ -318,7 +328,7 @@ public class SubscriptionDao {
       prepStmt = con.prepareStatement(SELECT_SUBSCRIPTIONS_BY_SUBSCRIBER_AND_RESOURCE);
       prepStmt.setString(1, subscriber.getId());
       prepStmt.setString(2, subscriber.getType().getName());
-      prepStmt.setString(3, resource.getPK().getInstanceId());
+      prepStmt.setString(3, resource.getInstanceId());
       prepStmt.setString(4, resource.getId());
       prepStmt.setString(5, resource.getType().getName());
       rs = prepStmt.executeQuery();
@@ -332,28 +342,31 @@ public class SubscriptionDao {
    * Method declaration
    * @param con
    * @param resource
+   * @param method
    * @return
    * @throws SQLException
    * @see
    */
   public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
-      SubscriptionResource resource) throws SQLException {
-    return getSubscribers(con, Collections.singletonList(resource));
+      SubscriptionResource resource, SubscriptionMethod method) throws SQLException {
+    return getSubscribers(con, Collections.singletonList(resource), method);
   }
 
   /**
    * Method declaration
    * @param con
    * @param resources
+   * @param method
    * @return
    * @throws SQLException
    */
   public Collection<SubscriptionSubscriber> getSubscribers(Connection con,
-      Collection<? extends SubscriptionResource> resources) throws SQLException {
+      Collection<? extends SubscriptionResource> resources, SubscriptionMethod method)
+      throws SQLException {
     SilverTrace.info("subscribe", "SubscriptionDao.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Set<SubscriptionSubscriber> result = new HashSet<SubscriptionSubscriber>();
     for (SubscriptionResource resource : resources) {
-      findSubscribers(con, resource, result);
+      findSubscribers(con, resource, result, method);
     }
     return result;
   }
@@ -363,17 +376,25 @@ public class SubscriptionDao {
    * @param con
    * @param resource
    * @param result
+   * @param method
    * @throws SQLException
    */
   private void findSubscribers(Connection con, SubscriptionResource resource,
-      Collection<SubscriptionSubscriber> result) throws SQLException {
+      Collection<SubscriptionSubscriber> result, SubscriptionMethod method) throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
+    String methodQueryPart = "";
+    if (method != null && !SubscriptionMethod.UNKNOWN.equals(method)) {
+      methodQueryPart = " AND subscriptionMethod = ?";
+    }
     try {
-      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_BY_RESOURCE);
+      prepStmt = con.prepareStatement(SELECT_SUBSCRIBERS_BY_RESOURCE + methodQueryPart);
       prepStmt.setString(1, resource.getId());
       prepStmt.setString(2, resource.getType().getName());
-      prepStmt.setString(3, resource.getPK().getInstanceId());
+      prepStmt.setString(3, resource.getInstanceId());
+      if (StringUtil.isDefined(methodQueryPart)) {
+        prepStmt.setString(4, method.getName());
+      }
       rs = prepStmt.executeQuery();
       SubscriptionSubscriber subscriber;
       while (rs.next()) {
@@ -434,6 +455,9 @@ public class SubscriptionDao {
 
     String creatorId = rs.getString("creatorId");
     Date creationDate = rs.getTimestamp("creationDate");
+    if (creationDate.getTime() <= 0) {
+      creationDate = null;
+    }
 
     final Subscription subscription;
     switch (resourceType) {

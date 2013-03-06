@@ -28,12 +28,16 @@ import com.google.common.collect.Lists;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.ComponentSubscriptionResource;
+import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
+import com.silverpeas.subscribe.service.NodeSubscriptionResource;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebServiceTest;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Before;
@@ -44,6 +48,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
@@ -100,8 +105,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
     Collection<Subscription> subscriptions = Lists.newArrayList((Subscription) subscription);
     when(mockedSubscriptionService.
-        getBySubscriberAndComponent(UserSubscriptionSubscriber.from(user.getId()), COMPONENT_ID))
-        .thenReturn(subscriptions);
+        getByResource(ComponentSubscriptionResource.from(COMPONENT_ID))).thenReturn(subscriptions);
     getTestResources().getMockableSubscriptionService()
         .setImplementation(mockedSubscriptionService);
     SubscriptionEntity[] entities =
@@ -125,21 +129,24 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     user.setState(UserState.VALID);
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
-    List<String> subscribers = new ArrayList<String>();
-    subscribers.add("5");
-    subscribers.add("6");
-    subscribers.add("7");
-    subscribers.add("20");
+    List<SubscriptionSubscriber> subscribers = new ArrayList<SubscriptionSubscriber>();
+    subscribers.add(UserSubscriptionSubscriber.from("5"));
+    subscribers.add(UserSubscriptionSubscriber.from("6"));
+    subscribers.add(GroupSubscriptionSubscriber.from("7"));
+    subscribers.add(UserSubscriptionSubscriber.from("20"));
     when(mockedSubscriptionService
-        .getUserSubscribers(ComponentSubscriptionResource.from(COMPONENT_ID)))
+        .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", COMPONENT_ID))))
         .thenReturn(subscribers);
     getTestResources().getMockableSubscriptionService()
         .setImplementation(mockedSubscriptionService);
-    String[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/")
+    SubscriberEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/0")
         .header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).get(String[].class);
+            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(4));
-    assertThat(entities, is(new String[]{"5", "6", "7", "20"}));
+    Iterator<SubscriptionSubscriber> it = subscribers.iterator();
+    for (SubscriberEntity entity : entities) {
+      assertThat(entity, SubscriberEntityMatcher.matches(it.next()));
+    }
   }
 }

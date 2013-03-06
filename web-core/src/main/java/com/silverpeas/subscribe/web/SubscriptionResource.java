@@ -46,9 +46,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static com.silverpeas.subscribe.web.SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI;
+import static com.silverpeas.subscribe.web.SubscriptionResourceURIs
+    .SUBSCRIPTION_SUBSCRIBER_URI_PART;
 
 /**
  * A REST Web resource representing a given subscription.
@@ -56,7 +59,7 @@ import java.util.Collection;
  */
 @Service
 @RequestScoped
-@Path("subscriptions/{componentId}")
+@Path(SUBSCRIPTION_BASE_URI + "/{componentId}")
 @Authorized
 public class SubscriptionResource extends RESTWebService {
 
@@ -97,11 +100,10 @@ public class SubscriptionResource extends RESTWebService {
       final Collection<Subscription> subscriptions;
       if (StringUtil.isDefined(resourceId)) {
         subscriptions = SubscriptionServiceFactory.getFactory().getSubscribeService()
-            .getBySubscriberAndResource(userSubscriber,
-                NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
+            .getByResource(NodeSubscriptionResource.from(new NodePK(resourceId, componentId)));
       } else {
         subscriptions = SubscriptionServiceFactory.getFactory().
-            getSubscribeService().getBySubscriberAndComponent(userSubscriber, componentId);
+            getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
       }
       return asWebEntities(subscriptions);
     } catch (CommentRuntimeException ex) {
@@ -120,9 +122,9 @@ public class SubscriptionResource extends RESTWebService {
    *         component subscriptions.
    */
   @GET
-  @Path("/subscribers")
+  @Path("/" + SUBSCRIPTION_SUBSCRIBER_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<String> getComponentSubscribers() {
+  public Collection<SubscriberEntity> getComponentSubscribers() {
     return getSubscribers(null);
   }
 
@@ -137,9 +139,9 @@ public class SubscriptionResource extends RESTWebService {
    *         component subscriptions.
    */
   @GET
-  @Path("/subscribers/{id}")
+  @Path("/" + SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Collection<String> getSubscribers(@PathParam("id") String resourceId) {
+  public Collection<SubscriberEntity> getSubscribers(@PathParam("id") String resourceId) {
     try {
       final com.silverpeas.subscribe.SubscriptionResource subscriptionResource;
       if (StringUtil.isDefined(resourceId)) {
@@ -147,8 +149,8 @@ public class SubscriptionResource extends RESTWebService {
       } else {
         subscriptionResource = ComponentSubscriptionResource.from(componentId);
       }
-      return SubscriptionServiceFactory.getFactory().
-          getSubscribeService().getUserSubscribers(subscriptionResource);
+      return asSubscriberWebEntities(SubscriptionServiceFactory.getFactory().
+          getSubscribeService().getSubscribers(subscriptionResource));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -165,10 +167,7 @@ public class SubscriptionResource extends RESTWebService {
     Collection<SubscriptionEntity> entities =
         new ArrayList<SubscriptionEntity>(subscriptions.size());
     for (Subscription subscription : subscriptions) {
-      URI subscriptionURI =
-          getUriInfo().getRequestUriBuilder().path(subscription.getResource().getId()).
-              build();
-      entities.add(asWebEntity(subscription, identifiedBy(subscriptionURI)));
+      entities.add(asWebEntity(subscription));
     }
     return entities;
   }
@@ -176,15 +175,33 @@ public class SubscriptionResource extends RESTWebService {
   /**
    * Gets the WEB entity representing the given subscription.
    * @param subscription
-   * @param subscriptionURI
    * @return
    */
-  protected SubscriptionEntity asWebEntity(final Subscription subscription, URI subscriptionURI) {
-    return SubscriptionEntity.fromSubscription(subscription).withURI(subscriptionURI);
+  protected SubscriptionEntity asWebEntity(final Subscription subscription) {
+    return SubscriptionEntity.from(subscription);
   }
 
-  protected URI identifiedBy(URI uri) {
-    return uri;
+  /**
+   * Gets WEB entity collection representing the given subscriber collection.
+   * @param subscribers
+   * @return
+   */
+  protected Collection<SubscriberEntity> asSubscriberWebEntities(
+      Collection<SubscriptionSubscriber> subscribers) {
+    Collection<SubscriberEntity> entities = new ArrayList<SubscriberEntity>(subscribers.size());
+    for (SubscriptionSubscriber subscriber : subscribers) {
+      entities.add(asSubscriberWebEntity(subscriber));
+    }
+    return entities;
+  }
+
+  /**
+   * Gets the WEB entity representing the given subscriber.
+   * @param subscriber
+   * @return
+   */
+  protected SubscriberEntity asSubscriberWebEntity(final SubscriptionSubscriber subscriber) {
+    return SubscriberEntity.from(subscriber);
   }
 
   @Override

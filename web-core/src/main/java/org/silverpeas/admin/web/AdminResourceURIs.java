@@ -130,7 +130,7 @@ public final class AdminResourceURIs {
 
   /**
    * Gets the URI from a given URI base and URI path parts
-   * @param uriInfo
+   * @param uriBase
    * @param uriPathParts
    * @return
    */
@@ -145,7 +145,7 @@ public final class AdminResourceURIs {
 
   /**
    * Gets the URI from a given URI base and URI path parts
-   * @param uriInfo
+   * @param uriBase
    * @param uriPathParts
    * @return
    */
@@ -155,7 +155,7 @@ public final class AdminResourceURIs {
       return "";
     }
 
-    final StringBuffer stringURI = new StringBuffer(uriBase);
+    final StringBuilder stringURI = new StringBuilder(uriBase);
     if (uriPathParts != null) {
       for (final String pathPart : uriPathParts) {
         if (stringURI.charAt(stringURI.length() - 1) != separator) {

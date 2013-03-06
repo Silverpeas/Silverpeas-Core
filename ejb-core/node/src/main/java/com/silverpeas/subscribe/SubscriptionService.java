@@ -24,6 +24,8 @@
 
 package com.silverpeas.subscribe;
 
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
+
 import java.util.Collection;
 
 /**
@@ -107,6 +109,15 @@ public interface SubscriptionService {
   public Collection<Subscription> getByResource(SubscriptionResource resource);
 
   /**
+   * Gets all subscriptions in relation to the given resource.
+   * @param resource
+   * @param method
+   * @return list of subscriptions
+   */
+  public Collection<Subscription> getByResource(SubscriptionResource resource,
+      SubscriptionMethod method);
+
+  /**
    * Gets all subscriptions (COMPONENT/NODE and SELF_CREATION/FORCED) in relation to a user.
    * @param userId
    * @return list of subscriptions of users that have subscribed themselves,
@@ -152,6 +163,17 @@ public interface SubscriptionService {
   public Collection<SubscriptionSubscriber> getSubscribers(SubscriptionResource resource);
 
   /**
+   * Gets all subscribers (USER and/or GROUP) that are subscribed to a resource.
+   * If a group subscriber is returned into result, caller has to perform it. User subscribers
+   * depending to a group subscription are not returned.
+   * @param resource
+   * @param method
+   * @return list of subscription subscribers
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(SubscriptionResource resource,
+      SubscriptionMethod method);
+
+  /**
    * Gets all users that are subscribed to a resource.
    * If user and/or group subscribers are required, please use {@link
    * SubscriptionService#getSubscribers(SubscriptionResource)}.
@@ -162,6 +184,18 @@ public interface SubscriptionService {
   public Collection<String> getUserSubscribers(SubscriptionResource resource);
 
   /**
+   * Gets all users that are subscribed to a resource.
+   * If user and/or group subscribers are required, please use {@link
+   * SubscriptionService#getSubscribers(SubscriptionResource)}.
+   * @param resource the aimed resource
+   * @param method
+   * @return identifiers of users that have subscribed themselves, of users that are subscribed
+   *         through a subscribed group and of users that have been subscribed by an other user
+   */
+  public Collection<String> getUserSubscribers(SubscriptionResource resource,
+      SubscriptionMethod method);
+
+  /**
    * Gets all subscribers (USER and/or GROUP) that are subscribed to given resources.
    * If a group subscriber is returned into result, caller has to perform it. User subscribers
    * depending to a group subscription are not returned.
@@ -170,6 +204,17 @@ public interface SubscriptionService {
    */
   public Collection<SubscriptionSubscriber> getSubscribers(
       Collection<? extends SubscriptionResource> resources);
+
+  /**
+   * Gets all subscribers (USER and/or GROUP) that are subscribed to given resources.
+   * If a group subscriber is returned into result, caller has to perform it. User subscribers
+   * depending to a group subscription are not returned.
+   * @param resources
+   * @param method
+   * @return list of subscription subscribers
+   */
+  public Collection<SubscriptionSubscriber> getSubscribers(
+      Collection<? extends SubscriptionResource> resources, SubscriptionMethod method);
 
   /**
    * Indicates if a subscriber is subscribed to a resource.

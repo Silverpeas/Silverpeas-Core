@@ -24,59 +24,48 @@
 
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriptionMethod;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
-import java.util.Date;
 
 /**
- * @author ehugonnet
+ * User: Yohann Chastagnier
  */
 @XmlRootElement
-public class SubscriptionEntity {
+public class SubscriptionResourceEntity {
 
   @XmlElement(required = true)
-  private SubscriptionResourceEntity resource;
+  private String id = "0";
   @XmlElement(required = true)
-  private SubscriberEntity subscriber;
-  @XmlElement(defaultValue = "true")
-  private boolean forced = true;
-  @XmlElement(defaultValue = "true")
-  private boolean selfCreation = true;
-  @XmlElement(defaultValue = "true")
-  private Date creationDate;
+  private boolean node = false;
+  @XmlElement(required = true)
+  private boolean component = true;
+  @XmlElement(required = true)
+  private String instanceId;
 
-  static SubscriptionEntity from(Subscription subscription) {
-    SubscriptionEntity entity = new SubscriptionEntity();
-    entity.resource = SubscriptionResourceEntity.from(subscription.getResource());
-    entity.subscriber = SubscriberEntity.from(subscription.getSubscriber());
-    entity.forced = SubscriptionMethod.FORCED.equals(subscription.getSubscriptionMethod());
-    entity.selfCreation =
-        SubscriptionMethod.SELF_CREATION.equals(subscription.getSubscriptionMethod());
-    entity.creationDate = subscription.getCreationDate();
+  static SubscriptionResourceEntity from(com.silverpeas.subscribe.SubscriptionResource resource) {
+    SubscriptionResourceEntity entity = new SubscriptionResourceEntity();
+    entity.id = resource.getId();
+    entity.node = SubscriptionResourceType.NODE.equals(resource.getType());
+    entity.component = SubscriptionResourceType.COMPONENT.equals(resource.getType());
+    entity.instanceId = resource.getInstanceId();
     return entity;
   }
 
-  public SubscriptionResourceEntity getResource() {
-    return resource;
+  public String getId() {
+    return id;
   }
 
-  public SubscriberEntity getSubscriber() {
-    return subscriber;
+  public boolean isNode() {
+    return node;
   }
 
-  public boolean isForced() {
-    return forced;
+  public boolean isComponent() {
+    return component;
   }
 
-  public boolean isSelfCreation() {
-    return selfCreation;
-  }
-
-  public Date getCreationDate() {
-    return creationDate;
+  public String getInstanceId() {
+    return instanceId;
   }
 }
