@@ -1,8 +1,6 @@
 package com.silverpeas.util.security;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.util.crypto.Cipher;
@@ -14,12 +12,6 @@ import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;

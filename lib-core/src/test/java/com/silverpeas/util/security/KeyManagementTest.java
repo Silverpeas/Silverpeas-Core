@@ -1,9 +1,7 @@
 package com.silverpeas.util.security;
 
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
@@ -13,12 +11,6 @@ import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -98,11 +90,12 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
       throws Exception {
     assertThat(keyFile.exists(), is(true));
     assertThat(keyFile.canWrite(), is(false));
-    String encryptedKey = FileUtils.readFileToString(keyFile);
-    assertThat(StringUtil.isDefined(encryptedKey), is(true));
+    String[] encryptedKeys = FileUtils.readFileToString(keyFile).split(" ");
+    assertThat(StringUtil.isDefined(encryptedKeys[1]), is(true));
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher cast125 = cipherFactory.getCipher(CryptographicAlgorithmName.CAST5);
-    String actualKey = cast125.decrypt(StringUtil.fromBase64(encryptedKey), CIPHER_KEY);
+    String actualKey = cast125.decrypt(StringUtil.fromBase64(encryptedKeys[1]),
+        CipherKey.aKeyFromBase64Text(encryptedKeys[0]));
     assertThat(actualKey, is(expectedKey));
   }
 

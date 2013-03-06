@@ -65,13 +65,14 @@ public class CryptoTestResources extends TestResources {
     CipherFactory cipherFactory = CipherFactory.getFactory();
     Cipher cast5 = cipherFactory.getCipher(CryptographicAlgorithmName.CAST5);
     CipherKey cast5Key = CipherKey.aKeyFromHexText(CAST5_KEY);
-    String encryptedKey = StringUtil.asBase64(cast5.encrypt(key, cast5Key));
+    String encryptedContent = StringUtil.asBase64(cast5Key.getRawKey()) + " " +
+        StringUtil.asBase64(cast5.encrypt(key, cast5Key));
 
     File keyFile = new File(ACTUAL_KEY_FILE_PATH);
     if (keyFile.exists()) {
       keyFile.setWritable(true);
     }
-    FileUtil.writeFile(keyFile, new StringReader(encryptedKey));
+    FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
     keyFile.setReadOnly();
   }
 }

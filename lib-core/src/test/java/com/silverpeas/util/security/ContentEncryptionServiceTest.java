@@ -131,7 +131,8 @@ public class ContentEncryptionServiceTest {
       keyFile.setWritable(true);
     }
     String encryptedKey = encryptKey(key);
-    FileUtil.writeFile(keyFile, new StringReader(encryptedKey));
+    String encryptedContent = StringUtil.asBase64(CIPHER_KEY.getRawKey()) + " " + encryptedKey;
+    FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
     keyFile.setReadOnly();
   }
 
@@ -146,7 +147,8 @@ public class ContentEncryptionServiceTest {
       keyFile.setWritable(true);
     }
     String encryptedKey = encryptKey(key);
-    FileUtil.writeFile(keyFile, new StringReader(encryptedKey));
+    String encryptedContent = StringUtil.asBase64(CIPHER_KEY.getRawKey()) + " " + encryptedKey;
+    FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
     keyFile.setReadOnly();
   }
 

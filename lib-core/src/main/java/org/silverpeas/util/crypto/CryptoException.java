@@ -33,6 +33,7 @@ public class CryptoException extends Exception {
 
   public static final String ENCRYPTION_FAILURE = "The encryption failed!";
   public static final String DECRYPTION_FAILURE = "The decryption failed!";
+  public static final String KEY_GENERATION_FAILURE = "The generation of a cipher key failed!";
 
   public CryptoException(final Throwable cause) {
     super(cause);

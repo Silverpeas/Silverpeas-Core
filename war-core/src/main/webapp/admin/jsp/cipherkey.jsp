@@ -42,6 +42,15 @@
 <html>
 <head>
   <view:looknfeel/>
+  <style type="text/css">
+    #help {
+      margin: 2em;
+    }
+    #action {
+      margin: 2em;
+      text-align: center;
+    }
+  </style>
   <script type="text/javascript">
     function isInHexadecimal(key) {
       var hexa = /^[0-9A-F]+$/gi;
@@ -74,6 +83,7 @@
         printError("${sizeError}");
       }
       else {
+        $.progressMessage();
         $.ajax(webContext + "/services/security/cipherkey", {
           type: 'PUT',
           data: key,
@@ -81,9 +91,11 @@
           dataType: "text",
           processData: false,
           success: function(status) {
+            $.closeProgressMessage();
             printMessage(status);
           },
           error: function(jqXHR, textStatus, errorThrown) {
+            $.closeProgressMessage();
             if (jqXHR.responseText)
               printError(jqXHR.responseText);
             else
@@ -92,6 +104,16 @@
         });
       }
     }
+
+    $(document).ready(function() {
+      var enterKey = 13;
+      $("#cipherKey").keypress(function(event) {
+        if ( event.which === enterKey ) {
+          event.preventDefault();
+          importCipherKey();
+        }
+      });
+    });
   </script>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
@@ -104,8 +126,6 @@
         <p>${description}</p>
       </div>
 
-      <br clear="all"/>
-
       <form>
         <label for="cipherKey">${label}</label>
         <input type="text" size="64" maxlength="64" name="cipherKey" id="cipherKey"/>
@@ -113,9 +133,7 @@
         <div id="status">
         </div>
 
-        <br clear="all"/>
-
-        <div align="center">
+        <div id="action">
           <view:buttonPane>
             <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
           </view:buttonPane>
@@ -125,5 +143,7 @@
     </view:board>
   </view:frame>
 </view:window>
+
+<view:progressMessage/>
 </body>
 </html>

@@ -82,11 +82,19 @@ public class CipherKey {
     return key != null;
   }
 
-  protected byte[] getKey() {
+  /**
+   * Gets the raw representation of this cipher key.
+   * @return the key in binaries.
+   */
+  public byte[] getRawKey() {
     return key;
   }
 
-  protected String getKeyFilePath() {
+  /**
+   * Gets the path of the file that stores the key.
+   * @return the path of the key file or null if this key isn't stored in a file.
+   */
+  public String getKeyFilePath() {
     return keyFilePath;
   }
 }

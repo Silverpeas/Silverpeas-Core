@@ -8,6 +8,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.text.MessageFormat;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 /**
  * In cryptography, a block cipher is a deterministic algorithm operating on fixed-length groups of
@@ -96,7 +98,7 @@ public abstract class BlockCipherWithPadding implements Cipher {
    * the IV (Initialization Vector) used in the ciphertext computation. This method is for using
    * this AES cipher implementation to decrypt ciphertexts that were computed by another AES cipher
    * implementation (only if they use the same mode of cryptographic operation).
-   * 
+   *
    * @param cipherText the ciphertext produced by an AES cipher.
    * @param iv the IV used in the ciphertext computation.
    * @return the resulting encrypted data understandable by this AES cipher implementation.
@@ -157,7 +159,7 @@ public abstract class BlockCipherWithPadding implements Cipher {
   public byte[] encrypt(final String data, final CipherKey keyCode) throws CryptoException {
     try {
       assertKeyIsBinary(keyCode);
-      byte[] keyRaw = keyCode.getKey();
+      byte[] keyRaw = keyCode.getRawKey();
       SecretKeySpec keySpec = new SecretKeySpec(keyRaw, getAlgorithmName().name());
       javax.crypto.Cipher cipher = javax.crypto.Cipher.
           getInstance(getTransformation(), SILVERPEAS_JCE_PROVIDER);
@@ -185,11 +187,11 @@ public abstract class BlockCipherWithPadding implements Cipher {
       throws CryptoException {
     try {
       assertKeyIsBinary(keyCode);
-      byte[] keyRaw = keyCode.getKey();
+      byte[] keyRaw = keyCode.getRawKey();
       byte[][] encryptionData = extractEncryptionData(encryptedData, this);
       byte[] cipherText = encryptionData[0];
       byte[] iv = encryptionData[1];
-      SecretKeySpec keySpec = new SecretKeySpec(keyRaw, CryptographicAlgorithmName.AES.name());
+      SecretKeySpec keySpec = new SecretKeySpec(keyRaw, getAlgorithmName().name());
       javax.crypto.Cipher cipher = javax.crypto.Cipher.
           getInstance(getTransformation(), SILVERPEAS_JCE_PROVIDER);
       cipher.init(javax.crypto.Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv));
@@ -197,6 +199,18 @@ public abstract class BlockCipherWithPadding implements Cipher {
       return new String(decryptedData, Charsets.UTF_8);
     } catch (Exception ex) {
       throw new CryptoException(CryptoException.DECRYPTION_FAILURE, ex);
+    }
+  }
+
+  @Override
+  public CipherKey generateCipherKey() throws CryptoException {
+    try {
+      KeyGenerator keyGenerator = KeyGenerator.getInstance(getAlgorithmName().name(),
+          SILVERPEAS_JCE_PROVIDER);
+      SecretKey key = keyGenerator.generateKey();
+      return CipherKey.aKeyFromBinary(key.getEncoded());
+    } catch (Exception ex) {
+      throw new CryptoException(CryptoException.KEY_GENERATION_FAILURE, ex);
     }
   }
 

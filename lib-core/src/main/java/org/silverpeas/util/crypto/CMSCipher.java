@@ -20,7 +20,6 @@
  */
 package org.silverpeas.util.crypto;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSEnvelopedDataGenerator;
@@ -156,5 +155,14 @@ public class CMSCipher implements Cipher {
 
   private byte[] stringToByteArray(String theString) {
     return theString.getBytes(Charsets.UTF_8);
+  }
+
+  /**
+   * This operation isn't yet supported by this cipher.
+   * @return nothing, throws an UnsupportedOperationException exception.
+   */
+  @Override
+  public CipherKey generateCipherKey() throws CryptoException {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

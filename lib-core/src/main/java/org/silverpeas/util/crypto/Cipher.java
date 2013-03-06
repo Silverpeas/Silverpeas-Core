@@ -42,6 +42,7 @@ public interface Cipher {
    * @param data the data to encode.
    * @param keyCode the key to use in the encryption.
    * @return the encrypted data in bytes.
+   * @throws CryptoException if an error has occurred in the data encryption.
    */
   byte[] encrypt(String data, CipherKey keyCode) throws CryptoException;
 
@@ -52,6 +53,16 @@ public interface Cipher {
    * @param encryptedData the data in bytes encrypted by this cipher.
    * @param keyCode the key to use in the decryption.
    * @return the decrypted data.
+   * @throws CryptoException if an error has occurred in the data decryption.
    */
   String decrypt(byte[] encryptedData, CipherKey keyCode) throws CryptoException;
+
+  /**
+   * Generates randomly a cipher key that can be used in the encryption and in the decryption of
+   * data with this cipher.
+   * @return a computed key that can be used with this cipher in the encryption and in the
+   * decryption of data.
+   * @throws CryptoException if an error has occurred in the key generation.
+   */
+  CipherKey generateCipherKey() throws CryptoException;
 }

@@ -55,14 +55,14 @@ public class CAST5CipherTest {
     byte[] encryptedText = cast5.encrypt(KNOWN_PLAIN_TEXT, key);
     byte[][] encryptionData = BlockCipherWithPadding.extractEncryptionData(encryptedText,
         (BlockCipherWithPadding) cast5);
-    byte[] expectedEncryptedText = encryptTextWithKeyAndIV(KNOWN_PLAIN_TEXT, key.getKey(),
+    byte[] expectedEncryptedText = encryptTextWithKeyAndIV(KNOWN_PLAIN_TEXT, key.getRawKey(),
         encryptionData[1]);
     assertThat(encryptedText, is(expectedEncryptedText));
   }
 
   @Test
   public void testDecrypt() throws Exception {
-    byte[] encryptedText = encryptTextWithKeyAndIV(KNOWN_PLAIN_TEXT, key.getKey(), null);
+    byte[] encryptedText = encryptTextWithKeyAndIV(KNOWN_PLAIN_TEXT, key.getRawKey(), null);
     String plainText = cast5.decrypt(encryptedText, key);
     assertThat(plainText, is(KNOWN_PLAIN_TEXT));
   }

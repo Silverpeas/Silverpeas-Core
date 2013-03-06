@@ -1,42 +1,39 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.util.crypto;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.util.Charsets;
 
 import java.util.Arrays;
 import java.security.NoSuchAlgorithmException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 /**
  * Blowfish is a keyed, symmetric block cipher, designed in 1993 by Bruce Schneier and included in a
  * large number of cipher suites and encryption products. Blowfish provides a good encryption rate
- * in software and no effective cryptanalysis of it has been found to date. However, the
- * Advanced Encryption Standard now receives more attention.
+ * in software and no effective cryptanalysis of it has been found to date. However, the Advanced
+ * Encryption Standard now receives more attention.
  *
  * Blowfish was one of the first secure block ciphers not subject to any patents and therefore
  * freely available for anyone to use. This benefit has contributed to its popularity in
@@ -47,7 +44,7 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class BlowfishCipher implements Cipher {
 
-  private javax.crypto.Cipher cipher = null;
+  private final javax.crypto.Cipher cipher;
   private BlowfishKey blowfishKey = null;
 
   protected BlowfishCipher() throws NoSuchPaddingException, NoSuchAlgorithmException {
@@ -57,6 +54,7 @@ public class BlowfishCipher implements Cipher {
 
   /**
    * Gets the name of the algorithm of the cipher.
+   *
    * @return the algorithm name.
    */
   @Override
@@ -75,7 +73,7 @@ public class BlowfishCipher implements Cipher {
       if (keyCode == null) {
         key = this.getSymmetricKey();
       } else {
-        key = new BlowfishKey(keyCode.getKey());
+        key = new BlowfishKey(keyCode.getRawKey());
       }
       synchronized (cipher) {
         cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, key);
@@ -100,7 +98,7 @@ public class BlowfishCipher implements Cipher {
       if (keyCode == null) {
         key = this.getSymmetricKey();
       } else {
-        key = new BlowfishKey(keyCode.getKey());
+        key = new BlowfishKey(keyCode.getRawKey());
       }
       synchronized (cipher) {
         this.cipher.init(javax.crypto.Cipher.DECRYPT_MODE, key);
@@ -120,4 +118,15 @@ public class BlowfishCipher implements Cipher {
     return blowfishKey;
   }
 
+  @Override
+  public CipherKey generateCipherKey() throws CryptoException {
+    try {
+      KeyGenerator keyGenerator = KeyGenerator.getInstance(CryptographicAlgorithmName.Blowfish.
+          name());
+      SecretKey key = keyGenerator.generateKey();
+      return CipherKey.aKeyFromBinary(key.getEncoded());
+    } catch (NoSuchAlgorithmException ex) {
+      throw new CryptoException(CryptoException.KEY_GENERATION_FAILURE, ex);
+    }
+  }
 }
