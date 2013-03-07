@@ -37,6 +37,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.silverpeas.util.GlobalContext;
+import org.silverpeas.util.crypto.CryptoException;
 
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -215,6 +216,10 @@ public class PublicationTemplateManager {
         xmlFile = new File(xmlFilePath);
       }
       
+      if (!xmlFile.exists()) {
+        return null;
+      }
+      
       Unmarshaller unmarshaller = JAXB_CONTEXT.createUnmarshaller();
       publicationTemplate = (PublicationTemplateImpl) unmarshaller.unmarshal(xmlFile);
       publicationTemplate.setFileName(xmlFileName);
@@ -233,16 +238,32 @@ public class PublicationTemplateManager {
    * Save a publicationTemplate definition from java objects to xml file
    * @param template the PublicationTemplate to save
    * @throws PublicationTemplateException
+   * @throws CryptoException 
+   * @throws FormException 
    */
   public void savePublicationTemplate(PublicationTemplate template) throws
-      PublicationTemplateException {
+      PublicationTemplateException, CryptoException {
     SilverTrace.info("form", "PublicationTemplateManager.savePublicationTemplate",
         "root.MSG_GEN_ENTER_METHOD", "template = " + template.getFileName());
 
     String xmlFileName = template.getFileName();
+    
+    PublicationTemplate previousTemplate = loadPublicationTemplate(xmlFileName);
+    boolean encryptionChanged =
+        previousTemplate != null &&
+            template.isDataEncrypted() != previousTemplate.isDataEncrypted();
+    
+    if (encryptionChanged) {
+      if (template.isDataEncrypted()) {
+        getGenericRecordSetManager().encryptData(xmlFileName);
+      } else {
+        getGenericRecordSetManager().decryptData(xmlFileName);
+      }
+    }
 
+    // save template into XML file
     try {
-      // Format these url
+      // Format this URL
       String xmlFilePath = makePath(templateDir, xmlFileName);
       
       Marshaller marshaller = JAXB_CONTEXT.createMarshaller();

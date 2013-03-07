@@ -188,5 +188,11 @@ public interface ContentEncryptionService {
    * the new cipher key.
    */
   void updateCipherKey(final String key) throws CipherKeyUpdateException, CryptoException;
+  
+  /**
+   * Checks if a key is defined and so if content can be encrypted
+   * @return true if the key exist and it is valid
+   */
+  boolean isCipherKeyDefined();
 
 }

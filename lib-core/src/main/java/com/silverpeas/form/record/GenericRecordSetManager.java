@@ -37,6 +37,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.security.ContentEncryptionService;
+import com.silverpeas.util.security.ContentEncryptionServiceFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -51,6 +53,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.silverpeas.util.crypto.CryptoException;
 
 /**
  * The GenericRecordSetManage all the GenericRecordSet. It is a singleton.
@@ -468,6 +473,140 @@ public class GenericRecordSetManager {
           "form.EXP_DELETE_FAILED", e);
     } finally {
       closeConnection(con);
+    }
+  }
+  
+  public void encryptData(String templateName) throws CryptoException {
+    encryptOrDecryptData(templateName, true);
+  }
+  
+  public void decryptData(String templateName) throws CryptoException {
+    encryptOrDecryptData(templateName, false);
+  }
+  
+  private void encryptOrDecryptData(String templateName, boolean encrypt) throws CryptoException {
+    // get all data managed by specified template
+    List<RecordRow> rowsToEncrypt;
+    try {
+      rowsToEncrypt = getAllRecordsOfTemplate(templateName);
+    } catch (FormException e) {
+      String message = CryptoException.ENCRYPTION_FAILURE;
+      if (!encrypt) {
+        message = CryptoException.DECRYPTION_FAILURE;
+      }
+      throw new CryptoException(message, e);
+    }
+    
+    // encrypting/decrypting values...
+    // start to generate a compliant structure to encryption service 
+    Map<String, String> toProcess = new HashMap<String, String>();
+    for (RecordRow row : rowsToEncrypt) {
+      toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
+    }
+    
+    ContentEncryptionService encryptionService =
+      ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+    
+    List<RecordRow> rowsToUpdate = new ArrayList<RecordRow>();
+    // encrypt or decrypt values
+    Map<String, String> processedEntries;
+    if (encrypt) {
+      // encrypt values
+      processedEntries = encryptionService.encryptContent(toProcess);
+    } else {
+      // decrypt values
+      processedEntries = encryptionService.decryptContent(toProcess);
+    }
+    
+    // generate structured data to store in database
+    for (Entry<String, String> entry : processedEntries.entrySet()) {
+      String key = entry.getKey();
+      String[] recordIdAndFieldName = StringUtil.split(key, "$SP$");
+      RecordRow rowToUpdate =
+          new RecordRow(Integer.parseInt(recordIdAndFieldName[0]), recordIdAndFieldName[1],
+              entry.getValue());
+      rowsToUpdate.add(rowToUpdate);
+    }
+    
+    // update encrypted/decrypted values in database
+    Connection con = null;
+    try {
+      con = getConnection();
+      updateFieldRows(con, rowsToUpdate);
+    } catch (Exception e) {
+      String message = CryptoException.ENCRYPTION_FAILURE;
+      if (!encrypt) {
+        message = CryptoException.DECRYPTION_FAILURE;
+      }
+      throw new CryptoException(message, e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  private void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
+    PreparedStatement update = con.prepareStatement(UPDATE_FIELD);
+
+    try {
+      for (RecordRow row : rows) {
+        update.setString(1, row.getFieldValue());
+        update.setInt(2, row.getRecordId());
+        update.setString(3, row.getFieldName());
+        
+        int nbRowsUpdated = update.executeUpdate();
+        if (nbRowsUpdated != 1) {
+          // do something ?
+        }
+      }
+    } finally {
+      DBUtil.close(update);
+    }
+  }
+  
+  private List<RecordRow> getAllRecordsOfTemplate(String templateName) throws FormException {
+    Connection con = null;
+    PreparedStatement select = null;
+    ResultSet rs = null;
+    List<RecordRow> rows = new ArrayList<RecordRow>();
+    try {
+      con = getConnection();
+      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_ENTRIES);
+      select.setString(1, templateName);
+      rs = select.executeQuery();
+
+      while (rs.next()) {
+        RecordRow row = new RecordRow(rs.getInt("recordId"), rs.getString("fieldName"), rs.getString("fieldValue"));
+        rows.add(row);
+      }
+
+      return rows;
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
+    } finally {
+      DBUtil.close(rs, select);
+      DBUtil.close(con);
+    }
+  }
+  
+  private String selectRecordFieldsRow(Connection con,
+      String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
+    PreparedStatement select = null;
+    ResultSet rs = null;
+
+    try {
+      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
+      select.setString(1, fieldName);
+      select.setString(2, recordExternalId);
+      select.setString(3, templateExternalId);
+      rs = select.executeQuery();
+
+      if (!rs.next()) {
+        return null;
+      }
+
+      return rs.getString("fieldValue");
+    } finally {
+      DBUtil.close(rs, select);
     }
   }
 
@@ -994,28 +1133,6 @@ public class GenericRecordSetManager {
     }
   }
 
-  private String selectRecordFieldsRow(Connection con,
-      String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
-    PreparedStatement select = null;
-    ResultSet rs = null;
-
-    try {
-      select = con.prepareStatement(SELECT_TEMPLATE_RECORD_VALUES);
-      select.setString(1, fieldName);
-      select.setString(2, recordExternalId);
-      select.setString(3, templateExternalId);
-      rs = select.executeQuery();
-
-      if (!rs.next()) {
-        return null;
-      }
-
-      return rs.getString("fieldValue");
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
   private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId,
       String externalId)
       throws SQLException, FormException {
@@ -1032,15 +1149,8 @@ public class GenericRecordSetManager {
     }
   }
 
-  private void closeConnection(Connection con) throws FormException {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (SQLException e) {
-        throw new FormException("GenericRecordSetManager",
-            "form.EXP_CLOSE_FAILED", e);
-      }
-    }
+  private void closeConnection(Connection con) {
+    DBUtil.close(con);
   }
 
   /* Template table */
@@ -1131,4 +1241,13 @@ public class GenericRecordSetManager {
           +
           TEMPLATE_TABLE +
           " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
+  
+  static final private String SELECT_TEMPLATE_RECORD_ENTRIES =
+      "SELECT * FROM " +
+          FIELDS_TABLE +
+          " tf, " +
+          RECORD_TABLE +
+          " rec, " +
+          TEMPLATE_TABLE +
+          " tpl WHERE tpl.templatename = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId";
 }

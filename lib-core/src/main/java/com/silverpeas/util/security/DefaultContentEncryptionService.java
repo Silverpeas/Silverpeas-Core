@@ -466,4 +466,14 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       }
     }
   }
+
+  @Override
+  public boolean isCipherKeyDefined() {
+    try {
+      getActualCipherKey();
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }
