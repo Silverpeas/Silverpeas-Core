@@ -39,17 +39,16 @@
 <fmt:message var="buttonLabel" key="crypto.import"/>
 <fmt:message var="hexaError"   key="crypto.keyNotInHexadecimal"/>
 <fmt:message var="sizeError"   key="crypto.invalidKeySize"/>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <link type="text/css" href="<c:url value="/util/styleSheets/fieldset.css"/>" rel="stylesheet" />
   <style type="text/css">
-    #help {
-      margin: 2em;
-    }
-    #action {
-      margin: 2em;
-      text-align: center;
-    }
+  	input#cipherKey {
+  		width: 100%;
+  	}
   </style>
   <script type="text/javascript">
     function isInHexadecimal(key) {
@@ -116,31 +115,33 @@
     });
   </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<view:browseBar ignoreComponentLink="true" componentId="${title}"/>
+<body>
+<view:browseBar ignoreComponentLink="true" path="${title}"/>
 <view:window>
   <view:frame>
     <view:board>
 
       <div id="help" class="inlineMessage">
-        <p>${description}</p>
+        ${description}
       </div>
+      <br clear="all"/>
+      
+      <div id="status"></div>
 
       <form>
-        <label for="cipherKey">${label}</label>
-        <input type="text" size="64" maxlength="64" name="cipherKey" id="cipherKey"/>
-
-        <div id="status">
+      	<div class="fields">
+      	<div class="field" id="codificationArea">
+      	  <label class="txtlibform" for="cipherKey">${label}</label>
+      	  <div class="champs">
+	        <input type="text" size="64" maxlength="64" name="cipherKey" id="cipherKey"/>
+	      </div>
         </div>
-
-        <div id="action">
-          <view:buttonPane>
-            <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
-          </view:buttonPane>
         </div>
       </form>
-
     </view:board>
+    <view:buttonPane>
+      <view:button label="${buttonLabel}" action="javascript:importCipherKey();"/>
+    </view:buttonPane>
   </view:frame>
 </view:window>
 

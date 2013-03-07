@@ -34,6 +34,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class BlowfishKey implements Key {
 
+  private static final long serialVersionUID = 5363796000217868136L;
   private Key key = null;
 
   /**

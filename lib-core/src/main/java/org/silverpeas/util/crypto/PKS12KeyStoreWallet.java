@@ -1,7 +1,5 @@
 package org.silverpeas.util.crypto;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
