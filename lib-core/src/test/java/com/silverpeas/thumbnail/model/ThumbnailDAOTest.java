@@ -86,7 +86,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testSelectByKey() throws Exception {
-    System.out.println("selectByKey");
     Connection con = getConnection().getConnection();
     ThumbnailDetail result = dao.selectByKey(con, "kmelia57", 1, 0);
     assertNotNull(result);
@@ -108,7 +107,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testDeleteThumbnail() throws Exception {
-    System.out.println("insertRow");
     Connection con = getConnection().getConnection();
 
     String instanceId = "kmelia57";
@@ -190,7 +188,6 @@ public class ThumbnailDAOTest extends AbstractTestDao {
    */
   @org.junit.Test
   public void testUpdateRow() throws Exception {
-    System.out.println("updateRow");
     Connection con = getConnection().getConnection();
 
     String instanceId = "kmelia57";
@@ -249,5 +246,11 @@ public class ThumbnailDAOTest extends AbstractTestDao {
   @Override
   protected String getDatasetFileName() {
     return "test-thumbnail-dao-dataset.xml";
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

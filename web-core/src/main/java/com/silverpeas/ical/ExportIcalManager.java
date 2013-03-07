@@ -24,25 +24,17 @@
 
 package com.silverpeas.ical;
 
-import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
-import com.stratelia.webactiv.util.exception.UtilException;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.agenda.control.AgendaSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
 import com.stratelia.webactiv.calendar.control.CalendarBmHome;
@@ -55,9 +47,18 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.FileWriter;
-import static com.silverpeas.calendar.CalendarEvent.*;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 
 /**
  * @author dle
@@ -362,8 +363,8 @@ public class ExportIcalManager {
       // set the attendees to the event
       Collection<Attendee> attendees = calendarBm.getJournalAttendees(schedulable.getId());
       for (Attendee attendee : attendees) {
-        OrganizationController oc = new OrganizationController();
-        UserDetail user = oc.getUserDetail(attendee.getUserId());
+        UserDetail user = OrganisationControllerFactory
+            .getOrganisationController().getUserDetail(attendee.getUserId());
         if (user != null) {
           String email = user.geteMail();
           if (StringUtil.isDefined(email)) {

@@ -107,7 +107,7 @@ public class UserGroupProfileResource extends RESTWebService {
           withName(name).
           withPaginationPage(fromPage(page)).build();
     }
-    ListSlice<Group> allGroups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteria);
     UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
     return Response.ok(entities).
         header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).build() ;
@@ -168,7 +168,7 @@ public class UserGroupProfileResource extends RESTWebService {
           withName(name).
           withPaginationPage(fromPage(page)).build();
     }
-    ListSlice<Group> groups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> groups = getOrganisationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
             header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
@@ -227,7 +227,7 @@ public class UserGroupProfileResource extends RESTWebService {
           withName(name).
           withPaginationPage(fromPage(page)).build();
     }
-    ListSlice<Group> subgroups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteria);
     return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
             header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
   }

@@ -51,7 +51,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -77,6 +76,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import javax.ejb.RemoveException;
+
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.versioning.notification.VersioningNotificationService;
 
 /**
@@ -292,7 +293,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @version 1.0
    */
   private UserDetail getUserDetailByID(int user_id) {
-    return getOrganizationController().getUserDetail(String.valueOf(user_id));
+    return getOrganisationController().getUserDetail(String.valueOf(user_id));
   }
 
   /**
@@ -307,7 +308,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   public String getGroupNameById(int id) {
-    Group group = getOrganizationController().getGroup(String.valueOf(id));
+    Group group = getOrganisationController().getGroup(String.valueOf(id));
     return group.getName();
   }
 
@@ -435,7 +436,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return HashMap Stored pair user id and Reader
    */
   public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
-    OrganizationController orgCntr = getOrganizationController();
+    OrganisationController orgCntr = getOrganisationController();
 
     ComponentInst componentInst = orgCntr.getComponentInst(
         document.getForeignKey().getComponentName());
@@ -571,7 +572,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @version 1.0
    */
   public Map<String, Reader> getUsersReader() {
-    OrganizationController orgCntr = getOrganizationController();
+    OrganisationController orgCntr = getOrganisationController();
     ComponentInst componentInst = orgCntr.getComponentInst(getComponentId());
     Map<String, Reader> mapRead = new HashMap<String, Reader>();
     ProfileInst profileInst;
@@ -1020,7 +1021,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     }
     if (!isReader) {
       for (String groupId : profile.getAllGroups()) {
-        UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
+        UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
         for (UserDetail user : users) {
           if (user != null && user.getId().equals(userId)) {
             return true;
@@ -1032,7 +1033,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   private boolean isComponentAvailable(String userId) {
-    return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+    return getOrganisationController().isComponentAvailable(getComponentId(), userId);
   }
 
   public boolean isWriter(Document document, int userId) throws RemoteException {
@@ -1130,7 +1131,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       // check in groups
       List<String> groupsIds = profile.getAllGroups();
       for (String groupId : groupsIds) {
-        UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
+        UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
         for (UserDetail user : users) {
           if (user != null && user.getId().equals(userId)) {
             return true;
@@ -1673,7 +1674,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     int lastOrder = workers.size();
     Worker worker;
     for (String userId : usersIds) {
-      userDetail = getOrganizationController().getUserDetail(userId);
+      userDetail = getOrganisationController().getUserDetail(userId);
       if (!mapCurrentWorkers.containsKey(SET_TYPE_USER + userDetail.getId())) {
         worker = new Worker(Integer.parseInt(userDetail.getId()), 0,
             lastOrder++, false, true, document.getInstanceId(), SET_TYPE_USER,
@@ -1715,7 +1716,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     boolean isSaved = false;
     int lastOrder = workers.size();
     for (String groupId : groupIds) {
-      groupDetail = getOrganizationController().getGroup(groupId);
+      groupDetail = getOrganisationController().getGroup(groupId);
       if (!mapCurrentWorkers.containsKey(SET_TYPE_GROUP + groupDetail.getId())) {
         worker = new Worker(Integer.parseInt(groupDetail.getId()), lastOrder++,
             0, false, true, document.getInstanceId(), SET_TYPE_GROUP, isSaved,
@@ -1745,7 +1746,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
         mapWork.put(worker.getId(), worker);
       } else {
         // Extract users from group
-        UserDetail[] usersFromGroup = getOrganizationController().getAllUsersOfGroup(Integer.
+        UserDetail[] usersFromGroup = getOrganisationController().getAllUsersOfGroup(Integer.
             toString(worker.getId()));
         int i = 0;
         Integer userId;

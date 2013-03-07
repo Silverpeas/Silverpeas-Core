@@ -20,15 +20,11 @@
  */
 package com.silverpeas.export.ical.ical4j;
 
-import java.io.ByteArrayOutputStream;
-import java.net.SocketException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.inject.Named;
-
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.CalendarEventRecurrence;
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.export.EncodingException;
+import com.silverpeas.export.ical.ICalCodec;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
@@ -40,30 +36,17 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
-import net.fortuna.ical4j.model.property.Attendee;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Categories;
-import net.fortuna.ical4j.model.property.Clazz;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.Location;
-import net.fortuna.ical4j.model.property.Priority;
-import net.fortuna.ical4j.model.property.ProdId;
-import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.TzId;
-import net.fortuna.ical4j.model.property.Uid;
-import net.fortuna.ical4j.model.property.Url;
-import net.fortuna.ical4j.model.property.Version;
+import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.UidGenerator;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.tika.io.IOUtils;
 
-
-import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.Datable;
-import com.silverpeas.export.EncodingException;
-import com.silverpeas.export.ical.ICalCodec;
+import javax.inject.Named;
+import java.io.ByteArrayOutputStream;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 
 import static com.silverpeas.export.ical.ical4j.ICal4JDateCodec.anICal4JDateCodec;
 import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.anICal4JRecurrenceCodec;
@@ -73,11 +56,13 @@ import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.anICal4JRe
  */
 @Named("iCalCodec")
 public class ICal4JICalCodec implements ICalCodec {
-  
+
+  private UidGenerator generator = new UidGenerator(new OffLineInetAddressHostInfo(), Uid.UID);
+
   @Override
   @SuppressWarnings("unchecked")
   public String encode(List<CalendarEvent> events) {
-    
+
     if (events == null || events.isEmpty()) {
       throw new IllegalArgumentException("The calendar events must be defined to encode them");
     }
@@ -99,12 +84,7 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent.getProperties().add(asTzId(event.getStartDate().getTimeZone()));
 
       // Generate UID
-      try {
-        iCalEvent.getProperties().add(new UidGenerator(Uid.UID).generateUid());
-      } catch (SocketException ex) {
-        throw new EncodingException("Cannot generate an UID for the iCal event", ex);
-      }
-
+      iCalEvent.getProperties().add(generator.generateUid());
       // Add recurring data if any
       if (event.isRecurring()) {
         CalendarEventRecurrence eventRecurrence = event.getRecurrence();
@@ -146,7 +126,7 @@ public class ICal4JICalCodec implements ICalCodec {
           throw new EncodingException("Malformed attendee URI: " + attendee, ex);
         }
       }
-      
+
       iCalEvents.add(iCalEvent);
     }
     calendarIcs.getComponents().addAll(iCalEvents);
@@ -160,16 +140,16 @@ public class ICal4JICalCodec implements ICalCodec {
     } finally {
       IOUtils.closeQuietly(output);
     }
-    
+
   }
-  
+
   private TzId asTzId(final TimeZone timeZone) {
     TimeZoneRegistry timeZoneRegistry = TimeZoneRegistryFactory.getInstance().createRegistry();
     VTimeZone tz = timeZoneRegistry.getTimeZone(timeZone.getID()).getVTimeZone();
     TzId tzId = new TzId(tz.getProperties().getProperty(Property.TZID).getValue());
     return tzId;
   }
-  
+
   private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
     List<Datable<?>> exceptionDates = recurrence.getExceptionDates();
     DateList exDatesList = new DateList();

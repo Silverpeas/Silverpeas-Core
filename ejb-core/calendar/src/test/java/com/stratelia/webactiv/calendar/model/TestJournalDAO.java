@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.stratelia.webactiv.calendar.model;
 
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
@@ -330,5 +326,10 @@ public class TestJournalDAO extends AbstractTestDao {
     } finally {
       closeConnection(connexion);
     }
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-table.sql";
   }
 }

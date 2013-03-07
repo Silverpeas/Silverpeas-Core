@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 public class SocialPublications implements SocialPublicationsInterface {
 
@@ -96,7 +98,7 @@ public class SocialPublications implements SocialPublicationsInterface {
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     // getting all components allowed to me and my contacts
-    OrganizationController oc = new OrganizationController();
+    OrganisationController oc = OrganisationControllerFactory.getOrganisationController();
     List<String> options = new ArrayList<String>();
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "kmelia")));
     options.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "toolbox")));

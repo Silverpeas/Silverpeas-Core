@@ -52,7 +52,6 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
@@ -67,6 +66,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -109,7 +110,6 @@ public class PublicationsTypeManager {
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
     PdcImportExport pdc_impExp = new PdcImportExport();
-    OrganizationController orgaController = new OrganizationController();
     String wysiwygText = null;
 
     SilverTrace.debug("importExport", "PublicationTypeManager.processExport",
@@ -123,7 +123,8 @@ public class PublicationsTypeManager {
 
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+      ComponentInst componentInst = OrganisationControllerFactory
+          .getOrganisationController().getComponentInst(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
       // Récupération du PublicationType
       PublicationType publicationType = gedIE.getPublicationCompleteById(pubId, componentId);
@@ -364,7 +365,7 @@ public class PublicationsTypeManager {
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
-   * @param pubName - nom de la publication
+   * @param pub - la publication
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,
@@ -429,7 +430,6 @@ public class PublicationsTypeManager {
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
-    OrganizationController orgaController = new OrganizationController();
 
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
@@ -440,8 +440,8 @@ public class PublicationsTypeManager {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
       PublicationPK pk = new PublicationPK(pubId, componentId);
-      ComponentInst componentInst = orgaController.getComponentInst(componentId);
-
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
+          .getComponentInst(componentId);
       exportAttachments(attachmentIE, versioningIE, componentInst, null, pk, "", exportPath);
     }
   }
@@ -452,14 +452,14 @@ public class PublicationsTypeManager {
       throws ImportExportException, IOException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport();
-    OrganizationController orgaController = new OrganizationController();
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
     // Parcours des publications à exporter
     for (WAAttributeValuePair attValue : listItemsToExport) {
       String pubId = attValue.getName();
       String componentId = attValue.getValue();
-      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
+          .getComponentInst(componentId);
       GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
       // Récupération du PublicationType
@@ -498,7 +498,6 @@ public class PublicationsTypeManager {
    * Méthode créant l'arborescence des répertoires pour une publication exportée
    *
    * @param exportPath - dossier dans lequel creer notre arborescence de dossiers
-   * @param positionPath - ensemble des noeuds sur laquelle la publication est classée
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
    * @param pub - la publication
@@ -579,7 +578,6 @@ public class PublicationsTypeManager {
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
     List<NodePositionType> nodes = new ArrayList<NodePositionType>();
-    OrganizationController orgaController = new OrganizationController();
     int nbItem = 1;
 
     // On parcours les objets PublicationType
@@ -596,7 +594,8 @@ public class PublicationsTypeManager {
       // Création du rapport unitaire
       UnitReport unitReport = new UnitReport("<publication> #" + nbItem);
       ImportReportManager.addUnitReport(unitReport, componentId);
-      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
+          .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas
         unitReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);

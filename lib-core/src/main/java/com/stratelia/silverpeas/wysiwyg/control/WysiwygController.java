@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -41,6 +40,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
 import javax.ejb.FinderException;
@@ -1013,7 +1014,8 @@ public class WysiwygController {
 
   public static List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController = new OrganizationController();
+    OrganisationController orgaController =  OrganisationControllerFactory
+        .getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoId,
@@ -1037,7 +1039,7 @@ public class WysiwygController {
   public static List<ComponentInstLight> getStorageFile(String userId) {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    OrganizationController controller = new OrganizationController();
+    OrganisationController controller =  OrganisationControllerFactory.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {

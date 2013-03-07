@@ -65,6 +65,8 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
@@ -218,7 +220,7 @@ public class VersioningUtil {
   }
 
   public HashMap<String, Reader> getAllUsersForProfile(Document document, String nameProfile) {
-    OrganizationController orgCntr = new OrganizationController();
+    OrganisationController orgCntr = OrganisationControllerFactory.getOrganisationController();
     ComponentInst componentInst =
         orgCntr.getComponentInst(document.getForeignKey().getComponentName());
 
@@ -362,7 +364,7 @@ public class VersioningUtil {
         }
       } catch (RemoteException e) {
         SilverTrace.error("versioning", "VersioningUtil.updateIndexEntryWithDocuments",
-            "versioning.CANT_INDEX_DOCUMENTS", "objectId = " + pk.getId() + ", component = " 
+            "versioning.CANT_INDEX_DOCUMENTS", "objectId = " + pk.getId() + ", component = "
             + pk.getInstanceId(), e);
       }
     }

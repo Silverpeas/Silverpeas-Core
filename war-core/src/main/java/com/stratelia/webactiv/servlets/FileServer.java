@@ -316,7 +316,7 @@ public class FileServer extends HttpServlet {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
-        isAllowed = controller.getOrganizationController().isComponentAvailable(
+        isAllowed = controller.getOrganisationController().isComponentAvailable(
             componentId, controller.getUserId());
       }
     }

@@ -37,9 +37,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -74,7 +74,6 @@ public class HtmlSearchResultTag extends TagSupport {
   /*
    * object helper
    */
-  private OrganizationController orga = new OrganizationController();
   private ResourcesWrapper settings = null;
   private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
 
@@ -178,7 +177,8 @@ public class HtmlSearchResultTag extends TagSupport {
         || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
-      ComponentInstLight component = orga.getComponentInstLight(instanceId);
+      ComponentInstLight component = OrganisationControllerFactory
+          .getOrganisationController().getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();
 

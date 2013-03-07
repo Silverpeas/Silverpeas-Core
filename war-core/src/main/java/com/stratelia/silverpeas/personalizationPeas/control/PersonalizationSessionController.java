@@ -489,7 +489,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
     UserFull valret = null;
     String IdUserCur = getUserId();
     if (StringUtil.isDefined(IdUserCur)) {
-      valret = getOrganizationController().getUserFull(IdUserCur);
+      valret = getOrganisationController().getUserFull(IdUserCur);
     }
     return valret;
   }
@@ -510,11 +510,11 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
           "aNotifAddressId=" + notifAddressId, e);
     }
   }
-  
+
   /*
-   * Delayed Notifications 
+   * Delayed Notifications
    */
-  
+
   public DelayedNotificationBean getDelayedNotificationBean() {
     return new DelayedNotificationBean(getUserId());
   }

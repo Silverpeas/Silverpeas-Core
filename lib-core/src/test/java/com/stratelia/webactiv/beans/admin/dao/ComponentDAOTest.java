@@ -24,13 +24,11 @@
 
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.google.common.collect.Lists;
 import com.silverpeas.components.model.AbstractTestDao;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.stratelia.webactiv.util.DBUtil;
@@ -41,7 +39,6 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-@RunWith(BlockJUnit4ClassRunner.class)
 public class ComponentDAOTest extends AbstractTestDao {
 
   public ComponentDAOTest() {
@@ -62,7 +59,7 @@ public class ComponentDAOTest extends AbstractTestDao {
     Connection con = null;
     try {
       con = getConnection().getConnection();
-      List<String> groupIds = Lists.newArrayList();
+      List<String> groupIds = new ArrayList<String>();
       int userId = 0;
       List<String> result = ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId);
       assertNotNull(result);
@@ -81,7 +78,7 @@ public class ComponentDAOTest extends AbstractTestDao {
     Connection con = null;
     try {
       con = getConnection().getConnection();
-      List<String> groupIds = Lists.newArrayList();
+      List<String> groupIds = new ArrayList<String>();
       int userId = 0;
       List<String> result = ComponentDAO.getAllAvailableComponentIds(con, groupIds, userId, null);
       assertNotNull(result);
@@ -123,5 +120,11 @@ public class ComponentDAOTest extends AbstractTestDao {
     } finally {      
       DBUtil.close(con);
     }
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

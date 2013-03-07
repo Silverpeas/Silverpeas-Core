@@ -37,7 +37,6 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page import="java.util.Date"%>
 <%@ page import="java.lang.String"%>
 <%@ page import="java.util.*"%>
 
@@ -53,11 +52,12 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 
 <%
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganizationController();
+OrganisationController organizationCtrl = m_MainSessionCtrl.getOrganisationController();
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 String language = m_MainSessionCtrl.getFavoriteLanguage();

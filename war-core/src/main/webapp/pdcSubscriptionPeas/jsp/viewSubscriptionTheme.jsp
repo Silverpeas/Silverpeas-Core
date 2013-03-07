@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -33,7 +34,7 @@ Collection 				subscribeThemes 	= (Collection) request.getAttribute("SubscribeTh
 String 					userId 				= (String) request.getAttribute("userId");
 String 					action				= (String) request.getAttribute("action");
 
-OrganizationController 	organizationCtrl 	= sessionController.getOrganizationController();
+OrganisationController organizationCtrl 	= sessionController.getOrganisationController();
 final String 			rootPath			= resource.getString("Path");
 
 boolean isReadOnly = false;

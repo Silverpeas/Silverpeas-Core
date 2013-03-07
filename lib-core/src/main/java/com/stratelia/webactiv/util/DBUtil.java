@@ -100,6 +100,9 @@ public class DBUtil {
 
   public static void clearTestInstance() {
     synchronized (DBUtil.class) {
+      if (instance != null) {
+        close(instance.connectionForTest);
+      }
       instance = new DBUtil(null);
       dsStock.clear();
     }
@@ -226,7 +229,7 @@ public class DBUtil {
 
   protected static int getMaxId(Connection privateConnection, String tableName, String idName)
       throws SQLException {
-    int max = 0;
+    int max;
     // tentative d'update
     SilverTrace.debug("util", "DBUtil.getNextId", "dBName = " + tableName);
     try {

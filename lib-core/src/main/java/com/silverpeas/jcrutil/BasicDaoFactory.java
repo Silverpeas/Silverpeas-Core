@@ -61,8 +61,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.naming.InitialContext;
-import org.apache.jackrabbit.core.jndi.RegistryHelper;
 
 /**
  * He

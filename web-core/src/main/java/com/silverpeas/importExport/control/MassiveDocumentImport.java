@@ -32,10 +32,10 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +43,6 @@ import java.util.Date;
 import java.util.List;
 
 public class MassiveDocumentImport {
-  private OrganizationController controller = new OrganizationController();
 
   public List<PublicationDetail> importDocuments(ComponentSessionController sessionController,
       String directory, int topicId, boolean draftMode, boolean isPOIUsed)
@@ -79,8 +78,8 @@ public class MassiveDocumentImport {
   }
 
   private boolean isVersioningUsed(String componentId) {
-
-    ComponentInst componentInst = controller.getComponentInst(componentId);
+    ComponentInst componentInst = OrganisationControllerFactory
+        .getOrganisationController().getComponentInst(componentId);
     return ImportExportHelper.isVersioningUsed(componentInst);
 
   }

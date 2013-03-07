@@ -33,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -40,8 +41,6 @@ import static org.hamcrest.Matchers.*;
  *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-jdbc-datasource.xml"})
 public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
   private static final String dateBegin = "2010-12-01";
   private static final String dateEnd = "2011-07-01";
@@ -50,6 +49,23 @@ public class SilverStatisticsPeasDAOConnexionTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-stats-connections-dataset.xml";
   }
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
+  
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    new ClassPathXmlApplicationContext(new String[]{"/spring-jdbc-datasource.xml"});
+  }
+  
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+  }
+  
 
   public SilverStatisticsPeasDAOConnexionTest() {
   }

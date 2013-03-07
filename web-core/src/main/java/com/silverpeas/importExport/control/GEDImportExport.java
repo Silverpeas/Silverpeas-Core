@@ -56,7 +56,6 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -85,6 +84,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import java.io.BufferedReader;
@@ -107,7 +107,6 @@ import java.util.List;
 public abstract class GEDImportExport extends ComponentImportExport {
 
   // Variables
-  private static final OrganizationController organizationController = new OrganizationController();
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
@@ -178,7 +177,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     if (isKmax()) {
       return topics;
     }
-    List<NodePositionType> existingTopics = new ArrayList<NodePositionType>();
+    List<NodePositionType> existingTopics;
     existingTopics = getExistingTopics(userId, topics, componentId);
     return existingTopics;
   }
@@ -651,7 +650,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       throws ImportExportException {
 
     int finPath = 0;
-    int debutPath = 0;
+    int debutPath;
     StringBuilder newWysiwygText = new StringBuilder();
 
     if (wysiwygText.indexOf("img src=\"", finPath) == -1) {
@@ -709,8 +708,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         "com.silverpeas.importExport.settings.stringsMapping", "");
     String newWysiwygText = wysiwygText;
 
-    String oldString = null;
-    String newString = null;
+    String oldString;
+    String newString;
 
     Enumeration<String> classes = mapping.getKeys();
     while (mapping != null && classes.hasMoreElements()) {
@@ -747,7 +746,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       try {
         reader = new BufferedReader(new FileReader(dir + File.separator + "strings2Remove.txt"));
 
-        String ligne = null;
+        String ligne;
         while ((ligne = reader.readLine()) != null) {
           if ("$$removeAnchors$$".equalsIgnoreCase(ligne)) {
             currentWysiwygText = removeAnchors(currentWysiwygText);
@@ -768,7 +767,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   private static String removeAnchors(String wysiwygText) {
     int fin = 0;
-    int debut = 0;
+    int debut;
     StringBuilder newWysiwygText = new StringBuilder();
 
     if (wysiwygText.indexOf("<a name=", fin) == -1) {
@@ -913,7 +912,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             newNode.setNodePK(new NodePK("unknown", componentId));
             newNode.setFatherPK(new NodePK(parentId, componentId));
             newNode.setCreatorId(userId);
-            NodePK newNodePK = null;
+            NodePK newNodePK;
             try {
               newNodePK = getNodeBm().createNode(newNode);
             } catch (Exception e) {
@@ -1084,7 +1083,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public PublicationType getPublicationCompleteById(String pubId, String componentId)
       throws ImportExportException {
     PublicationType publicationType = new PublicationType();
-    PublicationDetail publicationDetail = null;
+    PublicationDetail publicationDetail;
     try {
       CompletePublication pubComplete = getCompletePublication(new PublicationPK(pubId,
           getCurrentComponentId()));
@@ -1150,8 +1149,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
       publicationType.setComponentId(componentId);
 
       // Recherche du nom et du prenom du createur de la pub pour le marschalling
-      UserDetail userDetail =
-          organizationController.getUserDetail(publicationDetail.getCreatorId());
+      UserDetail userDetail = OrganisationControllerFactory.getOrganisationController()
+          .getUserDetail(publicationDetail.getCreatorId());
       if (userDetail != null) {
         String nomPrenomCreator = userDetail.getDisplayedName().trim();
         publicationDetail.setCreatorName(nomPrenomCreator);
