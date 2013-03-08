@@ -27,6 +27,7 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcAxisValueRepository;
 import com.silverpeas.pdc.dao.PdcClassificationRepository;
 import com.silverpeas.pdc.model.PdcAxisValue;
+import com.silverpeas.pdc.model.PdcAxisValuePk;
 import com.silverpeas.pdc.model.PdcClassification;
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import com.silverpeas.pdc.model.PdcPosition;
@@ -180,11 +181,14 @@ public class DefaultPdcClassificationService implements PdcClassificationService
             && classification.isEmpty()) {
       classificationRepository.delete(classification);
     } else {
-      List<PdcAxisValue> allValues = new ArrayList<PdcAxisValue>();
       for (PdcPosition aPosition : classification.getPositions()) {
-        allValues.addAll(aPosition.getValues());
+        for (PdcAxisValue aValue : aPosition.getValues()) {
+          PdcAxisValuePk pk = PdcAxisValuePk.aPdcAxisValuePk(aValue.getId(), aValue.getAxisId());
+          if (!valueRepository.exists(pk)) {
+            valueRepository.save(aValue);
+          }
+        }
       }
-      valueRepository.save(allValues);
       savedClassification = classificationRepository.saveAndFlush(classification);
     }
     return savedClassification;
