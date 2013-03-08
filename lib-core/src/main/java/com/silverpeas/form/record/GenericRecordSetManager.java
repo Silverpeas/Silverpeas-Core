@@ -298,14 +298,17 @@ public class GenericRecordSetManager {
       record = selectRecordRow(con, template, recordId, language);
 
       if (record != null) {
-        selectFieldRows(con, template, record);
+        try {
+          selectFieldRows(con, template, record);
+        } catch (CryptoException e) {
+          throw new FormException("GenericRecordSetManager", "form.DECRYPTING_DATA_FAILED", e);
+        }
       }
 
       return record;
 
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_SELECT_FAILED", e);
+      throw new FormException("GenericRecordSetManager", "form.EXP_SELECT_FAILED", e);
     } finally {
       closeConnection(con);
     }
@@ -344,14 +347,16 @@ public class GenericRecordSetManager {
 
       con = getConnection();
       insertRecordRow(con, template, record);
-      insertFieldRows(con, template, record);
+      try {
+        insertFieldRows(con, template, record);
+      } catch (CryptoException e) {
+        throw new FormException("GenericRecordSetManager", "form.ENCRYPTING_DATA_FAILED", e);
+      }
 
     } catch (ClassCastException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException("GenericRecordSetManager", "form.EXP_UNKNOWN_TEMPLATE", e);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_INSERT_FAILED", e);
+      throw new FormException("GenericRecordSetManager", "form.EXP_INSERT_FAILED", e);
     } finally {
       closeConnection(con);
     }
@@ -435,14 +440,15 @@ public class GenericRecordSetManager {
       GenericDataRecord record = (GenericDataRecord) updatedRecord;
 
       con = getConnection();
-      updateFieldRows(con, template, record);
-
+      try {
+        updateFieldRows(con, template, record);
+      } catch (CryptoException e) {
+        throw new FormException("GenericRecordSetManager", "form.ENCRYPTING_DATA_FAILED", e);
+      }
     } catch (ClassCastException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_UNKNOWN_TEMPLATE", e);
+      throw new FormException("GenericRecordSetManager", "form.EXP_UNKNOWN_TEMPLATE", e);
     } catch (SQLException e) {
-      throw new FormException("GenericRecordSetManager",
-          "form.EXP_UPDATED_FAILED", e);
+      throw new FormException("GenericRecordSetManager", "form.EXP_UPDATED_FAILED", e);
     } finally {
       closeConnection(con);
     }
@@ -504,8 +510,7 @@ public class GenericRecordSetManager {
       toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
     }
     
-    ContentEncryptionService encryptionService =
-      ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+    ContentEncryptionService encryptionService = getEncryptionService();
     
     List<RecordRow> rowsToUpdate = new ArrayList<RecordRow>();
     // encrypt or decrypt values
@@ -542,6 +547,10 @@ public class GenericRecordSetManager {
     } finally {
       DBUtil.close(con);
     }
+  }
+  
+  private ContentEncryptionService getEncryptionService() {
+    return ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
   }
   
   private void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
@@ -613,8 +622,7 @@ public class GenericRecordSetManager {
   /**
    * Get the template field declarations directly from the XML file.
    */
-  private void selectTemplateFieldsFromXML(
-      IdentifiedRecordTemplate template) throws FormException {
+  private void selectTemplateFieldsFromXML(IdentifiedRecordTemplate template) throws FormException {
 
     GenericRecordTemplate genericRecordTemplate = null;
 
@@ -623,6 +631,7 @@ public class GenericRecordSetManager {
           .loadPublicationTemplate(template.getTemplateName());
       genericRecordTemplate = (GenericRecordTemplate) publicationTemplateImpl
           .getRecordTemplate();
+      template.setEncrypted(publicationTemplateImpl.isDataEncrypted());
     } catch (PublicationTemplateException e) {
       throw new FormException("GenericRecordSetManager",
           "form.EXP_UNKNOWN_TEMPLATE", e);
@@ -926,19 +935,30 @@ public class GenericRecordSetManager {
 
   /**
    * Creates a row for each template_fields.
+   * @throws CryptoException 
    */
   private void insertFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException {
+      throws SQLException, FormException, CryptoException {
     PreparedStatement insert = null;
 
     try {
       insert = con.prepareStatement(INSERT_FIELD);
       int recordId = record.getInternalId();
       String[] fieldNames = record.getFieldNames();
+      Map<String, String> rows = new HashMap<String, String>();
       for (String fieldName : fieldNames) {
         Field field = record.getField(fieldName);
         String fieldValue = field.getStringValue();
+        rows.put(fieldName, fieldValue);
+      }
+      
+      if (template.isEncrypted()) {
+        rows = getEncryptionService().encryptContent(rows);
+      }
+      
+      for (String fieldName : rows.keySet()) {
+        String fieldValue = rows.get(fieldName);
         insert.setInt(1, recordId);
         insert.setString(2, fieldName);
         insert.setString(3, fieldValue);
@@ -1000,10 +1020,11 @@ public class GenericRecordSetManager {
 
   /**
    * Select the template field declarations.
+   * @throws CryptoException 
    */
   private void selectFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException {
+      throws SQLException, FormException, CryptoException {
     PreparedStatement select = null;
     ResultSet rs = null;
 
@@ -1011,11 +1032,21 @@ public class GenericRecordSetManager {
       select = con.prepareStatement(SELECT_FIELDS);
       select.setInt(1, record.getInternalId());
       rs = select.executeQuery();
+      Map<String, String> rows = new HashMap<String, String>();
       while (rs.next()) {
         String fieldName = rs.getString("fieldName");
         String fieldValue = rs.getString("fieldValue");
-
+        
+        rows.put(fieldName, fieldValue);
+      }
+      
+      if (template.isEncrypted()) {
+        rows = getEncryptionService().decryptContent(rows);
+      }
+      
+      for(String fieldName : rows.keySet()) {
         Field field = record.getField(fieldName);
+        String fieldValue = rows.get(fieldName);
         if (field != null) {// We have found a field corresponding to the fieldName
           SilverTrace.debug("form", "GenericRecordSetManager.selectFieldRows",
               "root.MSG_GEN_PARAM_VALUE", "fieldName=" + fieldName + ", fieldValue=" + fieldValue);
@@ -1053,10 +1084,11 @@ public class GenericRecordSetManager {
 
   /**
    * Updates the records fields.
+   * @throws CryptoException 
    */
   private void updateFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
-      throws SQLException, FormException {
+      throws SQLException, FormException, CryptoException {
     PreparedStatement update = null;
     PreparedStatement insert = null;
 
@@ -1064,6 +1096,7 @@ public class GenericRecordSetManager {
       update = con.prepareStatement(UPDATE_FIELD);
       int recordId = record.getInternalId();
       String[] fieldNames = record.getFieldNames();
+      Map<String, String> rows = new HashMap<String, String>();
       for (String fieldName : fieldNames) {
         Field field = record.getField(fieldName);
         String fieldValue = field.getStringValue();
@@ -1072,7 +1105,16 @@ public class GenericRecordSetManager {
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
             + ", fieldValue = " + fieldValue
             + ", recordId = " + recordId);
+        
+        rows.put(fieldName, fieldValue);
+      }
+      
+      if (template.isEncrypted()) {
+        rows = getEncryptionService().encryptContent(rows);
+      }
 
+      for (String fieldName : rows.keySet()) {
+        String fieldValue = rows.get(fieldName);
         update.setString(1, fieldValue);
         update.setInt(2, recordId);
         update.setString(3, fieldName);
