@@ -125,7 +125,7 @@ git merge silverpeas/master</source>
 git push origin BRANCH_NAME
 git branch --set-upstream BRANCH_NAME origin/BRANCH_NAME</source>
         <p>The second approach is to create the branch in your fork, then creates from it a local branch that will also track it:</p>
-        <source>git push origin HEAD:refs/heads/BRANCH_NAME
+        <source>git push origin master:refs/heads/BRANCH_NAME
 git branch --track BRANCH_NAME origin/BRANCH_NAME</source>
         <p>or to create remotely a branch from another one:</p>
         <source>git push origin EXISTING_BRANCH:refs/heads/BRANCH_NAME
