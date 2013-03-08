@@ -1,30 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
@@ -40,6 +32,8 @@ import java.util.Properties;
 
 import javax.naming.Context;
 
+import org.junit.Before;
+import org.junit.Test;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.socialnetwork.model.SocialInformation;
@@ -62,20 +56,9 @@ public class PublicationDAOTest extends AbstractTestDao {
   }
 
   @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     ApplicationContext ctx = new ClassPathXmlApplicationContext("/spring-publication.xml");
-    Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
-    props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    String jndiPath = props.getProperty("jndi.name", "");
-    File jndiDir = new File(jndiBaseDir + File.separatorChar
-        + jndiPath.substring(0, jndiPath.lastIndexOf('/')));
-    jndiDir.mkdirs();
     super.setUp();
   }
 
@@ -83,62 +66,63 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of invalidateLastPublis method, of class PublicationDAO.
    */
   /*
-  public void testInvalidateLastPublis() {
-  System.out.println("invalidateLastPublis");
-  String instanceId = "";
-  PublicationDAO.invalidateLastPublis(instanceId);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testInvalidateLastPublis() {
+   System.out.println("invalidateLastPublis");
+   String instanceId = "";
+   PublicationDAO.invalidateLastPublis(instanceId);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getNbPubInFatherPKs method, of class PublicationDAO.
    */
   /*
-  public void testGetNbPubInFatherPKs() throws Exception {
-  System.out.println("getNbPubInFatherPKs");
-  Connection con = null;
-  Collection fatherPKs = null;
-  int expResult = 0;
-  int result = PublicationDAO.getNbPubInFatherPKs(con, fatherPKs);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetNbPubInFatherPKs() throws Exception {
+   System.out.println("getNbPubInFatherPKs");
+   Connection con = null;
+   Collection fatherPKs = null;
+   int expResult = 0;
+   int result = PublicationDAO.getNbPubInFatherPKs(con, fatherPKs);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getNbPubByFatherPath method, of class PublicationDAO.
    */
   /*
-  public void testGetNbPubByFatherPath() throws Exception {
-  System.out.println("getNbPubByFatherPath");
-  Connection con = null;
-  NodePK fatherPK = null;
-  String fatherPath = "";
-  int expResult = 0;
-  int result = PublicationDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetNbPubByFatherPath() throws Exception {
+   System.out.println("getNbPubByFatherPath");
+   Connection con = null;
+   NodePK fatherPK = null;
+   String fatherPath = "";
+   int expResult = 0;
+   int result = PublicationDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getDistribution method, of class PublicationDAO.
    */
   /*
-  public void testGetDistribution() throws Exception {
-  System.out.println("getDistribution");
-  Connection con = getConnection().getConnection();
-  String instanceId = "kmelia36";
-  String statusSubQuery = "";
-  boolean checkVisibility = false;
-  Hashtable expResult = null;
-  Hashtable result = PublicationDAO.getDistribution(con, instanceId, statusSubQuery,
-  checkVisibility);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetDistribution() throws Exception {
+   System.out.println("getDistribution");
+   Connection con = getConnection().getConnection();
+   String instanceId = "kmelia36";
+   String statusSubQuery = "";
+   boolean checkVisibility = false;
+   Hashtable expResult = null;
+   Hashtable result = PublicationDAO.getDistribution(con, instanceId, statusSubQuery,
+   checkVisibility);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of insertRow method, of class PublicationDAO.
    */
+  @Test
   public void testInsertRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("500", "kmelia36");
@@ -164,7 +148,8 @@ public class PublicationDAOTest extends AbstractTestDao {
       }
     }
     String keywords = buffer.toString();
-    PublicationDetail detail = new PublicationDetail(pk, name, description, now.getTime(), beginDate.
+    PublicationDetail detail = new PublicationDetail(pk, name, description, now.getTime(),
+        beginDate.
         getTime(),
         endDate.getTime(),
         creatorId, importance, version, keywords, contenu);
@@ -199,17 +184,18 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of deleteRow method, of class PublicationDAO.
    */
   /*
-  public void testDeleteRow() throws Exception {
-  System.out.println("deleteRow");
-  Connection con = null;
-  PublicationPK pk = null;
-  PublicationDAO.deleteRow(con, pk);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testDeleteRow() throws Exception {
+   System.out.println("deleteRow");
+   Connection con = null;
+   PublicationPK pk = null;
+   PublicationDAO.deleteRow(con, pk);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByPrimaryKey method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByPrimaryKey() throws Exception {
     System.out.println("selectByPrimaryKey");
     Connection con = getConnection().getConnection();
@@ -238,6 +224,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByPublicationName method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByPublicationName() throws Exception {
     System.out.println("selectByPublicationName");
     Connection con = getConnection().getConnection();
@@ -269,13 +256,15 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByPublicationNameAndNodeId method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByPublicationNameAndNodeId() throws Exception {
     System.out.println("selectByPublicationNameAndNodeId");
     Connection con = getConnection().getConnection();
     String name = "Publication 1";
     PublicationPK primaryKey = new PublicationPK(null, "kmelia200");
     int nodeId = 110;
-    PublicationDetail result = PublicationDAO.selectByPublicationNameAndNodeId(con, primaryKey, name,
+    PublicationDetail result = PublicationDAO.
+        selectByPublicationNameAndNodeId(con, primaryKey, name,
         nodeId).pubDetail;
     primaryKey = new PublicationPK("100", "kmelia200");
     assertEquals(primaryKey, result.getPK());
@@ -301,10 +290,10 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByFatherPK_Connection_NodePK() throws Exception {
     System.out.println("selectByFatherPK");
     Connection con = getConnection().getConnection();
-    ;
     NodePK fatherPK = new NodePK("110", "kmelia200");
     Collection<PublicationDetail> result = PublicationDAO.selectByFatherPK(con, fatherPK);
     assertNotNull(result);
@@ -357,37 +346,38 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
   /*
-  public void testSelectByFatherPK_3args_1() throws Exception {
-  System.out.println("selectByFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  boolean filterOnVisibilityPeriod = false;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, filterOnVisibilityPeriod);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByFatherPK_3args_1() throws Exception {
+   System.out.println("selectByFatherPK");
+   Connection con = null;
+   NodePK fatherPK = null;
+   boolean filterOnVisibilityPeriod = false;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, filterOnVisibilityPeriod);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
   /*
-  public void testSelectByFatherPK_4args() throws Exception {
-  System.out.println("selectByFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  String sorting = "";
-  boolean filterOnVisibilityPeriod = false;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
-  filterOnVisibilityPeriod);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByFatherPK_4args() throws Exception {
+   System.out.println("selectByFatherPK");
+   Connection con = null;
+   NodePK fatherPK = null;
+   String sorting = "";
+   boolean filterOnVisibilityPeriod = false;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting,
+   filterOnVisibilityPeriod);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByFatherPK_5args() throws Exception {
     System.out.println("selectByFatherPK");
     Connection con = getConnection().getConnection();
@@ -454,49 +444,50 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of selectByFatherPK method, of class PublicationDAO.
    */
   /*
-  public void testSelectByFatherPK_3args_2() throws Exception {
-  System.out.println("selectByFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  String sorting = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByFatherPK_3args_2() throws Exception {
+   System.out.println("selectByFatherPK");
+   Connection con = null;
+   NodePK fatherPK = null;
+   String sorting = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByFatherPK(con, fatherPK, sorting);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectNotInFatherPK method, of class PublicationDAO.
    */
   /*
-  public void testSelectNotInFatherPK_Connection_NodePK() throws Exception {
-  System.out.println("selectNotInFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectNotInFatherPK(con, fatherPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectNotInFatherPK_Connection_NodePK() throws Exception {
+   System.out.println("selectNotInFatherPK");
+   Connection con = null;
+   NodePK fatherPK = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectNotInFatherPK(con, fatherPK);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectNotInFatherPK method, of class PublicationDAO.
    */
   /*
-  public void testSelectNotInFatherPK_3args() throws Exception {
-  System.out.println("selectNotInFatherPK");
-  Connection con = null;
-  NodePK fatherPK = null;
-  String sorting = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectNotInFatherPK(con, fatherPK, sorting);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectNotInFatherPK_3args() throws Exception {
+   System.out.println("selectNotInFatherPK");
+   Connection con = null;
+   NodePK fatherPK = null;
+   String sorting = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectNotInFatherPK(con, fatherPK, sorting);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByFatherIds method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByFatherIds() throws Exception {
     System.out.println("selectByFatherIds");
     Connection con = getConnection().getConnection();
@@ -526,19 +517,20 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of selectByPublicationPKs method, of class PublicationDAO.
    */
   /*
-  public void testSelectByPublicationPKs() throws Exception {
-  System.out.println("selectByPublicationPKs");
-  Connection con = getConnection().getConnection();
-  Collection publicationPKs = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByPublicationPKs(con, publicationPKs);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByPublicationPKs() throws Exception {
+   System.out.println("selectByPublicationPKs");
+   Connection con = getConnection().getConnection();
+   Collection publicationPKs = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByPublicationPKs(con, publicationPKs);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByStatus_3args_1() throws Exception {
     System.out.println("selectByStatus");
     Connection con = getConnection().getConnection();
@@ -555,6 +547,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByStatus method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByStatus_3args_2() throws Exception {
     System.out.println("selectByStatus");
     Connection con = getConnection().getConnection();
@@ -579,154 +572,155 @@ public class PublicationDAOTest extends AbstractTestDao {
    * Test of selectPKsByStatus method, of class PublicationDAO.
    */
   /*
-  public void testSelectPKsByStatus() throws Exception {
-  System.out.println("selectPKsByStatus");
-  Connection con = null;
-  List componentIds = null;
-  String status = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectPKsByStatus(con, componentIds, status);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectPKsByStatus() throws Exception {
+   System.out.println("selectPKsByStatus");
+   Connection con = null;
+   List componentIds = null;
+   String status = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectPKsByStatus(con, componentIds, status);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectAllPublications method, of class PublicationDAO.
    */
   /*
-  public void testSelectAllPublications_Connection_PublicationPK() throws Exception {
-  System.out.println("selectAllPublications");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectAllPublications(con, pubPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectAllPublications_Connection_PublicationPK() throws Exception {
+   System.out.println("selectAllPublications");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectAllPublications(con, pubPK);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectAllPublications method, of class PublicationDAO.
    */
   /*
-  public void testSelectAllPublications_3args() throws Exception {
-  System.out.println("selectAllPublications");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String sorting = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectAllPublications(con, pubPK, sorting);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectAllPublications_3args() throws Exception {
+   System.out.println("selectAllPublications");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   String sorting = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectAllPublications(con, pubPK, sorting);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByBeginDateDescAndStatus method, of class PublicationDAO.
    */
   /*
-  public void testSelectByBeginDateDescAndStatus() throws Exception {
-  System.out.println("selectByBeginDateDescAndStatus");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String status = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByBeginDateDescAndStatus(con, pubPK, status);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByBeginDateDescAndStatus() throws Exception {
+   System.out.println("selectByBeginDateDescAndStatus");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   String status = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByBeginDateDescAndStatus(con, pubPK, status);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByBeginDateDescAndStatusAndNotLinkedToFatherId method, of class PublicationDAO.
    */
   /*
-  public void testSelectByBeginDateDescAndStatusAndNotLinkedToFatherId() throws Exception {
-  System.out.println("selectByBeginDateDescAndStatusAndNotLinkedToFatherId");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String status = "";
-  String fatherId = "";
-  int fetchSize = 0;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con,
-  pubPK, status, fatherId, fetchSize);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByBeginDateDescAndStatusAndNotLinkedToFatherId() throws Exception {
+   System.out.println("selectByBeginDateDescAndStatusAndNotLinkedToFatherId");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   String status = "";
+   String fatherId = "";
+   int fetchSize = 0;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByBeginDateDescAndStatusAndNotLinkedToFatherId(con,
+   pubPK, status, fatherId, fetchSize);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of selectByBeginDateDesc method, of class PublicationDAO.
    */
   /*
-  public void testSelectByBeginDateDesc() throws Exception {
-  System.out.println("selectByBeginDateDesc");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectByBeginDateDesc(con, pubPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectByBeginDateDesc() throws Exception {
+   System.out.println("selectByBeginDateDesc");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectByBeginDateDesc(con, pubPK);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getOrphanPublications method, of class PublicationDAO.
    */
   /*
-  public void testGetOrphanPublications() throws Exception {
-  System.out.println("getOrphanPublications");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.getOrphanPublications(con, pubPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetOrphanPublications() throws Exception {
+   System.out.println("getOrphanPublications");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.getOrphanPublications(con, pubPK);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getNotOrphanPublications method, of class PublicationDAO.
    */
   /*
-  public void testGetNotOrphanPublications() throws Exception {
-  System.out.println("getNotOrphanPublications");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  Collection expResult = null;
-  Collection result = PublicationDAO.getNotOrphanPublications(con, pubPK);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetNotOrphanPublications() throws Exception {
+   System.out.println("getNotOrphanPublications");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   Collection expResult = null;
+   Collection result = PublicationDAO.getNotOrphanPublications(con, pubPK);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of deleteOrphanPublicationsByCreatorId method, of class PublicationDAO.
    */
   /*
-  public void testDeleteOrphanPublicationsByCreatorId() throws Exception {
-  System.out.println("deleteOrphanPublicationsByCreatorId");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String creatorId = "";
-  PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testDeleteOrphanPublicationsByCreatorId() throws Exception {
+   System.out.println("deleteOrphanPublicationsByCreatorId");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   String creatorId = "";
+   PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of getUnavailablePublicationsByPublisherId method, of class PublicationDAO.
    */
   /*
-  public void testGetUnavailablePublicationsByPublisherId() throws Exception {
-  System.out.println("getUnavailablePublicationsByPublisherId");
-  Connection con = null;
-  PublicationPK pubPK = null;
-  String publisherId = "";
-  String nodeId = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.getUnavailablePublicationsByPublisherId(con, pubPK,
-  publisherId, nodeId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testGetUnavailablePublicationsByPublisherId() throws Exception {
+   System.out.println("getUnavailablePublicationsByPublisherId");
+   Connection con = null;
+   PublicationPK pubPK = null;
+   String publisherId = "";
+   String nodeId = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.getUnavailablePublicationsByPublisherId(con, pubPK,
+   publisherId, nodeId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   /**
    * Test of searchByKeywords method, of class PublicationDAO.
    */
+  @Test
   public void testSearchByKeywords() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -755,6 +749,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of loadRow method, of class PublicationDAO.
    */
+  @Test
   public void testLoadRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -782,6 +777,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of changeInstanceId method, of class PublicationDAO.
    */
+  @Test
   public void testChangeInstanceId() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -831,6 +827,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of storeRow method, of class PublicationDAO.
    */
+  @Test
   public void testStoreRow() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pk = new PublicationPK("100", "kmelia200");
@@ -915,6 +912,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByName method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByName() throws Exception {
     Connection con = getConnection().getConnection();
     String name = "Publication 1";
@@ -944,6 +942,7 @@ public class PublicationDAOTest extends AbstractTestDao {
   /**
    * Test of selectByNameAndNodeId method, of class PublicationDAO.
    */
+  @Test
   public void testSelectByNameAndNodeId() throws Exception {
     Connection con = getConnection().getConnection();
     PublicationPK pubPK = new PublicationPK("100", "kmelia200");
@@ -975,23 +974,24 @@ public class PublicationDAOTest extends AbstractTestDao {
    */
 
   /*
-  public void testSelectBetweenDate() throws Exception {
-  System.out.println("selectBetweenDate");
-  Connection con = null;
-  String beginDate = "";
-  String endDate = "";
-  String instanceId = "";
-  Collection expResult = null;
-  Collection result = PublicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
-  assertEquals(expResult, result);
-  // TODO review the generated test code and remove the default call to fail.
-  fail("The test case is a prototype.");
-  }*/
+   public void testSelectBetweenDate() throws Exception {
+   System.out.println("selectBetweenDate");
+   Connection con = null;
+   String beginDate = "";
+   String endDate = "";
+   String instanceId = "";
+   Collection expResult = null;
+   Collection result = PublicationDAO.selectBetweenDate(con, beginDate, endDate, instanceId);
+   assertEquals(expResult, result);
+   // TODO review the generated test code and remove the default call to fail.
+   fail("The test case is a prototype.");
+   }*/
   @Override
   protected String getDatasetFileName() {
     return "test-publication-dao-dataset.xml";
   }
 
+  @Test
   public void testGetAllPublicationsIDbyUserid() throws Exception {
     Connection con = getConnection().getConnection();
     this.setUp();
@@ -1033,10 +1033,12 @@ public class PublicationDAOTest extends AbstractTestDao {
 //who updated pub1 and pub2
     begin = DateUtil.parse("2009/11/01");
     end = DateUtil.parse("2009/11/30");
-    SocialInformationPublication sp1User200 = new SocialInformationPublication(new PublicationWithStatus(
+    SocialInformationPublication sp1User200 = new SocialInformationPublication(
+        new PublicationWithStatus(
         (detail1), true));
     assertNotNull("SocialInformationPublication2 must be not null", sp1User200);
-    SocialInformationPublication sp2User200 = new SocialInformationPublication(new PublicationWithStatus(
+    SocialInformationPublication sp2User200 = new SocialInformationPublication(
+        new PublicationWithStatus(
         (detail2), true));
     assertNotNull("SocialInformationPublication2 must be not null", sp2User200);
     List<SocialInformation> list200 = new ArrayList<SocialInformation>();

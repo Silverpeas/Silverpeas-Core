@@ -41,9 +41,13 @@ public class OrganizationControllerFactory {
   public static OrganizationControllerFactory getFactory() {
     return instance;
   }
-
-  public OrganizationController getOrganizationController() {
+  
+  private OrganizationController getController() {
     return organizationController;
+  }
+
+  public static OrganizationController getOrganizationController() {
+    return instance.getController();
   }
 
   private OrganizationControllerFactory() {

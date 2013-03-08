@@ -59,6 +59,10 @@ public class Charsets {
    */
   public static final Charset UTF_16 = Charset.forName(CharEncoding.UTF_16);
 
+  private Charsets() {    
+  }
+
+
   /**
    * Returns a Charset for the named charset. If the name is null, return the default Charset.
    *

@@ -29,7 +29,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -40,21 +41,7 @@ public class EncodeHelperTest {
     public EncodeHelperTest() {
     }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
+ 
 
   /**
    * Test of encodeFilename method, of class EncodeHelper.
@@ -62,7 +49,6 @@ public class EncodeHelperTest {
    */
   @Test
   public void testEncodeFilename() throws Exception {
-    System.out.println("encodeFilename");
     String filename = "test.pdf";
     String expResult = "=?UTF-8?B?dGVzdC5wZGY=?=";
     String result = EncodeHelper.encodeFilename(filename);

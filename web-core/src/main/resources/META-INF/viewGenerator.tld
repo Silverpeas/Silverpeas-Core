@@ -520,7 +520,7 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -541,7 +541,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1323,6 +1323,35 @@
     </attribute>
   </tag>
   <tag>
+    <description>Tag that displays the available languages.</description>
+    <name>langSelect</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.LanguageSelectorTag
+    </tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Current lang</description>
+      <name>langCode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name for the input field/select</description>
+      <name>elementName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id for the input field/select</description>
+      <name>elementId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Obtain the value of the parameter for the specified component instance.</description>
     <name>componentParam</name>
     <tag-class>org.silverpeas.jstl.ComponentParameterTag</tag-class>
@@ -1459,6 +1488,50 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <description>
+      Establishes a scoped variable that contains the value of the defined settings.
+    </description>
+    <name>settings</name>
+    <tag-class>org.silverpeas.jstl.settings.SettingsValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the ResourceLocator to be used for the settings.</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute> 
+    <attribute>
+      <description>The key of the wanted settings.</description>
+      <name>key</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The default value for the corresponding setting. The type of the value returned is based on the type of the default value.</description>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>    
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
 
 
   <tag>
@@ -1513,8 +1586,7 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>
-
+  </function>  
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
@@ -1530,6 +1602,45 @@
     <function-signature>
       boolean isDefined( java.lang.String )
     </function-signature>
+  </function>
+  <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>com.silverpeas.util.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
   </function>
   <function>
     <description>Function that formats as memory size the given value.</description>

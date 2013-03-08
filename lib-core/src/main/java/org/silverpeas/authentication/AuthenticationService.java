@@ -21,36 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Ludovic BERTIN
- * @version 1.0
- * date 21/9/2001
- */
-
 package org.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
-import org.silverpeas.authentication.exception.AuthenticationHostException;
-import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
-import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
-import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
-import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
-import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -64,6 +46,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -232,7 +222,7 @@ public class AuthenticationService {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
-      // Store information about password change capabilities
+        // Store information about password change capabilities
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
@@ -267,8 +257,6 @@ public class AuthenticationService {
         errorCause = ERROR_PWD_EXPIRED;
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
-      } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
-        errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
         errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
@@ -358,7 +346,6 @@ public class AuthenticationService {
       throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
-
     // Verify that the user can login
     AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
     Connection connection = null;
@@ -377,9 +364,6 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
-
-    // Treatments on password change
-    onPasswordChanged(credential);
   }
 
   /**
@@ -507,12 +491,9 @@ public class AuthenticationService {
       throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
-
     // Verify that the user can login
     AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-
     Connection connection = null;
-
     try {
       // Open connection
       connection = openConnection();
@@ -529,32 +510,6 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
-
-    // Treatments on password change
-    onPasswordChanged(credential);
-  }
-
-  /**
-   * Treatments on password change.
-   * @param credential
-   */
-  private void onPasswordChanged(AuthenticationCredential credential) {
-    AdminController admin = new AdminController(null);
-    UserDetail user = UserDetail
-        .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
-
-    // Notify that the user has changed his password.
-    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
-        .notifyPasswordChange();
-
-    // Reset the counter of number of successful connections for the given user.
-    user.setNbSuccessfulLoginAttempts(0);
-
-    // Register the date of credential change
-    user.setLastLoginCredentialUpdateDate(new Date());
-
-    // Persisting user data changes.
-    admin.updateUser(user);
   }
 
   /**

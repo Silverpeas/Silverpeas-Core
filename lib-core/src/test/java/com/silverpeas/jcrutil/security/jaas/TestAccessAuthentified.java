@@ -91,7 +91,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(
           "Bonjour le monde".getBytes()));
       Calendar lastModified = Calendar.getInstance();
-      contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+      contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
       fail(ex.getMessage());
@@ -140,7 +140,7 @@ public class TestAccessAuthentified extends AbstractJcrRegisteringTestCase {
       contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(
           "Bonjour le monde".getBytes()));
       Calendar lastModified = Calendar.getInstance();
-      contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+      contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
       fail(ex.getMessage());

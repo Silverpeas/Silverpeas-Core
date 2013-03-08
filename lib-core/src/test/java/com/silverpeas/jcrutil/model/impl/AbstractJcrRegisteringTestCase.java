@@ -23,14 +23,17 @@
  */
 
 package com.silverpeas.jcrutil.model.impl;
-
-
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import org.junit.AfterClass;
-import org.junit.Before;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import javax.annotation.Resource;
 import javax.jcr.Repository;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
+import org.junit.Before;
+
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
 
 public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase {
 
@@ -53,10 +56,16 @@ public abstract class AbstractJcrRegisteringTestCase extends AbstractJcrTestCase
   @Before
   public void registerSilverpeasNodeTypes() throws Exception {
     System.out.print("Register Silverpeas Node Types");
+
     if (!registred) {
-      String cndFileName = AbstractJcrRegisteringTestCase.class.getClassLoader().getResource(
-          "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-      SilverpeasRegister.registerNodeTypes(cndFileName);
+      Reader reader = null;
+      try {
+        reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
+            getResourceAsStream("silverpeas-jcr.txt"));
+        SilverpeasRegister.registerNodeTypes(reader);
+      } finally {
+        IOUtils.closeQuietly(reader);
+      }
       registred = true;
       System.out.println(" -> node types registered");
     } else {

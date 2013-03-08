@@ -20,21 +20,22 @@
  */
 package com.stratelia.webactiv.beans.admin.dao;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.util.ListSlice;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.silverpeas.util.ListSlice;
 
 public class UserDAO {
 
@@ -46,6 +47,7 @@ public class UserDAO {
   private static final String SELECT_DOMAINS_BY_LOGIN = "SELECT DISTINCT(domainId) AS domain FROM "
       + "st_user WHERE state <> 'DELETED' AND state <> 'UNKNOWN' AND state <> 'BLOCKED' "
       + "AND state <> 'EXPIRED' AND login = ? ORDER BY domainId";
+
 
   public UserDAO() {
   }
@@ -154,7 +156,6 @@ public class UserDAO {
       throws SQLException {
     Statement stmt = null;
     ResultSet rs = null;
-
     try {
       String query = "SELECT DISTINCT(u.id), u.lastname FROM st_user u, st_group_user_rel g"
           + " WHERE g.userid = u.id AND g.groupid IN (" + StringUtil.join(groupIds, ',') + ")"
@@ -184,10 +185,9 @@ public class UserDAO {
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      String query = "SELECT " + USER_COLUMNS
-          + " FROM st_user WHERE state <> 'DELETED' ";
+      String query = "SELECT " + USER_COLUMNS + " FROM st_user WHERE state <> 'DELETED' ";
       if (domainIds != null && !domainIds.isEmpty()) {
-        query += " AND domainId IN (" + StringUtil.join(domainIds, ',') + ")";
+        query += " AND domainId IN (" + StringUtil.join(domainIds, ',') + ")";      
       }
       if (StringUtil.isDefined(orderBy)) {
         query += " ORDER BY " + orderBy;

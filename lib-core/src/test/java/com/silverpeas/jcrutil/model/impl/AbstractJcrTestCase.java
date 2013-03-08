@@ -20,33 +20,6 @@
  */
 package com.silverpeas.jcrutil.model.impl;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.silverpeas.util.PathTestUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import org.apache.commons.dbcp.BasicDataSourceFactory;
-import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.JcrConstants;
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import javax.inject.Inject;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.IOException;
@@ -57,8 +30,38 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javax.inject.Inject;
+import javax.jcr.Binary;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.ValueFormatException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSourceFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.JcrConstants;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.PathTestUtil;
+
+import com.stratelia.webactiv.util.JNDINames;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractJcrTestCase {
@@ -126,31 +129,22 @@ public abstract class AbstractJcrTestCase {
   protected String readFileFromNode(Node fileNode) throws IOException,
       ValueFormatException, PathNotFoundException, RepositoryException {
     CharArrayWriter writer = null;
-    InputStream in = null;
     Reader reader = null;
+    Binary in = null;
     try {
-      in = fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(
-          JcrConstants.JCR_DATA).getStream();
+      in = fileNode.getNode(JcrConstants.JCR_CONTENT).getProperty(JcrConstants.JCR_DATA).getBinary();
       writer = new CharArrayWriter();
-      reader = new InputStreamReader(in);
-      char[] buffer = new char[8];
-      int c = 0;
-      while ((c = reader.read(buffer)) != -1) {
-        writer.write(buffer, 0, c);
-      }
+      reader = new InputStreamReader(in.getStream());
+      IOUtils.copy(reader, writer);
       return new String(writer.toCharArray());
     } catch (IOException ioex) {
       return null;
     } finally {
-      if (reader != null) {
-        reader.close();
+      if(in != null) {
+        in.dispose();
       }
-      if (in != null) {
-        in.close();
-      }
-      if (writer != null) {
-        writer.close();
-      }
+      IOUtils.closeQuietly(reader);
+      IOUtils.closeQuietly(writer);
     }
   }
 

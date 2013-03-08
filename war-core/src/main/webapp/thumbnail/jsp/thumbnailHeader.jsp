@@ -40,9 +40,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
-
 <%// En fonction de ce dont vous avez besoin %>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
@@ -65,13 +62,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 
 
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
 ThumbnailSessionController scc = (ThumbnailSessionController) request.getAttribute("thumbnail");
 if (scc == null)
 {
     // No questionReply session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
@@ -80,7 +77,7 @@ ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 
 String language = scc.getLanguage();
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+String m_context = URLManager.getApplicationURL();
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
@@ -90,7 +87,6 @@ Frame frame = gef.getFrame();
 
 String sRequestURL = request.getRequestURL().toString();
 String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 //Example: http://myserver
-String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+String httpServerBase = GeneralPropertiesManager.getString("httpServerBase", m_sAbsolute);
 %>

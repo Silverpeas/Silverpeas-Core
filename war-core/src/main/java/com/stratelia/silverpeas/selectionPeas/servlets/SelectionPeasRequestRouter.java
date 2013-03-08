@@ -44,6 +44,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.ArrayUtil;
+
 /**
  * Class declaration
  * @author
@@ -404,10 +406,10 @@ public class SelectionPeasRequestRouter extends
     }
 
     ComponentSessionController componentSessionController = (ComponentSessionController) request.
-        getSession(true).getAttribute("Silverpeas_" + beanName + "_" + componentId);
-    Method m = componentSessionController.getClass().getMethod(method, null);
+        getSession(true).getAttribute("Silverpeas_" + beanName + "_" + componentId);    
+    Method m = componentSessionController.getClass().getMethod(method, ArrayUtil.EMPTY_CLASS_ARRAY);
     JdbcConnectorSetting jdbcSetting = (JdbcConnectorSetting) m.invoke(componentSessionController,
-        null);
+         ArrayUtil.EMPTY_CLASS_ARRAY);
 
     selectionPeasSC.updateJdbcParameters(jdbcSetting, tableName, columnsNames.toString(),
         formIndex,

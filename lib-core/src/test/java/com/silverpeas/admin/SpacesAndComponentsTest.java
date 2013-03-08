@@ -28,9 +28,10 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.quota.exception.QuotaException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.WAComponent;
@@ -750,10 +751,8 @@ public class SpacesAndComponentsTest extends AbstractTestDao {
     String destId = "WA3";
     String componentId = "kmelia1";
     SpaceInst dest = admin.getSpaceInstById(destId);
-
-    admin.moveComponentInst(destId, componentId, "", dest.getAllComponentsInst().
-        toArray(new ComponentInst[0]));
-
+    List<ComponentInst> components = dest.getAllComponentsInst();
+    admin.moveComponentInst(destId, componentId, "",components.toArray(new ComponentInst[components.size()]));
     SpaceInst source = admin.getSpaceInstById(sourceId);
     assertEquals(0, source.getAllComponentsInst().size());
 

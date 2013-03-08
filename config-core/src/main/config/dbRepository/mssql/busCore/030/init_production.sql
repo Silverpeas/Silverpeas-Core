@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 insert into calendarCategory(categoryId, name) values (1, 'Réunion')
 GO
 insert into calendarCategory(categoryId, name) values (2, 'Déplacement')
@@ -79,5 +78,3 @@ insert into ST_FormDesigner_Connectors
 	(ID, NAME, DESCRIPTION, DRIVER, URL, LOGIN, PASSWD, SQLQUERY, TYPE) values 
 	(0, '________', ' ', ' ', ' ', ' ', ' ', ' ', '')
 GO
-
-

@@ -38,8 +38,8 @@ import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
 import static com.stratelia.silverpeas.silverstatistics.util.StatType.*;
@@ -122,7 +123,6 @@ public class SilverStatisticsManager implements SchedulerEventListener {
   public static synchronized SilverStatisticsManager getInstance() {
     if (myInstance == null) {
       myInstance = new SilverStatisticsManager();
-      //myInstance.initSilverStatisticsManager();
     }
     return myInstance;
   }
@@ -171,9 +171,10 @@ public class SilverStatisticsManager implements SchedulerEventListener {
    * @param currentDate
    * @see
    */
-  public void doGetStatSize(Date currentDate) {
+  public void doGetStatSize(Date currentDate) throws ExecutionException, InterruptedException {
     for (String aDirectoryToScan : directoryToScan) {
-      addStatSize(currentDate, aDirectoryToScan, directorySize(aDirectoryToScan));
+      DirectoryVolumeService service = new DirectoryVolumeService(new File(aDirectoryToScan));
+      addStatSize(currentDate, aDirectoryToScan, service.getTotalSize(null));
     }
 
   }
@@ -236,7 +237,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
    * @param componentId
    * @see
    */
-  public void addStatVolume(String userId, int volume, Date dateAccess, String peasType,
+  public void addStatVolume(String userId, long volume, Date dateAccess, String peasType,
       String spaceId, String componentId) {
     if (statsConfig.isRun(Volume)) {
       SilverTrace.debug("silverstatistics", "SilverStatistics.addStatVolume",
@@ -405,7 +406,7 @@ public class SilverStatisticsManager implements SchedulerEventListener {
     }
     return -1;
   }
-  
+
   private long returnSize(File file) {
     if (file.isFile()) {
       return file.length();

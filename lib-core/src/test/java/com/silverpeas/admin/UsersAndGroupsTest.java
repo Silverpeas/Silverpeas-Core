@@ -24,27 +24,24 @@
 
 package com.silverpeas.admin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -75,9 +72,8 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setExpirationDate(expirationDate);
     user.setState(UserState.EXPIRED);
     user.setStateSaveDate(stateSaveDate);
-    
-    String newUserId = "5";
 
+    String newUserId = "5";
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
     assertThat(userId, is(newUserId));
@@ -105,7 +101,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     Date expirationDate = DateUtils.addDays(now, 4);
     Date stateSaveDate = DateUtils.addDays(now, 5);
     AdminController ac = getAdminController();
-    
+
     String updatedUserId = "1";
     UserDetail user = ac.getUserDetail(updatedUserId);
 

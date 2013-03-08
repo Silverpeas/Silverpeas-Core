@@ -29,7 +29,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.ejb.NodeDAO;
-import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
+import com.stratelia.webactiv.util.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;

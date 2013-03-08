@@ -27,12 +27,11 @@ import java.util.Iterator;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.glossary.HighlightGlossaryTerms;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
-
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 
 /**
  *
@@ -96,7 +95,7 @@ public class WysiwygDisplayerTag extends TagSupport {
       if (!StringUtil.isDefined(content) && I18NHelper.isI18N) {
         Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext() && !StringUtil.isDefined(content)) {
-          currentLang = (String) languages.next();
+          currentLang = languages.next();
           content = WysiwygController.load(getComponentId(), getObjectId(), currentLang);
         }
       }
