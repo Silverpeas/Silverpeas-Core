@@ -24,43 +24,130 @@
 
 package com.silverpeas.jcrutil;
 
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import org.apache.jackrabbit.value.ValueFactoryImpl;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.jcr.Value;
-import java.util.Calendar;
+import javax.naming.InitialContext;
+
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.jaas.TestAccessAuthentified;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
+import com.stratelia.webactiv.util.JNDINames;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.value.ValueFactoryImpl;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
-public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
+public class TestBasicDaoFactory {
+
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
+  private static BasicDataSource datasource;
+
+  @BeforeClass
+  public static void loadSpringContext() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext("/spring-in-memory-jcr.xml");
+    repository = context.getBean("repository", JackrabbitRepository.class);
+    String cndFileName = TestAccessAuthentified.class.getClassLoader().getResource(
+        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
+    BasicDaoFactory.getInstance().setApplicationContext(context);
+    SilverpeasRegister.registerNodeTypes(cndFileName);
+    datasource = context.getBean("dataSource", BasicDataSource.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
+    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+    System.out.println(" -> node types registered");
+  }
+
+  @AfterClass
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    datasource.close();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
 
   public TestBasicDaoFactory() {
   }
 
-  @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(this.getClass().
-        getResourceAsStream("test-jcrutil-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
+    InputStream in = this.getClass().getResourceAsStream("test-jcrutil-dataset.xml");
+    try {
+      ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
-  @Override
+  @Before
+  public void setUpDatabase() throws Exception {
+    IDatabaseConnection connection = null;
+    try {
+      connection = new DatabaseConnection(datasource.getConnection());
+      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          throw e;
+        }
+      }
+    }
+  }
+
+  @After
+  public void tearDownDatabase() throws Exception {
+    clearRepository();
+    IDatabaseConnection connection = null;
+    try {
+      connection = new DatabaseConnection(datasource.getConnection());
+      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          throw e;
+        }
+      }
+    }
+  }
+
   protected void clearRepository() throws Exception {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       session.getRootNode().getNode("kmelia36").remove();
       session.save();
     } catch (PathNotFoundException pex) {
