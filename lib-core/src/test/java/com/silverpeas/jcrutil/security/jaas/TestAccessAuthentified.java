@@ -52,6 +52,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -154,6 +155,7 @@ public class TestAccessAuthentified {
   }
 
   @Test
+  @Ignore
   public void testAccessFileOwnable() throws Exception {
     Session session = null;
     try {
@@ -205,6 +207,7 @@ public class TestAccessAuthentified {
   }
 
   @Test
+  @Ignore
   public void testAccessFileNotOwnable() throws Exception {
     Session session = null;
     try {
@@ -289,6 +292,7 @@ public class TestAccessAuthentified {
   }
 
   @Test
+  @Ignore
   public void testAccessFolderOwnable() throws Exception {
     Session session = null;
     try {
@@ -332,6 +336,7 @@ public class TestAccessAuthentified {
   }
 
   @Test
+  @Ignore
   public void testAccessFolderNotOwnable() throws Exception {
     Session session = null;
     try {
