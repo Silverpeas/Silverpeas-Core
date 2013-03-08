@@ -63,6 +63,7 @@ import net.fortuna.ical4j.util.UidGenerator;
 import static com.silverpeas.export.ical.ical4j.ICal4JDateCodec.*;
 import static com.silverpeas.export.ical.ical4j.ICal4JRecurrenceCodec.*;
 import net.fortuna.ical4j.model.*;
+import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.ExDate;
 
 /**
@@ -80,7 +81,7 @@ public class ICal4JICalCodec implements ICalCodec {
     StringWriter output = new StringWriter();
 
     Calendar calendarIcs = new Calendar();
-    calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.0//FR"));
+    calendarIcs.getProperties().add(new ProdId("-//Silverpeas//iCal4j 1.1//FR"));
     calendarIcs.getProperties().add(Version.VERSION_2_0);
     calendarIcs.getProperties().add(CalScale.GREGORIAN);
     List<VEvent> iCalEvents = new ArrayList<VEvent>();
@@ -93,7 +94,6 @@ public class ICal4JICalCodec implements ICalCodec {
       } else {
         iCalEvent = new VEvent(startDate, endDate, event.getTitle());
       }
-      iCalEvent.getProperties().add(asTzId(event.getStartDate().getTimeZone()));
 
       // Generate UID
       try {
