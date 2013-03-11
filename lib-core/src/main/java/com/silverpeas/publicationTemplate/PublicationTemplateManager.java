@@ -42,10 +42,13 @@ import org.silverpeas.util.crypto.CryptoException;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.record.FormEncryptionContentIterator;
 import com.silverpeas.form.record.GenericRecordSet;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.security.ContentEncryptionServiceFactory;
+import com.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
@@ -80,9 +83,9 @@ public class PublicationTemplateManager {
 
   static {
     ResourceLocator templateSettings =
-        new ResourceLocator("com.silverpeas.publicationTemplate.settings.template", "");
+        new ResourceLocator("org.silverpeas.publicationTemplate.settings.template", "");
     ResourceLocator mappingSettings =
-        new ResourceLocator("com.silverpeas.publicationTemplate.settings.mapping", "");
+        new ResourceLocator("org.silverpeas.publicationTemplate.settings.mapping", "");
 
     templateDir = templateSettings.getString("templateDir");
     defaultTemplateDir = System.getenv("SILVERPEAS_HOME") + "/data/templateRepository/";
@@ -443,6 +446,24 @@ public class PublicationTemplateManager {
 
     return searchableTemplates;
   }
+  
+  /**
+   * @return the list of PublicationTemplate which are crypted
+   * @throws PublicationTemplateException
+   */
+  public List<PublicationTemplate> getCryptedPublicationTemplates()
+      throws PublicationTemplateException {
+    List<PublicationTemplate> cryptedTemplates = new ArrayList<PublicationTemplate>();
+
+    List<PublicationTemplate> publicationTemplates = getPublicationTemplates();
+    for (PublicationTemplate template : publicationTemplates) {
+      if (template.isDataEncrypted()) {
+        cryptedTemplates.add(template);
+      }
+    }
+
+    return cryptedTemplates;
+  }
 
   /**
    * @param fileName the file name of the template to remove from cache
@@ -472,5 +493,11 @@ public class PublicationTemplateManager {
    */
   private static GenericRecordSetManager getGenericRecordSetManager() {
     return GenericRecordSetManager.getInstance();
+  }
+  
+  protected void registerForRenewingContentCipher() {
+    EncryptionContentIterator contentIterator = new FormEncryptionContentIterator();
+    ContentEncryptionServiceFactory.getFactory().getContentEncryptionService()
+        .registerForRenewingContentCipher(contentIterator);
   }
 }

@@ -179,5 +179,10 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     public void remove() {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void init() {      
+      
+    }
   }
 }

@@ -104,6 +104,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
 
   private void process(EncryptionContentIterator theContents, Cipher cipher, CipherKey actualKey,
       CipherKey previousKey) {
+    theContents.init();
     for (; theContents.hasNext(); ) {
       Map<String, String> content = theContents.next();
       try {

@@ -28,6 +28,7 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.FormRuntimeException;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
@@ -39,6 +40,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ContentEncryptionService;
 import com.silverpeas.util.security.ContentEncryptionServiceFactory;
+import com.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -53,7 +55,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -491,61 +492,23 @@ public class GenericRecordSetManager {
   }
   
   private void encryptOrDecryptData(String templateName, boolean encrypt) throws CryptoException {
-    // get all data managed by specified template
-    List<RecordRow> rowsToEncrypt;
-    try {
-      rowsToEncrypt = getAllRecordsOfTemplate(templateName);
-    } catch (FormException e) {
-      String message = CryptoException.ENCRYPTION_FAILURE;
-      if (!encrypt) {
-        message = CryptoException.DECRYPTION_FAILURE;
-      }
-      throw new CryptoException(message, e);
-    }
-    
-    // encrypting/decrypting values...
-    // start to generate a compliant structure to encryption service 
-    Map<String, String> toProcess = new HashMap<String, String>();
-    for (RecordRow row : rowsToEncrypt) {
-      toProcess.put(row.getRecordId()+"$SP$"+row.getFieldName(), row.getFieldValue());
-    }
-    
     ContentEncryptionService encryptionService = getEncryptionService();
-    
-    List<RecordRow> rowsToUpdate = new ArrayList<RecordRow>();
+    EncryptionContentIterator contentIterator = new FormEncryptionContentIterator(templateName);
     // encrypt or decrypt values
-    Map<String, String> processedEntries;
     if (encrypt) {
       // encrypt values
-      processedEntries = encryptionService.encryptContent(toProcess);
+      try {
+        encryptionService.encryptContents(contentIterator);
+      } catch (FormRuntimeException e) {
+        throw new CryptoException(CryptoException.ENCRYPTION_FAILURE, e);
+      }
     } else {
       // decrypt values
-      processedEntries = encryptionService.decryptContent(toProcess);
-    }
-    
-    // generate structured data to store in database
-    for (Entry<String, String> entry : processedEntries.entrySet()) {
-      String key = entry.getKey();
-      String[] recordIdAndFieldName = StringUtil.split(key, "$SP$");
-      RecordRow rowToUpdate =
-          new RecordRow(Integer.parseInt(recordIdAndFieldName[0]), recordIdAndFieldName[1],
-              entry.getValue());
-      rowsToUpdate.add(rowToUpdate);
-    }
-    
-    // update encrypted/decrypted values in database
-    Connection con = null;
-    try {
-      con = getConnection();
-      updateFieldRows(con, rowsToUpdate);
-    } catch (Exception e) {
-      String message = CryptoException.ENCRYPTION_FAILURE;
-      if (!encrypt) {
-        message = CryptoException.DECRYPTION_FAILURE;
+      try {
+        encryptionService.decryptContents(contentIterator);
+      } catch (Exception e) {
+        throw new CryptoException(CryptoException.DECRYPTION_FAILURE, e);
       }
-      throw new CryptoException(message, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
   
@@ -553,7 +516,7 @@ public class GenericRecordSetManager {
     return ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
   }
   
-  private void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
+  protected void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
     PreparedStatement update = con.prepareStatement(UPDATE_FIELD);
 
     try {
@@ -572,7 +535,7 @@ public class GenericRecordSetManager {
     }
   }
   
-  private List<RecordRow> getAllRecordsOfTemplate(String templateName) throws FormException {
+  protected List<RecordRow> getAllRecordsOfTemplate(String templateName) throws FormException {
     Connection con = null;
     PreparedStatement select = null;
     ResultSet rs = null;

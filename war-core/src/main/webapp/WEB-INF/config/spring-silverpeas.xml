@@ -60,6 +60,7 @@
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
+  <ctx:component-scan base-package="com.silverpeas.publicationTemplate"/>
   <ctx:component-scan base-package="org.silverpeas.admin.web"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web"/>
   <ctx:component-scan base-package="com.silverpeas.bundle.web"/>
@@ -176,4 +177,6 @@
   <bean id="contentEncryptionServiceFactory" class="com.silverpeas.util.security.ContentEncryptionServiceFactory"
         factory-method="getFactory"/>
 
+  <bean id="publicationTemplateManager" class="com.silverpeas.publicationTemplate.PublicationTemplateManager"
+        factory-method="getInstance" init-method="registerForRenewingContentCipher"/>
 </beans>

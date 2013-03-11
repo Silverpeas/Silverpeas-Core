@@ -24,6 +24,13 @@ import java.util.Map;
  * </ul>
  */
 public interface EncryptionContentIterator extends Iterator<Map<String, String>> {
+  
+  
+  /**
+   * Initialize contents to iterate. It prepares iterator for the encryption operations.
+   * It will be invoked by content encryption service before any iteration. 
+   */
+  void init();
 
   /**
    * Gets the next content in the iteration.
