@@ -1,6 +1,8 @@
 package com.silverpeas.util.security;
 
 import com.silverpeas.util.StringUtil;
+import java.io.File;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.silverpeas.util.crypto.Cipher;
@@ -9,12 +11,12 @@ import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
 import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
-import java.io.File;
-import java.util.Map;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+
+import static com.silverpeas.util.security.ContentEncryptionServiceTest.ACTUAL_KEY_FILE_PATH;
 
 /**
  * Unit tests on encryption management done by the DefaultContentEncryptionService instances.
@@ -62,8 +64,8 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     // the key encrypted by the service
     String previousEncryptedKey = FileUtils.readFileToString(keyFile);
     // some iterators on encrypted contents
-    final int count = 10;
-    MyOwnContentIterator[] iterators = getEncryptionContentIterators(count);
+    final int count = 5;
+    MyOwnContentIterator[] iterators = getEncryptionContentIterators(count, key);
     for (int i = 0; i < iterators.length; i++) {
       getContentEncryptionService().registerForRenewingContentCipher(iterators[i]);
     }
@@ -78,10 +80,38 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     assertTheContentCipherIsRenewed(iterators, key);
   }
 
-  private static MyOwnContentIterator[] getEncryptionContentIterators(final int count) {
+  @Test
+  public void testCipherRenewFailureWhenUpdatingCipherKey() throws Exception {
+    // create the key file with the actual cipher key
+    String encryptedKey = generateAESKey();
+    createKeyFileWithTheActualKey(encryptedKey);
+
+    // create the key file with a previous cipher key
+    String deprecatedEncryptedKey = generateAESKey();
+    createKeyFileWithTheDeprecatedKey(deprecatedEncryptedKey);
+
+    // an iterator on encrypted contents that will provoke an error with the cipher renewing
+    final int count = 5;
+    getContentEncryptionService().registerForRenewingContentCipher(new MyOwnContentIterator(count,
+        true));
+
+    // new encryption key
+    String key = generateAESKey();
+    try {
+      getContentEncryptionService().updateCipherKey(key);
+      fail("A CryptoException exception should be thrown");
+    } catch (CryptoException ex) {
+      assertKeyFileExistsWithKey(new File(ACTUAL_KEY_FILE_PATH), encryptedKey);
+      assertKeyFileExistsWithKey(new File(DEPRECATED_KEY_FILE_PATH), deprecatedEncryptedKey);
+    }
+  }
+
+  private static MyOwnContentIterator[] getEncryptionContentIterators(final int count, String key)
+      throws Exception {
     MyOwnContentIterator[] iterators = new MyOwnContentIterator[count];
     for (int i = 0; i < count; i++) {
-      iterators[i] = new MyOwnContentIterator(count);
+      iterators[i] = new MyOwnContentIterator(count, false);
+      iterators[i].encryptContents(key);
     }
     return iterators;
   }
@@ -120,8 +150,10 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
       TextContent[] contents = iterator.getContents();
       TextContent[] encryptedContents = iterator.getEncryptedContents();
       for (int i = 0; i < encryptedContents.length; i++) {
-        String title = aes.decrypt(StringUtil.fromBase64(encryptedContents[i].getTitle()), cipherKey);
-        String description = aes.decrypt(StringUtil.fromBase64(encryptedContents[i].getDescription()), cipherKey);
+        String title = aes.
+            decrypt(StringUtil.fromBase64(encryptedContents[i].getTitle()), cipherKey);
+        String description = aes.decrypt(StringUtil.
+            fromBase64(encryptedContents[i].getDescription()), cipherKey);
         String text = aes.decrypt(StringUtil.fromBase64(encryptedContents[i].getText()), cipherKey);
 
         assertThat(title, is(contents[i].getTitle()));
@@ -132,13 +164,17 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
   }
 
   private static class MyOwnContentIterator implements EncryptionContentIterator {
-    private int count;
-    private final TextContent[] contents = generateTextContents(count);
-    private final TextContent[] encryptedContents = new TextContent[contents.length];
-    private int current = -1;
 
-    public MyOwnContentIterator(int contentCount) {
+    private int count;
+    private TextContent[] contents;
+    private TextContent[] encryptedContents;
+    private int current = -1;
+    private boolean error = false;
+
+    public MyOwnContentIterator(int contentCount, boolean withError) {
       this.count = contentCount;
+      this.error = withError;
+      contents = generateTextContents(count);
     }
 
     public TextContent[] getContents() {
@@ -151,7 +187,11 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
 
     @Override
     public Map<String, String> next() {
-      return contents[current].getProperties();
+      if (error) {
+        return null;
+      } else {
+        return encryptedContents[current].getProperties();
+      }
     }
 
     @Override
@@ -163,7 +203,7 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     public void update(final Map<String, String> updatedContent) {
       TextContent content =
           new TextContent(contents[current].getId(), contents[current].getComponentInstanceId(),
-              contents[current].getCreator());
+          contents[current].getCreator());
       content.setTitle(updatedContent.get(TextContent.Properties.Title.name()));
       content.setDescription(updatedContent.get(TextContent.Properties.Description.name()));
       content.setText(updatedContent.get(TextContent.Properties.Text.name()));
@@ -178,6 +218,10 @@ public class KeyManagementTest extends ContentEncryptionServiceTest {
     @Override
     public void remove() {
       throw new UnsupportedOperationException();
+    }
+
+    private void encryptContents(String key) throws Exception {
+      encryptedContents = encryptTextContents(contents, key);
     }
   }
 }

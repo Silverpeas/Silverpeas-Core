@@ -1,9 +1,8 @@
 package com.silverpeas.util.security;
 
-import org.silverpeas.util.crypto.CryptoException;
-
 import java.util.Iterator;
 import java.util.Map;
+import org.silverpeas.util.crypto.CryptoException;
 
 /**
  * An iterator over a collection of contents for encryption purpose. The content is here represented
@@ -16,20 +15,22 @@ import java.util.Map;
  * </p>
  * It extends the {@link Iterator} interface by adding the following methods:
  * <ul>
- *   <li>{@link #update(java.util.Map)} to update the last content returned by the iterator,</li>
- *   <li>{@link #onError(java.util.Map, org.silverpeas.util.crypto.CryptoException)} to inform
- *   the implementation of this interface of an error while processing the last content returned
- *   by it, so that it can perform specific treatments with any retrieve mechanism (like closing
- *   correctly a connection for example).</li>
+ * <li>{@link #update(java.util.Map)} to update the last content returned by the iterator,</li>
+ * <li>{@link #onError(java.util.Map, org.silverpeas.util.crypto.CryptoException)} to inform the
+ * implementation of this interface of an error while processing the last content returned by it, so
+ * that it can perform specific treatments with any retrieve mechanism (like closing correctly a
+ * connection for example).</li>
  * </ul>
  */
 public interface EncryptionContentIterator extends Iterator<Map<String, String>> {
 
   /**
    * Gets the next content in the iteration.
+   *
    * @return the next content to update in the form of a {@link Map} object in which each entry
    * represents a field or a property of the content.
    */
+  @Override
   Map<String, String> next();
 
   /**
@@ -37,12 +38,15 @@ public interface EncryptionContentIterator extends Iterator<Map<String, String>>
    * </p>
    * This method is called by the encryption service each time before asking the next content to
    * encrypt or to decrypt with the {@link #next()} method.
+   *
    * @return true if there is another content in the iteration. False otherwise.
    */
+  @Override
   boolean hasNext();
 
   /**
    * Updates the last content returned by this iterator.
+   *
    * @param updatedContent the content updated by the encryption service in the form of a
    * {@link Map} object in which each entry represents a field or a property of the content.
    */
@@ -51,8 +55,9 @@ public interface EncryptionContentIterator extends Iterator<Map<String, String>>
   /**
    * An error occurred while processing the last content returned by this iterator.
    * </p>
-   * This method is invoked by the encryption service when an error occurs while processing the
-   * last content returned by the iterator.
+   * This method is invoked by the encryption service when an error occurs while processing the last
+   * content returned by the iterator.
+   *
    * @param content the content with which the error occurred.
    * @param ex the exception raised at the error.
    */
