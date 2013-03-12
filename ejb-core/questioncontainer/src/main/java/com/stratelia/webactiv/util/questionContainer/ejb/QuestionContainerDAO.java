@@ -52,7 +52,7 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerRunt
 public class QuestionContainerDAO {
 
   public static final String QUESTIONCONTAINERCOLUMNNAMES =
-      "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, anonymous, instanceId";
+      "qcId, qcTitle, qcDescription, qcComment, qcCreatorId, qcCreationDate, qcBeginDate, qcEndDate, qcIsClosed, qcNbVoters, qcNbQuestionsPage, qcNbMaxParticipations, qcNbTriesBeforeSolution, qcMaxTime, instanceId, anonymous, resultMode";
   public static final String COMMENTCOLUMNNAMES =
       "commentId, commentFatherId, userId, commentComment, commentIsAnonymous, commentDate";
 
@@ -113,8 +113,9 @@ public class QuestionContainerDAO {
     int nbMaxParticipations = rs.getInt(12);
     int nbParticipationsBeforeSolution = rs.getInt(13);
     int maxTime = rs.getInt(14);
-    boolean anonymous = (rs.getInt(15) == 1);
-    String instanceId = rs.getString(16);
+    String instanceId = rs.getString(15);
+    boolean anonymous = (rs.getInt(16) == 1);
+    int resultMode = rs.getInt(17);
 
     questionContainerPK.setComponentName(instanceId);
 
@@ -122,7 +123,7 @@ public class QuestionContainerDAO {
         new QuestionContainerPK(id, questionContainerPK), title, description,
         comment, creatorId, creationDate, beginDate, endDate, closed, nbVoters,
         nbQuestionsPage, nbMaxParticipations, nbParticipationsBeforeSolution,
-        maxTime, anonymous);
+        maxTime, anonymous, resultMode);
     return result;
   }
 
@@ -465,7 +466,7 @@ public class QuestionContainerDAO {
 
     String insertStatement = "insert into "
         + questionContainerHeader.getPK().getTableName()
-        + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+        + " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
     try {
       /* Retrieve next sequence identifier */
@@ -515,7 +516,8 @@ public class QuestionContainerDAO {
       } else {
         prepStmt.setInt(16, 0);
       }
-
+      prepStmt.setInt(17, questionContainerHeader.getResultMode());
+      
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);

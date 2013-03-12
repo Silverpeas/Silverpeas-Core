@@ -54,8 +54,8 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   private int nbMaxPoints = 0;
   private Collection<ScoreDetail> scores = null;
   private boolean anonymous;
-
   private String iconUrl;
+  private int resultMode; //1 : résultats immédiat | 2 : résultats différés après validation initiateur  
 
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String comment, String creatorId,
@@ -82,7 +82,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
       String title, String description, String comment, String creatorId,
       String creationDate, String beginDate, String endDate, boolean isClosed,
       int nbVoters, int nbQuestionsPerPage, int nbMaxParticipations,
-      int nbParticipationsBeforeSolution, int maxTime, boolean anonymous) {
+      int nbParticipationsBeforeSolution, int maxTime, boolean anonymous, int resultMode) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -98,6 +98,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setNbParticipationsBeforeSolution(nbParticipationsBeforeSolution);
     setMaxTime(maxTime);
     setAnonymous(anonymous);
+    setResultMode(resultMode);
   }
 
   // @deprecated
@@ -121,7 +122,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String creatorId, String creationDate,
       String beginDate, String endDate, boolean isClosed, int nbVoters,
-      int nbQuestionsPerPage, boolean anonymous) {
+      int nbQuestionsPerPage, boolean anonymous, int resultMode) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -134,6 +135,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setNbVoters(nbVoters);
     setNbQuestionsPerPage(nbQuestionsPerPage);
     setAnonymous(anonymous);
+    setResultMode(resultMode);
   }
 
   public QuestionContainerPK getPK() {
@@ -332,5 +334,14 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   public void setAnonymous(boolean anonymous) {
     this.anonymous = anonymous;
   }
+  
+  public int getResultMode() {
+    return this.resultMode;
+  }
+
+  public void setResultMode(int resultMode) {
+    this.resultMode = resultMode;
+  }
+  
 
 }
