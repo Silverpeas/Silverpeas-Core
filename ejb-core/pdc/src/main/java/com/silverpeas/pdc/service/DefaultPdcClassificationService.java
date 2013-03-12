@@ -23,16 +23,13 @@
  */
 package com.silverpeas.pdc.service;
 
+
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
-
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.dao.PdcAxisValueRepository;
@@ -51,6 +48,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static com.silverpeas.util.StringUtil.isDefined;
@@ -96,8 +95,8 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       if (isDefined(nodeId)) {
         NodePK nodeToSeek = new NodePK(nodeId, instanceId);
         while (classification == null && !nodeToSeek.isUndefined()) {
-          classification = classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek
-              .getId(), nodeToSeek.getInstanceId());          
+          classification = classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.
+              getId(), nodeToSeek.getInstanceId());
           NodeDetail node = getNodeBm().getDetail(nodeToSeek);
           nodeToSeek = node.getFatherPK();
         }
