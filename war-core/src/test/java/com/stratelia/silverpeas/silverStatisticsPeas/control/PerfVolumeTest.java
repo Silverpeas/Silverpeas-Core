@@ -23,17 +23,20 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
 import java.io.File;
 import java.sql.SQLException;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
+import org.silverpeas.silverstatistics.volume.DirectoryVolumeService;
+
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -46,6 +49,7 @@ public class PerfVolumeTest {
   private int forLoop = 10;
 
   @Test
+  @Ignore
   public void computeDataFromFs() throws Exception {
     String dataHomeDir = "/media/DATA/opt/silverpeas/data/workspaces/";
     File dataDirectory = new File(dataHomeDir);

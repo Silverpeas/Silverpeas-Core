@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -182,8 +183,8 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 
   browseInformation = request.getParameter("BrowseInfo");
   session.setAttribute("WYSIWYG_BrowseInfo", browseInformation);
-
-  userId = request.getParameter("UserId");
+    userId = ((MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
   session.setAttribute("WYSIWYG_UserId", userId);
 
   fileName = request.getParameter("FileName");
