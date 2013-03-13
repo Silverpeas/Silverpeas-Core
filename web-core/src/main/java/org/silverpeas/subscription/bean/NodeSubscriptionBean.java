@@ -21,19 +21,47 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdcSubscriptionPeas.bean;
+package org.silverpeas.subscription.bean;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriberType;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Collection;
 
 /**
  * User: Yohann Chastagnier
  * Date: 25/02/13
  */
-public class ComponentSubscriptionBean extends AbstractSubscriptionBean {
+public class NodeSubscriptionBean extends AbstractSubscriptionBean {
 
-  public ComponentSubscriptionBean(final Subscription subscription) {
-    super(subscription);
+  private final Collection<NodeDetail> path;
+
+  public NodeSubscriptionBean(final Subscription subscription, final Collection<NodeDetail> path,
+      final ComponentInstLight component, final String language) {
+    super(subscription, component, language);
+    this.path = path;
+  }
+
+  @Override
+  public String getPath() {
+    StringBuilder result = new StringBuilder();
+    for (NodeDetail node : path) {
+      if (result.length() > 0) {
+        result.insert(0, " > ");
+      }
+      if (NodePK.ROOT_NODE_ID.equals(node.getNodePK().getId())) {
+        result.insert(0, super.getPath());
+      } else {
+        result.insert(0, node.getName(getLanguage()));
+      }
+    }
+    return result.toString();
+  }
+
+  @Override
+  public String getLink() {
+    return path.iterator().next().getLink();
   }
 }

@@ -28,8 +28,6 @@ import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.silverpeas.pdcSubscriptionPeas.bean.ComponentSubscriptionBean;
-import com.silverpeas.pdcSubscriptionPeas.bean.NodeSubscriptionBean;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -56,11 +54,16 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.subscription.SubscriptionComparator;
+import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.subscription.bean.NodeSubscriptionBean;
+
+import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import javax.ejb.RemoveException;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -121,7 +124,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
     String currentUserId = userId;
-    Collection<NodeSubscriptionBean> subscribes = new ArrayList<NodeSubscriptionBean>();
+    List<NodeSubscriptionBean> subscribes = new ArrayList<NodeSubscriptionBean>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
@@ -130,21 +133,27 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       try {
         // Subscriptions managed at this level are only those of node subscription.
         if (SubscriptionResourceType.NODE.equals(subscription.getResource().getType())) {
-          Collection<NodeDetail> path =
-              getNodeBm().getPath((NodePK) subscription.getResource().getPK());
-          subscribes.add(new NodeSubscriptionBean(subscription, path));
+          ComponentInstLight componentInstLight = getOrganisationController()
+              .getComponentInstLight(subscription.getResource().getInstanceId());
+          if (componentInstLight != null) {
+            Collection<NodeDetail> path =
+                getNodeBm().getPath((NodePK) subscription.getResource().getPK());
+            subscribes.add(
+                new NodeSubscriptionBean(subscription, path, componentInstLight, getLanguage()));
+          }
         }
       } catch (RemoteException e) {
         // User subscribed to a non existing component or topic .Do nothing. Process next
         // subscription.
       }
     }
+    Collections.sort(subscribes, new SubscriptionComparator());
     return subscribes;
   }
 
   public Collection<ComponentSubscriptionBean> getComponentUserSubscriptions(String userId) {
     String currentUserId = userId;
-    Collection<ComponentSubscriptionBean> subscribes = new ArrayList<ComponentSubscriptionBean>();
+    List<ComponentSubscriptionBean> subscribes = new ArrayList<ComponentSubscriptionBean>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
@@ -155,10 +164,12 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
         ComponentInstLight componentInstLight = getOrganisationController()
             .getComponentInstLight(subscription.getResource().getInstanceId());
         if (componentInstLight != null) {
-          subscribes.add(new ComponentSubscriptionBean(subscription));
+          subscribes
+              .add(new ComponentSubscriptionBean(subscription, componentInstLight, getLanguage()));
         }
       }
     }
+    Collections.sort(subscribes, new SubscriptionComparator());
     return subscribes;
   }
 

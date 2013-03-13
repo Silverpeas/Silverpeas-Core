@@ -1,4 +1,6 @@
-<%@ page import="com.silverpeas.pdcSubscriptionPeas.bean.ComponentSubscriptionBean" %>
+<%@ page import="org.silverpeas.subscription.bean.ComponentSubscriptionBean" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
 <%--
   Copyright (C) 2000 - 2013 Silverpeas
 
@@ -28,12 +30,13 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
 <%
-  Collection<com.silverpeas.pdcSubscriptionPeas.bean.ComponentSubscriptionBean> subscriptions =
+  Collection<org.silverpeas.subscription.bean.ComponentSubscriptionBean> subscriptions =
       (Collection) request.getAttribute("subscriptions");
+  String currentUserId = (String) request.getAttribute("currentUserId");
   String userId = (String) request.getAttribute("userId");
   String action = (String) request.getAttribute("action");
 
-  OrganizationController organizationCtrl = sessionController.getOrganizationController();
+  OrganisationController organizationCtrl = sessionController.getOrganisationController();
   final String rootPath = resource.getString("Path");
 
   boolean isReadOnly = false;
@@ -110,28 +113,30 @@
 
     // remplissage de l'ArrayPane avec les abonnements
     if (!subscriptions.isEmpty()) {
-      for (ComponentSubscriptionBean subscriptionBean : subscriptions) {
-        String delete =
-            subscriptionBean.getSubscription().getResource().getInstanceId() + "-" +
-                subscriptionBean.getSubscription().getCreatorId();
-        ComponentInstLight componentInst = organizationCtrl.getComponentInstLight(
-            subscriptionBean.getSubscription().getResource().getInstanceId());
-        SpaceInstLight spaceInst =
-            organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
+      for (ComponentSubscriptionBean subscription : subscriptions) {
         ArrayLine line = arrayPane.addArrayLine();
-        line.addArrayCellText(resource.getString(
-            "SubscriptionType." + subscriptionBean.getSubscription().getSubscriber().getType()) +
-            " " + resource.getString(
-            "SubscriptionMethod." + subscriptionBean.getSubscription().getSubscriptionMethod()));
-        String name = spaceInst.getName() + " > " + componentInst.getLabel();
-        if (!isReadOnly) {
-          String link = URLManager.getSimpleURL(URLManager.URL_COMPONENT,
-              subscriptionBean.getSubscription().getResource().getInstanceId());
-          line.addArrayCellLink(name, link);
-        } else {
-          line.addArrayCellText(name);
+        StringBuilder subTypeLabel = new StringBuilder();
+        subTypeLabel.append(
+            resource.getString("SubscriptionType." + subscription.getSubscriber().getType()));
+        if (SubscriberType.GROUP.equals(subscription.getSubscriber().getType())) {
+          subTypeLabel.append(" <b>");
+          subTypeLabel.append(subscription.getSubscriberName());
+          subTypeLabel.append("</b>");
         }
-        if (!isReadOnly && !subscriptionBean.isReadOnly()) {
+        if (!currentUserId.equals(subscription.getCreatorId())) {
+          subTypeLabel.append(" ");
+          subTypeLabel.append(
+              resource.getString("SubscriptionMethod." + subscription.getSubscriptionMethod()));
+        }
+        line.addArrayCellText(subTypeLabel.toString());
+        if (!isReadOnly) {
+          line.addArrayCellLink(subscription.getPath(), subscription.getLink());
+        } else {
+          line.addArrayCellText(subscription.getPath());
+        }
+        if (!isReadOnly && !subscription.isReadOnly()) {
+          String delete = subscription.getResource().getInstanceId() + "-" +
+              subscription.getCreatorId();
           line.addArrayCellText(
               "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"subscriptionCheckbox\" value=\"" +
                   delete + "\">");

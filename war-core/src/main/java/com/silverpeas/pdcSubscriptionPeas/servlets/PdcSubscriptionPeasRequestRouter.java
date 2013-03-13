@@ -68,6 +68,7 @@ public class PdcSubscriptionPeasRequestRouter extends
       HttpServletRequest request) {
     String destination = "";
     request.setAttribute("language", pdcSC.getLanguage());
+    request.setAttribute("currentUserId", pdcSC.getUserId());
     String rootDest = "/pdcSubscriptionPeas/jsp/";
 
     try {

@@ -30,11 +30,11 @@ import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,7 +56,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
   private final SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organisationController;
 
   /**
    * Gets a database connection.
@@ -211,7 +211,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
         .info("subscribe", "SubscriptionService.getByUserSubscriber", "root.MSG_GEN_ENTER_METHOD");
     Collection<Subscription> subscriptions =
         getBySubscriber(UserSubscriptionSubscriber.from(userId));
-    for (String groupId : organizationController.getAllGroupIdsOfUser(userId)) {
+    for (String groupId : organisationController.getAllGroupIdsOfUser(userId)) {
       subscriptions.addAll(getBySubscriber(GroupSubscriptionSubscriber.from(groupId)));
     }
     return subscriptions;
@@ -316,7 +316,7 @@ public class SimpleSubscriptionService implements SubscriptionService {
 
     // Retrieving users from groups if any
     for (String groupId : groupIds) {
-      for (UserDetail user : organizationController.getAllUsersOfGroup(groupId)) {
+      for (UserDetail user : organisationController.getAllUsersOfGroup(groupId)) {
         userIds.add(user.getId());
       }
     }

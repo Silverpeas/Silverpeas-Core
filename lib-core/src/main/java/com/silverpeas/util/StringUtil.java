@@ -52,6 +52,9 @@ public class StringUtil extends StringUtils {
   public static boolean isDefined(String parameter) {
     return (parameter != null && parameter.trim().length() > 0 && !"null".equalsIgnoreCase(parameter));
   }
+  public static boolean isNotDefined(String parameter) {
+    return !isDefined(parameter);
+  }
 
   public static boolean isInteger(String id) {
     try {

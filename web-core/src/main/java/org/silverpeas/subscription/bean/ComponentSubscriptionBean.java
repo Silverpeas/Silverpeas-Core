@@ -21,28 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdcSubscriptionPeas.bean;
+package org.silverpeas.subscription.bean;
 
 import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriberType;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-
-import java.util.Collection;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 
 /**
  * User: Yohann Chastagnier
  * Date: 25/02/13
  */
-public class NodeSubscriptionBean extends AbstractSubscriptionBean {
+public class ComponentSubscriptionBean extends AbstractSubscriptionBean {
 
-  private final Collection<NodeDetail> path;
-
-  public NodeSubscriptionBean(final Subscription subscription, final Collection<NodeDetail> path) {
-    super(subscription);
-    this.path = path;
-  }
-
-  public Collection<NodeDetail> getPath() {
-    return path;
+  public ComponentSubscriptionBean(final Subscription subscription,
+      final ComponentInstLight component, final String language) {
+    super(subscription, component, language);
   }
 }

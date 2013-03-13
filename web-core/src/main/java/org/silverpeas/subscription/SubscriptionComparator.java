@@ -21,28 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.pdcSubscriptionPeas.bean;
+package org.silverpeas.subscription;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.subscribe.constant.SubscriberType;
+import com.silverpeas.util.comparator.AbstractComplexComparator;
+import org.silverpeas.subscription.bean.AbstractSubscriptionBean;
 
 /**
  * User: Yohann Chastagnier
- * Date: 25/02/13
+ * Date: 13/03/13
  */
-public abstract class AbstractSubscriptionBean {
+public class SubscriptionComparator extends AbstractComplexComparator<AbstractSubscriptionBean> {
 
-  private final Subscription subscription;
-
-  protected AbstractSubscriptionBean(final Subscription subscription) {
-    this.subscription = subscription;
-  }
-
-  public Subscription getSubscription() {
-    return subscription;
-  }
-
-  public boolean isReadOnly() {
-    return SubscriberType.GROUP.equals(subscription.getSubscriber().getType());
+  @Override
+  protected ValueBuffer getValuesToCompare(final AbstractSubscriptionBean subscription) {
+    ValueBuffer valuesToCompare = new ValueBuffer();
+    valuesToCompare.append(subscription.getSpace().getOrderNum());
+    valuesToCompare.append(subscription.getSpace().getName());
+    valuesToCompare.append(subscription.getComponent().getOrderNum());
+    valuesToCompare.append(subscription.getComponent().getName());
+    valuesToCompare.append(subscription.getPath());
+    return valuesToCompare;
   }
 }

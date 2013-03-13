@@ -1,5 +1,6 @@
 <%@ page import="org.silverpeas.core.admin.OrganisationController" %>
-<%@ page import="com.silverpeas.pdcSubscriptionPeas.bean.NodeSubscriptionBean" %>
+<%@ page import="org.silverpeas.subscription.bean.NodeSubscriptionBean" %>
+<%@ page import="com.silverpeas.subscribe.constant.SubscriberType" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -32,6 +33,7 @@
 <%@ include file="check.jsp" %>
 <%
   Collection<NodeSubscriptionBean> subscriptions = (Collection) request.getAttribute("subscriptions");
+  String currentUserId = (String) request.getAttribute("currentUserId");
   String userId = (String) request.getAttribute("userId");
   String action = (String) request.getAttribute("action");
 
@@ -112,46 +114,30 @@ function areYouSure() {
     // remplissage de l'ArrayPane avec les abonnements
     if (!subscriptions.isEmpty()) {
       for (NodeSubscriptionBean subscription : subscriptions) {
-        String rootName = "";
-        String link = "";
-        String delete = "";
-        ComponentInstLight componentInst = null;
         ArrayLine line = arrayPane.addArrayLine();
-        line.addArrayCellText(resource.getString(
-            "SubscriptionType." + subscription.getSubscription().getSubscriber().getType()) +
-            " " + resource.getString(
-            "SubscriptionMethod." + subscription.getSubscription().getSubscriptionMethod()));
-        for (NodeDetail node : subscription.getPath()) {
-          String name;
-          if (link.equals("")) {
-            link = node.getLink();
-            delete = node.getNodePK().getId() + "-" + node.getNodePK().getComponentName() + "-" +
-                subscription.getSubscription().getCreatorId();
-          }
-          if (node.getNodePK().getId().equals("0")) {
-            // on est a la racine, on recherche le nom de l'espace et de l'instance du composant
-            String componentId = node.getNodePK().getComponentName();
-            if (componentInst == null) {
-              componentInst = organizationCtrl.getComponentInstLight(componentId);
-            }
-            SpaceInstLight spaceInst =
-                organizationCtrl.getSpaceInstLightById(componentInst.getDomainFatherId());
-            name = spaceInst.getName() + " > " + componentInst.getLabel();
-          } else {
-            name = node.getName(language);
-          }
-          if (rootName.length() == 0) {
-            rootName = name;
-          } else {
-            rootName = name + " > " + rootName;
-          }
+        StringBuilder subTypeLabel = new StringBuilder();
+        subTypeLabel.append(
+            resource.getString("SubscriptionType." + subscription.getSubscriber().getType()));
+        if (SubscriberType.GROUP.equals(subscription.getSubscriber().getType())) {
+          subTypeLabel.append(" <b>");
+          subTypeLabel.append(subscription.getSubscriberName());
+          subTypeLabel.append("</b>");
         }
+        if (!currentUserId.equals(subscription.getCreatorId())) {
+          subTypeLabel.append(" ");
+          subTypeLabel.append(
+              resource.getString("SubscriptionMethod." + subscription.getSubscriptionMethod()));
+        }
+        line.addArrayCellText(subTypeLabel.toString());
         if (!isReadOnly) {
-          line.addArrayCellLink(rootName, link);
+          line.addArrayCellLink(subscription.getPath(), subscription.getLink());
         } else {
-          line.addArrayCellText(rootName);
+          line.addArrayCellText(subscription.getPath());
         }
         if (!isReadOnly && !subscription.isReadOnly()) {
+          String delete = subscription.getResource().getId() + "-" +
+              subscription.getResource().getInstanceId() + "-" +
+              subscription.getCreatorId();
           line.addArrayCellText(
               "&nbsp;&nbsp;&nbsp;&nbsp;<input type=\"checkbox\" name=\"themeCheck\" value=\"" +
                   delete + "\">");
