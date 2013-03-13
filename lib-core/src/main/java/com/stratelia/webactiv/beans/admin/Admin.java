@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.google.common.collect.Sets;
 import com.silverpeas.admin.components.*;
 import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
@@ -46,7 +45,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,59 +61,53 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ListSlice;
 
+import com.stratelia.webactiv.util.JNDINames;
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
-/**
- * @author neysseri
- *
- */
 /**
  * The class Admin is the main class of the Administrator.<BR/> The role of the administrator is to
  * create and maintain spaces.
  */
+
 public final class Admin {
 
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
-  static private final Object semaphore = new Object();
-  static private boolean delUsersOnDiffSynchro = true;
-  static private boolean shouldFallbackGroupNames = true;
-  static private boolean shouldFallbackUserLogins = false;
-  static private String m_groupSynchroCron = "";
-  static private String m_domainSynchroCron = "";
+  private static final Object semaphore = new Object();
+  private static boolean delUsersOnDiffSynchro = true;
+  private static boolean shouldFallbackGroupNames = true;
+  private static boolean shouldFallbackUserLogins = false;
+  private static String m_groupSynchroCron = "";
+  private static String m_domainSynchroCron = "";
   // Helpers
-  static private final SpaceInstManager spaceManager = new SpaceInstManager();
-  static private final ComponentInstManager componentManager = new ComponentInstManager();
-  static private final ProfileInstManager profileManager = new ProfileInstManager();
-  static private final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
-  static private final GroupManager groupManager = new GroupManager();
-  static private final UserManager userManager = new UserManager();
-  static private final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
-  static private final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
+  private static final SpaceInstManager spaceManager = new SpaceInstManager();
+  private static final ComponentInstManager componentManager = new ComponentInstManager();
+  private static final ProfileInstManager profileManager = new ProfileInstManager();
+  private static final SpaceProfileInstManager spaceProfileManager = new SpaceProfileInstManager();
+  private static final GroupManager groupManager = new GroupManager();
+  private static final UserManager userManager = new UserManager();
+  private static final ProfiledObjectManager profiledObjectManager = new ProfiledObjectManager();
+  private static final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
   // Component instanciator
-  static private Instanciateur componentInstanciator = null;
-  static private SpaceInstanciator spaceInstanciator = null;
+  private static Instanciateur componentInstanciator = null;
+  private static SpaceInstanciator spaceInstanciator = null;
   // Entreprise client space Id
-  static private String adminDBDriver = null;
-  static private String productionDbUrl;
-  static private String productionDbLogin;
-  static private String productionDbPassword;
-  static private int m_nEntrepriseClientSpaceId = 0;
-  static private String administratorMail = null;
-  static private String m_sDAPIGeneralAdminId = null;
+  private static int m_nEntrepriseClientSpaceId = 0;
+  private static String administratorMail = null;
+  private static String m_sDAPIGeneralAdminId = null;
   // User Logs
-  static private Map<String, UserLog> loggedUsers = Collections.synchronizedMap(
-      new HashMap<String, UserLog>(0));
+  private static Map<String, UserLog> loggedUsers = Collections.synchronizedMap(
+      new HashMap<String, UserLog>(100));
   private static FastDateFormat formatter = FastDateFormat.getInstance("dd/MM/yyyy HH:mm:ss:S");
   // Cache management
-  static private final AdminCache cache = new AdminCache();
+  private static final AdminCache cache = new AdminCache();
   // DB Connections Scheduled Resets
-  static private final ScheduledDBReset scheduledDBReset;
+  private static final ScheduledDBReset scheduledDBReset;
   public static final String basketSuffix = " (Restauré)";
-  static private SynchroGroupScheduler groupSynchroScheduler = null;
-  static private SynchroDomainScheduler domainSynchroScheduler = null;
-  static private ResourceLocator roleMapping = null;
-  static private boolean useProfileInheritance = false;
+  private static SynchroGroupScheduler groupSynchroScheduler = null;
+  private static SynchroDomainScheduler domainSynchroScheduler = null;
+  private static ResourceLocator roleMapping = null;
+  private static boolean useProfileInheritance = false;
   private static transient boolean cacheLoaded = false;
 
   @Inject
@@ -124,21 +116,12 @@ public final class Admin {
 
   static {
     // Load silverpeas admin resources
-    ResourceLocator resources = new ResourceLocator("com.stratelia.webactiv.beans.admin.admin",
-        "");
-    roleMapping = new ResourceLocator("com.silverpeas.admin.roleMapping", "");
+    ResourceLocator resources = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
+    roleMapping = new ResourceLocator("org.silverpeas.admin.roleMapping", "");
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
-
-    adminDBDriver = resources.getString("AdminDBDriver");
-    productionDbUrl = resources.getString("WaProductionDb");
-    productionDbLogin = resources.getString("WaProductionUser");
-    productionDbPassword = resources.getString("WaProductionPswd");
-
     m_nEntrepriseClientSpaceId = Integer.parseInt(resources.getString("EntrepriseClientSpaceId"));
     administratorMail = resources.getString("AdministratorEMail");
     m_sDAPIGeneralAdminId = resources.getString("DAPIGeneralAdminId");
-
-
     scheduledDBReset = new ScheduledDBReset();
     scheduledDBReset.initialize(resources.getString("DBConnectionResetScheduler", ""));
 
@@ -147,10 +130,8 @@ public final class Admin {
     m_domainSynchroCron = resources.getString("DomainSynchroCron", "* 4 * * *");
     m_groupSynchroCron = resources.getString("GroupSynchroCron", "* 5 * * *");
     delUsersOnDiffSynchro = resources.getBoolean("DelUsersOnThreadedSynchro", true);
-
     // Cache management
     cache.setCacheAvailable(StringUtil.getBooleanValue(resources.getString("UseCache", "1")));
-
     componentInstanciator = new Instanciateur();
   }
 
@@ -320,8 +301,7 @@ public final class Admin {
     try {
       SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst", "root.MSG_GEN_PARAM_VALUE",
           "Space Name : " + spaceInst.getName() + " NbCompo: " + spaceInst.getNumComponentInst());
-      connectionProd = openConnection(productionDbUrl, productionDbLogin, productionDbPassword,
-          false);
+      connectionProd = openConnection(false);
 
       // Open the connections with auto-commit to false
 
@@ -1238,8 +1218,7 @@ public final class Admin {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getFactory().getDomainDriverManager();
     try {
-      connectionProd = openConnection(productionDbUrl, productionDbLogin, productionDbPassword,
-          false);
+      connectionProd = openConnection(false);
 
       if (startNewTransaction) {
         // Open the connections with auto-commit to false
@@ -1407,8 +1386,7 @@ public final class Admin {
         componentManager.sendComponentToBasket(domainDriverManager, sDriverComponentId,
             componentInst.getLabel() + Admin.basketSuffix, userId);
       } else {
-        connectionProd = openConnection(productionDbUrl, productionDbLogin, productionDbPassword,
-            false);
+        connectionProd = openConnection(false);
 
         // Uninstantiate the components
         String componentName = componentInst.getName();
@@ -3786,6 +3764,13 @@ public final class Admin {
   }
 
   /**
+   * Get all domain ids for the specified login.
+   */
+  public List<String> getAllDomainIdsForLogin(String login) throws AdminException {
+    return userManager.getDomainsOfUser(login);
+  }
+
+  /**
    * Get a domain with given id
    */
   public Domain getDomain(String domainId) throws AdminException {
@@ -4229,8 +4214,8 @@ public final class Admin {
   }
 
   public List<SpaceInstLight> getSubSpaces(String spaceId) throws AdminException {
-    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = " +
-        spaceId);
+    SilverTrace.info("admin", "Admin.getSubSpaces", "root.MSG_GEN_ENTER_METHOD", "spaceId = "
+        + spaceId);
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     return spaceManager.getSubSpaces(domainDriverManager, getDriverSpaceId(spaceId));
@@ -4330,7 +4315,9 @@ public final class Admin {
   public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
     SilverTrace.info("admin", "Admin.getUserSpaceTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId);
-    Set<String> componentsId = Sets.newHashSet(getAvailCompoIds(userId));
+    List<String> availableComponentIds = Arrays.asList(getAvailCompoIds(userId));
+    Set<String> componentsId = new HashSet<String>(availableComponentIds.size());
+    componentsId.addAll(availableComponentIds);
     Set<String> authorizedIds = new HashSet<String>(100);
     if (!componentsId.isEmpty()) {
       String componentId = componentsId.iterator().next();
@@ -5195,20 +5182,15 @@ public final class Admin {
   /**
    * Open a connection
    */
-  private Connection openConnection(String sDbUrl, String sUser, String sPswd,
-      boolean bAutoCommit) throws AdminException {
+  private Connection openConnection(boolean bAutoCommit) throws AdminException {
     try {
-      // Load the driver (registers itself)
-      Class.forName(adminDBDriver);
-
       // Get the connection to the DB
-      Connection connection = DriverManager.getConnection(sDbUrl, sUser, sPswd);
+      Connection connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
       connection.setAutoCommit(bAutoCommit);
       return connection;
     } catch (Exception e) {
-      throw new AdminException("Admin.openConnection",
-          SilverpeasException.FATAL, "root.EX_CONNECTION_OPEN_FAILED",
-          "Db url: '" + sDbUrl + "', user: '" + sUser + "'", e);
+      throw new AdminException("Admin.openConnection", SilverpeasException.FATAL,
+          "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
@@ -6530,8 +6512,7 @@ public final class Admin {
       if (StringUtil.isDefined(sGroupId)) {
         // search users in group and subgroups
         UserDetail[] users = getAllUsersOfGroup(sGroupId);
-        for (UserDetail user :
-            users) {
+        for (UserDetail user : users) {
           userIds.add(user.getId());
         }
         if (userIds.isEmpty()) {
@@ -6699,7 +6680,8 @@ public final class Admin {
     return userManager.getUsersMatchingCriteria(criteria);
   }
 
-  public ListSlice<Group> searchGroups(final GroupsSearchCriteria searchCriteria) throws AdminException {
+  public ListSlice<Group> searchGroups(final GroupsSearchCriteria searchCriteria) throws
+      AdminException {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {

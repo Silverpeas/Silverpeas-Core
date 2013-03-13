@@ -307,6 +307,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <load-on-startup>4</load-on-startup>
     </servlet>
     <servlet>
+        <description>The webdav servlet that connects HTTP request to the repository for Office 2000.</description>
+        <servlet-name>BasicWebdav</servlet-name>
+        <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
+        <init-param>
+            <description>Defines the prefix for spooling resources out of the repository.</description>
+            <param-name>resource-path-prefix</param-name>
+            <param-value>/repository2000</param-value>
+        </init-param>
+        <init-param>
+            <description>Defines various dav-resource configuration parameters.</description>
+            <param-name>resource-config</param-name>
+            <param-value>/WEB-INF/classes/webdav-config.xml</param-value>
+        </init-param>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet>
         <servlet-name>JcrInitializer</servlet-name>
         <servlet-class>com.silverpeas.jcrutil.servlets.RepositoryAccessServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -727,6 +743,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>Webdav</servlet-name>
     <url-pattern>/repository/*</url-pattern>
+  </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>BasicWebdav</servlet-name>
+    <url-pattern>/repository2000/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JcrInitializer</servlet-name>

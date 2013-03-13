@@ -152,7 +152,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     for (Subscription subscription : list) {
       // Subscriptions managed at this level are only those of node subscription.
       if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
-        ComponentInstLight componentInstLight = getOrganizationController()
+        ComponentInstLight componentInstLight = getOrganisationController()
             .getComponentInstLight(subscription.getResource().getInstanceId());
         if (componentInstLight != null) {
           subscribes.add(new ComponentSubscriptionBean(subscription));

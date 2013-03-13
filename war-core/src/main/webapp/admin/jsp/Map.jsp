@@ -41,12 +41,13 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController" %>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInstLight" %>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 <view:timeout />
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-  OrganizationController organizationController = mainSessionCtrl.getOrganizationController();
+  OrganisationController organizationController = mainSessionCtrl.getOrganisationController();
   String language = mainSessionCtrl.getFavoriteLanguage();
   ResourceLocator message =
       new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);

@@ -111,7 +111,7 @@ public class SilverpeasSessionOpener {
       String redirectURL = null;
       if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
         redirectURL = alertUserAboutPwdExpiration(controller.getUserId(), controller.
-            getOrganizationController().
+            getOrganisationController().
             getAdministratorUserIds(controller.getUserId())[0], controller.getFavoriteLanguage(),
             StringUtil.getBooleanValue(allowPasswordChange));
       }

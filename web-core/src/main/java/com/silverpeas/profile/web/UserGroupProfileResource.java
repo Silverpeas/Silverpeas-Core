@@ -120,7 +120,7 @@ public class UserGroupProfileResource extends RESTWebService {
     // Common parameters
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
-    ListSlice<Group> allGroups = getOrganizationController().searchGroups(criteriaBuilder.build());
+    ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
     UserGroupProfileEntity[] entities =
         asWebEntity(allGroups, locatedAt(getUriInfo().getAbsolutePath()));
     return Response.ok(entities).
@@ -182,7 +182,7 @@ public class UserGroupProfileResource extends RESTWebService {
           withName(name).
           withPaginationPage(fromPage(page)).build();
     }
-    ListSlice<Group> groups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> groups = getOrganisationController().searchGroups(criteria);
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
             header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).build() ;
@@ -241,7 +241,7 @@ public class UserGroupProfileResource extends RESTWebService {
           withName(name).
           withPaginationPage(fromPage(page)).build();
     }
-    ListSlice<Group> subgroups = getOrganizationController().searchGroups(criteria);
+    ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteria);
     return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
             header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).build();
   }

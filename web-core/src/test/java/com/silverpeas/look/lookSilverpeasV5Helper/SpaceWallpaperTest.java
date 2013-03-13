@@ -27,7 +27,6 @@ package com.silverpeas.look.lookSilverpeasV5Helper;
 import com.silverpeas.look.LookSilverpeasV5Helper;
 import java.util.ArrayList;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.List;
@@ -35,6 +34,9 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.mockito.Mockito.*;
@@ -46,13 +48,14 @@ import static org.junit.Assert.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/spring-look.xml")
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SpaceWallpaperTest {
 
   private ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.viewGenerator.settings.SilverpeasV5", "fr");
+      "org.silverpeas.util.viewGenerator.settings.SilverpeasV5", "fr");
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   public SpaceWallpaperTest() {
   }
@@ -144,7 +147,7 @@ public class SpaceWallpaperTest {
    * Gets a mock of the organization controller.
    * @return a mock
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     return organizationController;
   }
 
@@ -154,7 +157,7 @@ public class SpaceWallpaperTest {
    */
   private LookSilverpeasV5Helper aLookSilverpeasV5HelperToTest() {
     MainSessionController sessionController = mock(MainSessionController.class);
-    when(sessionController.getOrganizationController()).thenReturn(organizationController);
+    when(sessionController.getOrganisationController()).thenReturn(organizationController);
     when(sessionController.getUserId()).thenReturn("0");
     return new LookSilverpeasV5Helper(sessionController, resources);
   }
@@ -171,7 +174,7 @@ public class SpaceWallpaperTest {
       when(space.getId()).thenReturn(spaceId);
       spaces.add(space);
     }
-    OrganizationController controller = getOrganizationController();
+    OrganisationController controller = getOrganisationController();
     when(controller.getSpacePath(anyString())).thenReturn(spaces);
   }
 }

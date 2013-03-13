@@ -26,7 +26,9 @@ package com.silverpeas.accesscontrol;
 
 import com.silverpeas.util.ComponentHelper;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -38,7 +40,7 @@ import javax.inject.Named;
 public class ComponentAccessController implements AccessController<String> {
 
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public ComponentAccessController() {
   }
@@ -47,7 +49,7 @@ public class ComponentAccessController implements AccessController<String> {
    * For tests only.
    * @param controller the controller to set for tests.
    */
-  protected void setOrganizationController(final OrganizationController controller) {
+  protected void setOrganizationController(final OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -58,7 +60,7 @@ public class ComponentAccessController implements AccessController<String> {
    * @return
    */
   public boolean isRightOnTopicsEnabled(String userId, String componentId) {
-    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganizationController().
+    return isThemeTracker(componentId) && StringUtil.getBooleanValue(getOrganisationController().
         getComponentParameterValue(componentId, "rightsOnTopics"));
   }
 
@@ -69,23 +71,23 @@ public class ComponentAccessController implements AccessController<String> {
   @Override
   public boolean isUserAuthorized(String userId, String componentId) {
     // Personal space or user tool
-    if (componentId == null || getOrganizationController().isToolAvailable(componentId)) {
+    if (componentId == null || getOrganisationController().isToolAvailable(componentId)) {
       return true;
     }
-    if (StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+    if (StringUtil.getBooleanValue(getOrganisationController().getComponentParameterValue(
         componentId, "publicFiles"))) {
       return true;
     }
-    return getOrganizationController().isComponentAvailable(componentId, userId);
+    return getOrganisationController().isComponentAvailable(componentId, userId);
   }
 
   /**
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = new OrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

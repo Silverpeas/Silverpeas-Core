@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -31,6 +28,7 @@ package com.silverpeas.components.model;
 import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import javax.naming.Context;
@@ -38,11 +36,13 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
+
+import org.apache.commons.io.IOUtils;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.JndiBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +96,15 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
 
   @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        this.getClass().getClassLoader().getResourceAsStream(this.dataSetFileName)));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
+    InputStream in = this.getClass().getClassLoader().getResourceAsStream(this.dataSetFileName);
+    try {
+      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
   @Override
@@ -118,6 +123,7 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
 
   /**
    * Creates the directory for JNDI files ystem provider
+   *
    * @throws IOException
    */
   protected void prepareJndi() throws IOException {
@@ -155,6 +161,7 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
 
   /**
    * Workaround to be able to use Sun's JNDI file system provider on Unix
+   *
    * @param ic : the JNDI initial context
    * @param jndiName : the binding name
    * @param ref : the reference to be bound
@@ -185,5 +192,4 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
   public String getDdlFile() {
     return this.ddlFile;
   }
-
 }

@@ -26,20 +26,23 @@ package com.stratelia.webactiv.util.viewGenerator.html.comment;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.util.Arrays;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+import java.util.Arrays;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It defines the base class of a widget for the rendering and handling of comments in Silverpeas.
@@ -155,7 +158,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Sets the type of the resource that is commented out.
-   * 
+   *
    * @param resourceType the type of the commented resource.
    */
   public void setResourceType(String resourceType) {
@@ -180,7 +183,7 @@ public abstract class CommentWidget extends TagSupport {
 
   /**
    * Gets the type of the commented resource.
-   * 
+   *
    * @return
    */
   public String getResourceType() {
@@ -224,7 +227,7 @@ public abstract class CommentWidget extends TagSupport {
   private String setUpJQueryCommentPlugin() throws JspTagException {
     String context = URLManager.getApplicationURL();
 
-    OrganizationController controller = new OrganizationController();
+    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
     ResourcesWrapper settings = getSettings();
     UserDetail currentUser = controller.getUserDetail(getUserId());
     String[] profiles = controller.getUserProfiles(getUserId(), getComponentId());

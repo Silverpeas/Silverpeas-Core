@@ -259,7 +259,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
+      isAllowed = controller.getOrganisationController().isComponentAvailable(
           componentId, controller.getUserId());
     }
     return isAllowed;

@@ -26,6 +26,8 @@ package com.silverpeas.comment.mock;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
+
 import javax.inject.Named;
 import static org.mockito.Mockito.*;
 
@@ -36,9 +38,9 @@ import static org.mockito.Mockito.*;
 @Named("organizationController")
 public class OrganizationControllerMocking extends OrganizationController {
   private static final long serialVersionUID = 4787617291562786442L;
-  
-  private OrganizationController mock = mock(OrganizationController.class);
-  
+
+  private OrganisationController mock = mock(OrganizationController.class);
+
   public void saveUser(final UserDetail user) {
     when(mock.getUserDetail(user.getId())).thenReturn(user);
   }
@@ -47,8 +49,8 @@ public class OrganizationControllerMocking extends OrganizationController {
   public UserDetail getUserDetail(String sUserId) {
     return mock.getUserDetail(sUserId);
   }
-  
-  public OrganizationController getMock() {
+
+  public OrganisationController getMock() {
     return mock;
   }
 }

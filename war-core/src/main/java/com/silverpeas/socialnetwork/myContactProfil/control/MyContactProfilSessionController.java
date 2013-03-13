@@ -64,7 +64,7 @@ public class MyContactProfilSessionController extends AbstractComponentSessionCo
    */
   public UserFull getUserFull(String userId) {
 
-    return this.getOrganizationController().getUserFull(userId);
+    return this.getOrganisationController().getUserFull(userId);
   }
 
   /**

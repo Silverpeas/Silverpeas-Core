@@ -134,7 +134,7 @@ public class SelectionPeasRequestRouter extends
               request.setAttribute("user", user);
             }
           } else {
-            UserDetail[] users = selectionPeasSC.getOrganizationController().getUserDetails(
+            UserDetail[] users = selectionPeasSC.getOrganisationController().getUserDetails(
                 selectionPeasSC.
                 getSelection().getSelectedElements());
             if (users != null && users.length > 0) {

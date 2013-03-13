@@ -270,9 +270,9 @@
   String s_topicRightsEnabled = request.getParameter("TopicRightsEnabled");
   String sIndexIt = request.getParameter("IndexIt");
   String callbackURL = request.getParameter("CallbackUrl");
-  String xmlForm = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(
+  String xmlForm = m_MainSessionCtrl.getOrganisationController().getComponentParameterValue(
       componentId, "XmlFormForFiles");
-  String sHideAllVersionsLink = m_MainSessionCtrl.getOrganizationController().getComponentParameterValue(
+  String sHideAllVersionsLink = m_MainSessionCtrl.getOrganisationController().getComponentParameterValue(
       componentId, "hideAllVersionsLink");
   boolean hideAllVersionsLink = StringUtil.getBooleanValue(sHideAllVersionsLink) && profile.equals(
       "user");

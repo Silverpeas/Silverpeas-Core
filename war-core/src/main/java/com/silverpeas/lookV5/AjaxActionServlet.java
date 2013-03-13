@@ -43,7 +43,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserFavoriteSpaceManager;
 import com.stratelia.webactiv.organization.DAOFactory;
@@ -51,6 +50,7 @@ import com.stratelia.webactiv.organization.UserFavoriteSpaceDAO;
 import com.stratelia.webactiv.organization.UserFavoriteSpaceVO;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class AjaxActionServlet extends HttpServlet {
 
@@ -112,8 +112,8 @@ public class AjaxActionServlet extends HttpServlet {
     String spaceId = req.getParameter("SpaceId");
     if (StringUtil.isDefined(spaceId) && StringUtil.isDefined(userId)) {
 
-      OrganizationController orgaController = m_MainSessionCtrl
-          .getOrganizationController();
+      OrganisationController orgaController = m_MainSessionCtrl
+          .getOrganisationController();
       // Retrieve all sub space identifier
       ArrayList<String> addedSubSpaceIds = getSubSpaceIdentifiers(userId, spaceId, orgaController);
 
@@ -165,7 +165,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @param orgaController
    * @return
    */
-  private ArrayList<String> getParentSpaceIds(String spaceId, OrganizationController orgaController) {
+  private ArrayList<String> getParentSpaceIds(String spaceId, OrganisationController orgaController) {
     ArrayList<String> parentSpaceIds = new ArrayList<String>();
     parentSpaceIds = getParentSpaceOfFavoriteSpace(spaceId, orgaController, parentSpaceIds);
     return parentSpaceIds;
@@ -178,7 +178,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return sub space identifiers of current space id given in parameter
    */
   private ArrayList<String> getSubSpaceIdentifiers(String userId, String spaceId,
-      OrganizationController orgaController) {
+      OrganisationController orgaController) {
     ArrayList<String> addedSubSpaceIds = new ArrayList<String>();
     addSubSpace(spaceId, userId, orgaController, addedSubSpaceIds);
     return addedSubSpaceIds;
@@ -193,7 +193,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return
    */
   private List<String> addSubSpace(String spaceId, String userId,
-      OrganizationController orgaController, ArrayList<String> addedSpaceIds) {
+      OrganisationController orgaController, ArrayList<String> addedSpaceIds) {
     String shortSpaceId = spaceId;
     if (spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
       shortSpaceId = spaceId.substring(Admin.SPACE_KEY_PREFIX.length());
@@ -251,12 +251,12 @@ public class AjaxActionServlet extends HttpServlet {
         String spaceState = "empty";
         if (helper.isEnableUFSContainsState()) {
           if (UserFavoriteSpaceManager.containsFavoriteSubSpace(spaceId, listUFS, m_MainSessionCtrl
-              .getOrganizationController(), userId)) {
+              .getOrganisationController(), userId)) {
             spaceState = "contains";
             jsonRslt.put("spacestate", spaceState);
           }
           // Retrieve father space identifiers
-          OrganizationController orga = m_MainSessionCtrl.getOrganizationController();
+          OrganisationController orga = m_MainSessionCtrl.getOrganisationController();
           ArrayList<String> parentSpaceIds = getParentSpaceIds(spaceId, orga);
           JSONArray parentSpaceJA = buildParentJA(userId, listUFS, orga, parentSpaceIds);
           jsonRslt.put("spacestate", spaceState);
@@ -283,7 +283,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return
    */
   private JSONArray buildParentJA(String userId, List<UserFavoriteSpaceVO> listUFS,
-      OrganizationController orga, ArrayList<String> parentSpaceIds) {
+      OrganisationController orga, ArrayList<String> parentSpaceIds) {
     JSONArray resultJA = new JSONArray();
     for (String curSpaceId : parentSpaceIds) {
       JSONObject curParentState = new JSONObject();
@@ -319,7 +319,7 @@ public class AjaxActionServlet extends HttpServlet {
    * @return true if current space is a sub space from a user favorite space, false else if
    */
   private ArrayList<String> getParentSpaceOfFavoriteSpace(String spaceId,
-      OrganizationController orgaController, ArrayList<String> parentSpaceIds) {
+      OrganisationController orgaController, ArrayList<String> parentSpaceIds) {
     SpaceInst curSpaceInst = orgaController.getSpaceInstById(spaceId);
     if (curSpaceInst.getLevel() > 0) {
       // Retrieve father space identifier

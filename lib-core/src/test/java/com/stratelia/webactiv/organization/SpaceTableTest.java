@@ -103,4 +103,10 @@ public class SpaceTableTest extends AbstractTestDao {
     assertEquals(expResult.length, result.length);
     assertArrayEquals(expResult, result);
   }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

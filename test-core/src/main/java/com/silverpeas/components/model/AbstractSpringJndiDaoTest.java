@@ -24,12 +24,12 @@
 
 package com.silverpeas.components.model;
 
+import java.io.InputStream;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -39,12 +39,13 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
-import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
 import java.util.Properties;
-import java.util.StringTokenizer;
+
+import javax.sql.DataSource;
+import org.apache.commons.io.IOUtils;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 
 /**
  * @author ehugonnet
@@ -55,7 +56,7 @@ public abstract class AbstractSpringJndiDaoTest {
 
   private static String jndiName = "";
   @Inject
-  private DataSource dataSource;
+  protected DataSource dataSource;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
@@ -67,30 +68,7 @@ public abstract class AbstractSpringJndiDaoTest {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
-  /**
-   * Workaround to be able to use Sun's JNDI file system provider on Unix
-   * @param ic : the JNDI initial context
-   * @param jndiName : the binding name
-   * @param ref : the reference to be bound
-   * @throws NamingException
-   */
-  protected static void rebind(InitialContext ic, String jndiName, Object ref) throws
-      NamingException {
-    Context currentContext = ic;
-    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while (tokenizer.hasMoreTokens()) {
-      String name = tokenizer.nextToken();
-      if (tokenizer.hasMoreTokens()) {
-        try {
-          currentContext = (Context) currentContext.lookup(name);
-        } catch (javax.naming.NameNotFoundException nnfex) {
-          currentContext = currentContext.createSubcontext(name);
-        }
-      } else {
-        currentContext.rebind(name, ref);
-      }
-    }
-  }
+  
 
   protected DatabaseOperation getTearDownOperation() throws Exception {
     return DatabaseOperation.DELETE_ALL;
@@ -105,8 +83,7 @@ public abstract class AbstractSpringJndiDaoTest {
     InitialContext ic = new InitialContext();
     Properties props = new Properties();
     props.load(AbstractTestDao.class.getClassLoader().getResourceAsStream("jdbc.properties"));
-    jndiName = props.getProperty("jndi.name");
-    rebind(ic, jndiName, this.dataSource);
+    jndiName ="jdbc/Silverpeas";
     ic.rebind(jndiName, this.dataSource);
     IDatabaseConnection connection = getConnection();
     getSetUpOperation().execute(connection, getDataSet());
@@ -118,6 +95,8 @@ public abstract class AbstractSpringJndiDaoTest {
     IDatabaseConnection connection = getConnection();
     getTearDownOperation().execute(connection, getDataSet());
     connection.close();
+    InitialContext ic = new InitialContext();
+    ((EmbeddedDatabase)ic.lookup("jdbc/Silverpeas")).shutdown();
   }
 
   private IDatabaseConnection getConnection() throws Exception {
@@ -125,11 +104,17 @@ public abstract class AbstractSpringJndiDaoTest {
     return connection;
   }
 
+
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSet(
-        this.getClass().getResourceAsStream(getDatasetFileName())));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
+    InputStream in = this.getClass().getClassLoader().getResourceAsStream(getDatasetFileName());
+    try {
+      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
   protected abstract String getDatasetFileName();

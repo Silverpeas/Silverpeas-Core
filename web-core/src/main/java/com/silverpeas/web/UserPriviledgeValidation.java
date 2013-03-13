@@ -26,7 +26,6 @@ package com.silverpeas.web;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import org.apache.commons.codec.binary.Base64;
@@ -44,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import org.silverpeas.core.admin.OrganisationController;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -64,7 +64,7 @@ public class UserPriviledgeValidation {
   @Named("componentAccessController")
   private AccessController<String> componentAccessController;
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organisationController;
   @Inject
   private TokenService tokenService;
   /**
@@ -203,7 +203,7 @@ public class UserPriviledgeValidation {
       int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      UserFull user = organizationController.getUserFull(userId);
+      UserFull user = organisationController.getUserFull(userId);
       if (user == null || !user.getPassword().equals(password)) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }

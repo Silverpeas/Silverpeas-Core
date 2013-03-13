@@ -36,11 +36,11 @@ import com.silverpeas.components.model.AbstractTestDao;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Properties;
 import javax.naming.Context;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import static org.junit.Assert.*;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Calendar.*;
 
 /**
@@ -53,30 +53,13 @@ public class LastPublicationDAOTest extends AbstractTestDao {
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jndi.properties"));
-    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
-    props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream(
-        "jdbc.properties"));
-    String jndiPath = props.getProperty("jndi.name", "");
-    File jndiDir = new File(jndiBaseDir + File.separatorChar
-        + jndiPath.substring(0, jndiPath.lastIndexOf('/')));
-    jndiDir.mkdirs();
-    super.setUp();
-  }
-
-  @Override
   protected String getDatasetFileName() {
     return "test-last-publication-dao-dataset.xml";
   }
 
   public void testSelectPksByStatus() throws Exception {
     Connection con = getConnection().getConnection();
-    List<String> componentIds = newArrayList("kmelia100", "kmelia200");
+    List<String> componentIds = Arrays.asList(new String[] {"kmelia100", "kmelia200"});
     Calendar calend = Calendar.getInstance();
     calend.set(YEAR, 2009);
     calend.set(MONTH, NOVEMBER);
@@ -97,7 +80,7 @@ public class LastPublicationDAOTest extends AbstractTestDao {
 
   public void testSelectLastPublications() throws Exception {
     Connection con = getConnection().getConnection();
-    List<String> componentIds = newArrayList("kmelia100", "kmelia200");
+    List<String> componentIds = Arrays.asList(new String[] {"kmelia100", "kmelia200"});
     Calendar calend = Calendar.getInstance();
     calend.set(YEAR, 2009);
     calend.set(MONTH, NOVEMBER);
@@ -118,5 +101,10 @@ public class LastPublicationDAOTest extends AbstractTestDao {
     assertEquals(2, keys.size());
     assertThat(keys, IsIterableContainingInOrder.contains(new PublicationPK("200", "kmelia200"),
         new PublicationPK("101", "kmelia100")));
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-table.sql";
   }
 }

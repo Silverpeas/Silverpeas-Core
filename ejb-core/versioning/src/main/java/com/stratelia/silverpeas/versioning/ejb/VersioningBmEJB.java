@@ -49,6 +49,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
@@ -164,7 +166,7 @@ public class VersioningBmEJB implements SessionBean {
     // mise à jour de la date d'expiration
 
     // 1. rechercher le nombre de jours avant expiration dans le composant
-    OrganizationController orga = new OrganizationController();
+    OrganisationController orga = OrganisationControllerFactory.getOrganisationController();
     String day = orga.getComponentParameterValue(doc.getInstanceId(),
         "nbDayForReservation");
     if (StringUtil.isDefined(day)) {
@@ -1280,7 +1282,7 @@ public class VersioningBmEJB implements SessionBean {
     StringBuilder message = new StringBuilder();
     SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
 
-    OrganizationController orgCtr = new OrganizationController();
+    OrganisationController orgCtr = OrganisationControllerFactory.getOrganisationController();
 
     String space_label = "";
     String component_label = "";
@@ -1354,7 +1356,7 @@ public class VersioningBmEJB implements SessionBean {
    * @return first administrator id
    */
   private int getFirstAdministrator(
-      OrganizationController organizationController, int userId) {
+      OrganisationController organizationController, int userId) {
     int fromUserID = -1;
     String[] admins = organizationController.getAdministratorUserIds(Integer.toString(userId));
     if (admins != null && admins.length > 0) {

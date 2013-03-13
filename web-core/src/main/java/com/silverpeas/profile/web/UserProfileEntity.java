@@ -112,7 +112,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
       this.language = DisplayI18NHelper.getDefaultLanguage();
     }
     try {
-      this.domainName = UserDetail.getOrganizationController().getDomain(this.user.getDomainId()).
+      this.domainName = UserDetail.getOrganisationController().getDomain(this.user.getDomainId()).
               getName();
     } catch (Exception e) {
       // Potential errors during getting domain should not break service
@@ -178,7 +178,7 @@ public class UserProfileEntity extends UserDetail implements Exposable {
   @Override
   public void setDomainId(String sDomainId) {
     this.user.setDomainId(sDomainId);
-    this.domainName = UserDetail.getOrganizationController().getDomain(sDomainId).getName();
+    this.domainName = UserDetail.getOrganisationController().getDomain(sDomainId).getName();
   }
 
   @Override

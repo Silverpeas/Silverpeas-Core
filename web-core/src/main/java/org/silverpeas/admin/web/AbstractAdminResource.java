@@ -205,9 +205,9 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @return the corresponding space appearance entity.
    */
   protected SpaceAppearanceEntity asWebEntity(final SpaceInstLight space, final String look,
-      final String wallpaper) {
+      final String wallpaper, final String css) {
     checkNotFoundStatus(space);
-    return SpaceAppearanceEntity.createFrom(space, look, wallpaper).withURI(
+    return SpaceAppearanceEntity.createFrom(space, look, wallpaper, css).withURI(
         buildURIOfSpaceAppearance(space, getUriInfo()));
   }
 

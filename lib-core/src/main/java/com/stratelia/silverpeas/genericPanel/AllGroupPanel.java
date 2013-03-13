@@ -22,16 +22,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 package com.stratelia.silverpeas.genericPanel;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.Hashtable;
 
@@ -40,7 +41,7 @@ public class AllGroupPanel extends PanelProvider {
 
   protected static final int COL_NAME = 0;
 
-  protected OrganizationController m_oc = new OrganizationController();
+  protected OrganisationController m_oc =  OrganisationControllerFactory.getOrganisationController();
 
   protected Hashtable<String, Group> m_AllGroup = new Hashtable<String, Group>();
 

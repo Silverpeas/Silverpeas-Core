@@ -47,7 +47,7 @@ String description = "";
 while (infos.hasNext())
 {
     PublicationDetail pub = (PublicationDetail) infos.next();
-	UserDetail pubCreator = m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.getCreatorId());
+	UserDetail pubCreator = m_MainSessionCtrl.getOrganisationController().getUserDetail(pub.getCreatorId());
 
     description = pub.getWysiwyg();
     if (!StringUtil.isDefined(description))
