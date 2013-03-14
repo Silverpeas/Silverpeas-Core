@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -19,7 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.attachment.web;
 
 import java.io.File;
@@ -41,7 +39,10 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -49,8 +50,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 
 /**
@@ -96,11 +97,12 @@ public class DragAndDrop extends HttpServlet {
     boolean actifyPublisherEnable = settings.getBoolean("ActifyPublisherEnable", false);
     try {
       req.setCharacterEncoding(CharEncoding.UTF_8);
-      String componentId = req.getParameter("ComponentId");      
+      String componentId = req.getParameter("ComponentId");
       String id = req.getParameter("PubId");
+      String lang = I18NHelper.checkLanguage(req.getParameter("lang"));
       String userId = req.getParameter("UserId");
       SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
-          "componentId = " + componentId +", id = " + id + ", userId = " + userId);
+          "componentId = " + componentId + ", id = " + id + ", userId = " + userId);
       boolean bIndexIt = StringUtil.getBooleanValue(req.getParameter("IndexIt"));
 
       List<FileItem> items = FileUploadUtil.parseRequest(req);
@@ -114,22 +116,28 @@ public class DragAndDrop extends HttpServlet {
           String fileName = item.getName();
           if (fileName != null) {
             String mimeType = FileUtil.getMimeType(fileName);
-
             SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                 "item size = " + item.getSize());
+            // create AttachmentDetail Object
             SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, componentId),
-                id, 0, false, new SimpleAttachment(fileName, null, fileName, null, item.getSize(), 
+                id, 0, false, new SimpleAttachment(fileName, lang, null, null, item.getSize(),
                 mimeType, userId, new Date(), null));
             document.setDocumentType(determineDocumentType(req));
-            // create AttachmentDetail Object
-            InputStream in = item.getInputStream();
+            InputStream uploadedInputStream = item.getInputStream();
+            File tempFile = File.createTempFile("silverpeas_", fileName);
             try {
+              FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+              MetadataExtractor extractor = new MetadataExtractor();
+              MetaData metadata = extractor.extractMetadata(tempFile);
+              document.setSize(tempFile.length());
+              document.setTitle(metadata.getTitle());
+              document.setDescription(metadata.getSubject());
               document = AttachmentServiceFactory.getAttachmentService().createAttachment(document,
-                  in, bIndexIt);
+                  tempFile, bIndexIt);
             } catch (Exception e) {
               throw e;
             } finally {
-              IOUtils.closeQuietly(in);
+              FileUtils.deleteQuietly(tempFile);
             }
             // Specific case: 3d file to convert by Actify Publisher
             if (actifyPublisherEnable) {
@@ -137,7 +145,7 @@ public class DragAndDrop extends HttpServlet {
               StringTokenizer tokenizer = new StringTokenizer(extensions, ",");
               // 3d native file ?
               boolean fileForActify = false;
-              SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE", 
+              SilverTrace.info("attachment", "DragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
                   "nb tokenizer =" + tokenizer.countTokens());
               String type = FileRepositoryManager.getFileExtension(fileName);
               while (tokenizer.hasMoreTokens() && !fileForActify) {
@@ -172,14 +180,14 @@ public class DragAndDrop extends HttpServlet {
     }
     res.getOutputStream().println("SUCCESS");
   }
-  
+
   private DocumentType determineDocumentType(HttpServletRequest req) {
     String context = req.getParameter("Context");
     DocumentType type = DocumentType.attachment;
-    if(StringUtil.isDefined(context)) {
+    if (StringUtil.isDefined(context)) {
       try {
-      type = DocumentType.valueOf(context);
-      }catch(IllegalArgumentException ex) {
+        type = DocumentType.valueOf(context);
+      } catch (IllegalArgumentException ex) {
         //wrong parameter value, we keep with the default context.
       }
     }
