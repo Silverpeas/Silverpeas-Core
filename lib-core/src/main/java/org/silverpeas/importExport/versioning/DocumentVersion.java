@@ -28,15 +28,19 @@ package org.silverpeas.importExport.versioning;
 import java.io.File;
 import java.util.Date;
 
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
+
+import org.apache.commons.io.FilenameUtils;
 
 public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTypes {
 
@@ -322,12 +326,21 @@ public class DocumentVersion implements java.io.Serializable, Cloneable, MimeTyp
    * @return the path to the document file.
    */
   public String getDocumentPath() {
-    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
-        new String[]{CONTEXT});
+    if (isPhysicalPathAbsolute()) {
+      return FilenameUtils.separatorsToSystem(physicalName);
+    }
+    String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(), new String[]{CONTEXT});
+    directory = FilenameUtils.separatorsToSystem(directory);
     if (!directory.endsWith(File.separator)) {
       directory += File.separator;
     }
     return directory + getPhysicalName();
+  }
+
+  private boolean isPhysicalPathAbsolute() {
+    String filePath = FilenameUtils.separatorsToSystem(physicalName);
+    File file = new File(filePath);
+    return file.exists() && file.isFile();
   }
 
   public String getCreatorName() {

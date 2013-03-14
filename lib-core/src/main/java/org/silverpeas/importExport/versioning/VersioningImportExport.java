@@ -28,38 +28,39 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.attachment.AttachmentPK;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.attachment.model.UnlockContext;
-
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author neysseri
@@ -96,6 +97,7 @@ public class VersioningImportExport {
    * @param topicId
    * @return
    * @throws RemoteException
+   * @throws IOException
    */
   public int importDocuments(String objectId, String componentId, List<AttachmentDetail> attachments,
       int userId, int versionType, boolean indexIt, String topicId) throws RemoteException,
@@ -111,13 +113,14 @@ public class VersioningImportExport {
         listDocumentsByForeignKey(pubPK, null);
     for (AttachmentDetail attachment : attachments) {
       InputStream content = attachmentImportExport.getAttachmentContent(attachment);
-      if(!StringUtil.isDefined(attachment.getAuthor())) {
+      if (!StringUtil.isDefined(attachment.getAuthor())) {
         attachment.setAuthor(user.getId());
       }
       SimpleDocument document = isDocumentExist(documents, attachment);
       if (document != null) {
         document.edit(attachment.getAuthor());
-        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), attachment.getAuthor(), null);
+        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), attachment
+            .getAuthor(), null);
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, indexIt,
             true);
         AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),

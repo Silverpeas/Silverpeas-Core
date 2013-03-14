@@ -20,18 +20,21 @@
  */
 package org.silverpeas.importExport.attachment;
 
+import java.io.File;
+import java.io.Serializable;
+import java.util.Date;
+
 import com.silverpeas.form.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.AbstractI18NBean;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.Date;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Class declaration
@@ -528,6 +531,9 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
    * @return the path to the attachment file.
    */
   public String getAttachmentPath() {
+    if (isPhysicalPathAbsolute()) {
+      return physicalName.replace('/', File.separatorChar);
+    }
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId(),
         FileRepositoryManager.getAttachmentContext(getContext()));
     if (!directory.endsWith(File.separator)) {
@@ -535,6 +541,12 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     }
     directory = directory.replace('/', File.separatorChar);
     return directory + getPhysicalName();
+  }
+
+  private boolean isPhysicalPathAbsolute() {
+    String filePath = FilenameUtils.separatorsToSystem(physicalName);
+    File file = new File(filePath);
+    return file.exists() && file.isFile();
   }
 
   /**

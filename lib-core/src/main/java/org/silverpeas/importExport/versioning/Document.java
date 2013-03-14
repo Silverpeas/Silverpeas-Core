@@ -21,17 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Aliaksei_Budnikau
- * Date: Oct 16, 2002
- */
 package org.silverpeas.importExport.versioning;
 
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
 import java.util.Date;
+
+import com.silverpeas.util.ForeignPK;
+
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class Document implements java.io.Serializable, Cloneable {
 

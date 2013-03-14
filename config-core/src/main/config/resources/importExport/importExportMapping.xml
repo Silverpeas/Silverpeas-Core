@@ -76,7 +76,7 @@
     <castor:field name="attachmentsType" type="org.silverpeas.importExport.attachment.AttachmentsType">
       <castor:bind-xml name="sp:attachments" node="element"/>
     </castor:field>
-    <castor:field name="documentsType" type="DocumentsType">
+    <castor:field name="documentsType" type="org.silverpeas.importExport.versioning.DocumentsType">
       <castor:bind-xml name="sp:documents" node="element"/>
     </castor:field>
     <castor:field name="nodePositionsType" type="com.silverpeas.node.importexport.NodePositionsType">
@@ -179,7 +179,7 @@
   <!-- Versioning -->
   <castor:class name="org.silverpeas.importExport.versioning.DocumentsType">
     <castor:map-to xml="documents" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listDocuments" type="Document" collection="arraylist">
+    <castor:field name="listDocuments" type="org.silverpeas.importExport.versioning.Document" collection="arraylist">
       <castor:bind-xml name="sp:document" node="element"/>
     </castor:field>
   </castor:class>
@@ -191,13 +191,13 @@
     <castor:field name="description" type="string">
       <castor:bind-xml name="sp:description" node="element"/>
     </castor:field>
-    <castor:field name="versionsType" type="VersionsType">
+    <castor:field name="versionsType" type="org.silverpeas.importExport.versioning.VersionsType">
       <castor:bind-xml name="sp:versions" node="element"/>
     </castor:field>
   </castor:class>
   <castor:class name="org.silverpeas.importExport.versioning.VersionsType">
     <castor:map-to xml="versions" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-    <castor:field name="listVersions" type="DocumentVersion" collection="arraylist">
+    <castor:field name="listVersions" type="org.silverpeas.importExport.versioning.DocumentVersion" collection="arraylist">
       <castor:bind-xml name="sp:version" node="element"/>
     </castor:field>
   </castor:class>
