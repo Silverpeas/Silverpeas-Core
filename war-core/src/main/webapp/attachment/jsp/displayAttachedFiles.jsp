@@ -271,11 +271,8 @@
               <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
             </c:if>
             <c:if test="${view:isDefined(currentAttachment.description) && showInfo}">
-              <span class="description"><view:encodeHtml string="${currentAttachment.description}" /></span>
+              <span class="description"><view:encodeHtmlParagraph string="${currentAttachment.description}" /></span>
             </c:if>
-              <!--
-              xmlForm <c:out value="${currentAttachment.xmlFormId}" /> <c:out value="${view:isDefined(currentAttachment.xmlFormId)}" />
-              -->
             <c:if test="${view:isDefined(currentAttachment.xmlFormId)}">
               <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>

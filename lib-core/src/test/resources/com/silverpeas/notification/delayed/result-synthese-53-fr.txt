@@ -32,7 +32,7 @@
 						. modifiée par User 500, le 01/01/2012 à 08:10
 						<br/>. commentée par User 500, le 01/01/2012 à 08:10, avec le message suivant :<br/>
 							<div style="margin-left:30px;background-color:#FFF9D7;padding:5px;border:1px solid #E2C822;width:380px">
-								Message U3 (2ème)<br/>A la ligne
+								Message U3 (2&egrave;me)<br/>A la ligne
 							</div>
 					</div>
 				</div>
