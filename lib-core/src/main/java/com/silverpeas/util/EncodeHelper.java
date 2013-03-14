@@ -76,7 +76,7 @@ public class EncodeHelper {
    * @param javastring Java string to encode
    * @return html string encoded
    */
-  private static String convertWhiteSpacesForHTMLDisplay(String javastring) {
+  public static String convertWhiteSpacesForHTMLDisplay(String javastring) {
     if (javastring == null) {
       return "";
     }

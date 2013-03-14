@@ -1532,8 +1532,6 @@
       <type>java.lang.String</type>
     </attribute>
   </tag>
-
-
   <tag>
     <description>
       Display the content of a Wysiwyg.
@@ -1649,5 +1647,17 @@
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
   </function>
 </taglib>
