@@ -979,13 +979,25 @@ public class DocumentRepository {
     }
   }
 
-  public long storeContent(SimpleDocument document, InputStream in) throws
+  public long storeContent(SimpleDocument document, InputStream in, boolean update) throws
       RepositoryException, IOException {
     File file = new File(document.getAttachmentPath());
     SilverTrace.debug("attachment", "DocumentRepository", "Storing file for document in "
         + document.getAttachmentPath());
+    if (update) {
+      File parentFile = file.getParentFile();
+      if (parentFile.isDirectory() && parentFile.list().length > 0) {
+        FileUtils.deleteDirectory(parentFile);
+        FileUtils.forceMkdir(parentFile);
+      }
+    }
     FileUtils.copyInputStreamToFile(in, file);
     return file.length();
+  }
+
+  public long storeContent(SimpleDocument document, InputStream in) throws
+      RepositoryException, IOException {
+    return storeContent(document, in, false);
   }
 
   public void duplicateContent(SimpleDocument origin, SimpleDocument document)
