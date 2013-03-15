@@ -25,13 +25,15 @@ import java.net.URLEncoder;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.attachment.model.SimpleDocument;
 
-import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * @author ehugonnet
@@ -55,11 +57,10 @@ public class MenuHelper {
   }
 
   public static void displayActions(SimpleDocument attachment, boolean useXMLForm,
-      boolean useFileSharing, boolean useWebDAV, String userId, String language,
+      boolean useFileSharing, boolean useWebDAV, String userId, String lang,
       ResourcesWrapper resources, String httpServerBase, boolean showMenuNotif,
-      boolean useContextualMenu, JspWriter out)
-      throws IOException {
-
+      boolean useContextualMenu, JspWriter out) throws IOException {
+    String language = I18NHelper.checkLanguage(lang);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(1024);
