@@ -146,6 +146,7 @@ public class DocumentRepository {
     pk.setOldSilverpeasId(document.getOldSilverpeasId());
     targetDoc.setPK(pk);
     targetDoc.setDocumentType(document.getDocumentType());
+    targetDoc.setNodeName(document.getNodeName());
     prepareComponentAttachments(session, destination.getInstanceId(), document.getFolder());
     Node originDocumentNode = session.getNodeByIdentifier(document.getPk().getId());
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
