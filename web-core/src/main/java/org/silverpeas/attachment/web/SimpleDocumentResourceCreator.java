@@ -36,14 +36,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
-import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -60,9 +53,16 @@ import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.web.RESTWebService;
+
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -159,9 +159,6 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         getFileName())) {
       String lang = I18NHelper.checkLanguage(language);
       String title = fileTitle;
-      if (!StringUtil.isDefined(fileTitle)) {
-        title = fileDetail.getFileName();
-      }
       DocumentType attachmentContext;
       if (!StringUtil.isDefined(context)) {
         attachmentContext = DocumentType.attachment;
@@ -196,6 +193,14 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       document.setDescription(description);
       File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+      MetadataExtractor extractor = new MetadataExtractor();
+      MetaData metadata = extractor.extractMetadata(tempFile);
+      if (!StringUtil.isDefined(fileTitle)) {
+        document.setTitle(metadata.getTitle());
+      }
+      if (!StringUtil.isDefined(description)) {
+        document.setTitle(metadata.getSubject());
+      }
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (needCreation) {
