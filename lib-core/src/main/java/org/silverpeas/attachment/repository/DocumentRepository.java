@@ -30,7 +30,9 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
@@ -257,12 +259,12 @@ public class DocumentRepository {
    */
   public void setClone(Session session, SimpleDocument original, SimpleDocument clone) throws
       RepositoryException {
-    Node documentNode = session.getNodeByIdentifier(original.getPk().getId());
+    Node documentNode = session.getNodeByIdentifier(clone.getId());
     boolean checkedin = !documentNode.isCheckedOut();
     if (checkedin) {
       session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
     }
-    documentNode.setProperty(SLV_PROPERTY_CLONE, clone.getId());
+    documentNode.setProperty(SLV_PROPERTY_CLONE, original.getId());
     if (checkedin) {
       session.save();
       session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
@@ -1077,19 +1079,46 @@ public class DocumentRepository {
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
       throws ItemNotFoundException, RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
-    Node cloneNode = session.getNodeByIdentifier(clone.getId());
+    Set<String> existingAttachements = new HashSet<String>(I18NHelper.getNumberOfLanguages());
     for (Node child : new NodeIterable(originalNode.getNodes())) {
-      child.remove();
+      existingAttachements.add(child.getName());
     }
+    Node cloneNode = session.getNodeByIdentifier(clone.getId());
     for (Node child : new NodeIterable(cloneNode.getNodes())) {
-      session.move(child.getPath(), originalNode.getPath() + '/' + child.getName());
+      String childNodeName = child.getName();
+      if (existingAttachements.contains(childNodeName) && originalNode.hasNode(childNodeName)) {
+        copyNode(session, child, originalNode.getNode(childNodeName));
+        existingAttachements.remove(childNodeName);
+      } else {
+        session.move(child.getPath(), originalNode.getPath() + '/' + childNodeName);
+      }
     }
-    for (Property property : new PropertyIterable(originalNode.getProperties())) {
-      property.remove();
-    }
-    for (Property property : new PropertyIterable(cloneNode.getProperties())) {
-      originalNode.setProperty(property.getName(), property.getValue());
+    for (String deletedNode : existingAttachements) {
+      if (originalNode.hasNode(deletedNode)) {
+        originalNode.getNode(deletedNode).remove();
+      }
     }
     converter.addStringProperty(originalNode, SLV_PROPERTY_CLONE, null);
+  }
+
+  private void copyNode(Session session, Node source, Node target) throws RepositoryException {
+    for (Node child : new NodeIterable(target.getNodes())) {
+      if (!child.getDefinition().isProtected()) {
+        child.remove();
+      }
+    }
+    for (Node child : new NodeIterable(source.getNodes())) {
+      session.move(child.getPath(), target.getPath() + '/' + child.getName());
+    }
+    for (Property property : new PropertyIterable(target.getProperties())) {
+      if (!property.getDefinition().isProtected()) {
+        property.remove();
+      }
+    }
+    for (Property property : new PropertyIterable(source.getProperties())) {
+      if (!property.getDefinition().isProtected()) {
+        target.setProperty(property.getName(), property.getValue());
+      }
+    }
   }
 }
