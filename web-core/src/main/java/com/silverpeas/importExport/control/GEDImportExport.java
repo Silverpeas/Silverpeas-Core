@@ -20,6 +20,26 @@
  */
 package com.silverpeas.importExport.control;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -50,9 +70,8 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -78,25 +97,9 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
@@ -1016,13 +1019,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public PublicationType getPublicationCompleteById(String pubId, String componentId)
       throws ImportExportException {
     PublicationType publicationType = new PublicationType();
-    PublicationDetail publicationDetail = null;
     try {
       CompletePublication pubComplete =
           getCompletePublication(new PublicationPK(pubId, getCurrentComponentId()));
 
       // Recuperation de l'objet PublicationDetail
-      publicationDetail = pubComplete.getPublicationDetail();
+      PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
 
       InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
@@ -1068,10 +1070,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()))) {
+      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(
+          publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
-        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()));
+        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper
+            .checkLanguage(publicationDetail.getLanguage()));
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
