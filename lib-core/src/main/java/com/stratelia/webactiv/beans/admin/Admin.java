@@ -4859,9 +4859,18 @@ public final class Admin {
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
       // Build the list of instanciated components with given componentName
-      String[] asMatchingComponentIds =
+      String[] matchingComponentIds = 
           componentManager.getAllCompoIdsByComponentName(domainDriverManager, sComponentName);
-      return asMatchingComponentIds;
+      
+      // check TreeCache to know if component is not removed neither into a removed space
+      List<String> shortIds = new ArrayList<String>();
+      for (String componentId : matchingComponentIds) {
+        ComponentInstLight component = TreeCache.getComponent(componentId);
+        if (component != null) {
+          shortIds.add(componentId);
+        }
+      }
+      return shortIds.toArray(new String[shortIds.size()]);
     } catch (Exception e) {
       throw new AdminException("Admin.getCompoId", SilverpeasException.ERROR,
           "admin.EX_ERR_GET_AVAILABLE_INSTANCES_OF_COMPONENT",
