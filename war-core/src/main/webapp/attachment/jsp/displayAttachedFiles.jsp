@@ -970,9 +970,9 @@
       <label for="private"><fmt:message key="attachment.version.label"/></label><br/>
       <input value="false" type="radio" name="private" id="private" checked><fmt:message key="attachment.version_public.label"/>
       <input value="true" type="radio" name="private" id="private"><fmt:message key="attachment.version_wip.label"/><br/>
+      <label for="comment"><fmt:message key="attachment.dialog.comment" /></label><br/>
+      <textarea name="comment" cols="60" rows="3" id="comment"></textarea><br/>
     </c:if>
-    <label for="comment"><fmt:message key="attachment.dialog.comment" /></label><br/>
-    <textarea name="comment" cols="60" rows="3" id="comment"></textarea><br/>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>

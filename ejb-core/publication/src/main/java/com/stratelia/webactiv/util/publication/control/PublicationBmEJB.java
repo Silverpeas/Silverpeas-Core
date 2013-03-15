@@ -41,6 +41,8 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
@@ -64,8 +66,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.WysiwygException;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -203,22 +203,19 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
     return pubDetail.getPK();
   }
 
-  public void movePublication(PublicationPK pubPK, NodePK nodePK,
-      boolean indexIt) throws RemoteException {
+  public void movePublication(PublicationPK pubPK, NodePK nodePK, boolean indexIt) throws
+      RemoteException {
     Publication publi = findPublication(pubPK);
     try {
       deleteIndex(pubPK);
-
       publi.move(nodePK);
-
       if (indexIt) {
         createIndex(pubPK);
       }
     } catch (Exception re) {
       throw new PublicationRuntimeException("PublicationBmEJB.movePublication()",
           SilverpeasRuntimeException.ERROR,
-          "publication.MOVING_PUBLICATION_FAILED", "pubId = " + pubPK.getId(),
-          re);
+          "publication.MOVING_PUBLICATION_FAILED", "pubId = " + pubPK.getId(), re);
     }
   }
 
