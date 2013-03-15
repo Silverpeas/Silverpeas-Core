@@ -130,8 +130,8 @@ public class SimpleDocumentService implements AttachmentService {
     if (!StringUtil.isDefined(title)) {
       title = FilenameUtils.getBaseName(document.getFilename());
     }
-     indexEntry.setTitle(title, language);
-     indexEntry.setKeywords(title, language);
+    indexEntry.setTitle(title, language);
+    indexEntry.setKeywords(title, language);
     indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
         getContentType(), language);
     if (StringUtil.isDefined(document.getXmlFormId())) {
@@ -907,8 +907,11 @@ public class SimpleDocumentService implements AttachmentService {
     try {
       session = BasicDaoFactory.getSystemSession();
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
-      SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
-      repository.moveMultilangContent(document, moveDoc);
+      SimpleDocument targetDoc = new SimpleDocument();
+      targetDoc.setPK(pk);
+      targetDoc.setDocumentType(document.getDocumentType());
+      targetDoc.setNodeName(document.getNodeName());
+      repository.moveMultilangContent(document, targetDoc);
       session.save();
       return pk;
     } catch (RepositoryException ex) {

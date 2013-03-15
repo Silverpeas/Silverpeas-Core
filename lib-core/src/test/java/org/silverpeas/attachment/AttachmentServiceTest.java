@@ -46,23 +46,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
@@ -84,6 +67,23 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -195,6 +195,7 @@ public class AttachmentServiceTest {
     }
     FileUtils.deleteQuietly(new File(IndexFileManager.getAbsoluteIndexPath(null, instanceId)));
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(foreignInstanceId)));
   }
 
   @BeforeClass
@@ -380,13 +381,14 @@ public class AttachmentServiceTest {
     String language = "fr";
     String foreignId = "73";
     SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
-    SimpleDocumentPK pk = instance.moveDocument(original,
-        new ForeignPK(foreignId, foreignInstanceId));
+    File originalContent = new File(original.getAttachmentPath());
+    assertThat(originalContent.exists(), is(true));
+    SimpleDocumentPK pk = instance.moveDocument(original, new ForeignPK(foreignId,
+        foreignInstanceId));
     SimpleDocument movedDocument = instance.searchDocumentById(pk, language);
     original.setForeignId(foreignId);
     original.setPK(pk);
     assertThat(movedDocument, SimpleDocumentMatcher.matches(original));
-    File originalContent = new File(original.getAttachmentPath());
     assertThat(originalContent.exists(), is(false));
     File movedContent = new File(movedDocument.getAttachmentPath());
     assertThat(movedContent.exists(), is(true));

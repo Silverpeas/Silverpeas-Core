@@ -1060,14 +1060,18 @@ public class DocumentRepository {
 
   public void moveMultilangContent(SimpleDocument origin, SimpleDocument copy) throws IOException {
     String originDir = origin.getDirectoryPath(null);
+    File source = new File(originDir).getParentFile();
     String targetDir = copy.getDirectoryPath(null);
     targetDir = targetDir.replace('/', File.separatorChar);
     File target = new File(targetDir).getParentFile();
-    File source = new File(originDir).getParentFile();
     if (!source.exists() || !source.isDirectory() || source.listFiles() == null) {
       return;
     }
-    FileUtils.copyDirectory(source, target);
+    if (!target.getParentFile().getName().equals(source.getParentFile().getName())) {
+      source = source.getParentFile();
+      target = target.getParentFile();
+    }
+    FileUtils.moveDirectory(source, target);
   }
 
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)

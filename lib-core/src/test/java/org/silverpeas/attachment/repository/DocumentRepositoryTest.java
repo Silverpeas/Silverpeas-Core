@@ -41,22 +41,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -76,6 +60,23 @@ import com.silverpeas.util.PathTestUtil;
 
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
@@ -154,6 +155,7 @@ public class DocumentRepositoryTest {
         session.logout();
       }
     }
+    FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
   }
 
   @BeforeClass
