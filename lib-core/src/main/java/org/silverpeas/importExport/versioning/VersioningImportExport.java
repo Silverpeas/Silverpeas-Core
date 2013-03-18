@@ -141,11 +141,12 @@ public class VersioningImportExport {
       }
 
       if (attachment.isRemoveAfterImport()) {
-        boolean removed = FileUtils.deleteQuietly(new File(attachment.getOriginalPath()));
+        boolean removed = FileUtils.deleteQuietly(attachmentImportExport.getAttachmentFile(
+            attachment));
         if (!removed) {
-          SilverTrace.error("versioning",
-              "VersioningImportExport.importDocuments()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachment.getOriginalPath());
+          SilverTrace.error("versioning", "VersioningImportExport.importDocuments()",
+              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachmentImportExport
+              .getAttachmentFile(attachment));
         }
       }
       nbFilesProcessed++;

@@ -20,27 +20,6 @@
  */
 package org.silverpeas.importExport.attachment;
 
-import com.silverpeas.form.importExport.FormTemplateImportExport;
-import com.silverpeas.form.importExport.XMLModelContentType;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,6 +29,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
+import com.silverpeas.form.importExport.FormTemplateImportExport;
+import com.silverpeas.form.importExport.XMLModelContentType;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
@@ -78,7 +79,6 @@ public class AttachmentImportExport {
   public void importAttachment(String pubId, String componentId,
       AttachmentDetail attachmentDetail, InputStream file, boolean indexIt,
       boolean updateLogicalName) {
-    //copyFile(componentId, attachmentDetail, updateLogicalName);
     if (attachmentDetail.getSize() > 0) {
       addAttachmentToPublication(pubId, componentId, attachmentDetail, file, indexIt);
     }
@@ -103,7 +103,8 @@ public class AttachmentImportExport {
   }
 
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
-      List<AttachmentDetail> attachments, String userId, boolean indexIt) {
+      List<AttachmentDetail> attachments, String userId, boolean indexIt) throws
+      FileNotFoundException {
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
       //TODO check user id
@@ -133,27 +134,14 @@ public class AttachmentImportExport {
       }
 
       if (attDetail.isRemoveAfterImport()) {
-        boolean removed = FileUtils.deleteQuietly(new File(attDetail.getOriginalPath()));
+        boolean removed = FileUtils.deleteQuietly(getAttachmentFile(attDetail));
         if (!removed) {
-          SilverTrace.error("attachment",
-              "AttachmentImportExport.importAttachments()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attDetail.getOriginalPath());
+          SilverTrace.error("attachment", "AttachmentImportExport.importAttachments()",
+              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + getAttachmentFile(attDetail));
         }
       }
     }
     return attachments;
-  }
-
-  public List<AttachmentDetail> copyFiles(String componentId, List<AttachmentDetail> attachments,
-      String path) {
-    List<AttachmentDetail> copiedAttachments = new ArrayList<AttachmentDetail>();
-    for (AttachmentDetail attDetail : attachments) {
-      copyFile(componentId, attDetail, path);
-      if (0 != attDetail.getSize()) {
-        copiedAttachments.add(attDetail);
-      }
-    }
-    return copiedAttachments;
   }
 
   /**
@@ -353,6 +341,10 @@ public class AttachmentImportExport {
   }
 
   public InputStream getAttachmentContent(AttachmentDetail attachment) throws FileNotFoundException {
+    return new FileInputStream(getAttachmentFile(attachment));
+  }
+
+  public File getAttachmentFile(AttachmentDetail attachment) throws FileNotFoundException {
     File file = new File(FileUtil.convertPathToServerOS(attachment.getAttachmentPath()));
     if (file == null || !file.exists() || !file.isFile()) {
       String baseDir = resources.getString("importRepository");
@@ -365,6 +357,6 @@ public class AttachmentImportExport {
       attachment.setLogicalName(file.getName());
     }
     attachment.setSize(file.length());
-    return new FileInputStream(file);
+    return file;
   }
 }

@@ -631,6 +631,10 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     return importUpdateRule;
   }
 
+  public void setImportUpdateRule(String updateRule) {
+    this.importUpdateRule = updateRule;
+  }
+
 
   /**
    * if type is known as application/octet-stream, try to find right mimeType
@@ -659,6 +663,9 @@ public final class AttachmentDetail extends AbstractI18NBean implements Serializ
     return removeAfterImport;
   }
 
+  public void setRemoveAfterImport(boolean removeAfterImport) {
+    this.removeAfterImport = removeAfterImport;
+  }
 
   public void setOriginalPath(String originalPath) {
     this.originalPath = originalPath;
