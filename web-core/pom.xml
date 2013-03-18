@@ -219,6 +219,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <scope>provided</scope>
