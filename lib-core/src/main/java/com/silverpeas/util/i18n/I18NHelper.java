@@ -24,10 +24,6 @@
 
 package com.silverpeas.util.i18n;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,10 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
+
+import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class I18NHelper {
 
@@ -346,6 +349,10 @@ public class I18NHelper {
       return param[0];
     }
     return null;
+  }
+
+  public static boolean isI18nActivated() {
+    return isI18N;
   }
 
   public static void setI18NInfo(I18NBean bean, HttpServletRequest request) {

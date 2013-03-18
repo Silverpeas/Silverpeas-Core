@@ -29,6 +29,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
@@ -48,8 +49,8 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <c:choose>
-  <c:when test="${view:booleanValue(isComponentVersioned)}">
-<script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
+  <c:when test="${silfn:booleanValue(isComponentVersioned)}">
+    <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
   VersioningSessionController versioningSC = (VersioningSessionController) request.getAttribute(URLManager.CMP_VERSIONINGPEAS);
@@ -123,7 +124,7 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.ShowTitle != null}">
-      <c:set var="showTitle" scope="page" value="${view:booleanValue(param.ShowTitle)}" />
+      <c:set var="showTitle" scope="page" value="${silfn:booleanValue(param.ShowTitle)}" />
     </c:when>
     <c:otherwise>
       <c:set var="showTitle" scope="page" value="${true}" />
@@ -131,7 +132,7 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.ShowFileSize != null}">
-      <c:set var="showFileSize" scope="page" value="${view:booleanValue(param.ShowFileSize)}" />
+      <c:set var="showFileSize" scope="page" value="${silfn:booleanValue(param.ShowFileSize)}" />
     </c:when>
     <c:otherwise>
       <c:set var="showFileSize" scope="page" value="${true}" />
@@ -139,7 +140,7 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.ShowDownloadEstimation != null}">
-      <c:set var="showDownloadEstimation" scope="page" value="${view:booleanValue(param.ShowDownloadEstimation)}" />
+      <c:set var="showDownloadEstimation" scope="page" value="${silfn:booleanValue(param.ShowDownloadEstimation)}" />
     </c:when>
     <c:otherwise>
       <c:set var="showDownloadEstimation" scope="page" value="${true}" />
@@ -147,7 +148,7 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.ShowInfo != null}">
-      <c:set var="showInfo" scope="page" value="${view:booleanValue(param.ShowInfo)}" />
+      <c:set var="showInfo" scope="page" value="${silfn:booleanValue(param.ShowInfo)}" />
     </c:when>
     <c:otherwise>
       <c:set var="showInfo" scope="page" value="${true}" />
@@ -155,23 +156,23 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.ShowIcon != null}">
-      <c:set var="showIcon" scope="page" value="${view:booleanValue(param.ShowIcon)}" />
+      <c:set var="showIcon" scope="page" value="${silfn:booleanValue(param.ShowIcon)}" />
     </c:when>
     <c:otherwise>
       <c:set var="showIcon" scope="page" value="${true}" />
     </c:otherwise>
   </c:choose>
-  <c:set var="fromAlias" value="${view:booleanValue(param.Alias)}" />
-  <c:set var="useXMLForm" value="${view:isDefined(xmlForm)}" />
-  <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-  <c:set var="showMenuNotif" value="${view:booleanValue(param.ShowMenuNotif)}" />
+  <c:set var="fromAlias" value="${silfn:booleanValue(param.Alias)}" />
+  <c:set var="useXMLForm" value="${silfn:isDefined(xmlForm)}" />
+  <c:set var="indexIt" value="${silfn:booleanValue(param.IndexIt)}" />
+  <c:set var="showMenuNotif" value="${silfn:booleanValue(param.ShowMenuNotif)}" />
   <c:set var="displayUniversalLinks"><%=URLManager.displayUniversalLinks()%></c:set>
 
   <c:set var="Silverpeas_Attachment_ObjectId" value="${param.Id}" scope="session" />
   <c:set var="Silverpeas_Attachment_ComponentId" value="${param.ComponentId}" scope="session" />
   <c:choose>
-    <c:when test="${view:isDefined(param.context)}">
-        <c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
+    <c:when test="${silfn:isDefined(param.context)}">
+      <c:set var="Silverpeas_Attachment_Context" value="${param.Context}" scope="session" />
     </c:when>
     <c:otherwise>
       <c:set var="Silverpeas_Attachment_Context" value="attachment" scope="session" />
@@ -180,7 +181,7 @@
   <c:set var="Silverpeas_Attachment_Profile" value="${userProfile}" scope="session" />
   <c:set var="Silverpeas_Attachment_IndexIt" value="${indexIt}" />
   <c:choose>
-    <c:when test="${! view:isDefined(param.Language)}">
+    <c:when test="${! silfn:isDefined(param.Language)}">
       <c:set var="contentLanguage" value="${null}" />
     </c:when>
     <c:otherwise>
@@ -199,8 +200,8 @@
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
     <ul id="attachmentList">
-      <c:if test="${!empty pageScope.attachments  || (view:isDefined(userProfile) && ('user' != userProfile))}">
-      <c:forEach items="${pageScope.attachments}" var="varAttachment" >
+      <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
+        <c:forEach items="${pageScope.attachments}" var="varAttachment" >
         <c:choose>
           <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
             <c:set var="currentAttachment" value="${varAttachment.lastPublicVersion}" />
@@ -237,7 +238,7 @@
                 </c:otherwise>
               </c:choose>
               <c:choose>
-                <c:when test="${! view:isDefined(currentAttachment.title) || ! showTitle}">
+                <c:when test="${! silfn:isDefined(currentAttachment.title) || ! showTitle}">
                   <c:set var="title" value="${currentAttachment.filename}" />
                 </c:when>
                 <c:otherwise>
@@ -260,21 +261,21 @@
               <c:if test="${showDownloadEstimation}">
                 <c:out value="${view:estimateDownload(currentAttachment.size)}" />
               </c:if> - <view:formatDate value="${currentAttachment.created}" />
-              <c:if test="${view:isPreviewable(currentAttachment.attachmentPath)}">
-              <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
+              <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
+                <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
               </c:if>
-              <c:if test="${view:isViewable(currentAttachment.attachmentPath)}">
-              <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
+              <c:if test="${silfn:isViewable(currentAttachment.attachmentPath)}">
+                <img onclick="javascript:view(this, '<c:out value="${currentAttachment.id}" />');" class="view-file" src='<c:url value="/util/icons/view.png"/>' alt="<fmt:message key="GML.view"/>" title="<fmt:message key="GML.view" />"/>
               </c:if>
             </span>
-            <c:if test="${view:isDefined(currentAttachment.title) && showTitle}">
-              <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
+              <c:if test="${silfn:isDefined(currentAttachment.title) && showTitle}">
+                <span class="fileName"><c:out value="${currentAttachment.filename}" /></span>
             </c:if>
-            <c:if test="${view:isDefined(currentAttachment.description) && showInfo}">
-              <span class="description"><view:encodeHtmlParagraph string="${currentAttachment.description}" /></span>
+              <c:if test="${silfn:isDefined(currentAttachment.description) && showInfo}">
+                <span class="description"><view:encodeHtmlParagraph string="${currentAttachment.description}" /></span>
             </c:if>
-            <c:if test="${view:isDefined(currentAttachment.xmlFormId)}">
-              <br/><a rel='<c:url value="/RformTemplate/jsp/View">
+              <c:if test="${silfn:isDefined(currentAttachment.xmlFormId)}">
+                <br/><a rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
                         <c:param name="ObjectId" value="${currentAttachment.oldSilverpeasId}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
@@ -284,7 +285,7 @@
                       </c:url>' href="#" title='<c:out value="${title}"/>' ><fmt:message key="attachment.xmlForm.View" /></a>
             </c:if>
             <view:componentParam var="hideAllVersionsLink" componentId="${param.ComponentId}" parameter="hideAllVersionsLink" />
-            <c:set var="shouldHideAllVersionsLink" scope="page" value="${view:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
+            <c:set var="shouldHideAllVersionsLink" scope="page" value="${silfn:booleanValue(hideAllVersionsLink) && 'user' eq userProfile}" />
             <c:set var="shouldShowAllVersionLink" scope="page" value="${currentAttachment.versioned && ( ('user' eq userProfile && currentAttachment.public) || !('user' eq userProfile  || empty currentAttachment.history))}" />
             <c:if test="${shouldShowAllVersionLink && !shouldHideAllVersionsLink}" >
                 <span class="linkAllVersions">
@@ -301,8 +302,8 @@
                 </c:otherwise>
               </c:choose>
             </c:if>
-            <c:if test="${spinfireViewerEnable && spinfire eq view:mimeType(currentAttachment.filename)}">
-              <div id="switchView" name="switchView" style="display: none">
+                  <c:if test="${spinfireViewerEnable && spinfire eq silfn:mimeType(currentAttachment.filename)}">
+                    <div id="switchView" name="switchView" style="display: none">
               <a href="#" onClick="changeView3d('<c:out value="${currentAttachment.id}" />')"><img name="iconeView<c:out value="${currentAttachment.id}" />" valign="top" border="0" src="<c:url value="/util/icons/masque3D.gif" />"></a>
               </div><div id="<c:out value="${currentAttachment.id}" />" style="display: none">
                 <object classid="CLSID:A31CCCB0-46A8-11D3-A726-005004B35102" width="300" height="200" id="XV" >
@@ -328,8 +329,8 @@
     </ul>
     <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
       <c:choose>
-        <c:when test="${view:booleanValue(isComponentVersioned)}">
-          <div>
+        <c:when test="${silfn:booleanValue(isComponentVersioned)}">
+        <div>
             <div class="dragNdrop">
               <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
             </div>
@@ -381,7 +382,7 @@
 <script type="text/javascript">
   <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
     <c:param name="ComponentId" value="${componentId}" />
-    <c:param name="fromAlias" value="${view:booleanValue(param.Alias)}"/>
+    <c:param name="fromAlias" value="${silfn:booleanValue(param.Alias)}"/>
   </c:url>
   var publicVersionsWindow = window;
   function viewPublicVersions(docId) {
@@ -598,7 +599,7 @@
 
     function reloadIncludingPage() {
       <c:choose>
-        <c:when test="${! view:isDefined(param.CallbackUrl)}">document.location.reload();</c:when>
+        <c:when test="${! silfn:isDefined(param.CallbackUrl)}">document.location.reload();</c:when>
         <c:otherwise>document.location.href = "<c:url value="${param.CallbackUrl}" />";</c:otherwise>
       </c:choose>
     }
@@ -627,7 +628,6 @@
     $(document).ready(function() {
       $("#fileLang").on("change", function (event) {
         $("#fileLang option:selected").each(function () {
-          alert($(this).val());
           loadAttachment($("#attachmentId").val(), $(this).val());
         });
     });
@@ -748,12 +748,15 @@
               $('#update-attachment-form').attr('action', submitUrl);
               $('#update-attachment-form').submit();
             } },
-          '<fmt:message key="GML.delete"/>': function() {
+              <c:if test="${silfn:isI18n()}">
+          '<fmt:message key="attachment.dialog.delete.lang"/>': function() {
+          if(confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
             $.ajax({
-              url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/content/' + $("#fileLang").val(),
+                url: '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/content/' + $("#fileLang").val(),
                 type: "DELETE",
                 contentType: "application/json",
                 dataType: "json",
+                class: "deleteLang",
                 cache: false,
                 success: function(data) {
                   reloadIncludingPage();
@@ -761,7 +764,7 @@
                 }
               });
               $(this).dialog("close");
-            },
+              } },</c:if>
             '<fmt:message key="GML.cancel"/>': function() {
               $(this).dialog("close");
             }
@@ -915,7 +918,7 @@
     <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
     <c:choose>
-      <c:when test="${view:booleanValue(isComponentVersioned)}">
+      <c:when test="${silfn:booleanValue(isComponentVersioned)}">
         <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
         <input value="0" type="radio" name="versionType" id="versionType"><fmt:message key="attachment.version_public.label"/>
         <input value="1" type="radio" name="versionType" id="versionType" checked><fmt:message key="attachment.version_wip.label"/><br/>
@@ -940,8 +943,8 @@
     <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
     <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>    
      <c:choose>
-      <c:when test="${view:booleanValue(isComponentVersioned)}">
-      <label for="typeVersion"><fmt:message key="attachment.version.label"/></label><br/>
+       <c:when test="${silfn:booleanValue(isComponentVersioned)}">
+         <label for="typeVersion"><fmt:message key="attachment.version.label"/></label><br/>
       <input value="0" type="radio" name="versionType" id="typeVersion"><fmt:message key="attachment.version_public.label"/>
       <input value="1" type="radio" name="versionType" id="typeVersion" checked><fmt:message key="attachment.version_wip.label"/><br/>
     </c:when>
@@ -966,7 +969,7 @@
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
-    <c:if test="${view:booleanValue(isComponentVersioned)}">
+    <c:if test="${silfn:booleanValue(isComponentVersioned)}">
       <label for="private"><fmt:message key="attachment.version.label"/></label><br/>
       <input value="false" type="radio" name="private" id="private" checked><fmt:message key="attachment.version_public.label"/>
       <input value="true" type="radio" name="private" id="private"><fmt:message key="attachment.version_wip.label"/><br/>
