@@ -55,7 +55,9 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   private Collection<ScoreDetail> scores = null;
   private boolean anonymous;
   private String iconUrl;
-  private int resultMode; //1 : résultats immédiat | 2 : résultats différés après validation initiateur  
+  private int resultMode; //1 : résultats immédiat | 2 : résultats différés après validation initiateur 
+  public static final int IMMEDIATE_RESULTS = 1;
+  public static final int DELAYED_RESULTS = 2;
 
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String comment, String creatorId,
