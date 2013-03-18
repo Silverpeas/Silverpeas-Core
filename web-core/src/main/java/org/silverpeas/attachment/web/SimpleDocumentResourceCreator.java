@@ -199,7 +199,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         document.setTitle(metadata.getTitle());
       }
       if (!StringUtil.isDefined(description)) {
-        document.setTitle(metadata.getSubject());
+        document.setDescription(metadata.getSubject());
       }
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
