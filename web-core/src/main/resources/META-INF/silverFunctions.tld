@@ -98,4 +98,10 @@
     <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>
     <function-signature>boolean isI18nActivated () </function-signature>
   </function>
+  <function>
+    <description>Function to tell if Silverpeas is in mode i18N.</description>
+    <name>i18nLanguageLabel</name>
+    <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>
+    <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
+  </function>
 </taglib>

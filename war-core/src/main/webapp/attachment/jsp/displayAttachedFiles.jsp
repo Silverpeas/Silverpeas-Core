@@ -566,6 +566,16 @@
       $("#dialog-attachment-delete").data("id", id).dialog("open");
     }
 
+    function deleteContent(id, lang) {
+      deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/content/' + lang;
+      $.ajax({
+        url: deleteUrl,
+        type: "DELETE",
+        cache: false,
+        success: function(data) {}
+      });
+    }
+
     function removeAttachment(attachmentId) {
       var sLanguages = "";
       var boxItems = document.removeForm.languagesToDelete;
@@ -667,30 +677,79 @@
 
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
+      open:function() {
+      <c:if test="${silfn:isI18n()}">
+        translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
+        $.ajax({
+          url: translationsUrl,
+          type: "GET",
+          cache: false,
+          success: function(data) {
+            $("#attachment-delete-warning-message").hide();
+            for(var i = 0 ; i < data.length; i++) {
+              $("#delete-language-" + data[i].lang).show();
+            }
+            $("#attachment-delete-select-lang").show();
+          }
+        });</c:if>
+      },
       title: '<fmt:message key="supprimerAttachment" />',
       height: 300,
       width: 350,
       modal: true,
       buttons: {
         '<fmt:message key="GML.ok"/>': function() {
-          deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id");
-            $.ajax({
-              url: deleteUrl,
-              type: "DELETE",
-              cache: false,
-              success: function(data) {
-                reloadIncludingPage();
-                $(this).dialog("close");
+          var attachmentId = $(this).data("id");
+      <c:choose>
+        <c:when test="${silfn:isI18n()}">      
+             var $b = $("input[name='languagesToDelete']");
+             if($b.length ==  $b.filter(':checked').length ) {
+                deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+                $.ajax({
+                  url: deleteUrl,
+                  type: "DELETE",
+                  cache: false,
+                  success: function(data) {
+                    reloadIncludingPage();
+                    $("#dialog-attachment-delete").dialog("close");
+                  }
+                });
+             } else {
+              $b.filter(':checked').each(function() {
+                deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
+                $.ajax({
+                  url: deleteUrl,
+                  type: "DELETE",
+                  cache: false,
+                  success: function(data) {
+                    reloadIncludingPage();
+                    $("#dialog-attachment-delete").dialog("close");
+                  }
+                });
+               });
               }
-            });
-          },
-          '<fmt:message key="GML.cancel"/>': function() {
-            $(this).dialog("close");
-          }
+        </c:when>
+          <c:otherwise>
+              deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+              $.ajax({
+                url: deleteUrl,
+                type: "DELETE",
+                cache: false,
+                success: function(data) {
+                  reloadIncludingPage();
+                  $(this).dialog("close");
+                }
+              });
+            </c:otherwise>
+          </c:choose>
         },
-        close: function() {
+        '<fmt:message key="GML.cancel"/>': function() {
+          $(this).dialog("close");
         }
-      });
+      },
+      close: function() {
+      }
+    });      
 
       $("#dialog-attachment-add").dialog({
         autoOpen: false,
@@ -944,10 +1003,10 @@
     <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>    
      <c:choose>
        <c:when test="${silfn:booleanValue(isComponentVersioned)}">
-         <label for="typeVersion"><fmt:message key="attachment.version.label"/></label><br/>
-      <input value="0" type="radio" name="versionType" id="typeVersion"><fmt:message key="attachment.version_public.label"/>
-      <input value="1" type="radio" name="versionType" id="typeVersion" checked><fmt:message key="attachment.version_wip.label"/><br/>
-    </c:when>
+         <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
+         <input value="0" type="radio" name="versionType" id="typeVersionPublic"><fmt:message key="attachment.version_public.label"/>
+         <input value="1" type="radio" name="versionType" id="typeVersionPrivate" checked><fmt:message key="attachment.version_wip.label"/><br/>
+       </c:when>
       <c:otherwise>        
         <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>
       </c:otherwise>
@@ -960,11 +1019,25 @@
   </form>
 </div>
 
-<div id="dialog-attachment-delete" style="display:none">
-  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-</div>
+    <div id="dialog-attachment-delete" style="display:none">
+      <c:choose>
+        <c:when test="${silfn:isI18n()}">
+          <div id="attachment-delete-select-lang" style="display:none">
+            <label for="languagesToDelete"><fmt:message key="attachment.allTranslations"/></label>
+            <div id="languages">
+              <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
+                <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
+              </c:forEach>
+            </div>
+          </div>
+        </c:when>
+        <c:otherwise>
+          <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+        </c:otherwise>
+      </c:choose>
+    </div>
 
-<div id="dialog-attachment-checkin" style="display:none">
+ <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
