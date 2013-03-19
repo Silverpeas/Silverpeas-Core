@@ -58,12 +58,17 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   private int resultMode; //1 : résultats immédiat | 2 : résultats différés après validation initiateur 
   public static final int IMMEDIATE_RESULTS = 1;
   public static final int DELAYED_RESULTS = 2;
+  private int resultView; //1 : n'affiche rien | 2 : vue classique | 3 : vue détaillée | 4 : vue classique et vue détaillée 
+  public static final int NOTHING_DISPLAY_RESULTS = 1;
+  public static final int CLASSIC_DISPLAY_RESULTS = 2;
+  public static final int DETAILED_DISPLAY_RESULTS = 3;
+  public static final int TWICE_DISPLAY_RESULTS = 4;
 
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String comment, String creatorId,
       String creationDate, String beginDate, String endDate, boolean isClosed,
       int nbVoters, int nbQuestionsPerPage, int nbMaxParticipations,
-      int nbParticipationsBeforeSolution, int maxTime) {
+      int nbParticipationsBeforeSolution, int maxTime, int resultMode, int resultView) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -78,13 +83,16 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setNbMaxParticipations(nbMaxParticipations);
     setNbParticipationsBeforeSolution(nbParticipationsBeforeSolution);
     setMaxTime(maxTime);
+    setResultMode(resultMode);
+    setResultView(resultView);
   }
 
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String comment, String creatorId,
       String creationDate, String beginDate, String endDate, boolean isClosed,
       int nbVoters, int nbQuestionsPerPage, int nbMaxParticipations,
-      int nbParticipationsBeforeSolution, int maxTime, boolean anonymous, int resultMode) {
+      int nbParticipationsBeforeSolution, int maxTime, boolean anonymous, 
+      int resultMode, int resultView) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -101,30 +109,13 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setMaxTime(maxTime);
     setAnonymous(anonymous);
     setResultMode(resultMode);
-  }
-
-  // @deprecated
-  public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
-      String title, String description, String creatorId, String creationDate,
-      String beginDate, String endDate, boolean isClosed, int nbVoters,
-      int nbQuestionsPerPage) {
-    setPK(questionContainerPK);
-    setTitle(title);
-    setDescription(description);
-    setComment(comment);
-    setCreatorId(creatorId);
-    setCreationDate(creationDate);
-    setBeginDate(beginDate);
-    setEndDate(endDate);
-    close(isClosed);
-    setNbVoters(nbVoters);
-    setNbQuestionsPerPage(nbQuestionsPerPage);
+    setResultView(resultView);
   }
 
   public QuestionContainerHeader(QuestionContainerPK questionContainerPK,
       String title, String description, String creatorId, String creationDate,
       String beginDate, String endDate, boolean isClosed, int nbVoters,
-      int nbQuestionsPerPage, boolean anonymous, int resultMode) {
+      int nbQuestionsPerPage, boolean anonymous, int resultMode, int resultView) {
     setPK(questionContainerPK);
     setTitle(title);
     setDescription(description);
@@ -138,6 +129,7 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
     setNbQuestionsPerPage(nbQuestionsPerPage);
     setAnonymous(anonymous);
     setResultMode(resultMode);
+    setResultView(resultView);
   }
 
   public QuestionContainerPK getPK() {
@@ -344,6 +336,14 @@ public class QuestionContainerHeader extends AbstractI18NBean implements java.io
   public void setResultMode(int resultMode) {
     this.resultMode = resultMode;
   }
-  
 
+  public int getResultView() {
+    return this.resultView;
+  }
+
+  public void setResultView(int resultView) {
+    this.resultView = resultView;
+  }
+  
+  
 }
