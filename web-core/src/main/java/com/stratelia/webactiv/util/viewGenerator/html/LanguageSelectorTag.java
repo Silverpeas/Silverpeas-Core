@@ -30,13 +30,13 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.i18n.I18NLanguage;
+
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.Input;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
-
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.i18n.I18NLanguage;
 
 /**
  *
@@ -59,27 +59,27 @@ public class LanguageSelectorTag extends SimpleTagSupport {
   public String getLangCode() {
     return currentLangCode;
   }
-  
+
   @Override
   public void doTag() throws JspException, IOException {
     ElementContainer xhtml = new ElementContainer();
-    if(I18NHelper.isI18N) {
+    if (I18NHelper.isI18N) {
       Select langSelector = new Select();
       langSelector.setID(elementId);
       langSelector.setName(elementName);
       List<Option> options = new ArrayList<Option>(I18NHelper.getNumberOfLanguages());
-      for(I18NLanguage language : I18NHelper.getAllLanguages(getLangCode())) {
+      for (I18NLanguage language : I18NHelper.getAllLanguages(getLangCode())) {
         Option option = new Option(language.getLabel(), language.getCode());
         option.addElement(language.getLabel());
-        if(getLangCode().equalsIgnoreCase(language.getCode())) {
+        if (getLangCode().equalsIgnoreCase(language.getCode())) {
           option.setSelected(true);
         }
-        options.add(option);        
+        options.add(option);
       }
       langSelector.addElement(options.toArray(new Option[options.size()]));
       xhtml.addElement(langSelector);
     } else {
-      Input hidden = new Input();      
+      Input hidden = new Input();
       hidden.setID(elementId);
       hidden.setName(elementName);
       hidden.setType("hidden");
@@ -89,10 +89,6 @@ public class LanguageSelectorTag extends SimpleTagSupport {
   }
 
   public void setLangCode(String currentLang) {
-    if (I18NHelper.getAllSupportedLanguages().contains(currentLang)) {
-      this.currentLangCode = currentLang;
-    } else {
-      currentLangCode = I18NHelper.defaultLanguage;
-    }
+    currentLangCode = I18NHelper.checkLanguage(currentLang);
   }
 }

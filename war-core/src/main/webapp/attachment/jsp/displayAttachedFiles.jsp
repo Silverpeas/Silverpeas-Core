@@ -926,7 +926,7 @@
         <input type="text" name="commentMessage" size="100" id="commentMessage" /><br/>
       </c:when>
       <c:otherwise>        
-        <view:langSelect elementName="fileLang" elementId="fileLang" langCode="fr" /><br/>
+        <view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" /><br/>
       </c:otherwise>
     </c:choose>
     <label for="fileTitle"><fmt:message key="Title"/></label><br/>
