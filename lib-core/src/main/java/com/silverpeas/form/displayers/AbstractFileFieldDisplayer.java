@@ -27,9 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -42,6 +39,9 @@ import com.silverpeas.util.FileUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
+
 /**
  *
  * @author ehugonnet
@@ -51,7 +51,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   protected SimpleDocument createSimpleDocument(String objectId, String componentId, FileItem item,
       String fileName, String userId) throws IOException {
     SimpleDocumentPK documentPk = new SimpleDocumentPK(null, componentId);
-    SimpleDocument document = new SimpleDocument(documentPk, objectId, 0, false, userId,
+    SimpleDocument document = new SimpleDocument(documentPk, objectId, 0, false, null,
         new SimpleAttachment(fileName, null, null, null, item.getSize(),
         FileUtil.getMimeType(fileName), userId, new Date(), null));
     document.setDocumentType(DocumentType.form);

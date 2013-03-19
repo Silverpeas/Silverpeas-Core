@@ -30,9 +30,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.io.IOUtils;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -61,6 +58,9 @@ import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileServerUtils;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.IOUtils;
 
 /**
  * A FileFieldDisplayer is an object which can display a link to a file (attachment) in HTML and can
@@ -371,7 +371,7 @@ public class FileFieldDisplayer extends AbstractFieldDisplayer<FileField> {
           null, null, null, item.getSize(), FileUtil.getMimeType(logicalName), userId, new Date(),
           null));
     } else {
-      document = new SimpleDocument(documentPk, objectId, 0, false, userId, new SimpleAttachment(
+      document = new SimpleDocument(documentPk, objectId, 0, false, null, new SimpleAttachment(
           logicalName, null, null, null, item.getSize(), FileUtil.getMimeType(logicalName), userId,
           new Date(), null));
     }
