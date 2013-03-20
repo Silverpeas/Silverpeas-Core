@@ -702,32 +702,18 @@
           var attachmentId = $(this).data("id");
       <c:choose>
         <c:when test="${silfn:isI18n()}">      
-             var $b = $("input[name='languagesToDelete']");
-             if($b.length ==  $b.filter(':checked').length ) {
-                deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
-                $.ajax({
-                  url: deleteUrl,
-                  type: "DELETE",
-                  cache: false,
-                  success: function(data) {
-                    reloadIncludingPage();
-                    $("#dialog-attachment-delete").dialog("close");
-                  }
-                });
-             } else {
-              $b.filter(':checked').each(function() {
-                deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
-                $.ajax({
-                  url: deleteUrl,
-                  type: "DELETE",
-                  cache: false,
-                  success: function(data) {
-                    reloadIncludingPage();
-                    $("#dialog-attachment-delete").dialog("close");
-                  }
-                });
-               });
-              }
+          $("input[name='languagesToDelete']").filter(':checked').each(function() {
+            deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
+            $.ajax({
+              url: deleteUrl,
+              type: "DELETE",
+              cache: false,
+              async: false,
+              success: function(data) {}
+            });
+          });
+          reloadIncludingPage();
+          $("#dialog-attachment-delete").dialog("close");
         </c:when>
           <c:otherwise>
               deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
