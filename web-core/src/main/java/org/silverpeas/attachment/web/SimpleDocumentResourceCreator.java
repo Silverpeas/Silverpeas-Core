@@ -109,9 +109,10 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("foreignId") String foreignId,
       final @FormDataParam("indexIt") String indexIt,
       final @FormDataParam("versionType") String type,
+      final @FormDataParam("commentMessage") String comment,
       final @FormDataParam("context") String context) throws IOException {
     SimpleDocumentEntity entity = createSimpleDocument(uploadedInputStream,
-        fileDetail, language, fileTitle, description, foreignId, indexIt, type, context);
+        fileDetail, language, fileTitle, description, foreignId, indexIt, type, comment, context);
     String result = null;
     if (entity != null) {
       ObjectMapper mapper = new ObjectMapper();
@@ -147,18 +148,39 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("foreignId") String foreignId,
       final @FormDataParam("indexIt") String indexIt,
       final @FormDataParam("versionType") String type,
+      final @FormDataParam("commentMessage") String comment,
       final @FormDataParam("context") String context) throws IOException {
     return createSimpleDocument(uploadedInputStream, fileDetail, language, fileTitle, description,
-        foreignId, indexIt, type, context);
+        foreignId, indexIt, type, comment, context);
   }
 
   protected SimpleDocumentEntity createSimpleDocument(InputStream uploadedInputStream,
-      FormDataContentDisposition fileDetail, String language, String fileTitle, String description,
-      String foreignId, String indexIt, String type, String context) throws IOException {
+      FormDataContentDisposition fileDetail, String language, String fileTitle, String fileDescription,
+      String foreignId, String indexIt, String type, String comment, String context) throws IOException {
     if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
         getFileName())) {
+      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
+      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+      
       String lang = I18NHelper.checkLanguage(language);
       String title = fileTitle;
+      String description = fileDescription;
+      if (!StringUtil.isDefined(fileTitle)) {
+        MetadataExtractor extractor = new MetadataExtractor();
+        MetaData metadata = extractor.extractMetadata(tempFile);
+        if (StringUtil.isDefined(metadata.getTitle())) {
+          title = metadata.getTitle();
+        } else {
+          title = "";
+        }
+        if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
+          description = metadata.getSubject();
+        }
+      }
+      if (!StringUtil.isDefined(description)) {
+        description = "";
+      }
+     
       DocumentType attachmentContext;
       if (!StringUtil.isDefined(context)) {
         attachmentContext = DocumentType.attachment;
@@ -177,30 +199,21 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
         needCreation = document == null;
         if (document == null) {
           document = new HistorisedDocument(pk, foreignId, 0, userId,
-              new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
+              new SimpleAttachment(fileDetail.getFileName(), lang, title, description, fileDetail.getSize(),
               FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
           document.setDocumentType(attachmentContext);
         }
         document.setPublicDocument(publicDocument);
+        document.setComment(comment);
       } else {
         document = new SimpleDocument(pk, foreignId, 0, false, null,
-            new SimpleAttachment(fileDetail.getFileName(), lang, title, "", fileDetail.getSize(),
+            new SimpleAttachment(fileDetail.getFileName(), lang, title, description, fileDetail.getSize(),
             FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
         document.setDocumentType(attachmentContext);
       }
       document.setLanguage(language);
       document.setTitle(title);
-      document.setDescription(description);
-      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
-      FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      MetadataExtractor extractor = new MetadataExtractor();
-      MetaData metadata = extractor.extractMetadata(tempFile);
-      if (!StringUtil.isDefined(fileTitle)) {
-        document.setTitle(metadata.getTitle());
-      }
-      if (!StringUtil.isDefined(description)) {
-        document.setDescription(metadata.getSubject());
-      }
+      document.setDescription(description);      
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (needCreation) {
