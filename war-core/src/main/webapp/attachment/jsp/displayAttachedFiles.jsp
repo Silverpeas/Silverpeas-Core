@@ -44,12 +44,18 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
+<c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
+<!-- 
+isI18n: <c:out value="${silfn:isI18n()}" />
+isVersionActive: <c:out value="${not isVersionActive}" />
+value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
+  -->
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <c:choose>
-  <c:when test="${silfn:booleanValue(isComponentVersioned)}">
+  <c:when test="${isVersionActive}">
     <script type="text/javascript" src='<c:url value="/attachment/jsp/javaScript/versionedDragAndDrop.js" />' ></script>
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
@@ -198,7 +204,7 @@
   pageContext.setAttribute("attachments", attachments);
 %>
 <div class="attachments bgDegradeGris">
-  <div class="bgDegradeGris  header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
+  <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
     <ul id="attachmentList">
       <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
         <c:forEach items="${pageScope.attachments}" var="varAttachment" >
@@ -260,7 +266,7 @@
                 <c:if test="${showFileSize && showDownloadEstimation}"> / </c:if>
               <c:if test="${showDownloadEstimation}">
                 <c:out value="${view:estimateDownload(currentAttachment.size)}" />
-              </c:if> - <view:formatDate value="${currentAttachment.created}" />
+              </c:if> - <view:formatDateTime value="${currentAttachment.updated}" />
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
                 <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
               </c:if>
@@ -295,7 +301,7 @@
             <c:if test="${contextualMenuEnabled}">
               <c:choose>
                 <c:when test="${currentAttachment.readOnly}">
-                  <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${currentAttachment.editedBy}" /> <fmt:message key="at" /> <view:formatDate value="${currentAttachment.reservation}" /></div>
+                  <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:visible"><fmt:message key="readOnly" /> <view:username zoom="false" userId="${currentAttachment.editedBy}" /> <fmt:message key="at" /> <view:formatDateTime value="${currentAttachment.reservation}" /></div>
                 </c:when>
                 <c:otherwise>
                   <div class='workerInfo'  id='worker<c:out value="${currentAttachment.oldSilverpeasId}" />' style="visibility:hidden"> </div>
@@ -329,7 +335,7 @@
     </ul>
     <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
       <c:choose>
-        <c:when test="${silfn:booleanValue(isComponentVersioned)}">
+        <c:when test="${isVersionActive}">
         <div>
             <div class="dragNdrop">
               <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
@@ -561,9 +567,8 @@
     }
 
     function deleteAttachment(id, filename) {
-      $("#dialog-attachment-delete").dialog("option", 'title', '<fmt:message key="supprimerAttachment" />' + filename + ' ?');
-      $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?' );
-      $("#dialog-attachment-delete").data("id", id).dialog("open");
+      $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
+      $("#dialog-attachment-delete").data("id", id).data("filename", filename).dialog("open");
     }
 
     function deleteContent(id, lang) {
@@ -678,30 +683,39 @@
     $("#dialog-attachment-delete").dialog({
       autoOpen: false,
       open:function() {
-      <c:if test="${silfn:isI18n()}">
+    	  var filename = $(this).data("filename");
+    	  $("#button-delete-all").hide();
+      <c:if test="${silfn:isI18n() && not isVersionActive}">
         translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
           type: "GET",
           cache: false,
           success: function(data) {
-            $("#attachment-delete-warning-message").hide();
-            for(var i = 0 ; i < data.length; i++) {
-              $("#delete-language-" + data[i].lang).show();
-            }
-            $("#attachment-delete-select-lang").show();
+        	if (data.length > 1) {
+        	  $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
+	          for(var i = 0 ; i < data.length; i++) {
+	            $("#delete-language-" + data[i].lang).show();
+	          }
+	          $("#attachment-delete-select-lang").show();
+	          $("#button-delete-all").show();
+        	} else {
+        	  $("#attachment-delete-select-lang").hide();
+           	  $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
+           	  $("#button-delete-all").hide();
+        	}
           }
         });</c:if>
       },
-      title: '<fmt:message key="supprimerAttachment" />',
-      height: 300,
+      title: '<fmt:message key="attachment.dialog.delete" />',
+      height: 'auto',
       width: 350,
       modal: true,
       buttons: {
-        '<fmt:message key="GML.ok"/>': function() {
+        '<fmt:message key="GML.delete"/>': function() {
           var attachmentId = $(this).data("id");
       <c:choose>
-        <c:when test="${silfn:isI18n()}">      
+        <c:when test="${silfn:isI18n() && not isVersionActive}">      
           $("input[name='languagesToDelete']").filter(':checked').each(function() {
             deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
             $.ajax({
@@ -729,6 +743,22 @@
             </c:otherwise>
           </c:choose>
         },
+        '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
+        	id: "button-delete-all",
+        	text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
+        	click: function() {
+        		deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+                $.ajax({
+                  url: deleteUrl,
+                  type: "DELETE",
+                  cache: false,
+                  success: function(data) {
+                    reloadIncludingPage();
+                    $(this).dialog("close");
+                  }
+                });
+        	}
+        },
         '<fmt:message key="GML.cancel"/>': function() {
           $(this).dialog("close");
         }
@@ -739,8 +769,9 @@
 
       $("#dialog-attachment-add").dialog({
         autoOpen: false,
-        height: 350,
-        width: 600,
+        title: "<fmt:message key="attachment.dialog.add" />",
+        height: 'auto',
+        width: 500,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {             
@@ -770,8 +801,9 @@
 
       $("#dialog-attachment-update").dialog({
         autoOpen: false,
-        height: 350,
-        width: 600,
+        title: "<fmt:message key="attachment.dialog.update" />",
+        height: 'auto',
+        width: 500,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {              
@@ -793,7 +825,7 @@
               $('#update-attachment-form').attr('action', submitUrl);
               $('#update-attachment-form').submit();
             } },
-              <c:if test="${silfn:isI18n()}">
+          <c:if test="${silfn:isI18n() && not isVersionActive}">
           '<fmt:message key="attachment.dialog.delete.lang"/>': function() {
           if(confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
             $.ajax({
@@ -824,13 +856,14 @@
           modal: true,
           title: '<fmt:message key="attachment.dialog.delete" />' ,
           height: 'auto',
-          width: 400
+          width: 500
         });
 
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
-        height: 350,
-        width: 600,
+        title: "<fmt:message key="attachment.dialog.checkin"/>",
+        height: 'auto',
+        width: 500,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
@@ -955,86 +988,94 @@
     return false;
   }
 </script>
+
 <div id="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
-    <label for="fileName"><fmt:message key="GML.file" /></label><br/>
-    <span id="fileName"></span><br/>
-    <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
-    <label for="file_upload"><fmt:message key="fichierJoint"/></label><br/>
-    <input type="file" name="file_upload" size="60" id="file_upload" multiple/><br/>
-    <c:choose>
-      <c:when test="${silfn:booleanValue(isComponentVersioned)}">
-        <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
-        <input value="0" type="radio" name="versionType" id="versionType"><fmt:message key="attachment.version_public.label"/>
-        <input value="1" type="radio" name="versionType" id="versionType" checked><fmt:message key="attachment.version_wip.label"/><br/>
-        <label for="commentMessage"><fmt:message key="attachment.dialog.comment"/></label>
-        <input type="text" name="commentMessage" size="100" id="commentMessage" /><br/>
-      </c:when>
-      <c:otherwise>        
-        <view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" /><br/>
-      </c:otherwise>
-    </c:choose>
-    <label for="fileTitle"><fmt:message key="Title"/></label><br/>
-    <input type="text" name="fileTitle" size="60" id="fileTitle" /><br/>
-    <label for="fileDescription"><fmt:message key="GML.description" /></label><br/>
-    <textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea><br/>
-    <input type="submit" value="Submit" style="display:none" />
-  </form>
-</div>
-<div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
-    <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
-    <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    <label for="file_create"><fmt:message key="fichierJoint"/></label><br/>
-    <input type="file" name="file_upload" size="60" id="file_create" multiple/><br/>    
-     <c:choose>
-       <c:when test="${silfn:booleanValue(isComponentVersioned)}">
-         <label for="versionType"><fmt:message key="attachment.version.label"/></label><br/>
-         <input value="0" type="radio" name="versionType" id="typeVersionPublic"><fmt:message key="attachment.version_public.label"/>
-         <input value="1" type="radio" name="versionType" id="typeVersionPrivate" checked><fmt:message key="attachment.version_wip.label"/><br/>
-       </c:when>
-      <c:otherwise>        
-        <view:langSelect elementName="fileLang" elementId="langCreate" langCode="fr" /><br/>
-      </c:otherwise>
-    </c:choose>
-    <label for="fileTitleCreate"><fmt:message key="Title"/></label><br/>
-    <input type="text" name="fileTitle" size="60" id="fileTitleCreate" /><br/>
-    <label for="fileDescriptionCreate"><fmt:message key="GML.description" /></label><br/>
-    <textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea><br/>
+    <input type="hidden" name="IdAttachment" id="attachmentId"/>
+    <c:if test="${silfn:isI18n() && not isVersionActive}">
+    	<label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+    	<span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
+    </c:if>
+    
+    <c:if test="${isVersionActive}">
+      <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+      <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+      <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
+    </c:if>
+    <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
+    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
+    
+    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
+    <span id="fileName" class="champ-ui-dialog"></span>
+    <label for="file_upload" class="label-ui-dialog">&nbsp;</label>
+    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
+    <c:if test="${isVersionActive}">
+      <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+    </c:if>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
 
-    <div id="dialog-attachment-delete" style="display:none">
-      <c:choose>
-        <c:when test="${silfn:isI18n()}">
-          <div id="attachment-delete-select-lang" style="display:none">
-            <label for="languagesToDelete"><fmt:message key="attachment.allTranslations"/></label>
-            <div id="languages">
-              <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
-                <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
-              </c:forEach>
-            </div>
-          </div>
-        </c:when>
-        <c:otherwise>
-          <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-        </c:otherwise>
-      </c:choose>
-    </div>
+<div id="dialog-attachment-add" style="display:none">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+    <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
+    <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
+    
+    <c:if test="${silfn:isI18n() && not isVersionActive}">
+      <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+      <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
+    </c:if>
+    
+    <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
+    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_create" /></span>
+    <c:if test="${isVersionActive}">
+      <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+      <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="typeVersionPublic" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+      <input value="1" type="radio" name="versionType" id="typeVersionPrivate"/><fmt:message key="attachment.version_wip.label"/></span>
+      <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+    </c:if>
+    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
+    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
+    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea></span>
+    <input type="submit" value="Submit" style="display:none" />
+  </form>
+</div>
+
+<div id="dialog-attachment-delete" style="display:none">
+  <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
+    <c:if test="${silfn:isI18n() && not isVersionActive}">
+      <div id="attachment-delete-select-lang" style="display:none">
+        <div id="languages">
+          <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">
+            <span id='delete-language-<c:out value="${supportedLanguage}"/>' style="display:none"><input type="checkbox" id='<c:out value="${supportedLanguage}"/>ToDelete' name="languagesToDelete" value='<c:out value="${supportedLanguage}"/>'/><c:out value="${silfn:i18nLanguageLabel(supportedLanguage, sessionScope.SilverSessionController.favoriteLanguage)}"/></span>
+          </c:forEach>
+        </div>
+      </div>
+    </c:if>
+</div>
 
  <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="checkin_oldId" id="checkin_oldId" value="-1" />
     <input type="hidden" name="force" id="force" value="false" />
     <input type="hidden" name="webdav" id="webdav" value="false" />
-    <c:if test="${silfn:booleanValue(isComponentVersioned)}">
-      <label for="private"><fmt:message key="attachment.version.label"/></label><br/>
-      <input value="false" type="radio" name="private" id="private" checked><fmt:message key="attachment.version_public.label"/>
-      <input value="true" type="radio" name="private" id="private"><fmt:message key="attachment.version_wip.label"/><br/>
-      <label for="comment"><fmt:message key="attachment.dialog.comment" /></label><br/>
-      <textarea name="comment" cols="60" rows="3" id="comment"></textarea><br/>
-    </c:if>
+    <c:choose>
+        <c:when test="${isVersionActive}">
+          <label for="private" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+	      <span class="champ-ui-dialog"><input value="false" type="radio" name="private" id="private" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+	      <input value="true" type="radio" name="private" id="private"/><fmt:message key="attachment.version_wip.label"/></span>
+	      <label for="comment" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment" /></label>
+	      <span class="champ-ui-dialog"><textarea name="comment" cols="60" rows="3" id="comment"></textarea></span>
+        </c:when>
+        <c:otherwise>
+          <fmt:message key="confirm.checkin.message" />
+        </c:otherwise>
+    </c:choose>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>

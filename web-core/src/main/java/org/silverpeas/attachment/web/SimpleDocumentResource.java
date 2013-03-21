@@ -228,6 +228,9 @@ public class SimpleDocumentResource extends RESTWebService {
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
+      if (!StringUtil.isDefined(document.getEditedBy())) {
+        document.edit(getUserDetail().getId());
+      }
       AttachmentServiceFactory.getAttachmentService()
           .updateAttachment(document, content, true, true);
       content.close();

@@ -32,9 +32,11 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.I18NLanguage;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.html.Input;
+import org.apache.ecs.html.Label;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 
@@ -47,6 +49,7 @@ public class LanguageSelectorTag extends SimpleTagSupport {
   private String currentLangCode = I18NHelper.defaultLanguage;
   private String elementId;
   private String elementName;
+  private boolean includeLabel;
 
   public void setElementId(String elementId) {
     this.elementId = elementId;
@@ -54,6 +57,10 @@ public class LanguageSelectorTag extends SimpleTagSupport {
 
   public void setElementName(String elementName) {
     this.elementName = elementName;
+  }
+  
+  public void setIncludeLabel(boolean includeLabel) {
+    this.includeLabel = includeLabel;
   }
 
   public String getLangCode() {
@@ -77,6 +84,12 @@ public class LanguageSelectorTag extends SimpleTagSupport {
         options.add(option);
       }
       langSelector.addElement(options.toArray(new Option[options.size()]));
+      if (includeLabel) {
+        Label label = new Label(elementId);
+        label.addElement(GeneralPropertiesManager.getGeneralMultilang(getLangCode()).getString(
+            "GML.language"));
+        xhtml.addElement(label);
+      }
       xhtml.addElement(langSelector);
     } else {
       Input hidden = new Input();

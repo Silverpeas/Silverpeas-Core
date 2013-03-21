@@ -76,29 +76,29 @@
     String id = document.getPk().getId();
     boolean spinfireViewerEnable = attachmentSettings.getBoolean("SpinfireViewerEnable", false);
 %>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title><fmt:message key="popupTitle" /></title>
   <view:looknfeel />
 <view:includePlugin name="qtip"/>
 </head>
 <body>
-  <view:frame>
     <view:window>
-      <view:browseBar extraInformations="${requestScope.Document.title}"/>
+      <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
 
 <%
 ArrayPane arrayPane = gef.getArrayPane("List", "ViewAllVersions?DocId="+id+"&Alias=null&ComponentId="+componentId, request,session);// declare an array
 
 // header of the array
+ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
+arrayColumn_version.setSortable(false);
 ArrayColumn arrayColumn_mimeType = arrayPane.addArrayColumn(messages.getString("GML.attachments"));
 arrayColumn_mimeType.setSortable(false);
 ArrayColumn arrayColumn_titre = arrayPane.addArrayColumn(messages.getString("GML.title"));
 arrayColumn_mimeType.setSortable(false);
 ArrayColumn arrayColumn_infos = arrayPane.addArrayColumn(messages.getString("description"));
 arrayColumn_mimeType.setSortable(false);
-ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
-arrayColumn_version.setSortable(false);
 ArrayColumn arrayColumn_creatorLabel = arrayPane.addArrayColumn(messages.getString("creator"));
 arrayColumn_creatorLabel.setSortable(false);
 ArrayColumn arrayColumn_date = arrayPane.addArrayColumn(messages.getString("date"));
@@ -107,9 +107,6 @@ ArrayColumn arrayColumn_status = arrayPane.addArrayColumn(messages.getString("co
 arrayColumn_status.setSortable(false);
 
 ArrayLine arrayLine = null; // declare line object of the array
-
-
-
 
 for (SimpleDocument publicVersion : vVersions) {
     arrayLine = arrayPane.addArrayLine(); // set a new line
@@ -131,21 +128,23 @@ for (SimpleDocument publicVersion : vVersions) {
       spinFire += "</div>";
     }
     String permalink = " <a href=\""+URLManager.getSimpleURL(URLManager.URL_VERSION, publicVersion.getId())+"\"><img src=\""+URLManager.getApplicationURL()+"/util/icons/link.gif\" border=\"0\" valign=\"absmiddle\" alt=\""+messages.getString("versioning.CopyLink")+"\" title=\""+messages.getString("versioning.CopyLink")+"\" target=\"_blank\"></a> ";
+    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+
         FileRepositoryManager.getFileIcon(publicVersion.getFilename()) +"\" border=\"0\" title=\"" +publicVersion.getFilename() + "\"/> " + publicVersion.getFilename() + "</a>");
-     arrayLine.addArrayCellText(publicVersion.getTitle());
-     arrayLine.addArrayCellText(publicVersion.getDescription());
-    arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
-    if(StringUtil.isDefined(publicVersion.getUpdatedBy())) {
-      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getUpdatedBy())));
-      ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getUpdated()));
-      cell.setNoWrap(true);
-    }else {
-      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
-      ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDate(publicVersion.getCreated()));
-      cell.setNoWrap(true);
+    arrayLine.addArrayCellText(publicVersion.getTitle());
+    if (StringUtil.isDefined(publicVersion.getDescription())) {
+      arrayLine.addArrayCellText(publicVersion.getDescription());
+    } else {
+      arrayLine.addArrayCellText("");
     }
-
+    if (StringUtil.isDefined(publicVersion.getUpdatedBy())) {
+      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getUpdatedBy())));
+    } else {
+      arrayLine.addArrayCellText("????");
+    }
+    ArrayCellText cell = arrayLine.addArrayCellText(resources.getOutputDateAndHour(publicVersion.getUpdated()));
+    cell.setNoWrap(true);
+    
    	String xtraData = "";
   	if (StringUtil.isDefined(publicVersion.getXmlFormId())) {
       String xmlURL = URLManager.getApplicationURL()+"/RformTemplate/jsp/View?ObjectId="+publicVersion.getPk().getId()+"&ComponentId="+componentId+"&ObjectType=Versioning&XMLFormName="+URLEncoder.encode(publicVersion.getXmlFormId(), CharEncoding.UTF_8);
@@ -160,11 +159,10 @@ for (SimpleDocument publicVersion : vVersions) {
 
     out.println(arrayPane.print());%>
     </view:window>
-  </view:frame>
 </body>
 </html>
 <% if (spinfireViewerEnable) { %>
-<script language="javascript">
+<script type="text/javascript">
 	if (navigator.appName=='Microsoft Internet Explorer') {
 		for (i=0; document.getElementsByName("switchView")[i].style.display=='none'; i++)
 			document.getElementsByName("switchView")[i].style.display = '';

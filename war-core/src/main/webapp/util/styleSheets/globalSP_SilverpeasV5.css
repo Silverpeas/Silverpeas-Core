@@ -5340,3 +5340,14 @@ ul.tagit li.tagit-choice {
 ul.tagit li.tagit-choice a.tagit-close {
     padding: 0px 0px 2px 3px !important;
 }
+
+.ui-dialog .label-ui-dialog {
+  float:left;
+  clear:left;
+  width:30%;
+}
+
+.ui-dialog .champ-ui-dialog {
+ float:left;
+ width:70%;
+}
