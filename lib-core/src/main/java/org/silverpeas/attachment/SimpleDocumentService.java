@@ -440,7 +440,7 @@ public class SimpleDocumentService implements AttachmentService {
         webdavRepository.updateNodeAttachment(session, finalDocument);
       }
       repository.duplicateContent(document, finalDocument);
-      String userId = finalDocument.getCreatedBy();
+      String userId = finalDocument.getUpdatedBy();
       if (StringUtil.isDefined(userId) && invokeCallback && finalDocument.isPublic()) {
         CallBackManager callBackManager = CallBackManager.get();
         callBackManager.invoke(CallBackManager.ACTION_ATTACHMENT_UPDATE, Integer.parseInt(userId),

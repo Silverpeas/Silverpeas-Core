@@ -123,6 +123,8 @@ public class DocumentRepository {
     Node docsNode = prepareComponentAttachments(session, document.getInstanceId(), document.
         getFolder());
     Node documentNode = docsNode.addNode(document.computeNodeName(), SLV_SIMPLE_DOCUMENT);
+    document.setUpdatedBy(document.getCreatedBy());
+    document.setUpdated(document.getCreated());
     converter.fillNode(document, documentNode);
     if (document.isVersioned()) {
       documentNode.addMixin(MIX_SIMPLE_VERSIONABLE);
@@ -246,6 +248,7 @@ public class DocumentRepository {
     if (StringUtil.isDefined(document.getEditedBy())) {
       document.setUpdatedBy(document.getEditedBy());
     }
+    document.setUpdated(new Date());
     converter.fillNode(document, documentNode);
   }
 
