@@ -5343,11 +5343,13 @@ ul.tagit li.tagit-choice a.tagit-close {
 
 .ui-dialog .label-ui-dialog {
   float:left;
-  clear:left;
-  width:30%;
+  clear:both;
+  width:25%;
+  margin-bottom: 14px;
 }
 
 .ui-dialog .champ-ui-dialog {
- float:left;
+ float:right;
  width:70%;
+ margin-bottom: 14px;
 }
