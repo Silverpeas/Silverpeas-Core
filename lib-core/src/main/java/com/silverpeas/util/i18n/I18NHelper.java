@@ -24,10 +24,6 @@
 
 package com.silverpeas.util.i18n;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,10 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
+
+import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class I18NHelper {
 
@@ -58,7 +61,7 @@ public class I18NHelper {
   public static final String HTMLLink2 = "Translation?Code=";
 
   static {
-    ResourceLocator rs = new ResourceLocator("com.silverpeas.util.i18n", "");
+    ResourceLocator rs = new ResourceLocator("org.silverpeas.util.i18n", "");
     String rsLanguages = rs.getString("languages");
     StringTokenizer tokenizer = new StringTokenizer(rsLanguages, ",");
     while (tokenizer.hasMoreTokens()) {
@@ -68,15 +71,15 @@ public class I18NHelper {
       if (defaultLanguage == null) {
         defaultLanguage = language;
       }
-      ResourceLocator rsLanguage = new ResourceLocator("com.silverpeas.util.multilang.i18n",
+      ResourceLocator rsLanguage = new ResourceLocator("org.silverpeas.util.multilang.i18n",
           language);
 
       StringTokenizer tokenizer2 = new StringTokenizer(rsLanguages, ",");
       List<I18NLanguage> l = new ArrayList<I18NLanguage>();
       while (tokenizer2.hasMoreTokens()) {
         String language2 = tokenizer2.nextToken();
-        I18NLanguage i18nLanguage = new I18NLanguage(language2, rsLanguage
-            .getString("language_" + language2));
+        I18NLanguage i18nLanguage = new I18NLanguage(language2, rsLanguage.getString("language_"
+            + language2));
         l.add(i18nLanguage);
       }
       allLanguages.put(language, l);
@@ -84,7 +87,7 @@ public class I18NHelper {
     isI18N = (nbLanguages > 1);
   }
 
-  static public String getLanguageLabel(String code, String userLanguage) {
+  public static String getLanguageLabel(String code, String userLanguage) {
     List<I18NLanguage> labels = allLanguages.get(userLanguage);
     for (I18NLanguage language : labels) {
       if (language.getCode().equalsIgnoreCase(code)) {
@@ -94,38 +97,38 @@ public class I18NHelper {
     return "";
   }
 
-  static private List<I18NLanguage> getAllLanguages(String userLanguage) {
+  public static List<I18NLanguage> getAllLanguages(String userLanguage) {
     return allLanguages.get(userLanguage);
   }
 
-  static public Iterator<String> getLanguages() {
+  public static Iterator<String> getLanguages() {
     return allLanguages.keySet().iterator();
   }
 
-  static public Set<String> getAllSupportedLanguages() {
+  public static Set<String> getAllSupportedLanguages() {
     return allLanguages.keySet();
   }
 
-  static public int getNumberOfLanguages() {
+  public static int getNumberOfLanguages() {
     return allLanguages.size();
   }
 
-  static public boolean isDefaultLanguage(String language) {
+  public static boolean isDefaultLanguage(String language) {
     if (StringUtil.isDefined(language)) {
       return defaultLanguage.equalsIgnoreCase(language);
     }
     return true;
   }
 
-  static public String checkLanguage(String language) {
+  public static String checkLanguage(String language) {
     String lang = language;
-    if (!StringUtil.isDefined(language)) {
+    if (!StringUtil.isDefined(language) || ! allCodes.contains(language)) {
       lang = defaultLanguage;
     }
     return lang;
   }
 
-  static public String getHTMLLinks(String url, String currentLanguage) {
+  public static String getHTMLLinks(String url, String currentLanguage) {
     if (!isI18N) {
       return "";
     }
@@ -165,7 +168,7 @@ public class I18NHelper {
     return links;
   }
 
-  static public String getHTMLLinks(List<String> languages, String currentLanguage) {
+  public static String getHTMLLinks(List<String> languages, String currentLanguage) {
     if (!isI18N || languages == null) {
       return "";
     }
@@ -204,7 +207,7 @@ public class I18NHelper {
     return links;
   }
 
-  static public String getHTMLLinks(I18NBean bean, String currentLanguage) {
+  public static String getHTMLLinks(I18NBean bean, String currentLanguage) {
     String lang = currentLanguage;
     if (!isI18N || bean == null) {
       return "";
@@ -220,12 +223,11 @@ public class I18NHelper {
     return getHTMLLinks(languages, lang);
   }
 
-  static public String getFormLine(ResourcesWrapper resources) {
+  public static String getFormLine(ResourcesWrapper resources) {
     return getFormLine(resources, null, null);
   }
 
-  static public String getFormLine(ResourcesWrapper resources, I18NBean bean,
-      String translation) {
+  public static String getFormLine(ResourcesWrapper resources, I18NBean bean, String translation) {
     if (nbLanguages == 1) {
       return "";
     }
@@ -233,14 +235,13 @@ public class I18NHelper {
     tr.append("<tr>\n");
     tr.append("<td class=\"txtlibform\">").append(
         resources.getString("GML.language")).append(" :</td>\n");
-    tr.append("<td>").append(
-        getHTMLSelectObject(resources.getLanguage(), bean, translation))
-        .append("</td>");
+    tr.append("<td>").append(getHTMLSelectObject(resources.getLanguage(), bean, translation)).
+        append("</td>");
     tr.append("</tr>\n");
     return tr.toString();
   }
 
-  static public String getHTMLSelectObject(String userLanguage, I18NBean bean,
+  public static String getHTMLSelectObject(String userLanguage, I18NBean bean,
       String selectedTranslation) {
     List<I18NLanguage> languages = getAllLanguages(userLanguage);
 
@@ -258,7 +259,7 @@ public class I18NHelper {
     return getHTMLSelectObject(result, bean, selectedTranslation, userLanguage);
   }
 
-  static private String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
+   private static String getHTMLSelectObject(List<I18NLanguage> toDisplay, I18NBean bean,
       String selectedTranslation, String userLanguage) {
     String list = "";
     String currentTranslation = selectedTranslation;
@@ -310,7 +311,7 @@ public class I18NHelper {
     return list;
   }
 
-  static public String updateHTMLLinks(I18NBean bean) {
+  public static String updateHTMLLinks(I18NBean bean) {
     String javaScript = "";
 
     Set<String> codes = bean.getTranslations().keySet();
@@ -326,7 +327,7 @@ public class I18NHelper {
     return javaScript;
   }
 
-  static public String[] getLanguageAndTranslationId(HttpServletRequest request) {
+  public static String[] getLanguageAndTranslationId(HttpServletRequest request) {
     String param = request.getParameter(HTMLSelectObjectName);
     return getLanguageAndTranslationId(param);
   }
@@ -336,13 +337,13 @@ public class I18NHelper {
       StringTokenizer tokenizer = new StringTokenizer(param, "_");
       String language = tokenizer.nextToken();
       String translationId = tokenizer.nextToken();
-      String[] result = { language, translationId };
+      String[] result = {language, translationId};
       return result;
     }
     return null;
   }
 
-  static public String getSelectedLanguage(HttpServletRequest request) {
+  public static String getSelectedLanguage(HttpServletRequest request) {
     String[] param = getLanguageAndTranslationId(request);
     if (param != null) {
       return param[0];
@@ -350,16 +351,18 @@ public class I18NHelper {
     return null;
   }
 
-  static public void setI18NInfo(I18NBean bean, HttpServletRequest request) {
-    String languageAndTranslationId = request
-        .getParameter(HTMLSelectObjectName);
-    String removeTranslation = request
-        .getParameter(HTMLHiddenRemovedTranslationMode);
+  public static boolean isI18nActivated() {
+    return isI18N;
+  }
+
+  public static void setI18NInfo(I18NBean bean, HttpServletRequest request) {
+    String languageAndTranslationId = request.getParameter(HTMLSelectObjectName);
+    String removeTranslation = request.getParameter(HTMLHiddenRemovedTranslationMode);
 
     setI18NInfo(bean, languageAndTranslationId, removeTranslation);
   }
 
-  static public void setI18NInfo(I18NBean bean, List<FileItem> parameters) {
+  public static void setI18NInfo(I18NBean bean, List<FileItem> parameters) {
     String languageAndTranslationId = getParameterValue(parameters,
         HTMLSelectObjectName);
     String removeTranslation = getParameterValue(parameters,

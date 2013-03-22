@@ -46,7 +46,7 @@ import java.io.OutputStream;
 public abstract class GoTo extends HttpServlet {
 
   private static final long serialVersionUID = -8381001443484846645L;
-  private static SilverpeasWebUtil util = new SilverpeasWebUtil();
+  protected static SilverpeasWebUtil util = new SilverpeasWebUtil();
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)

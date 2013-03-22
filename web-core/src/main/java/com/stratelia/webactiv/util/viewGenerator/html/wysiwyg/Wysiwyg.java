@@ -14,17 +14,17 @@ public class Wysiwyg {
   private boolean toolbarStartExpanded = true;
   private String imageBrowserURL;
   private String serverURL;
-  
-  ResourceLocator wysiwygSettings = new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
-  
+
+  ResourceLocator wysiwygSettings = new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+
   public Wysiwyg() {
-    
+
   }
-  
+
   public String print() {
     String configFile = wysiwygSettings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/ckeditor/silverconfig.js");
     StringBuilder builder = new StringBuilder(100);
-    
+
     builder.append("CKEDITOR.replace('").append(getReplace()).append("', {\n");
     builder.append("width : '").append(getWidth()).append("',\n");
     builder.append("height : ").append(getHeight()).append(",\n");
@@ -38,10 +38,10 @@ public class Wysiwyg {
     builder.append("customConfig : '").append(configFile).append("',\n");
     builder.append("toolbar : '").append(getToolbar()).append("'\n");
     builder.append("});");
-    
+
     return builder.toString();
   }
-  
+
   public String getReplace() {
     return replace;
   }
@@ -105,5 +105,5 @@ public class Wysiwyg {
   public String getServerURL() {
     return serverURL;
   }
-  
+
 }

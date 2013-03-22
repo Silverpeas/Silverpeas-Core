@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.sharing.services;
 
@@ -27,11 +24,11 @@ import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.stratelia.silverpeas.versioning.model.Document;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -45,11 +42,14 @@ import org.apache.commons.collections.CollectionUtils;
 import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.versioning.Document;
 
 /**
  * Access control to shared nodes and their content.
  */
 public class NodeAccessControl implements ShareableAccessControl {
+
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
 
@@ -67,6 +67,12 @@ public class NodeAccessControl implements ShareableAccessControl {
           AttachmentDetail attachment = (AttachmentDetail) resource.getAccessedObject();
           return isPublicationReadable(attachment.getForeignKey(), nodePk.getInstanceId(),
               autorizedNodes);
+        }
+        if (resource.getAccessedObject() instanceof SimpleDocument) {
+          SimpleDocument attachment = (SimpleDocument) resource.getAccessedObject();
+          Collection<NodePK> fathers = getPublicationFathers(new ForeignPK(attachment.
+              getForeignId(), attachment.getInstanceId()));
+          return CollectionUtils.containsAny(autorizedNodes, fathers);
         }
         if (resource.getAccessedObject() instanceof Document) {
           Document document = (Document) resource.getAccessedObject();
@@ -88,7 +94,7 @@ public class NodeAccessControl implements ShareableAccessControl {
       throws CreateException, RemoteException {
     return findPublicationBm().getAllFatherPK(new PublicationPK(pk.getId(), pk.getInstanceId()));
   }
-  
+
   protected Collection<Alias> getPublicationAliases(WAPrimaryKey pk)
       throws CreateException, RemoteException {
     return findPublicationBm().getAlias(new PublicationPK(pk.getId(), pk.getInstanceId()));
@@ -98,7 +104,7 @@ public class NodeAccessControl implements ShareableAccessControl {
       throws CreateException, RemoteException {
     return findNodeBm().getDescendantPKs(pk);
   }
-  
+
   private boolean isPublicationReadable(WAPrimaryKey pk, String instanceId,
       Collection<NodePK> autorizedNodes) throws RemoteException, CreateException {
     if (pk.getInstanceId().equals(instanceId)) {

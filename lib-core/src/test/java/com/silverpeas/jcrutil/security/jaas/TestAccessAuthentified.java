@@ -22,6 +22,8 @@ package com.silverpeas.jcrutil.security.jaas;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -30,6 +32,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.naming.InitialContext;
+
+import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.JcrConstants;
@@ -82,9 +86,13 @@ public class TestAccessAuthentified {
         "classpath:/spring-jaas.xml", "classpath:/spring-domains.xml");
     BasicDaoFactory.getInstance().setApplicationContext(context);
     repository = context.getBean("repository", JackrabbitRepository.class);
-    String cndFileName = TestAccessAuthentified.class.getClassLoader().getResource(
-        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
-    SilverpeasRegister.registerNodeTypes(cndFileName);
+    Reader reader = new InputStreamReader(TestAccessAuthentified.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+    SilverpeasRegister.registerNodeTypes(reader);
+    }finally {
+      IOUtils.closeQuietly(reader);
+    }
     datasource = context.getBean("jpaDataSource", BasicDataSource.class);
     InitialContext ic = new InitialContext();
     ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
@@ -172,7 +180,7 @@ public class TestAccessAuthentified {
       contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(
           "Bonjour le monde".getBytes()));
       Calendar lastModified = Calendar.getInstance();
-      contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+      contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
       fail(ex.getMessage());
@@ -222,7 +230,7 @@ public class TestAccessAuthentified {
       contentNode.setProperty(JcrConstants.JCR_DATA, new ByteArrayInputStream(
           "Bonjour le monde".getBytes()));
       Calendar lastModified = Calendar.getInstance();
-      contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+      contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
       session.save();
     } catch (Exception ex) {
       fail(ex.getMessage());

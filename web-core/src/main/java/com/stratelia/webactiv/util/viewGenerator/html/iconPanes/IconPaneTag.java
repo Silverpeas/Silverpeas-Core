@@ -34,6 +34,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 public class IconPaneTag extends TagSupport {
 
   static public final String ICONPANE_PAGE_ATT = "pageContextIconPane";
+  private static final long serialVersionUID = -942309015545358248L;
 
   private String orientation = "horizontal";
   private String spacing = null;
@@ -66,19 +67,21 @@ public class IconPaneTag extends TagSupport {
     this.spacing = spacing;
   }
 
+  @Override
   public int doEndTag() throws JspException {
     try {
       IconPane icons = (IconPane) pageContext.getAttribute(ICONPANE_PAGE_ATT);
       pageContext.getOut().println(icons.print());
+      pageContext.removeAttribute(ICONPANE_PAGE_ATT);
     } catch (IOException e) {
       throw new JspException("TabbedPane Tag", e);
     }
     return EVAL_PAGE;
   }
 
+  @Override
   public int doStartTag() throws JspException {
-    GraphicElementFactory gef = (GraphicElementFactory) pageContext
-        .getSession()
+    GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
         .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     IconPane icons = gef.getIconPane();
     pageContext.setAttribute(ICONPANE_PAGE_ATT, icons);

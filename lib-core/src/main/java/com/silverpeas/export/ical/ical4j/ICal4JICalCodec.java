@@ -93,6 +93,7 @@ public class ICal4JICalCodec implements ICalCodec {
 
       // Generate UID
       iCalEvent.getProperties().add(generator.generateUid());
+
       // Add recurring data if any
       if (event.isRecurring()) {
         CalendarEventRecurrence eventRecurrence = event.getRecurrence();
@@ -148,9 +149,7 @@ public class ICal4JICalCodec implements ICalCodec {
     } finally {
       IOUtils.closeQuietly(output);
     }
-
   }
-
 
   private ExDate exceptionDatesFrom(final CalendarEventRecurrence recurrence) {
     List<Datable<?>> exceptionDates = recurrence.getExceptionDates();

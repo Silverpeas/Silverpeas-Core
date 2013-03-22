@@ -51,6 +51,7 @@ import com.sun.portal.portletcontainer.admin.registry.PortletRegistryTags;
 import com.sun.portal.portletcontainer.context.registry.PortletRegistryException;
 import com.sun.portal.portletcontainer.warupdater.PortletWarUpdaterUtil;
 import java.io.FileOutputStream;
+import org.apache.commons.lang3.CharEncoding;
 
 /**
  * PortletRegistryHelper is a Helper class to write to and read from the portlet registry xml files.
@@ -113,7 +114,7 @@ public class PortletRegistryHelper implements PortletRegistryTags {
       TransformerFactory tFactory = TransformerFactory.newInstance();
       Transformer transformer = tFactory.newTransformer();
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      transformer.setOutputProperty(OutputKeys.ENCODING, CharEncoding.UTF_8);
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.setOutputProperty(
           "{http://xml.apache.org/xslt}indent-amount", "5");

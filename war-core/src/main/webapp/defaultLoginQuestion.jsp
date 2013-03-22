@@ -95,9 +95,8 @@
         </div>
         <p><label><span><%=userDetail.getLoginQuestion()%></span>
           <input type="password" name="answer" id="answer"/></label></p>
-        <br/>
-
-        <p>
+          <br/>
+          <p>
           <input type="submit" style="width:0; height:0; border:0; padding:0"/>
           <a href="#" class="submit" onclick="$('#questionForm').submit()"><img src="<%=m_context%>/images/bt-login.png" alt=""/></a>
         </p>

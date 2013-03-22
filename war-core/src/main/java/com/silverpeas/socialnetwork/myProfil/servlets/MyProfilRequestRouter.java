@@ -24,6 +24,21 @@
 
 package com.silverpeas.socialnetwork.myProfil.servlets;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+
 import com.silverpeas.directory.servlets.ImageProfil;
 import com.silverpeas.look.LookHelper;
 import com.silverpeas.personalization.UserMenuDisplay;
@@ -36,8 +51,7 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
-import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
-import org.silverpeas.authentication.exception.AuthenticationException;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
@@ -46,18 +60,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.apache.commons.fileupload.FileItem;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.fileupload.FileItem;
 
 import static com.silverpeas.socialnetwork.myProfil.servlets.MyProfileRoutes.*;
 

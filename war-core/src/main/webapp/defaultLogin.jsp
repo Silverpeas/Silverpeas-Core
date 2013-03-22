@@ -35,7 +35,7 @@
 
 <%
   ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+      new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
 
   pageContext.setAttribute("authenticationBundle", authenticationBundle.getResourceBundle());
 

@@ -23,6 +23,7 @@
  */
 package com.silverpeas.sharing.model;
 
+import java.rmi.RemoteException;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
@@ -40,6 +41,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.Date;
 
+import javax.ejb.CreateException;
+
 /**
  *
  * @author ehugonnet
@@ -51,13 +54,13 @@ public class NodeTicket extends Ticket {
   private static final NodeAccessControl accessControl = new NodeAccessControl();
 
   public NodeTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
 
   public NodeTicket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-          Date endDate, int nbAccessMax) {
+      Date endDate, int nbAccessMax) {
     super(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
     this.sharedObjectType = NODE_TYPE;
   }
@@ -73,14 +76,19 @@ public class NodeTicket extends Ticket {
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    NodeDetail node = null;
     try {
       NodeBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       NodeBm nodeBm = home.create();
-      node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()), getComponentId()));
-    } catch (Exception e) {
+      NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
+          getComponentId()));
+      if (node != null) {
+        return new ShareableNode(getToken(), node);
+      }
+    } catch (CreateException e) {
+      SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
+    } catch (RemoteException e) {
       SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
     }
-    return new ShareableNode(getToken(), node);
+    return null;
   }
 }
