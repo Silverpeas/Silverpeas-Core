@@ -20,50 +20,55 @@
  */
 package com.silverpeas.components.model;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.Properties;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import org.apache.commons.dbcp.BasicDataSourceFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.dbunit.JndiBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.io.IOUtils;
-import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
  * @author ehugonnet
  */
 public abstract class AbstractTestDao extends JndiBasedDBTestCase {
 
-  private static String jndiName = "";
-  private static final Properties props = new Properties();
-  static {
+  public AbstractTestDao() {
+    Properties props = new Properties();
+    InputStream in = null;
     try {
-      props.load(AbstractTestDao.class.getClassLoader().getResourceAsStream("jdbc.properties"));
-    } catch (IOException ex) {
-      Logger.getLogger(AbstractTestDao.class.getName()).log(Level.SEVERE, null, ex);
+      in = AbstractTestDao.class.getClassLoader().getResourceAsStream("jdbc.properties");
+      props.load(in);
+    } catch (IOException ioex) {
+      ioex.printStackTrace();
+    } finally {
+      IOUtils.closeQuietly(in);
     }
+
+    jndiName = props.getProperty("jndi.name");
   }
+  private String jndiName = "";
+  protected EmbeddedDatabase datasource;
 
   @BeforeClass
   public static void setUpClass() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
-    configureJNDIDatasource();
   }
 
   @AfterClass
@@ -78,7 +83,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    */
   @Override
   public void tearDown() throws Exception {
-    super.tearDown();
+    cleanData();
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
@@ -91,6 +96,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
   @After
   public void cleanData() throws Exception {
     super.tearDown();
+    this.datasource.shutdown();
   }
 
   /**
@@ -102,7 +108,7 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
   public void setUp() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
     configureJNDIDatasource();
-    super.setUp();
+    prepareData();
   }
 
   /**
@@ -124,12 +130,12 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
    * @throws NamingException if the data source cannot be found in the JNDI context.
    * @throws Exception if the data source cannot be created.
    */
-  public static void configureJNDIDatasource() throws Exception {
+  public void configureJNDIDatasource() throws Exception {
     InitialContext ic = new InitialContext();
-    DataSource ds = BasicDataSourceFactory.createDataSource(props);
-    jndiName = props.getProperty("jndi.name");
-    rebind(ic, jndiName, ds);
-    ic.rebind(jndiName, ds);
+    EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+    datasource = builder.setType(EmbeddedDatabaseType.H2).addScript(getTableCreationScript()).
+        build();
+    ic.rebind(jndiName, datasource);
   }
 
   @Override
@@ -145,8 +151,9 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
   @Override
   protected IDataSet getDataSet() throws Exception {
     FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-    InputStream in = this.getClass().getResourceAsStream(getDatasetFileName());
+    InputStream in = null;
     try {
+      in = this.getClass().getResourceAsStream(getDatasetFileName());
       ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
       dataSet.addReplacementObject("[NULL]", null);
       return dataSet;
@@ -155,31 +162,19 @@ public abstract class AbstractTestDao extends JndiBasedDBTestCase {
     }
   }
 
-  /**
-   * Workaround to be able to use Sun's JNDI file system provider on Unix
-   *
-   * @param ic : the JNDI initial context
-   * @param jndiName : the binding name
-   * @param ref : the reference to be bound
-   * @throws NamingException
-   */
-  protected static void rebind(InitialContext ic, String jndiName, Object ref) throws
-      NamingException {
-    Context currentContext = ic;
-    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while (tokenizer.hasMoreTokens()) {
-      String name = tokenizer.nextToken();
-      if (tokenizer.hasMoreTokens()) {
-        try {
-          currentContext = (Context) currentContext.lookup(name);
-        } catch (javax.naming.NameNotFoundException nnfex) {
-          currentContext = currentContext.createSubcontext(name);
-        }
-      } else {
-        currentContext.rebind(name, ref);
-      }
-    }
-  }
-
   protected abstract String getDatasetFileName();
+
+  protected abstract String getTableCreationFileName();
+
+  protected String getTableCreationScript() {
+    String filePath = "";
+    try {
+      filePath = this.getClass().getResource(getTableCreationFileName()).toURI().toURL().toString();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } catch (URISyntaxException ex) {
+      ex.printStackTrace();
+    }
+    return filePath;
+  }
 }

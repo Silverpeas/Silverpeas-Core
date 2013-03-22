@@ -24,11 +24,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.socialnetwork.relationShip.RelationShip;
 import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -121,4 +121,8 @@ public class TestRelationShipService extends AbstractTestDao {
     return calend.getTime();
   }
 
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

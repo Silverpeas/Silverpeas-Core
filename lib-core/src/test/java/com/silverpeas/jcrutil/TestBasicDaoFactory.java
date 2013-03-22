@@ -1,30 +1,29 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
-
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.jcr.Node;
@@ -32,39 +31,125 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.naming.InitialContext;
 
+import org.silverpeas.util.Charsets;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
+import com.stratelia.webactiv.util.JNDINames;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.value.ValueFactoryImpl;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static org.junit.Assert.*;
 
-@ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
+public class TestBasicDaoFactory {
+
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
+  private static BasicDataSource datasource;
+
+  @BeforeClass
+  public static void loadSpringContext() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext("/spring-in-memory-jcr.xml");
+    repository = context.getBean("repository", JackrabbitRepository.class);
+    BasicDaoFactory.getInstance().setApplicationContext(context);
+    Reader reader = new InputStreamReader(TestBasicDaoFactory.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SilverpeasRegister.registerNodeTypes(reader);
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
+    datasource = context.getBean("dataSource", BasicDataSource.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
+    ic.rebind(JNDINames.ADMIN_DATASOURCE, datasource);
+    System.out.println(" -> node types registered");
+  }
+
+  @AfterClass
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    datasource.close();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
 
   public TestBasicDaoFactory() {
   }
 
-  @Override
   protected IDataSet getDataSet() throws Exception {
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(this.
-        getClass().getResourceAsStream("test-jcrutil-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    return dataSet;
+    InputStream in = TestBasicDaoFactory.class.getResourceAsStream("test-jcrutil-dataset.xml");
+    try {
+      ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
-  @Override
+  @Before
+  public void setUpDatabase() throws Exception {
+    IDatabaseConnection connection = null;
+    try {
+      connection = new DatabaseConnection(datasource.getConnection());
+      DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          throw e;
+        }
+      }
+    }
+  }
+
+  @After
+  public void tearDownDatabase() throws Exception {
+    clearRepository();
+    IDatabaseConnection connection = null;
+    try {
+      connection = new DatabaseConnection(datasource.getConnection());
+      DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if (connection != null) {
+        try {
+          connection.getConnection().close();
+        } catch (SQLException e) {
+          throw e;
+        }
+      }
+    }
+  }
+
   protected void clearRepository() throws Exception {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       session.getRootNode().getNode("kmelia36").remove();
       session.save();
     } catch (PathNotFoundException pex) {
@@ -131,8 +216,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
       Calendar calend = RandomGenerator.getRandomCalendar();
-      BasicDaoFactory.addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.
-          getTime());
+      BasicDaoFactory
+          .addDateProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE, calend.getTime());
       assertTrue(node.hasProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE));
       assertEquals(calend.getTime(),
           node.getProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE).getDate().getTime());
@@ -194,8 +279,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       Calendar calend = RandomGenerator.getRandomCalendar();
       Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertEquals(calend.getTimeInMillis(),
-          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE).
-          getTimeInMillis());
+          BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE)
+          .getTimeInMillis());
       dateProperty.remove();
       assertNull(
           BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE));
@@ -212,9 +297,8 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
       Node componentNode = session.getRootNode().addNode("kmelia36", JcrConstants.NT_FOLDER);
       String nodeName = RandomGenerator.getRandomString();
       Node node = componentNode.addNode(nodeName, JcrConstants.SLV_LINK);
-      Calendar calend = RandomGenerator.getFuturCalendar();
-      Value value = session.getValueFactory().createValue(calend);
-      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, value);
+      Calendar calend = RandomGenerator.getRandomCalendar();
+      Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertEquals(calend.getTime(), BasicDaoFactory.getDateProperty(node,
           JcrConstants.SLV_PROPERTY_CREATION_DATE));
       dateProperty.remove();
@@ -266,12 +350,11 @@ public class TestBasicDaoFactory extends AbstractJcrRegisteringTestCase {
     String uuid2 = RandomGenerator.getRandomString();
     String uuid3 = RandomGenerator.getRandomString();
     String uuid4 = RandomGenerator.getRandomString();
-    Session session = BasicDaoFactory.getSystemSession();
-    Value[] references = new Value[]{session.getValueFactory().createValue(uuid1),
-      session.getValueFactory().createValue(uuid2),
-      session.getValueFactory().createValue(uuid3),
-      session.getValueFactory().createValue(uuid4)};
-    session.logout();
+    Value[] references = new Value[]{
+      ValueFactoryImpl.getInstance().createValue(uuid1),
+      ValueFactoryImpl.getInstance().createValue(uuid2),
+      ValueFactoryImpl.getInstance().createValue(uuid3),
+      ValueFactoryImpl.getInstance().createValue(uuid4)};
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
     assertEquals(3, result.length);

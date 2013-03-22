@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
+import com.silverpeas.components.model.AbstractTestDao;
 
 import org.junit.Test;
 
@@ -88,4 +88,9 @@ public class UserFavoriteSpaceDAOImplTest extends AbstractTestDao {
     return "test-favoritespace-dataset.xml";
   }
   
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

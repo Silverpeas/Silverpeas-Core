@@ -29,33 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jcr.NodeIterator;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
@@ -65,10 +45,10 @@ import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
@@ -76,52 +56,39 @@ import com.silverpeas.util.PathTestUtil;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author ehugonnet
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class HistorisedDocumentRepositoryTest {
 
   private static final String instanceId = "kmelia73";
   private static EmbeddedDatabase dataSource;
-  private boolean registred = false;
-  private static BetterRepositoryFactoryBean shutdown;
-  @Inject
-  private BetterRepositoryFactoryBean helper;
-  @Resource
-  private Repository repository;
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
   private DocumentRepository documentRepository = new DocumentRepository();
-
-  public Repository getRepository() {
-    return this.repository;
-  }
 
   public HistorisedDocumentRepositoryTest() {
   }
 
   @Before
-  public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
-    if (!registred) {
-      Reader reader = new InputStreamReader(HistorisedDocumentRepositoryTest.class.getClassLoader().
-          getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
-      try {
-        SilverpeasRegister.registerNodeTypes(reader);
-      } finally {
-        IOUtils.closeQuietly(reader);
-      }
-      registred = true;
-      DBUtil.getInstanceForTest(dataSource.getConnection());
-    }
+  public void setupJcr() throws Exception {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
       }
@@ -131,16 +98,13 @@ public class HistorisedDocumentRepositoryTest {
         session.logout();
       }
     }
-    if (shutdown == null) {
-      shutdown = helper;
-    }
   }
 
   @After
   public void cleanRepository() throws RepositoryException {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (session.getRootNode().hasNodes()) {
         NodeIterator iter = session.getRootNode().getNodes(instanceId);
         while (iter.hasNext()) {
@@ -156,17 +120,35 @@ public class HistorisedDocumentRepositoryTest {
   }
 
   @BeforeClass
-  public static void prepareDatabase() {
+  public static void loadSpringContext() throws Exception {
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
+    Reader reader = new InputStreamReader(DocumentRepositoryTest.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml");
+    repository = context.getBean("repository", JackrabbitRepository.class);
+    BasicDaoFactory.getInstance().setApplicationContext(context);
+    try {
+      SilverpeasRegister.registerNodeTypes(reader);
+      System.out.println(" -> node types registered");
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
     EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
     dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript(
         "classpath:/org/silverpeas/attachment/repository/create-database.sql").build();
+    DBUtil.getInstanceForTest(dataSource.getConnection());
   }
 
   @AfterClass
   public static void tearDown() throws Exception {
     dataSource.shutdown();
     DBUtil.clearTestInstance();
-    shutdown.destroy();
+    repository.shutdown();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
   }
@@ -491,7 +473,8 @@ public class HistorisedDocumentRepositoryTest {
       documentRepository.lock(session, docOwn10_2, docOwn10_2.getEditedBy());
       documentRepository.lock(session, docOwn25_1, docOwn25_1.getEditedBy());
       session.save();
-      NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session, instanceId, "10");
+      NodeIterator nodes = documentRepository.selectDocumentsByOwnerIdAndComponentId(session,
+          instanceId, "10");
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docOwn10_1.getId()));
@@ -1018,6 +1001,7 @@ public class HistorisedDocumentRepositoryTest {
       SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       document.setContentType(MimeTypes.PDF_MIME_TYPE);
       createVersionedDocument(session, document, content);
+      document =  documentRepository.findDocumentById(session, document.getPk(), language);
       session.save();
       foreignId = "node36";
       SimpleDocumentPK result = documentRepository.copyDocument(session, document, new ForeignPK(
@@ -1031,6 +1015,7 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc.getCreated(), is(creationDate));
       document.setForeignId(foreignId);
       document.setPK(result);
+      document.setNodeName(doc.getNodeName());
       assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
       checkEnglishSimpleDocument(doc);
     } finally {
@@ -1056,31 +1041,35 @@ public class HistorisedDocumentRepositoryTest {
       SimpleAttachment attachment = createEnglishVersionnedAttachment();
       Date creationDate = attachment.getCreated();
       String foreignId = "node78";
-      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);      
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 0, false, attachment);
       document.setNodeName(SimpleDocument.ATTACHMENT_PREFIX + document.getOldSilverpeasId());
       documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(1024L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-      SimpleDocument otherDocument =
-          new HistorisedDocument(emptyId, foreignId, 0, attachment);
+      SimpleDocument otherDocument = new HistorisedDocument(emptyId, foreignId, 0, attachment);
       createVersionedDocument(session, otherDocument, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       emptyId.setOldSilverpeasId(2048L);
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       SimpleDocument versionedDocument = new HistorisedDocument(emptyId, foreignId, 0, attachment);
-      versionedDocument.setNodeName(SimpleDocument.VERSION_PREFIX + versionedDocument.getOldSilverpeasId());
+      versionedDocument.setNodeName(SimpleDocument.VERSION_PREFIX + versionedDocument.
+          getOldSilverpeasId());
       createVersionedDocument(session, versionedDocument, content);
       session.save();
+      versionedDocument.setUpdatedBy(versionedDocument.getCreatedBy());
+      versionedDocument.setMajorVersion(versionedDocument.getMajorVersion() + 1);
       SimpleDocument doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId,
           oldSilverpeasId, false, language);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(2048L));
       assertThat(doc.getCreated(), is(creationDate));
+      document.setUpdatedBy(document.getCreatedBy());
       assertThat(doc, SimpleDocumentMatcher.matches(document));
       doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId, oldSilverpeasId,
           true, language);
+      document.setUpdatedBy(null);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(2048L));
       assertThat(doc.getCreated(), is(creationDate));

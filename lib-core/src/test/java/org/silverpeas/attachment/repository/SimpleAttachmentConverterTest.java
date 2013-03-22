@@ -23,28 +23,39 @@
  */
 package org.silverpeas.attachment.repository;
 
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.dbunit.dataset.DefaultDataSet;
-import org.dbunit.dataset.IDataSet;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-
+import org.silverpeas.attachment.AttachmentServiceTest;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.util.Charsets;
 
 import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
 
 import com.stratelia.webactiv.util.DateUtil;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;
@@ -52,29 +63,43 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author ehugonnet
- */
-@ContextConfiguration(locations = {"/spring-in-memory-jcr.xml"})
-public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCase {
+public class SimpleAttachmentConverterTest {
 
   private static final String instanceId = "kmelia73";
   private static final SimpleAttachmentConverter instance = new SimpleAttachmentConverter();
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
 
-  public SimpleAttachmentConverterTest() {
+  @BeforeClass
+  public static void loadSpringContext() throws Exception {
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
+    Reader reader = new InputStreamReader(AttachmentServiceTest.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SimpleMemoryContextFactory.setUpAsInitialContext();
+      context = new ClassPathXmlApplicationContext("/spring-in-memory-jcr.xml");
+      repository = context.getBean("repository", JackrabbitRepository.class);
+      BasicDaoFactory.getInstance().setApplicationContext(context);
+      SilverpeasRegister.registerNodeTypes(reader);
+      System.out.println(" -> node types registered");
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
   }
 
-  @Override
-  protected IDataSet getDataSet() throws Exception {
-    return new DefaultDataSet();
+  @AfterClass
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 
   @Before
-  public void setup() throws Exception {
+  public void setupJcr() throws Exception {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
       }
@@ -84,6 +109,25 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
         session.logout();
       }
     }
+  }
+
+  @After
+  public void clearRepository() throws Exception {
+    Session session = null;
+    try {
+      session = repository.login(new SilverpeasSystemCredentials());
+      if (session.getRootNode().hasNode(instanceId)) {
+        session.getRootNode().getNode(instanceId).remove();
+      }
+      session.save();
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
+  }
+
+  public SimpleAttachmentConverterTest() {
   }
 
   /**
@@ -180,22 +224,6 @@ public class SimpleAttachmentConverterTest extends AbstractJcrRegisteringTestCas
       assertThat(node.getProperty(SLV_PROPERTY_SIZE).getLong(), is(12L));
     } finally {
       BasicDaoFactory.logout(session);
-    }
-  }
-
-  @Override
-  protected void clearRepository() throws Exception {
-    Session session = null;
-    try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
-      if (session.getRootNode().hasNode(instanceId)) {
-        session.getRootNode().getNode(instanceId).remove();
-      }
-      session.save();
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
     }
   }
 }

@@ -24,16 +24,16 @@
 
 package com.stratelia.webactiv.calendar.model;
 
-import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
-import com.stratelia.webactiv.util.DateUtil;
-import com.silverpeas.components.model.AbstractTestDao;
-
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.components.model.AbstractTestDao;
+
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
+import com.stratelia.webactiv.util.DateUtil;
+
 import org.dbunit.database.IDatabaseConnection;
 
 /**

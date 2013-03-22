@@ -21,16 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.stratelia.webactiv.beans.admin;
 
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.components.model.AbstractTestDao;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.silverpeas.components.model.AbstractTestDao;
 
 import static org.junit.Assert.assertThat;
 
@@ -193,5 +198,10 @@ public class AdminTest extends AbstractTestDao {
     assertEquals("domainSilverpeas", domains[1].getName());
     assertEquals("SILVERPEAS", domains[2].getName());
   }
-
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

@@ -26,11 +26,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.socialnetwork.invitation.Invitation;
 import com.silverpeas.socialnetwork.invitation.InvitationService;
+
+import com.stratelia.webactiv.util.DBUtil;
 
 /**
  *
@@ -40,11 +40,17 @@ public class TestInvitationService extends AbstractTestDao {
 
   private InvitationService invitationService;
 
-  @Override
-  @Before
+ @Override
   public void setUp() throws Exception {
     super.setUp();
+    DBUtil.getInstanceForTest(getConnection().getConnection());
     invitationService = new InvitationService();
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    DBUtil.clearTestInstance();
   }
 
   @Override
@@ -192,5 +198,10 @@ public class TestInvitationService extends AbstractTestDao {
     calendar.set(Calendar.MILLISECOND, 0);
     return calendar.getTime();
 
+  }
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

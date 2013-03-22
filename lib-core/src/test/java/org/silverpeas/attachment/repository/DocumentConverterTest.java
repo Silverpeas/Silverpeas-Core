@@ -24,122 +24,61 @@
 package org.silverpeas.attachment.repository;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jcr.Node;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.PathTestUtil;
-
-import com.stratelia.webactiv.util.DBUtil;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.Property.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author ehugonnet
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class DocumentConverterTest {
 
   private static final String instanceId = "kmelia74";
   private static final DocumentConverter instance = new DocumentConverter();
-  private boolean registred = false;
-  private static BetterRepositoryFactoryBean shutdown;
-  @Inject
-  private BetterRepositoryFactoryBean helper;
-  @Resource
-  private Repository repository;
-  private static EmbeddedDatabase dataSource;
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
 
   public DocumentConverterTest() {
-  }
-
-  public Repository getRepository() {
-    return this.repository;
-  }
-
-  @Before
-  public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
-    if (!registred) {
-      Reader reader = null;
-      try {
-        reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
-            getResourceAsStream("silverpeas-jcr.txt"));
-        SilverpeasRegister.registerNodeTypes(reader);
-      } finally {
-        IOUtils.closeQuietly(reader);
-      }
-      registred = true;
-      DBUtil.getInstanceForTest(dataSource.getConnection());
-    } else {
-      System.out.println(" -> node types already registered!");
-    }
-    Session session = null;
-    try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
-      if (!session.getRootNode().hasNode(instanceId)) {
-        session.getRootNode().addNode(instanceId, NT_FOLDER);
-      }
-      session.save();
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
-    }
-    if (shutdown == null) {
-      shutdown = helper;
-    }
   }
 
   @After
   public void cleanRepository() throws RepositoryException {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().getNode(instanceId).remove();
       }
@@ -152,22 +91,47 @@ public class DocumentConverterTest {
   }
 
   @BeforeClass
-  public static void prepareDatabase() {
-    EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-    dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript(
-        "classpath:/org/silverpeas/attachment/repository/create-database.sql").build();
+  public static void loadSpringContext() throws Exception {
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
-        + "temp_jackrabbit"));
+          + "temp_jackrabbit"));
+    Reader reader = new InputStreamReader(DocumentConverterTest.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SimpleMemoryContextFactory.setUpAsInitialContext();
+      context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml");
+      repository = context.getBean("repository", JackrabbitRepository.class);
+      BasicDaoFactory.getInstance().setApplicationContext(context);
+      SilverpeasRegister.registerNodeTypes(reader);
+      System.out.println(" -> node types registered");
 
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
   }
 
   @AfterClass
-  public static void tearDown() throws Exception {
-    shutdown.destroy();
-    dataSource.shutdown();
-    DBUtil.clearTestInstance();
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
+  }
+
+  @Before
+  public void setupJcr() throws Exception {
+    Session session = null;
+    try {
+      session = repository.login(new SilverpeasSystemCredentials());
+      if (!session.getRootNode().hasNode(instanceId)) {
+        session.getRootNode().addNode(instanceId, NT_FOLDER);
+      }
+      session.save();
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
   }
 
   /**

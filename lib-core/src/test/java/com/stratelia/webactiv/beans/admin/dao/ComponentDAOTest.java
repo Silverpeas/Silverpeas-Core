@@ -24,15 +24,17 @@
 
 package com.stratelia.webactiv.beans.admin.dao;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import org.junit.Test;
-
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.components.model.AbstractTestDao;
+
 import com.stratelia.webactiv.util.DBUtil;
-import static org.hamcrest.Matchers.*;
+
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 /**
@@ -120,5 +122,11 @@ public class ComponentDAOTest extends AbstractTestDao {
     } finally {      
       DBUtil.close(con);
     }
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

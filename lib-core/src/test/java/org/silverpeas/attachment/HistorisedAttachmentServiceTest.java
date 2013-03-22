@@ -38,30 +38,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.jcr.LoginException;
 import javax.jcr.NodeIterator;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
@@ -73,11 +53,11 @@ import org.silverpeas.attachment.repository.SimpleDocumentMatcher;
 import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.util.Charsets;
 
-import com.silverpeas.jcrutil.BetterRepositoryFactoryBean;
+import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.jcrutil.model.impl.AbstractJcrRegisteringTestCase;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.PathTestUtil;
@@ -87,6 +67,21 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
 import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -95,48 +90,27 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-pure-memory-jcr.xml"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class HistorisedAttachmentServiceTest {
 
   private static final String instanceId = "kmelia974";
   private static EmbeddedDatabase dataSource;
   private boolean registred = false;
-  private static BetterRepositoryFactoryBean shutdown;
-  @Inject
-  private BetterRepositoryFactoryBean helper;
-  @Resource
-  private Repository repository;
-  @Inject
-  private AttachmentService instance = new SimpleDocumentService();
+  private AttachmentService instance;
+  private static ClassPathXmlApplicationContext context;
+  private static JackrabbitRepository repository;
   private SimpleDocumentPK existingFrDoc;
   private SimpleDocumentPK existingEnDoc;
   private DocumentRepository documentRepository = new DocumentRepository();
-
-  public Repository getRepository() {
-    return this.repository;
-  }
 
   public HistorisedAttachmentServiceTest() {
   }
 
   @Before
-  public void setUp() throws RepositoryException, ParseException, IOException, SQLException {
-    if (!registred) {
-      Reader reader = new InputStreamReader(AbstractJcrRegisteringTestCase.class.getClassLoader().
-          getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
-      try {
-        SilverpeasRegister.registerNodeTypes(reader);
-      } finally {
-        IOUtils.closeQuietly(reader);
-      }
-      registred = true;
-      DBUtil.getInstanceForTest(dataSource.getConnection());
-    }
+  public void setUpJcr() throws RepositoryException, ParseException, IOException, SQLException {
+    instance = AttachmentServiceFactory.getAttachmentService();
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (!session.getRootNode().hasNode(instanceId)) {
         session.getRootNode().addNode(instanceId, NT_FOLDER);
         Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -148,7 +122,8 @@ public class HistorisedAttachmentServiceTest {
             MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
         InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
         existingFrDoc = documentRepository.createDocument(session, document);
-        document = documentRepository.findDocumentById(session, existingFrDoc, document.getLanguage());
+        document = documentRepository.findDocumentById(session, existingFrDoc, document.
+            getLanguage());
         document.setPublicDocument(true);
         document = documentRepository.unlock(session, document, false);
         documentRepository.storeContent(document, content);
@@ -168,7 +143,8 @@ public class HistorisedAttachmentServiceTest {
             MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
         content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
         existingEnDoc = documentRepository.createDocument(session, document);
-         document = documentRepository.findDocumentById(session, existingEnDoc, document.getLanguage());
+        document = documentRepository.findDocumentById(session, existingEnDoc, document.
+            getLanguage());
         document.setPublicDocument(true);
         document = documentRepository.unlock(session, document, false);
         documentRepository.storeContent(document, content);
@@ -186,8 +162,28 @@ public class HistorisedAttachmentServiceTest {
         session.logout();
       }
     }
-    if (shutdown == null) {
-      shutdown = helper;
+  }
+  
+  @BeforeClass
+  public static void loadSpringContext() throws Exception {
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+          + "temp_jackrabbit"));
+    Reader reader = new InputStreamReader(HistorisedAttachmentServiceTest.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SimpleMemoryContextFactory.setUpAsInitialContext();
+      context = new ClassPathXmlApplicationContext("/spring-pure-memory-jcr.xml");
+      repository = context.getBean("repository", JackrabbitRepository.class);
+
+      BasicDaoFactory.getInstance().setApplicationContext(context);
+      SilverpeasRegister.registerNodeTypes(reader);
+      System.out.println(" -> node types registered");
+      
+      EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+      dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript(
+          "classpath:/org/silverpeas/attachment/repository/create-database.sql").build();
+    } finally {
+      IOUtils.closeQuietly(reader);
     }
   }
 
@@ -195,7 +191,7 @@ public class HistorisedAttachmentServiceTest {
   public void cleanRepository() throws RepositoryException {
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       if (session.getRootNode().hasNodes()) {
         NodeIterator iter = session.getRootNode().getNodes(instanceId);
         while (iter.hasNext()) {
@@ -212,23 +208,19 @@ public class HistorisedAttachmentServiceTest {
     FileUtils.deleteQuietly(new File(FileRepositoryManager.getAbsolutePath(instanceId)));
   }
 
-  @BeforeClass
-  public static void prepareDatabase() {
-    EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-    dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript(
-        "classpath:/org/silverpeas/attachment/repository/create-database.sql").build();
 
-  }
-
-  @AfterClass
-  public static void tearDown() throws Exception {
-    shutdown.destroy();
+@AfterClass
+  public static void tearAlldown() throws Exception {
+    repository.shutdown();
+    dataSource.shutdown();
+    DBUtil.clearTestInstance();
+    context.close();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
     dataSource.shutdown();
     DBUtil.clearTestInstance();
     FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
         + "temp_jackrabbit"));
     FileUtils.deleteQuietly(new File(PathTestUtil.BUILD_PATH + "temp"));
-
   }
 
   /**
@@ -250,7 +242,8 @@ public class HistorisedAttachmentServiceTest {
 
   /**
    * Test of addContent method, of class AttachmentService.
-   * @throws UnsupportedEncodingException 
+   *
+   * @throws UnsupportedEncodingException
    */
   @Test
   public void testAddNewStreamContent() throws UnsupportedEncodingException {
@@ -560,7 +553,7 @@ public class HistorisedAttachmentServiceTest {
     WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();
@@ -570,8 +563,8 @@ public class HistorisedAttachmentServiceTest {
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       SimpleDocumentPK id = instance.createAttachment(document1, content).getPk();
-      document1.setPK(id);
-      
+      document1 = instance.searchDocumentById(id, "fr");
+
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document2 = new HistorisedDocument(emptyId, foreignId, 5,
           new SimpleAttachment("test.odp", "fr", "Mon document de test 2",
@@ -579,7 +572,7 @@ public class HistorisedAttachmentServiceTest {
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = instance.createAttachment(document2, content).getPk();
-      document2.setPK(id);
+      document2  = instance.searchDocumentById(id, "fr");
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       SimpleDocument document3 = new HistorisedDocument(emptyId, foreignId, 100,
@@ -588,7 +581,7 @@ public class HistorisedAttachmentServiceTest {
           MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
       content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
       id = instance.createAttachment(document3, content).getPk();
-      document3.setPK(id);
+      document3 = instance.searchDocumentById(id, "fr");
 
       emptyId = new SimpleDocumentPK("-1", instanceId);
       foreignId = "node49";
@@ -598,7 +591,7 @@ public class HistorisedAttachmentServiceTest {
           MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
       content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
       id = instance.createAttachment(document4, content).getPk();
-      document4.setPK(id);
+      document4 = instance.searchDocumentById(id, "en");
 
       session.save();
       List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
@@ -655,7 +648,7 @@ public class HistorisedAttachmentServiceTest {
     WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
     Session session = null;
     try {
-      session = getRepository().login(new SilverpeasSystemCredentials());
+      session = repository.login(new SilverpeasSystemCredentials());
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
       String foreignId = foreignKey.getId();

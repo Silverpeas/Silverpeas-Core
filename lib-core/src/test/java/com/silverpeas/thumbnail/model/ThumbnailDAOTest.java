@@ -24,8 +24,9 @@
 
 package com.silverpeas.thumbnail.model;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.sql.Connection;
+
+import com.silverpeas.components.model.AbstractTestDao;
 
 /**
  *
@@ -248,4 +249,9 @@ public class ThumbnailDAOTest extends AbstractTestDao {
     return "test-thumbnail-dao-dataset.xml";
   }
   
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
+  }
 }

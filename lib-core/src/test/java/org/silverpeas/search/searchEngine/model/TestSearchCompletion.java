@@ -22,9 +22,9 @@ package org.silverpeas.search.searchEngine.model;
 
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.silverpeas.components.model.AbstractTestDao;
+
+import org.junit.Test;
 
 public class TestSearchCompletion extends AbstractTestDao {
 
@@ -54,5 +54,10 @@ public class TestSearchCompletion extends AbstractTestDao {
   @Override
   protected String getDatasetFileName() {
     return "autocompletion-dataset.xml";
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }
