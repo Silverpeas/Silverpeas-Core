@@ -205,6 +205,9 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 %>
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
+  <c:if test="${contextualMenuEnabled}">
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:AddAttachment();"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  </c:if>
     <ul id="attachmentList">
       <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
         <c:forEach items="${pageScope.attachments}" var="varAttachment" >
@@ -359,9 +362,6 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
           </div>
       </c:otherwise>
     </c:choose>
-  </c:if>
-  <c:if test="${contextualMenuEnabled && ! dragAndDropEnable}">
-    <div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><fmt:message key="GML.add" />...</a></div>
   </c:if>
 </div>
 <div id="attachmentModalDialog" style="display: none"> </div>
