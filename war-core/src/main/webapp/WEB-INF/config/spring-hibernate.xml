@@ -26,26 +26,26 @@
 -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xsi:schemaLocation="
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <bean id="txManager" name="txManager"
-    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
   <bean id="sessionFactory" name="sessionFactory"
-    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-	<property name="mappingDirectoryLocations">
-		<list>
-			<value>WEB-INF/mappings</value>
-		</list>
-	</property>
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <property name="mappingDirectoryLocations">
+      <list>
+        <value>WEB-INF/mappings</value>
+      </list>
+    </property>
 
     <property name="hibernateProperties">
       <props>
@@ -63,7 +63,7 @@
 
   <aop:config>
     <aop:pointcut id="serviceOperation"
-      expression="execution(* *..*ServiceImpl.*(..))" />
+                  expression="execution(* *..*ServiceImpl.*(..))" />
     <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
 
   </aop:config>
@@ -72,7 +72,7 @@
     <aop:pointcut id="daoOperation" expression="execution(* *..*DaoImpl.*(..))" />
     <aop:advisor pointcut-ref="daoOperation" advice-ref="txDaoAdvice" />
   </aop:config>
-  
+
   <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
       <tx:method name="list*" read-only="true" propagation="REQUIRED" />
