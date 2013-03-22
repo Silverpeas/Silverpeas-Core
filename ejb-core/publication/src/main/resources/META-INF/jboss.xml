@@ -32,22 +32,10 @@
     <session>
       <ejb-name>PublicationBm</ejb-name>
       <jndi-name>ejb/PublicationBm</jndi-name>
-      <ejb-ref>
-        <ejb-ref-name>Publication</ejb-ref-name>
-        <jndi-name>ejb/Publication</jndi-name>
-      </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
         <jndi-name>Silverpeas</jndi-name>
       </resource-ref>
     </session>
-    <entity>
-      <ejb-name>Publication</ejb-name>
-      <jndi-name>ejb/Publication</jndi-name>
-      <resource-ref>
-        <res-ref-name>jdbc/Silverpeas</res-ref-name>
-        <jndi-name>Silverpeas</jndi-name>
-      </resource-ref>
-    </entity>
   </enterprise-beans>
 </jboss>

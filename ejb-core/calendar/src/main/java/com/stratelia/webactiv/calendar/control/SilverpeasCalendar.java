@@ -24,55 +24,57 @@
 
 package com.stratelia.webactiv.calendar.control;
 
+import com.stratelia.webactiv.calendar.model.Attendee;
+import com.stratelia.webactiv.calendar.model.Category;
+import com.stratelia.webactiv.calendar.model.HolidayDetail;
+import com.stratelia.webactiv.calendar.model.JournalHeader;
+import com.stratelia.webactiv.calendar.model.SchedulableCount;
+import com.stratelia.webactiv.calendar.model.ToDoHeader;
+import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
+
+import javax.ejb.Local;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import com.stratelia.webactiv.calendar.model.HolidayDetail;
-import com.stratelia.webactiv.calendar.model.Attendee;
-import com.stratelia.webactiv.calendar.model.Category;
-import com.stratelia.webactiv.calendar.model.JournalHeader;
-import com.stratelia.webactiv.calendar.model.SchedulableCount;
-import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
-import com.stratelia.webactiv.calendar.model.ToDoHeader;
-
-public interface CalendarBmBusinessSkeleton {
+@Local
+public interface SilverpeasCalendar {
 
   /**
    * getDaySchedulablesForUser() for a particular user returns all the events scheduled on a
    * particular day. This includes all kinds of events
    */
   public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation) throws RemoteException;
+      String categoryId, String participation) ;
 
   /**
    * getNextDaySchedulablesForUser() for a particular user returns the next events scheduled. This
    * includes all kinds of events
    */
   public Collection<JournalHeader> getNextDaySchedulablesForUser(String day, String userId,
-      String categoryId, String participation) throws RemoteException;
+      String categoryId, String participation) ;
 
   /**
    * getNextEventForUser for a particular user returns the next events scheduled. This includes all
    * kinds of events
    */
   public List<JournalHeader> getNextEventsForUser(String day, String userId,
-      String classification, Date begin, Date end) throws RemoteException;
+      String classification, Date begin, Date end) ;
 
   /**
    * get Next Social Events for a given list of my Contacts returns the next events
    * (SocialInformationEvent). This includes all kinds of events
    */
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end) throws RemoteException;
+      List<String> myContactsIds, Date begin, Date end) ;
 
   /**
    * get Last Social Events for a given list of my Contacts returns the next events
    * (SocialInformationEvent). This includes all kinds of events
    */
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, Date begin, Date end) throws RemoteException;
+      List<String> myContactsIds, Date begin, Date end) ;
 
   /**
    * get the my last Events of information and number of Item and the first Index includes all kinds
@@ -81,7 +83,7 @@ public interface CalendarBmBusinessSkeleton {
    * @param :String day,String myId , int numberOfElement, int firstIndex
    */
   public List<SocialInformationEvent> getMyLastEvents(String day, String myId,
-      Date begin, Date end) throws RemoteException;
+      Date begin, Date end) ;
 
   /**
    * getPeriodSchedulablesForUser() for a particular user returns all the events scheduled during a
@@ -89,170 +91,170 @@ public interface CalendarBmBusinessSkeleton {
    */
   public Collection<JournalHeader> getPeriodSchedulablesForUser(String begin, String end,
       String userId, String categoryId, String participation)
-      throws RemoteException;
+      ;
 
   /**
    * countMonthSchedulablesForUser() for a particular user, counts the number of schedules for each
    * day in the month
    */
   public Collection<SchedulableCount> countMonthSchedulablesForUser(String month, String userId,
-      String categoryId, String participation) throws RemoteException;
+      String categoryId, String participation) ;
 
   /**
    * methods for tentative schedules (not yet accepted or declined events)
    */
   public boolean hasTentativeSchedulablesForUser(String userId)
-      throws RemoteException;
+      ;
 
   public Collection<JournalHeader> getTentativeSchedulablesForUser(String userId)
-      throws RemoteException;
+      ;
 
   public Collection<ToDoHeader> getNotCompletedToDosForUser(String userId)
-      throws RemoteException;
+      ;
 
   public Collection<ToDoHeader> getOrganizerToDos(String organizerId)
-      throws RemoteException;
+      ;
 
-  public Collection<ToDoHeader> getClosedToDos(String organizerId) throws RemoteException;
+  public Collection<ToDoHeader> getClosedToDos(String organizerId) ;
 
   public Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
-      String externalId) throws RemoteException;
+      String externalId) ;
 
   /**
    * addJournal() add a journal entry in the database
    */
-  public String addJournal(JournalHeader journal) throws RemoteException;
+  public String addJournal(JournalHeader journal) ;
 
   /**
    * addToDo() add a todo entry in the database
    */
-  public String addToDo(ToDoHeader todo) throws RemoteException;
+  public String addToDo(ToDoHeader todo) ;
 
   /**
    * updateJournal() update the journal entry, specified by the id, in the database
    */
-  public void updateJournal(JournalHeader journal) throws RemoteException;
+  public void updateJournal(JournalHeader journal) ;
 
   /**
    * updateToDo() update the todo entry, specified by the id, in the database
    */
   /*
-   * public void updateToDo(ToDoHeader todo) throws RemoteException, CreateException;
+   * public void updateToDo(ToDoHeader todo) , CreateException;
    */
-  public void updateToDo(ToDoHeader todo) throws RemoteException;
+  public void updateToDo(ToDoHeader todo) ;
 
   /**
    * removeJournal() remove the journal entry specified by the id
    */
-  public void removeJournal(String journalId) throws RemoteException;
+  public void removeJournal(String journalId) ;
 
   /**
    * removeToDo() remove the todo entry specified by the id
    */
-  public void removeToDo(String id) throws RemoteException;
+  public void removeToDo(String id) ;
 
   /**
    * removeToDoByInstanceId remove all todo of the specified instance
    */
-  public void removeToDoByInstanceId(String instanceId) throws RemoteException;
+  public void removeToDoByInstanceId(String instanceId) ;
 
   /**
    * getJournalHeader() returns the journalHeader represented by the journalId
    */
   public JournalHeader getJournalHeader(String journalId)
-      throws RemoteException;
+      ;
 
   /**
    * getOutlookJournalHeadersForUser() returns the journalHeaders for user represented by the userId
    */
   public Collection<JournalHeader> getExternalJournalHeadersForUser(String userId)
-      throws RemoteException;
+      ;
 
   /**
    * getExternalJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by
    * the userId for which start date after given date
    */
   public Collection<JournalHeader> getExternalJournalHeadersForUserAfterDate(String userId,
-      Date startDate) throws RemoteException;
+      Date startDate) ;
 
   /**
    * getJournalHeadersForUserAfterDate() returns the journalHeaders for user represented by the
    * userId for which start date after given date
    */
   public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userId,
-      Date startDate, int nbReturned) throws RemoteException;
+      Date startDate, int nbReturned) ;
 
   /**
    * getToDoHeader() returns the ToDoHeader represented by the todoId
    */
-  public ToDoHeader getToDoHeader(String todoId) throws RemoteException;
+  public ToDoHeader getToDoHeader(String todoId) ;
 
   /**
    * methods for attendees
    */
   public void addJournalAttendee(String journalId, Attendee attendee)
-      throws RemoteException;
+      ;
 
   public void removeJournalAttendee(String journalId, Attendee attendee)
-      throws RemoteException;
+      ;
 
   public Collection<Attendee> getJournalAttendees(String journalId)
-      throws RemoteException;
+      ;
 
   public void setJournalAttendees(String journalId, String[] userIds)
-      throws RemoteException;
+      ;
 
   public void setJournalParticipationStatus(String journalId, String userId,
-      String participation) throws RemoteException;
+      String participation) ;
 
   public void addToDoAttendee(String todoId, Attendee attendee)
-      throws RemoteException;
+      ;
 
   public void removeToDoAttendee(String todoId, Attendee attendee)
-      throws RemoteException;
+      ;
 
-  public Collection<Attendee> getToDoAttendees(String todoId) throws RemoteException;
+  public Collection<Attendee> getToDoAttendees(String todoId) ;
 
   public void setToDoAttendees(String todoId, String[] userIds)
-      throws RemoteException;
+      ;
 
   /**
    * methods for categories
    */
-  public Collection<Category> getAllCategories() throws RemoteException;
+  public Collection<Category> getAllCategories() ;
 
-  public Category getCategory(String categoryId) throws RemoteException;
+  public Category getCategory(String categoryId) ;
 
   public Collection<Category> getJournalCategories(String journalId)
-      throws RemoteException;
+      ;
 
   public void addJournalCategory(String journalId, String categoryId)
-      throws RemoteException;
+      ;
 
   public void removeJournalCategory(String journalId, String categoryId)
-      throws RemoteException;
+      ;
 
   public void setJournalCategories(String journalId, String[] categoryIds)
-      throws RemoteException;
+      ;
 
   // methods for reindexation
-  public void indexAllTodo() throws RemoteException;
+  public void indexAllTodo() ;
 
-  public void indexAllJournal() throws RemoteException;
+  public void indexAllJournal() ;
 
   // Gestion des jours non travailles
-  public boolean isHolidayDate(HolidayDetail date) throws RemoteException;
+  public boolean isHolidayDate(HolidayDetail date) ;
 
-  public List<String> getHolidayDates(String userId) throws RemoteException;
+  public List<String> getHolidayDates(String userId) ;
 
   public List<String> getHolidayDates(String userId, Date beginDate, Date endDate)
-      throws RemoteException;
+      ;
 
-  public void addHolidayDate(HolidayDetail holiday) throws RemoteException;
+  public void addHolidayDate(HolidayDetail holiday) ;
 
-  public void addHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException;
+  public void addHolidayDates(List<HolidayDetail> holidayDates) ;
 
-  public void removeHolidayDate(HolidayDetail holiday) throws RemoteException;
+  public void removeHolidayDate(HolidayDetail holiday) ;
 
-  public void removeHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException;
+  public void removeHolidayDates(List<HolidayDetail> holidayDates) ;
 }

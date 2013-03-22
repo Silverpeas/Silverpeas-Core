@@ -23,9 +23,6 @@
  */
 package com.stratelia.webactiv.agenda.notification;
 
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,12 +30,12 @@ import java.util.HashSet;
 import com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder;
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.template.SilverpeasTemplate;
+
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarBmHome;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.JournalHeader;
 import com.stratelia.webactiv.util.DateUtil;
@@ -46,19 +43,23 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 /**
  * User notification from "My Diary" application.
+ *
  * @author Yohann Chastagnier
  */
 public class AgendaUserNotification extends AbstractTemplateUserNotificationBuilder<JournalHeader> {
-  private CalendarBm calendarBm;
 
+  private SilverpeasCalendar calendarBm;
   private final NotifAction action;
   private final UserDetail sender;
   private final String attend;
 
   /**
    * Notification from delegator
+   *
    * @param action
    * @param sender
    * @param resource
@@ -70,6 +71,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
 
   /**
    * Notification from attendee
+   *
    * @param sender
    * @param resource
    * @param attend
@@ -81,6 +83,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
 
   /**
    * Default hidden constructor
+   *
    * @param action
    * @param sender
    * @param resource
@@ -101,8 +104,8 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected void initialize() {
     super.initialize();
-    getNotificationMetaData().setSource(
-        getBundle(sender.getUserPreferences().getLanguage()).getString("agenda"));
+    getNotificationMetaData().setSource(getBundle(sender.getUserPreferences().getLanguage()).
+        getString("agenda"));
   }
 
   /*
@@ -169,20 +172,13 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   protected Collection<String> getUserIdsToNotify() {
     final Collection<String> userIds;
     switch (action) {
-
       case RESPONSE:
         userIds = Collections.singleton(getResource().getDelegatorId());
         break;
-
       default:
         userIds = new HashSet<String>();
-        try {
-          for (final Attendee attendee : getCalendarBm().getJournalAttendees(getResource().getId())) {
-            userIds.add(attendee.getUserId());
-          }
-        } catch (final RemoteException e) {
-          throw new AgendaRuntimeException("AgendaUserNotification.getUserIdsToNotify()",
-              SilverpeasException.ERROR, "root.EX_CANT_GET_ATTENDEES", e);
+        for (final Attendee attendee : getCalendarBm().getJournalAttendees(getResource().getId())) {
+          userIds.add(attendee.getUserId());
         }
         break;
     }
@@ -198,8 +194,8 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   @Override
   protected void performTemplateData(final String language, final JournalHeader resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language,
-        getBundle(language).getString(getBundleSubjectKey(), getTitle()), "");
+    getNotificationMetaData().addLanguage(language, getBundle(language).getString(
+        getBundleSubjectKey(), getTitle()), "");
     template.setAttribute("sender", sender.getDisplayedName());
     if (isDefined(attend)) {
       template.setAttribute(attend, attend);
@@ -309,12 +305,11 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
   /**
    * @return the calendarBm
    */
-  protected CalendarBm getCalendarBm() {
+  protected SilverpeasCalendar getCalendarBm() {
     if (calendarBm == null) {
       try {
-        calendarBm =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME, CalendarBmHome.class)
-                .create();
+        calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
+            SilverpeasCalendar.class);
       } catch (final Exception e) {
         throw new AgendaRuntimeException("AgendaUserNotification.getCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

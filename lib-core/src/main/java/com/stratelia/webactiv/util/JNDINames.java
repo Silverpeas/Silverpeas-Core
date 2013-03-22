@@ -39,7 +39,6 @@ public class JNDINames {
   public static final String YELLOWPAGESBM_EJBHOME;
   public static final String PUBLICATION_EJBHOME;
   public static final String PUBLICATIONBM_EJBHOME;
-  public static final String CONTACT_EJBHOME;
   public static final String CONTACTBM_EJBHOME;
   public static final String FAVORITBM_EJBHOME;
   public static final String SUBSCRIBEBM_EJBHOME;
@@ -172,7 +171,6 @@ public class JNDINames {
     YELLOWPAGESBM_EJBHOME = rs.getString("YELLOWPAGESBM_EJBHOME", "ejb/YellowpagesBm");
     PUBLICATION_EJBHOME = rs.getString("PUBLICATION_EJBHOME", "ejb/Publication");
     PUBLICATIONBM_EJBHOME = rs.getString("PUBLICATIONBM_EJBHOME", "ejb/PublicationBm");
-    CONTACT_EJBHOME = rs.getString("CONTACT_EJBHOME", "ejb/Contact");
     CONTACTBM_EJBHOME = rs.getString("CONTACTBM_EJBHOME", "ejb/ContactBm");
     FAVORITBM_EJBHOME = rs.getString("FAVORITBM_EJBHOME", "ejb/FavoritBm");
     SUBSCRIBEBM_EJBHOME = rs.getString("SUBSCRIBEBM_EJBHOME", "ejb/SubscribeBm");

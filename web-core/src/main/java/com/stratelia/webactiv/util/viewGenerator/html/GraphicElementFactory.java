@@ -20,8 +20,6 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import com.silverpeas.look.SilverpeasLook;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -31,7 +29,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang3.CharEncoding;
+import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 
@@ -73,6 +71,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
+
+import org.apache.commons.lang3.CharEncoding;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -875,8 +875,7 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Build a new Calendar.
-   *
+   * Build a new SilverpeasCalendar.
    * @param String : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */

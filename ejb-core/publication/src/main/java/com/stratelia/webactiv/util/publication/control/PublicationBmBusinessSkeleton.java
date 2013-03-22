@@ -1,37 +1,33 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.publication.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.ForeignPK;
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -47,6 +43,7 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 
 /**
  * Interface declaration
+ *
  * @author
  */
 public interface PublicationBmBusinessSkeleton {
@@ -70,6 +67,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Change order of the given publication identified by pubPK in the given nodePK. direction less
    * than 0 means "up" else it means "down"
+   *
    * @param pubPK the publication's id to move
    * @param nodePK the publication's place
    * @param direction must be different to 0
@@ -136,6 +134,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @param creatorId
    * @throws RemoteException
@@ -207,6 +206,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pk
    * @param status
    * @param nbPubs
@@ -275,6 +275,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param status
    * @param pubPK
    * @return
@@ -291,6 +292,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * Return the list of publications with a maxSize as specified, each publication has the specified
    * status and has been updated since the specified date
+   *
    * @param status : the publications status.
    * @param since : the last update of the publication
    * @param maxSize : the maximum size of the list. If 0 is specified, the limit is not used.
@@ -306,6 +308,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param query
    * @param pubPK
    * @return
@@ -317,6 +320,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param fatherPKs
    * @return
    * @throws RemoteException
@@ -326,6 +330,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param fatherPK
    * @param fatherPath
    * @return
@@ -337,6 +342,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * * Return the tree of nodes with the number of publication per node.
+   *
    * @param instanceId
    * @param statusSubQuery
    * @param checkVisibility
@@ -348,38 +354,35 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param fatherIds
    * @param pubPK
    * @return
    * @throws RemoteException
    * @see
    */
-  public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
+  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK) throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
-      PublicationPK pubPK, boolean filterOnVisibilityPeriod)
-      throws RemoteException;
+  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
+      PublicationPK pubPK, boolean filterOnVisibilityPeriod) throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIds(ArrayList<String> fatherIds,
+  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK, String sorting) throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(ArrayList<String> fatherIds,
-      PublicationPK pubPK, String sorting, String status)
-      throws RemoteException;
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(List<String> fatherIds,
+      PublicationPK pubPK, String sorting, String status) throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-      ArrayList<String> fatherIds,
-      PublicationPK pubPK, String sorting, ArrayList<String> status)
-      throws RemoteException;
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+      PublicationPK pubPK, String sorting, List<String> status) throws RemoteException;
 
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-      ArrayList<String> fatherIds,
-      PublicationPK pubPK, String sorting, ArrayList<String> status,
-      boolean filterOnVisibilityPeriod) throws RemoteException;
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+      PublicationPK pubPK, String sorting, List<String> status, boolean filterOnVisibilityPeriod)
+      throws RemoteException;
 
   /**
    * Method declaration
+   *
    * @param fatherPKs
    * @return
    * @throws RemoteException
@@ -390,6 +393,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param fatherPK
    * @return
    * @throws RemoteException
@@ -399,6 +403,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @throws RemoteException
    * @see
@@ -409,6 +414,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @throws RemoteException
    * @see
@@ -417,6 +423,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Method declaration
+   *
    * @param pubPK
    * @return
    * @throws RemoteException
@@ -430,6 +437,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Looking for, in the instance identified by pubPK, a publication named pubName.
+   *
    * @param pubPK the identifier of the instance
    * @param pubName the publication's name we are looking for
    * @return the pubId if a publication already exists in this component's instance. null otherwise.
@@ -444,6 +452,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * A wysiwyg's content has been added or modified to a publication. Its content must be added to
    * the indexed content of the publication
+   *
    * @param pubPK the identifier of the publication associated to the wysiwyg
    * @throws RemoteException
    */
@@ -476,6 +485,7 @@ public interface PublicationBmBusinessSkeleton {
 
   /**
    * Updates the publication links
+   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    * @throws RemoteException
@@ -488,6 +498,7 @@ public interface PublicationBmBusinessSkeleton {
   /**
    * get list of socialInformation of my contacts according to options and number of Item and the
    * first Index
+   *
    * @return: List <SocialInformation>
    * @param: myId
    * @param :List<String> myContactsIds

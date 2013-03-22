@@ -1,50 +1,45 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.calendar.backbone;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Vector;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
+import com.stratelia.webactiv.calendar.control.SilverpeasCalendar;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Vector;
-
 public class TodoBackboneAccess {
 
-  private static CalendarBm calendarBm = null;
+  private static SilverpeasCalendar calendarBm = null;
 
   private static TodoDetail todoHeaderToDetail(final ToDoHeader header) {
     TodoDetail detail = new TodoDetail();
@@ -80,8 +75,7 @@ public class TodoBackboneAccess {
   }
 
   public TodoBackboneAccess() {
-    SilverTrace.info("calendar", "TodoBackboneAcess.TodoBackboneAccess()",
-        "calendar.MSG_NEW_BB");
+    SilverTrace.info("calendar", "TodoBackboneAcess.TodoBackboneAccess()", "calendar.MSG_NEW_BB");
   }
 
   public String addEntry(TodoDetail todo) {
@@ -94,11 +88,11 @@ public class TodoBackboneAccess {
     NotificationSender notifSender = new NotificationSender(todo.getComponentId());
     try {
       ToDoHeader header = todoDetailToHeader(todo);
-      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()",
-          "root.MSG_GEN_ENTER_METHOD", "apres header");
+      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()", "root.MSG_GEN_ENTER_METHOD",
+          "apres header");
       String id = getCalendarBm().addToDo(header);
-      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()",
-          "root.MSG_GEN_ENTER_METHOD", "id=" + id);
+      SilverTrace.info("calendar", "TodoBackboneAcess.addEntry()", "root.MSG_GEN_ENTER_METHOD",
+          "id=" + id);
 
       if (todo.getAttendees() != null) {
         Collection<UserRecipient> selectedUsers = new ArrayList<UserRecipient>();
@@ -150,7 +144,6 @@ public class TodoBackboneAccess {
     try {
       ToDoHeader header = getCalendarBm().getToDoHeader(id);
       TodoDetail detail = todoHeaderToDetail(header);
-
       Collection<Attendee> list = getCalendarBm().getToDoAttendees(id);
       Vector<Attendee> vector = new Vector<Attendee>(list);
       detail.setAttendees(vector);
@@ -164,12 +157,10 @@ public class TodoBackboneAccess {
 
   public Vector<TodoDetail> getEntriesFromExternal(String spaceId, String componentId,
       String externalId) {
-    SilverTrace
-        .info(
-            "calendar",
-            "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
-            "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId
-                + ", componentId=" + componentId + ", externalId=" + externalId);
+    SilverTrace.info("calendar",
+        "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
+        "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId + ", componentId=" + componentId
+        + ", externalId=" + externalId);
     try {
       Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId,
           componentId, externalId);
@@ -183,11 +174,9 @@ public class TodoBackboneAccess {
       }
       return result;
     } catch (Exception e) {
-      SilverTrace
-          .error(
-              "calendar",
-              "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
-              "calendar.MSG_CANT_GET", "return null", e);
+      SilverTrace.error("calendar",
+          "TodoBackboneAcess.getEntriesFromExternal(String spaceId, String componentId, String externalId)",
+          "calendar.MSG_CANT_GET", "return null", e);
       return null;
     }
 
@@ -205,34 +194,28 @@ public class TodoBackboneAccess {
   }
 
   public void removeEntriesFromExternal(String spaceId, String componentId, String externalId) {
-    SilverTrace
-        .info(
-            "calendar",
-            "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
-            "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId
-                + ", componentId=" + componentId + ", externalId=" + externalId);
+    SilverTrace.info("calendar",
+        "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
+        "root.MSG_GEN_ENTER_METHOD", "spaceId=" + spaceId + ", componentId=" + componentId
+        + ", externalId=" + externalId);
     try {
-      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId,
-          componentId, externalId);
+      Collection<ToDoHeader> headers = getCalendarBm().getExternalTodos(spaceId, componentId,
+          externalId);
       for (ToDoHeader header : headers) {
         getCalendarBm().removeToDo(header.getId());
       }
     } catch (Exception e) {
-      SilverTrace
-          .error(
-              "calendar",
-              "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
-              "calendar.MSG_CANT_REMOVE", "return null", e);
+      SilverTrace.error("calendar",
+          "TodoBackboneAcess.removeEntriesFromExternal(String spaceId, String componentId, String externalId)",
+          "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
 
   public void removeAttendeeToEntryFromExternal(String componentId, String externalId, String userId) {
-    SilverTrace
-        .info(
-            "calendar",
-            "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId, String userId)",
-            "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId
-                + ", externalId=" + externalId + ", userId = " + userId);
+    SilverTrace.info("calendar",
+        "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId, String userId)",
+        "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId + ", externalId=" + externalId
+        + ", userId = " + userId);
     try {
       Attendee attendee = new Attendee();
       attendee.setUserId(userId);
@@ -245,11 +228,9 @@ public class TodoBackboneAccess {
         }
       }
     } catch (Exception e) {
-      SilverTrace
-          .error(
-              "calendar",
-              "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId)",
-              "calendar.MSG_CANT_REMOVE", "return null", e);
+      SilverTrace.error("calendar",
+          "TodoBackboneAcess.removeAttendeeToEntryFromExternal(String componentId, String externalId)",
+          "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
 
@@ -259,17 +240,17 @@ public class TodoBackboneAccess {
     try {
       getCalendarBm().removeToDoByInstanceId(instanceId);
     } catch (Exception e) {
-      SilverTrace.error("calendar",
-          "TodoBackboneAcess.removeEntriesByInstanceId(String instanceId)",
+      SilverTrace.
+          error("calendar", "TodoBackboneAcess.removeEntriesByInstanceId(String instanceId)",
           "calendar.MSG_CANT_REMOVE", "return null", e);
     }
   }
 
-  private synchronized CalendarBm getCalendarBm() {
+  private synchronized SilverpeasCalendar getCalendarBm() {
     if (calendarBm == null) {
       try {
         calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
-            CalendarBmHome.class).create();
+            SilverpeasCalendar.class);
       } catch (Exception e) {
         throw new CalendarRuntimeException("TodoBackboneAcessB.getCalendarBm()",
             SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
