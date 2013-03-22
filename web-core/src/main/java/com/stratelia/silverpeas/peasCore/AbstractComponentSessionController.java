@@ -33,10 +33,10 @@ import com.stratelia.silverpeas.genericPanel.GenericPanel;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -253,8 +253,8 @@ public class AbstractComponentSessionController implements ComponentSessionContr
    * @see
    */
   @Override
-  public OrganizationController getOrganizationController() {
-    return controller.getOrganizationController();
+  public OrganisationController getOrganisationController() {
+    return controller.getOrganisationController();
   }
 
   /**
@@ -305,7 +305,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
   }
 
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**
@@ -538,7 +538,7 @@ public class AbstractComponentSessionController implements ComponentSessionContr
     builder.append("?userId=").append(getUserId()).append("&login=");
     builder.append(getUrlEncodedParameter(getUserDetail().getLogin()));
     builder.append("&password=");
-    builder.append(getUrlEncodedParameter(controller.getOrganizationController().getUserFull(
+    builder.append(getUrlEncodedParameter(controller.getOrganisationController().getUserFull(
         getUserId()).getPassword()));
     return builder.toString();
   }

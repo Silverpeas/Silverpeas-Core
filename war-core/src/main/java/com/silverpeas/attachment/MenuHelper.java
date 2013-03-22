@@ -24,13 +24,12 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 import javax.servlet.jsp.JspWriter;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import org.silverpeas.attachment.model.SimpleDocument;
 
 import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -42,10 +41,10 @@ public class MenuHelper {
 
   static final String NEW_LINE = System.getProperty("line.separator");
   private final static String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
-  private static OrganizationController organisation = new OrganizationController();
 
   public static boolean isAdmin(String userId) {
-    return organisation.getUserDetail(userId).isAccessAdmin();
+    return OrganisationControllerFactory.getOrganisationController().getUserDetail(userId)
+        .isAccessAdmin();
   }
 
   public static boolean isWorker(String userId, SimpleDocument attachment) {

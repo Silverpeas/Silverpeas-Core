@@ -97,7 +97,7 @@ public class DBUtil {
   public static void clearTestInstance() {
     synchronized (DBUtil.class) {
       if (instance != null) {
-        DBUtil.close(instance.connectionForTest);
+        close(instance.connectionForTest);
       }
       instance = new DBUtil(null);
       dsStock.clear();

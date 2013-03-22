@@ -87,4 +87,5 @@ public class UserFavoriteSpaceDAOImplTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-favoritespace-dataset.xml";
   }
+  
 }

@@ -23,10 +23,13 @@
  */
 package com.silverpeas.web;
 
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
-
-import java.util.Collection;
+import com.silverpeas.SilverpeasServiceProvider;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.session.SessionInfo;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -34,13 +37,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.util.Collection;
 
-import com.silverpeas.SilverpeasServiceProvider;
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.session.SessionInfo;
-import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_AUTHORIZATION;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -49,7 +49,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public abstract class RESTWebService {
 
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -180,7 +180,7 @@ public abstract class RESTWebService {
    *
    * @return an OrganizationController instance.
    */
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return organizationController;
   }
 }

@@ -184,7 +184,7 @@ public class FileServer extends AbstractFileSender {
         // Case of file contained in a component used as a file storage
         isAllowed = true;
       } else {
-        isAllowed = controller.getOrganizationController()
+        isAllowed = controller.getOrganisationController()
             .isComponentAvailable(componentId, controller.getUserId());
       }
     }

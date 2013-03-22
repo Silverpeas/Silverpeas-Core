@@ -136,7 +136,7 @@ public class UserProfileResource extends RESTWebService {
         withGroupId(groupId).
         withName(name).
         withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     return Response.ok(
         asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
@@ -221,7 +221,7 @@ public class UserProfileResource extends RESTWebService {
         withGroupId(groupId).
         withName(name).
         withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
@@ -277,7 +277,7 @@ public class UserProfileResource extends RESTWebService {
           withUserIds(contactIds).
           withName(name).
           withPaginationPage(fromPage(page)).build();
-      contacts = getOrganizationController().searchUsers(criteria);
+      contacts = getOrganisationController().searchUsers(criteria);
     } else {
       contacts = new ListSlice<UserDetail>(0, 0, 0);
     }

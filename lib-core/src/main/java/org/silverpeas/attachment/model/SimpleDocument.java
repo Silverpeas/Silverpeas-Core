@@ -27,13 +27,14 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.URLUtils;
 
 import java.io.Serializable;
@@ -307,8 +308,10 @@ public class SimpleDocument implements Serializable {
   public void edit(String currentEditor) {
     this.editedBy = currentEditor;
     this.reservation = new Date();
-    String day = OrganizationControllerFactory.getFactory().getOrganizationController().
-        getComponentParameterValue(getInstanceId(), "nbDayForReservation");
+    OrganisationControllerFactory.getFactory();
+    String day =
+        OrganisationControllerFactory.getOrganisationController()
+            .getComponentParameterValue(getInstanceId(), "nbDayForReservation");
 
     if (StringUtil.isInteger(day)) {
       int nbDay = Integer.parseInt(day);

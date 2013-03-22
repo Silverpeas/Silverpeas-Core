@@ -29,8 +29,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 
 import com.silverpeas.components.model.AbstractTestDao;
 
@@ -40,7 +38,6 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-@RunWith(BlockJUnit4ClassRunner.class)
 public class AdminTest extends AbstractTestDao {
 
   private Admin instance;
@@ -196,4 +193,5 @@ public class AdminTest extends AbstractTestDao {
     assertEquals("domainSilverpeas", domains[1].getName());
     assertEquals("SILVERPEAS", domains[2].getName());
   }
+
 }

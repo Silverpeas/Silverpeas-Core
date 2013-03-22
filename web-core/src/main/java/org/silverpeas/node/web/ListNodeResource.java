@@ -26,7 +26,6 @@ package org.silverpeas.node.web;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -70,12 +69,12 @@ public class ListNodeResource extends RESTWebService {
     }
     return nodeBm;
   }
-  
+
   /**
    * @return true if the current user has the admin role
    */
   private boolean isUserAdmin() {
-    String[] profiles = getOrganizationController().getUserProfiles(getUserDetail().getId(), getComponentId());
+    String[] profiles = getOrganisationController().getUserProfiles(getUserDetail().getId(), getComponentId());
     for (String profile : profiles) {
       if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
         return true;

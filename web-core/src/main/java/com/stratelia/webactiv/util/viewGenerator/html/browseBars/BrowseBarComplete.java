@@ -90,10 +90,10 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
       if (StringUtil.isDefined(getComponentId())) {
         spaces =
-          getMainSessionController().getOrganizationController().getSpacePathToComponent(
+          getMainSessionController().getOrganisationController().getSpacePathToComponent(
           getComponentId());
       } else {
-        spaces = getMainSessionController().getOrganizationController().getSpacePath(getSpaceId());
+        spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
       }
       boolean firstSpace = true;
       for (SpaceInst spaceInst : spaces) {
@@ -122,7 +122,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
       if (StringUtil.isDefined(getComponentId())) {
         // Display component's label
         ComponentInstLight componentInstLight =
-          getMainSessionController().getOrganizationController().getComponentInstLight(
+          getMainSessionController().getOrganisationController().getComponentInstLight(
           getComponentId());
         if (componentInstLight != null) {
           result.append(CONNECTOR);

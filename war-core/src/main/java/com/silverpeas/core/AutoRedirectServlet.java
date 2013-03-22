@@ -173,7 +173,7 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private boolean isAccessibleSpace(String spaceId, MainSessionController mainController) {
-    return StringUtil.isDefined(spaceId) && !mainController.getOrganizationController().
+    return StringUtil.isDefined(spaceId) && !mainController.getOrganisationController().
         isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
@@ -181,7 +181,7 @@ public class AutoRedirectServlet extends HttpServlet {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
         !mainController.
-        getOrganizationController().isComponentAvailable(componentId,
+            getOrganisationController().isComponentAvailable(componentId,
         mainController.getUserId());
   }
 

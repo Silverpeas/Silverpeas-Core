@@ -23,17 +23,34 @@
  */
 package com.silverpeas.web.mock;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.stratelia.webactiv.beans.admin.*;
 import java.util.List;
 import java.util.Map;
+
 import javax.inject.Named;
+
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
+
+import com.silverpeas.admin.components.WAComponent;
+
+import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.beans.admin.ProfileInst;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
 
 import static org.mockito.Mockito.mock;
 
 /**
- * A wrapper around an OrganizationController mock for testing purpose. 
+ * A wrapper around an OrganizationController mock for testing purpose.
  * It is managed by the IoC container and it plays the role of an OrganizationController instance
  * for the business objects involved in a test. For doing, it delegates the invoked methods to
  * the wrapped mock.
@@ -41,20 +58,20 @@ import static org.mockito.Mockito.mock;
  * should have in the tests.
  */
 @Named("organizationController")
-public class OrganizationControllerMockWrapper extends OrganizationController {
+public class OrganizationControllerMockWrapper implements OrganisationController {
 
   private static final long serialVersionUID = 2449731617524868440L;
-  private OrganizationController mock;
+  private OrganisationController mock;
 
   public OrganizationControllerMockWrapper() {
-    mock = mock(OrganizationController.class);
+   mock = mock(OrganisationController.class);
   }
 
   /**
    * Gets the mock of the OrganizationController class wrapped by this instance.
    * @return an OrganizationController mock.
    */
-  public OrganizationController getOrganizationControllerMock() {
+  public OrganisationController getOrganizationControllerMock() {
     return mock;
   }
 
@@ -455,5 +472,30 @@ public class OrganizationControllerMockWrapper extends OrganizationController {
   @Override
   public boolean isToolAvailable(String toolId) {
     return mock.isToolAvailable(toolId);
+  }
+
+  @Override
+  public UserDetail[] getAllUsers(String sPrefixTableName, String sComponentName) {
+    return mock.getAllUsers(sPrefixTableName, sComponentName);
+  }
+
+  @Override
+  public List<ProfileInst> getUserProfiles(String componentId, String objectId, String objectType) {
+    return mock.getUserProfiles(componentId, objectId, objectType);
+  }
+
+  @Override
+  public List<UserDetail> getAllUsersFromNewestToOldest() {
+    return mock.getAllUsersFromNewestToOldest();
+  }
+
+  @Override
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
+    return mock.getUsersOfDomainsFromNewestToOldest(domainIds);
+  }
+
+  @Override
+  public List<UserDetail> getUsersOfDomains(List<String> domainIds) {
+    return mock.getUsersOfDomains(domainIds);
   }
 }

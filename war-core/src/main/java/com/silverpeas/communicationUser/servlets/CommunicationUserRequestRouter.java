@@ -98,7 +98,7 @@ public class CommunicationUserRequestRouter extends
           commUserSC.addCurrentDiscussion(fileDiscussion);
           request.setAttribute("UserName", commUserSC.getUserDetail().getDisplayedName());
           request.setAttribute("UserIdDest", userId);
-          request.setAttribute("UserNameDest", commUserSC.getOrganizationController()
+          request.setAttribute("UserNameDest", commUserSC.getOrganisationController()
               .getUserDetail(
               userId).getDisplayedName());
           destination = "/communicationUser/jsp/discussion.jsp";

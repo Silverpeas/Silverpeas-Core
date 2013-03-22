@@ -23,6 +23,8 @@
  */
 package com.silverpeas.web;
 
+import static com.silverpeas.util.StringUtil.isDefined;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -30,12 +32,11 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.silverpeas.attachment.model.SimpleDocument;
 import org.apache.commons.codec.binary.Base64;
+import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.authentication.exception.AuthenticationException;
-
-
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.token.TokenStringKey;
 import org.silverpeas.token.constant.TokenType;
 import org.silverpeas.token.model.Token;
@@ -45,12 +46,8 @@ import org.silverpeas.util.Charsets;
 import com.silverpeas.accesscontrol.AccessController;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
-
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-
-import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -72,7 +69,7 @@ public class UserPriviledgeValidation {
   @Named("simpleDocumentAccessController")
   private AccessController<SimpleDocument> documentAccessController;
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organisationController;
   @Inject
   private TokenService tokenService;
   /**
@@ -225,7 +222,7 @@ public class UserPriviledgeValidation {
       int loginPasswordSeparatorIndex = decoded.indexOf(':');
       String userId = decoded.substring(0, loginPasswordSeparatorIndex);
       String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-      UserFull user = organizationController.getUserFull(userId);
+      UserFull user = organisationController.getUserFull(userId);
       if (user == null || !user.getPassword().equals(password)) {
         throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }

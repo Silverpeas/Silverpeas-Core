@@ -32,7 +32,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
+
 import java.util.Map;
 
 /**
@@ -121,7 +122,7 @@ public class TreeMenuHtmlHeadTag extends TagSupport {
           StringBuilder iconStyleBuilder = new StringBuilder();
           MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
               getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-          OrganizationController controller = mainSessionCtrl.getOrganizationController();
+          OrganisationController controller = mainSessionCtrl.getOrganisationController();
           Map<String, String> componentsNames = controller.getAllComponentsNames();
 
           if (!componentsNames.isEmpty()) {

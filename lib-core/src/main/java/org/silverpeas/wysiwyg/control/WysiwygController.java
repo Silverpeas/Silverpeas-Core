@@ -27,7 +27,6 @@ import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -44,6 +43,8 @@ import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.WysiwygException;
@@ -885,14 +886,15 @@ public class WysiwygController {
   }
 
   public static List<ComponentInstLight> getGalleries() {
-    String[] galleryIds = OrganizationControllerFactory.getOrganizationController().getCompoId(
-        "gallery");
-    List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>(galleryIds.length);
-    for (String componentId : galleryIds) {
-      if (StringUtil.getBooleanValue(OrganizationControllerFactory.getOrganizationController()
-          .getComponentParameterValue("gallery" + componentId, "viewInWysiwyg"))) {
-        galleries.add(OrganizationControllerFactory.getOrganizationController()
-            .getComponentInstLight("gallery" + componentId));
+    List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
+    OrganisationController orgaController =
+        OrganisationControllerFactory.getOrganisationController();
+    String[] compoIds = orgaController.getCompoId("gallery");
+    for (String compoId : compoIds) {
+      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
+          "viewInWysiwyg"))) {
+        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
+        galleries.add(gallery);
       }
     }
     return galleries;
@@ -908,15 +910,13 @@ public class WysiwygController {
   public static List<ComponentInstLight> getStorageFile(String userId) {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    OrganisationController controller =  OrganisationControllerFactory.getOrganisationController();
     // gets all kmelia components
-    String[] compoIds = OrganizationControllerFactory.getOrganizationController().getCompoId(
-        "kmelia");
+    String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {
       // retain only the components considered as a file storage
-      if (StringUtil.getBooleanValue(OrganizationControllerFactory.getOrganizationController()
-          .getComponentParameterValue(compoId, "publicFiles"))) {
-        ComponentInstLight component = OrganizationControllerFactory.getOrganizationController()
-            .getComponentInstLight(compoId);
+      if (StringUtil.getBooleanValue(controller.getComponentParameterValue(compoId, "publicFiles"))) {
+        ComponentInstLight component = controller.getComponentInstLight(compoId);
         components.add(component);
       }
     }

@@ -247,4 +247,5 @@ public class ThumbnailDAOTest extends AbstractTestDao {
   protected String getDatasetFileName() {
     return "test-thumbnail-dao-dataset.xml";
   }
+  
 }

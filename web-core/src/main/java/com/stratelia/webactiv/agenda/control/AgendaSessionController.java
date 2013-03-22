@@ -137,7 +137,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
       try {
         return "/rssAgenda/" + getAgendaUserId() + "?userId=" + getUserId() + "&amp;login="
             + URLEncoder.encode(getUserDetail().getLogin(), CharEncoding.UTF_8) + "&amp;password="
-            + URLEncoder.encode(getOrganizationController().getUserFull(getUserId()).getPassword(),
+            + URLEncoder.encode(getOrganisationController().getUserFull(getUserId()).getPassword(),
             CharEncoding.UTF_8);
       } catch (UnsupportedEncodingException e) {
         SilverTrace.error("agenda", "AgendaSessionController.getRSSUrl()",
@@ -489,7 +489,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public UserDetail[] getUserList() {
-    return getOrganizationController().getAllUsers();
+    return getOrganisationController().getAllUsers();
   }
 
   /**
@@ -499,7 +499,7 @@ public class AgendaSessionController extends AbstractComponentSessionController 
    * @see
    */
   public UserDetail getUserDetail(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**

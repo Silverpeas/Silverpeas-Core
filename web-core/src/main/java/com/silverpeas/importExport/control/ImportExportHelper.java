@@ -20,9 +20,10 @@
  */
 package com.silverpeas.importExport.control;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -45,7 +46,7 @@ public class ImportExportHelper {
   }
 
   public static String checkUserId(String userId, UserDetail importer) {
-    if (OrganizationControllerFactory.getOrganizationController().getUserDetail(userId) != null) {
+    if (OrganisationControllerFactory.getOrganisationController().getUserDetail(userId) != null) {
       return userId;
     }
     return importer.getId();

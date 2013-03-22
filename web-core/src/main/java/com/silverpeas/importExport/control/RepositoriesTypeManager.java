@@ -30,7 +30,6 @@ import com.silverpeas.pdc.importExport.PdcImportExport;
 import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -42,6 +41,7 @@ import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +71,6 @@ public class RepositoriesTypeManager {
       boolean isPOIUsed) {
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
-    OrganizationController orgaController = null;
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     PdcImportExport pdcIE = new PdcImportExport();
@@ -88,11 +87,8 @@ public class RepositoriesTypeManager {
       ImportReportManager.addMassiveReport(massiveReport, componentId);
       massiveReport.setRepositoryPath(sPath);
 
-      if (orgaController == null) {
-        orgaController = new OrganizationController();
-      }
-
-      ComponentInst componentInst = orgaController.getComponentInst(componentId);
+      ComponentInst componentInst = OrganisationControllerFactory.getOrganisationController()
+          .getComponentInst(componentId);
       if (componentInst == null) {
         // le composant n'existe pas
         massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_COMPONENT);

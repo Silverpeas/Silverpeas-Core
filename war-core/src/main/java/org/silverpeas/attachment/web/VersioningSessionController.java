@@ -96,7 +96,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return the user name for given user id
    */
   public String getUserNameByID(int user_id) {
-    UserDetail user = getOrganizationController().getUserDetail(String.valueOf(user_id));
+    UserDetail user = getOrganisationController().getUserDetail(String.valueOf(user_id));
     String name = user.getFirstName() + " " + user.getLastName();
     return name.trim();
   }
@@ -191,7 +191,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   private boolean isComponentAvailable(String userId) {
-    return getOrganizationController().isComponentAvailable(getComponentId(), userId);
+    return getOrganisationController().isComponentAvailable(getComponentId(), userId);
   }
 
   /**
@@ -244,7 +244,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
       // check in groups
       List<String> groupsIds = profile.getAllGroups();
       for (String groupId : groupsIds) {
-        UserDetail[] users = getOrganizationController().getAllUsersOfGroup(groupId);
+        UserDetail[] users = getOrganisationController().getAllUsersOfGroup(groupId);
         for (UserDetail user : users) {
           if (user != null && user.getId().equals(userId)) {
             return true;

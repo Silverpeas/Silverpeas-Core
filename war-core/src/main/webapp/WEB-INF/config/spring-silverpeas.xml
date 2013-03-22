@@ -102,7 +102,7 @@
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"
-        class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory"/>
 
   <!-- The administration module -->
