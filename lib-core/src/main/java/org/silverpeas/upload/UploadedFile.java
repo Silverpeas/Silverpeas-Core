@@ -23,10 +23,21 @@
  */
 package org.silverpeas.upload;
 
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.MetaData;
+import com.silverpeas.util.MetadataExtractor;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -52,8 +63,8 @@ public class UploadedFile {
    */
   public static UploadedFile from(HttpServletRequest request, String uploadedFileId) {
     return new UploadedFile(uploadedFileId, getUploadedFileFromUploadId(uploadedFileId),
-        (String) request.getParameter(uploadedFileId + "-title"),
-        (String) request.getParameter(uploadedFileId + "-description"));
+        request.getParameter(uploadedFileId + "-title"),
+        request.getParameter(uploadedFileId + "-description"));
   }
 
   /**
@@ -107,8 +118,103 @@ public class UploadedFile {
    * Indicates that the uploaded file has been processed.
    * Uploaded physical file is deleted from its temporary upload repository.
    */
-  public void markAsProcessed() {
+  private void markAsProcessed() {
     FileUtils.deleteQuietly(file);
+  }
+
+  /**
+   * Register a simple document attached in relation to the given contribution identifiers.
+   * Please notice that the original content is deleted from its original location.
+   * For now, as this method is exclusively used for contribution creations,
+   * the treatment doesn't search for existing attachments. In the future and if updates will be
+   * handled, the treatment must evolve to search for existing attachments ...
+   * @param resourceId
+   * @param componentInstanceId
+   * @param user
+   * @param contributionLanguage
+   */
+  public void registerSimpleDocument(String resourceId, String componentInstanceId, UserDetail user,
+      String contributionLanguage) {
+    registerSimpleDocument(resourceId, componentInstanceId, user, contributionLanguage, true);
+  }
+
+  /**
+   * Register a simple document attached in relation to the given contribution identifiers.
+   * Please notice that the original content is deleted from its original location.
+   * For now, as this method is exclusively used for contribution creations,
+   * the treatment doesn't search for existing attachments. In the future and if updates will be
+   * handled, the treatment must evolve to search for existing attachments ...
+   * @param resourceId
+   * @param componentInstanceId
+   * @param user
+   * @param contributionLanguage
+   * @param indexIt
+   */
+  public void registerSimpleDocument(String resourceId, String componentInstanceId, UserDetail user,
+      String contributionLanguage, boolean indexIt) {
+
+    // Retrieve the simple document
+    SimpleDocument document =
+        retrieveSimpleDocument(resourceId, componentInstanceId, user, contributionLanguage);
+
+    // Create attachment (please read the method documentation ...)
+    AttachmentServiceFactory.getAttachmentService().createAttachment(document, getFile(), indexIt);
+
+    // Delete the original content from its original location.
+    markAsProcessed();
+  }
+
+  /**
+   * Retrieve the SimpleDocument in relation with uploaded file.
+   * For now, as this method is exclusively used for contribution creations,
+   * the treatment doesn't search for existing attachments. In the future and if updates will be
+   * handled, the treatment must evolve to search for existing attachments ...
+   * @param user
+   * @param contributionLanguage (be careful, not the user language ...)
+   * @return
+   */
+  public SimpleDocument retrieveSimpleDocument(String resourceId, String componentInstanceId,
+      UserDetail user, String contributionLanguage) {
+
+    // Contribution language
+    String lang = I18NHelper.checkLanguage(contributionLanguage);
+
+    // Title and description
+    String title = getTitle();
+    String description = getDescription();
+    if (!StringUtil.isDefined(title)) {
+      MetadataExtractor extractor = new MetadataExtractor();
+      MetaData metadata = extractor.extractMetadata(getFile());
+      if (StringUtil.isDefined(metadata.getTitle())) {
+        title = metadata.getTitle();
+      } else {
+        title = "";
+      }
+      if (!StringUtil.isDefined(description) && StringUtil.isDefined(metadata.getSubject())) {
+        description = metadata.getSubject();
+      }
+    }
+    if (!StringUtil.isDefined(description)) {
+      description = "";
+    }
+
+    // Simple document PK
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, componentInstanceId);
+
+    // Simple document
+    SimpleDocument document = new SimpleDocument(pk, resourceId, 0, false, null,
+        new SimpleAttachment(getFile().getName().substring(getFileUploadId().length() + 1), lang,
+            title, description, getFile().length(), FileUtil.getMimeType(getFile().getPath()),
+            user.getId(), DateUtil.getNow(), null));
+
+    // Simple document details
+    document.setLanguage(lang);
+    document.setTitle(title);
+    document.setDescription(description);
+    document.setSize(getFile().length());
+
+    // Result
+    return document;
   }
 
   /**

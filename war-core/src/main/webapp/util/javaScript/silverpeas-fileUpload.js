@@ -24,8 +24,6 @@
 
 (function($) {
 
-  var fileTransferInProgress = [];
-
   // Check for the various File API support.
   var isFileAPI = window.File;
 
@@ -36,8 +34,10 @@
 
   // Event definitions
   var EVENT = {
+    SEND_FILE : 'SEND_REQUEST',
     FILES_TO_SEND : 'FILES_TO_SEND',
-    UPLOADED_FILE_CHANGED : 'UPLOADED_FILE_CHANGED'
+    UPLOADED_FILE_CHANGED : 'UPLOADED_FILE_CHANGED',
+    DELETE_FILE : 'DELETE_FILE'
   };
 
   /**
@@ -105,9 +105,6 @@
         containerOriginId : $target.attr('id'),
         uploadCount : 0
       };
-
-      // Initialize file transfer
-      fileTransferInProgress[params.containerOriginId] = [];
 
       // Options
       var _options = __buildOptions(options);
@@ -261,6 +258,9 @@
   function __renderUploadedFilesList(params) {
     var $list = $('<div>').addClass('uploaded-file-list');
     params.$uploadedFileList = $list;
+    $list.on(EVENT.SEND_FILE, function(event, uploadHandler) {
+      uploadHandler.send();
+    });
     return $list;
   }
 
@@ -393,7 +393,7 @@
       params.$container.append($fileUploadContainer.append($form.append($inputOfFiles)));
 
       // Perform uploads
-      __appendUpload(new __UploadHandler(uploadCommons.uploadContext,
+      __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
           uploadCommons.$waitingEndOfUploadContainer, $fileUploadContainer, null));
     }
   }
@@ -414,7 +414,7 @@
         var uploadCommons = __performAppendUploadCommons(params, [file]);
 
         // Perform uploads
-        __appendUpload(new __UploadHandler(uploadCommons.uploadContext,
+        __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
             uploadCommons.$waitingEndOfUploadContainer, null, file));
       });
     }
@@ -458,9 +458,6 @@
       uploadContext.nbFiles = files.length;
     }
 
-    // Adding in context the number of files that are going to be uploaded
-    __addFileTransfer(uploadContext);
-
     // Prepare waiting message
     var waitingMessage = params.options.labels.sendingFile.replace(/@name@/, (
         (isFileAPI && files) ? files[0].name : files.val()));
@@ -473,6 +470,10 @@
     // Adding to the DOM the waiting message
     params.$waitingUploadList.append($waitingEndOfUploadContainer);
 
+    // Build iuploaded file UI
+    uploadContext.fileUI = new __FileUI(params);
+    uploadContext.$uploadedFileList.append(uploadContext.fileUI.getContainer());
+
     // Results
     return  {
       uploadContext : uploadContext,
@@ -482,28 +483,23 @@
 
   /**
    * Treatment that has to be called after that the type of upload is set.
+   * @param params
    * @param uploadHandler
    * @private
    */
-  function __appendUpload(uploadHandler) {
-    uploadHandler.send();
+  function __appendUpload(params, uploadHandler) {
+    params.$uploadedFileList.trigger(EVENT.SEND_FILE, uploadHandler);
   }
 
   /**
-   * Compte the number of possible send to append.
+   * Compute the number of possible send to append.
    * @param params
    * @private
    */
   function __getNbPossibleFileSends(params) {
 
     // Total number of files
-    var nbFiles = 0;
-
-    // Number of file that are being send
-    nbFiles += __getNbFilesBeingTransfer(params);
-
-    // Files already uploaded
-    nbFiles += params.$uploadedFileList.children().length;
+    var nbFiles = params.$uploadedFileList.children().length;
 
     // Result
     return params.options.nbFileLimit - nbFiles;
@@ -522,6 +518,21 @@
   function __UploadHandler(uploadContext, $waitingEndOfUploadContainer, $formUploadContainer,
       file) {
     var self = this;
+    var xhr = null;
+
+    /**
+     * Aborts the send.
+     */
+    this.abort = function() {
+      if (xhr != null) {
+        if (xhr != null && xhr.abort) {
+          xhr.abort();
+          window.console &&
+          window.console.log('Silverpeas File Upload JQuery Plugin - INFO - File sending aborted successfully');
+          xhr = null;
+        }
+      }
+    };
 
     /**
      * Handles the send of files.
@@ -529,6 +540,8 @@
     this.send = function() {
       // Sending
       if ($formUploadContainer != null) {
+        __renderUploadFile(uploadContext, self, $(":file", $formUploadContainer).val(),
+            $waitingEndOfUploadContainer);
         // HTML4 upload way (use of jquery-iframe-transport.js plugin)
         $("form", $formUploadContainer).submit(function() {
           $.ajax(uploadContext.uploadUrl, {
@@ -539,8 +552,7 @@
                 self.sendComplete($.parseJSON(uploadedFiles.responseText));
                 __triggerUploadedListChanged(uploadContext);
               }).error(function(jqXHR, textStatus, errorThrown) {
-                __removeFileTransfer(uploadContext);
-                __removeWaiting($waitingEndOfUploadContainer)
+                uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
                 window.console &&
                 window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
                     errorThrown && errorThrown.length > 0 ? errorThrown :
@@ -558,8 +570,9 @@
 
     // HTML5 upload way
     this.sendFile = function(file) {
-      var xhr = new XMLHttpRequest();
+      xhr = new XMLHttpRequest();
       if (xhr.upload && file) {
+        __renderUploadFile(uploadContext, self, file.name, $waitingEndOfUploadContainer);
 
         // End of the upload
         xhr.onload = function() {
@@ -586,12 +599,12 @@
 
         // Error
         xhr.onerror = function() {
-          __removeFileTransfer(uploadContext);
-          __removeWaiting($waitingEndOfUploadContainer)
+          uploadContext.fileUI.getContainer().trigger(EVENT.DELETE_FILE);
           window.console &&
           window.console.log(('Silverpeas File Upload JQuery Plugin - ERROR - ' + (
               this.responseText && this.responseText.length > 0 ? this.responseText :
                   'Maybe due to an upload of a wrong type of file...')));
+          xhr = null;
         };
 
         // Start upload
@@ -604,9 +617,8 @@
 
     // Upload complete
     this.sendComplete = function(uploadedFiles) {
-      __removeFileTransfer(uploadContext);
-      __removeWaiting($waitingEndOfUploadContainer)
-      $('fieldset#' + uploadContext.containerOriginId).css('height', 'auto');
+      xhr = null;
+      __removeWaiting($waitingEndOfUploadContainer);
       $(uploadedFiles).each(function(index, file) {
         __renderUploadedFile(uploadContext, file)
       });
@@ -619,7 +631,9 @@
    * @private
    */
   function __removeWaiting($waitingEndOfUploadContainer) {
-    $waitingEndOfUploadContainer.remove();
+    if ($waitingEndOfUploadContainer != null) {
+      $waitingEndOfUploadContainer.remove();
+    }
   }
 
   /**
@@ -632,122 +646,179 @@
   }
 
   /**
-   * Render an uploaded file.
+   * Centralizes the render an uploaded file.
+   * @param uploadContext
+   * @param uploadHandler
+   * @param fileName
+   * @param $waitingEndOfUploadContainer
+   * @private
+   */
+  function __renderUploadFile(uploadContext, uploadHandler, fileName,
+      $waitingEndOfUploadContainer) {
+    uploadContext.fileUI.setUploadFileData({
+      uploadHandler : uploadHandler,
+      fileName : fileName,
+      $waitingEndOfUploadContainer : $waitingEndOfUploadContainer
+    });
+  }
+
+  /**
+   * Centralizes the render an uploaded file.
    * @param uploadContext
    * @param file
    * @private
    */
   function __renderUploadedFile(uploadContext, file) {
+    uploadContext.fileUI.setUploadedFileData(file);
+  }
+
+  /**
+   * Handle the UI of a file.
+   * @param params
+   * @private
+   */
+  function __FileUI(params) {
+    var self = this;
+
+    $('fieldset#' + params.containerOriginId).css('height', 'auto');
     var $file = $('<div>').addClass('uploaded-file');
     var $fileDetails = $('<div>').addClass('details');
     var $fileInfos = $('<div>').addClass('infos');
     var $fileTitleInfo = $('<div>').addClass('infos-title');
     var $fileDescriptionInfo = $('<div>').addClass('infos-description');
-    uploadContext.$uploadedFileList.append($file);
     $file.append($fileDetails, $fileInfos.append($fileTitleInfo, $fileDescriptionInfo));
 
-    // Hidden technical input
-    $file.append($('<input>', {
-      type : 'hidden',
-      name : 'uploaded-file-' + file.fileId,
-      value : file.fileId
-    }));
+    var uploadHandler = null;
+    var $waitingEndOfUploadContainer = null;
+    var uploadedFileData = null;
 
     // Header - details
+    $file.on(EVENT.DELETE_FILE, function() {
+      __removeWaiting($waitingEndOfUploadContainer);
+      if (uploadHandler != null) {
+        uploadHandler.abort();
+      }
+      if (uploadedFileData != null) {
+        __deleteFile(uploadedFileData.fileId);
+      }
+      $file.fadeOut(200, function() {
+        $file.remove();
+        __triggerUploadedListChanged(params);
+      });
+    });
+    $fileDetails.append($('<span>'));
     var $deleteAction = $('<a>').attr('href', '#').addClass('delete-file').append($('<img>', {
-          title : uploadContext.options.labels.deleteFile,
-          alt : uploadContext.options.labels.deleteFile,
+          title : params.options.labels.deleteFile,
+          alt : params.options.labels.deleteFile,
           src : webContext + '/util/icons/cross.png'
         })).click(function() {
-          __deleteFile(file.fileId);
-          $file.fadeOut(200, function() {
-            $file.remove();
-            __triggerUploadedListChanged(uploadContext);
-          });
+          $file.trigger(EVENT.DELETE_FILE);
           return false;
         });
-    $fileDetails.append($('<img>', {
-      alt : '',
-      src : file.iconUrl
-    }), $('<span>').append(file.name, ' - ', file.formattedSize));
-    $fileDetails.append($deleteAction);
+    $fileDetails.append($deleteAction.hide());
 
     // Body - title and description
+    var dummyBaseId = new Date().getMilliseconds();
     var $fileTitle = $('<input>', {
       type : 'text',
-      id : file.fileId + '-title',
-      name : file.fileId + '-title',
+      id : dummyBaseId + '-title',
+      name : dummyBaseId + '-title',
       maxLength : 150,
       size : 40,
-      placeholder : uploadContext.options.labels.title
+      placeholder : params.options.labels.title
     });
     if (!isFileAPI) {
-      $fileTitleInfo.append($('<label>').attr('for', file.fileId +
-              '-title').addClass('txtlibform').append(uploadContext.options.labels.title +
+      $fileTitleInfo.append($('<label>').attr('for',
+              dummyBaseId + '-title').addClass('txtlibform').append(params.options.labels.title +
               "<br/>"));
     }
     $fileTitleInfo.append($fileTitle);
     var $fileDescription = $('<textarea>', {
-      id : file.fileId + '-description',
-      name : file.fileId + '-description',
+      id : dummyBaseId + '-description',
+      name : dummyBaseId + '-description',
       rows : 2,
       cols : 40,
-      placeholder : uploadContext.options.labels.description
+      placeholder : params.options.labels.description
     });
     if (!isFileAPI) {
-      $fileDescriptionInfo.append($('<label>').attr('for', file.fileId +
-              '-description').addClass('txtlibform').append(uploadContext.options.labels.description +
+      $fileDescriptionInfo.append($('<label>').attr('for', dummyBaseId +
+              '-description').addClass('txtlibform').append(params.options.labels.description +
               "<br/>"));
     }
     $fileDescriptionInfo.append($fileDescription);
-  }
 
-  /**
-   * Adding in the context that some files are being transfer.
-   * @param uploadContext
-   * @private
-   */
-  function __addFileTransfer(uploadContext) {
-    var fileTransfer = fileTransferInProgress[uploadContext.containerOriginId];
-    var nbFilesAlreadyExisting = fileTransfer[uploadContext.uploadId];
-    if (!nbFilesAlreadyExisting) {
-      nbFilesAlreadyExisting = 0;
-    }
-    fileTransfer[uploadContext.uploadId] = (uploadContext.nbFiles + nbFilesAlreadyExisting);
-  }
+    /**
+     * Gets the DOM container.
+     * @return {*}
+     */
+    this.getContainer = function() {
+      return $file;
+    };
 
-  /**
-   * Removing from the context that some files are being transfer.
-   * @param uploadContext
-   * @private
-   */
-  function __removeFileTransfer(uploadContext) {
-    var fileTransfer = fileTransferInProgress[uploadContext.containerOriginId];
-    var nbFilesAlreadyExisting = fileTransfer[uploadContext.uploadId];
-    if (!nbFilesAlreadyExisting) {
-      nbFilesAlreadyExisting = 0;
-    }
-    fileTransfer[uploadContext.uploadId] = (nbFilesAlreadyExisting - uploadContext.nbFiles);
-  }
-
-  /**
-   * Removing from the context that some files are being transfer.
-   * @param uploadContext
-   * @private
-   */
-  function __getNbFilesBeingTransfer(uploadContext) {
-    var fileTransfer = fileTransferInProgress[uploadContext.containerOriginId];
-    var nbFiles = 0;
-    var currentNbFiles;
-    for (var index in fileTransfer) {
-      if (fileTransfer.hasOwnProperty(index)) {
-        currentNbFiles = fileTransfer[index];
-        if (currentNbFiles) {
-          nbFiles += currentNbFiles;
-        }
+    /**
+     * Sets the file icon.
+     * @param iconUrl
+     */
+    this.setFileIcon = function(iconUrl) {
+      var $img = $('img.file-icon', $fileDetails);
+      if ($img.length == 0) {
+        $img = $('<img>').attr('alt', '').addClass('file-icon').prependTo($fileDetails);
       }
-    }
-    return nbFiles;
+      $img.attr('src', iconUrl);
+    };
+
+    /**
+     * The file informations from the beginning of a file upload.
+     * @param file
+     */
+    this.setUploadFileData = function(file) {
+      uploadHandler = file.uploadHandler;
+      $waitingEndOfUploadContainer = file.$waitingEndOfUploadContainer;
+      $('span', $fileDetails).html(file.fileName);
+      self.setFileIcon(webContext + '/util/icons/uploading.gif');
+      $deleteAction.hide().show();
+    };
+
+    /**
+     * The file informations from an successful file upload.
+     * @param file
+     */
+    this.setUploadedFileData = function(file) {
+      uploadedFileData = file;
+
+      // Hidden technical input
+      $file.prepend($('<input>', {
+        type : 'hidden',
+        name : 'uploaded-file-' + uploadedFileData.fileId,
+        value : uploadedFileData.fileId
+      }));
+
+      // Header - details
+      self.setFileIcon(uploadedFileData.iconUrl);
+      $('span', $fileDetails).empty().append(uploadedFileData.name, ' - ',
+          uploadedFileData.formattedSize);
+
+      // Body - title and description
+      $fileTitle.attr('id', uploadedFileData.fileId + '-title');
+      $fileTitle.attr('name', uploadedFileData.fileId + '-title');
+      if (!isFileAPI) {
+        $('label', $fileTitleInfo).attr('for', uploadedFileData.fileId + '-title');
+      }
+      $fileDescription.attr('id', uploadedFileData.fileId + '-description');
+      $fileDescription.attr('name', uploadedFileData.fileId + '-description');
+      if (!isFileAPI) {
+        $('label', $fileDescriptionInfo).attr('for', uploadedFileData.fileId + '-description');
+      }
+    };
+  }
+
+  /**
+   * Gets the number of files being transfer.
+   * @param params
+   * @private
+   */
+  function __getNbFilesBeingTransfer(params) {
+    return params.$waitingUploadList.children().length;
   }
 
   /**
