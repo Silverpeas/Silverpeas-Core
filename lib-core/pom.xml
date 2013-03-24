@@ -191,6 +191,10 @@
       <artifactId>jersey-server</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-lgpl</artifactId>
     </dependency>
@@ -328,7 +332,6 @@
     <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
-      <classifier>silverpeas</classifier>
     </dependency>
     <dependency>
       <groupId>com.drewnoakes</groupId>
@@ -395,7 +398,7 @@
         </excludes>
       </testResource>
       <testResource>
-        <directory>src/test/resources</directory>
+        <directory>${basedir}/src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
@@ -409,11 +412,29 @@
           <include>**/*.tar.bz2</include>
           <include>**/*.sql</include>
           <include>opendj/**</include>
+          <include>**/*.tif</include>
         </includes>
       </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>**/*.odp</exclude>
+          <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/*.odt</exclude>
+          <exclude>**/*.doc</exclude>
+          <exclude>**/*.docx</exclude>
+          <exclude>**/*.zip</exclude>
+          <exclude>**/*.tar.gz</exclude>
+          <exclude>**/*.tar.bz2</exclude>
+          <exclude>**/*.sql</exclude>
+          <exclude>opendj/**</exclude>
+          <exclude>**/*.tif</exclude>
+        </excludes>
+      </testResource>      
     </testResources>
     <filters>
-      <filter>src/test/filters/filters.properties</filter>
+      <filter>${basedir}/src/test/filters/filters.properties</filter>
     </filters>
     <plugins>
       <plugin>

@@ -9,7 +9,7 @@
 # As a special exception to the terms and conditions of version 3.0 of
 # the GPL, you may redistribute this Program in connection with Free/Libre
 # Open Source Software ("FLOSS") applications as described in Silverpeas's
-# FLOSS exception.  You should have recieved a copy of the text describing
+# FLOSS exception.  You should have received a copy of the text describing
 # the FLOSS exception, and it is also available here:
 # "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 #
@@ -56,12 +56,6 @@ database.SQLGroupParentIdColumnName         = superGroupId
 database.SQLUserGroupUIDColumnName          = userId
 database.SQLUserGroupGIDColumnName          = groupId
 
-# Database encryption
-# -------------------
-# Available values : ClearText, CryptUnix, CryptMd5
-database.SQLPasswordEncryption = $SQLPasswordEncryption$
-
-
 # Users synchronisation
 # -------------------
 
@@ -78,7 +72,7 @@ ExternalSynchroClass =
 # Property number : from 1 to N
 
 property.Number = 9
-property.ResourceFile = com.stratelia.silverpeas.domains.multilang.templateDomainSQLBundle
+property.ResourceFile = org.silverpeas.domains.multilang.templateDomainSQLBundle
 
 property_1.Name = title
 property_1.Type = STRING

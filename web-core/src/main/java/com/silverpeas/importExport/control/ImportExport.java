@@ -60,13 +60,12 @@ import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -82,6 +81,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -101,17 +101,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static com.google.common.base.Charsets.UTF_8;
 import static java.io.File.separator;
@@ -123,7 +113,7 @@ import static java.io.File.separator;
 public class ImportExport {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.importExport.settings.mapping", "");
+      "org.silverpeas.importExport.settings.mapping", "");
   public final static String iframePublication = "publications";
   public final static String iframeIndexPublications = "indexPublications";
 
@@ -810,8 +800,6 @@ public class ImportExport {
     ExportReport exportReport = new ExportReport();
     CoordinateImportExport coordinateImportExport = new CoordinateImportExport();
     GEDImportExport gedIE;
-    OrganizationController orgController = new OrganizationController();
-
     try {
       // Stockage de la date de démarage de l'export dans l'objet rapport
       exportReport.setDateDebut(new Date());
@@ -889,7 +877,8 @@ public class ImportExport {
         }
 
         // Create unbalanced file html index
-        ComponentInst componentInst = orgController.getComponentInst(componentId);
+        ComponentInst componentInst = OrganisationControllerFactory
+            .getOrganisationController().getComponentInst(componentId);
         gedIE = ImportExportFactory.createGEDImportExport(userDetail, componentId);
 
         String unbalancedFileNameRelativePath = "index-2.html";

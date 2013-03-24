@@ -101,10 +101,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <listener>
         <listener-class>com.silverpeas.bootstrap.SilverpeasContextBootStrapper</listener-class>
     </listener>
-    <!--
-<listener>
-<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-</listener>-->
     <listener>
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
@@ -115,7 +111,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
         <listener-class>com.sun.portal.portletcontainer.impl.PortletContainerContextListenerImpl</listener-class>
     </listener>
     <listener>
-        <listener-class>com.stratelia.webactiv.servlets.SilverListener</listener-class>
+        <listener-class>org.silverpeas.servlets.SilverListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.apache.commons.fileupload.servlet.FileCleanerCleanup</listener-class>
@@ -144,63 +140,59 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>CredentialsServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.CredentialsServlet</servlet-class>
+        <servlet-class>org.silverpeas.servlets.CredentialsServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.FileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.FileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>OnlineFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.OnlineFileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.OnlineFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>TempFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.TempFileServer</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FileUploader</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.FileUploader</servlet-class>
+        <servlet-class>org.silverpeas.servlets.TempFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>RestOnlineFileServer</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.RestOnlineFileServer</servlet-class>
+        <servlet-class>org.silverpeas.servlets.RestOnlineFileServer</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToPublication</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToPublication</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToPublication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToTopic</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToTopic</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToTopic</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToComponent</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToComponent</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToComponent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToSpace</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToSpace</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToSpace</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToFile</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToFile</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToFile</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToDocument</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToDocument</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToDocument</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GoToVersion</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.GoToVersion</servlet-class>
+        <servlet-class>org.silverpeas.servlets.GoToVersion</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>MainRequestRouter</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.MainRequestRouter</servlet-class>
+        <servlet-class>org.silverpeas.servlets.MainRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.servlets.LogoutServlet</servlet-class>
+        <servlet-class>org.silverpeas.servlets.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>POPUPRequestRouter</servlet-name>
@@ -256,11 +248,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>DragAndDrop</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.DragAndDrop</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.DragAndDrop</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ActifyToAttachment</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.ActifyToAttachment</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.ActifyToAttachment</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PdcRequestRouter</servlet-name>
@@ -298,6 +290,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
             <description>Defines the prefix for spooling resources out of the repository.</description>
             <param-name>resource-path-prefix</param-name>
             <param-value>/repository</param-value>
+        </init-param>
+        <init-param>
+            <description>Defines various dav-resource configuration parameters.</description>
+            <param-name>resource-config</param-name>
+            <param-value>/WEB-INF/classes/webdav-config.xml</param-value>
+        </init-param>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet>
+        <description>The webdav servlet that connects HTTP request to the repository for Office 2000.</description>
+        <servlet-name>BasicWebdav</servlet-name>
+        <servlet-class>com.silverpeas.jcrutil.servlets.SimpleWebdavServlet</servlet-class>
+        <init-param>
+            <description>Defines the prefix for spooling resources out of the repository.</description>
+            <param-name>resource-path-prefix</param-name>
+            <param-value>/repository2000</param-value>
         </init-param>
         <init-param>
             <description>Defines various dav-resource configuration parameters.</description>
@@ -407,7 +415,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>VersioningRequestRouter</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.VersioningRequestRouter</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.VersioningRequestRouter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SilverStatisticsPeasRequestRouter</servlet-name>
@@ -423,7 +431,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>VersioningDragAndDrop</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.DragAndDrop</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.VersionedDragAndDrop</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FileSharingRequestRouter</servlet-name>
@@ -455,16 +463,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     </servlet>
     <servlet>
         <servlet-name>AttachmentAjaxServlet</servlet-name>
-        <servlet-class>com.silverpeas.attachment.servlets.AjaxServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>VersioningAjaxServlet</servlet-name>
-        <servlet-class>com.stratelia.silverpeas.versioningPeas.servlets.AjaxServlet</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.AjaxServlet</servlet-class>
     </servlet>
     <!--
 <servlet>
 <servlet-name>AjaxFileUploadServlet</servlet-name>
-
   <servlet-class>com.silverpeas.servlets.upload.AjaxFileUploadServlet</servlet-class>
   <init-param>
   <param-name>UPLOAD_DIRECTORY</param-name>
@@ -525,10 +528,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-class>com.silverpeas.socialnetwork.newsFeed.servlets.NewsFeedJSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>DirectoryServlet</servlet-name>
-    <servlet-class>com.silverpeas.directory.servlets.DirectoryServlet</servlet-class>
-  </servlet>
-  <servlet>
     <servlet-name>DirectoryJSONServlet</servlet-name>
     <servlet-class>com.silverpeas.directory.servlets.DirectoryJSONServlet</servlet-class>
   </servlet>
@@ -566,7 +565,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet>
   <servlet>
     <servlet-name>LaunchWebdavEdition</servlet-name>
-    <servlet-class>com.silverpeas.attachment.servlets.LaunchWebdavEdition</servlet-class>
+        <servlet-class>org.silverpeas.attachment.web.LaunchWebdavEdition</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>REST Container</servlet-name>
@@ -591,10 +590,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>TempFileServer</servlet-name>
     <url-pattern>/TempFileServer/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>FileUploader</servlet-name>
-    <url-pattern>/FileUploader/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>RestOnlineFileServer</servlet-name>
@@ -727,6 +722,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>Webdav</servlet-name>
     <url-pattern>/repository/*</url-pattern>
+  </servlet-mapping>
+   <servlet-mapping>
+    <servlet-name>BasicWebdav</servlet-name>
+    <url-pattern>/repository2000/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JcrInitializer</servlet-name>
@@ -869,10 +868,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>AttachmentAjaxServlet</servlet-name>
     <url-pattern>/Attachment/*</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>VersioningAjaxServlet</servlet-name>
-    <url-pattern>/AjaxVersioning/*</url-pattern>
-  </servlet-mapping>
   <!--
   <servlet-mapping>
   <servlet-name>AjaxFileUploadServlet</servlet-name>
@@ -930,10 +925,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>NewsFeedJSONServlet</servlet-name>
     <url-pattern>/RnewsFeedJSONServlet</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DirectoryServlet</servlet-name>
-    <url-pattern>/RdirectoryServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DirectoryJSONServlet</servlet-name>

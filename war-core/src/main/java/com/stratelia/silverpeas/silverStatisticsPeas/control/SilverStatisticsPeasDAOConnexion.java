@@ -26,12 +26,12 @@ package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -53,7 +53,6 @@ import java.util.Map;
  */
 public class SilverStatisticsPeasDAOConnexion {
 
-  private static final OrganizationController controller = new OrganizationController();
   public static final int INDICE_LIB = 0;
   public static final int INDICE_COUNTCONNEXION = 1;
   public static final int INDICE_DURATION = 2;
@@ -313,7 +312,8 @@ public class SilverStatisticsPeasDAOConnexion {
     LinkedHashMap<String, Long> result = prepareStatisticsArray(startDate, endDate);
     try {
       myCon = DBUtil.makeConnection(JNDINames.SILVERSTATISTICS_DATASOURCE);
-      UserDetail[] users = controller.getAllUsersOfGroup(groupId);
+      UserDetail[] users = OrganisationControllerFactory
+          .getOrganisationController().getAllUsersOfGroup(groupId);
       stmt = myCon.prepareStatement(SELECT_USER_NB_CONNECTION);
       for (UserDetail userDetail : users) {
         stmt.setString(1, startDate);
@@ -347,7 +347,7 @@ public class SilverStatisticsPeasDAOConnexion {
         "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
         "root.MSG_GEN_ENTER_METHOD");
     List<String[]> result = new ArrayList<String[]>();
-    Group[] groups = controller.getAllGroups();
+    Group[] groups = OrganisationControllerFactory.getOrganisationController().getAllGroups();
     for (Group group : groups) {
       result.addAll(getStatsConnexionGroupUser(dateBegin, dateEnd, group));
     }
@@ -367,8 +367,8 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String[]> getStatsConnexionAllGroup(String dateBegin,
       String dateEnd, int groupId) throws SQLException, UtilException {
-    return getStatsConnexionGroupUser(dateBegin, dateEnd, controller.getGroup(
-        String.valueOf(groupId)));
+    return getStatsConnexionGroupUser(dateBegin, dateEnd, OrganisationControllerFactory
+        .getOrganisationController().getGroup(String.valueOf(groupId)));
   }
 
   static Collection<String[]> getStatsConnexionGroupUser(String dateBegin, String dateEnd,
@@ -385,7 +385,8 @@ public class SilverStatisticsPeasDAOConnexion {
       stmt = myCon.prepareStatement(SELECT_COUNTS_FOR_USER);
       long countConnection = 0L;
       long duration = 0L;
-      UserDetail[] users = controller.getAllUsersOfGroup(group.getId());
+      UserDetail[] users = OrganisationControllerFactory.getOrganisationController()
+          .getAllUsersOfGroup(group.getId());
       for (UserDetail userDetail : users) {
         stmt.setString(1, dateBegin);
         stmt.setString(2, dateEnd);

@@ -37,6 +37,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.ListSlice;
 
 import static org.mockito.Matchers.any;
@@ -78,7 +80,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   public void whenSearchGroupsByCriteriaThenReturn(final Group[] groups) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     doAnswer(new Answer<ListSlice<Group>>() {
       @Override
       public ListSlice<Group> answer(InvocationOnMock invocation) throws Throwable {
@@ -89,7 +91,7 @@ public class UserProfileTestResources extends TestResources {
 
   public void whenSearchUsersByCriteriaThenReturn(final UserDetailsSearchCriteria criteria,
           final UserDetail[] users) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     doAnswer(new Answer<ListSlice<UserDetail>>() {
 
       @Override
@@ -294,7 +296,7 @@ public class UserProfileTestResources extends TestResources {
     UserDetail[] existingUsers = getAllExistingUsers();
     UserDetail[] actualUsers = Arrays.copyOf(existingUsers, existingUsers.length + 1);
     actualUsers[actualUsers.length - 1] = user;
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     when(mock.getAllUsers()).thenReturn(actualUsers);
     return super.registerUser(user);
   }
@@ -314,6 +316,7 @@ public class UserProfileTestResources extends TestResources {
     user.setLastName(lastName);
     user.setId(id);
     user.setDomainId(domainId);
+    user.setAccessLevel(UserAccessLevel.DOMAIN_ADMINISTRATOR);
     return user;
   }
 
@@ -330,7 +333,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void putUsersInGroups() {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     Group[] groups = mock.getAllGroups();
     for (Group group : groups) {
       when(mock.getAllUsersOfGroup(group.getId())).thenReturn(new UserDetail[0]);
@@ -356,7 +359,7 @@ public class UserProfileTestResources extends TestResources {
   }
 
   private void registerSomeGroups(final Group... someGroups) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     List<Group> rootGroups = new ArrayList<Group>();
     for (int i = 0; i < someGroups.length; i++) {
       when(mock.getGroup(someGroups[i].getId())).thenReturn(someGroups[i]);

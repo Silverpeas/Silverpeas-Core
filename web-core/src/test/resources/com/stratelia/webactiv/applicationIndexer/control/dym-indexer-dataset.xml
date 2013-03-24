@@ -26,8 +26,8 @@
 -->
 
 <dataset>
-  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="" login="SilverAdmin" loginmail="" accesslevel="A" loginquestion="Quelle est votre ville de naissance ?" loginanswer="fff"/>
-  <st_user id="1" domainid="0" specificid="1" firstname="Lecteur" lastname="Lecteur" email="" login="lecteur" loginmail="" accesslevel="U" loginquestion="Quelle est le nom de jeune fille de votre mère ?" loginanswer="mere"/>
+  <st_user id="0" domainid="0" specificid="0" firstname="" lastname="Administrateur" email="" login="SilverAdmin" loginmail="" accesslevel="A" loginquestion="Quelle est votre ville de naissance ?" loginanswer="fff" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
+  <st_user id="1" domainid="0" specificid="1" firstname="Lecteur" lastname="Lecteur" email="" login="lecteur" loginmail="" accesslevel="U" loginquestion="Quelle est le nom de jeune fille de votre mère ?" loginanswer="mere" state='VALID' stateSaveDate='2012-01-01 00:00:00 0'/>
   <st_space id="1" name="Java" description="language de programmation Java" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="0" createtime="1265208590802" updatetime="1265208676165" updatedby="0" lang="fr" isinheritanceblocked="0"/>
   <st_space id="2" name="TCP IP" description="" createdby="0" firstpagetype="0" firstpageextraparam="" ordernum="1" createtime="1265378986407" updatetime="1265379014037" updatedby="0" lang="fr" isinheritanceblocked="0"/>
   <st_componentinstance id="1" spaceid="1" name="J2EE" componentname="kmelia" description="" createdby="0" ordernum="0" createtime="1265209006921" ispublic="0" ishidden="0" lang="fr" isinheritanceblocked="0"/>
@@ -147,78 +147,4 @@
   <st_instance_data id="97" componentid="18" name="XMLFormName" label="Formulaire XML" value=""/>
   <st_instance_data id="98" componentid="18" name="searchFields2" label="Champs recherche 2" value=""/>
   <st_instance_data id="99" componentid="18" name="searchFields1" label="Champs recherche 1" value=""/>
-  <!--
-  <st_userrole id="1" instanceid="1" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="2" instanceid="1" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="3" instanceid="2" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="4" instanceid="2" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="5" instanceid="3" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="6" instanceid="3" name="" rolename="userClassic" description="" isinherited="1"/>
-  <st_userrole id="7" instanceid="4" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="8" instanceid="4" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="9" instanceid="5" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="10" instanceid="5" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="11" instanceid="6" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="12" instanceid="6" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="13" instanceid="7" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="14" instanceid="7" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="15" instanceid="10" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="16" instanceid="10" name="" rolename="lecteur" description="" isinherited="1"/>
-  <st_userrole id="17" instanceid="11" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="18" instanceid="11" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="19" instanceid="12" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="20" instanceid="12" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="21" instanceid="13" name="" rolename="Admin" description="" isinherited="1"/>
-  <st_userrole id="22" instanceid="13" name="" rolename="Reader" description="" isinherited="1"/>
-  <st_userrole id="25" instanceid="16" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="26" instanceid="16" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="27" instanceid="17" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="28" instanceid="17" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole id="30" instanceid="19" name="" rolename="admin" description="" isinherited="1"/>
-  <st_userrole id="31" instanceid="19" name="" rolename="user" description="" isinherited="1"/>
-  <st_userrole_group_rel/>
-  <st_userrole_user_rel userroleid="1" userid="0"/>
-  <st_userrole_user_rel userroleid="2" userid="1"/>
-  <st_userrole_user_rel userroleid="3" userid="0"/>
-  <st_userrole_user_rel userroleid="4" userid="1"/>
-  <st_userrole_user_rel userroleid="5" userid="0"/>
-  <st_userrole_user_rel userroleid="6" userid="1"/>
-  <st_userrole_user_rel userroleid="7" userid="0"/>
-  <st_userrole_user_rel userroleid="8" userid="1"/>
-  <st_userrole_user_rel userroleid="9" userid="0"/>
-  <st_userrole_user_rel userroleid="10" userid="1"/>
-  <st_userrole_user_rel userroleid="11" userid="0"/>
-  <st_userrole_user_rel userroleid="12" userid="1"/>
-  <st_userrole_user_rel userroleid="13" userid="0"/>
-  <st_userrole_user_rel userroleid="14" userid="1"/>
-  <st_userrole_user_rel userroleid="15" userid="0"/>
-  <st_userrole_user_rel userroleid="16" userid="1"/>
-  <st_userrole_user_rel userroleid="17" userid="0"/>
-  <st_userrole_user_rel userroleid="18" userid="1"/>
-  <st_userrole_user_rel userroleid="19" userid="0"/>
-  <st_userrole_user_rel userroleid="20" userid="1"/>
-  <st_userrole_user_rel userroleid="21" userid="0"/>
-  <st_userrole_user_rel userroleid="22" userid="1"/>
-  <st_userrole_user_rel userroleid="25" userid="0"/>
-  <st_userrole_user_rel userroleid="26" userid="1"/>
-  <st_userrole_user_rel userroleid="27" userid="0"/>
-  <st_userrole_user_rel userroleid="28" userid="1"/>
-  <st_userrole_user_rel userroleid="30" userid="0"/>
-  <st_userrole_user_rel userroleid="31" userid="1"/>
-  <st_spaceuserrole id="1" spaceid="1" name="Manager d&apos;espace" rolename="Manager" description="" isinherited="0"/>
-  <st_spaceuserrole id="2" spaceid="1" name="" rolename="reader" description="" isinherited="0"/>
-  <st_spaceuserrole id="3" spaceid="1" name="" rolename="admin" description="" isinherited="0"/>
-  <st_spaceuserrole id="4" spaceid="2" name="Manager d&apos;espace" rolename="Manager" description="" isinherited="0"/>
-  <st_spaceuserrole id="5" spaceid="2" name="" rolename="admin" description="" isinherited="0"/>
-  <st_spaceuserrole id="6" spaceid="2" name="" rolename="reader" description="" isinherited="0"/>
-  <st_spaceuserrole_group_rel/>
-  <st_spaceuserrole_user_rel spaceuserroleid="1" userid="0"/>
-  <st_spaceuserrole_user_rel spaceuserroleid="2" userid="1"/>
-  <st_spaceuserrole_user_rel spaceuserroleid="3" userid="0"/>
-  <st_spaceuserrole_user_rel spaceuserroleid="4" userid="0"/>
-  <st_spaceuserrole_user_rel spaceuserroleid="5" userid="0"/>
-  <st_spaceuserrole_user_rel spaceuserroleid="6" userid="1"/>
-  <sb_pdc_axis id="1" rootid="1" name="java" axistype="P" axisorder="0" creationdate="2010/02/03" creatorid="0" description="" lang="fr"/>
-  <st_notifdefaultaddress />
-  -->
 </dataset>

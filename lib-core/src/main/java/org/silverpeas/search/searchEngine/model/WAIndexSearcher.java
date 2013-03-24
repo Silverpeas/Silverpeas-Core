@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -58,7 +59,6 @@ public class WAIndexSearcher {
   private int primaryFactor = 3;
   private int secondaryFactor = 1;
   public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
-  
   /**
    * indicates the number maximum of results returned by the search
    */
@@ -116,12 +116,12 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
     SpaceComponentPair pair = new SpaceComponentPair(null, component);
-    HashSet<SpaceComponentPair> set = new HashSet<SpaceComponentPair>();
+    Set<SpaceComponentPair> set = new HashSet<SpaceComponentPair>(1);
     set.add(pair);
 
     IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
-    Searcher searcher = getSearcher(set);
+    IndexSearcher searcher = getSearcher(set);
     try {
       TopDocs topDocs;
       Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
@@ -135,14 +135,7 @@ public class WAIndexSearcher {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
     } finally {
-      try {
-        if (searcher != null) {
-          searcher.close();
-        }
-      } catch (IOException ioe) {
-        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-            "searchEngine.MSG_CANNOT_CLOSE_SEARCHER", ioe);
-      }
+      IOUtils.closeQuietly(searcher);
     }
     return matchingIndexEntry;
   }
@@ -150,6 +143,10 @@ public class WAIndexSearcher {
   /**
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
+   *
+   * @param query
+   * @return
+   * @throws org.silverpeas.search.searchEngine.model.ParseException
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
@@ -260,7 +257,7 @@ public class WAIndexSearcher {
         l++;
       }
 
-      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_36,fields, analyzer);
+      MultiFieldQueryParser mfqp = new MultiFieldQueryParser(Version.LUCENE_36, fields, analyzer);
       mfqp.setDefaultOperator(defaultOperand);
       parsedQuery = mfqp.parse(query.getQuery());
     } else {
@@ -375,7 +372,7 @@ public class WAIndexSearcher {
    * @throws IOException if there is a problem when searching Lucene index
    */
   private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      Searcher searcher) throws IOException {
+      IndexSearcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
         new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
@@ -445,7 +442,7 @@ public class WAIndexSearcher {
    * reached or whose endDate is passed are pruned from the results list.
    */
   private List<MatchingIndexEntry> makeList(TopDocs topDocs, QueryDescription query,
-      Searcher searcher) throws IOException {
+      IndexSearcher searcher) throws IOException {
     List<MatchingIndexEntry> results = new ArrayList<MatchingIndexEntry>();
 
     if (topDocs != null) {
@@ -453,8 +450,8 @@ public class WAIndexSearcher {
 
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];
-        MatchingIndexEntry indexEntry =
-            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
+        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query
+            .getRequestedLanguage(), searcher);
         results.add(indexEntry);
       }
     }

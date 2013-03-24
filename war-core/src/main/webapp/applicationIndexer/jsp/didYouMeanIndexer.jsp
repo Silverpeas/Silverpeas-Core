@@ -37,18 +37,19 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.SpaceInst"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInst"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer"%>
 
-<%@ page import="java.util.ArrayList"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationControllerFactory" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%!
-private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationController m_OrganizationController, String m_sContext) {
+private String printSpaceAndSubSpaces(String spaceId, int depth, OrganisationController m_OrganizationController, String m_sContext) {
     ComponentInst 	compoInst 	= null;
     String 			compoName 	= null;
     String 			compoDesc 	= null;
@@ -103,16 +104,17 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
+if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
 
-OrganizationController m_OrganizationController = new OrganizationController();
+OrganisationController m_OrganizationController = OrganisationControllerFactory
+    .getOrganisationController();
 
-ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
+ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 
 String sURI = request.getRequestURI();
 String sServletPath = request.getServletPath();
@@ -142,7 +144,7 @@ if (action != null) {
     } else if (action.equals("IndexPdc")) {
     	ai.indexPdc();
     }
-    indexMessage = "Indexation lanc�e en t�che de fond !";
+    indexMessage = "Indexation lancée en tâche de fond !";
 }
 
 %>
@@ -156,7 +158,7 @@ if (action != null) {
 <script language="JavaScript">
 function index(action, compo, space)
 {
-	var message = "Vous �tes sur le point de recr�er un index pour la fonctionnalit� \"voulez vous dire ?\" pour   ";
+	var message = "Vous êtes sur le point de recréer un index pour la fonctionnalité \"voulez vous dire ?\" pour   ";
 	if (action == "Index")
 	{
 		if (compo.length > 1)
@@ -172,7 +174,7 @@ function index(action, compo, space)
 		message += "tout le portail";
 	else if (action == "IndexPdc")
 		message += "le plan de classement";
-	message += ". \nEtes-vous s�r de vouloir effectuer cette op�ration ?";
+	message += ". \nEtes-vous sûr de vouloir effectuer cette opération ?";
 	if (confirm(message))
 		location.href="didYouMeanIndexer.jsp?Action="+action+"&PersonalCompo="+compo+"&SpaceId="+space+"&ComponentId="+compo;
 }

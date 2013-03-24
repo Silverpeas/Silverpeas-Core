@@ -22,57 +22,59 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="com.silverpeas.socialnetwork.model.SocialNetworkID" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="java.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.Domain"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
+<%@ page import="org.silverpeas.authentication.AuthenticationService" %>
+<%@ page import="com.stratelia.webactiv.beans.admin.Domain" %>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
+<%@ page import="java.util.Hashtable" %>
+<%@ page import="java.util.List" %>
 
 <%
-	response.setHeader( "Expires", "Tue, 21 Dec 1993 23:59:59 GMT" );
-    response.setHeader( "Pragma", "no-cache" );
-    response.setHeader( "Cache-control", "no-cache" );
-    response.setHeader( "Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT" );
-    response.setStatus( HttpServletResponse.SC_CREATED );
+  response.setHeader("Expires", "Tue, 21 Dec 1993 23:59:59 GMT");
+  response.setHeader("Pragma", "no-cache");
+  response.setHeader("Cache-control", "no-cache");
+  response.setHeader("Last-Modified", "Fri, Jan 25 2099 23:59:59 GMT");
+  response.setStatus(HttpServletResponse.SC_CREATED);
 %>
 
 <%
-String m_context = request.getContextPath();
+  String m_context = request.getContextPath();
 
 // Get the authentication settings
-ResourceLocator authenticationSettings		= new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
-ResourceLocator homePageBundle = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", request.getLocale().getLanguage());
+  ResourceLocator authenticationSettings =
+      new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
+  ResourceLocator homePageBundle =
+      new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle",
+          request.getLocale().getLanguage());
 
 // Get the logo to print
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-ResourceLocator generalMultilang = new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", request.getLocale().getLanguage());
+  ResourceLocator general =
+      new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+   ResourceLocator generalMultilang =
+      new ResourceLocator("org.silverpeas.multilang.generalMultilang",
+          request.getLocale().getLanguage());
 
-String logo = general.getString("logo", m_context+"/images/logo.jpg");
-String styleSheet = general.getString("defaultLoginStyleSheet", m_context+"/style.css");
+  String logo = general.getString("logo", m_context + "/images/logo.jpg");
+  String styleSheet = general.getString("defaultLoginStyleSheet", m_context + "/style.css");
 
 // Is "forgotten password" feature active ?
-String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
-boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
-boolean changePwdFromLoginPageActive = authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
-boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
-boolean newRegistrationActive = authenticationSettings.getBoolean("newRegistrationEnabled", false);
-String changePasswordFromLoginPage = general.getString("changePasswordFromLoginPage", "/defaultChangePassword.jsp");
-pageContext.setAttribute("changePasswordFromLoginPage", changePasswordFromLoginPage);
+  String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
+  boolean forgottenPwdActive = !"false".equalsIgnoreCase(pwdResetBehavior);
+  boolean changePwdFromLoginPageActive =
+      authenticationSettings.getBoolean("changePwdFromLoginPageActive", false);
+  boolean rememberPwdActive = authenticationSettings.getBoolean("cookieEnabled", false);
+  boolean newRegistrationActive =
+      authenticationSettings.getBoolean("newRegistrationEnabled", false);
 
 // active social networks
-boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
-boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
-
-// Get a LoginPasswordAuthentication object
-LoginPasswordAuthentication lpAuth = new LoginPasswordAuthentication();
-
+  boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
+  boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
+// Get a AuthenticationService object
+AuthenticationService lpAuth = new AuthenticationService();
 // list of domains
-// Let domains variable for backward compatibility purpose. getAllDomains is now deprecated !!!
-Hashtable domains = lpAuth.getAllDomains();
-List<Domain> listDomains = lpAuth.getListDomains();
+List<Domain> listDomains = lpAuth.getAllDomains();
 pageContext.setAttribute("listDomains", listDomains);
 boolean multipleDomains = listDomains != null && listDomains.size() > 1;
 pageContext.setAttribute("multipleDomains", multipleDomains);
@@ -80,5 +82,4 @@ String submitClass = "submitWithOneDomain";
 if (multipleDomains) {
   submitClass = "submit";
 }
-List<String> domainIds = lpAuth.getDomainsIds();
 %>

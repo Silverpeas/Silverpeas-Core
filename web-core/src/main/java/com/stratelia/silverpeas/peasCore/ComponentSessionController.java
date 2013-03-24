@@ -34,6 +34,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationController;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +45,7 @@ import java.util.List;
 
 public interface ComponentSessionController {
   /** Return the organizationController */
-  public OrganizationController getOrganizationController();
+  public OrganisationController getOrganisationController();
 
   /** Return the user language */
   public String getLanguage();

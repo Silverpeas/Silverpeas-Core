@@ -50,14 +50,14 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import com.stratelia.webactiv.servlets.LogoutServlet;
+import org.silverpeas.servlets.LogoutServlet;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.springframework.context.annotation.DependsOn;
 
 /**
- * Class declaration This object is a singleton used by AuthenticationService : when the user log
+ * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user log
  * in, ComponentRequestRouter : when the user access a component. It provides functions to manage
  * the sessions, to write a log journal and getFactory informations about the logged users.
  *
@@ -492,7 +492,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
 
   /**
    * This method is dedicated to the authentication for only accessing the WEB services published in
-   * Silverpeas. To authenticate a user using a WEB browser to access Silverpeas, please prefers the
+   * Silverpeas. To openSession a user using a WEB browser to access Silverpeas, please prefers the
    * below openSession method.
    *
    * @param user the user for which the session has to be opened

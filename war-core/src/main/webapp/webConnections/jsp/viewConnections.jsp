@@ -30,12 +30,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
-<% 
+<%
 Collection 	connections 		= (Collection) request.getAttribute("Connections");
 %>
 
 <%@page import="java.util.Enumeration"%>
-<html>  
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationControllerFactory" %>
+<html>
   <head>
     <view:looknfeel />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
@@ -52,21 +54,21 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
               connectionWindow.close();
           connectionWindow = SP_openWindow(urlWindows, windowName, larg, haut, windowParams);
       }
-	
+
       function deleteConnection(id) {
           if(window.confirm("<%=resource.getString("webConnections.confirmDeleteConnection")%>")) {
               document.deleteForm.ConnectionId.value = id;
               document.deleteForm.submit();
           }
       }
-    </script>    
-  </head>  
+    </script>
+  </head>
   <body>
     <form name="readForm" action="" method="POST">
       <view:browseBar />
       <view:window>
         <view:frame>
-<%	
+<%
       ArrayPane arrayPane = gef.getArrayPane("connectionList", "ViewConnections", request, session);
       arrayPane.addArrayColumn(resource.getString("GML.name"));
       arrayPane.addArrayColumn(resource.getString("webConnections.login"));
@@ -79,10 +81,10 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
           ArrayLine line = arrayPane.addArrayLine();
           ConnectionDetail connection = (ConnectionDetail) it.next();
           line.addArrayCellText(connection.getComponentName());
-          OrganizationController orga = new OrganizationController();
-          ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+          ComponentInst inst = OrganisationControllerFactory
+              .getOrganisationController().getComponentInst(connection.getComponentId());
           String nameLogin = inst.getParameterValue("login");
-          String name = (String) connection.getParam().get(nameLogin);
+          String name =  connection.getParam().get(nameLogin);
           line.addArrayCellText(name);
           IconPane iconPane = gef.getIconPane();
           Icon updateIcon = iconPane.addIcon();
@@ -96,7 +98,7 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
           line.addArrayCellText(updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
         }
       }
-        
+
       out.println(arrayPane.print());
   %>
         </view:frame>

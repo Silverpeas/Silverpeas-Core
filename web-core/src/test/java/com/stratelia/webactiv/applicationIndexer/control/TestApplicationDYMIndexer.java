@@ -18,9 +18,6 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- *
- */
 package com.stratelia.webactiv.applicationIndexer.control;
 
 import java.io.File;
@@ -30,10 +27,15 @@ import java.util.Properties;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
 import org.dbunit.operation.DatabaseOperation;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.components.model.AbstractTestDao;
 
 import static java.io.File.separatorChar;
+import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -48,21 +50,30 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
   public void setUp() throws Exception {
     super.setUp();
     Properties props = new Properties();
-    props.load(this.getClass().getClassLoader().getResourceAsStream("com/stratelia/webactiv/general.properties"));
+    props.load(this.getClass().getClassLoader().getResourceAsStream(
+        "com/stratelia/webactiv/general.properties"));
     indexDirectory = props.getProperty("uploadsIndexPath");
     assertEquals(org.silverpeas.search.indexEngine.IndexFileManager.getIndexUpLoadPath(),
-            indexDirectory + separatorChar);
+        indexDirectory + separatorChar);
+    OrganisationControllerFactory.getFactory().clearFactory();
+    OrganisationControllerFactory.getOrganisationController().reloadAdminCache();
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
   }
 
   /**
    * Test method for
    * {@link com.stratelia.webactiv.applicationIndexer.control.ApplicationDYMIndexer#indexPersonalComponent(java.lang.String)}
    * .
+   *
    * @throws IOException
    */
-  public final void testIndexPersonalComponent() throws IOException {
-    String indexSpellcheckerpath = indexDirectory + separatorChar + "user@0_agenda" + separatorChar
-            + "indexSpell";
+  @Test
+  public void testIndexPersonalComponent() throws IOException {
+    String indexSpellcheckerpath = getIndexPath("user@0_agenda");
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.indexPersonalComponent("agenda");
     checkIndexExistence(indexSpellcheckerpath);
@@ -76,17 +87,16 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    *
    * @throws IOException
    */
+  @Test
   public void testIndexPersonalComponents() throws IOException {
-    String indexSpellcheckerpath = indexDirectory + separatorChar + "user@0_todo" + separatorChar
-            + "indexSpell";
+    String indexSpellcheckerpath = getIndexPath("user@0_todo");
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
 
     indexer.indexPersonalComponents();
     checkIndexExistence(indexSpellcheckerpath);
     assertTrue(checkExistingWord(indexSpellcheckerpath, "tester"));
 
-    String indexSpellcheckerpath2 = indexDirectory + separatorChar + "user@1_todo" + separatorChar
-            + "indexSpell";
+    String indexSpellcheckerpath2 = getIndexPath("user@1_todo");
     checkIndexExistence(indexSpellcheckerpath2);
     assertTrue(checkExistingWord(indexSpellcheckerpath2, "commencer"));
   }
@@ -97,9 +107,9 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    *
    * @throws IOException
    */
+  @Test
   public void testIndexPdc() throws IOException {
-    String indexSpellcheckerPath = indexDirectory + separatorChar + "pdc" + separatorChar
-            + "indexSpell";
+    String indexSpellcheckerPath = getIndexPath("pdc");
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
     indexer.indexPdc();
     checkIndexExistence(indexSpellcheckerPath);
@@ -113,20 +123,16 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
    *
    * @throws Exception
    */
+  @Test
   public void testIndexAllSpaces() throws Exception {
     ApplicationDYMIndexer indexer = new ApplicationDYMIndexer();
-    indexer.organizationController.reloadAdminCache();
     indexer.indexAllSpaces();
     // check one component of first space
-    String indexSpellcheckerPath =
-            indexDirectory + separatorChar + "kmelia1" + separatorChar
-            + "indexSpell";
+    String indexSpellcheckerPath = getIndexPath("kmelia1");
     checkIndexExistence(indexSpellcheckerPath);
     assertTrue(checkExistingWord(indexSpellcheckerPath, "javamail"));
     // check one component of second space
-    String indexSpellcheckerPath2 =
-            indexDirectory + separatorChar + "kmelia17" + separatorChar
-            + "indexSpell";
+    String indexSpellcheckerPath2 = getIndexPath("kmelia17");
     checkIndexExistence(indexSpellcheckerPath2);
     assertTrue(checkExistingWord(indexSpellcheckerPath2, "reseau"));
   }
@@ -168,5 +174,14 @@ public class TestApplicationDYMIndexer extends AbstractTestDao {
     assertThat(filesList.length, is(9));
     File segmentsGenFile = new File(path + separatorChar + "segments.gen");
     assertTrue(segmentsGenFile.getPath() + "doesn't exist", segmentsGenFile.exists());
+  }
+
+  private String getIndexPath(String application) {
+    return indexDirectory + separatorChar + application + separatorChar + "indexSpell";
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

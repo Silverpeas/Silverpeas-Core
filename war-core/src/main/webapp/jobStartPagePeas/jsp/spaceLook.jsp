@@ -39,6 +39,10 @@
 <c:set var="curSpace" value="${requestScope.Space}" />
 <c:set var="spacePositionOption" value="${requestScope.displaySpaceOption}" />
 
+<c:set var="isAdmin" value="${requestScope.SpaceExtraInfos.admin}"/>
+<c:set var="css" value="${requestScope.SpaceLookHelper.CSS}"/>
+<c:set var="wallpaper" value="${requestScope.SpaceLookHelper.wallpaper}"/>
+
 <%
 SpaceInst		space				= (SpaceInst) request.getAttribute("Space");
 SpaceLookHelper slh 				= (SpaceLookHelper) request.getAttribute("SpaceLookHelper");
@@ -46,30 +50,25 @@ boolean 		isInHeritanceEnable = ((Boolean)request.getAttribute("IsInheritanceEna
 DisplaySorted 	m_SpaceExtraInfos 	= (DisplaySorted)request.getAttribute("SpaceExtraInfos");
 String 			spaceId				= (String) request.getAttribute("CurrentSpaceId");
 
-List 			availableLooks		= gef.getAvailableLooks();
+List<String>	availableLooks		= gef.getAvailableLooks();
 String			spaceLook			= space.getLook();
-SpaceLookItem 	item 				= (SpaceLookItem) slh.getItem("wallPaper");
 
 browseBar.setSpaceId(spaceId);
 browseBar.setExtraInformation(resource.getString("JSPP.SpaceAppearance"));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
+<view:looknfeel/>
+<script type="text/javascript">
 function B_VALIDER_ONCLICK() {
 	document.lookSpace.submit();
 }
 </script>
-</HEAD>
-<BODY>
-<form name="lookSpace" action="UpdateSpaceLook" method="POST" enctype="multipart/form-data">
+</head>
+<body>
 <%
 out.println(window.printBefore());
 
@@ -79,8 +78,7 @@ tabbedPane.addTab(resource.getString("JSPP.SpaceAppearance"), "SpaceLook", true)
 
 tabbedPane.addTab(resource.getString("JSPP.Manager"), "SpaceManager", false);
 
-if (isInHeritanceEnable)
-{
+if (isInHeritanceEnable) {
     tabbedPane.addTab(resource.getString("JSPP.admin"), "SpaceManager?Role=admin", false);
     tabbedPane.addTab(resource.getString("JSPP.publisher"), "SpaceManager?Role=publisher", false);
     tabbedPane.addTab(resource.getString("JSPP.writer"), "SpaceManager?Role=writer", false);
@@ -88,87 +86,99 @@ if (isInHeritanceEnable)
 }
 
 out.println(tabbedPane.print());
-out.println(frame.printBefore());
-out.println(board.printBefore());
 %>
+<view:frame>
+<view:board>
+	<form name="lookSpace" action="UpdateSpaceLook" method="post" enctype="multipart/form-data">
 	<table border="0" cellspacing="0" cellpadding="5" width="100%">
 		<% if (availableLooks.size() >= 2) { %>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
-			<% if (m_SpaceExtraInfos.isAdmin) { %>
+			<c:choose>
+				<c:when test="${isAdmin}">
 					<td>
 						<select name="SelectedLook" size="1">
 						<%
-						if (StringUtil.isDefined(spaceLook))
+						if (StringUtil.isDefined(spaceLook)) {
 							out.println("<option value=\"\"></option>");
-						else
+						} else {
 							out.println("<option value=\"\" selected></option>");
-				        for (int i = 0; i < availableLooks.size(); i++) {
-				            String lookName = (String) availableLooks.get(i);
-				            if (lookName.equals(spaceLook))
+						}
+				        for (String lookName : availableLooks) {
+				            if (lookName.equals(spaceLook)) {
 				              out.println("<option value=\""+lookName+"\" selected>"+lookName+"</option>");
-				            else
+				            } else {
 				              out.println("<option value=\""+lookName+"\">"+lookName+"</option>");
+				            }
 				        } %>
 				        </select>
 					</td>
-			<% } else { %>
+				</c:when>
+				<c:otherwise>
 					<td>
-						<%
-							if (StringUtil.isDefined(spaceLook))
-								out.println(spaceLook);
-						%>
+						<% if (StringUtil.isDefined(spaceLook)) { %>
+								<%=spaceLook %>
+						<% } %>
 					</td>
-			<% } %>
+				</c:otherwise>
+			</c:choose>
 		</tr>
 		<% } %>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("JSPP.WallPaper")%> :</td>
-			<% if (m_SpaceExtraInfos.isAdmin) { %>
-				<td>
-					<% if (item != null) { %>
-						<a href="<%=item.getURL()%>" target="_blank"><%=item.getName()%></a> <%=item.getSize()%> <a href="RemoveFileToLook?FileName=<%=item.getName()%>"><img src="<%=resource.getIcon("JSPP.delete")%>" border="0"></a> <BR/>
-					<% } %>
-					<input type="file" name="wallPaper" size="60">
-				</td>
-			<% } else { %>
-				<td>
-					<% if (item != null) { %>
-						<a href="<%=item.getURL()%>" target="_blank"><%=item.getName()%></a> <%=item.getSize()%>
-					<% } %>
-				</td>
-			<% } %>
+			<td>
+				<c:if test="${wallpaper != null}">
+					<a href="<c:out value="${wallpaper.URL}" />" target="_blank"><c:out value="${wallpaper.name}" /></a> / <c:out value="${wallpaper.size}" />
+					<c:if test="${isAdmin}">
+						<a href="RemoveFileToLook?FileName=<c:out value="${wallpaper.name}" />"><img src="<%=resource.getIcon("JSPP.delete")%>" border="0"/></a> <br/>
+					</c:if>
+				</c:if>
+				<c:if test="${isAdmin}">
+					<input type="file" name="wallPaper" size="60"/>
+				</c:if>
+			</td>
+		</tr>
+		<tr>
+			<td class="txtlibform"><fmt:message key="JSPP.CSS"/> :</td>
+			<td>
+				<c:if test="${css != null}">
+					<a href="<c:out value="${css.URL}" />" target="_blank"><c:out value="${css.name}" /></a> / <c:out value="${css.size}" />
+					<c:if test="${isAdmin}">
+						<a href="RemoveFileToLook?FileName=<c:out value="${css.name}" />"><img src="<%=resource.getIcon("JSPP.delete")%>" border="0"/></a> <br/>
+					</c:if>
+				</c:if>
+				<c:if test="${isAdmin}">
+					<input type="file" name="css" size="60"/>
+				</c:if>
+			</td>
 		</tr>
   <c:if test="${spacePositionOption}">
     <tr>
-      <td class="txtlibform" nowrap valign="top"><fmt:message key="JSPP.SpacePosition" /> :</td>
+      <td class="txtlibform"><fmt:message key="JSPP.SpacePosition" /> :</td>
       <td valign="top" width="100%">
 	    <c:if test="${curSpace.displaySpaceFirst}">
-	      <input type="radio" value="1" name="SpacePosition" checked/>&nbsp;<fmt:message key="JSPP.SpacePositionFirst" />
+	      <input type="radio" value="1" name="SpacePosition" checked="checked"/>&nbsp;<fmt:message key="JSPP.SpacePositionFirst" />
 	      <input type="radio" value="2" name="SpacePosition" />&nbsp;<fmt:message key="JSPP.SpacePositionLast" />
 	    </c:if>
 	    <c:if test="${!curSpace.displaySpaceFirst}">
 	      <input type="radio" value="1" name="SpacePosition" />&nbsp;<fmt:message key="JSPP.SpacePositionFirst" />
-	      <input type="radio" value="2" name="SpacePosition" checked/>&nbsp;<fmt:message key="JSPP.SpacePositionLast" />
+	      <input type="radio" value="2" name="SpacePosition" checked="checked"/>&nbsp;<fmt:message key="JSPP.SpacePositionLast" />
 	    </c:if>
 	    </td>
    </tr>
   </c:if>
-
-	</table>
+</table>
+</form>
+</view:board>
+<c:if test="${isAdmin}">
+	<view:buttonPane>
+		<fmt:message key="GML.validate" var="buttonLabel"/>
+		<view:button label="${buttonLabel}" action="javascript:onclick=B_VALIDER_ONCLICK();"></view:button>
+	</view:buttonPane>
+</c:if>
+</view:frame>
 <%
-	out.println(board.printAfter());
-
-	if (m_SpaceExtraInfos.isAdmin)
-	{
-		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-		out.println("<br/><center>"+buttonPane.print()+"</center>");
-	}
-
-	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</FORM>
-</BODY>
-</HTML>
+</body>
+</html>

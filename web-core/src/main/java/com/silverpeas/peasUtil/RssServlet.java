@@ -24,6 +24,21 @@
 
 package com.silverpeas.peasUtil;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -32,27 +47,14 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Date;
 
 public abstract class RssServlet<T> extends HttpServlet {
 
@@ -139,8 +141,8 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public String getChannelTitle(String instanceId) {
-    OrganizationController orga = new OrganizationController();
-    ComponentInstLight instance = orga.getComponentInstLight(instanceId);
+    ComponentInstLight instance = OrganisationControllerFactory.getOrganisationController()
+        .getComponentInstLight(instanceId);
     if (instance != null) {
       return instance.getLabel();
     }
@@ -153,8 +155,8 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public boolean isComponentRss(String instanceId) {
-    OrganizationController orga = new OrganizationController();
-    String paramRssValue = orga.getComponentParameterValue(instanceId, "rss");
+    String paramRssValue = OrganisationControllerFactory.getOrganisationController()
+        .getComponentParameterValue(instanceId, "rss");
     // rechercher si le composant a bien le flux RSS autorisé
     return "yes".equalsIgnoreCase(paramRssValue);
   }

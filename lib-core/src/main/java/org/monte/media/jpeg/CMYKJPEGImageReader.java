@@ -10,18 +10,36 @@
  */
 package org.monte.media.jpeg;
 
-import com.sun.imageio.plugins.jpeg.JPEGImageReader;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
-import java.awt.image.*;
-import java.io.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DirectColorModel;
+import java.awt.image.PixelInterleavedSampleModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
-import javax.imageio.*;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.stream.*;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+
+import com.sun.imageio.plugins.jpeg.JPEGImageReader;
 import org.monte.media.io.ByteArrayImageInputStream;
 import org.monte.media.io.ImageInputStreamAdapter;
 
@@ -284,9 +302,8 @@ public class CMYKJPEGImageReader extends ImageReader {
    */
   public static BufferedImage readRGBAImageFromRGBA(InputStream in, ICC_Profile rgbaProfile) throws
     IOException {
-    ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
+    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
       .createImageInputStream(in);
     reader.setInput(inputStream);
     Raster raster = reader.readRaster(0, null);
@@ -308,9 +325,8 @@ public class CMYKJPEGImageReader extends ImageReader {
    */
   public static BufferedImage readRGBImageFromYCCK(InputStream in, ICC_Profile cmykProfile) throws
     IOException {
-    ImageInputStream inputStream = null;
     ImageReader reader = createNativeJPEGReader();
-    inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
+    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
       .createImageInputStream(in);
     reader.setInput(inputStream);
     Raster raster = reader.readRaster(0, null);
@@ -333,9 +349,8 @@ public class CMYKJPEGImageReader extends ImageReader {
    */
   public static BufferedImage readRGBImageFromInvertedYCCK(InputStream in, ICC_Profile cmykProfile)
     throws IOException {
-    ImageInputStream inputStream = null;
-    ImageReader reader = createNativeJPEGReader();
-    inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
+    ImageReader reader = createNativeJPEGReader();    
+    ImageInputStream inputStream = (in instanceof ImageInputStream) ? (ImageInputStream) in : ImageIO
       .createImageInputStream(in);
     reader.setInput(inputStream);
     Raster raster = reader.readRaster(0, null);
@@ -366,8 +381,6 @@ public class CMYKJPEGImageReader extends ImageReader {
       int[] Cb = ycckRaster.getSamples(0, 0, w, h, 1, (int[]) null);
       int[] Cr = ycckRaster.getSamples(0, 0, w, h, 2, (int[]) null);
       int[] K = ycckRaster.getSamples(0, 0, w, h, 3, (int[]) null);
-
-
       float vr, vg, vb;
       for (int i = 0, imax = Y.length; i < imax; i++) {
         float k = K[i], y = Y[i], cb = Cb[i], cr = Cr[i];
@@ -378,9 +391,7 @@ public class CMYKJPEGImageReader extends ImageReader {
           | (0xff & (vg < 0.0f ? 0 : vg > 255.0f ? 0xff : (int) (vg + 0.5f))) << 8
           | (0xff & (vb < 0.0f ? 0 : vb > 255.0f ? 0xff : (int) (vb + 0.5f)));
       }
-
-      Raster rgbRaster = Raster.createPackedRaster(
-        new DataBufferInt(rgb, rgb.length),
+      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
         w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
       ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
@@ -427,13 +438,11 @@ public class CMYKJPEGImageReader extends ImageReader {
           | (0xff & (vb < 0.0f ? 0 : vb > 255.0f ? 0xff : (int) (vb + 0.5f)));
       }
 
-      Raster rgbRaster = Raster.createPackedRaster(
-        new DataBufferInt(rgb, rgb.length),
+      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
         w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
       ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
         DataBuffer.TYPE_INT);
-
       image = new BufferedImage(cm, (WritableRaster) rgbRaster, true, null);
     }
     return image;
@@ -480,8 +489,7 @@ public class CMYKJPEGImageReader extends ImageReader {
           | (255 - Math.min(255, Y[i] + k));
       }
 
-      Raster rgbRaster = Raster.createPackedRaster(
-        new DataBufferInt(rgb, rgb.length),
+      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
         w, h, w, new int[]{0xff0000, 0xff00, 0xff}, null);
       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
       ColorModel cm = new DirectColorModel(cs, 24, 0xff0000, 0xff00, 0xff, 0x0, false,
@@ -531,8 +539,7 @@ public class CMYKJPEGImageReader extends ImageReader {
         rgb[i] = A[i] << 24 | R[i] << 16 | G[i] << 8 | B[i];
       }
 
-      Raster rgbRaster = Raster.createPackedRaster(
-        new DataBufferInt(rgb, rgb.length),
+      Raster rgbRaster = Raster.createPackedRaster(new DataBufferInt(rgb, rgb.length),
         w, h, w, new int[]{0xff0000, 0xff00, 0xff, 0xff000000}, null);
       ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
       ColorModel cm = new DirectColorModel(cs, 32, 0xff0000, 0xff00, 0xff, 0x0ff000000, false,
@@ -608,8 +615,7 @@ public class CMYKJPEGImageReader extends ImageReader {
         | 255 - ycckK[i];
     }
 
-    Raster cmykRaster = Raster.createPackedRaster(
-      new DataBufferInt(cmyk, cmyk.length),
+    Raster cmykRaster = Raster.createPackedRaster(new DataBufferInt(cmyk, cmyk.length),
       w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
     return cmykRaster;
 
@@ -644,8 +650,7 @@ public class CMYKJPEGImageReader extends ImageReader {
         | ycckK[i];
     }
 
-    return Raster.createPackedRaster(
-      new DataBufferInt(cmyk, cmyk.length),
+    return Raster.createPackedRaster(new DataBufferInt(cmyk, cmyk.length),
       w, h, w, new int[]{0xff000000, 0xff0000, 0xff00, 0xff}, null);
   }
 

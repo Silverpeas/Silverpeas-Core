@@ -24,19 +24,21 @@
 package com.silverpeas.web;
 
 import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.web.mock.*;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.silverpeas.web.mock.AccessControllerMock;
+import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
+import com.silverpeas.web.mock.PersonalizationServiceMockWrapper;
+import com.silverpeas.web.mock.SessionManagerMock;
 import com.silverpeas.web.mock.SpaceAccessControllerMock;
+import com.silverpeas.web.mock.TokenServiceMockWrapper;
+import com.silverpeas.web.mock.UserDetailWithProfiles;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
-import javax.inject.Inject;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
-
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.token.TokenKey;
 import org.silverpeas.token.constant.TokenType;
 import org.silverpeas.token.exception.TokenException;
@@ -45,6 +47,11 @@ import org.silverpeas.token.service.TokenService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
 
 /**
  * It is a wrapper of the resources required in the RESTWebServiceTest test cases.
@@ -139,7 +146,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * With this mock, you can register expected behaviours for the OrganizationController instances.
    * @return the OrganizationController mock used in the tests.
    */
-  public OrganizationController getOrganizationControllerMock() {
+  public OrganisationController getOrganizationControllerMock() {
     return organizationControllerMockWrapper.getOrganizationControllerMock();
   }
 
@@ -186,6 +193,7 @@ public abstract class TestResources implements ApplicationContextAware {
     user.setFirstName("Toto");
     user.setLastName("Chez-les-papoos");
     user.setDomainId(DEFAULT_DOMAIN);
+    user.setState(UserState.VALID);
     return user;
   }
 
@@ -202,6 +210,7 @@ public abstract class TestResources implements ApplicationContextAware {
     user.setFirstName(firstName);
     user.setLastName(lastName);
     user.setDomainId(DEFAULT_DOMAIN);
+    user.setState(UserState.VALID);
     return user;
   }
 
@@ -216,7 +225,7 @@ public abstract class TestResources implements ApplicationContextAware {
    * @return the user itself with its identifier set.
    */
   public UserDetail registerUser(final UserDetail user) {
-    OrganizationController mock = getOrganizationControllerMock();
+    OrganisationController mock = getOrganizationControllerMock();
     user.setId(String.valueOf(maxUserId++));
     if (user.getDomainId() == null) {
       user.setDomainId(DEFAULT_DOMAIN);

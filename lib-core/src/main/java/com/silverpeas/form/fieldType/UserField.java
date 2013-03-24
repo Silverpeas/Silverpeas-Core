@@ -24,17 +24,17 @@
 
 package com.silverpeas.form.fieldType;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * A UserField stores a user reference.
  * @see Field
- * @see FieldDisplayer
+ * @see com.silverpeas.form.FieldDisplayer
  */
 public class UserField implements Field {
 
@@ -91,7 +91,8 @@ public class UserField implements Field {
       return userId;
     }
 
-    UserDetail user = organizationController.getUserDetail(getUserId());
+    UserDetail user =  OrganisationControllerFactory.getOrganisationController().getUserDetail(
+        getUserId());
     if (user == null) {
       return "user(" + getUserId() + ")";
     }
@@ -140,7 +141,7 @@ public class UserField implements Field {
     if (getUserId() == null) {
       return null;
     }
-    return organizationController.getUserDetail(getUserId());
+    return  OrganisationControllerFactory.getOrganisationController().getUserDetail(getUserId());
   }
 
   /**
@@ -208,14 +209,19 @@ public class UserField implements Field {
   }
 
   /**
-   * Tests equality beetwen this field and the specified field.
+   * Tests equality between this field and the specified field.
    */
   public boolean equals(Object o) {
     String s = getUserId();
-
+    if (s == null) {
+      s = "";
+    }
     if (o instanceof UserField) {
       String t = ((UserField) o).getUserId();
-      return ((s == null && t == null) || s.equals(t));
+      if (t == null) {
+        t = "";
+      }
+      return s.equals(t);
     } else {
       return false;
     }
@@ -260,10 +266,5 @@ public class UserField implements Field {
    * The referenced userId.
    */
   private String userId = null;
-
-  /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
 
 }

@@ -38,7 +38,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class UserSearchCriteriaForDAO implements SearchCriteria {
 
-  private static final String QUERY = "select {0} from {1} where accessLevel <> ''R'' {2} {3}";
+  private static final String QUERY = "select {0} from {1} where state <> ''DELETED'' {2} {3}";
   private static final String ORDER_BY_LASTNAME = "order by lastName";
 
   private StringBuilder filter = new StringBuilder();
@@ -125,7 +125,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   public String toSQLQuery(String fields) {
     String ordering = ORDER_BY_LASTNAME;
-    if (fields.matches("(count|max|min)\\(.*\\)")) {
+    if (fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
       ordering = "";
     }
     return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter(), ordering);

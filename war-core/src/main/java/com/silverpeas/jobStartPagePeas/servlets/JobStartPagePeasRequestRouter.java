@@ -24,7 +24,6 @@
 
 package com.silverpeas.jobStartPagePeas.servlets;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,15 +36,16 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.UnitUtil;
 
+import com.silverpeas.admin.components.Option;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
+import com.silverpeas.admin.localized.LocalizedOption;
 import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
-import com.silverpeas.jobStartPagePeas.SpaceLookHelper;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
@@ -65,12 +65,9 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class JobStartPagePeasRequestRouter extends
     ComponentRequestRouter<JobStartPagePeasSessionController> {
@@ -497,7 +494,7 @@ public class JobStartPagePeasRequestRouter extends
 
   public String getDestinationSpace(String function,
       JobStartPagePeasSessionController jobStartPageSC,
-      HttpServletRequest request) throws AdminException {
+      HttpServletRequest request) throws Exception {
     String destination = null;
 
     if (function.equals("StartPageInfo")) {
@@ -763,23 +760,10 @@ public class JobStartPagePeasRequestRouter extends
       request.setAttribute("urlToReload", "SpaceManager");
       destination = "/jobStartPagePeas/jsp/closeWindow.jsp";
     } else if (function.equals("SpaceLook")) {
-      String path = getSpaceLookRepository(jobStartPageSC);
-
-      List<File> files = null;
-      try {
-        files = (List<File>) FileFolderManager.getAllFile(path);
-      } catch (UtilException e) {
-        files = new ArrayList<File>();
-      }
-
-      SpaceLookHelper slh = new SpaceLookHelper("Space"
-          + jobStartPageSC.getManagedSpaceId());
-      slh.setFiles(files);
-
       SpaceInst spaceint1 = jobStartPageSC.getSpaceInstById();
 
       request.setAttribute("Space", spaceint1);
-      request.setAttribute("SpaceLookHelper", slh);
+      request.setAttribute("SpaceLookHelper", jobStartPageSC.getSpaceLookHelper());
       request.setAttribute("SpaceExtraInfos", jobStartPageSC.getManagedSpace());
       request.setAttribute("IsInheritanceEnable", Boolean.valueOf(
           JobStartPagePeasSettings.isInheritanceEnable));
@@ -797,70 +781,12 @@ public class JobStartPagePeasRequestRouter extends
       }
       destination = "/jobStartPagePeas/jsp/spaceLook.jsp";
     } else if (function.equals("UpdateSpaceLook")) {
-      try {
-        List<FileItem> items = FileUploadUtil.parseRequest(request);
-        FileItem file = FileUploadUtil.getFile(items, "wallPaper");
-        if (file != null && StringUtil.isDefined(file.getName())) {
-          String extension = FileRepositoryManager.getFileExtension(file.getName());
-          if (extension != null && extension.equalsIgnoreCase("jpeg")) {
-            extension = "jpg";
-          }
-          FileRepositoryManager.createAbsolutePath("Space" + jobStartPageSC.getManagedSpaceId(),
-              "look");
-          String[] dir = new String[1];
-          dir[0] = "look";
-
-          String path = FileRepositoryManager.getAbsolutePath("Space"
-              + jobStartPageSC.getManagedSpaceId(), dir);
-
-          // Remove all wallpapers to ensure it is unique
-          File wallPaper = new File(path + File.separator + "wallPaper.gif");
-          if (wallPaper != null && wallPaper.exists()) {
-            wallPaper.delete();
-          }
-
-          wallPaper = new File(path + File.separator + "wallPaper.jpg");
-          if (wallPaper != null && wallPaper.exists()) {
-            wallPaper.delete();
-          }
-
-          file.write(new File(path + File.separator + "wallPaper." + extension.toLowerCase()));
-        }
-
-        String selectedLook = FileUploadUtil.getParameter(items, "SelectedLook");
-        if (!StringUtil.isDefined(selectedLook)) {
-          selectedLook = null;
-        }
-
-        SpaceInst space = jobStartPageSC.getSpaceInstById();
-        space.setLook(selectedLook);
-        // Retrieve global variable configuration
-        String configSpacePosition = jobStartPageSC.getConfigSpacePosition();
-        boolean isDisplaySpaceFirst = true;
-        // Use global variable if defined else use SpacePosition request parameter.
-        if ("BEFORE".equalsIgnoreCase(configSpacePosition)) {
-          isDisplaySpaceFirst = true;
-        } else if ("AFTER".equalsIgnoreCase(configSpacePosition)) {
-          isDisplaySpaceFirst = false;
-        } else {
-          String spacePosition = FileUploadUtil.getParameter(items, "SpacePosition");
-          isDisplaySpaceFirst = !(StringUtil.isDefined(spacePosition)
-              && "2".equalsIgnoreCase(spacePosition));
-        }
-        // Set new space position VO
-        space.setDisplaySpaceFirst(isDisplaySpaceFirst);
-        // Save these changes in database
-        jobStartPageSC.updateSpaceInst(space);
-      } catch (Exception e) {
-        throw new AdminException("JobStartPagePeasRequestRouter.AddFileToLook",
-            SilverpeasException.ERROR, "jobStartPagePeas.CANT_UPLOAD_FILE", e);
-      }
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      jobStartPageSC.updateSpaceAppearance(items);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("RemoveFileToLook")) {
       String fileName = request.getParameter("FileName");
-      String path = getSpaceLookRepository(jobStartPageSC);
-      File file = new File(path + File.separator + fileName);
-      file.delete();
+      jobStartPageSC.removeExternalElementOfSpaceAppearance(fileName);
       destination = getDestination("SpaceLook", jobStartPageSC, request);
     } else if (function.equals("OpenSpace")) {
       jobStartPageSC.init();
@@ -888,11 +814,6 @@ public class JobStartPagePeasRequestRouter extends
     }
 
     return destination;
-  }
-
-  private String getSpaceLookRepository(JobStartPagePeasSessionController sc) {
-    return FileRepositoryManager.getAbsolutePath("Space"
-        + sc.getManagedSpaceId(), new String[] { "look" });
   }
 
   /**
@@ -1024,16 +945,6 @@ public class JobStartPagePeasRequestRouter extends
     } else {
       request.setAttribute("nameSubSpace", null);
     }
-  }
-
-  private List<LocalizedParameter> getVisibleParameters(List<LocalizedParameter> parameters) {
-    List<LocalizedParameter> visibleParameters = new ArrayList<LocalizedParameter>();
-    for (LocalizedParameter parameter : parameters) {
-      if (parameter.isVisible()) {
-        visibleParameters.add(parameter);
-      }
-    }
-    return visibleParameters;
   }
 
   private List<LocalizedParameter> getHiddenParameters(List<LocalizedParameter> parameters) {
@@ -1210,7 +1121,7 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1243,8 +1154,8 @@ public class JobStartPagePeasRequestRouter extends
     LocalizedComponent componentInstSelected = new LocalizedComponent(sessionController.
         getComponentByName(componentName), sessionController.getLanguage());
     setSpacesNameInRequest(sessionController, request);
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(componentInstSelected.
-        getSortedParameters());
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(componentInstSelected.getSortedParameters());
     Parameter hiddenParam = createIsHiddenParam("no");
     visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
@@ -1274,7 +1185,8 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";

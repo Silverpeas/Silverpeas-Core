@@ -24,6 +24,14 @@
 
 package com.silverpeas.converter.openoffice;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ConnectException;
+import java.util.Arrays;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.silverpeas.converter.DocumentFormat;
@@ -33,13 +41,6 @@ import com.silverpeas.converter.DocumentFormatException;
 import com.silverpeas.converter.option.FilterOption;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.util.Arrays;
 
 /**
  * A document format converter using the OpenOffice API to perform its task. This class is the
@@ -47,8 +48,8 @@ import java.util.Arrays;
  */
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
-  private static final ResourceLocator settings =
-      new ResourceLocator("com.silverpeas.converter.openoffice", "");
+  private static final ResourceLocator settings = new ResourceLocator(
+      "org.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
 
@@ -62,7 +63,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   @Override
   public File convert(final File source, final DocumentFormat inFormat,
       final FilterOption... options) {
-    final String fileName = FilenameUtils.getBaseName(source.getName()) + "." + inFormat.name();
+    final String fileName = FilenameUtils.getBaseName(source.getName()) + '.' + inFormat.name();
     final File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
     return convert(source, destination, inFormat, options);
   }

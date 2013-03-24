@@ -26,13 +26,14 @@ import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static java.io.File.separatorChar;
 
 /**
 * @author ehugonnet
@@ -51,7 +52,7 @@ public class ZipManagerTest {
   @After
   public void tearDownClass() throws Exception {
     File tempDir = new File(PathTestUtil.TARGET_DIR + "temp");
-    FileUtils.forceDelete(tempDir);
+    tempDir.mkdirs();
   }
 
   /**
@@ -61,27 +62,32 @@ public class ZipManagerTest {
 */
   @Test
   public void testCompressPathToZip() throws Exception {
-    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "ZipSample";
+    String path = PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "ZipSample";
     String outfilename =
-      PathTestUtil.TARGET_DIR + "temp" + File.separatorChar + "testCompressPathToZip.zip";
+      PathTestUtil.TARGET_DIR + "temp" + separatorChar + "testCompressPathToZip.zip";
     ZipManager.compressPathToZip(path, outfilename);
-    ZipFile zipFile = new ZipFile(new File(outfilename), "UTF-8");
+    ZipFile zipFile = new ZipFile(new File(outfilename), CharEncoding.UTF_8);
     try {
       Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
+      assertThat(zipFile.getEncoding(), is(CharEncoding.UTF_8));
       int nbEntries = 0;
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
         nbEntries++;
       }
-      assertEquals(5, nbEntries);
-      assertNotNull(zipFile.getEntry("ZipSample/simple.txt"));
-      assertNotNull(zipFile.getEntry("ZipSample/level1/simple.txt"));
-      assertNotNull(zipFile.getEntry("ZipSample/level1/level2b/simple.txt"));
-      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"));
-      //assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/s\u00efmplifi\u00e9.txt"));
-      assertNotNull(zipFile.getEntry("ZipSample/level1/level2a/" +
-          new String("sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset())));
-      assertNull(zipFile.getEntry("ZipSample/level1/level2c/"));
+      assertThat(nbEntries, is(5));
+      assertThat(zipFile.getEntry("ZipSample/simple.txt"), is(notNullValue()));
+      assertThat(zipFile.getEntry("ZipSample/level1/simple.txt"), is(notNullValue()));
+      assertThat(zipFile.getEntry("ZipSample/level1/level2b/simple.txt"), is(notNullValue()));     
+      assertThat(zipFile.getEntry("ZipSample/level1/level2a/simple.txt"), is(notNullValue()));
+     
+      ZipEntry accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/s\u00efmplifi\u00e9.txt") ;
+      if(accentuatedEntry == null) {
+       accentuatedEntry = zipFile.getEntry("ZipSample/level1/level2a/" + new String(
+           "sïmplifié.txt".getBytes("UTF-8"), Charset.defaultCharset()));
+      }
+      assertThat(accentuatedEntry, is(notNullValue()));
+      assertThat(zipFile.getEntry("ZipSample/level1/level2c/"), is(nullValue()));
     } finally {
       zipFile.close();
     }
@@ -94,23 +100,21 @@ public class ZipManagerTest {
 */
   @Test
   public void testCompressStreamToZip() throws Exception {
-    InputStream inputStream =
-      this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp");
-    String filePathNameToCreate =
-      File.separatorChar + "dir1" + File.separatorChar + "dir2" + File.separatorChar
-      + "FrenchScrum.odp";
-    String outfilename = PathTestUtil.TARGET_DIR + "temp" + File.separatorChar
-      + "testCompressStreamToZip.zip";
+    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("FrenchScrum.odp");
+    String filePathNameToCreate = separatorChar + "dir1" + separatorChar + "dir2" + separatorChar
+        + "FrenchScrum.odp";
+    String outfilename = PathTestUtil.TARGET_DIR + "temp" + separatorChar 
+        + "testCompressStreamToZip.zip";
     ZipManager.compressStreamToZip(inputStream, filePathNameToCreate, outfilename);
     inputStream.close();
     File file = new File(outfilename);
-    assertNotNull(file);
-    assertTrue(file.exists());
-    assertTrue(file.isFile());
+    assertThat(file, is(notNullValue()));
+    assertThat(file.exists(), is(true));
+    assertThat(file.isFile(), is(true));
     int result = ZipManager.getNbFiles(new File(outfilename));
-    assertEquals(1, result);
+    assertThat(result, is(1));
     ZipFile zipFile = new ZipFile(file);
-    assertNotNull(zipFile.getEntry("/dir1/dir2/FrenchScrum.odp"));
+    assertThat(zipFile.getEntry("/dir1/dir2/FrenchScrum.odp"), is(notNullValue()));
     zipFile.close();
   }
 
@@ -121,13 +125,12 @@ public class ZipManagerTest {
 */
   @Test
   public void testExtract() throws Exception {
-    File source =
-      new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "testExtract.zip");
-    File dest =
-      new File(PathTestUtil.TARGET_DIR + "temp" + File.separatorChar + "extract");
+    File source = new File(PathTestUtil.TARGET_DIR + "test-classes" + separatorChar 
+        + "testExtract.zip");
+    File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract");
     dest.mkdirs();
     ZipManager.extract(source, dest);
-    assertNotNull(dest);
+    assertThat(dest, is(notNullValue()));
   }
 
   /**
@@ -137,13 +140,12 @@ public class ZipManagerTest {
 */
   @Test
   public void testExtractTargz() throws Exception {
-    File source =
-      new File(
-      PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "testExtract.tar.gz");
-    File dest = new File(PathTestUtil.TARGET_DIR + "temp" + File.separatorChar + "extract-tar");
+    File source = new File(
+      PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "testExtract.tar.gz");
+    File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract-tar");
     dest.mkdirs();
     ZipManager.extract(source, dest);
-    assertNotNull(dest);
+    assertThat(dest, is(notNullValue()));
     File uncompressedDir = new File(dest, "ZipSample");
     assertThat(uncompressedDir.exists(), is(true));
     assertThat(uncompressedDir.isDirectory(), is(true));
@@ -157,12 +159,12 @@ public class ZipManagerTest {
 */
   @Test
   public void testExtractTarBz2() throws Exception {
-    File source = new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar
+    File source = new File(PathTestUtil.TARGET_DIR + "test-classes" + separatorChar
       + "testExtract.tar.bz2");
-    File dest = new File(PathTestUtil.TARGET_DIR + "temp" + File.separatorChar + "extract-bz2");
+    File dest = new File(PathTestUtil.TARGET_DIR + "temp" + separatorChar + "extract-bz2");
     dest.mkdirs();
     ZipManager.extract(source, dest);
-    assertNotNull(dest);
+    assertThat(dest, is(notNullValue()));
     File uncompressedDir = new File(dest, "ZipSample");
     assertThat(uncompressedDir.exists(), is(true));
     assertThat(uncompressedDir.isDirectory(), is(true));
@@ -176,15 +178,15 @@ public class ZipManagerTest {
 */
   @Test
   public void testGetNbFiles() throws Exception {
-    String path = PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "ZipSample";
-    String outfilename = PathTestUtil.TARGET_DIR + "temp" + File.separatorChar
+    String path = PathTestUtil.TARGET_DIR + "test-classes" + separatorChar + "ZipSample";
+    String outfilename = PathTestUtil.TARGET_DIR + "temp" + separatorChar
       + "testGetNbFiles.zip";
     ZipManager.compressPathToZip(path, outfilename);
     File file = new File(outfilename);
-    assertNotNull(file);
-    assertTrue(file.exists());
-    assertTrue(file.isFile());
+    assertThat(file, is(notNullValue()));
+    assertThat(file.exists(), is(true));
+    assertThat(file.isFile(), is(true));
     int result = ZipManager.getNbFiles(file);
-    assertEquals(5, result);
+    assertThat(result, is(5));
   }
 }

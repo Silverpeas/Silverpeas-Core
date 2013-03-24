@@ -27,11 +27,11 @@ package com.silverpeas.thesaurus.model;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.thesaurus.control.ThesaurusBm;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * This class contains a full information about a Jargon a Jargon is linked to a Vocabulary and a
@@ -44,7 +44,6 @@ public class Jargon extends SilverpeasBean {
   private long idVoca;
   private String idUser;
   private ThesaurusBm thesaurus = ThesaurusBm.getInstance();
-  private static OrganizationController organizationController = new OrganizationController();
 
   public Jargon() {
   }
@@ -52,13 +51,13 @@ public class Jargon extends SilverpeasBean {
   public String readUserName() {
     String userName = null;
     if (type == 0) {// user
-      UserDetail userDetail = organizationController.getUserDetail(new Long(
-          getIdUser()).toString());
+      UserDetail userDetail = OrganisationControllerFactory
+          .getOrganisationController().getUserDetail(getIdUser());
       if (userDetail != null) {
         userName = userDetail.getLastName() + " " + userDetail.getFirstName();
       }
     } else { // group
-      Group group = organizationController.getGroup(String.valueOf(getIdUser()));
+      Group group = OrganisationControllerFactory.getOrganisationController().getGroup(getIdUser());
       if (group != null) {
         userName = group.getName();
       }

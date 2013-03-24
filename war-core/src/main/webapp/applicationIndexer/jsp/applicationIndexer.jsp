@@ -47,11 +47,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.applicationIndexer.control.ApplicationIndexer"%>
 
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationController" %>
+<%@ page import="org.silverpeas.core.admin.OrganisationControllerFactory" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%!
-private String printSpaceAndSubSpaces(String spaceId, int depth, OrganizationController m_OrganizationController, String m_sContext) {
+private String printSpaceAndSubSpaces(String spaceId, int depth, OrganisationController m_OrganizationController, String m_sContext) {
     String 			compoName 	= null;
     String 			compoDesc 	= null;
     String 			compoId 	= null;
@@ -105,16 +108,17 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-if (m_MainSessionCtrl == null || !"A".equals(m_MainSessionCtrl.getUserAccessLevel())) {
+if (m_MainSessionCtrl == null || !UserAccessLevel.ADMINISTRATOR.equals(m_MainSessionCtrl.getUserAccessLevel())) {
     // No session controller in the request -> security exception
-    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    String sessionTimeout = GeneralPropertiesManager.getString("sessionTimeout");
     getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
     return;
 }
 
-OrganizationController m_OrganizationController = new OrganizationController();
+OrganisationController m_OrganizationController = OrganisationControllerFactory
+    .getOrganisationController();
 
-ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
+ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", m_MainSessionCtrl.getFavoriteLanguage());
 
 String sURI = request.getRequestURI();
 String sServletPath = request.getServletPath();

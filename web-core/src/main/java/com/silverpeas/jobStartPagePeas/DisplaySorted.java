@@ -53,4 +53,8 @@ public class DisplaySorted implements Comparable<DisplaySorted> {
     isAdmin = src.isAdmin;
     isVisible = src.isVisible;
   }
+  
+  public boolean isAdmin() {
+    return isAdmin;
+  }
 }

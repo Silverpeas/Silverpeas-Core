@@ -61,8 +61,9 @@
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
   <ctx:component-scan base-package="org.silverpeas.admin.web"/>
-  <ctx:component-scan base-package="org.silverpeas.sharing.web"/>
-  <ctx:component-scan base-package="com.silverpeas.bundle.web"/>
+  <ctx:component-scan base-package="org.silverpeas.sharing.web" />
+  <ctx:component-scan base-package="com.silverpeas.bundle.web" />
+  <ctx:component-scan base-package="org.silverpeas.accesscontrol" />  
   <ctx:component-scan base-package="org.silverpeas.admin.space"/>
   <ctx:component-scan base-package="org.silverpeas.attachment"/>
   <ctx:component-scan base-package="org.silverpeas.look"/>
@@ -87,7 +88,7 @@
 
   <!-- The user authenticator -->
   <bean id="authenticator"
-        class="com.stratelia.silverpeas.authentication.LoginPasswordAuthentication"/>
+        class="org.silverpeas.authentication.AuthenticationService"/>
 
   <!-- The session management factory -->
   <bean id="sessionManagementFactory"
@@ -101,7 +102,7 @@
 
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"
-        class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory"/>
 
   <!-- The administration module -->

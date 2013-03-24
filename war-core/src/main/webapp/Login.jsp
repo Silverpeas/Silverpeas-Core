@@ -22,30 +22,30 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.silverpeas.authentication.*"%>
-<%@ page import="com.silverpeas.util.StringUtil"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.silverpeas.util.StringUtil" %>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator" %>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <%
-String errorCode = request.getParameter("ErrorCode");
-String domainId = null;
-if(StringUtil.isInteger(request.getParameter("DomainId"))) {
-  domainId = request.getParameter("DomainId");
-}
+  String errorCode = request.getParameter("ErrorCode");
+  String domainId = null;
+  if (StringUtil.isInteger(request.getParameter("DomainId"))) {
+    domainId = request.getParameter("DomainId");
+  }
 
-ResourceLocator general = new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-String loginPage = general.getString("loginPage");
-if (! StringUtil.isDefined(loginPage)){
-  loginPage = request.getContextPath()+"/defaultLogin.jsp";
-}
-loginPage += "?DomainId="+domainId+"&ErrorCode="+errorCode+"&logout="+request.getParameter("logout");
-response.sendRedirect(response.encodeRedirectURL(loginPage));
+  ResourceLocator general =
+      new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+  String loginPage = general.getString("loginPage");
+  if (!StringUtil.isDefined(loginPage)) {
+    loginPage = request.getContextPath() + "/defaultLogin.jsp";
+  }
+  loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
+      request.getParameter("logout");
+  response.sendRedirect(response.encodeRedirectURL(loginPage));
 %>

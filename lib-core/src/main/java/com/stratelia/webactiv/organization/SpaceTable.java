@@ -33,6 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -125,10 +126,10 @@ public class SpaceTable extends Table<SpaceRow> {
       "select " + SPACE_COLUMNS + " from ST_Space where id = ?";
 
   public SpaceRow getPersonalSpace(String userId) throws AdminPersistenceException {
-    int[] ids = new int[2];
-    ids[0] = 1;
-    ids[1] = Integer.valueOf(userId);
-    List<SpaceRow> rows = getRows(SELECT_PERSONALSPACE, ids);
+    List<Object> params = new ArrayList<Object>(2);
+    params.add(1);
+    params.add(Integer.valueOf(userId));
+    List<SpaceRow> rows = getRows(SELECT_PERSONALSPACE, params);
     if (rows != null && rows.size() > 0) {
       return rows.get(0);
     }
@@ -188,20 +189,6 @@ public class SpaceTable extends Table<SpaceRow> {
       + "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
   /**
-   * Returns all the Root Spaces.
-   * @return all the Root Spaces.
-   * @throws AdminPersistenceException
-   */
-  public SpaceRow[] getAllRootSpaces() throws AdminPersistenceException {
-    List<SpaceRow> rows = getRows(SELECT_ALL_ROOT_SPACES);
-    return rows.toArray(new SpaceRow[rows.size()]);
-  }
-
-  static final private String SELECT_ALL_ROOT_SPACES = "select "
-      + SPACE_COLUMNS + " from ST_Space" + " where domainFatherId is null"
-      + " AND spaceStatus is null AND isPersonal is null" + " order by orderNum";
-
-  /**
    * Returns all spaces which has been removed but not definitely deleted
    * @return all spaces which has been removed but not definitely deleted
    * @throws AdminPersistenceException
@@ -242,6 +229,20 @@ public class SpaceTable extends Table<SpaceRow> {
   static final private String SELECT_SUBSPACE_IDS =
       "select id from ST_Space where domainFatherId = ? "
       + "and spaceStatus is null order by orderNum";
+  
+  /**
+   * Returns direct sub spaces of given space.
+   * @param superSpaceId
+   * @return all direct sub spaces of given space.
+   * @throws AdminPersistenceException
+   */
+  public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws AdminPersistenceException {
+    return getRows(SELECT_SUBSPACES, superSpaceId);
+  }
+  
+  static final private String SELECT_SUBSPACES =
+    "select "+SPACE_COLUMNS+" from ST_Space where domainFatherId = ? "
+    + "and spaceStatus is null order by orderNum";
 
   /**
    * Inserts in the database a new space row.
@@ -249,7 +250,7 @@ public class SpaceTable extends Table<SpaceRow> {
    * @throws AdminPersistenceException
    */
   public void createSpace(SpaceRow space) throws AdminPersistenceException {
-    SpaceRow superSpace = null;
+    SpaceRow superSpace;
 
     if (space.domainFatherId != -1) {
       superSpace = getSpace(space.domainFatherId);
@@ -322,16 +323,6 @@ public class SpaceTable extends Table<SpaceRow> {
   public void updateSpaceOrder(int spaceId, int orderNum) throws AdminPersistenceException {
     int[] values = new int[] { orderNum, spaceId };
     updateRelation(UPDATE_SPACE_ORDER, values);
-  }
-
-  public void updateSpaceInheritance(int spaceId, boolean inheritanceBlocked) throws
-      AdminPersistenceException {
-    int iInheritance = 0;
-    if (inheritanceBlocked) {
-      iInheritance = 1;
-    }
-    int[] values = new int[] { iInheritance, spaceId };
-    updateRelation(UPDATE_SPACE_INHERITANCE, values);
   }
 
   static final private String UPDATE_SPACE_INHERITANCE = "update ST_Space set "

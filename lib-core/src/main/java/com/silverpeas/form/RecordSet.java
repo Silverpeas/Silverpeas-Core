@@ -26,6 +26,8 @@ package com.silverpeas.form;
 
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 
+import java.util.Map;
+
 /**
  * A RecordSet manages a set of DataRecord built on a same RecordTemplate.
  * @see DataRecord
@@ -72,8 +74,6 @@ public interface RecordSet {
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this
    * RecordSet. Else the record is updated.
-   * @see insert
-   * @see update
    * @throw FormException when the record doesn't have the required template.
    * @throw FormException when the record has an unknown id.
    * @throw FormException when the insert or update fail.
@@ -83,13 +83,12 @@ public interface RecordSet {
   /**
    * Index the given DataRecord into the indexEntry. formName looks like allFields (ie template
    * filename allFields.xml without extension)
-   * @param data
    * @param formName
    * @param indexEntry
    * @throws FormException
    */
-  public void indexRecord(String recordId, String formName,
-      FullIndexEntry indexEntry) throws FormException;
+  public void indexRecord(String recordId, String formName, FullIndexEntry indexEntry)
+      throws FormException;
 
   /**
    * Deletes the given DataRecord and set to null its id.
@@ -103,9 +102,9 @@ public interface RecordSet {
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.
    */
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
-      String cloneComponentId) throws FormException;
+      String cloneComponentId, Map<String, String> attachmentIds) throws FormException;
 
   public void merge(String fromExternalId, String fromComponentId, String toExternalId,
-      String toComponentId) throws FormException;
+      String toComponentId, Map<String, String> attachmentIds) throws FormException;
 
 }

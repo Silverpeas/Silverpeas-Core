@@ -83,13 +83,22 @@ public enum SupportedJavaScriptPlugins {
    */
   popup,
   /**
-   * Silverpeas plugin to open document preview dialog.
+   * JQuery plugin that post a form to an IFrame and allow for a callback with the iframe content.
+   * @see http://www.jainaewen.com/files/javascript/jquery/iframe-post-form.html#api
+   */
+  iframepost,
+   /**
+    * Silverpeas plugin to open document preview dialog.
    */
   preview,
   /**
    * Silverpeas plugin to notify user.
    */
   notifier,
+  /**
+   * External plugin to manage list of items as tags
+   */
+  tags,
   /**
    * Silverpeas plugin to manage password.
    */

@@ -1,10 +1,9 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -13,15 +12,13 @@
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
 import com.silverpeas.jcrutil.converter.ConverterUtil;
@@ -61,11 +58,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import javax.naming.InitialContext;
-import org.apache.jackrabbit.core.jndi.RegistryHelper;
+import org.apache.commons.io.IOUtils;
 
 /**
- * He
+ *
  * @author Emmanuel Hugonnet
  */
 public class BasicDaoFactory implements ApplicationContextAware {
@@ -82,8 +78,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   }
 
   @Override
-  public void setApplicationContext(ApplicationContext context)
-      throws BeansException {
+  public void setApplicationContext(ApplicationContext context) throws BeansException {
     this.context = context;
   }
 
@@ -97,18 +92,19 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Create a system JCR session
+   *
    * @return a jcrSession with System rights.
    * @throws LoginException
    * @throws RepositoryException
    */
-  public static Session getSystemSession() throws LoginException,
-      RepositoryException {
-    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY))
-        .login(new SilverpeasSystemCredentials());
+  public static Session getSystemSession() throws LoginException, RepositoryException {
+    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY)).
+        login(new SilverpeasSystemCredentials());
   }
 
   /**
    * Create a system JCR session
+   *
    * @param login the user's login.
    * @param password the user's password.
    * @return a jcrSession with user's rights.
@@ -117,12 +113,13 @@ public class BasicDaoFactory implements ApplicationContextAware {
    */
   public static Session getAuthentifiedSession(String login, String password)
       throws LoginException, RepositoryException {
-    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY))
-        .login(new SimpleCredentials(login, password.toCharArray()));
+    return ((Repository) getInstance().getApplicationContext().getBean(JRC_REPOSITORY)).
+        login(new SimpleCredentials(login, password.toCharArray()));
   }
 
   /**
    * Logout of the JCR session
+   *
    * @param session the session to be closed.
    */
   public static void logout(Session session) {
@@ -134,6 +131,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Compute the componentId corresponding to the specified node by checking the name of the first
    * Ancestor.
+   *
    * @param node the node whose componentId is required.
    * @return the componentId of the specified node.
    * @throws ItemNotFoundException
@@ -148,6 +146,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Defines the value of a JCR Node's property. If the specified value is null then the
    * corresponding property is removed from the Node.
+   *
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
@@ -172,6 +171,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Defines the Calendar value of a JCR Node's property. If the specified value is null then the
    * corresponding property is removed from the Node.
+   *
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
@@ -191,13 +191,15 @@ public class BasicDaoFactory implements ApplicationContextAware {
     } else {
       Calendar calend = Calendar.getInstance();
       calend.setTime(value);
-      node.setProperty(propertyName, calend);
+      Value propertyValue = node.getSession().getValueFactory().createValue(calend);
+      node.setProperty(propertyName, propertyValue);
     }
   }
 
   /**
    * Defines the Calendar value of a JCR Node's property. If the specified value is null then the
    * corresponding property is removed from the Node.
+   *
    * @param node the node whose property is being set.
    * @param propertyName the name of the property being set.
    * @param value the value being set. If it is null then the property is removed.
@@ -215,12 +217,14 @@ public class BasicDaoFactory implements ApplicationContextAware {
       } catch (PathNotFoundException pnfex) {
       }
     } else {
-      node.setProperty(propertyName, value);
+      Value propertyValue = node.getSession().getValueFactory().createValue(value);
+      node.setProperty(propertyName, propertyValue);
     }
   }
 
   /**
    * Return the property value as String for a JCR Node. If the property doesn't exist return null.
+   *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
    * @return the String value of the property - null if the property doesn't exist.
@@ -239,6 +243,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Return the property value as Calendar for a JCR Node. If the property doesn't exist return
    * null.
+   *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
    * @return the Calendar value of the property - null if the property doesn't exist.
@@ -257,6 +262,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Return the property value as java.util.Date for a JCR Node. If the property doesn't exist
    * return null.
+   *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
    * @return the java.util.Date value of the property - null if the property doesn't exist.
@@ -274,6 +280,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Return the property value as an int for a JCR Node. If the property doesn't exist return 0.
+   *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
    * @return the int value of the property - 0 if the property doesn't exist.
@@ -291,6 +298,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   /**
    * Return the property value as an long for a JCR Node. If the property doesn't exist return 0.
+   *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
    * @return the long value of the property - 0 if the property doesn't exist.
@@ -309,6 +317,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Remove a reference from an array of javax.jcr.Value. If the reference is not found no change is
    * done to the array.
+   *
    * @param values the array of references
    * @param uuid the reference to be removed
    * @return the updated arry of references.
@@ -333,6 +342,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
   /**
    * Compute a unique node name if a node with the same name already exists under the same parent
    * node.
+   *
    * @param prefix
    * @param tableName the name of the column used to stored the id.
    * @return the name of the node.
@@ -360,7 +370,7 @@ public class BasicDaoFactory implements ApplicationContextAware {
     }
     contentNode.setProperty(JcrConstants.JCR_MIMETYPE, fileMimeType);
     Calendar lastModified = Calendar.getInstance();
-    contentNode.setProperty(JcrConstants.JCR_LASTMODIFIED, lastModified);
+    contentNode.setProperty(JcrConstants.JCR_LAST_MODIFIED, lastModified);
   }
 
   public static void setContent(Node fileNode, File file, String mimeType)
@@ -391,27 +401,20 @@ public class BasicDaoFactory implements ApplicationContextAware {
 
   public static byte[] getContent(Node fileNode) throws RepositoryException,
       IOException {
-    ByteArrayOutputStream out = null;
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
     InputStream in = null;
     try {
-      out = new ByteArrayOutputStream();
       Node contentNode;
       if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
         contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
         in = contentNode.getProperty(JcrConstants.JCR_DATA).getStream();
-        byte[] buffer = new byte[8];
-        int c = 0;
-        while ((c = in.read(buffer)) >= 0) {
-          out.write(buffer, 0, c);
-        }
-        out.close();
+        IOUtils.copy(in, out);
         return out.toByteArray();
       }
       return ArrayUtil.EMPTY_BYTE_ARRAY;
     } finally {
-      if (in != null) {
-        in.close();
-      }
+      IOUtils.closeQuietly(out);
+      IOUtils.closeQuietly(in);
     }
   }
 
@@ -423,16 +426,10 @@ public class BasicDaoFactory implements ApplicationContextAware {
       if (fileNode.hasNode(JcrConstants.JCR_CONTENT)) {
         contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
         in = contentNode.getProperty(JcrConstants.JCR_DATA).getStream();
-        byte[] buffer = new byte[8];
-        int c = 0;
-        while ((c = in.read(buffer)) >= 0) {
-          out.write(buffer, 0, c);
-        }
+        IOUtils.copy(in, out);
       }
     } finally {
-      if (in != null) {
-        in.close();
-      }
+      IOUtils.closeQuietly(in);
     }
   }
 

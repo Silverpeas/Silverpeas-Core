@@ -29,8 +29,8 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -68,7 +68,7 @@ public class MapTag extends TagSupport {
     String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
     MainSessionController sessionController = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    OrganizationController organisationController = sessionController.getOrganizationController();
+    OrganisationController organisationController = sessionController.getOrganisationController();
     SpaceInst spaceInst = organisationController.getSpaceInstById(spaceId);
     StringBuilder result = new StringBuilder(500);
     if (spaceInst != null) {
@@ -98,7 +98,7 @@ public class MapTag extends TagSupport {
             if (!StringUtil.isDefined(label)) {
               label = componentInst.getName();
             }
-            
+
             // display component icon
             result.append("&nbsp;<img src=\"").append(contextPath).append("/util/icons/component/");
             if (componentInst.isWorkflow()) {

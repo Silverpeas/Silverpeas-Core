@@ -20,14 +20,11 @@
  */
 package com.silverpeas.wysiwyg.dynamicvalue;
 
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import java.util.logging.Level;
 
-import org.apache.commons.io.IOUtils;
 import org.dbunit.JdbcBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
@@ -50,8 +47,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
   /**
    * @throws java.lang.Exception
    */
-  @Before
   @Override
+  @Before
   public void setUp() throws Exception {
     properties = new Properties();
     properties.load(TestDynamicValueDAO.class.getClassLoader().
@@ -106,12 +103,9 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
 
   @Override
   protected IDataSet getDataSet() throws Exception {
-    InputStream in = this.getClass().getResourceAsStream("test-dynamicvalue-dataset.xml");
-    try {
-      return new FlatXmlDataSetBuilder().build(in);
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
+    IDataSet dataSet = new FlatXmlDataSetBuilder().build(this.getClass().getResourceAsStream(
+        "test-dynamicvalue-dataset.xml"));
+    return dataSet;
   }
 
   /**

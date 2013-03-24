@@ -148,7 +148,7 @@ public abstract class AbstractPieChartBuilder {
       // build instance list
       UserDetail userDetail = AdminReference.getAdminService().getUserDetail(currentUserId);
       if (!StringUtil.isDefined(spaceId)) {
-        if (UserDetail.ADMIN_ACCESS.equals(userDetail.getAccessLevel())) {// Admin
+        if (userDetail.isAccessAdmin()) {// Admin
           tabSpaceIds = AdminReference.getAdminService().getAllRootSpaceIds(); // de type WA123
         } else {// Manager d'espaces ou de sous-espaces
           // manager d'espace

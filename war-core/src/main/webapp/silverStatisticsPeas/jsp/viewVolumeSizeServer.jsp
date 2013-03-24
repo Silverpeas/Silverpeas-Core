@@ -1,3 +1,4 @@
+<%@ page import="org.silverpeas.admin.user.constant.UserAccessLevel" %>
 <%--
 
     Copyright (C) 2000 - 2012 Silverpeas
@@ -28,28 +29,28 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
-    String spaceId = (String) request.getAttribute("SpaceId");
+  String spaceId = (String) request.getAttribute("SpaceId");
 	Vector<String[]> vPath = (Vector<String[]>) request.getAttribute("Path");
-    Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
-    String userProfile = (String)request.getAttribute("UserProfile");
-    
-    long totalSize = 0;
+  Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+  UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
+
+  long totalSize = 0L;
 
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (userProfile.equals("A")) {
+	if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
-	
+	tabbedPane.addTab(resources.getString("GML.attachments"),"javascript:displayVolumes();",true);
+
 	ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeSizeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
 	arrayPane.setVisibleLineNumber(50);
-      	
-    ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
-    ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsSize"));
-      	
+  arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
+  arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsSize"));
+
     if (vStatsData != null) {
        	for (String[] item : vStatsData) {
        	  	ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -75,8 +76,17 @@
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
 		$.progressMessage();
-		document.volumeServerFormulaire.submit();		
+		document.volumeServerFormulaire.submit();
 	}
+
+  function displayVolumes() {
+    $.progressMessage();
+    $.get('<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />', function(newContent) {
+      var newPage = document.open("text/html", "replace");
+      newPage.write(newContent);
+      newPage.close();
+    });
+  }
 </script>
 </head>
 <body class="admin stats volume attachments">
@@ -84,12 +94,12 @@
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.AttachmentsSize"), "ViewVolumeSizeServer?SpaceId=");
-    
+
     if (spaceId != null && !"".equals(spaceId))	{
 		String path = "";
 		String separator = "";
 		for (String[] pathItem : vPath) {
-			if (userProfile.equals("A")) {
+			if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 				path += separator + "<a href=\"ViewVolumeSizeServer"+( (pathItem[0]==null) ? "" : ("?SpaceId="+pathItem[0]) )+"\">"+pathItem[1]+ "</a>";
 			} else {
 				path += separator + pathItem[1];
@@ -98,10 +108,10 @@
 		}
 		browseBar.setPath(path);
 	}
-	
+
 	out.println(window.printBefore());
-    out.println(tabbedPane.print());
-    out.println(frame.printBefore());
+  out.println(tabbedPane.print());
+  out.println(frame.printBefore());
 %>
 
 <br/>
@@ -111,7 +121,7 @@
 		<select name="Display" size="1" onchange="changeDisplay()">
 			<option value="ViewVolumeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsNumber")%></option>
 			<option value="ViewVolumeSizeServer" selected><%=resources.getString("silverStatisticsPeas.AttachmentsSize")%></option>
-			<% if (userProfile.equals("A")) { %>
+			<% if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) { %>
 				<option value="ViewEvolutionVolumeSizeServer"><%=resources.getString("silverStatisticsPeas.AttachmentsTotalSize")%></option>
 			<% } %>
 		</select>
@@ -126,7 +136,7 @@
 	</div>
 <% } %>
 <br/>
-<%     	
+<%
     if (vStatsData != null) {
   		out.println(arrayPane.print());
     }

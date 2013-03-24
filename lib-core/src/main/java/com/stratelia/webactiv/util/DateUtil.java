@@ -28,6 +28,9 @@ import com.silverpeas.calendar.Datable;
 import com.silverpeas.calendar.DateTime;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,8 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
+
+import static java.util.Calendar.*;
 
 /**
  * DateUtil is an helper class for date manipulation.
@@ -84,8 +87,7 @@ public class DateUtil {
     ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
     ICALUTCDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'",
         TimeZone.getTimeZone("UTC"));
-    ISO8601_FORMATTER =
-        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
+    ISO8601_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone(
         "UTC"));
   }
 
@@ -152,8 +154,8 @@ public class DateUtil {
       return "";
     }
     FastDateFormat formatter = FastDateFormat.getInstance(getMultilangProperties(
-        language).getString("dateOutputFormat") +
-        " " + getMultilangProperties(language).getString("hourOutputFormat"));
+        language).getString("dateOutputFormat") + " " + getMultilangProperties(language).getString(
+        "hourOutputFormat"));
     return formatter.format(date);
   }
 
@@ -211,14 +213,30 @@ public class DateUtil {
     }
   }
 
+  /**
+   * Gets the current date and hour.
+   * @return
+   */
+  public static Date getNow() {
+    return Calendar.getInstance().getTime();
+  }
+
+  /**
+   * Gets the current date with reseted hour.
+   * @return
+   */
+  public static Date getDate() {
+    return resetHour(getNow());
+  }
+
   public static Date getDate(Date date, String hour) {
     if (date == null) {
       return null;
     }
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.HOUR_OF_DAY, extractHour(hour));
-    calendar.set(Calendar.MINUTE, extractMinutes(hour));
+    calendar.set(HOUR_OF_DAY, extractHour(hour));
+    calendar.set(MINUTE, extractMinutes(hour));
     return calendar.getTime();
 
   }
@@ -240,7 +258,6 @@ public class DateUtil {
     if (!StringUtil.isDefined(hour)) {
       return 0;
     }
-
     if (hour.indexOf(':') != -1) {
       return Integer.parseInt(hour.substring(hour.indexOf(':') + 1));
     } else if (hour.indexOf('h') != -1) {
@@ -294,8 +311,8 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
-    return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " " +
-        getMultilangProperties(lang).getString("hourOutputFormat"));
+    return new SimpleDateFormat(getMultilangProperties(lang).getString("dateInputFormat") + " "
+        + getMultilangProperties(lang).getString("hourOutputFormat"));
   }
 
   /**
@@ -341,17 +358,17 @@ public class DateUtil {
    * @return true if both dates defined the same date
    */
   public static boolean datesAreEqual(Date date1, Date date2) {
-    Calendar cDate1 = Calendar.getInstance();
+    Calendar cDate1 = getInstance();
     cDate1.setTime(date1);
-    Calendar cDate2 = Calendar.getInstance();
+    Calendar cDate2 = getInstance();
     cDate2.setTime(date2);
-    if (cDate1.get(Calendar.YEAR) != cDate2.get(Calendar.YEAR)) {
+    if (cDate1.get(YEAR) != cDate2.get(YEAR)) {
       return false;
     } else {
-      if (cDate1.get(Calendar.MONTH) != cDate2.get(Calendar.MONTH)) {
+      if (cDate1.get(MONTH) != cDate2.get(MONTH)) {
         return false;
       } else {
-        if (cDate1.get(Calendar.DATE) != cDate2.get(Calendar.DATE)) {
+        if (cDate1.get(DATE) != cDate2.get(DATE)) {
           return false;
         }
       }
@@ -441,8 +458,7 @@ public class DateUtil {
 
   public static String getFormattedTime(Date date) {
     String time = formatTime(date);
-    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " +
-        time);
+    SilverTrace.debug("util", "DateUtil.getFormattedTime(Date)", "Time = " + time);
     return time;
   }
 
@@ -456,15 +472,39 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result.getTime();
+    return resetHour(result).getTime();
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   * @return
+   */
+  public static Calendar resetHour(Calendar date) {
+    date.set(Calendar.HOUR_OF_DAY, 0);
+    date.set(Calendar.MINUTE, 0);
+    date.set(Calendar.SECOND, 0);
+    date.set(Calendar.MILLISECOND, 0);
+    return date;
+  }
+
+  /**
+   * Reset hour of a date (00:00:00.000)
+   * @param date
+   * @return
+   */
+  public static Date resetHour(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    return calendar.getTime();
   }
 
   /**
@@ -477,7 +517,7 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATETIME_PARSER) {
       result.setTime(DATETIME_PARSER.parse(date));
     }
@@ -494,7 +534,7 @@ public class DateUtil {
     if (time == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (TIME_PARSER) {
       result.setTime(TIME_PARSER.parse(time));
     }
@@ -511,15 +551,11 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    Calendar result = Calendar.getInstance();
+    Calendar result = getInstance();
     synchronized (DATE_PARSER) {
       result.setTime(DATE_PARSER.parse(date));
     }
-    result.set(Calendar.HOUR_OF_DAY, 0);
-    result.set(Calendar.MINUTE, 0);
-    result.set(Calendar.SECOND, 0);
-    result.set(Calendar.MILLISECOND, 0);
-    return result;
+    return resetHour(result);
   }
 
   /**
@@ -564,22 +600,22 @@ public class DateUtil {
    * @param calend the calendar to be updated.
    */
   public static void setTime(Calendar calend, String time) {
-    calend.set(Calendar.SECOND, 0);
-    calend.set(Calendar.MILLISECOND, 0);
+    calend.set(SECOND, 0);
+    calend.set(MILLISECOND, 0);
     if (time != null) {
       try {
         Calendar result = Calendar.getInstance();
         synchronized (TIME_PARSER) {
           result.setTime(TIME_PARSER.parse(time));
         }
-        calend.set(Calendar.HOUR_OF_DAY, result.get(Calendar.HOUR_OF_DAY));
-        calend.set(Calendar.MINUTE, result.get(Calendar.MINUTE));
+        calend.set(HOUR_OF_DAY, result.get(HOUR_OF_DAY));
+        calend.set(MINUTE, result.get(MINUTE));
         return;
       } catch (ParseException pex) {
       }
     }
-    calend.set(Calendar.HOUR_OF_DAY, 0);
-    calend.set(Calendar.MINUTE, 0);
+    calend.set(HOUR_OF_DAY, 0);
+    calend.set(MINUTE, 0);
   }
 
   /**
@@ -691,13 +727,13 @@ public class DateUtil {
    * @return a date for the first day of the month of the specified date.
    */
   public static Date getFirstDateOfMonth(Date date) {
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.DAY_OF_MONTH, 1);
-    calendar.set(Calendar.HOUR_OF_DAY, 0);
-    calendar.set(Calendar.MINUTE, 0);
-    calendar.set(Calendar.SECOND, 0);
-    calendar.set(Calendar.MILLISECOND, 0);
+    calendar.set(DAY_OF_MONTH, 1);
+    calendar.set(HOUR_OF_DAY, 0);
+    calendar.set(MINUTE, 0);
+    calendar.set(SECOND, 0);
+    calendar.set(MILLISECOND, 0);
     return calendar.getTime();
   }
 
@@ -707,46 +743,82 @@ public class DateUtil {
    * @return a date for the last day of the month of the specified date.
    */
   public static Date getEndDateOfMonth(Date date) {
-    Calendar calendar = Calendar.getInstance();
+    Calendar calendar = getInstance();
     calendar.setTime(date);
-    calendar.set(Calendar.DAY_OF_MONTH, calendar.getMaximum(Calendar.DAY_OF_MONTH));
-    calendar.set(Calendar.HOUR_OF_DAY, 23);
-    calendar.set(Calendar.MINUTE, 59);
-    calendar.set(Calendar.SECOND, 59);
-    calendar.set(Calendar.MILLISECOND, 999);
+    calendar.set(DAY_OF_MONTH, calendar.getMaximum(DAY_OF_MONTH));
+    calendar.set(HOUR_OF_DAY, 23);
+    calendar.set(MINUTE, 59);
+    calendar.set(SECOND, 59);
+    calendar.set(MILLISECOND, 999);
     return calendar.getTime();
   }
 
-  
   /**
    * Get last hour, minute, second, millisecond of the specified date
+   *
    * @param curDate the specified date
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getEndOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 23);
-    cal.set(Calendar.MINUTE, 59);
-    cal.set(Calendar.SECOND, 59);
-    cal.set(Calendar.MILLISECOND, 999);
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = getInstance();
+      cal.setTime(curDate);
+      cal.set(HOUR_OF_DAY, 23);
+      cal.set(MINUTE, 59);
+      cal.set(SECOND, 59);
+      cal.set(MILLISECOND, 999);
+      return cal.getTime();
+    }
+    return null;
   }
-
 
   /**
    * Get first hour, minute, second, millisecond of the specified date
+   *
    * @param curDate the specified date
    * @return a date at last hour, minute, second and millisecond of the specified date
    */
   public static Date getBeginOfDay(Date curDate) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(curDate);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND,0);    
-    return cal.getTime();
+    if (curDate != null) {
+      Calendar cal = getInstance();
+      cal.setTime(curDate);
+      cal.set(HOUR_OF_DAY, 0);
+      cal.set(MINUTE, 0);
+      cal.set(SECOND, 0);
+      cal.set(MILLISECOND, 0);
+      return cal.getTime();
+    }
+    return null;
+  }
+
+  /**
+   * Set the first hour, minute, second, millisecond of the specified calendar to 0.
+   *
+   * @param calendar the specified calendar.
+   */
+  public static void setAtBeginOfDay(Calendar calendar) {
+    if (calendar != null) {
+      calendar.set(HOUR_OF_DAY, 0);
+      calendar.set(MINUTE, 0);
+      calendar.set(SECOND, 0);
+      calendar.set(MILLISECOND, 0);
+    }
+  }
+
+  /**
+   * Compute a new date by adding the specified number of days without couting week-ends.
+   *
+   * @param calendar
+   * @param nbDay
+   */
+  public static void addDaysExceptWeekEnds(Calendar calendar, int nbDay) {
+    int nb = 0;
+    while (nb < nbDay) {
+      calendar.add(DATE, 1);
+      if (calendar.get(DAY_OF_WEEK) != SATURDAY && calendar.get(DAY_OF_WEEK) != SUNDAY) {
+        nb += 1;
+      }
+    }
   }
 
   /**
@@ -756,8 +828,8 @@ public class DateUtil {
    * @param curDate
    * @return String
    */
-  public final static int getDayNumberInWeek(Date curDate) {
-    return DateUtil.convert(curDate).get(Calendar.DAY_OF_WEEK);
+  public static int getDayNumberInWeek(Date curDate) {
+    return DateUtil.convert(curDate).get(DAY_OF_WEEK);
   }
 
   /**
@@ -766,7 +838,7 @@ public class DateUtil {
    * @return Calendar
    */
   public static Calendar convert(Date curDate) {
-    Calendar cal = Calendar.getInstance();
+    Calendar cal = getInstance();
     cal.setTime(curDate);
     return cal;
   }

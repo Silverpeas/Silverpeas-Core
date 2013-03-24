@@ -43,11 +43,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.util.MimeTypes;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -62,6 +60,8 @@ import com.sun.portal.portletcontainer.context.registry.PortletRegistryException
 import com.sun.portal.portletcontainer.invoker.InvokerException;
 import com.sun.portal.portletcontainer.invoker.WindowInvokerConstants;
 import com.sun.portal.portletcontainer.invoker.util.InvokerUtil;
+import org.silverpeas.core.admin.OrganisationController;
+
 import java.util.HashSet;
 
 import static com.silverpeas.util.MimeTypes.*;
@@ -293,7 +293,7 @@ public class SPDesktopServlet extends HttpServlet {
    * Returns a Map of portlet data and title for the portlet windows specified in the portletList
    *
    * @param request the HttpServletRequest Object
-   * @param portletContent the PortletContent Cobject
+   * @param response the HttpServletResponse object
    * @param portletList the List of portlet windows
    * @return a Map of portlet data and title for the portlet windows specified in the portletList
    */
@@ -570,7 +570,7 @@ public class SPDesktopServlet extends HttpServlet {
         }
         MainSessionController m_MainSessionCtrl = getMainSessionController(request);
         SpaceInst spaceStruct =
-            m_MainSessionCtrl.getOrganizationController().getSpaceInstById(spaceId);
+            m_MainSessionCtrl.getOrganisationController().getSpaceInstById(spaceId);
         // Page d'accueil de l'espace = Portlet ?
         if (spaceStruct == null || spaceStruct.getFirstPageType() != SpaceInst.FP_TYPE_PORTLET) {
           return null;
@@ -590,8 +590,8 @@ public class SPDesktopServlet extends HttpServlet {
     return m_MainSessionCtrl;
   }
 
-  private OrganizationController getOrganizationController(final HttpServletRequest request) {
-    return getMainSessionController(request).getOrganizationController();
+  private OrganisationController getOrganizationController(final HttpServletRequest request) {
+    return getMainSessionController(request).getOrganisationController();
   }
 
   private boolean isSpaceBackOffice(final HttpServletRequest request) {
@@ -607,7 +607,7 @@ public class SPDesktopServlet extends HttpServlet {
 
   private String getSpaceHomepage(String spaceId, final HttpServletRequest request)
       throws UnsupportedEncodingException {
-    OrganizationController organizationCtrl = getOrganizationController(request);
+    OrganisationController organizationCtrl = getOrganizationController(request);
     SpaceInst spaceStruct = null;
     if (!SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) {
       spaceStruct = organizationCtrl.getSpaceInstById(spaceId);
@@ -618,8 +618,9 @@ public class SPDesktopServlet extends HttpServlet {
       String userId = m_MainSessionCtrl.getUserId();
 
       // Maintenance Mode
-      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) && "U".equals(m_MainSessionCtrl.
-          getUserAccessLevel())) {
+      if (m_MainSessionCtrl.isSpaceInMaintenance(spaceId) &&
+          (m_MainSessionCtrl.getCurrentUserDetail().isAccessUser() ||
+              m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest())) {
         return URLManager.getApplicationURL() + "/admin/jsp/spaceInMaintenance.jsp";
       }
 

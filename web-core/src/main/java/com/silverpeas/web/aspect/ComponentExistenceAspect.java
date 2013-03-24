@@ -25,13 +25,14 @@ package com.silverpeas.web.aspect;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.stereotype.Component;
 
 /**
@@ -72,8 +73,8 @@ public class ComponentExistenceAspect {
     } catch (Exception ex) {
     }
     if (isDefined(instanceId)) {
-      OrganizationController controller = OrganizationControllerFactory.getFactory().
-              getOrganizationController();
+      OrganisationController controller = OrganisationControllerFactory.getFactory().
+              getOrganisationController();
       if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }

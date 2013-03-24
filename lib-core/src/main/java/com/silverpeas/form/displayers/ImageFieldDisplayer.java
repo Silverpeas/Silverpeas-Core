@@ -1,37 +1,37 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form.displayers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -48,44 +48,34 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 /**
  * A ImageFieldDisplayer is an object which can display an image in HTML and can retrieve via HTTP
  * any file.
+ *
  * @see Field
  * @see FieldTemplate
  * @see Form
  * @see FieldDisplayer
  */
-public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
+public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
 
   public static final String CONTEXT_FORM_IMAGE = "XMLFormImages";
 
-  /**
-   * Returns the name of the managed types.
-   */
-  public String[] getManagedTypes() {
-    return new String[] { FileField.TYPE };
-  }
 
   /**
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the fieldName is unknown by the template.
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * log a silvertrace and writes an empty string when : <UL> <LI>the fieldName is unknown by the
+   * template. <LI>the field type is not a managed type. </UL>
+   *
+   * @param pageContext
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
@@ -122,38 +112,43 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
    * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
-   * <UL>
-   * <LI>the field type is not a managed type.
-   * </UL>
+   * <UL> <LI>the field type is not a managed type. </UL>
+   *
    * @param out
    * @param field
    * @param template
    * @param pagesContext
+   * @param webContext
    * @throws FormException
    */
   public void display(PrintWriter out, FileField field, FieldTemplate template,
       PagesContext pagesContext, String webContext) throws FormException {
     SilverTrace.info("form", "ImageFieldDisplayer.display", "root.MSG_GEN_ENTER_METHOD",
-        "fieldName = " + template.getFieldName() + ", value = " + field.getValue() +
-        ", fieldType = "
-        + field.getTypeName());
+        "fieldName = " + template.getFieldName() + ", value = " + field.getValue()
+        + ", fieldType = " + field.getTypeName());
     String fieldName = template.getFieldName();
     String language = pagesContext.getLanguage();
 
-    String attachmentId = field.getValue();
     String componentId = pagesContext.getComponentId();
-    AttachmentDetail attachment = null;
+    String attachmentId = field.getValue();
+    SimpleDocumentPK attachmentPk;
+    if (StringUtil.isLong(attachmentId)) {
+      attachmentPk = new SimpleDocumentPK(null, componentId);
+      attachmentPk.setOldSilverpeasId(Long.parseLong(attachmentId));
+    } else {
+      attachmentPk = new SimpleDocumentPK(attachmentId, componentId);
+    }
+    SimpleDocument attachment = null;
     String imageURL = null;
     if (StringUtil.isDefined(attachmentId)) {
       if (attachmentId.startsWith("/")) {
         imageURL = attachmentId;
       } else {
-        attachment =
-            AttachmentController.searchAttachmentByPK(
-            new AttachmentPK(attachmentId, componentId));
+        attachment = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+            attachmentPk, language);
         if (attachment != null) {
           if (pagesContext.getRenderingContext() == RenderingContext.EXPORT) {
-            imageURL = "file:" + attachment.getAttachmentPath(language);
+            imageURL = "file:" + attachment.getAttachmentPath();
           } else {
             imageURL = webContext + attachment.getAttachmentURL();
           }
@@ -162,28 +157,21 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
     } else {
       attachmentId = "";
     }
-
     Map<String, String> parameters = template.getParameters(language);
-
     if (template.isReadOnly() && !template.isHidden()) {
       if (imageURL != null) {
-        String height =
-            (parameters.containsKey("height") ? parameters.get("height") : "");
-        String width =
-            (parameters.containsKey("width") ? parameters.get("width") : "");
-
+        String height = (parameters.containsKey("height") ? parameters.get("height") : "");
+        String width = (parameters.containsKey("width") ? parameters.get("width") : "");
         String paramHeight = "";
         String paramWidth = "";
         if (StringUtil.isDefined(width) && StringUtil.isDefined(height)) {
-          // les 2 paramètres sont renseignés : forcer la taille
           paramWidth = " width=\"" + width + "\" ";
           paramHeight = " height=\"" + height + "\" ";
         } else {
           // un des 2 seulement est renseigné, calculer le second
           if (StringUtil.isDefined(width) && attachment != null) {
-            String[] paramSize =
-                ImageUtil.getWidthAndHeightByWidth(getImagePath(attachment), Integer.parseInt(
-                width));
+            String[] paramSize = ImageUtil.getWidthAndHeightByWidth(new File(attachment.
+                getAttachmentPath()), Integer.parseInt(width));
             if (StringUtil.isDefined(paramSize[0])) {
               paramWidth = " width=\"" + paramSize[0] + "\" ";
             }
@@ -192,9 +180,8 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
             }
           }
           if (StringUtil.isDefined(height) && attachment != null) {
-            String[] paramSize =
-                ImageUtil.getWidthAndHeightByHeight(getImagePath(attachment), Integer.parseInt(
-                height));
+            String[] paramSize = ImageUtil.getWidthAndHeightByHeight(new File(attachment.
+                getAttachmentPath()), Integer.parseInt(height));
             if (StringUtil.isDefined(paramSize[0])) {
               paramWidth = " width=\"" + paramSize[0] + "\" ";
             }
@@ -265,8 +252,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
           stringBuilder.append(Util.getString("GML.galleries", language));
           stringBuilder.append("</option>");
           for (ComponentInstLight component : galleries) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
-                .append(
+            stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
                 component.getLabel(language)).append("</option>");
           }
           stringBuilder.append("</select>");
@@ -312,8 +298,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   @Override
   public List<String> update(List<FileItem> items, FileField field, FieldTemplate template,
-      PagesContext pageContext) throws
-      FormException {
+      PagesContext pageContext) throws FormException {
     List<String> attachmentIds = new ArrayList<String>();
     String itemName = template.getFieldName();
     try {
@@ -322,7 +307,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
       if (param != null && !pageContext.isCreation()) {
         if (param.startsWith("remove_")) {
           // Il faut supprimer le fichier
-          String attachmentId = param.substring("remove_".length());
+          String attachmentId = field.getAttachmentId();
           if (!attachmentId.startsWith("/")) {
             deleteAttachment(attachmentId, pageContext);
           } else {
@@ -348,7 +333,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
         return attachmentIds;
       }
       attachmentIds.addAll(update(value, field, template, pageContext));
-    } catch (Exception e) {
+    } catch (IOException e) {
       SilverTrace.error("form", "ImageFieldDisplayer.update", "form.EXP_UNKNOWN_FIELD", null, e);
     }
     return attachmentIds;
@@ -356,6 +341,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -365,6 +351,7 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
 
   /**
    * Method declaration
+   *
    * @return
    */
   @Override
@@ -373,99 +360,23 @@ public class ImageFieldDisplayer extends AbstractFieldDisplayer<FileField> {
   }
 
   private String processUploadedImage(List<FileItem> items, String parameterName,
-      PagesContext pagesContext)
-      throws Exception {
+      PagesContext pagesContext) throws IOException {
     String attachmentId = null;
     FileItem item = FileUploadUtil.getFile(items, parameterName);
     if (item != null && !item.isFormField()) {
       String componentId = pagesContext.getComponentId();
       String userId = pagesContext.getUserId();
       String objectId = pagesContext.getObjectId();
-      String logicalName = item.getName();
-      String physicalName = null;
-      String type = null;
-      String mimeType = null;
-      File dir = null;
-      long size = 0;
-      if (StringUtil.isDefined(logicalName)) {
-        if (!FileUtil.isWindows()) {
-          logicalName = logicalName.replace('\\', File.separatorChar);
-          SilverTrace.info("form", "AbstractForm.processUploadedImage", "root.MSG_GEN_PARAM_VALUE",
-              "fullFileName on Unix = " + logicalName);
-        }
-
-        logicalName =
-            logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.
-            length());
-        type = FileRepositoryManager.getFileExtension(logicalName);
-        mimeType = item.getContentType();
-
-        physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
-
-        dir = getImagePath(componentId, physicalName);
-        size = item.getSize();
-        item.write(dir);
-
-        // l'ajout du fichier joint ne se fait que si la taille du fichier (size) est >0
-        // sinon cela indique que le fichier n'est pas valide (chemin non valide, fichier non
-        // accessible)
-        if (size > 0) {
-          AttachmentDetail ad =
-              createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType,
-              size,
-              ImageFieldDisplayer.CONTEXT_FORM_IMAGE, userId);
-          ad = AttachmentController.createAttachment(ad, true);
-          attachmentId = ad.getPK().getId();
-        } else {
-          // le fichier à tout de même été créé sur le serveur avec une taille 0!, il faut le
-          // supprimer
-          if (dir != null) {
-            FileFolderManager.deleteFolder(dir.getPath());
-          }
+      if (StringUtil.isDefined(item.getName())) {
+        String fileName = FileUtil.getFilename(item.getName());
+        long size = item.getSize();
+        if (size > 0L) {
+          SimpleDocument document = createSimpleDocument(objectId, componentId, item, fileName,
+              userId);
+          attachmentId = document.getId();
         }
       }
     }
     return attachmentId;
-  }
-
-  private File getImagePath(AttachmentDetail attachment) {
-    String path =
-        AttachmentController.createPath(attachment.getInstanceId(), attachment.getContext());
-    return new File(path + attachment.getPhysicalName());
-  }
-
-  private File getImagePath(String componentId, String physicalName) {
-    String path =
-        AttachmentController.createPath(componentId, ImageFieldDisplayer.CONTEXT_FORM_IMAGE);
-    return new File(path + physicalName);
-  }
-
-  private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
-      String physicalName,
-      String logicalName, String mimeType, long size, String context, String userId) {
-    // create AttachmentPK with spaceId and componentId
-    AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-
-    // create foreignKey with spaceId, componentId and id
-    // use AttachmentPK to build the foreign key of customer object.
-    AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-    if (objectId != null) {
-      foreignKey.setId(objectId);
-    }
-
-    // create AttachmentDetail Object
-    AttachmentDetail ad =
-        new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context,
-        new Date(), foreignKey);
-    ad.setAuthor(userId);
-
-    return ad;
-  }
-
-  private void deleteAttachment(String attachmentId, PagesContext pageContext) {
-    SilverTrace.info("form", "AbstractForm.deleteAttachment", "root.MSG_GEN_ENTER_METHOD",
-        "attachmentId = " + attachmentId + ", componentId = " + pageContext.getComponentId());
-    AttachmentPK pk = new AttachmentPK(attachmentId, pageContext.getComponentId());
-    AttachmentController.deleteAttachment(pk);
   }
 }

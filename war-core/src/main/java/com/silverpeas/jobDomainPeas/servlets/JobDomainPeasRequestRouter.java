@@ -42,7 +42,6 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.DomainDriver;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -50,6 +49,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request.getParameter("GroupId"), request, sendEmail);
@@ -201,15 +202,20 @@ public class JobDomainPeasRequestRouter extends
               EncodeHelper.htmlStringToJavaString(request.getParameter("userLastName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userFirstName")),
               EncodeHelper.htmlStringToJavaString(request.getParameter("userEMail")),
-              EncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
+              UserAccessLevel.from(request.getParameter("userAccessLevel")),
               userPasswordValid,
               EncodeHelper.htmlStringToJavaString(request.getParameter("userPassword")),
               properties, request, sendEmail);
+        } else if (function.startsWith("userBlock")) {
+          jobDomainSC.blockUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userUnblock")) {
+          jobDomainSC.unblockUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           String userId = request.getParameter("Iduser");
-          String accessLevel = request.getParameter("userAccessLevel");
+          UserAccessLevel accessLevel =
+              UserAccessLevel.from(request.getParameter("userAccessLevel"));
 
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
@@ -294,7 +300,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.equals("userOpen")) {
           String userId = request.getParameter("userId");
 
-          OrganizationController orgaController = jobDomainSC.getOrganizationController();
+          OrganisationController orgaController = jobDomainSC.getOrganisationController();
           UserDetail user = orgaController.getUserDetail(userId);
           String domainId = user.getDomainId();
           if (domainId == null) {
@@ -419,7 +425,7 @@ public class JobDomainPeasRequestRouter extends
           String groupId = request.getParameter("groupId");
 
           if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
-            OrganizationController orgaController = jobDomainSC.getOrganizationController();
+            OrganisationController orgaController = jobDomainSC.getOrganisationController();
             Group group = orgaController.getGroup(groupId);
             String domainId = group.getDomainId();
             if (domainId == null) {
@@ -721,6 +727,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
       }
       if (destination.equals("domainContent.jsp")) {
+        jobDomainSC.refresh();
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));

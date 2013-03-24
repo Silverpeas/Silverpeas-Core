@@ -35,27 +35,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 
-/*
- * CVS Informations
- * 
- * $Id: NavigationStock.java,v 1.2 2004/09/28 12:45:27 neysseri Exp $
- * 
- * $Log: NavigationStock.java,v $
- * Revision 1.2  2004/09/28 12:45:27  neysseri
- * Extension de la longueur du login (de 20 a 50 caracteres) + nettoyage sources
- *
- * Revision 1.1.1.1  2002/08/06 14:47:55  nchaix
- * no message
- *
- * Revision 1.2  2002/04/05 05:22:08  tleroi
- * no message
- *
- * Revision 1.1  2002/04/03 07:40:33  tleroi
- * no message
- *
- *
- */
-
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
  * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
@@ -129,20 +108,7 @@ public class NavigationStock {
   }
 
   public UserDetail[] getUserPage() {
-    UserDetail[] valret = null;
-    int i;
-
     return m_SubUsers;
-
-    // Simple case : less than a page to display or display all
-    /*
-     * if ((JobDomainSettings.m_UsersByPage == -1) || (m_SubUsers.length <=
-     * JobDomainSettings.m_UsersByPage)) { return m_SubUsers; } if (m_SubUsers.length <=
-     * (m_FirstDisplayedUser + JobDomainSettings.m_UsersByPage)) { valret = new
-     * UserDetail[m_SubUsers.length - m_FirstDisplayedUser]; } else { valret = new
-     * UserDetail[JobDomainSettings.m_UsersByPage]; } for (i = 0; i < valret.length; i++) {
-     * valret[i] = m_SubUsers[m_FirstDisplayedUser + i]; } return valret;
-     */
   }
 
   // SubGroups functions
@@ -180,19 +146,6 @@ public class NavigationStock {
   }
 
   public Group[] getGroupPage() {
-    Group[] valret = null;
-    int i;
-
     return m_SubGroups;
-
-    // Simple case : less than a page to display or display all
-    /*
-     * if ((JobDomainSettings.m_GroupsByPage == -1) || (m_SubGroups.length <=
-     * JobDomainSettings.m_GroupsByPage)) { return m_SubGroups; } if (m_SubGroups.length <=
-     * (m_FirstDisplayedGroup + JobDomainSettings.m_GroupsByPage)) { valret = new
-     * Group[m_SubGroups.length - m_FirstDisplayedGroup]; } else { valret = new
-     * Group[JobDomainSettings.m_GroupsByPage]; } for (i = 0; i < valret.length; i++) { valret[i] =
-     * m_SubGroups[m_FirstDisplayedGroup + i]; } return valret;
-     */
   }
 }

@@ -43,6 +43,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 public class VersioningDAO {
 
@@ -1217,47 +1218,7 @@ public class VersioningDAO {
 
   /**
 * @param conn
-* @param componentId
-* @param groupsIds
-* @param usersIds
-* @return
-* @throws SQLException
-* @throws VersioningRuntimeException
-*/
-  public static String insertReadersAccessGroupsList(Connection conn,
-    String componentId, List<String> groupsIds, List<String> usersIds)
-    throws SQLException, VersioningRuntimeException {
-    SilverTrace.debug("versioning", "VersioningDAO.insertReadersAccessGroupsList",
-      "root.MSG_GEN_ENTER_METHOD");
-
-    int rowCount = 0;
-    PreparedStatement prepStmt = null;
-    int newId = DBUtil.getNextId("sb_doc_readers_acl", "id");
-    try {
-      prepStmt = conn.prepareStatement(INSERT_ACCESS_LIST);
-      prepStmt.setInt(1, newId);
-      prepStmt.setString(2, componentId);
-      rowCount = prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
-
-    if (rowCount == 0) {
-      throw new VersioningRuntimeException("VersioningDAO.insertAccessGroupsList",
-        SilverpeasRuntimeException.ERROR, "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "componentId = "
-        + componentId);
-    } else {
-      insertAccessGroupsListContent(conn, newId, groupsIds, usersIds);
-    }
-    SilverTrace.debug("versioning", "VersioningDAO.insertReadersAccessGroupsList",
-      "root.MSG_GEN_EXIT_METHOD");
-    return Integer.toString(newId);
-  }
-
-  /**
-* @param conn
-* @param role
-* @param componentId
+* @param accessId
 * @param groupsIds
 * @param usersIds
 * @throws SQLException
@@ -1270,36 +1231,12 @@ public class VersioningDAO {
       "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
     for (String groupsId : groupsIds) {
       int groupId = Integer.parseInt(groupsId);
-      insertAccessListContentRow(conn, UserDetail.GUEST_ACCESS, groupId, accessId);
+      insertAccessListContentRow(conn, UserAccessLevel.GUEST.code(), groupId, accessId);
     }
 
     for (String usersId : usersIds) {
       int userId = Integer.parseInt(usersId);
-      insertAccessListContentRow(conn, UserDetail.USER_ACCESS, userId, accessId);
-    }
-  }
-
-  /**
-* @param conn
-* @param accessId
-* @param groupsIds
-* @param usersIds
-* @throws SQLException
-* @throws VersioningRuntimeException
-*/
-  private static void insertAccessGroupsListContent(Connection conn,
-    int accessId, List<String> groupsIds, List<String> usersIds)
-    throws SQLException, VersioningRuntimeException {
-    SilverTrace.debug("versioning",
-      "VersioningDAO.insertAccessGroupsListContent",
-      "root.MSG_GEN_PARAM_VALUE", "accessId = " + accessId);
-    for (String groupsId : groupsIds) {
-      int groupId = Integer.parseInt(groupsId);
-      insertAccessListContentRow(conn, UserDetail.GUEST_ACCESS, groupId, accessId);
-    }
-    for (String usersId : usersIds) {
-      int userId = Integer.parseInt(usersId);
-      insertAccessListContentRow(conn, UserDetail.USER_ACCESS, userId, accessId);
+      insertAccessListContentRow(conn, UserAccessLevel.USER.code(), userId, accessId);
     }
   }
 

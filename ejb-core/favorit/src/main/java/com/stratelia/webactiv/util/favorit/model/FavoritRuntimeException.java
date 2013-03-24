@@ -21,10 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.favorit.model;
 
 import com.stratelia.webactiv.util.exception.*;
@@ -35,6 +31,7 @@ import com.stratelia.webactiv.util.exception.*;
  * @version %I%, %G%
  */
 public class FavoritRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Constructor declaration
@@ -43,7 +40,7 @@ public class FavoritRuntimeException extends SilverpeasRuntimeException {
    * @see
    */
   public FavoritRuntimeException(String message, Exception nested) {
-    super(message, nested);
+    super(null, ERROR, message, nested);
   }
 
   /**
@@ -51,6 +48,7 @@ public class FavoritRuntimeException extends SilverpeasRuntimeException {
    * @return
    * @see
    */
+  @Override
   public String getModule() {
     return "favorit";
   }

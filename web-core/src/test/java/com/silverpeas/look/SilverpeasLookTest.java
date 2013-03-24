@@ -24,13 +24,13 @@
 
 package com.silverpeas.look;
 
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -38,7 +38,10 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -47,13 +50,14 @@ import static org.mockito.Mockito.*;
  * Unit tests on the SilverpeasLook operations.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-look.xml")
+@ContextConfiguration(locations = {"/spring-look.xml"})
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class SilverpeasLookTest {
 
   @Inject
   private SilverpeasLook look;
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   public SilverpeasLookTest() {
   }
@@ -142,6 +146,34 @@ public class SilverpeasLookTest {
     prepareSpaces("WA2", "WA11", "WA111");
     String wallpaper = look.getWallpaperOfSpaceOrDefaultOne("WA111");
     assertThat(wallpaper, equalTo("/silverpeas/admin/jsp/icons/silverpeas_light/bandeauTop.jpg"));
+  }
+  
+  /**
+   * When a root space has a CSS specifically set, this CSS should be returned.
+   */
+  @Test
+  public void getCSSOfARootSpace() {
+    prepareSpaces("WA1");
+    String spaceId = look.getSpaceWithCSS("WA1");
+    assertThat(spaceId, is("1"));
+  }
+  
+  /**
+   * When a space has no specifically CSS set, the one of the fist parent having a CSS
+   * specifically set is returned
+   */
+  @Test
+  public void getCSSOfTheFirstParentSpace() {
+    prepareSpaces("WA1", "WA11", "WA111");
+    String url = look.getCSSOfSpace("WA111");
+    assertThat(url, is("/silverpeas/OnlineFileServer/styles.css?ComponentId=Space1" +
+        "&SourceFile=styles.css&MimeType=text/css&Directory=look"));
+  }
+  
+  @Test
+  public void spaceWithoutASpecificCSS() {
+    prepareSpaces("WA3");
+    assertThat(look.getCSSOfSpace("WA3"), is(nullValue()));
   }
 
   /**

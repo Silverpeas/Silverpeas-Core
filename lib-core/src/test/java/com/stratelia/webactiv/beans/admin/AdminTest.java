@@ -28,15 +28,14 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import java.util.List;
+import java.util.Map;
+
 import com.silverpeas.components.model.AbstractTestDao;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertThat;
 
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-@RunWith(BlockJUnit4ClassRunner.class)
 public class AdminTest extends AbstractTestDao {
 
   private Admin instance;
@@ -199,5 +197,11 @@ public class AdminTest extends AbstractTestDao {
     assertEquals("Customer", domains[0].getName());
     assertEquals("domainSilverpeas", domains[1].getName());
     assertEquals("SILVERPEAS", domains[2].getName());
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

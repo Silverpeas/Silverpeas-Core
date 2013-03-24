@@ -1,10 +1,9 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -13,139 +12,193 @@
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
-// ESCA-JAVA0257:
+import javax.jcr.Property;
+
 /**
  * Constants used in Silverpeas JCR implementation.
+ *
  * @author Emmanuel Hugonnet
  * @version $revision$
  */
-public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
+public interface JcrConstants extends Property {
+
+  /**
+   * nt:base
+   */
+  String NT_BASE = "nt:base";
+  /**
+   * nt:childNodeDefinition
+   */
+  String NT_CHILDNODEDEFINITION = "nt:childNodeDefinition";
+  /**
+   * nt:file
+   */
+  String NT_FILE = "nt:file";
+  /**
+   * nt:folder
+   */
+  String NT_FOLDER = "nt:folder";
+  /**
+   * nt:frozenNode
+   */
+  String NT_FROZENNODE = "nt:frozenNode";
+  /**
+   * nt:hierarchyNode
+   */
+  String NT_HIERARCHYNODE = "nt:hierarchyNode";
+  /**
+   * nt:linkedFile
+   */
+  String NT_LINKEDFILE = "nt:linkedFile";
+  /**
+   * nt:nodeType
+   */
+  String NT_NODETYPE = "nt:nodeType";
+  /**
+   * nt:propertyDefinition
+   */
+  String NT_PROPERTYDEFINITION = "nt:propertyDefinition";
+  /**
+   * nt:query
+   */
+  String NT_QUERY = "nt:query";
+  /**
+   * nt:resource
+   */
+  String NT_RESOURCE = "nt:resource";
+  /**
+   * nt:unstructured
+   */
+  String NT_UNSTRUCTURED = "nt:unstructured";
+  /**
+   * nt:version
+   */
+  String NT_VERSION = "nt:version";
+  /**
+   * nt:versionHistory
+   */
+  String NT_VERSIONHISTORY = "nt:versionHistory";
+  /**
+   * nt:versionLabels
+   */
+  String NT_VERSIONLABELS = "nt:versionLabels";
+  /**
+   * nt:versionedChild
+   */
+  String NT_VERSIONEDCHILD = "nt:versionedChild";
   /**
    * Prefix for Silverpeas namespace.
    */
   String SILVERPEAS_PREFIX = "slv";
-
   /**
    * Silverpeas theme qname
    */
   String SLV_NODE = "slv:theme";
-
   /**
    * Silverpeas translation for theme qname
    */
   String SLV_I18N_NODE = "slv:i18nTheme";
-
+  /**
+   * Silverpeas versionning document node qname.
+   */
+  String SLV_SIMPLE_DOCUMENT = "slv:simpleDocument";
+  /**
+   * Silverpeas versionning document versionnode qname.
+   */
+  String SLV_SIMPLE_ATTACHMENT = "slv:simpleAttachment";
   /**
    * Silverpeas translation for link qname
    */
   String SLV_LINK = "slv:link";
-
   /**
    * Silverpeas kmelia component node.
    */
   String SLV_KMELIA = "slv:kmelia";
-
   /**
    * Silverpeas publication node qname.
    */
   String SLV_PUBLICATION = "slv:publication";
-
   /**
    * Silverpeas publication translation node qname.
    */
   String SLV_I18N_PUBLICATION = "slv:i18nPublication";
-
   /**
    * Silverpeas versionning document node qname.
    */
   String SLV_DOCUMENT = "slv:document";
-
   /**
    * Silverpeas versionning document versionnode qname.
    */
   String SLV_DOCUMENT_ATTACHMENT = "slv:documentAttachment";
-
   /**
    * Silverpeas attachment node qname.
    */
   String SLV_ATTACHMENT = "slv:attachment";
-
   /**
    * Silverpeas attachment translation node qname.
    */
   String SLV_I18N_ATTACHMENT = "slv:i18nAttachment";
-
   /**
    * Silverpeas Blog component node.
    */
   String SLV_BLOG = "slv:blog";
-
   /**
    * Silverpeas QuickInfo component node.
    */
   String SLV_QUICK_INFO = "slv:quickInfo";
-
   /**
    * Silverpeas NewsEdito component node.
    */
   String SLV_NEWS_EDITO = "slv:newsEdito";
-
   /**
    * Silverpeas Forum component node.
    */
   String SLV_FORUM = "slv:forum";
-
   /**
    * Silverpeas Gallery component node.
    */
   String SLV_GALLERY = "slv:gallery";
-
   /**
    * Silverpeas Question/Reply component node.
    */
   String SLV_QUESTION_REPLY = "slv:questionReply";
-
   /**
    * Silverpeas WebSites component node.
    */
   String SLV_WEB_SITES = "slv:webSites";
-
   /**
    * Silverpeas Record (FormTemplate) component node.
    */
   String SLV_XML_FORM = "slv:xmlForm";
-
   /**
    * Silverpeas Data Record (FormTemplate) component node.
    */
   String SLV_XML_FORM_DATA = "slv:xmlFormData";
-
   /**
    * Silverpeas Mixin to add an owner to the node.
    */
   String SLV_OWNABLE_MIXIN = "slv:ownable";
-
+  
+  /**
+   * Silverpeas Mixin to add an comment to the node.
+   */
+  String SLV_COMMENTABLE_MIXIN = "slv:commentable";
   /**
    * Translation node 's name prefix. A translation's name should be TRANSLATION_NAME_PREFIX+ lang.
    */
   String TRANSLATION_NAME_PREFIX = "traduction_";
-
   /**
    * Root node for XPath Queries
    */
-  String JCR_ROOT = "jcr:root";
-
   String SLV_PROPERTY_NAME = "slv:name";
   String SLV_PROPERTY_DESCRIPTION = "slv:description";
   String SLV_PROPERTY_CREATION_DATE = "slv:creationDate";
@@ -156,7 +209,6 @@ public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
   String SLV_PROPERTY_RIGHTS = "slv:rightsdependson";
   String SLV_PROPERTY_TYPE = "slv:type";
   String SLV_PROPERTY_STATUS = "slv:status";
-  String SLV_PROPERTY_TRANSLATION = "slv:translations";
   String SLV_PROPERTY_LINKS = "slv:links";
   String SLV_PROPERTY_KEYWORDS = "slv:keywords";
   String SLV_PROPERTY_CREATOR = "slv:creator";
@@ -191,4 +243,9 @@ public interface JcrConstants extends org.apache.jackrabbit.JcrConstants {
   String SLV_PROPERTY_MINOR = "slv:minor";
   String SLV_PROPERTY_DATA = "slv:data";
   String SLV_PROPERTY_TEMPLATE = "slv:template";
+  String SLV_PROPERTY_INSTANCEID = "slv:instanceId";
+  String SLV_PROPERTY_OLD_ID = "slv:oldSilverpeasId";
+  String SLV_PROPERTY_VERSIONED = "slv:versioned";
+  String SLV_PROPERTY_XMLFORM_ID = "slv:xmlFormId";
+  String SLV_PROPERTY_COMMENT = "slv:comment";
 }

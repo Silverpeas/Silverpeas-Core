@@ -65,6 +65,9 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
 
   @XmlElement(defaultValue = "")
   private String wallpaper;
+  
+  @XmlElement(defaultValue = "")
+  private String css;
 
   @XmlTransient
   private String spaceId;
@@ -77,8 +80,8 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
    * @return
    */
   public static SpaceAppearanceEntity createFrom(final SpaceInstLight space, final String look,
-      final String wallpaper) {
-    return new SpaceAppearanceEntity(space, look, wallpaper);
+      final String wallpaper, final String css) {
+    return new SpaceAppearanceEntity(space, look, wallpaper, css);
   }
 
   /**
@@ -121,6 +124,13 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
   protected final String getWallpaper() {
     return wallpaper;
   }
+  
+  /**
+   * @return the wallpaper
+   */
+  protected final String getCSS() {
+    return css;
+  }
 
   /**
    * Instantiating a new web entity from the corresponding data
@@ -128,11 +138,12 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
    * @param language
    */
   private SpaceAppearanceEntity(final SpaceInstLight space, final String look,
-      final String wallpaper) {
+      final String wallpaper, final String css) {
     this();
     spaceId = space.getShortId();
     this.look = look;
     this.wallpaper = wallpaper;
+    this.css = css;
   }
 
   protected SpaceAppearanceEntity() {

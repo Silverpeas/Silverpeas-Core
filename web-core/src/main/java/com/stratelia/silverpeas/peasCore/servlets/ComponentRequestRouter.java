@@ -20,28 +20,14 @@
  */
 package com.stratelia.silverpeas.peasCore.servlets;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
-
-import java.util.Date;
-
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
-
-import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.PeasCoreException;
-import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.UserAndGroupSelectionProcessor;
@@ -51,6 +37,20 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
+
+import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
 public abstract class ComponentRequestRouter<T extends ComponentSessionController> extends
     HttpServlet {
@@ -110,6 +110,15 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
       return GeneralPropertiesManager.getString("sessionTimeout");
     }
+
+    // Verify that the user can login
+    try {
+      AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(mainSessionCtrl.getCurrentUserDetail()).verify();
+    } catch (AuthenticationException e) {
+      return GeneralPropertiesManager.getString("sessionTimeout");
+    }
+
     // App in Maintenance ?
     SilverTrace.debug("peasCore", "ComponentRequestRouter.computeDestination()",
         "root.MSG_GEN_PARAM_VALUE", "appInMaintenance = "
@@ -146,7 +155,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
 
     T component = this.getComponentSessionController(session, componentId);
     if (component == null) {
-      // check that the user has an acces to this component instance
+      // isUserStateValid that the user has an acces to this component instance
       boolean bCompoAllowed = isUserAllowed(mainSessionCtrl, componentId);
       if (!bCompoAllowed) {
         SilverTrace.warn("peasCore", "ComponentRequestRouter.computeDestination",
@@ -243,7 +252,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     sessionManagement.validateSession(session.getId());
   }
 
-  // check if the user is allowed to access the required component
+  // isUserStateValid if the user is allowed to access the required component
   private boolean isUserAllowed(MainSessionController controller,
       String componentId) {
     boolean isAllowed;
@@ -251,7 +260,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
+      isAllowed = controller.getOrganisationController().isComponentAvailable(
           componentId, controller.getUserId());
     }
     return isAllowed;
@@ -266,17 +275,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);
       } else {
-        request
-            .setAttribute(
-                "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
-                request.getRequestURI());
+        request.setAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI",
+            request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
         } else {
-          SilverTrace.info("peasCore",
-              "ComponentRequestRouter.redirectService",
+          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
                   + destination + "' not found !");
         }
@@ -285,8 +291,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-                SilverpeasException.ERROR,
-                "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
+                SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
                     + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher(
             "/admin/jsp/errorpageMain.jsp").forward(request, response);

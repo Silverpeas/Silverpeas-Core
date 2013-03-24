@@ -136,7 +136,7 @@ public class UserProfileResource extends RESTWebService {
         withGroupId(groupId).
         withName(name).
         withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     return Response.ok(
         asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();
@@ -221,7 +221,7 @@ public class UserProfileResource extends RESTWebService {
         withGroupId(groupId).
         withName(name).
         withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganizationController().searchUsers(criteria);
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
@@ -277,7 +277,7 @@ public class UserProfileResource extends RESTWebService {
           withUserIds(contactIds).
           withName(name).
           withPaginationPage(fromPage(page)).build();
-      contacts = getOrganizationController().searchUsers(criteria);
+      contacts = getOrganisationController().searchUsers(criteria);
     } else {
       contacts = new ListSlice<UserDetail>(0, 0, 0);
     }
@@ -376,9 +376,10 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets all details about the user that matchs the specified identifier. The identifier is a pattern
-   * that accepts either a user unique identifier or the specific word <i>me</i>. Latest means the
-   * current user of the underlying HTTP session.
+   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
    * @param identifier an identifier.
    * @return the detail about a user.
    */

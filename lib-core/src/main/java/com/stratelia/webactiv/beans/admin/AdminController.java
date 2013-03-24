@@ -29,8 +29,6 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +40,10 @@ import org.silverpeas.quota.exception.QuotaException;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
 This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization
@@ -204,7 +205,7 @@ public class AdminController implements java.io.Serializable {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       UserDetail user = getAdminService().getUserDetail(sUserId);
-      if (user.getAccessLevel().equals("A") || sUserId.equals("0")) {
+      if (user.isAccessAdmin() || sUserId.equals("0")) {
         return getAdminService().getClientSpaceIds(getAdminService().getAllSpaceIds());
       } else {
         return getAdminService().getClientSpaceIds(getAdminService().getUserManageableSpaceIds(sUserId));
@@ -1237,8 +1238,8 @@ public class AdminController implements java.io.Serializable {
     try {
       return getAdminService().getUserFull(sUserId);
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserFull",
-          "admin.EX_ERR_GET_USER_DETAIL", "user Id : '" + sUserId + "'", e);
+      SilverTrace.error("admin", "AdminController.getUserFull", "admin.EX_ERR_GET_USER_DETAIL",
+          "user Id : '" + sUserId + "'", e);
       return null;
     }
   }
@@ -1262,8 +1263,7 @@ public class AdminController implements java.io.Serializable {
       return getAdminService().getUserIdByLoginAndDomain(sLogin, sDomainId);
     } catch (Exception e) {
       SilverTrace.warn("admin", "AdminController.getUserIdByLoginAndDomain",
-          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = "
-          + sDomainId, e);
+          "admin.EX_ERR_GET_USER_DETAIL", "sLogin : '" + sLogin + "' Domain = " + sDomainId, e);
       return null;
     }
   }
@@ -1278,8 +1278,8 @@ public class AdminController implements java.io.Serializable {
       }
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminController.getUserDetails",
-          "admin.EX_ERR_GET_USER_DETAILS", e);
+      SilverTrace.error("admin", "AdminController.getUserDetails", "admin.EX_ERR_GET_USER_DETAILS",
+          e);
       return null;
     }
   }
@@ -1294,6 +1294,26 @@ public class AdminController implements java.io.Serializable {
       SilverTrace.error("admin", "AdminController.addUser",
           "admin.EX_ERR_ADD_USER", e);
       return "";
+    }
+  }
+
+  /** Block the given user */
+  public void blockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.blockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().blockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.blockUser", "admin.EX_ERR_BLOCK_USER", e);
+    }
+  }
+
+  /** Unblock the given user */
+  public void unblockUser(String userId) {
+    SilverTrace.info("admin", "AdminController.unblockUser", "root.MSG_GEN_ENTER_METHOD");
+    try {
+      getAdminService().unblockUser(userId);
+    } catch (Exception e) {
+      SilverTrace.error("admin", "AdminController.unblockUser", "admin.EX_ERR_UNBLOCK_USER", e);
     }
   }
 

@@ -20,23 +20,9 @@
  */
 package com.silverpeas.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
-
-import javax.activation.MimetypesFileTypeMap;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -47,11 +33,11 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.util.mail.Mail;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
+import java.util.*;
 
-public class FileUtil implements MimeTypes {
+public class FileUtil implements MimeTypes  {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "org.silverpeas.util.attachment.mime_types", "");
@@ -106,7 +92,7 @@ public class FileUtil implements MimeTypes {
         mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
       }
     } catch (final MissingResourceException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
+      SilverTrace.warn("attachment", "FileUtil",
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
     if (mimeType == null) {
@@ -249,6 +235,16 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
+   * If 3D document.
+   *
+   * @param filename the name of the file.
+   * @return true or false
+   */
+  public static boolean isSpinfireDocument(String filename) {
+    return SPINFIRE_MIME_TYPE.equals(getMimeType(filename));
+  }
+
+  /**
    * Indicates if the current file is of type archive.
    *
    * @param filename the name of the file.
@@ -322,6 +318,34 @@ public class FileUtil implements MimeTypes {
         : FalseFileFilter.INSTANCE));
   }
 
+  /**
+   * Remove any \ or / from the filename thus avoiding conflicts on the server.
+   *
+   * @param fileName
+   * @return
+   */
+  public static String getFilename(String fileName) {
+     if (!StringUtil.isDefined(fileName)) {
+      return "";
+    }
+    String logicalName = convertPathToServerOS(fileName);
+    return logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+  }
+
   private FileUtil() {
+  }
+
+  /**
+   * Convert a path to the current OS path format.
+   * @param undeterminedOsPath
+   * @return server OS pah.
+   */
+  public static String convertPathToServerOS(String undeterminedOsPath) {
+    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
+      return "";
+    }
+    String localPath = undeterminedOsPath;
+    localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
+    return localPath;
   }
 }

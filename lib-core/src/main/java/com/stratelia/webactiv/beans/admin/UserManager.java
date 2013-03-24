@@ -34,28 +34,49 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
+
+import com.silverpeas.util.ArrayUtil;
 
 public class UserManager {
 
-  private UserDAO userDAO = new UserDAO();
+  private final UserDAO userDAO = new UserDAO();
 
-  /**
-   * Constructor
-   */
   public UserManager() {
   }
 
-  public int getUsersNumberOfDomain(DomainDriverManager ddManager, String domainId) throws
-          AdminException {
+  /**
+   * Get domains of a login.
+   *
+   * @param login the login whose domains we want.
+   * @return the list of domain ids where the specified login exists.
+   * @throws AdminException
+   */
+  public List<String> getDomainsOfUser(String login) throws AdminException {
+    Connection connection = null;
     try {
-      SilverTrace.info("admin", "UserManager.getUsersNumberOfDomain()",
-              "root.MSG_GEN_ENTER_METHOD");
+      connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      return userDAO.getDomainsContainingLogin(connection, login);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getDomainsOfUser", SilverpeasException.ERROR,
+          "Couldn't obtain the list of domains for login: " + login, e);
+    } finally {
+      DBUtil.close(connection);
+    }
+  }
+
+  public int getUsersNumberOfDomain(DomainDriverManager ddManager, String domainId) throws
+      AdminException {
+    try {
+      SilverTrace.info("admin", "UserManager.getUsersNumberOfDomain()", "root.MSG_GEN_ENTER_METHOD");
       ddManager.getOrganizationSchema();
       return ddManager.getOrganization().user.getUserNumberOfDomain(idAsInt(domainId));
     } catch (Exception e) {
       throw new AdminException("UserManager.getUsersNumberOfDomain()",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERSET_NUMBER", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERSET_NUMBER", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -63,13 +84,12 @@ public class UserManager {
 
   public int getUserNumber(DomainDriverManager ddManager) throws AdminException {
     try {
-      SilverTrace.info("admin", "UserManager.getUserNumber()",
-              "root.MSG_GEN_ENTER_METHOD");
+      SilverTrace.info("admin", "UserManager.getUserNumber()", "root.MSG_GEN_ENTER_METHOD");
       ddManager.getOrganizationSchema();
       return ddManager.getOrganization().user.getUserNumber();
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserNumber()",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERSET_NUMBER", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERSET_NUMBER", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -89,13 +109,11 @@ public class UserManager {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-
       List<UserDetail> users = userDAO.getUsersOfGroups(con, groupIds);
-
       return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
-      throw new AdminException("UserManager.getAllUsersOfGroups",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+      throw new AdminException("UserManager.getAllUsersOfGroups", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USER_GROUPS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -105,21 +123,19 @@ public class UserManager {
    * Gets the users that match the specified criteria.
    *
    * @param criteria the criteria in searching of user details.
-   * @return a slice of the list of user details matching the criteria or an empty list of no ones are found.
+   * @return a slice of the list of user details matching the criteria or an empty list of no ones
+   * are found.
    * @throws AdminException if an error occurs while getting the user details.
    */
-  public ListSlice<UserDetail> getUsersMatchingCriteria(final UserSearchCriteriaForDAO criteria) throws
-          AdminException {
+  public ListSlice<UserDetail> getUsersMatchingCriteria(final UserSearchCriteriaForDAO criteria)
+      throws AdminException {
     Connection connection = null;
     try {
       connection = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-
-      ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
-              (UserSearchCriteriaForDAO) criteria);
-      return users;
+      return userDAO.getUsersByCriteria(connection, criteria);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersMatching",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
     } finally {
       DBUtil.close(connection);
     }
@@ -134,16 +150,15 @@ public class UserManager {
    */
   public List<String> getAllUserIdsOfGroups(List<String> groupIds) throws AdminException {
     if (groupIds == null || groupIds.isEmpty()) {
-      return new ArrayList<String>();
+      return new ArrayList<String>(0);
     }
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-
       return userDAO.getUserIdsOfGroups(con, groupIds);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersOfGroups",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_GROUPS", e);
     } finally {
       DBUtil.close(con);
     }
@@ -158,12 +173,12 @@ public class UserManager {
    * @throws AdminException
    */
   public UserDetail[] getUsersOfDomain(DomainDriverManager ddManager, String sDomainId) throws
-          AdminException {
+      AdminException {
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
       SynchroReport.info("UserManager.getUsersOfDomain()",
-              "Recherche des utilisateurs du domaine LDAP dans la base...", null);
+          "Recherche des utilisateurs du domaine LDAP dans la base...", null);
       // Get users of domain from Silverpeas database
       UserRow[] urs = ddManager.getOrganization().user.getAllUserOfDomain(idAsInt(sDomainId));
 
@@ -172,17 +187,17 @@ public class UserManager {
       for (int nI = 0; nI < urs.length; nI++) {
         aus[nI] = userRow2UserDetail(urs[nI]);
         SynchroReport.debug("UserManager.getUsersOfDomain()",
-                "Utilisateur trouvé no : " + java.lang.Integer.toString(nI) + ", login : "
-                + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
-                + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
+            "Utilisateur trouvé no : " + java.lang.Integer.toString(nI) + ", login : "
+            + aus[nI].getLogin() + ", " + aus[nI].getFirstName() + ", "
+            + aus[nI].getLastName() + ", " + aus[nI].geteMail(), null);
       }
       SynchroReport.info("UserManager.getUsersOfDomain()", "Récupération de "
-              + urs.length + " utilisateurs du domaine LDAP dans la base", null);
+          + urs.length + " utilisateurs du domaine LDAP dans la base", null);
       return aus;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUsersOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN",
-              "domain Id: '" + sDomainId + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN",
+          "domain Id: '" + sDomainId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -197,28 +212,27 @@ public class UserManager {
    * @throws AdminException
    */
   public String[] getUserIdsOfDomain(DomainDriverManager ddManager, String sDomainId) throws
-          AdminException {
-    String[] uids;
+      AdminException {
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
       // Get user ids of domain from Silverpeas database
-      uids = ddManager.getOrganization().user.getUserIdsOfDomain(idAsInt(sDomainId));
+      String[] uids = ddManager.getOrganization().user.getUserIdsOfDomain(idAsInt(sDomainId));
       if (uids != null) {
         return uids;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdsOfDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN",
-              "domain Id: '" + sDomainId + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN",
+          "domain Id: '" + sDomainId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
   }
 
   public String[] getUserIdsOfDomainAndAccessLevel(DomainDriverManager ddManager, String sDomainId,
-          String accessLevel) throws AdminException {
+          UserAccessLevel accessLevel) throws AdminException {
     String[] uids;
 
     try {
@@ -226,16 +240,16 @@ public class UserManager {
       ddManager.getOrganizationSchema();
       // Get user ids of domain from Silverpeas database
       uids = ddManager.getOrganization().user.getUserIdsOfDomainByAccessLevel(idAsInt(sDomainId),
-              accessLevel);
+          accessLevel);
       if (uids != null) {
         return uids;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdsOfDomain",
-              SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USERS_OF_DOMAIN_BY_ACCESSLEVEL", "domain Id: "
-              + sDomainId + ", AccessLevel = " + accessLevel, e);
+          SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_USERS_OF_DOMAIN_BY_ACCESSLEVEL", "domain Id: "
+          + sDomainId + ", AccessLevel = " + accessLevel, e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -250,7 +264,7 @@ public class UserManager {
    * @throws AdminException
    */
   public String[] getManageableSpaceIds(String sUserId, List<String> groupIds)
-          throws AdminException {
+      throws AdminException {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
@@ -258,7 +272,7 @@ public class UserManager {
       return spaceIds.toArray(new String[spaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException("UserManager.getManageableSpaceIds", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId + "'", e);
+          "admin.EX_ERR_GET_USER_MANAGEABLE_SPACE_IDS", "user Id: '" + sUserId + "'", e);
     } finally {
       DBUtil.close(con);
     }
@@ -277,7 +291,7 @@ public class UserManager {
       return ddManager.getOrganization().user.getAllUserIds();
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersIds", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_ALL_USER_IDS", e);
+          "admin.EX_ERR_GET_ALL_USER_IDS", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -292,14 +306,13 @@ public class UserManager {
    * @throws AdminException
    */
   public String[] getAllAdminIds(DomainDriverManager ddManager, UserDetail fromUser) throws
-          AdminException {
+      AdminException {
     try {
       ddManager.getOrganizationSchema();
-      String[] asAdminIds = ddManager.getOrganization().user.getAllAdminIds(fromUser);
-      return asAdminIds;
+      return ddManager.getOrganization().user.getAllAdminIds(fromUser);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllAdminIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ADMIN_IDS", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_ADMIN_IDS", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -319,7 +332,7 @@ public class UserManager {
       return ddManager.getUserFull(sUserId);
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserFull", SilverpeasException.ERROR,
-              "admin.EX_ERR_GET_USER_DETAIL", "user Id: '" + sUserId + "'", e);
+          "admin.EX_ERR_GET_USER_DETAIL", "user Id: '" + sUserId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -334,15 +347,15 @@ public class UserManager {
    * @throws AdminException
    */
   public UserDetail getUserDetail(DomainDriverManager ddManager, String sUserId) throws
-          AdminException {
+      AdminException {
     try {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUser(idAsInt(sUserId));
       return userRow2UserDetail(ur);
     } catch (Exception e) {
       throw new AdminException("UserManager.getUser",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
-              + sUserId + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER", "user Id: '"
+          + sUserId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -358,17 +371,17 @@ public class UserManager {
    * @throws AdminException
    */
   public String getUserIdBySpecificIdAndDomainId(DomainDriverManager ddManager, String sSpecificId,
-          String sDomainId) throws AdminException {
+      String sDomainId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUserBySpecificId(idAsInt(sDomainId),
-              sSpecificId);
+          sSpecificId);
       return idAsString(ur.id);
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdBySpecificIdAndDomainId",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
-              "user sSpecificId: '" + sSpecificId + "', domain Id: '" + sDomainId
-              + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
+          "user sSpecificId: '" + sSpecificId + "', domain Id: '" + sDomainId
+          + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -384,22 +397,22 @@ public class UserManager {
    * @throws AdminException
    */
   public String getUserIdByLoginAndDomain(DomainDriverManager ddManager, String sLogin,
-          String sDomainId) throws AdminException {
+      String sDomainId) throws AdminException {
     try {
       ddManager.getOrganizationSchema();
       UserRow ur = ddManager.getOrganization().user.getUserByLogin(idAsInt(sDomainId), sLogin);
       return idAsString(ur.id);
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdByLoginAndDomain",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
-              "user login: '" + sLogin + "', domain Id: '" + sDomainId + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USER_BY_LOGIN_DOMAIN",
+          "user login: '" + sLogin + "', domain Id: '" + sDomainId + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
   }
 
   public UserDetail[] searchUsers(DomainDriverManager ddManager,
-          UserDetail modelUser, boolean isAnd) throws AdminException {
+      UserDetail modelUser, boolean isAnd) throws AdminException {
     UserRow[] urs;
     UserDetail[] aus;
     UserRow model;
@@ -426,14 +439,14 @@ public class UserManager {
       return aus;
     } catch (Exception e) {
       throw new AdminException("UserManager.searchUsers",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
   }
 
   public String[] searchUsersIds(DomainDriverManager ddManager, List<String> userIds,
-          UserDetail modelUser) throws AdminException {
+      UserDetail modelUser) throws AdminException {
     UserRow model;
 
     try {
@@ -452,16 +465,17 @@ public class UserManager {
       return ddManager.getOrganization().user.searchUsersIds(userIds, model);
     } catch (Exception e) {
       throw new AdminException("UserManager.searchUsersIds",
-              SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
   }
 
-  public void migrateUser(DomainDriverManager ddManager, UserDetail userDetail, String targetDomainId) throws AdminException {
+  public void migrateUser(DomainDriverManager ddManager, UserDetail userDetail,
+      String targetDomainId) throws AdminException {
     if (userDetail == null || !StringUtil.isDefined(userDetail.getDomainId())) {
       throw new AdminException("UserManager.migrateUser",
-              SilverpeasException.ERROR, "admin.EX_MIGRATE_USER", "User detail : " + userDetail);
+          SilverpeasException.ERROR, "admin.EX_MIGRATE_USER", "User detail : " + userDetail);
     }
 
     try {
@@ -491,7 +505,7 @@ public class UserManager {
       updateUser(ddManager, userFull);
     } catch (Exception e) {
       throw new AdminException("UserManager.migrateUser",
-              SilverpeasException.ERROR, "admin.EX_ERR_MIGRATE_USER", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_MIGRATE_USER", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -500,32 +514,32 @@ public class UserManager {
   /**
    * Add the given user in Silverpeas and specific domain
    *
-* @param ddManager
+   * @param ddManager
    * @param userDetail
    * @param addOnlyInSilverpeas
    * @return
    * @throws AdminException
    */
   public String addUser(DomainDriverManager ddManager, UserDetail userDetail,
-          boolean addOnlyInSilverpeas) throws AdminException {
+      boolean addOnlyInSilverpeas) throws AdminException {
     String specificId;
 
     if (userDetail == null || !StringUtil.isDefined(userDetail.getLastName())
-            || !StringUtil.isDefined(userDetail.getLogin())
-            || !StringUtil.isDefined(userDetail.getDomainId())) {
+        || !StringUtil.isDefined(userDetail.getLogin())
+        || !StringUtil.isDefined(userDetail.getDomainId())) {
       if (userDetail == null) {
         SynchroReport.error("UserManager.addUser()",
-                "Problème lors de l'ajout de l'utilisateur dans la base, cet utilisateurn'existe pas",
-                null);
+            "Problème lors de l'ajout de l'utilisateur dans la base, cet utilisateurn'existe pas",
+            null);
       } else if (!StringUtil.isDefined(userDetail.getLastName())) {
         SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId() + " dans la base, cet utilisateur n'a pas de nom", null);
+            + userDetail.getSpecificId() + " dans la base, cet utilisateur n'a pas de nom", null);
       } else if (!StringUtil.isDefined(userDetail.getLogin())) {
         SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId() + " dans la base, login non spécifié", null);
+            + userDetail.getSpecificId() + " dans la base, login non spécifié", null);
       } else if (!StringUtil.isDefined(userDetail.getDomainId())) {
         SynchroReport.error("UserManager.addUser()", "Problème lors de l'ajout de l'utilisateur "
-                + userDetail.getSpecificId() + " dans la base, domaine non spécifié", null);
+            + userDetail.getSpecificId() + " dans la base, domaine non spécifié", null);
       }
       return "";
     }
@@ -533,15 +547,15 @@ public class UserManager {
     try {
       ddManager.getOrganizationSchema();
       SynchroReport.info("UserManager.addUser()", "Ajout de l'utilisateur "
-              + userDetail.getSpecificId() + " dans la base...", null);
+          + userDetail.getSpecificId() + " dans la base...", null);
       // Check that the given login is not already used
       UserRow ur = ddManager.getOrganization().user.getUserByLogin(
-              idAsInt(userDetail.getDomainId()), userDetail.getLogin());
+          idAsInt(userDetail.getDomainId()), userDetail.getLogin());
       if (ur != null) {
         SynchroReport.error("UserManager.addUser()", "Utilisateur " + userDetail.getLogin()
-                + " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
+            + " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
         throw new AdminException("UserManager.addUser", SilverpeasException.ERROR,
-                "admin.EX_ERR_LOGIN_ALREADY_USED", "user login: '" + userDetail.getLogin() + "'");
+            "admin.EX_ERR_LOGIN_ALREADY_USED", "user login: '" + userDetail.getLogin() + "'");
       }
 
       if (!addOnlyInSilverpeas) {
@@ -563,18 +577,18 @@ public class UserManager {
       boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
       if (isX509Enabled) {
         X509Factory.buildP12(sUserId, userDetail.getLogin(), userDetail.getLastName(),
-                userDetail.getFirstName(), userDetail.getDomainId());
+            userDetail.getFirstName(), userDetail.getDomainId());
       }
 
       return sUserId;
     } catch (Exception e) {
       SynchroReport.error("UserManager.addUser()",
-              "problème à l'ajout de l'utilisateur " + userDetail.getFirstName()
-              + " " + userDetail.getLastName() + "(specificId:"
-              + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
+          "problème à l'ajout de l'utilisateur " + userDetail.getFirstName()
+          + " " + userDetail.getLastName() + "(specificId:"
+          + userDetail.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.addUser",
-              SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", "user login: '"
-              + userDetail.getLogin() + "'", e);
+          SilverpeasException.ERROR, "admin.EX_ERR_ADD_USER", "user login: '"
+          + userDetail.getLogin() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -583,14 +597,14 @@ public class UserManager {
   /**
    * Delete the given user
    *
-* @param ddManager
+   * @param ddManager
    * @param user
    * @param onlyInSilverpeas
    * @return
    * @throws AdminException
    */
   public String deleteUser(DomainDriverManager ddManager, UserDetail user, boolean onlyInSilverpeas)
-          throws AdminException {
+      throws AdminException {
     try {
       ddManager.getOrganizationSchema();
 
@@ -598,9 +612,10 @@ public class UserManager {
       try {
         DelayedNotificationDelegate.executeUserDeleting(Integer.valueOf(user.getId()));
       } catch (Exception e) {
-        SynchroReport.warn("UserManager.deleteUser()", "problème d'envoi des notifications journalisées "
-                + user.getFirstName() + " " + user.getLastName() + "(specificId:"
-                + user.getSpecificId() + ") - " + e.getMessage(), null);
+        SynchroReport.warn("UserManager.deleteUser()",
+            "problème d'envoi des notifications journalisées "
+            + user.getFirstName() + " " + user.getLastName() + "(specificId:"
+            + user.getSpecificId() + ") - " + e.getMessage(), null);
       }
 
       // Delete user from specific domain
@@ -609,7 +624,7 @@ public class UserManager {
       }
       // Delete the user node from Silverpeas
       SynchroReport.info("UserManager.deleteUser()", "Suppression de l'utilisateur " + user.
-              getSpecificId() + " de la base...", null);
+          getSpecificId() + " de la base...", null);
       ddManager.getOrganization().user.removeUser(idAsInt(user.getId()));
 
       // Delete index of user information
@@ -625,10 +640,10 @@ public class UserManager {
       return user.getId();
     } catch (Exception e) {
       SynchroReport.error("UserManager.deleteUser()", "problème à la suppression de l'utilisateur "
-              + user.getFirstName() + " " + user.getLastName() + "(specificId:"
-              + user.getSpecificId() + ") - " + e.getMessage(), null);
+          + user.getFirstName() + " " + user.getLastName() + "(specificId:"
+          + user.getSpecificId() + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.deleteUser", SilverpeasException.ERROR,
-              "admin.EX_ERR_DELETE_USER", "user id: '" + user.getId() + "'", e);
+          "admin.EX_ERR_DELETE_USER", "user id: '" + user.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -637,7 +652,7 @@ public class UserManager {
   /**
    * Update the given user (only in silverpeas)
    *
-* @param ddManager
+   * @param ddManager
    * @param user
    * @return
    * @throws AdminException
@@ -650,7 +665,7 @@ public class UserManager {
 
       // update the user node in Silverpeas
       SynchroReport.info("UserManager.updateUser()", "Maj de l'utilisateur "
-              + user.getSpecificId() + " dans la base...", null);
+          + user.getSpecificId() + " dans la base...", null);
       ddManager.getOrganization().user.updateUser(ur);
 
       // index user information
@@ -658,11 +673,11 @@ public class UserManager {
       return user.getId();
     } catch (Exception e) {
       SynchroReport.error("UserManager.updateUser()", "problème lors de la maj de l'utilisateur "
-              + user.getFirstName() + " " + user.getLastName() + "(specificId:"
-              + user.getSpecificId()
-              + ") - " + e.getMessage(), null);
+          + user.getFirstName() + " " + user.getLastName() + "(specificId:"
+          + user.getSpecificId()
+          + ") - " + e.getMessage(), null);
       throw new AdminException("UserManager.updateUser", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE_USER", "user id: '" + user.getId() + "'", e);
+          "admin.EX_ERR_UPDATE_USER", "user id: '" + user.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -671,13 +686,13 @@ public class UserManager {
   /**
    * Update the given user
    *
-* @param ddManager
+   * @param ddManager
    * @param userFull
    * @return
    * @throws AdminException
    */
   public String updateUserFull(DomainDriverManager ddManager, UserFull userFull) throws
-          AdminException {
+      AdminException {
     try {
       ddManager.getOrganizationSchema();
       // update user in specific domain
@@ -691,7 +706,7 @@ public class UserManager {
       return userFull.getId();
     } catch (Exception e) {
       throw new AdminException("UserManager.updateUserDetail", SilverpeasException.ERROR,
-              "admin.EX_ERR_UPDATE_USER_DETAIL", "user id: '" + userFull.getId() + "'", e);
+          "admin.EX_ERR_UPDATE_USER_DETAIL", "user id: '" + userFull.getId() + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
     }
@@ -714,9 +729,84 @@ public class UserManager {
       return ((users != null) && (users.length > 0));
     } catch (Exception e) {
       throw new AdminException("UserManager.isEmailExisting", SilverpeasException.ERROR,
-              "admin.CANT_CHECK_EMAIL", "email: '" + email + "'", e);
+          "admin.CANT_CHECK_EMAIL", "email: '" + email + "'", e);
     } finally {
       ddManager.releaseOrganizationSchema();
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from all domains
+   * @return a List of UserDetail sort by alphabetical order
+   * @throws AdminException
+   */
+  public List<UserDetail> getAllUsers() throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getAllUsers(con);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsers",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from all domains
+   * @return a List of UserDetail sort by reverse creation order
+   * @throws AdminException
+   */
+  public List<UserDetail> getAllUsersFromNewestToOldest() throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+      return userDAO.getAllUsersFromNewestToOldest(con);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getAllUsersFromNewestToOldest",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from specified domains
+   * @return a List of UserDetail sort by alphabetical order
+   * @throws AdminException
+   */
+  public List<UserDetail> getUsersOfDomains(List<String> domainIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getUsersOfDomains(con, domainIds);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getUsersOfDomains",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+  
+  /**
+   * Get all users (except deleted ones) from specified domains
+   * @return a List of UserDetail sort by reverse creation order
+   * @throws AdminException
+   */
+  public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) throws AdminException {
+    Connection con = null;
+    try {
+      con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
+
+      return userDAO.getUsersOfDomainsFromNewestToOldest(con, domainIds);
+    } catch (Exception e) {
+      throw new AdminException("UserManager.getUsersOfDomains",
+              SilverpeasException.ERROR, "admin.MSG_ERR_GET_ALL_USERS", e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
@@ -732,10 +822,19 @@ public class UserManager {
     ur.firstName = user.getFirstName();
     ur.lastName = user.getLastName();
     ur.eMail = user.geteMail();
-    ur.accessLevel = user.getAccessLevel();
+    ur.accessLevel = user.getAccessLevel().code();
     ur.loginQuestion = user.getLoginQuestion();
     ur.loginAnswer = user.getLoginAnswer();
-
+    ur.creationDate = user.getCreationDate();
+    ur.saveDate = user.getSaveDate();
+    ur.version = user.getVersion();
+    ur.tosAcceptanceDate = user.getTosAcceptanceDate();
+    ur.lastLoginDate = user.getLastLoginDate();
+    ur.nbSuccessfulLoginAttempts = user.getNbSuccessfulLoginAttempts();
+    ur.lastLoginCredentialUpdateDate = user.getLastLoginCredentialUpdateDate();
+    ur.expirationDate = user.getExpirationDate();
+    ur.state = user.getState().name();
+    ur.stateSaveDate = user.getStateSaveDate();
     return ur;
   }
 
@@ -744,7 +843,6 @@ public class UserManager {
    */
   private UserDetail userRow2UserDetail(UserRow ur) {
     UserDetail user = new UserDetail();
-
     user.setId(idAsString(ur.id));
     user.setSpecificId(ur.specificId);
     user.setDomainId(idAsString(ur.domainId));
@@ -752,10 +850,19 @@ public class UserManager {
     user.setFirstName(ur.firstName);
     user.setLastName(ur.lastName);
     user.seteMail(ur.eMail);
-    user.setAccessLevel(ur.accessLevel);
+    user.setAccessLevel(UserAccessLevel.fromCode(ur.accessLevel));
     user.setLoginQuestion(ur.loginQuestion);
     user.setLoginAnswer(ur.loginAnswer);
-
+    user.setCreationDate(ur.creationDate);
+    user.setSaveDate(ur.saveDate);
+    user.setVersion(ur.version);
+    user.setTosAcceptanceDate(ur.tosAcceptanceDate);
+    user.setLastLoginDate(ur.lastLoginDate);
+    user.setNbSuccessfulLoginAttempts(ur.nbSuccessfulLoginAttempts);
+    user.setLastLoginCredentialUpdateDate(ur.lastLoginCredentialUpdateDate);
+    user.setExpirationDate(ur.expirationDate);
+    user.setState(UserState.from(ur.state));
+    user.setStateSaveDate(ur.stateSaveDate);
     return user;
   }
 

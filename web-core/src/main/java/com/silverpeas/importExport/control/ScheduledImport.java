@@ -33,10 +33,10 @@ import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.io.File;
 
@@ -44,7 +44,7 @@ public class ScheduledImport implements SchedulerEventListener {
 
   public static final String IMPORTENGINE_JOB_NAME = "ImportEngineJob";
   private final ResourceLocator resources = new ResourceLocator(
-      "com.silverpeas.importExport.settings.importSettings", "");
+      "org.silverpeas.importExport.settings.importSettings", "");
   private File dir = null; // Where the import XML descriptors are stored
   private String postPolicy = null;
 
@@ -56,7 +56,7 @@ public class ScheduledImport implements SchedulerEventListener {
       String sDir = resources.getString("importRepository");
       dir = new File(sDir);
       if (!dir.exists() && !dir.isDirectory()) {
-        SilverTrace.error("importExport", "ScheduledImport.initialize()",
+        SilverTrace.warn("importExport", "ScheduledImport.initialize()",
             "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
             + "' does not exists !");
       } else {
@@ -78,8 +78,8 @@ public class ScheduledImport implements SchedulerEventListener {
 
     String userId = resources.getString("userIdAsCreatorId");
     ImportExport importExport = new ImportExport();
-    OrganizationController orga = new OrganizationController();
-    UserDetail user = orga.getUserDetail(userId);
+    UserDetail user = OrganisationControllerFactory
+        .getOrganisationController().getUserDetail(userId);
     ResourceLocator multilang = new ResourceLocator(
         "com.silverpeas.importExportPeas.multilang.importExportPeasBundle", "fr");
     ResourcesWrapper resource = new ResourcesWrapper(multilang, "fr");

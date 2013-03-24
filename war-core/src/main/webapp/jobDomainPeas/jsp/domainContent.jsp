@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.admin.user.constant.UserState"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -44,10 +45,10 @@
   boolean isGroupManager		= (Boolean)request.getAttribute("isOnlyGroupManager");
   boolean isUserAddingAllowed = (Boolean)request.getAttribute("isUserAddingAllowedForGroupManager");
   Group[] subGroups = (Group[])request.getAttribute("subGroups");
-  String[][] subUsers = (String[][])request.getAttribute("subUsers");
+  List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   boolean isDomainSql = "com.stratelia.silverpeas.domains.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
-  boolean mixedDomain = "-1".equals(domObject.getId());
+  boolean mixedDomain = domObject.isMixedOne();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
@@ -58,8 +59,7 @@
 	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
 	{
-	    if (!domObject.getId().equals("-1"))
-	    {
+	    if (!mixedDomain) {
 		    operationPane.addLine();
 	    	if(isDomainSql) {
 		        operationPane.addOperation(resource.getIcon("JDP.domainSqlUpdate"),resource.getString("JDP.domainSQLUpdate"),"displayDomainSQLModify");
@@ -176,7 +176,7 @@ out.println(window.printBefore());
 		<% } %>
 		<div id="number-user-group-domainContent">
 			<% if (!mixedDomain) { %>
-				<span id="number-user-domainContent"><%=subUsers.length %> <%=resource.getString("GML.user_s") %></span> -
+				<span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span> -
 			<% } %>
 			<span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
 		</div>
@@ -202,21 +202,17 @@ out.println(window.printBefore());
   arrayPane.addArrayColumn(resource.getString("GML.description"));
   arrayPane.setSortable(false);
 
-  if (subGroups != null)
-  {
-	  Group group = null;
-      for(int i=0; i<subGroups.length; i++){
-          //cr�ation des ligne de l'arrayPane
-    	  group = subGroups[i];
-    	  if (group != null)
-    	  {
+  if (subGroups != null) {
+      for(Group group : subGroups){
+    	  if (group != null) {
 	          ArrayLine arrayLine = arrayPane.addArrayLine();
 	          IconPane iconPane1 = gef.getIconPane();
 	          Icon groupIcon = iconPane1.addIcon();
-	          if (group.isSynchronized())
+	          if (group.isSynchronized()) {
 	        	  groupIcon.setProperties(resource.getIcon("JDP.groupSynchronized"), resource.getString("GML.groupe"), "");
-	          else
+	          } else {
 	        	  groupIcon.setProperties(resource.getIcon("JDP.group"), resource.getString("GML.groupe"), "");
+	          }
 	          arrayLine.addArrayCellIconPane(iconPane1);
 	          arrayLine.addArrayCellLink(EncodeHelper.javaStringToHtmlString(group.getName()), (String)request.getAttribute("myComponentURL")+"groupContent?Idgroup="+group.getId());
 	          arrayLine.addArrayCellText(group.getNbUsers());
@@ -235,22 +231,28 @@ out.println(window.printBefore());
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 	  arrayPaneUser.setTitle(resource.getString("GML.users"));
 
-	  arrayPaneUser.addArrayColumn("&nbsp;");
+	  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-	  arrayPaneUser.setSortable(false);
+	  if (JobDomainSettings.lastConnectionColumnEnabled) {
+		  arrayPaneUser.addArrayColumn(resource.getString("GML.user.lastConnection"));
+	  }
 
 	  if (subUsers != null) {
-	      for(int i=0; i<subUsers.length; i++){
-	          //cr�ation des ligne de l'arrayPane
+	      for(UserDetail user : subUsers){
 	          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-	          IconPane iconPane1User = gef.getIconPane();
-	          Icon userIcon = iconPane1User.addIcon();
-	          userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
-	          arrayLineUser.addArrayCellIconPane(iconPane1User);
-	          arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
-	          arrayLineUser.addArrayCellText(subUsers[i][2]);
-	        }
+            String icon = resource.getIcon("JDP.user.state."+user.getState().getName());
+            String iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
+	          ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\""+icon+"\" alt=\""+iconAltText+"\" title=\""+iconAltText+"\"/>");
+	          cellIcon.setCompareOn(user.getState().name());
+	          arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
+	          arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+	          if (JobDomainSettings.lastConnectionColumnEnabled) {
+		          Date lastConnection = user.getLastLoginDate();
+		          ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
+		          cell.setCompareOn(lastConnection);
+	          }
+	      }
 	  }
 	  out.println(arrayPaneUser.print());
   }

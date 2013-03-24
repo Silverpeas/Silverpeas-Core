@@ -121,7 +121,7 @@
     </tr>
 	<tr id="accessLevel">
 		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel()) %></td>
+		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
 	</tr>
 	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
 		<tr id="oldPassword">
@@ -130,7 +130,7 @@
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
@@ -149,7 +149,6 @@
     <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
-        String userLoginAnswer = userFull.getLoginAnswer();
 %>
         <tr id="question">
             <td class="txtlibform"><%=resource.getString("myProfile.LoginQuestion")%> :</td>

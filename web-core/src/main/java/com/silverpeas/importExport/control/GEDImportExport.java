@@ -1,30 +1,45 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExport.control;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.WysiwygException;
+import org.silverpeas.wysiwyg.control.WysiwygController;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -33,6 +48,7 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.fieldType.FileField;
+import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
 import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
@@ -50,11 +66,12 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.WysiwygException;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -62,14 +79,11 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
@@ -83,24 +97,13 @@ import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Classe metier de creation d'entites silverpeas utilisee par le moteur d'importExport.
+ *
  * @author sDevolder.
  */
 public abstract class GEDImportExport extends ComponentImportExport {
@@ -110,15 +113,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private PublicationBm publicationBm = null;
   private FormTemplateBm formTemplateBm = null;
   private NodeBm nodeBm = null;
-  private AttachmentImportExport attachmentIE = new AttachmentImportExport();
+  private AttachmentImportExport attachmentIE;
 
   /**
    * Constructeur public de la classe
+   *
    * @param curentUserDetail - informations sur l'utilisateur faisant appel au moteur d'importExport
    * @param currentComponentId - composant silverpeas cible
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
+    attachmentIE = new AttachmentImportExport(curentUserDetail);
   }
 
   /**
@@ -128,8 +133,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected PublicationBm getPublicationBm() throws ImportExportException {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
+        PublicationBmHome publicationBmHome =
+            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
         publicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
@@ -142,8 +147,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
     if (formTemplateBm == null) {
       try {
-        FormTemplateBmHome formTemplateBmHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
+        FormTemplateBmHome formTemplateBmHome = EJBUtilitaire
+            .getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
         formTemplateBm = formTemplateBmHome.create();
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
@@ -160,9 +165,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected NodeBm getNodeBm() throws ImportExportException {
     if (nodeBm == null) {
       try {
-        com.stratelia.webactiv.util.node.control.NodeBmHome kscEjbHome = EJBUtilitaire.
-            getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-            com.stratelia.webactiv.util.node.control.NodeBmHome.class);
+        NodeBmHome kscEjbHome =
+            EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         nodeBm = kscEjbHome.create();
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getNodeBm()",
@@ -177,9 +181,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     if (isKmax()) {
       return topics;
     }
-    List<NodePositionType> existingTopics = new ArrayList<NodePositionType>();
-    existingTopics = getExistingTopics(userId, topics, componentId);
-    return existingTopics;
+    return getExistingTopics(userId, topics, componentId);
   }
 
   /**
@@ -187,6 +189,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * repository du * moteur d'importExport. Cas particulier: si une publication de meme nom existe
    * deja  dans le composant, alors une nouvelle publication ne sera creee que si le premier node a 
    * lier ne contient pas la publication de meme nom.
+   *
    * @param pubDetailToCreate - publication a  creer ou a  mettre a  jour.
    * @return l'objet PublicationDetail contenant les informations de la publication creee ou mise a 
    * jour.
@@ -195,9 +198,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
       PublicationDetail pubDetailToCreate, List<NodePositionType> listOfNodeTypes) {
     // checking topics
-    List<NodePositionType> existingTopics =
-        processTopics(userDetail.getId(), listOfNodeTypes, pubDetailToCreate.getPK()
-        .getInstanceId());
+    List<NodePositionType> existingTopics = processTopics(userDetail.getId(), listOfNodeTypes,
+        pubDetailToCreate.getPK().getInstanceId());
 
     if (existingTopics.isEmpty() && !isKmax()) {
       // Ids are not corresponding to any topics
@@ -295,14 +297,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
             // Adding publication into other topics
             NodePositionType node_Type = itListNode_Type.next();
             try {
-              NodePK topicPK =
-                  new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.getPK());
+              NodePK topicPK = new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.
+                  getPK());
               PublicationPK pubPK = new PublicationPK(pubId, pubDetailToCreate.getPK());
               if (pubAlreadyExist) {
                 // check if existing publication is already in this topic
                 try {
-                  getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(),
-                      pubDet_temp.getName(), node_Type.getId());
+                  getPublicationBm().getDetailByNameAndNodeId(pubDet_temp.getPK(), pubDet_temp.
+                      getName(), node_Type.getId());
                 } catch (Exception ex) {
                   // this publication is not in this topic. Adding it...
                   addPublicationToTopic(pubPK, topicPK);
@@ -329,33 +331,34 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId) throws ImportExportException {
-    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
-        getApplicationContext());
+      PublicationContentType pubContent, String userId, String language) throws
+      ImportExportException {
+    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.getApplicationContext(), language);
   }
 
   /**
    * Methode de creation du contenu d une publication importee
+   *
    * @param unitReport
    * @param pubId - id de la publication pour laquelle on importe un contenu
    * @param pubContent - object de mapping castor contenant les informations d importation du
    * contenu
    * @param userId
    * @param webContext
+   * @param lang
    * @throws ImportExportException
    */
   public void createPublicationContent(UnitReport unitReport, int pubId,
-      PublicationContentType pubContent, String userId, String webContext) throws
+      PublicationContentType pubContent, String userId, String webContext, String language) throws
       ImportExportException {
-
     DBModelContentType dbModelType = pubContent.getDBModelContentType();
     WysiwygContentType wysiwygType = pubContent.getWysiwygContentType();
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
       if (dbModelType != null) { // Contenu DBModel
-        createDBModelContent(unitReport, dbModelType, java.lang.Integer.toString(pubId));
+        createDBModelContent(unitReport, dbModelType, String.valueOf(pubId));
       } else if (wysiwygType != null) { // Contenu Wysiwyg
-        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext);
+        createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext, language);
       } else if (xmlModel != null) {
         createXMLModelContent(unitReport, xmlModel, java.lang.Integer.toString(pubId), userId);
       }
@@ -384,13 +387,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
       pubDetail.setInfoId(xmlFormShortName);
       pubDetail.setIndexOperation(IndexManager.NONE);
       getPublicationBm().setDetail(pubDetail);
-
-      publicationTemplateManager.addDynamicPublicationTemplate(getCurrentComponentId() + ':'
-          + xmlFormShortName, xmlFormShortName + ".xml");
+      publicationTemplateManager
+          .addDynamicPublicationTemplate(getCurrentComponentId() + ':' + xmlFormShortName,
+          xmlFormShortName + ".xml");
     }
 
-    PublicationTemplate pub = publicationTemplateManager.getPublicationTemplate(
-        getCurrentComponentId() + ':' + xmlModel.getName());
+    PublicationTemplate pub = publicationTemplateManager
+        .getPublicationTemplate(getCurrentComponentId() + ':' + xmlModel.getName());
 
     RecordSet set = pub.getRecordSet();
     // Form form = pub.getUpdateForm();
@@ -408,48 +411,20 @@ public abstract class GEDImportExport extends ComponentImportExport {
     for (XMLField xmlField : xmlModel.getFields()) {
       String xmlFieldName = xmlField.getName();
       String xmlFieldValue = xmlField.getValue();
-      String fieldValue = null;
+      String fieldValue;
       try {
         Field field = data.getField(xmlFieldName);
         if (field != null) {
           FieldTemplate fieldTemplate = pub.getRecordTemplate().getFieldTemplate(xmlFieldName);
           if (fieldTemplate != null) {
-            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(
-                field.getTypeName(), fieldTemplate.getDisplayerName());
+            FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(field.
+                getTypeName(), fieldTemplate.getDisplayerName());
             if (field.getTypeName().equals(FileField.TYPE) && StringUtil.isDefined(xmlFieldValue)) {
-              String context = "Images";
-              if ("image".equals(fieldTemplate.getDisplayerName())) {
-                context = "XMLFormImages";
-              }
-
-              String imagePath = xmlFieldValue;
-              String imageName = imagePath.substring(imagePath.lastIndexOf(File.separator) + 1,
-                  imagePath.length());
-              String imageExtension = FileRepositoryManager.getFileExtension(imagePath);
-              String imageMimeType = AttachmentController.getMimeType(imagePath);
-
-              String physicalName =
-                  Long.toString(System.currentTimeMillis()) + '.' + imageExtension;
-
-              String path = AttachmentController.createPath(getCurrentComponentId(), context);
-              FileRepositoryManager.copyFile(imagePath, path + physicalName);
-              File file = new File(path + physicalName);
-              long size = file.length();
-
-              if (size > 0) {
-                AttachmentDetail ad = createAttachmentDetail(pubId, getCurrentComponentId(),
-                    physicalName, imageName, imageMimeType, size, context, userId);
-                ad = AttachmentController.createAttachment(ad, true);
-                fieldValue = ad.getPK().getId();
-              } else {
-                // le fichier a tout de même été créé sur le serveur avec une taille 0!,
-                // il faut le supprimer
-                FileFolderManager.deleteFolder(path + physicalName);
-              }
+              fieldValue = new FormTemplateImportExport()
+                  .manageFileField(new ForeignPK(pubPK), userId, xmlFieldValue, fieldTemplate);
             } else {
               fieldValue = xmlFieldValue;
             }
-
             fieldDisplayer.update(fieldValue, field, fieldTemplate, formContext);
           }
         }
@@ -459,27 +434,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
       }
     }
     set.save(data);
-  }
-
-  private AttachmentDetail createAttachmentDetail(String objectId, String componentId,
-      String physicalName, String logicalName, String mimeType, long size, String context,
-      String userId) {
-    // create AttachmentPK with spaceId and componentId
-    AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
-
-    // create foreignKey with spaceId, componentId and id
-    // use AttachmentPK to build the foreign key of customer object.
-    AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-    if (objectId != null) {
-      foreignKey.setId(objectId);
-    }
-
-    // create AttachmentDetail Object
-    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType,
-        size, context, new Date(), foreignKey);
-    ad.setAuthor(userId);
-
-    return ad;
   }
 
   private void createDBModelContent(UnitReport unitReport, DBModelContentType dbModelType,
@@ -505,7 +459,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // le modele existant n'est pas le meme que l'importe
         unitReport.setError(UnitReport.ERROR_CANT_UPDATE_CONTENT);
       }
-    } else if (!WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), pubId)) {
+    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId, I18NHelper.defaultLanguage)) {
       // on ne remplace pas un type de contenu par un autre
       // Preparation des donnees DBModel a  creer
       if (modelDetail == null) {
@@ -524,12 +478,12 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode preparant les dataModels pour la creation en base d un contenu DBModel, cette methode
    * se charge egalement de la copie des fichiers du contenu sur le serveur
+   *
    * @param dbModelType - objet de mapping castor contenant les informations de contenu de type
    * DBModel
    * @return
    */
   private InfoDetail prepareDbModelContent(UnitReport unitReport, DBModelContentType dbModelType) {
-
     List<InfoImageDetail> listInfoImage = null;
     List<InfoTextDetail> listInfoText = null;
     int imageOrder = 1;
@@ -555,53 +509,51 @@ public abstract class GEDImportExport extends ComponentImportExport {
       for (String imagePath : listImagesParts) {
         File f = new File(imagePath);
         long size = f.length();
-        String mimeType = AttachmentController.getMimeType(imagePath);
+        String mimeType = FileUtil.getMimeType(imagePath);
         if (listInfoImage == null) {
           listInfoImage = new ArrayList<InfoImageDetail>();
         }
         imageOrder++;
-        listInfoImage.add(new InfoImageDetail(null, String.valueOf(imageOrder), null,
-            imagePath, imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1), "",
-            mimeType, size));
+        listInfoImage.add(new InfoImageDetail(null, String.valueOf(imageOrder), null, imagePath,
+            imagePath.substring(imagePath.lastIndexOf(File.separatorChar) + 1), "", mimeType,
+            size));
       }
       // copie sur le serveur des images
       copyDBmodelImagePartsForImport(unitReport, getCurrentComponentId(), listInfoImage);
     }
-
     // Creation du contenu en base
     InfoDetail infoDetail =
-        new InfoDetail(new InfoPK("unknown", "useless", getCurrentComponentId()),
-        listInfoText, listInfoImage, null, null);
-
+        new InfoDetail(new InfoPK("unknown", "useless", getCurrentComponentId()), listInfoText,
+        listInfoImage, null, null);
     return infoDetail;
   }
 
   /**
    * Methode de creation d'un contenu de type wysiwyg
+   *
    * @param pubId - id de la publication pour laquelle on cree le contenu wysiwyg
    * @param wysiwygType - objet de mapping castor contenant les informations de contenu de type
    * Wysiwyg
    */
   private void createWysiwygContent(UnitReport unitReport, int pubId,
-      WysiwygContentType wysiwygType,
-      String userId, String webContext) throws UtilException, WysiwygException,
-      ImportExportException {
-
-    String wysiwygFileName =
-        WysiwygController.getWysiwygFileName(java.lang.Integer.toString(pubId));
-    String wysiwygPath = AttachmentController.createPath(getCurrentComponentId(), "wysiwyg");
-
+      WysiwygContentType wysiwygType, String userId, String webContext, String lang)
+      throws UtilException, WysiwygException, ImportExportException {
     // Recuperation du nouveau contenu wysiwyg
-    File f = null;
+    File wysiwygFile = null;
     String wysiwygText = "";
     try {
-      f = new File(wysiwygType.getPath());
-      wysiwygText = FileFolderManager.getCode(f.getParent(), f.getName());
+      wysiwygFile = new File(FileUtil.convertPathToServerOS(wysiwygType.getPath()));
+      if (!wysiwygFile.exists() && !wysiwygFile.isFile()) {
+        String baseDir = resources.getString("importRepository");
+        wysiwygFile = new File(
+            FileUtil.convertPathToServerOS(baseDir + File.separatorChar + wysiwygType.getPath()));
+      }
+      wysiwygText = FileFolderManager.getCode(wysiwygFile.getParent(), wysiwygFile.getName());
     } catch (UtilException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      if (f != null) {
+      if (wysiwygFile != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + f.getPath(), ex);
+            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath(), ex);
       } else {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
             "importExport.EX_CANT_CREATE_CONTENT", "file = null", ex);
@@ -609,48 +561,40 @@ public abstract class GEDImportExport extends ComponentImportExport {
     }
     if (wysiwygText == null) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-      if (f != null) {
+      if (wysiwygFile != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
-            "importExport.EX_CANT_CREATE_CONTENT", "file = " + f.getPath());
+            "importExport.EX_CANT_CREATE_CONTENT", "file = " + wysiwygFile.getPath());
       }
     }
-
     // Suppression de tout le contenu wysiwyg s il existe
-    if (WysiwygController.haveGotWysiwyg("useless", getCurrentComponentId(), java.lang.Integer.
-        toString(pubId))) {
+    if (WysiwygController.haveGotWysiwyg(getCurrentComponentId(), String.valueOf(pubId), lang)) {
       // TODO: verifier d abord que la mise a jour est valide?!
       try {
         WysiwygController.deleteWysiwygAttachmentsOnly("useless", getCurrentComponentId(),
-            java.lang.Integer.toString(pubId));
-      } catch (WysiwygException ex) {/*
-                                      * TODO: gerer l exception
-                                      */
-
+            String.valueOf(pubId));
+      } catch (WysiwygException ex) {
       }
-      File file = new File(wysiwygPath + File.separator + wysiwygFileName);
-      file.delete();
     }
-
     // Creation du fichier de contenu wysiwyg sur les serveur
-    String imagesContext = WysiwygController.getImagesFileName(java.lang.Integer.toString(pubId));
-    String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId, f.getParent(),
-        wysiwygText, imagesContext, webContext);
+    String imagesContext = WysiwygController.getImagesFileName(String.valueOf(pubId));
+    String newWysiwygText = replaceWysiwygImagesPathForImport(unitReport, pubId,
+        wysiwygFile.getParent(), wysiwygText, imagesContext, webContext);
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
-    WysiwygController.createFileAndAttachment(newWysiwygText, wysiwygFileName, "useless",
-        getCurrentComponentId(), "wysiwyg", java.lang.Integer.toString(pubId), userId);
+    WysiwygController.createFileAndAttachment(newWysiwygText, new ForeignPK(String.valueOf(pubId),
+        getCurrentComponentId()), WysiwygController.WYSIWYG_CONTEXT, userId, lang);
   }
 
   /**
    * Methode chargee de copier les fichiers images references par le contenu wysiwyg sur le serveur
    * et de mettre a  jour le contenu wysiwyg avec ces nouveaux liens
+   *
    * @param wysiwygText - contenu wysiwyg passe en parametre
    * @return - le contenu wysiwyg mis a  jour
    */
   private String replaceWysiwygImagesPathForImport(UnitReport unitReport, int pubId,
       String wysiwygImportedPath, String wysiwygText, String imageContext, String webContext)
       throws ImportExportException {
-
     int finPath = 0;
     int debutPath = 0;
     StringBuilder newWysiwygText = new StringBuilder();
@@ -678,21 +622,21 @@ public abstract class GEDImportExport extends ComponentImportExport {
           }
           // TODO: chercher autres infos utiles pour la creation des attachments ensuite
           try {
-            attDetail = attachmentIE.importWysiwygAttachment(java.lang.Integer.toString(pubId),
-                getCurrentComponentId(), attDetail, imageContext);
+            attDetail = attachmentIE
+                .importWysiwygAttachment(String.valueOf(pubId), getCurrentComponentId(), attDetail,
+                imageContext);
             ImportReportManager.addNumberOfFilesProcessed(1);
             if (attDetail == null || attDetail.getSize() == 0) {
               unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
-              throw new ImportExportException(
-                  "GEDImportExport.replaceWysiwygImagesPathForImport()",
+              throw new ImportExportException("GEDImportExport.replaceWysiwygImagesPathForImport()",
                   "importExport.EX_CANT_CREATE_CONTENT", "pic = " + imageSrc);
             }
             // On additionne la taille des fichiers importes au niveau du rapport
             ImportReportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
-            newWysiwygText.append(webContext).append(attDetail.getAttachmentURL());
+            //TODO FEATURE 82 newWysiwygText.append(webContext).append(attDetail.getAttachmentURL
+            // ());
           } catch (Exception e) {
-            SilverTrace.error("importExport",
-                "GEDImportExport.replaceWysiwygImagesPathForImport()",
+            SilverTrace.error("importExport", "GEDImportExport.replaceWysiwygImagesPathForImport()",
                 "importExport.CANNOT_FIND_FILE", e);
             newWysiwygText.append(imageSrc);
           }
@@ -706,17 +650,14 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   private String replaceWysiwygStringsForImport(String wysiwygText) {
-    ResourceLocator mapping = new ResourceLocator(
-        "com.silverpeas.importExport.settings.stringsMapping", "");
+    ResourceLocator mapping =
+        new ResourceLocator("com.silverpeas.importExport.settings.stringsMapping", "");
     String newWysiwygText = wysiwygText;
-
-    String oldString = null;
-    String newString = null;
 
     Enumeration<String> classes = mapping.getKeys();
     while (mapping != null && classes.hasMoreElements()) {
-      oldString = classes.nextElement();
-      newString = mapping.getString(oldString);
+      String oldString = classes.nextElement();
+      String newString = mapping.getString(oldString);
       newWysiwygText = replaceWysiwygStringForImport(oldString, newString, newWysiwygText);
     }
     return newWysiwygText;
@@ -724,6 +665,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode chargee de remplacer une classe Css par une autre
+   *
    * @param wysiwygText - contenu wysiwyg passe en parametre
    * @param oldCssClass - la classe CSS a  remplacer
    * @param newCssClass - la nouvelle classe CSS a  utiliser
@@ -734,20 +676,18 @@ public abstract class GEDImportExport extends ComponentImportExport {
     if (!StringUtil.isDefined(wysiwygText)) {
       return "";
     }
-
     return wysiwygText.replaceAll(oldCssClass, newCssClass);
   }
 
   private String removeWysiwygStringsForImport(String wysiwygText) {
     String currentWysiwygText = wysiwygText;
-    ResourceLocator resource = new ResourceLocator("com.silverpeas.importExport.settings.mapping",
-        "");
+    ResourceLocator resource =
+        new ResourceLocator("com.silverpeas.importExport.settings.mapping", "");
     String dir = resource.getString("mappingDir");
     if (StringUtil.isDefined(dir)) {
       BufferedReader reader = null;
       try {
         reader = new BufferedReader(new FileReader(dir + File.separator + "strings2Remove.txt"));
-
         String ligne = null;
         while ((ligne = reader.readLine()) != null) {
           if ("$$removeAnchors$$".equalsIgnoreCase(ligne)) {
@@ -790,6 +730,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode copiant les images du contenu DBModel a  creer
+   *
    * @param componentId - id du composant de la publication dans laquelle on va creer le contenu
    * DBModel
    * @param listInfoImageDetail - liste des InfoImageDetails correspondant aux images du contenu
@@ -798,8 +739,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * serveur
    */
   private Collection<InfoImageDetail> copyDBmodelImagePartsForImport(UnitReport unitReport,
-      String componentId,
-      Collection<InfoImageDetail> listInfoImageDetail) {
+      String componentId, Collection<InfoImageDetail> listInfoImageDetail) {
     for (InfoImageDetail infoImage : listInfoImageDetail) {
       String from = infoImage.getPhysicalName();// chemin complet mappe depuis l import xml
       String type = FilenameUtils.getExtension(infoImage.getPhysicalName());
@@ -807,9 +747,6 @@ public abstract class GEDImportExport extends ComponentImportExport {
       infoImage.setPhysicalName(newName);
       String to = FileRepositoryManager.getAbsolutePath(componentId) + File.separator + "images"
           + File.separator + newName;
-      /*
-       * TODO: a voir kmelia.getPublicationSettings().getString("imagesSubDirectory")+"\\"+
-       */
       try {
         FileRepositoryManager.copyFile(from, to);
         File f = new File(to);
@@ -826,6 +763,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode de copie des images DBModel d'un contenu dans le dossier d'exportation d'une
    * publication
+   *
    * @param exportPublicationPath - dossier d'exportation de la publication
    * @param listImageParts - liste des images du contenu DBModel
    * @param exportPublicationRelativePath
@@ -840,8 +778,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         String imagePath = iter.next();
         File f = new File(imagePath);
         try {// TODO: a revoir
-          FileRepositoryManager.copyFile(imagePath, exportPublicationPath + File.separator
-              + f.getName());
+          FileRepositoryManager.copyFile(imagePath, exportPublicationPath + File.separator + f.
+              getName());
           iter.remove();
           result.add(exportPublicationRelativePath + File.separator + f.getName());
         } catch (IOException ex) {
@@ -856,6 +794,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode copiant les images contenues dans le dossier d'exportation de la publication. Cette
    * methode met a  jour le fichier wysiwyg avec les nouveaux chemins d'images avant de le copier
    * dans l'exportation
+   *
    * @param pubId - id de la publication a  exporter
    * @param componentId - id du composant contenant la publication a  exporter
    * @param exportPublicationPath - dossier d'exportation de la publication
@@ -863,17 +802,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public void copyWysiwygImageForExport(String pubId, String componentId,
       String exportPublicationPath) {
-
-    // Copie des images du wysiwig;
-    String imagesContext = WysiwygController.getImagesFileName(pubId);
-    AttachmentPK foreignKey = new AttachmentPK(pubId, "useless", componentId);
-    Collection<AttachmentDetail> vectAttachment = AttachmentController.
-        searchAttachmentByPKAndContext(foreignKey, imagesContext);
-    String path = AttachmentController.createPath(componentId, imagesContext);
-    for (AttachmentDetail attDetail : vectAttachment) {
+    ForeignPK foreignKey = new ForeignPK(pubId, componentId);
+    Collection<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKey(foreignKey, null);
+    for (SimpleDocument attDetail : documents) {
       try {
-        FileRepositoryManager.copyFile(path + File.separator + attDetail.getPhysicalName(),
-            exportPublicationPath + File.separator + attDetail.getLogicalName());
+        FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
+            exportPublicationPath + File.separator + attDetail.getFilename());
       } catch (IOException ex) {
         // TODO: gerer l exception!!
       }
@@ -901,8 +836,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
                 getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
           } catch (Exception e) {
             SilverTrace.info("importExport", "GEDImportExport.getExistingTopics",
-                "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" +
-                node.getExplicitPath() + "' does not exist");
+                "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" + node.
+                getExplicitPath() + "' does not exist");
           }
           if (existingNode != null) {
             // topic exists
@@ -919,8 +854,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
               newNodePK = getNodeBm().createNode(newNode);
             } catch (Exception e) {
               SilverTrace.error("importExport", "GEDImportExport.getExistingTopics",
-                  "root.MSG_GEN_PARAM_VALUE", "Can't create node named '" + name + "' in path '" +
-                  node.getExplicitPath() + "'", e);
+                  "root.MSG_GEN_PARAM_VALUE",
+                  "Can't create node named '" + name + "' in path '" + node.getExplicitPath() + "'",
+                  e);
               return new ArrayList<NodePositionType>();
             }
             parentId = newNodePK.getId();
@@ -947,6 +883,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Methode ajoutant un theme a  un theme deja existant. Si le theme a  ajouter existe lui aussi
    * (par exemple avec un meme ID), il n'est pas modifie et la methode ne fait rien et ne leve
    * aucune exception.
+   *
    * @param nodeDetail le detail du noeud a  ajouter.
    * @param topicId l'identifiant du noeud parent, ou 0 pour designer le noeud racine.
    * @param unitReport le rapport d'import unitaire.
@@ -954,28 +891,28 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * identifiant non modifie).
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  protected abstract com.stratelia.webactiv.util.node.model.NodePK addSubTopicToTopic(
-      com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail, int topicId,
+  protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       UnitReport unitReport) throws ImportExportException;
 
   /**
    * Methode ajoutant un theme a  un theme deja existant. Si le theme a  ajouter existe lui aussi
    * (par exemple avec un meme ID), il n'est pas modifie et la methode ne fait rien et ne leve
    * aucune exception.
+   *
    * @param nodeDetail l'objet node correspondant au theme a  creer.
    * @param topicId l'ID du theme dans lequel creer le nouveau theme.
    * @param massiveReport
    * @return un objet cle primaire du nouveau theme cree.
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  protected abstract com.stratelia.webactiv.util.node.model.NodePK addSubTopicToTopic(
-      com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail, int topicId,
+  protected abstract NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException;
 
   /**
    * Ajoute un sous-noeud a  un noeud existant a  partir d'un repertoire du systeme de fichiers. Le
    * nom de ce repertoire represente le noeud a  creer. Utile pour les imports massifs de noeuds et
    * de publications a  partir d'une hierarchie de dossiers et de fichiers.
+   *
    * @param unitReport le rapport d'import unitaire.
    * @param nodeDetail le detail du noeud a  creer.
    * @param parentTopicId l'identifiant du noeud parent, ou 0 pour designer le noeud racine.
@@ -984,17 +921,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
   public com.stratelia.webactiv.util.node.model.NodeDetail createTopicForUnitImport(
-      UnitReport unitReport, com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail,
-      int parentTopicId) throws ImportExportException {
+      UnitReport unitReport, NodeDetail nodeDetail, int parentTopicId)
+      throws ImportExportException {
     unitReport.setItemName(nodeDetail.getName());
-    com.stratelia.webactiv.util.node.model.NodePK nodePk = addSubTopicToTopic(nodeDetail,
-        parentTopicId, unitReport);
+    NodePK nodePk = addSubTopicToTopic(nodeDetail, parentTopicId, unitReport);
     try {
       return getNodeBm().getDetail(nodePk);
     } catch (RemoteException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_TOPIC);
-      SilverTrace.error("importExport", "GEDImportExport.createTopicForUnitImport()",
-          "root.EX_NO_MESSAGE", ex);
+      SilverTrace
+          .error("importExport", "GEDImportExport.createTopicForUnitImport()", "root.EX_NO_MESSAGE",
+          ex);
       throw new ImportExportException("GEDImportExport.createTopicForUnitImport",
           "importExport.EX_NODE_CREATE", ex);
     }
@@ -1003,6 +940,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   /**
    * Methode de creation d'une publication dans le cas d'une importation unitaire avec meta-donnees
    * definies dans le fichier xml d'importation.
+   *
    * @param unitReport
    * @param userDetail
    * @param pubDetail
@@ -1010,8 +948,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return
    */
   public PublicationDetail createPublicationForUnitImport(UnitReport unitReport,
-      UserDetail userDetail, PublicationDetail pubDetail,
-      List<com.silverpeas.node.importexport.NodePositionType> listNode_Type) {
+      UserDetail userDetail, PublicationDetail pubDetail, List<NodePositionType> listNode_Type) {
     unitReport.setItemName(pubDetail.getName());
     // On cree la publication
     return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
@@ -1019,6 +956,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de creation d'une publication dans le cas d'une importation massive
+   *
    * @param unitReport
    * @param userDetail
    * @param pubDetail
@@ -1027,15 +965,11 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   public PublicationDetail createPublicationForMassiveImport(UnitReport unitReport,
-      UserDetail userDetail, PublicationDetail pubDetail, int nodeId) throws
-      ImportExportException {
+      UserDetail userDetail, PublicationDetail pubDetail, int nodeId) throws ImportExportException {
     unitReport.setItemName(pubDetail.getName());
-    com.silverpeas.node.importexport.NodePositionType nodePosType =
-        new com.silverpeas.node.importexport.NodePositionType();
+    NodePositionType nodePosType = new NodePositionType();
     nodePosType.setId(nodeId);
-    List<com.silverpeas.node.importexport.NodePositionType> listNode_Type =
-        new ArrayList<com.silverpeas.node.importexport.NodePositionType>(
-        1);
+    List<NodePositionType> listNode_Type = new ArrayList<NodePositionType>(1);
     listNode_Type.add(nodePosType);
     return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
   }
@@ -1044,21 +978,19 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * Ajoute un sous-noeud a  un noeud existant a  partir d'un repertoire du systeme de fichiers. Le
    * nom de ce repertoire represente le noeud a  creer. Utile pour les imports massifs de noeuds et
    * de publications a  partir d'une hierarchie de dossiers et de fichiers.
+   *
    * @param directory le repertoire dont le nom represente le nouveau noeud.
    * @param topicId l'identifiant du noeud parent.
    * @param massiveReport le rapprt d'import.
    * @return un objet qui represente le nouveau noeud cree.
    * @throws ImportExportException en cas d'anomalie lors de la creation du noeud.
    */
-  public com.stratelia.webactiv.util.node.model.NodeDetail addSubTopicToTopic(File directory,
-      int topicId, MassiveReport massiveReport)
+  public NodeDetail addSubTopicToTopic(File directory, int topicId, MassiveReport massiveReport)
       throws ImportExportException {
     try {
       String directoryName = directory.getName();
-      com.stratelia.webactiv.util.node.model.NodeDetail nodeDetail =
-          new com.stratelia.webactiv.util.node.model.NodeDetail(
-          "unknow", directoryName, directoryName, null, null,
-          null, "0", "useless");
+      NodeDetail nodeDetail =
+          new NodeDetail("unknow", directoryName, directoryName, null, null, null, "0", "useless");
       nodeDetail.setNodePK(addSubTopicToTopic(nodeDetail, topicId, massiveReport));
       return nodeDetail;
     } catch (Exception ex) {
@@ -1069,6 +1001,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode recuperant le silverObjectId d'un objet d'id id
+   *
    * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id
    * @throws Exception
@@ -1077,6 +1010,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode de recuperation de la publication complete utilisee pour l'exportation
+   *
    * @param pubId
    * @param componentId
    * @return
@@ -1085,18 +1019,17 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public PublicationType getPublicationCompleteById(String pubId, String componentId)
       throws ImportExportException {
     PublicationType publicationType = new PublicationType();
-    PublicationDetail publicationDetail = null;
     try {
-      CompletePublication pubComplete = getCompletePublication(new PublicationPK(pubId,
-          getCurrentComponentId()));
+      CompletePublication pubComplete =
+          getCompletePublication(new PublicationPK(pubId, getCurrentComponentId()));
 
       // Recuperation de l'objet PublicationDetail
-      publicationDetail = pubComplete.getPublicationDetail();
+      PublicationDetail publicationDetail = pubComplete.getPublicationDetail();
 
       InfoDetail infoDetail = pubComplete.getInfoDetail();
       PublicationContentType pubContent = null;
-      if (infoDetail != null && !(infoDetail.getInfoImageList().isEmpty()
-          && infoDetail.getInfoTextList().isEmpty())) {
+      if (infoDetail != null && !(infoDetail.getInfoImageList().isEmpty() && infoDetail.
+          getInfoTextList().isEmpty())) {
         // la publication a un contenu de type DBModel
         pubContent = new PublicationContentType();
         DBModelContentType dbModel = new DBModelContentType();
@@ -1117,8 +1050,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         if (listInfoImage != null && !listInfoImage.isEmpty()) {
           ArrayList<String> listImageParts = new ArrayList<String>();
           for (InfoImageDetail imageDetail : listInfoImage) {
-            String path = FileRepositoryManager.getAbsolutePath(componentId) + File.separator
-                + "images";
+            String path =
+                FileRepositoryManager.getAbsolutePath(componentId) + File.separator + "images";
             listImageParts.add(path + File.separator + imageDetail.getPhysicalName());
           }
           dbModel.setListImageParts(listImageParts);
@@ -1130,18 +1063,19 @@ public abstract class GEDImportExport extends ComponentImportExport {
       } else if (!StringUtil.isInteger(publicationDetail.getInfoId())) {
         // la publication a un contenu de type XMLTemplate (formTemplate)
         pubContent = new PublicationContentType();
-        List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(
-            publicationDetail.getPK().getInstanceId() + ":" + publicationDetail.getInfoId(),
-            pubId);
+        List<XMLField> xmlFields = getFormTemplateBm().getXMLFieldsForExport(publicationDetail.
+            getPK().getInstanceId() + ":" + publicationDetail.getInfoId(), pubId);
         SilverTrace.info("importExport", "GEDImportExport.getPublicationCompleteById()",
             "root.MSG_GEN_PARAM_VALUE", "# of xmlField = " + xmlFields.size());
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg("useless", componentId, pubId)) {
+      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(
+          publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
-        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId);
+        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper
+            .checkLanguage(publicationDetail.getLanguage()));
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
@@ -1165,30 +1099,27 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Methode renvoyant la liste des topics de la publication sous forme de NodePK
+   *
    * @param pubId - id de la publication dont on veut les topics
    * @param componentId
    * @return - liste des nodesPk de la publication
    * @throws ImportExportException
    */
-  public List<com.stratelia.webactiv.util.node.model.NodePK> getAllTopicsOfPublication(
-      String pubId,
-      String componentId) throws ImportExportException {
-    Collection<com.stratelia.webactiv.util.node.model.NodePK> listNodePk =
-        new ArrayList<com.stratelia.webactiv.util.node.model.NodePK>();
+  public List<NodePK> getAllTopicsOfPublication(String pubId, String componentId)
+      throws ImportExportException {
+    Collection<NodePK> listNodePk = new ArrayList<NodePK>();
     PublicationPK pubPK = new PublicationPK(pubId, "Useless", componentId);
     try {
       listNodePk = getPublicationBm().getAllFatherPK(pubPK);
     } catch (RemoteException ex) {
       throw new ImportExportException("", "", ex);// TODO: completer!!
     }
-    return new ArrayList<com.stratelia.webactiv.util.node.model.NodePK>(listNodePk);
+    return new ArrayList<NodePK>(listNodePk);
 
   }
 
-  public List<com.stratelia.webactiv.util.node.model.NodePK> getTopicTree(NodePK pk) throws
-      ImportExportException {
-    List<com.stratelia.webactiv.util.node.model.NodePK> listNodePk =
-        new ArrayList<com.stratelia.webactiv.util.node.model.NodePK>();
+  public List<NodePK> getTopicTree(NodePK pk) throws ImportExportException {
+    List<NodePK> listNodePk = new ArrayList<NodePK>();
     try {
       Collection<NodeDetail> path = getNodeBm().getPath(pk);
       for (NodeDetail detail : path) {
@@ -1202,11 +1133,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
   }
 
   public ModelDetail getModelDetail(int idModelDetail) throws ImportExportException {
-
     ModelDetail modelDetail = null;
     try {
-      modelDetail = getPublicationBm().getModelDetail(new ModelPK(java.lang.Integer.toString(
-          idModelDetail)));
+      modelDetail = getPublicationBm().getModelDetail(new ModelPK(String.valueOf(idModelDetail)));
     } catch (RemoteException ex) {
       throw new ImportExportException("", "", ex);// TODO: completer!!
     }
@@ -1225,6 +1154,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
   /**
    * Specific Kmax: Create publication with no nodeFather
+   *
    * @param pubDetail
    * @return pubDetail
    */
@@ -1245,23 +1175,24 @@ public abstract class GEDImportExport extends ComponentImportExport {
     // Preparation des parametres du fichier a creer
     String logicalName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
     String type = FileRepositoryManager.getFileExtension(logicalName);
-    String mimeType = AttachmentController.getMimeType(logicalName);
+    String mimeType = FileUtil.getMimeType(logicalName);
     String physicalName = Long.toString(System.currentTimeMillis()) + "." + type;
     if (FileUtil.isImage(logicalName)) {
-      String dest = FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
-          + "images" + File.separator + physicalName;
+      String dest =
+          FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId()) + "images"
+          + File.separator + physicalName;
       try {
         FileRepositoryManager.copyFile(filePath, dest);
       } catch (Exception e) {
-        SilverTrace.error("importExport", "GEDImportExport.processThumbnail()",
-            "root.MSG_GEN_PARAM_VALUE", "filePath = " + filePath, e);
+        SilverTrace
+            .error("importExport", "GEDImportExport.processThumbnail()", "root.MSG_GEN_PARAM_VALUE",
+            "filePath = " + filePath, e);
       }
       ThumbnailDetail thumbnailDetail = new ThumbnailDetail(pubDetail.getPK().getComponentName(),
           Integer.valueOf(pubDetail.getPK().getId()),
           ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       thumbnailDetail.setOriginalFileName(physicalName);
       thumbnailDetail.setOriginalFileName(mimeType);
-
       ThumbnailController.createThumbnail(thumbnailDetail, 50, 50);
 
     }
@@ -1272,11 +1203,9 @@ public abstract class GEDImportExport extends ComponentImportExport {
       PublicationDetail pubDetailToCreate, UserDetail userDetail) throws Exception;
 
   protected abstract String createPublicationIntoTopic(PublicationDetail pubDet_temp,
-      com.stratelia.webactiv.util.node.model.NodePK topicPK, UserDetail userDetail) throws
-      Exception;
+      NodePK topicPK, UserDetail userDetail) throws Exception;
 
-  protected abstract void addPublicationToTopic(PublicationPK pubPK,
-      com.stratelia.webactiv.util.node.model.NodePK topicPK)
+  protected abstract void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK)
       throws Exception;
 
   protected abstract CompletePublication getCompletePublication(PublicationPK pk) throws Exception;

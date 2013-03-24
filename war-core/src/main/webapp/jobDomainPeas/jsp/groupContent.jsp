@@ -36,75 +36,71 @@
     boolean isDomainSync 			= ((Boolean)request.getAttribute("isDomainSync")).booleanValue();
     boolean isGroupManagerHere		= ((Boolean)request.getAttribute("isGroupManagerOnThisGroup")).booleanValue();
     boolean isGroupManager			= ((Boolean)request.getAttribute("isOnlyGroupManager")).booleanValue();
-    boolean isGroupManagerDirectly	= ((Boolean)request.getAttribute("isGroupManagerDirectlyOnThisGroup")).booleanValue();    
-    
+    boolean isGroupManagerDirectly	= ((Boolean)request.getAttribute("isGroupManagerDirectlyOnThisGroup")).booleanValue();
+
     boolean showTabs		= false;
-    
+
     String thisGroupId = grObject.getId();
 
     browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
     if (groupsPath != null)
         browseBar.setPath(groupsPath);
-    
+
     if (grObject.isSynchronized())
     {
     	//Group operations
-        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
-        
+        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
+        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
         operationPane.addLine();
         operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"), "groupSynchro?Idgroup="+thisGroupId);
-        
+
         showTabs = true;
-    } 
-    else if (isDomainRW) 
+    }
+    else if (isDomainRW)
     {
     	if (!isGroupManager)
     	{
     		showTabs = true;
-    		
+
 	        // Group operations
 	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
-	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
-	
+	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
+	        operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("GML.delete"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
 	        // User operations
-			operationPane.addLine();
+          operationPane.addLine();
 	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
     	}
     	else if (isGroupManagerHere)
     	{
-    		if (grObject.getSuperGroupId() == null)
-    		{
+    		if (grObject.getSuperGroupId() == null) {
     			//Group operations
-    	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-    	        
+    	    operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
     			//User operations
     			operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
     		}
-    		else
-    		{
+        else {
     			//Group operations
-    	        operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
-    	        operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("JDP.groupUpdate"),"displayGroupModify?Idgroup="+thisGroupId);
-    	        
-    	        if (!isGroupManagerDirectly)
-    	        	operationPane.addOperation(resource.getIcon("JDP.groupDel"),resource.getString("JDP.groupDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.groupDelConfirm")+"','groupDelete?Idgroup="+thisGroupId+"')");
-
-    	        // User operations
-    			operationPane.addLine();
-    	        operationPane.addOperation(resource.getIcon("JDP.userManage"),resource.getString("JDP.userManage"),"displayAddRemoveUsers?Idgroup="+thisGroupId);
+    	    operationPane.addOperationOfCreation(resource.getIcon("JDP.groupAdd"),resource.getString("JDP.groupAdd"),"displayGroupCreate?Idgroup="+thisGroupId);
+    	    operationPane.addOperation(resource.getIcon("JDP.groupUpdate"),resource.getString("GML.modify"),"displayGroupModify?Idgroup="+thisGroupId);
+    	    if (!isGroupManagerDirectly) {
+              operationPane.addOperation(resource.getIcon("JDP.groupDel"), resource.getString(
+                  "GML.delete"), "javascript:ConfirmAndSend('" + resource.getString(
+                  "JDP.groupDelConfirm") + "','groupDelete?Idgroup=" + thisGroupId + "')");
+            }
+            // User operations
+            operationPane.addLine();
+            operationPane.addOperation(resource.getIcon("JDP.userManage"), resource.getString(
+                "JDP.userManage"), "displayAddRemoveUsers?Idgroup=" + thisGroupId);
     		}
-    		
+
     		showTabs = true;
     	}
     }
-    if (isDomainSync)
-    {
-        // Group operations
-		operationPane.addLine();
-        operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"),"groupSynchro?Idgroup="+thisGroupId);
-        operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"),resource.getString("JDP.groupUnsynchro"),"groupUnSynchro?Idgroup="+thisGroupId);
+    if (isDomainSync) {
+      // Group operations
+      operationPane.addLine();
+      operationPane.addOperation(resource.getIcon("JDP.groupSynchro"),resource.getString("JDP.groupSynchro"),"groupSynchro?Idgroup="+thisGroupId);
+      operationPane.addOperation(resource.getIcon("JDP.groupUnsynchro"),resource.getString("JDP.groupUnsynchro"),"groupUnSynchro?Idgroup="+thisGroupId);
     }
 %>
 
@@ -145,13 +141,13 @@ if (showTabs) {
 		<td class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.name")%> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getName())%></td>
 	</tr>
-	<tr>			
+	<tr>
 	    <td></td>
 		<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("GML.description") %> :</td>
 		<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getDescription())%></td>
 	</tr>
 	<% if (grObject.getRule() != null) { %>
-	<tr>			
+	<tr>
     	<td></td>
     	<td valign="baseline" align="left" class="textePetitBold" nowrap="nowrap"><%=resource.getString("JDP.synchroRule") %> :</td>
     	<td align=left valign="baseline" width="100%"><%=EncodeHelper.javaStringToHtmlString(grObject.getRule())%></td>
@@ -164,7 +160,7 @@ if (showTabs) {
 	if (!grObject.isSynchronized()) {
 		ArrayPane arrayPane = gef.getArrayPane("groupe", "groupContent.jsp", request, session);
 		Group[] subGroups = (Group[])request.getAttribute("subGroups");
-	
+
 		arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
 		arrayPane.setTitle(resource.getString("JDP.groups"));
 
@@ -177,7 +173,7 @@ if (showTabs) {
 		if (subGroups != null) {
 			Group group = null;
 			for(int i=0; i<subGroups.length; i++){
-				//cr�ation des ligne de l'arrayPane
+				//creation des ligne de l'arrayPane
 				group = subGroups[i];
 		    	if (group != null) {
 					ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -193,35 +189,38 @@ if (showTabs) {
 			        arrayLine.addArrayCellText(EncodeHelper.javaStringToHtmlString(group.getDescription()));
 		    	}
 			}
-		} 	
+		}
 		out.println(arrayPane.print());
 	}
 
 	out.println("<br/>");
 
   ArrayPane arrayPaneUser = gef.getArrayPane("users", "groupContent.jsp", request, session);
-  String[][] subUsers = (String[][])request.getAttribute("subUsers");
+  List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
   arrayPaneUser.setTitle(resource.getString("GML.users"));
 
-  arrayPaneUser.addArrayColumn("&nbsp;");
+  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.surname"));
-  arrayPaneUser.setSortable(false);
+  arrayPaneUser.addArrayColumn(resource.getString("GML.lastConnection"));
 
   if (subUsers != null) {
-      for(int i=0; i<subUsers.length; i++){
-          //cr�ation des ligne de l'arrayPane
-          ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
-          IconPane iconPane1User = gef.getIconPane();
-          Icon userIcon = iconPane1User.addIcon();
-          userIcon.setProperties(resource.getIcon("JDP.user"), resource.getString("GML.user"), "");
-          arrayLineUser.addArrayCellIconPane(iconPane1User);
-          arrayLineUser.addArrayCellLink(subUsers[i][1], (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + subUsers[i][0]);
-          arrayLineUser.addArrayCellText(subUsers[i][2]);
-        }
-  } 	
+    for(UserDetail user : subUsers){
+        ArrayLine arrayLineUser = arrayPaneUser.addArrayLine();
+        String userIcon = resource.getIcon("JDP.user.state." + user.getState().getName());
+        String iconAltText = resource.getString("GML.user.account.state."+user.getState().getName());
+        ArrayCellText cellIcon = arrayLineUser.addArrayCellText("<img src=\"" + userIcon
+              + "\" alt=\"" + iconAltText + "\" title=\"" + iconAltText + "\"/>");
+        cellIcon.setCompareOn(user.getState().name());
+        arrayLineUser.addArrayCellLink(EncodeHelper.javaStringToHtmlString(user.getLastName()), (String)request.getAttribute("myComponentURL") + "userContent?Iduser=" + user.getId());
+        arrayLineUser.addArrayCellText(EncodeHelper.javaStringToHtmlString(user.getFirstName()));
+        Date lastConnection = user.getLastLoginDate();
+        ArrayCellText cell = arrayLineUser.addArrayCellText(resource.getOutputDateAndHour(lastConnection));
+        cell.setCompareOn(lastConnection);
+      }
+  }
   out.println(arrayPaneUser.print());
 %>
 </view:frame>

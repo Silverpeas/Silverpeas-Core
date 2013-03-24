@@ -23,7 +23,6 @@
  */
 package org.silverpeas.viewer.web;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.silverpeas.viewer.Preview;
@@ -53,12 +52,9 @@ public class PreviewEntityMatcher extends BaseMatcher<PreviewEntity> {
     boolean match = false;
     if (item instanceof PreviewEntity) {
       final PreviewEntity actual = (PreviewEntity) item;
-      final EqualsBuilder matcher = new EqualsBuilder();
-      matcher.appendSuper(actual.getURI().toString()
-          .endsWith("/preview/componentName5/attachment/7"));
-      matcher.appendSuper(actual.getURL().toString().endsWith("/URL/physicalName7"));
-      matcher.append("originalFileName7", actual.getOriginalFileName());
-      match = matcher.isEquals();
+      match = expected.getURLAsString().equals(actual.getURL().toString()) && 
+          expected.getOriginalFileName().equals(actual.getOriginalFileName())
+          && actual.getURI().toString().endsWith("/preview/componentName5/attachment/7");
     }
     return match;
   }
