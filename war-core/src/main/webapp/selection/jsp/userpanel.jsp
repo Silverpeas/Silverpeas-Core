@@ -64,23 +64,23 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-profile.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/selection/jsp/javaScript/selection.js'/>"></script>
     <script type="text/javascript">
-      var selectedUsersLabel  = "<fmt:message key='selection.usersSelected'/>";
-      var selectedUserLabel   = "<fmt:message key='selection.userSelected'/>";
+      var selectedUsersLabel = "<fmt:message key='selection.usersSelected'/>";
+      var selectedUserLabel = "<fmt:message key='selection.userSelected'/>";
       var selectedGroupsLabel = "<fmt:message key='selection.groupsSelected'/>";
-      var selectedGroupLabel  = "<fmt:message key='selection.groupSelected'/>";
-      var foundUsersLabel     = "<fmt:message key='selection.usersFound'/>";
-      var foundUserLabel      = "<fmt:message key='selection.userFound'/>";
-      var foundGroupsLabel    = "<fmt:message key='selection.groupsFound'/>";
-      var foundGroupLabel     = "<fmt:message key='selection.groupFound'/>";
-      var itemToSelect        = "<c:out value='${selectionScope}'/>";
-      var language            = '<c:out value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>';
-      var MaximizedPageSize   = 10;
+      var selectedGroupLabel = "<fmt:message key='selection.groupSelected'/>";
+      var foundUsersLabel = "<fmt:message key='selection.usersFound'/>";
+      var foundUserLabel = "<fmt:message key='selection.userFound'/>";
+      var foundGroupsLabel = "<fmt:message key='selection.groupsFound'/>";
+      var foundGroupLabel = "<fmt:message key='selection.groupFound'/>";
+      var itemToSelect = "<c:out value='${selectionScope}'/>";
+      var language = '<c:out value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>';
+      var MaximizedPageSize = 10;
 
-      rootUserGroup.name      = '<fmt:message key="selection.RootUserGroups"/>';
+      rootUserGroup.name = '<fmt:message key="selection.RootUserGroups"/>';
       rootUserGroup.inDomain('${domainId}').
-        inComponent('${instanceId}').
-        withRoles('${roles}').
-        forResource('${resourceId}');
+              inComponent('${instanceId}').
+              withRoles('${roles}').
+              forResource('${resourceId}');
 
       var allUsers = new UserProfileManagement({
         component: '${instanceId}',
@@ -90,10 +90,10 @@
       });
 
       var me = new UserProfile({id: '${currentUserId}'}).
-        inDomain('<c:out value="${domainId}"/>').
-        inComponent('${instanceId}').
-        withRoles('${roles}').
-        forResource('${resourceId}');
+              inDomain('<c:out value="${domainId}"/>').
+              inComponent('${instanceId}').
+              withRoles('${roles}').
+              forResource('${resourceId}');
 
       var nameInUserSearch = null; // required for the pagination with the results of a search (as at each page, the users are loaded for that page, so
       // we have to remind the name on which users are filtered if any)
@@ -123,25 +123,25 @@
 
       // the size of items to render within a pagination page
       function pageSize() {
-        return (itemToSelect == 'usergroup' && !userListingPanelStatus.maximized ? CountPerPage: MaximizedPageSize);
+        return (itemToSelect == 'usergroup' && !userListingPanelStatus.maximized ? CountPerPage : MaximizedPageSize);
       }
 
       // what are the preselected user profiles and user groups (get at web page build)
       <c:choose>
-          <c:when test="${selection.selectedElements != null && fn:length(selection.selectedElements) > 0}">
-            var preselectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>'.split(',');
-            if (preselectedUsers[0] == "")
-              preselectedUsers = [];
+        <c:when test="${selection.selectedElements != null && fn:length(selection.selectedElements) > 0}">
+        var preselectedUsers = '<c:out value="${fn:join(selection.selectedElements, ',')}"/>'.split(',');
+        if (preselectedUsers[0] == "")
+          preselectedUsers = [];
         </c:when>
         <c:otherwise>
           var preselectedUsers = [];
         </c:otherwise>
       </c:choose>
       <c:choose>
-          <c:when test="${selection.selectedSets != null && fn:length(selection.selectedSets) > 0}">
-            var preselectedUserGroups = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>'.split(',');
-            if (preselectedUserGroups[0] == "")
-              preselectedUserGroups = [];
+        <c:when test="${selection.selectedSets != null && fn:length(selection.selectedSets) > 0}">
+        var preselectedUserGroups = '<c:out value="${fn:join(selection.selectedSets, ',')}"/>'.split(',');
+        if (preselectedUserGroups[0] == "")
+          preselectedUserGroups = [];
         </c:when>
         <c:otherwise>
           var preselectedUserGroups = [];
@@ -188,7 +188,7 @@
         // selection panel
         function loadPreselectionOfUsers() {
           if (preselectedUsers && preselectedUsers.length > 0) {
-            for(var i = 0; i < preselectedUsers.length; i++) {
+            for (var i = 0; i < preselectedUsers.length; i++) {
               new UserProfile({id: preselectedUsers[i]}).load(userSelection.add);
             }
           }
@@ -201,7 +201,7 @@
         // selection panel
         function loadPreselectionOfGroups() {
           if (preselectedUserGroups && preselectedUserGroups.length > 0) {
-            for(var i = 0; i < preselectedUserGroups.length; i++) {
+            for (var i = 0; i < preselectedUserGroups.length; i++) {
               new UserGroup({id: preselectedUserGroups[i]}).load(groupSelection.add);
             }
           }
@@ -229,7 +229,7 @@
             var insertionIndex = index;
             if (self.groups.maxlength == undefined)
               self.groups.maxlength = groups.maxlength;
-            for(var i = 0; i < groups.length; i++)
+            for (var i = 0; i < groups.length; i++)
               self.groups[insertionIndex++] = groups[i];
           }
 
@@ -237,12 +237,14 @@
           this.groups = [];
 
           // size of the cache
-          this.size = function() { return self.groups.length }
+          this.size = function() {
+            return self.groups.length
+          }
 
           this.groupsBetween = function(start, end) {
             var groups = self.groups.slice(start, end);
             groups.maxlength = self.groups.maxlength;
-            groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
+            groups.completlyLoaded = self.groups.maxlength == self.groups.length;
             return groups;
           }
 
@@ -264,11 +266,11 @@
               pagination.page++;
             var start = page.count * (page.page - 1);
             var end = start + page.count;
-            if (end > self.groups.length || self.groups[start] == null || self.groups[end-1] == null)
+            if (end > self.groups.length || self.groups[start] == null || self.groups[end - 1] == null)
               parentGroup.loadChildren({pagination: page}, function(groups) {
                 add(start, groups);
                 if (callback) {
-                  groups.completlyLoaded =  self.groups.maxlength == self.groups.length;
+                  groups.completlyLoaded = self.groups.maxlength == self.groups.length;
                   callback(groups);
                 }
               });
@@ -298,7 +300,7 @@
               group.loadUsers({
                 pagination: {
                   page: 1,
-                  count: pageSize()} }, renderFilteredUsers);
+                  count: pageSize()}}, renderFilteredUsers);
           }
 
           function resetGroupFilter() {
@@ -400,8 +402,8 @@
               $('#breadcrumb').breadcrumb('set', rootUserGroup);
               resetGroupFilter();
               me.loadRelationships({
-                    pagination: {page: 1, count: pageSize()}
-                  }, renderFilteredUsers);
+                pagination: {page: 1, count: pageSize()}
+              }, renderFilteredUsers);
             });
           }
 
@@ -417,14 +419,14 @@
           this.onGroupSearch = function(pattern) {
             onEvent('search', function() {
               var name = arguments[0];
-              _currentGroup.loadChildren({ name: name }, renderFilteredUserGroups);
+              _currentGroup.loadChildren({name: name}, renderFilteredUserGroups);
             }, pattern);
           }
         }
 
         function selectedUserNamesToString() {
           var selection = '';
-          for (var i =0; i <  userSelection.items.length - 1; i++)
+          for (var i = 0; i < userSelection.items.length - 1; i++)
             selection += userSelection.items[i].fullName + ',';
           if (userSelection.items.length > 0)
             selection += userSelection.items[userSelection.items.length - 1].fullName;
@@ -442,11 +444,11 @@
 
         function resetSearchText() {
       <c:if test='${fn:startsWith(selectionScope, "user")}'>
-            $('#user_search').val('<fmt:message key="selection.searchUsers"/>');
-            nameInUserSearch = null;
+          $('#user_search').val('<fmt:message key="selection.searchUsers"/>');
+          nameInUserSearch = null;
       </c:if>
       <c:if test='${fn:endsWith(selectionScope, "group")}'>
-            $('#group_search').val('<fmt:message key="selection.searchUserGroups"/>');
+          $('#group_search').val('<fmt:message key="selection.searchUserGroups"/>');
       </c:if>
         }
 
@@ -455,9 +457,9 @@
           var height_listing_groups = $('.listing_groups_filter').outerHeight();
           var height_listing = $('.listing_filter').outerHeight();
           var height_title = $('#filter_userPanel .title').outerHeight();
-          var new_height_listing_groups = height_container - (height_listing-height_listing_groups)-height_title;
+          var new_height_listing_groups = height_container - (height_listing - height_listing_groups) - height_title;
 
-          $('.listing_groups_filter').css('height',new_height_listing_groups+'px');
+          $('.listing_groups_filter').css('height', new_height_listing_groups + 'px');
         }
 
         function renderUsersInPage(page, renderUsers) {
@@ -465,14 +467,14 @@
             renderUsers = function(users) {
               renderFilteredUsers(users, page > 1);
             }
-          var pagination = (page == null ? null: {
+          var pagination = (page == null ? null : {
             page: page,
             count: pageSize()
           });
           if (userListingPanelStatus.renderedItems == 'myContacts')
             me.loadRelationships({
-                name: nameInUserSearch,
-                pagination: pagination
+              name: nameInUserSearch,
+              pagination: pagination
             }, renderUsers);
           else if (userListingPanelStatus.renderedItems == 'allUsers') {
             allUsers.get({
@@ -507,7 +509,7 @@
           $container.focus(function() {
             var currentVal = $(this).val();
             if (currentVal == defaultText)
-            $(this).val('');
+              $(this).val('');
           }).blur(function() {
             var currentVal = $(this).val();
             if (currentVal.length == 0)
@@ -566,7 +568,7 @@
         }
 
         function renderUserGroupSelection() {
-          var text = (groupSelection.items.length <= 1 ? selectedGroupLabel: selectedGroupsLabel);
+          var text = (groupSelection.items.length <= 1 ? selectedGroupLabel : selectedGroupsLabel);
           $('#group_selected_count').text(groupSelection.items.length + ' ' + text);
           if (groupSelection.isMultiple()) {
             if (groupSelection.items.length == 0)
@@ -575,16 +577,16 @@
               $('.listing_groups a.remove_all').show();
           }
           $('#selected_group_list').hide();
-            $('#selected_group_list').children().remove();
-            for(var i = 0; i < groupSelection.items.length; i++) {
-              renderUserGroup($('#selected_group_list'), i, groupSelection.items[i]);
-            }
-            $('#selected_group_list').show();
-            renderPaginationFor(groupSelection.items.length, 'selected_group_list');
+          $('#selected_group_list').children().remove();
+          for (var i = 0; i < groupSelection.items.length; i++) {
+            renderUserGroup($('#selected_group_list'), i, groupSelection.items[i]);
+          }
+          $('#selected_group_list').show();
+          renderPaginationFor(groupSelection.items.length, 'selected_group_list');
         }
 
         function renderUserSelection() {
-          var text = (userSelection.items.length <= 1 ? selectedUserLabel: selectedUsersLabel);
+          var text = (userSelection.items.length <= 1 ? selectedUserLabel : selectedUsersLabel);
           $('#user_selected_count').text(userSelection.items.length + ' ' + text);
           if (userSelection.isMultiple()) {
             if (userSelection.items.length == 0)
@@ -593,57 +595,57 @@
               $('.listing_users a.remove_all').show();
           }
           $('#selected_user_list').hide();
-            $('#selected_user_list').children().remove();
-            for(var i = 0; i < userSelection.items.length; i++) {
-              renderUser($('#selected_user_list'), i, userSelection.items[i]);
-            }
-            $('#selected_user_list').show();
-            renderPaginationFor(userSelection.items.length, 'selected_user_list');
+          $('#selected_user_list').children().remove();
+          for (var i = 0; i < userSelection.items.length; i++) {
+            renderUser($('#selected_user_list'), i, userSelection.items[i]);
+          }
+          $('#selected_user_list').show();
+          renderPaginationFor(userSelection.items.length, 'selected_user_list');
         }
 
         function renderUserGroup($container, order, theGroup) {
-          var style = (order % 2 == 0 ? 'odd':'even'), $operation = null;
+          var style = (order % 2 == 0 ? 'odd' : 'even'), $operation = null;
           if ($container.attr('id') == 'group_list') {
             var id = 'group_' + theGroup.id;
             $operation = $('<a>', {id: 'add_group_' + theGroup.id, title: '<fmt:message key="selection.AddToSelection"/>', href: '#'}).
-              addClass('add').addClass('group').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
+                    addClass('add').addClass('group').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
               groupSelection.add(theGroup);
             })
           } else {
             var id = 'selected_group_' + theGroup.id;
             $operation = $('<a>', {title: '<fmt:message key="selection.RemoveFromSelection"/>', href: '#'}).
-              addClass('remove').addClass('group').text('<fmt:message key="selection.RemoveFromSelection"/>').click(function() {
+                    addClass('remove').addClass('group').text('<fmt:message key="selection.RemoveFromSelection"/>').click(function() {
               groupSelection.remove(theGroup);
             });
           }
-          var domainName = (theGroup.domainName == 'internal' ? "<fmt:message key='GML.internalDomain'/>":theGroup.domainName);
+          var domainName = (theGroup.domainName == 'internal' ? "<fmt:message key='GML.internalDomain'/>" : theGroup.domainName);
 
           $('<li>', {id: id}).addClass('line').addClass(style).
-            append($('<div>').addClass('avatar').append($('<img>', {alt: '', src: webContext + '/util/icons/component/groupe_Type_gestionCollaborative.png'}))).
-            append($('<span>').addClass('name_group').text(theGroup.name)).
-            append($('<span>').addClass('nb_user_group').text(theGroup.userCount + ' ' + '<fmt:message key="GML.user_s"/>')).
-            append($('<span>').addClass('sep_nb_user_group').text(' - ')).
-            append($('<span>').addClass('domain_group').text(domainName)).
-            append($operation).appendTo($container);
+                  append($('<div>').addClass('avatar').append($('<img>', {alt: '', src: webContext + '/util/icons/component/groupe_Type_gestionCollaborative.png'}))).
+                  append($('<span>').addClass('name_group').text(theGroup.name)).
+                  append($('<span>').addClass('nb_user_group').text(theGroup.userCount + ' ' + '<fmt:message key="GML.user_s"/>')).
+                  append($('<span>').addClass('sep_nb_user_group').text(' - ')).
+                  append($('<span>').addClass('domain_group').text(domainName)).
+                  append($operation).appendTo($container);
         }
 
         function renderUserGroupFilter(group) {
-          $('<li>').append($('<a>', { href: '#' }).addClass('filter').
-            append(group.name).
-            append($('<span>').addClass('nb_results_by_filter').append(' (' + group.userCount + ')')).click(function() {
+          $('<li>').append($('<a>', {href: '#'}).addClass('filter').
+                  append(group.name).
+                  append($('<span>').addClass('nb_results_by_filter').append(' (' + group.userCount + ')')).click(function() {
             $('#breadcrumb').breadcrumb('set', group);
           })).
-            appendTo($('ul.listing_groups_filter'));
+                  appendTo($('ul.listing_groups_filter'));
         }
 
         function renderNextGroupLink() {
-          $('<li>', {'id': 'nextGroups'}).append($('<a>', { href: '#' }).addClass('filter').append("<fmt:message key='selection.NextGroups'/>").click(function() {
+          $('<li>', {'id': 'nextGroups'}).append($('<a>', {href: '#'}).addClass('filter').append("<fmt:message key='selection.NextGroups'/>").click(function() {
             eventProcessing.onNextGroups();
           })).appendTo($('ul.listing_groups_filter'));
         }
 
         function renderFilteredUserGroups(groups, inSamePagination, additionalRendering) {
-          var text = (groups.length <= 1 ? foundGroupLabel: foundGroupsLabel);
+          var text = (groups.length <= 1 ? foundGroupLabel : foundGroupsLabel);
           if (groupSelection.isMultiple()) {
             if (groups.length == 0 && groupSelection.isMultiple())
               $('.listing_groups a.add_all').hide();
@@ -653,7 +655,7 @@
           $('#group_result_count').text(groups.maxlength + ' ' + text);
           $('#group_list').hide();
           $('#group_list').children().remove();
-          for(var i = 0; i < groups.length; i++) {
+          for (var i = 0; i < groups.length; i++) {
             renderUserGroup($('#group_list'), i, groups[i]);
             if (additionalRendering)
               additionalRendering(groups[i]);
@@ -668,8 +670,8 @@
           $container.hide();
           $container.children().remove();
           if (itemToSelect == 'user' || eventProcessing.event == 'myContacts' ||
-              eventProcessing.event == 'allUsers')
-            for(var i = 0; i < groups.length; i++)
+                  eventProcessing.event == 'allUsers')
+            for (var i = 0; i < groups.length; i++)
               renderUserGroupFilter(groups[i]);
           else
             renderFilteredUserGroups(groups, false, renderUserGroupFilter);
@@ -681,7 +683,7 @@
 
         function renderNextUserGroups(groups) {
           $('#nextGroups').remove();
-          for(var i = 0; i < groups.length; i++) {
+          for (var i = 0; i < groups.length; i++) {
             renderUserGroupFilter(groups[i]);
           }
           if (!groups.completlyLoaded)
@@ -690,11 +692,11 @@
         }
 
         function renderUser($container, order, theUser) {
-          var style = (order % 2 == 0 ? 'odd':'even'), $operation = null;
+          var style = (order % 2 == 0 ? 'odd' : 'even'), $operation = null;
           if ($container.attr('id') == 'user_list') {
             var id = 'user_' + theUser.id;
             $operation = $('<a>', {id: 'add_user_' + theUser.id, title: '<fmt:message key="selection.AddToSelection"/>', href: '#'}).
-              addClass('add').addClass('user').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
+                    addClass('add').addClass('user').text('<fmt:message key="selection.AddToSelection"/>').click(function() {
               userSelection.add(theUser);
             });
             if (userSelection.isSelected(theUser))
@@ -702,19 +704,22 @@
           } else {
             var id = 'selected_user_' + theUser.id;
             $operation = $('<a>', {title: '<fmt:message key="selection.RemoveFromSelection"/>', href: '#'}).
-              addClass('remove').addClass('user').text('<fmt:message key="selection.RemoveFromSelection"/>').click(function() {
+                    addClass('remove').addClass('user').text('<fmt:message key="selection.RemoveFromSelection"/>').click(function() {
               userSelection.remove(theUser);
             });
           }
+          var sep = theUser.eMail ? ' - ' : '';
           $('<li>', {id: id}).addClass('line').addClass(style).
-            append($('<div>').addClass('avatar').append($('<img>', {alt: '', src: theUser.avatar}))).
-            append($('<span>').addClass('name_user').text(theUser.lastName + ' ' + theUser.firstName)).
-            append($('<span>').addClass('mail_user').text(theUser.eMail)).
-            append($operation).appendTo($container);
+                  append($('<div>').addClass('avatar').append($('<img>', {alt: '', src: theUser.avatar}))).
+                  append($('<span>').addClass('name_user').text(theUser.lastName + ' ' + theUser.firstName)).
+                  append($('<span>').addClass('mail_user').text(theUser.eMail)).
+                  append($('<span>').addClass('sep_mail_user').text(sep)).
+                  append($('<span>').addClass('domain_user').text(theUser.domainName)).
+                  append($operation).appendTo($container);
         }
 
         function renderFilteredUsers(users, inSamePagination) {
-          var text = (users.length <= 1 ? foundUserLabel: foundUsersLabel);
+          var text = (users.length <= 1 ? foundUserLabel : foundUsersLabel);
           if (userSelection.isMultiple()) {
             if (users.length == 0)
               $('.listing_users a.add_all').hide();
@@ -724,7 +729,7 @@
           $('#user_result_count').text(users.maxlength + ' ' + text);
           $('#user_list').hide();
           $('#user_list').children().remove();
-          for(var i = 0; i < users.length; i++) {
+          for (var i = 0; i < users.length; i++) {
             renderUser($('#user_list'), i, users[i]);
           }
           $('#user_list').show();
@@ -742,13 +747,13 @@
           var selectedUserIds = userSelection.selectedItemIdsToString();
       <c:choose>
         <c:when test="${hotSetting}">
-            var selectedGroupNames = selectedGroupNamesToString();
-            var selectedUserNames = selectedUserNamesToString();
-            var selectionIdField   = '<c:out value="${selection.htmlFormElementId}"/>';
-            var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
-            window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds:selectedGroupIds));
-            window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames:selectedGroupNames));
-            window.close();
+          var selectedGroupNames = selectedGroupNamesToString();
+          var selectedUserNames = selectedUserNamesToString();
+          var selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
+          var selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
+          window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds));
+          window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames));
+          window.close();
         </c:when>
         <c:otherwise>
             $("input#group-selection").val(selectedGroupIds);
@@ -765,23 +770,23 @@
           window.close();
         </c:when>
         <c:otherwise>
-          $('input[name="UserOrGroupSelection"]').val('false');
-          $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
-          $("#selection").submit();
+            $('input[name="UserOrGroupSelection"]').val('false');
+            $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
+            $("#selection").submit();
         </c:otherwise>
       </c:choose>
         }
 
         function highlightFilter($this) {
-           $('.filter').removeClass('select');
-           $this.addClass('select');
+          $('.filter').removeClass('select');
+          $this.addClass('select');
         }
 
         $(document).ready(function() {
 
           // the rendering of the content within both the group listing panel and the user listing
           // panel is triggered by the breadcrumb through user actions
-          $('#breadcrumb').breadcrumb( {
+          $('#breadcrumb').breadcrumb({
             root: rootUserGroup,
             oninit: function() {
               eventProcessing.onInit();
@@ -790,7 +795,7 @@
               if (eventProcessing.event == null)
                 eventProcessing.onGroupChange();
               /*else
-                group.loadChildren(renderUserGroups);*/
+               group.loadChildren(renderUserGroups);*/
               highlightFilter($('#breadcrumb'));
             }
           });
@@ -812,43 +817,43 @@
       </c:if>
 
       <c:if test='${selectionScope == "user" || selectionScope == "usergroup"}'>
-            $('<li>').append($('<a>', {href: '#', id: 'filter_users'}).addClass('filter').text('<fmt:message key="selection.AllUsers"/>').click(function() {
-              eventProcessing.onAllUsers();
-              highlightFilter($(this));
-            })).prependTo($('ul.listing_filter'));
+          $('<li>').append($('<a>', {href: '#', id: 'filter_users'}).addClass('filter').text('<fmt:message key="selection.AllUsers"/>').click(function() {
+            eventProcessing.onAllUsers();
+            highlightFilter($(this));
+          })).prependTo($('ul.listing_filter'));
 
-            $('<li>').append($('<a>', {href: '#', id: 'filter_contact'}).addClass('filter').text('<fmt:message key="selection.MyContacts"/>').click(function() {
-              eventProcessing.onMyContacts();
-              highlightFilter($(this));
-            })).prependTo($('ul.listing_filter'));
+          $('<li>').append($('<a>', {href: '#', id: 'filter_contact'}).addClass('filter').text('<fmt:message key="selection.MyContacts"/>').click(function() {
+            eventProcessing.onMyContacts();
+            highlightFilter($(this));
+          })).prependTo($('ul.listing_filter'));
 
-            renderSearchBox($('#user_search'));
+          renderSearchBox($('#user_search'));
 
-            if (userSelection.isMultiple()) {
-              $('.listing_users a.add_all').click(function() {
-                renderUsersInPage(null, userSelection.add);
-              });
-            } else {
-              $('.listing_users a.add_all').remove();
-              $('.listing_users a.remove_all').remove();
-            }
+          if (userSelection.isMultiple()) {
+            $('.listing_users a.add_all').click(function() {
+              renderUsersInPage(null, userSelection.add);
+            });
+          } else {
+            $('.listing_users a.add_all').remove();
+            $('.listing_users a.remove_all').remove();
+          }
 
-            loadPreselectionOfUsers();
+          loadPreselectionOfUsers();
       </c:if>
 
-		  try {
-	      	  var browser = jQuery.uaMatch(navigator.userAgent).browser;
-		      var documentWidth = $(document).width();
-		      if (browser == "webkit") {
-		      	documentWidth = "980";
-		      }
+          try {
+            var browser = jQuery.uaMatch(navigator.userAgent).browser;
+            var documentWidth = $(document).width();
+            if (browser == "webkit") {
+              documentWidth = "980";
+            }
 
-	          if ($(window).width() < documentWidth) {
-	             window.resizeTo(documentWidth,758);
-	          }
-		  } catch (e) {
-			  // to prevent errors according to cross browser compatibility
-		  }
+            if ($(window).width() < documentWidth) {
+              window.resizeTo(documentWidth, 758);
+            }
+          } catch (e) {
+            // to prevent errors according to cross browser compatibility
+          }
 
           $(window).resize(function() {
             autoresizeUserGroupFilters();

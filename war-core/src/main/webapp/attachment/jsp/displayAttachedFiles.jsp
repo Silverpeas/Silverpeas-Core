@@ -205,6 +205,9 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 %>
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
+  <c:if test="${contextualMenuEnabled}">
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:AddAttachment();"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  </c:if>
     <ul id="attachmentList">
       <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
         <c:forEach items="${pageScope.attachments}" var="varAttachment" >
@@ -359,9 +362,6 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
           </div>
       </c:otherwise>
     </c:choose>
-  </c:if>
-  <c:if test="${contextualMenuEnabled && ! dragAndDropEnable}">
-    <div class="dragNdrop"><br/><a href="javascript:AddAttachment();"><fmt:message key="GML.add" />...</a></div>
   </c:if>
 </div>
 <div id="attachmentModalDialog" style="display: none"> </div>
@@ -709,7 +709,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
       },
       title: '<fmt:message key="attachment.dialog.delete" />',
       height: 'auto',
-      width: 350,
+      width: 400,
       modal: true,
       buttons: {
         '<fmt:message key="GML.delete"/>': function() {
@@ -771,7 +771,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.add" />",
         height: 'auto',
-        width: 500,
+        width: 550,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {             
@@ -803,7 +803,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.update" />",
         height: 'auto',
-        width: 500,
+        width: 550,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {              
@@ -856,14 +856,14 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
           modal: true,
           title: '<fmt:message key="attachment.dialog.delete" />' ,
           height: 'auto',
-          width: 500
+          width: 550
         });
 
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.checkin"/>",
         height: 'auto',
-        width: 500,
+        width: 550,
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
@@ -992,29 +992,41 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 <div id="dialog-attachment-update" style="display:none">
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
-    <c:if test="${silfn:isI18n() && not isVersionActive}">
-    	<label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
-    	<span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
-    </c:if>
-    
-    <c:if test="${isVersionActive}">
-      <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-      <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-      <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
-    </c:if>
-    <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
-    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
-    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
-    
-    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
-    <span id="fileName" class="champ-ui-dialog"></span>
-    <label for="file_upload" class="label-ui-dialog">&nbsp;</label>
-    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
-    <c:if test="${isVersionActive}">
-      <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
-      <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
-    </c:if>
+    <c:choose>
+		<c:when test="${not isVersionActive}">
+			<c:if test="${silfn:isI18n()}">
+		    	<label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
+		    	<span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
+		    </c:if>
+			<label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
+		    <span id="fileName" class="champ-ui-dialog"></span>
+		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
+		    
+			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
+		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
+		</c:when>
+		<c:otherwise>
+		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
+		    
+		    <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
+		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
+		    
+		    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
+		    <span id="fileName" class="champ-ui-dialog"></span>
+		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
+		    
+		    <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
+		    <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
+	    </c:otherwise>
+    </c:choose>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
