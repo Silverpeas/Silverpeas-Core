@@ -24,6 +24,9 @@
 
 package com.silverpeas.accesscontrol;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -34,9 +37,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * Check the access to a node for a user.

@@ -217,7 +217,7 @@
       <file name="postgres\busCore\up026\alter_init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="027">
     <create_table>
       <file name="postgres\busCore\up027\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>

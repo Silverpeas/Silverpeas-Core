@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.lang.time.DateUtils;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;

@@ -20,18 +20,18 @@
  */
 package com.silverpeas.social.status;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialnetwork.status.Status;
-import com.silverpeas.socialnetwork.status.StatusDao;
-
-import org.dbunit.database.IDatabaseConnection;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Test;
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.socialnetwork.status.Status;
+import com.silverpeas.socialnetwork.status.StatusDao;
+
 import com.stratelia.webactiv.util.DBUtil;
+
+import org.dbunit.database.IDatabaseConnection;
+import org.junit.Test;
 
 public class TestSatusDao extends AbstractTestDao {
 
@@ -136,7 +136,6 @@ public class TestSatusDao extends AbstractTestDao {
       dao.updateStatus(connexion.getConnection(), updateStatus);
       status = dao.getStatus(connexion.getConnection(), 3);
       assertEquals(status, updateStatus);
-
 
     } finally {
       closeConnection(connexion);

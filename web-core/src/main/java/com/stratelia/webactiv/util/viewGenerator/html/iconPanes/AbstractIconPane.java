@@ -68,6 +68,7 @@ public abstract class AbstractIconPane implements IconPane {
    * @return
    * @see
    */
+  @Override
   public Icon addIcon() {
     Icon icon = new IconWA();
 

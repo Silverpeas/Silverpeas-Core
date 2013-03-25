@@ -24,6 +24,21 @@
 
 package com.silverpeas.peasUtil;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Date;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -34,24 +49,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
+
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
 import de.nava.informa.exporters.RSS_2_0_Exporter;
 import de.nava.informa.impl.basic.Channel;
 import de.nava.informa.impl.basic.Item;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.Writer;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Date;
 
 public abstract class RssServlet<T> extends HttpServlet {
 

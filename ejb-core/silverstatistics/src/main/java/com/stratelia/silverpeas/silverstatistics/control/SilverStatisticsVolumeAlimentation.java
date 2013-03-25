@@ -52,7 +52,7 @@ public class SilverStatisticsVolumeAlimentation {
 
   static {
     try {
-      resources = FileUtil.loadBundle("com.stratelia.silverpeas.silverstatistics.SilverStatistics",
+      resources = FileUtil.loadBundle("org.silverpeas.silverstatistics.SilverStatistics",
           Locale.getDefault());
     } catch (Exception ex) {
       SilverTrace.error("silverstatistics", "SilverStatisticsVolumeAlimentation",
@@ -71,17 +71,15 @@ public class SilverStatisticsVolumeAlimentation {
 
     if (listAllSpacesId != null && !listAllSpacesId.isEmpty()) {
 
-      for (String aListAllSpacesId : listAllSpacesId) {
+      for (String currentSpaceId : listAllSpacesId) {
         // get all components from a space
-        String currentSpaceId = aListAllSpacesId;
         List<ComponentInst> listAllComponentsInst = getAllComponentsInst(currentSpaceId);
 
         for (ComponentInst ci : listAllComponentsInst) {
           String currentComponentsId = ci.getId();
           // get all elements from a component
           Collection<UserIdCountVolumeCouple> collectionUserIdCountVolume =
-              getCollectionUserIdCountVolume(
-              currentSpaceId, ci);
+              getCollectionUserIdCountVolume(currentSpaceId, ci);
 
           if (collectionUserIdCountVolume != null) {
             for (UserIdCountVolumeCouple currentUserIdCountVolume : collectionUserIdCountVolume) {
@@ -150,8 +148,7 @@ public class SilverStatisticsVolumeAlimentation {
       if (className != null) {
         ComponentStatisticsInterface myCompo = (ComponentStatisticsInterface) Class.forName(
             className).newInstance();
-        Collection<UserIdCountVolumeCouple> v = (Collection<UserIdCountVolumeCouple>) myCompo.
-            getVolume(spaceId, ci.getId());
+        Collection<UserIdCountVolumeCouple> v = myCompo.getVolume(spaceId, ci.getId());
         c = agregateUser(v);
       }
     } catch (ClassNotFoundException ce) {

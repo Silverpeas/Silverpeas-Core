@@ -31,7 +31,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.google.common.collect.Lists;
 import com.silverpeas.util.ForeignPK;
 import java.util.Collection;
-import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
@@ -41,6 +40,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.junit.Test;
+
+import org.silverpeas.importExport.versioning.Document;
 import static org.junit.Assert.*;
 
 /**

@@ -71,11 +71,11 @@ function SubmitWithVerif()
 {
   var userLastNameInput = $("#userLastName");
   var errorMsg = "";
-  
+
   if (userLastNameInput.length > 0 && isWhitespace(userLastNameInput.val())) {
     errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>\n";
   }
-      
+
   <% if ("userCreate".equals(action)) { %>
   var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
   if (isWhitespace(loginfld)) {
@@ -84,7 +84,7 @@ function SubmitWithVerif()
     errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.minLength")+" "+minLengthLogin.toString()+" "+resource.getString("JDP.caracteres")%>\n";
   }
   <% } %>
-   
+
   <% if (userObject.isPasswordAvailable()) { %>
   if ($('#userPasswordValid:checked').val()) {
     var $pwdInput = $('#userPasswordId');
@@ -104,7 +104,7 @@ function SubmitWithVerif()
     <% } %>
   }
   <% } %>
-   
+
   if (errorMsg == "")
   {
     <% if ("userCreate".equals(action) && groups != null && groups.size() > 0) { %>
@@ -136,7 +136,7 @@ function selectUnselect()
 {
 <% if (userObject.isPasswordAvailable()) { %>
   var bSelected;
-  
+
   bSelected = document.userForm.userPasswordValid.checked;
   if (bSelected){
       document.userForm.userPassword.disabled = false;
@@ -160,27 +160,27 @@ function selectUnselect()
         out.print(userObject.getId());
       } %>"/>
     <table cellpadding="5" cellspacing="0" border="0" width="100%">
-      <tr>      
+      <tr>
           <td class="txtlibform" width="40%"><fmt:message key="GML.lastName"/> :</td>
             <td width="60%">
               <% if (action.equals("userMS")) { %>
                 <%= userObject.getLastName()%>
               <% } else { %>
                 <input type="text" name="userLastName" id="userLastName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
-              <% } %> 
+              <% } %>
             </td>
         </tr>
-        <tr>      
+        <tr>
           <td class="txtlibform"><fmt:message key="GML.surname"/> :</td>
             <td>
               <% if (action.equals("userMS")) { %>
               <%= userObject.getFirstName()%>
             <% } else { %>
               <input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
-            <% } %> 
+            <% } %>
             </td>
         </tr>
-        <tr>      
+        <tr>
           <td class="txtlibform"><fmt:message key="GML.login"/> :</td>
             <td>
               <% if (action.equals("userCreate")) { %>
@@ -190,14 +190,14 @@ function selectUnselect()
                 <% } %>
             </td>
         </tr>
-        <tr>      
+        <tr>
             <td class="txtlibform"><fmt:message key="GML.eMail"/> :</td>
             <td>
               <% if (action.equals("userMS")) { %>
               <%= userObject.geteMail()%>
             <% } else { %>
                   <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" value="<%=EncodeHelper.javaStringToHtmlString(userObject.geteMail())%>" />
-                <% } %> 
+                <% } %>
             </td>
         </tr>
         <tr>
@@ -244,13 +244,13 @@ function selectUnselect()
             <tr>
                 <td class="txtlibform"><fmt:message key="GML.password"/> :</td>
                 <td>
-                    <input type="password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/> 
+                    <input type="password" name="userPassword" id="userPasswordId" size="50" maxlength="32" value=""/>
                 </td>
             </tr>
             <tr>
                 <td class="txtlibform"><fmt:message key="GML.passwordAgain"/> :</td>
                 <td>
-                    <input type="password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/> 
+                    <input type="password" name="userPasswordAgain" id="userPasswordAgainId" size="50" maxlength="32" value=""/>
                 </td>
             </tr>
             <tr id="sendEmailTRid" style="display:none;">
@@ -258,11 +258,11 @@ function selectUnselect()
                 <td>
                     <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<fmt:message key="GML.yes" /> <br/>
                 </td>
-            </tr>        
- 
+            </tr>
+
         <% } %>
- 
-        <% 
+
+        <%
             String[] properties = userObject.getPropertiesNames();
         String property = null;
         for (int p=0; p<properties.length; p++) {
@@ -291,11 +291,11 @@ function selectUnselect()
             <% } else { %>
               <% if("STRING".equals(userObject.getPropertyType(property)) || "USERID".equals(userObject.getPropertyType(property))) { %>
                 <%=EncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-              <% } else if("BOOLEAN".equals(userObject.getPropertyType(property))) { 
+              <% } else if("BOOLEAN".equals(userObject.getPropertyType(property))) {
                 if (StringUtil.getBooleanValue(userObject.getValue(property))) {
                   out.print(resource.getString("GML.yes"));
                 } else {
-                  out.print(resource.getString("GML.no")); 
+                  out.print(resource.getString("GML.no"));
                 }
                } %>
             <% } %>
@@ -305,11 +305,11 @@ function selectUnselect()
           }
         }
         %>
-        
+
         <%
           //in case of group manager, the added user must be set to one group
           //if user manages only once group, user will be added to it
-          //else if he manages several groups, manager chooses one group 
+          //else if he manages several groups, manager chooses one group
           if (groups != null && groups.size() > 0) {
         %>
             <tr>
@@ -331,8 +331,8 @@ function selectUnselect()
               </td>
             </tr>
       <% } %>
-        
-      <tr> 
+
+      <tr>
         <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>)</td>
       </tr>
     </table>

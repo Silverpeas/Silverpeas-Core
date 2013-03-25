@@ -25,18 +25,16 @@
  */
 package com.silverpeas.components.model;
 
-import com.silverpeas.util.PathTestUtil;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.Properties;
-import java.util.StringTokenizer;
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
 
+import org.apache.commons.dbcp.BasicDataSource;
+
+import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.apache.commons.io.IOUtils;
 import org.dbunit.IDatabaseTester;
 import org.dbunit.JndiBasedDBTestCase;
@@ -44,8 +42,8 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 /**
  * @author ehugonnet
@@ -56,7 +54,7 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
   private final String dataSetFileName;
   private final String ddlFile;
   private final DatabaseOperation tearDownOperation;
-  private static final Logger logger = LoggerFactory.getLogger(SilverpeasJndiCase.class);
+  private BasicDataSource datasource;
 
   public SilverpeasJndiCase(String dataSetFileName, String ddlFile) {
     this(dataSetFileName, ddlFile, DatabaseOperation.DELETE_ALL);
@@ -66,12 +64,20 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
       DatabaseOperation tearDownOperation) {
     this.dataSetFileName = dataSetFileName;
     this.ddlFile = ddlFile;
-    this.tearDownOperation = tearDownOperation;
+    this.tearDownOperation = tearDownOperation;    
+    SimpleMemoryContextFactory.setUpAsInitialContext();
   }
 
   @Override
   public void setUp() throws Exception {
     super.setUp();
+  }
+
+  public void shudown() throws SQLException {
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    if (datasource != null) {
+      datasource.close();
+    }
   }
 
   @Override
@@ -98,8 +104,7 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
   protected IDataSet getDataSet() throws Exception {
     InputStream in = this.getClass().getClassLoader().getResourceAsStream(this.dataSetFileName);
     try {
-      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
-      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
+      ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
       dataSet.addReplacementObject("[NULL]", null);
       return dataSet;
     } finally {
@@ -107,80 +112,14 @@ public class SilverpeasJndiCase extends JndiBasedDBTestCase {
     }
   }
 
-  @Override
-  protected Properties getJNDIProperties() {
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-    try {
-      if (PathTestUtil.class.getClassLoader().getResource("jndi.properties") != null) {
-        env.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
-      }
-    } catch (IOException ex) {
-      logger.error("", ex);
-    }
-    return env;
-  }
-
-  /**
-   * Creates the directory for JNDI files ystem provider
-   *
-   * @throws IOException
-   */
-  protected void prepareJndi() throws IOException {
-    Properties jndiProperties = getJNDIProperties();
-    String jndiDirectoryPath = jndiProperties.getProperty(Context.PROVIDER_URL).substring(7);
-    File jndiDirectory = new File(jndiDirectoryPath);
-    if (!jndiDirectory.exists()) {
-      jndiDirectory.mkdirs();
-      jndiDirectory.mkdir();
-    }
-  }
-
-  public void configureJNDIDatasource() throws IOException, NamingException {
-    prepareJndi();
-    Properties env = new Properties();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.fscontext.RefFSContextFactory");
-    InitialContext ic = new InitialContext(env);
-    Properties props = new Properties();
-    props.load(SilverpeasJndiCase.class.getClassLoader().getResourceAsStream("jdbc.properties"));
-    // Construct BasicDataSource reference
-    Reference ref = new Reference("javax.sql.DataSource",
-        "org.apache.commons.dbcp.BasicDataSourceFactory", null);
-    ref.add(new StringRefAddr("driverClassName", props.getProperty("driverClassName")));
-    ref.add(new StringRefAddr("url", props.getProperty("url")));
-    ref.add(new StringRefAddr("username", props.getProperty("username")));
-    ref.add(new StringRefAddr("password", props.getProperty("password")));
-    ref.add(new StringRefAddr("maxActive", "4"));
-    ref.add(new StringRefAddr("maxWait", "5000"));
-    ref.add(new StringRefAddr("removeAbandoned", "true"));
-    ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-    jndiName = props.getProperty("jndi.name");
-    rebind(ic, jndiName, ref);
-    ic.rebind(jndiName, ref);
-  }
-
-  /**
-   * Workaround to be able to use Sun's JNDI file system provider on Unix
-   *
-   * @param ic : the JNDI initial context
-   * @param jndiName : the binding name
-   * @param ref : the reference to be bound
-   * @throws NamingException
-   */
-  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
-    Context currentContext = ic;
-    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-    while (tokenizer.hasMoreTokens()) {
-      String name = tokenizer.nextToken();
-      if (tokenizer.hasMoreTokens()) {
-        try {
-          currentContext = (Context) currentContext.lookup(name);
-        } catch (javax.naming.NameNotFoundException nnfex) {
-          currentContext = currentContext.createSubcontext(name);
-        }
-      } else {
-        currentContext.rebind(name, ref);
-      }
+  public void configureJNDIDatasource() throws IOException, NamingException, Exception {
+    InitialContext ic = new InitialContext();
+    if (datasource == null) {
+      Properties props = new Properties();
+      props.load(SilverpeasJndiCase.class.getClassLoader().getResourceAsStream("jdbc.properties"));
+      datasource = (BasicDataSource) BasicDataSourceFactory.createDataSource(props);
+      jndiName = props.getProperty("jndi.name");
+      ic.rebind(jndiName, datasource);
     }
   }
 

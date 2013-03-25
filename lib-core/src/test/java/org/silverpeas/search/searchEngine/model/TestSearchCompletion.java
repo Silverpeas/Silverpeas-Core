@@ -22,9 +22,9 @@ package org.silverpeas.search.searchEngine.model;
 
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.silverpeas.components.model.AbstractTestDao;
+
+import org.junit.Test;
 
 public class TestSearchCompletion extends AbstractTestDao {
 

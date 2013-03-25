@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.util.exception;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -44,22 +40,26 @@ import java.util.List;
  * nom que celui defini dans Silvertrace)
  */
 abstract public class SilverpeasException extends Exception implements WithNested, FromModule {
+
   public static final int FATAL = SilverTrace.TRACE_LEVEL_FATAL;
   public static final int ERROR = SilverTrace.TRACE_LEVEL_ERROR;
   public static final int WARNING = SilverTrace.TRACE_LEVEL_WARN;
   private static final long serialVersionUID = -981770983716177578L;
-
   private int errorLevel = ERROR;
   private Exception nested = null;
   private String extraParams = "";
   private String callingClass = "NoClass";
 
+  public SilverpeasException(Exception exception) {
+    this("noClass", ERROR, "", null, exception);
+  }
+
   // Constructors
   // ------------
-
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue. Il n'y a pas d'exception
    * ayant provoqué celle-ci (getNested() renvera null). Le niveau d'importance est ERROR.
+   *
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
    * @deprecated
@@ -71,6 +71,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue et une exception à
    * imbriquer. Le niveau d'importance est ERROR.
+   *
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
    * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
@@ -84,6 +85,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue, une eception à imbriquer
    * et un niveau d'importance.
+   *
    * @param message Le label multilangue. Ex : "impossibleDeFabriquerUneConnexionBDD". Le label est
    * traduit dans des fichiers de properties.
    * @param nested L'exception qui a provoqué le problème. nested peut etre une SilverpeasException
@@ -127,23 +129,25 @@ abstract public class SilverpeasException extends Exception implements WithNeste
 
   // WithNested methods
   // ------------------
-
   /**
    * retourne l'exception qui a provoqué la creation de celle-ci. Permet l'encapsulation des
    * exception technique.
+   *
    * @return L'exception précédente qui a provoqué celle-ci, null s'il n'y en a pas.
    */
+  @Override
   public Exception getNested() {
     return nested;
   }
 
   // Throwable methods overloaded
   // ----------------------------
-
+  @Override
   public void printStackTrace() {
     this.printStackTrace(System.out);
   }
 
+  @Override
   public void printStackTrace(java.io.PrintStream s) {
     if (getNested() == null) {
       s.println(this.getMessageLang());
@@ -171,6 +175,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
     }
   }
 
+  @Override
   public void printStackTrace(java.io.PrintWriter w) {
     if (getNested() == null) {
       w.println(this.getMessageLang());
@@ -201,21 +206,26 @@ abstract public class SilverpeasException extends Exception implements WithNeste
 
   // FromModule methods
   // ------------------
-
   /**
    * This function must be defined by the Classes that herit from this one
+   *
    * @return The SilverTrace's module name
-   **/
+   *
+   */
+  @Override
   abstract public String getModule();
 
+  @Override
   public String getMessageLang() {
     return SilverTrace.getTraceMessage(getMessage());
   }
 
+  @Override
   public String getMessageLang(String language) {
     return SilverTrace.getTraceMessage(getMessage(), language);
   }
 
+  @Override
   public void traceException() {
     switch (errorLevel) {
       case FATAL:
@@ -230,13 +240,18 @@ abstract public class SilverpeasException extends Exception implements WithNeste
         SilverTrace.warn(getModule(), callingClass, getMessage(), extraParams,
             this);
         break;
+      default:
+        SilverTrace.info(getModule(), callingClass, getMessage(), extraParams,
+            this);
     }
   }
 
   /**
    * retourne le niveau de critissicité de l'exception
+   *
    * @return le niveau d'erreur, FATAL, ERROR, ou WARNING
    */
+  @Override
   public int getErrorLevel() {
     return errorLevel;
   }
@@ -251,6 +266,7 @@ abstract public class SilverpeasException extends Exception implements WithNeste
    * méthode utilitaire dont le role est de représenter les exceptions encapsulées sous forme d'une
    * collection. L'exception courante se trouvera en première position de la collection. Les
    * eventuelles imbrications succéssive suivront dans la liste.
+   *
    * @param e L'exception de plus haut niveau
    * @return une collection de Throwable, qui contiendra au moins l'exception passee en parametre.
    * Et plus si cette exception en imbrique d'autre.

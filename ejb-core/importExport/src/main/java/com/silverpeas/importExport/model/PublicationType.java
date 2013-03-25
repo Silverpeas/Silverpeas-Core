@@ -24,13 +24,15 @@
 
 package com.silverpeas.importExport.model;
 
-import com.silverpeas.attachment.importExport.AttachmentsType;
+import org.silverpeas.importExport.attachment.AttachmentsType;
+import org.silverpeas.importExport.versioning.DocumentsType;
+
+import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
 import com.silverpeas.node.importexport.NodePositionsType;
 import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.publication.importExport.PublicationContentType;
-import com.silverpeas.versioning.importExport.DocumentsType;
+
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
 
 public class PublicationType {
 

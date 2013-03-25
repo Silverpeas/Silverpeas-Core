@@ -376,9 +376,10 @@ public class UserProfileResource extends RESTWebService {
   }
 
   /**
-   * Gets all details about the user that matchs the specified identifier. The identifier is a pattern
-   * that accepts either a user unique identifier or the specific word <i>me</i>. Latest means the
-   * current user of the underlying HTTP session.
+   * Gets all details about the user that matchs the specified identifier. The identifier is a
+   * pattern that accepts either a user unique identifier or the specific word <i>me</i>. Latest
+   * means the current user of the underlying HTTP session.
+   *
    * @param identifier an identifier.
    * @return the detail about a user.
    */

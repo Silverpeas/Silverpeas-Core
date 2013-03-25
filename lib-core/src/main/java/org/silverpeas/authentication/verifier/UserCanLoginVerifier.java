@@ -28,6 +28,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 
+
 /**
  * Class that provides tools to verify if the user can login in relation to its account state.
  * User: Yohann Chastagnier

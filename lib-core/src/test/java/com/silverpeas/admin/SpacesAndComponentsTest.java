@@ -779,7 +779,8 @@ public class SpacesAndComponentsTest {
     String destId = "WA3";
     String componentId = "kmelia1";
     SpaceInst dest = admin.getSpaceInstById(destId);
-    admin.moveComponentInst(destId, componentId, "", dest.getAllComponentsInst().toArray(new ComponentInst[0]));
+    List<ComponentInst> components = dest.getAllComponentsInst();
+    admin.moveComponentInst(destId, componentId, "",components.toArray(new ComponentInst[components.size()]));
     SpaceInst source = admin.getSpaceInstById(sourceId);
     assertThat(source.getAllComponentsInst().size(), is(0));
     dest = admin.getSpaceInstById(destId);

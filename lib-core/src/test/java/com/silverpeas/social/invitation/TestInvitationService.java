@@ -22,13 +22,13 @@
 
 package com.silverpeas.social.invitation;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.socialnetwork.invitation.Invitation;
-import com.silverpeas.socialnetwork.invitation.InvitationService;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.socialnetwork.invitation.Invitation;
+import com.silverpeas.socialnetwork.invitation.InvitationService;
 
 import com.stratelia.webactiv.util.DBUtil;
 

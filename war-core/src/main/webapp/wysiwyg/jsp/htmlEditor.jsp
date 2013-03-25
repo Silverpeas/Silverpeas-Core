@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
 <%@page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -46,8 +47,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.silverpeas.treeMenu.model.NodeType"%>
 
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.*"%>
+<%@ page import="org.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="org.silverpeas.wysiwyg.*"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.wysiwyg.dynamicvalue.control.DynamicValueReplacement" %>
@@ -146,9 +147,8 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
           "nb collectionPages = " + collectionPages.length + " nb collectionImages=" +
               collectionImages.length);
     } else {
-      imagesContext = WysiwygController.getImagesFileName(objectId);
-      SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId=" + objectId + " imagesContext=" + imagesContext);
-      collectionImages = WysiwygController.searchAllAttachments(objectId, componentId, imagesContext);
+      SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId=" + objectId);
+      collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
     }
   }
   if("SaveHtmlAndExit".equals(actionWysiwyg)) {
@@ -183,8 +183,8 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
 
   browseInformation = request.getParameter("BrowseInfo");
   session.setAttribute("WYSIWYG_BrowseInfo", browseInformation);
-
-  userId = request.getParameter("UserId");
+    userId = ((MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
   session.setAttribute("WYSIWYG_UserId", userId);
 
   fileName = request.getParameter("FileName");
@@ -213,7 +213,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
     specificURL = "/website/" + componentId + "/" + objectId + "/";
   } else {
     imagesContext = WysiwygController.getImagesFileName(objectId);
-    collectionImages = WysiwygController.searchAllAttachments(objectId, componentId, imagesContext);
+    collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
   }
   session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 
@@ -231,12 +231,14 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
   }
 }
 
-	ResourceLocator message 	= new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
-	ResourceLocator settings 	= new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", language);
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-
-  Window 		window = gef.getWindow();
-  BrowseBar 	browseBar 	= window.getBrowseBar();
+	ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
+        language);
+    ResourceLocator settings =
+        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", language);
+    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    Window window = gef.getWindow();
+  BrowseBar 	browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceName);
   browseBar.setComponentName(componentName, returnUrl);
   browseBar.setExtraInformation(browseInformation);

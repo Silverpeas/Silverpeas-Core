@@ -44,16 +44,16 @@
 
 // Get the authentication settings
   ResourceLocator authenticationSettings =
-      new ResourceLocator("com.silverpeas.authentication.settings.authenticationSettings", "");
+      new ResourceLocator("org.silverpeas.authentication.settings.authenticationSettings", "");
   ResourceLocator homePageBundle =
-      new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle",
+      new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle",
           request.getLocale().getLanguage());
 
 // Get the logo to print
   ResourceLocator general =
       new ResourceLocator("com.stratelia.silverpeas.lookAndFeel.generalLook", "");
-  ResourceLocator generalMultilang =
-      new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang",
+   ResourceLocator generalMultilang =
+      new ResourceLocator("org.silverpeas.multilang.generalMultilang",
           request.getLocale().getLanguage());
 
   String logo = general.getString("logo", m_context + "/images/logo.jpg");
@@ -71,10 +71,8 @@
 // active social networks
   boolean facebookEnabled = SocialNetworkID.FACEBOOK.isEnabled();
   boolean linkedInEnabled = SocialNetworkID.LINKEDIN.isEnabled();
-
 // Get a AuthenticationService object
 AuthenticationService lpAuth = new AuthenticationService();
-
 // list of domains
 List<Domain> listDomains = lpAuth.getAllDomains();
 pageContext.setAttribute("listDomains", listDomains);

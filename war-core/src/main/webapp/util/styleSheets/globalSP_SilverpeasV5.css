@@ -5290,35 +5290,55 @@ input.search:focus {
 /********************************/
 /** created action bar **/
 /*******************************/
-#menubar-creation-actions {
-	background-color:#fff4eb;
-	border-top:1px solid #f1790f;
-	border-bottom:1px solid #f1790f;
-	vertical-align:middle;
-	text-align:center;
-	height:auto;
-	margin:1em;
+#menubar-creation-actions,
+#attachment-creation-actions {
+    background-color:#fff4eb;
+    border-top:1px solid #f1790f;
+    border-bottom:1px solid #f1790f;
+    vertical-align:middle;
+    text-align:center;
+    height:auto;
+    margin:1em;
 }
 
-#menubar-creation-actions .menubar-creation-actions-item {
-	padding:10px 30px;
-	color:#4c4c4c;
-	font-size:12px;
-	display:inline-block;
-	width:auto;
-	line-height:12px;
-	height:18px;
-	white-space:nowrap;
+#attachment-creation-actions {
+    margin:0;
 }
 
-#menubar-creation-actions .menubar-creation-actions-item:hover {
-	background-color:#F1790F;
-	color:#fff;
+#menubar-creation-actions .menubar-creation-actions-item,
+#attachment-creation-actions .menubar-creation-actions-item{
+    padding:10px 30px;
+    color:#4c4c4c;
+    font-size:12px;
+    display:inline-block;
+    width:auto;
+    line-height:12px;
+    height:18px;
+    white-space:nowrap;
 }
-#menubar-creation-actions .menubar-creation-actions-item img {
-	vertical-align:middle;
-	margin:0;
-	border:0;
+
+#attachment-creation-actions .menubar-creation-actions-item{
+    padding:6px 20px;
+    font-size:11px;
+    line-height:11px;
+    height:18px;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item:hover,
+#attachment-creation-actions .menubar-creation-actions-item:hover {
+    background-color:#F1790F;
+    color:#fff;
+}
+
+#menubar-creation-actions .menubar-creation-actions-item img,
+#attachment-creation-actions .menubar-creation-actions-item img {
+    vertical-align:middle;
+    margin:0;
+    border:0;
+}
+
+#attachment-creation-actions .menubar-creation-actions-item img {
+    margin-right:4px;
 }
 
 /*******************************/
@@ -5339,4 +5359,17 @@ ul.tagit li.tagit-choice {
 
 ul.tagit li.tagit-choice a.tagit-close {
     padding: 0px 0px 2px 3px !important;
+}
+
+.ui-dialog .label-ui-dialog {
+  float:left;
+  clear:both;
+  width:25%;
+  margin-bottom: 14px;
+}
+
+.ui-dialog .champ-ui-dialog {
+ float:right;
+ width:70%;
+ margin-bottom: 14px;
 }
