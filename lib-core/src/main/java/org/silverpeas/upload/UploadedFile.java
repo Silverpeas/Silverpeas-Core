@@ -123,7 +123,7 @@ public class UploadedFile {
   }
 
   /**
-   * Register a simple document attached in relation to the given contribution identifiers.
+   * Register an attachment attached in relation to the given contribution identifiers.
    * Please notice that the original content is deleted from its original location.
    * For now, as this method is exclusively used for contribution creations,
    * the treatment doesn't search for existing attachments. In the future and if updates will be
@@ -133,13 +133,13 @@ public class UploadedFile {
    * @param user
    * @param contributionLanguage
    */
-  public void registerSimpleDocument(String resourceId, String componentInstanceId, UserDetail user,
+  public void registerAttachment(String resourceId, String componentInstanceId, UserDetail user,
       String contributionLanguage) {
-    registerSimpleDocument(resourceId, componentInstanceId, user, contributionLanguage, true);
+    registerAttachment(resourceId, componentInstanceId, user, contributionLanguage, true);
   }
 
   /**
-   * Register a simple document attached in relation to the given contribution identifiers.
+   * Register an attachment in relation to the given contribution identifiers.
    * Please notice that the original content is deleted from its original location.
    * For now, as this method is exclusively used for contribution creations,
    * the treatment doesn't search for existing attachments. In the future and if updates will be
@@ -150,7 +150,7 @@ public class UploadedFile {
    * @param contributionLanguage
    * @param indexIt
    */
-  public void registerSimpleDocument(String resourceId, String componentInstanceId, UserDetail user,
+  public void registerAttachment(String resourceId, String componentInstanceId, UserDetail user,
       String contributionLanguage, boolean indexIt) {
 
     // Retrieve the simple document
