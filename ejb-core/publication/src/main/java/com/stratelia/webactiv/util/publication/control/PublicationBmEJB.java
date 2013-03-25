@@ -47,7 +47,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.ejb.NotationBmHome;
 import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
@@ -1857,9 +1856,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   private NotationBm getNotationBm() {
     try {
-      NotationBmHome notationBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
-      return notationBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
     } catch (Exception e) {
       throw new NotationRuntimeException("PublicationBmEJB.getNotationBm()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
