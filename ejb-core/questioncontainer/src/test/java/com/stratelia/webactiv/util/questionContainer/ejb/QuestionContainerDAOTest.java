@@ -219,6 +219,8 @@ public class QuestionContainerDAOTest {
     assertEquals(1, result.getNbQuestionsPerPage());
     assertEquals(2, result.getNbVoters());
     assertEquals("Quiz expression sur les légumes", result.getTitle());
+    assertEquals(1, result.getResultMode());
+    assertEquals(4, result.getResultView());
   }
 
   /**

@@ -5287,6 +5287,19 @@ input.search:focus {
   height: 13px;
 }
 
+.ui-dialog .label-ui-dialog {
+        float:left;
+        clear:both;
+        width:30%;
+        margin-bottom:14px;
+}
+
+.ui-dialog .champs-ui-dialog {
+    float:right;
+    width:65%;
+    margin-bottom:14px;
+}
+
 /********************************/
 /** created action bar **/
 /*******************************/
