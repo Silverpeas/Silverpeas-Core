@@ -23,22 +23,6 @@
  */
 package org.silverpeas.process.io.file;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.getFile;
-import static org.apache.commons.io.FileUtils.listFiles;
-import static org.apache.commons.io.FileUtils.readFileToString;
-import static org.apache.commons.io.FileUtils.sizeOf;
-import static org.apache.commons.io.FileUtils.toURLs;
-import static org.apache.commons.io.FileUtils.touch;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.apache.commons.io.IOUtils.LINE_SEPARATOR;
-import static org.apache.commons.io.IOUtils.LINE_SEPARATOR_UNIX;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.write;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -51,6 +35,12 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.junit.Test;
+
+import static org.apache.commons.io.FileUtils.*;
+import static org.apache.commons.io.IOUtils.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * @author Yohann Chastagnier
@@ -118,13 +108,8 @@ public class HandledFileTest extends AbstractHandledFileTest {
     assertThat(readFileToString(getFile(sessionComponentPath, "file2")), is("file2line 2"));
   }
 
-  /*
-   * openInputStream
-   */
-
   @Test
   public void testOpenInputStream() throws Exception {
-
     // File exists in real path only
     HandledFile file = getHandledFile(realComponentPath, "file");
     touch(getFile(realComponentPath, "file"));

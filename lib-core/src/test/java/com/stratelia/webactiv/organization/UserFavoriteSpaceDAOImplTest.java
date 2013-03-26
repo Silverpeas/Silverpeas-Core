@@ -24,9 +24,9 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.util.List;
 
+import com.silverpeas.components.model.AbstractTestDao;
 
 import org.junit.Test;
 

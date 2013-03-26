@@ -24,8 +24,9 @@
 
 package com.silverpeas.thumbnail.model;
 
-import com.silverpeas.components.model.AbstractTestDao;
 import java.sql.Connection;
+
+import com.silverpeas.components.model.AbstractTestDao;
 
 /**
  *

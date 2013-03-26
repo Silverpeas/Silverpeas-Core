@@ -30,8 +30,6 @@ import java.util.List;
 
 import org.dbunit.database.IDatabaseConnection;
 import static junit.framework.TestCase.*;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.jcrutil.RandomGenerator;
@@ -44,7 +42,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 /**
  *

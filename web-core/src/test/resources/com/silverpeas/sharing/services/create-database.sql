@@ -1,9 +1,9 @@
-CREATE TABLE uniqueId (
+CREATE TABLE IF NOT EXISTS uniqueId (
 	maxId int NOT NULL ,
 	tableName VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE sb_filesharing_ticket
+CREATE TABLE IF NOT EXISTS sb_filesharing_ticket
 (
 	shared_object BIGINT NOT NULL,
 	componentId VARCHAR(255) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE sb_filesharing_ticket
   shared_object_type VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE sb_filesharing_history
+CREATE TABLE IF NOT EXISTS sb_filesharing_history
 (
 	id BIGINT NOT NULL,
 	keyfile VARCHAR(255) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE sb_filesharing_history
 	downloadIp VARCHAR(50)	NOT NULL
 );
 
-CREATE TABLE sb_attachment_attachment 
+CREATE TABLE IF NOT EXISTS sb_attachment_attachment 
 (
 	attachmentId		int		NOT NULL ,
 	attachmentPhysicalName	varchar (500)	NOT NULL ,
@@ -51,7 +51,7 @@ CREATE TABLE sb_attachment_attachment
 	xmlForm			varchar(50)		NULL
 );
 
-CREATE TABLE sb_attachment_attachmentI18N 
+CREATE TABLE IF NOT EXISTS sb_attachment_attachmentI18N 
 (
 	id			int		NOT NULL,
 	attachmentId		int		NOT NULL,

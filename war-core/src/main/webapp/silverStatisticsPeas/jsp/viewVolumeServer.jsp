@@ -29,6 +29,7 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 //Recuperation des parametres
@@ -44,14 +45,14 @@ if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 }
 tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
+tabbedPane.addTab(resources.getString("GML.attachments"),"javascript:displayVolumes();",true);
 
 ArrayPane arrayPane = gef.getArrayPane("List", "ViewVolumeServer"+( (spaceId==null) ? "" : ("?SpaceId="+spaceId) ), request,session);
 arrayPane.setVisibleLineNumber(50);
-     
+
 ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.organisation"));
 ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.AttachmentsNumber"));
- 	
+
 if (vStatsData != null) {
    	for (String[] item : vStatsData) {
    	  	ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -60,7 +61,7 @@ if (vStatsData != null) {
        	} else {
     		arrayLine.addArrayCellText(item[2]);
        	}
-     			
+
    		ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[3]);
    		Integer nb = new Integer(item[3]);
    		totalNumberOfAttachments += nb;
@@ -78,17 +79,26 @@ if (vStatsData != null) {
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
 		$.progressMessage();
-		document.volumeServerFormulaire.submit();		
+		document.volumeServerFormulaire.submit();
 	}
+
+  function displayVolumes() {
+    $.progressMessage();
+    $.get('<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />', function(newContent) {
+      var newPage = document.open("text/html", "replace");
+      newPage.write(newContent);
+      newPage.close();
+    });
+  }
 </script>
 </head>
 <body class="admin stats volume attachments">
  <form name="volumeServerFormulaire" action="ViewVolumeServer" method="post">
-<%	
+<%
 
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.AttachmentsNumber"), "ViewVolumeServer?SpaceId=");
-    
+
     if (spaceId != null && !"".equals(spaceId)) {
 		String path = "";
 		String separator = "";
@@ -102,7 +112,7 @@ if (vStatsData != null) {
 		}
 		browseBar.setPath(path);
 	}
-    
+
 	out.println(window.printBefore());
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
@@ -119,7 +129,7 @@ if (vStatsData != null) {
 			<% } %>
 		</select>
 	</div>
-		    
+
 <% if (vStatsData != null) { %>
 	<div align="center" id="chart">
 		<img src="<%=m_context%>/ChartServlet/?chart=DOC_VENTIL_CHART&random=<%=(new Date()).getTime()%>"/>

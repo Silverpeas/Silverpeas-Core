@@ -43,9 +43,9 @@
   HttpSession httpSession = request.getSession();
   String redirection = (String) httpSession.getAttribute("gotoNew");
   ResourceLocator mesLook =
-      new ResourceLocator("com.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
+      new ResourceLocator("org.silverpeas.lookSilverpeasV5.multilang.lookBundle", "fr");
   ResourceLocator authenticationBundle =
-      new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
+      new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
 
   String errorCode = request.getParameter("ErrorCode");
   if (errorCode == null || errorCode.equals("null")) {

@@ -64,6 +64,17 @@ public class NodeDetail extends AbstractI18NBean implements Serializable {
   private String userRole = null; // No persistence - usefull to store user role
   private boolean useId = false;
 
+
+  public NodeDetail(NodeDetail detail) {
+    new NodeDetail(detail.nodePK, detail.name, detail.description, detail.creationDate,
+        detail.creatorId, detail.path, detail.level, detail.fatherPK, detail.modelId, detail.status,
+        null, detail.type);
+    setOrder(detail.order);
+    setLanguage(detail.getLanguage());
+    setRightsDependsOn(detail.rightsDependsOn);
+
+  }
+
   /**
    * Construct an empty NodeDetail
    * @since 1.0

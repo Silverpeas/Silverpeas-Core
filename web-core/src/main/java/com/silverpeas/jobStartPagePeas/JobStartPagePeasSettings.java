@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * JobStartPagePeasSettings.java
- */
-
 package com.silverpeas.jobStartPagePeas;
 
 import com.stratelia.webactiv.util.ResourceLocator;

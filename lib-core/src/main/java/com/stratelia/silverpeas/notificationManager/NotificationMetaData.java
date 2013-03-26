@@ -37,6 +37,7 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
+
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -236,10 +237,9 @@ public class NotificationMetaData implements java.io.Serializable {
     } else {
       result = contents.get(language);
     }
-    SilverTrace.info("notificationManager",
-        "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",
-        "result = " + result);
-    return EncodeHelper.javaStringToHtmlParagraphe(result);
+    SilverTrace.info("notificationManager", "NotificationMetaData.getContent()",
+        "root.MSG_GEN_EXIT_METHOD", "result = " + result);
+    return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result);
   }
 
   /**

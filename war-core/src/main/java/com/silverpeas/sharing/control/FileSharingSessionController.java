@@ -46,8 +46,8 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   public FileSharingSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.sharing.multilang.fileSharingBundle",
-        "com.silverpeas.sharing.settings.fileSharingIcons");
+        "org.silverpeas.sharing.multilang.fileSharingBundle",
+        "org.silverpeas.sharing.settings.fileSharingIcons");
   }
 
   public List<Ticket> getTicketsByUser() throws RemoteException {
@@ -79,6 +79,6 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   }
 
   private SharingTicketService getFileSharingService() {
-    return SharingServiceFactory.getFactory().getSharingTicketService();
+    return SharingServiceFactory.getSharingTicketService();
   }
 }

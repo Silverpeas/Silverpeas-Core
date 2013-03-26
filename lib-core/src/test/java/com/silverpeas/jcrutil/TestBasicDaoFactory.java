@@ -1,30 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -35,9 +33,9 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.naming.InitialContext;
 
+import org.silverpeas.util.Charsets;
 import com.silverpeas.jcrutil.model.SilverpeasRegister;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.jaas.TestAccessAuthentified;
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 import com.stratelia.webactiv.util.JNDINames;
@@ -72,10 +70,14 @@ public class TestBasicDaoFactory {
     SimpleMemoryContextFactory.setUpAsInitialContext();
     context = new ClassPathXmlApplicationContext("/spring-in-memory-jcr.xml");
     repository = context.getBean("repository", JackrabbitRepository.class);
-    String cndFileName = TestAccessAuthentified.class.getClassLoader().getResource(
-        "silverpeas-jcr.txt").getFile().toString().replaceAll("%20", " ");
     BasicDaoFactory.getInstance().setApplicationContext(context);
-    SilverpeasRegister.registerNodeTypes(cndFileName);
+    Reader reader = new InputStreamReader(TestBasicDaoFactory.class.getClassLoader().
+        getResourceAsStream("silverpeas-jcr.txt"), Charsets.UTF_8);
+    try {
+      SilverpeasRegister.registerNodeTypes(reader);
+    } finally {
+      IOUtils.closeQuietly(reader);
+    }
     datasource = context.getBean("dataSource", BasicDataSource.class);
     InitialContext ic = new InitialContext();
     ic.rebind(JNDINames.DATABASE_DATASOURCE, datasource);
@@ -95,7 +97,7 @@ public class TestBasicDaoFactory {
   }
 
   protected IDataSet getDataSet() throws Exception {
-    InputStream in = this.getClass().getResourceAsStream("test-jcrutil-dataset.xml");
+    InputStream in = TestBasicDaoFactory.class.getResourceAsStream("test-jcrutil-dataset.xml");
     try {
       ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
       dataSet.addReplacementObject("[NULL]", null);
@@ -278,7 +280,7 @@ public class TestBasicDaoFactory {
       Property dateProperty = node.setProperty(JcrConstants.SLV_PROPERTY_CREATION_DATE, calend);
       assertEquals(calend.getTimeInMillis(),
           BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE)
-              .getTimeInMillis());
+          .getTimeInMillis());
       dateProperty.remove();
       assertNull(
           BasicDaoFactory.getCalendarProperty(node, JcrConstants.SLV_PROPERTY_CREATION_DATE));
@@ -349,10 +351,10 @@ public class TestBasicDaoFactory {
     String uuid3 = RandomGenerator.getRandomString();
     String uuid4 = RandomGenerator.getRandomString();
     Value[] references = new Value[]{
-        ValueFactoryImpl.getInstance().createValue(uuid1),
-        ValueFactoryImpl.getInstance().createValue(uuid2),
-        ValueFactoryImpl.getInstance().createValue(uuid3),
-        ValueFactoryImpl.getInstance().createValue(uuid4)};
+      ValueFactoryImpl.getInstance().createValue(uuid1),
+      ValueFactoryImpl.getInstance().createValue(uuid2),
+      ValueFactoryImpl.getInstance().createValue(uuid3),
+      ValueFactoryImpl.getInstance().createValue(uuid4)};
     Value[] result = BasicDaoFactory.removeReference(references, uuid3);
     assertNotNull(result);
     assertEquals(3, result.length);

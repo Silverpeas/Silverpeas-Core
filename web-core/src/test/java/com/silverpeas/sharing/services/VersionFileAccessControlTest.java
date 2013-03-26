@@ -24,21 +24,56 @@
  */
 package com.silverpeas.sharing.services;
 
-import com.silverpeas.sharing.mock.VersionSharingTicketService;
-import com.silverpeas.sharing.security.ShareableVersionDocument;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
-import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+import com.silverpeas.sharing.security.ShareableAttachment;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.PathTestUtil;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.*;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Date;
+
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import static com.silverpeas.jcrutil.JcrConstants.NT_FOLDER;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -46,66 +81,147 @@ import static org.junit.Assert.assertThat;
  *
  * @author ehugonnet
  */
-/*
- * @RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration(locations =
- * {"/spring-sharing-document-datasource.xml", "/spring-sharing-service.xml"})
- */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({com.stratelia.webactiv.util.EJBUtilitaire.class, SharingServiceFactory.class})
 public class VersionFileAccessControlTest {
 
   public VersionFileAccessControlTest() {
   }
+  private static ReplacementDataSet dataSet;
+  private static final String instanceId = "kmelia2";
+  private static final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+      "/spring-sharing-datasource.xml", "/spring-sharing-service.xml", "/spring-pure-memory-jcr.xml");
+  private static final DataSource dataSource = context.getBean("jpaDataSource", DataSource.class);
+  private boolean registred = false;
+  private static Repository repository = context.getBean(Repository.class);
+
+  @BeforeClass
+  public static void prepareDataSet() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    InputStream in = JpaSharingTicketService.class.getClassLoader().
+        getResourceAsStream("com/silverpeas/sharing/services/sharing_security_dataset.xml");
+    try {
+      dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      DBUtil.clearTestInstance();
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
+
+  public Connection getConnection() throws SQLException {
+    return dataSource.getConnection();
+  }
+
+  public Repository getRepository() {
+    return repository;
+  }
+
+  @Before
+  public void generalSetUp() throws Exception {
+    InitialContext ic = new InitialContext();
+    ic.rebind(JNDINames.ATTACHMENT_DATASOURCE, dataSource);
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    DatabaseOperation.DELETE_ALL.execute(connection, dataSet);
+    DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
+    DBUtil.getInstanceForTest(dataSource.getConnection());
+    if (!registred) {
+      Reader reader = null;
+      try {
+        reader = new InputStreamReader(SimpleFileAccessControlTest.class.getClassLoader().
+            getResourceAsStream("silverpeas-jcr.txt"), CharEncoding.UTF_8);
+        SilverpeasRegister.registerNodeTypes(reader);
+      } finally {
+        IOUtils.closeQuietly(reader);
+      }
+      registred = true;
+      DBUtil.getInstanceForTest(dataSource.getConnection());
+    }
+    Session session = null;
+    try {
+      session = getRepository().login(new SilverpeasSystemCredentials());
+      if (!session.getRootNode().hasNode(instanceId)) {
+        session.getRootNode().addNode(instanceId, NT_FOLDER);
+      }
+      session.save();
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
+  }
+
+  @After
+  public void cleanRepository() throws RepositoryException {
+    Session session = null;
+    try {
+      session = getRepository().login(new SilverpeasSystemCredentials());
+      if (session.getRootNode().hasNode(instanceId)) {
+        session.getRootNode().getNode(instanceId).remove();
+      }
+      session.save();
+    } finally {
+      if (session != null) {
+        session.logout();
+      }
+    }
+  }
+
+  @AfterClass
+  public static void generalCleanUp() throws Exception {
+    ((JackrabbitRepository) repository).shutdown();
+    FileUtils.deleteQuietly(new File(PathTestUtil.TARGET_DIR + "tmp" + File.separatorChar
+        + "temp_jackrabbit"));
+    context.close();    
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+  }
 
   /**
    * Test of isReadable method, of class SimpleFileAccessControl.
-   *
-   * @throws Exception
    */
   @Test
-  public void testIsReadable() throws Exception {
-    PowerMockito.mockStatic(EJBUtilitaire.class);
-    VersioningBmHome home = Mockito.mock(VersioningBmHome.class);
-    VersioningBm versionBm = Mockito.mock(VersioningBm.class);
-    PowerMockito.when(home.create()).thenReturn(versionBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class)).thenReturn(home);
-    DocumentPK pk = new DocumentPK(5, "kmelia2");
-    Document document = new Document();
-    document.setPk(pk);
-    final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService()).thenReturn(new VersionSharingTicketService(
-            token, pk));
-    PowerMockito.when(versionBm.getDocument(pk)).thenReturn(document);
-    VersionFileAccessControl instance = new VersionFileAccessControl();
+  public void testIsReadable() {
+    String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
+    SimpleDocument attachment = createFrenchSimpleAttachment();
+    ShareableAttachment resource = new ShareableAttachment(token, attachment);
+    SimpleFileAccessControl instance = new SimpleFileAccessControl();
     boolean expResult = true;
     boolean result = instance.isReadable(resource);
     assertThat(result, is(expResult));
   }
-  
+
   @Test
-  public void testIsNotReadable() throws Exception {
-    PowerMockito.mockStatic(EJBUtilitaire.class);
-    VersioningBmHome home = Mockito.mock(VersioningBmHome.class);
-    VersioningBm versionBm = Mockito.mock(VersioningBm.class);
-    PowerMockito.when(home.create()).thenReturn(versionBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-            VersioningBmHome.class)).thenReturn(home);
-    DocumentPK resourcePk = new DocumentPK(5, "kmelia2");
-    Document document = new Document();
-    document.setPk(resourcePk);
-    final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
-    ShareableVersionDocument resource = new ShareableVersionDocument(token, document);
-    PowerMockito.mockStatic(SharingServiceFactory.class);
-    DocumentPK pk = new DocumentPK(5, "kmelia2");
-    PowerMockito.when(SharingServiceFactory.getSharingTicketService()).thenReturn(new VersionSharingTicketService(
-            token, pk));
-    PowerMockito.when(versionBm.getDocument(pk)).thenReturn(document);
-    VersionFileAccessControl instance = new VersionFileAccessControl();
-    boolean expResult = true;
+  public void testIsNotReadable() {
+    createFrenchSimpleAttachment();
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, instanceId);
+    pk.setOldSilverpeasId(10);
+    SimpleDocument attachment = new HistorisedDocument();
+    attachment.setPK(pk);
+    attachment.setForeignId("15");
+    ShareableAttachment resource = new ShareableAttachment(
+        "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505", attachment);
+    SimpleFileAccessControl instance = new SimpleFileAccessControl();
+    boolean expResult = false;
     boolean result = instance.isReadable(resource);
     assertThat(result, is(expResult));
+  }
+
+  private SimpleDocument createFrenchSimpleAttachment() {
+    String language = "fr";
+    String fileName = "test.odp";
+    String title = "Mon document de test";
+    String description = "Ceci est un document de test";
+    String creatorId = "10";
+    Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+    SimpleAttachment file = new SimpleAttachment(fileName, language, title, description,
+        "Ceci est un test".getBytes(Charsets.UTF_8).length, MimeTypes.MIME_TYPE_OO_PRESENTATION,
+        creatorId, creationDate, null);
+    SimpleDocumentPK pk = new SimpleDocumentPK(null, instanceId);
+    pk.setOldSilverpeasId(5);
+    SimpleDocument attachment = new HistorisedDocument();
+    attachment.setPK(pk);
+    attachment.setFile(file);
+    attachment.setForeignId("12");
+    return AttachmentServiceFactory.getAttachmentService().createAttachment(attachment,
+        new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8)));
+
   }
 }

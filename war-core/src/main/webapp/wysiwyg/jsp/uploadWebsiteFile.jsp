@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -41,16 +42,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="java.io.File"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
-<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 
 <%
-  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-  WysiwygController scc = (WysiwygController) request.getAttribute("wysiwyg");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+        GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    String m_context = URLManager.getApplicationURL();
 	String language = request.getParameter("Language");
 	String thePath = request.getParameter("Path");
-
-    String m_context = GeneralPropertiesManager.getString("ApplicationURL");
-    ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
+    ResourceLocator message = new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
+        language);
 
     //Le cadre
     Board board = gef.getBoard();

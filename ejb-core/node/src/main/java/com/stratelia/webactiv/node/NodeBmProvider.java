@@ -45,8 +45,7 @@ public class NodeBmProvider {
   public NodeBm getNodeBm() {
     if (nodeBm == null) {
       try {
-        NodeBmHome home = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-                JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        NodeBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
         nodeBm = home.create();
       } catch (Exception ex) {
         throw new RuntimeException(ex.getMessage(), ex);

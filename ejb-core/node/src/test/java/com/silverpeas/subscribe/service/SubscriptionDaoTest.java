@@ -59,7 +59,7 @@ import static org.junit.Assert.assertThat;
 public class SubscriptionDaoTest {
 
   private static final String INSTANCE_ID = "kmelia60";
-  private static SubscriptionDao subscriptionDao = new SubscriptionDao();
+  private SubscriptionDao subscriptionDao = new SubscriptionDao();
 
   // Spring context
   private ClassPathXmlApplicationContext context;

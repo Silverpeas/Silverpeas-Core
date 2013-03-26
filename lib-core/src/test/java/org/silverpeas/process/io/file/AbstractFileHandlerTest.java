@@ -23,19 +23,13 @@
  */
 package org.silverpeas.process.io.file;
 
-import static org.apache.commons.io.FileUtils.deleteQuietly;
-import static org.apache.commons.io.FileUtils.getFile;
-import static org.apache.commons.io.FileUtils.touch;
-import static org.apache.commons.io.FileUtils.writeStringToFile;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.silverpeas.process.io.IOAccess;
 import org.silverpeas.process.io.file.exception.FileHandlerException;
 import org.silverpeas.process.session.DefaultProcessSession;
@@ -43,17 +37,21 @@ import org.silverpeas.process.session.ProcessSession;
 
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
+import static org.apache.commons.io.FileUtils.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 /**
  * @author Yohann Chastagnier
  */
 public class AbstractFileHandlerTest {
+
   private static final FileBasePath BASE_PATH_TEST = FileBasePath.UPLOAD_PATH;
-  private static final File sessionRootPath = new File(
-      GeneralPropertiesManager.getString("tempPath"));
+  private static final File sessionRootPath = new File(GeneralPropertiesManager.
+      getString("tempPath"));
   private static final File realRootPath = new File(BASE_PATH_TEST.getPath());
   private static final File otherFile = new File(
       new File(BASE_PATH_TEST.getPath()).getParentFile(), "other");
-
   private ProcessSession currentSession;
   private FileHandlerTest fileHandler;
   private String componentInstanceId;
@@ -63,15 +61,14 @@ public class AbstractFileHandlerTest {
   @Before
   public void beforeTest() throws Exception {
     cleanTest();
-    componentInstanceId =
-        "component" + String.valueOf(System.identityHashCode(this)).substring(0, 2);
+    componentInstanceId = "component" + String.valueOf(System.identityHashCode(this)).
+        substring(0, 2);
     currentSession = createSessionTest();
     fileHandler = new FileHandlerTest(currentSession);
     realPath = getFile(realRootPath, componentInstanceId);
     realPath.mkdirs();
-    sessionPath =
-        getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.getHandledNodeName(),
-            componentInstanceId);
+    sessionPath = getFile(sessionRootPath, currentSession.getId(), BASE_PATH_TEST.
+        getHandledNodeName(), componentInstanceId);
     sessionPath.mkdirs();
     touch(otherFile);
   }
@@ -169,7 +166,7 @@ public class AbstractFileHandlerTest {
   public void testTranslateToRealPathFromSessionFile() {
     final File test =
         fileHandler.translateToRealPath(BASE_PATH_TEST,
-            getFile(fileHandler.getRootPathForTest(), "file"));
+        getFile(fileHandler.getRootPathForTest(), "file"));
     final File expected = getFile(realPath, "file");
     assertFileNames(test, expected);
   }
@@ -200,7 +197,7 @@ public class AbstractFileHandlerTest {
   public void testTranslateToSessionPathFromSessionFile() {
     final File test =
         fileHandler.translateToSessionPath(BASE_PATH_TEST,
-            getFile(fileHandler.getRootPathForTest(), "file"));
+        getFile(fileHandler.getRootPathForTest(), "file"));
     final File expected = getFile(sessionPath, "file");
     assertFileNames(test, expected);
   }
@@ -395,6 +392,7 @@ public class AbstractFileHandlerTest {
 
   /**
    * Centralizes asserts
+   *
    * @param test
    * @param expected
    */
@@ -407,6 +405,7 @@ public class AbstractFileHandlerTest {
   }
 
   private class FileHandlerTest extends AbstractFileHandler {
+
     protected FileHandlerTest(final ProcessSession session) {
       super(session);
     }

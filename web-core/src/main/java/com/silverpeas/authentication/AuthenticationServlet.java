@@ -29,6 +29,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.authentication.Authentication;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
@@ -37,6 +38,7 @@ import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
 import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
+
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -49,6 +51,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -76,7 +79,7 @@ public class AuthenticationServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding("UTF-8");
+      request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (silverpeasSessionOpener.isAnonymousUser(request)) {
       silverpeasSessionOpener.closeSession(request);
@@ -272,7 +275,6 @@ public class AuthenticationServlet extends HttpServlet {
       for(Map.Entry<String, Object> capability: credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
       }
-
       return key;
     }
     return null;

@@ -24,16 +24,16 @@ import com.silverpeas.jcrutil.security.impl.DigestCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
+
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.WithNested;
-import java.security.Principal;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+
 import org.apache.jackrabbit.core.security.AnonymousPrincipal;
 import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
@@ -46,13 +46,13 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.silverpeas.util.cryptage.CryptMD5;
-import org.apache.jackrabbit.util.Text;
 import org.silverpeas.core.admin.OrganisationController;
 
 public class SilverpeasLoginModule implements LoginModule {
@@ -233,7 +233,7 @@ public class SilverpeasLoginModule implements LoginModule {
     String md5a1 = CryptMD5.encrypt(user.getPassword());
     String serverDigestValue = md5a1 + ":" + sc.getNonce() + ":" + sc.getNc() + ":" + sc.getCnonce()
         + ":" + sc.getQop() + ":" + sc.getMd5a2();
-    String serverDigest = Text.md5(serverDigestValue);
+    String serverDigest = CryptMD5.encrypt(serverDigestValue);
     return serverDigest.equals(sc.getClientDigest());
   }
 }

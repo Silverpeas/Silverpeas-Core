@@ -20,7 +20,12 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
-import com.silverpeas.admin.components.*;
+import com.silverpeas.admin.components.ComponentPasteInterface;
+import com.silverpeas.admin.components.Instanciateur;
+import com.silverpeas.admin.components.Parameter;
+import com.silverpeas.admin.components.PasteDetail;
+import com.silverpeas.admin.components.Profile;
+import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.notification.AdminNotificationService;
 import com.silverpeas.admin.spaces.SpaceInstanciator;
 import com.silverpeas.admin.spaces.SpaceTemplate;
@@ -33,7 +38,11 @@ import com.stratelia.silverpeas.domains.ldapdriver.LDAPSynchroUserItf;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.cache.*;
+import com.stratelia.webactiv.beans.admin.cache.AdminCache;
+import com.stratelia.webactiv.beans.admin.cache.DomainCache;
+import com.stratelia.webactiv.beans.admin.cache.GroupCache;
+import com.stratelia.webactiv.beans.admin.cache.Space;
+import com.stratelia.webactiv.beans.admin.cache.TreeCache;
 import com.stratelia.webactiv.beans.admin.dao.GroupSearchCriteriaForDAO;
 import com.stratelia.webactiv.beans.admin.dao.UserSearchCriteriaForDAO;
 import com.stratelia.webactiv.organization.AdminPersistenceException;
@@ -4315,9 +4324,7 @@ public final class Admin {
   public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws Exception {
     SilverTrace.info("admin", "Admin.getUserSpaceTreeview",
         "root.MSG_GEN_ENTER_METHOD", "user id = " + userId);
-    List<String> availableComponentIds = Arrays.asList(getAvailCompoIds(userId));
-    Set<String> componentsId = new HashSet<String>(availableComponentIds.size());
-    componentsId.addAll(availableComponentIds);
+    Set<String> componentsId = new HashSet<String>(Arrays.asList(getAvailCompoIds(userId)));
     Set<String> authorizedIds = new HashSet<String>(100);
     if (!componentsId.isEmpty()) {
       String componentId = componentsId.iterator().next();
@@ -5325,12 +5332,9 @@ public final class Admin {
   private ArrayList<String> getAllComponentIdsRecur(String sSpaceId, String sUserId,
       String componentNameRoot, boolean inCurrentSpace) throws Exception {
     ArrayList<String> alCompoIds = new ArrayList<String>();
-
     getComponentIdsByNameAndUserId(sUserId, componentNameRoot);
-
     // Get components in the root of the space
     if (inCurrentSpace) {
-
       String[] componentIds = getAvailCompoIdsAtRoot(sSpaceId, sUserId);
       if (componentIds != null) {
         for (String componentId : componentIds) {
@@ -5344,9 +5348,7 @@ public final class Admin {
 
     // Get components in sub spaces
     String[] asSubSpaceIds = getAllSubSpaceIds(sSpaceId);
-    for (int nI = 0;
-        asSubSpaceIds != null && nI < asSubSpaceIds.length;
-        nI++) {
+    for (int nI = 0; asSubSpaceIds != null && nI < asSubSpaceIds.length; nI++) {
       SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
           "root.MSG_GEN_PARAM.VALUE", "Sub spaceId=" + asSubSpaceIds[nI]);
       SpaceInst spaceInst = getSpaceInstById(asSubSpaceIds[nI]);

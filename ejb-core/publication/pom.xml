@@ -49,12 +49,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>versioning</artifactId>
-      <version>${project.parent.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${project.parent.version}</version>

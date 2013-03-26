@@ -28,67 +28,81 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%
 //Recuperation des parametres
-Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
+  Vector<String[]> vStatsData = (Vector<String[]>) request.getAttribute("StatsData");
 
-int totalNumberOfInstances = 0;
+  int totalNumberOfInstances = 0;
 
-TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",true);
-tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",false);
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context
+        + "/RsilverStatisticsPeas/jsp/ViewVolumeServices", true);
+  tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"),
+        m_context + "/RsilverStatisticsPeas/jsp/ViewVolumePublication", false);
+  tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();", false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<head>
-<title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel />
-</head>
-<body class="admin stats volume applications">
-<%
-	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
-    browseBar.setComponentName(resources.getString("silverStatisticsPeas.Volumes"));
-    browseBar.setPath(resources.getString("silverStatisticsPeas.JobPeas"));
-    
-    out.println(window.printBefore());
-    out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-    
-    ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
-    arrayPane.setVisibleLineNumber(50);
+  <head>
+    <title><%=resources.getString("GML.popupTitle")%></title>
+    <view:looknfeel />
+    <script type="text/javascript">
+      function displayVolumes() {
+        $.progressMessage();
+        $.get('<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />', function(newContent) {
+          var newPage = document.open("text/html", "replace");
+          newPage.write(newContent);
+          newPage.close();
+        });
+      }
+    </script>
+  </head>
+  <body class="admin stats volume applications">
+    <%
+      browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
+      browseBar.setComponentName(resources.getString("silverStatisticsPeas.Volumes"));
+      browseBar.setPath(resources.getString("silverStatisticsPeas.JobPeas"));
 
-    arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
-    arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
+      out.println(window.printBefore());
+        out.println(tabbedPane.print());
+        out.println(frame.printBefore());
 
-    if (vStatsData != null) {
-    	for (String[] item : vStatsData) {
-        	ArrayLine arrayLine = arrayPane.addArrayLine();				
-       		arrayLine.addArrayCellText(item[0]);
-            ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
-            Integer nbInstances = new Integer(item[1]);
-            totalNumberOfInstances += nbInstances;
-            cellTextCount.setCompareOn(nbInstances);
-        }
-	}
-%>
+      ArrayPane arrayPane = gef.getArrayPane("List", "", request, session);
+        arrayPane.setVisibleLineNumber(50);
 
-<div align="center" id="chart">
-	<img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=new Date().getTime()%>"/>
-</div>
-<div align="center" id="total">
-	<span><span class="number"><%=totalNumberOfInstances %></span> <%=resources.getString("silverStatisticsPeas.sums.applications") %></span>
-</div>
+      arrayPane.addArrayColumn(resources.getString("GML.jobPeas"));
+        arrayPane.addArrayColumn(resources.getString("silverStatisticsPeas.InstancesNumber"));
 
-<%
-    if (vStatsData != null) {
+  if (vStatsData != null) {
+      for (String[] item : vStatsData) {
+        ArrayLine arrayLine = arrayPane.addArrayLine();
+        arrayLine.addArrayCellText(item[0]);
+        ArrayCellText cellTextCount = arrayLine.addArrayCellText(item[1]);
+        Integer nbInstances = new Integer(item[1]);
+        totalNumberOfInstances += nbInstances;
+        cellTextCount.setCompareOn(nbInstances);
+      }
+    }
+    %>
+
+    <div align="center" id="chart">
+      <img src="<%=m_context%>/ChartServlet/?chart=KM_INSTANCES_CHART&random=<%=new Date().getTime()%>"/>
+    </div>
+    <div align="center" id="total">
+      <span><span class="number"><%=totalNumberOfInstances%></span> <%=resources.getString("silverStatisticsPeas.sums.applications")%></span>
+    </div>
+
+      <%
+      if (vStatsData != null) {
         out.println(arrayPane.print());
-	}
-  
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-</body>
+      }
+
+  out.println(frame.printAfter());
+    out.println(window.printAfter());
+    %>
+    <view:progressMessage/>
+  </body>
 </html>

@@ -26,15 +26,17 @@
 -->
 
 <dataset>
-  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP" 
+  <st_domain id="0" name="Silverpeas" propfilename="com.stratelia.silverpeas.domains.domainSP"
   classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP" />
   <st_user id="1" domainid="0" specificid="1" lastname="Administrateur" login="SilverAdmin" accesslevel="A" state='VALID' stateSaveDate='2012-01-01 00:00:00 0' />
   <st_user id="2" domainid="0" specificid="2" lastname="Hetfield" login="jhetfield" accesslevel="U" state='VALID' stateSaveDate='2013-02-11 00:00:00 0' />
   <st_user id="3" domainid="0" specificid="3" lastname="Hammett" login="khammett" accesslevel="U" state='VALID' stateSaveDate='2013-02-11 00:00:00 0' />
+
   <domainsp_user id="1" lastname="Administrateur" login="SilverAdmin" />
   <domainsp_user id="2" lastname="Hetfield" login="jhetfield" />
   <domainsp_user id="3" lastname="Hammett" login="khammett" />
   <st_group id="1" domainid="0" specificid="1" name="Groupe 1"/>	
+
   <domainsp_group id="1" name="Groupe 1"/>
   <uniqueid maxid="1" tablename="domainsp_group"/>
   <uniqueid maxid="1" tablename="st_group"/>

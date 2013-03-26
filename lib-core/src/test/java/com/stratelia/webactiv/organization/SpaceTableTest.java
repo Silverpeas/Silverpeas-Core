@@ -29,8 +29,10 @@
 package com.stratelia.webactiv.organization;
 
 import com.silverpeas.components.model.AbstractTestDao;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  *
