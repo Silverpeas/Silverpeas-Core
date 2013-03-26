@@ -348,16 +348,28 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 }
 .milieuBoutonV5 {
 	background-image: none;
+	background-color:transparent;
+	border:0;
+	padding:0;
+}
+.milieuBoutonV5 a,
+button {
+		background-image: none;
 	background-color:#C8ED99;
 	border:1px solid #9BD94A;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	box-shadow:5px 5px 10px #cccccc;
-	-moz-box-shadow:5px 5px 10px #cccccc;
-	-webkit-box-shadow:5px 5px 10px #cccccc;
-	padding-left: 10px;
-	padding-right: 10px;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	padding: 8px 10px;
+	line-height:120%;
+	font-weight:bold;
+	display:inline-block;
+	color:#444;
+	font-size:11px;
+}
+.milieuBoutonV5 a:hover,
+button:hover{
+	background-color:#A8DE66;
 }
 
 
@@ -776,19 +788,3 @@ div#vakata-contextmenu.jstree-default-context li.vakata-separator {
 	}
 .txtnav {
 	font-size:12px;}
-
-button {
-	background-image: none;
-	background-color:#C8ED99;
-	border:1px solid #9BD94A;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	box-shadow:5px 5px 10px #cccccc;
-	-moz-box-shadow:5px 5px 10px #cccccc;
-	-webkit-box-shadow:5px 5px 10px #cccccc;
-	padding-left: 10px;
-	padding-right: 10px;
-	color: #444444;
-	font-size: 11px;
-}

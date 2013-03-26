@@ -24,6 +24,8 @@
 
 package com.silverpeas.subscribe;
 
+import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -50,7 +52,13 @@ public class SubscriptionCallBack implements CallBack {
           + ", extraParam = " + extraParam.toString());
       return;
     }
-    getSubscribeBm().unsubscribe(Integer.toString(iParam));
+    if (CallBackManager.ACTION_BEFORE_REMOVE_USER == action) {
+      getSubscribeBm().unsubscribeBySubscriber(
+          UserSubscriptionSubscriber.from(String.valueOf(iParam)));
+    } else if(CallBackManager.ACTION_BEFORE_REMOVE_GROUP == action) {
+      getSubscribeBm().unsubscribeBySubscriber(
+          GroupSubscriptionSubscriber.from(String.valueOf(iParam)));
+    }
   }
 
   /*
@@ -61,6 +69,7 @@ public class SubscriptionCallBack implements CallBack {
   public void subscribe() {
     CallBackManager callBackManager = CallBackManager.get();
     callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_USER, this);
+    callBackManager.subscribeAction(CallBackManager.ACTION_BEFORE_REMOVE_GROUP, this);
   }
 
   public SubscriptionService getSubscribeBm() {

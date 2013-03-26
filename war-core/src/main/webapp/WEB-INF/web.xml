@@ -567,6 +567,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>LaunchWebdavEdition</servlet-name>
         <servlet-class>org.silverpeas.attachment.web.LaunchWebdavEdition</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>SubscriptionRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.subscription.servlets.SubscriptionRequestRouter</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>REST Container</servlet-name>
     <url-pattern>/services/*</url-pattern>
@@ -971,6 +975,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>QaptchaServlet</servlet-name>
     <url-pattern>/Qaptcha</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SubscriptionRequestRouter</servlet-name>
+    <url-pattern>/RSubscription/*</url-pattern>
   </servlet-mapping>
   <error-page>
     <error-code>404</error-code>
