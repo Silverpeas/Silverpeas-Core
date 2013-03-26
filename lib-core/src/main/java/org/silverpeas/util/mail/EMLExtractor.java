@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -39,15 +40,19 @@ import javax.mail.Session;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.mail.internet.ParseException;
-
-import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
-import org.apache.commons.lang3.text.translate.EntityArrays;
-import org.apache.commons.lang3.text.translate.LookupTranslator;
 
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 
 public class EMLExtractor implements MailExtractor {
 
@@ -56,10 +61,14 @@ public class EMLExtractor implements MailExtractor {
   private MimeMessage message;
 
   public EMLExtractor(File file) throws ExtractorException {
+    InputStream in = null;
     try {
-      init(new FileInputStream(file));
+      in = new FileInputStream(file);
+      init(in);
     } catch (Exception e) {
       throw new ExtractorException("EMLExtractor.constructor", SilverpeasException.ERROR, "", e);
+    } finally {
+      IOUtils.closeQuietly(in);
     }
   }
 
@@ -70,20 +79,20 @@ public class EMLExtractor implements MailExtractor {
       throw new ExtractorException("EMLExtractor.constructor", SilverpeasException.ERROR, "", e);
     }
   }
-  
+
   private void init(InputStream file) throws MessagingException {
     Properties props = System.getProperties();
     Session mailSession = Session.getDefaultInstance(props, null);
-    
     message = new MimeMessage(mailSession, file);
   }
 
+  @Override
   public Mail getMail() throws Exception {
-    
+
     Mail mail = new Mail();
     mail.setDate(message.getSentDate());
     mail.setSubject(message.getSubject());
-    
+
     String body = null;
     Object messageContent = message.getContent();
     if (messageContent instanceof Multipart) {
@@ -91,17 +100,18 @@ public class EMLExtractor implements MailExtractor {
     } else if (messageContent instanceof String) {
       body = (String) messageContent;
     }
-    
+
     if (message.getFrom() != null) {
       mail.setFrom((InternetAddress) message.getFrom()[0]);
     }
     mail.setTo(message.getRecipients(Message.RecipientType.TO));
     mail.setCc(message.getRecipients(Message.RecipientType.CC));
-    
+
     mail.setBody(ESCAPE_ISO8859_1.translate(body));
     return mail;
   }
-  
+
+  @Override
   public List<MailAttachment> getAttachments() throws Exception {
     List<MailAttachment> attachments = new ArrayList<MailAttachment>();
     Object messageContent = message.getContent();
@@ -110,13 +120,13 @@ public class EMLExtractor implements MailExtractor {
     }
     return attachments;
   }
-  
+
   private String getBody(Multipart multipart) throws MessagingException, IOException {
     int partsNumber = multipart.getCount();
     String body = "";
     for (int i = 0; i < partsNumber; i++) {
       Part part = multipart.getBodyPart(i);
-      if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
+      if (part.getContentType().contains(MimeTypes.HTML_MIME_TYPE)) {
         // if present, return always HTML part
         return (String) part.getContent();
       } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
@@ -126,7 +136,8 @@ public class EMLExtractor implements MailExtractor {
     return body;
   }
 
-  private String processMultipart(Multipart multipart, List<MailAttachment> attachments) throws MessagingException, IOException {
+  private String processMultipart(Multipart multipart, List<MailAttachment> attachments) throws
+      MessagingException, IOException {
     int partsNumber = multipart.getCount();
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < partsNumber; i++) {
@@ -136,7 +147,8 @@ public class EMLExtractor implements MailExtractor {
     return sb.toString();
   }
 
-  private String processMailPart(Part part, List<MailAttachment> attachments) throws MessagingException, IOException {
+  private String processMailPart(Part part, List<MailAttachment> attachments) throws
+      MessagingException, IOException {
     if (!isTextPart(part)) {
       Object content = part.getContent();
       if (content instanceof Multipart) {
@@ -162,8 +174,7 @@ public class EMLExtractor implements MailExtractor {
 
   private boolean isTextPart(Part part) throws MessagingException {
     String disposition = part.getDisposition();
-    if (!Part.ATTACHMENT.equals(disposition) &&
-        !Part.INLINE.equals(disposition)) {
+    if (!Part.ATTACHMENT.equals(disposition) && !Part.INLINE.equals(disposition)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         return "text".equalsIgnoreCase(type.getPrimaryType());
@@ -173,18 +184,17 @@ public class EMLExtractor implements MailExtractor {
     } else if (Part.INLINE.equals(disposition)) {
       try {
         ContentType type = new ContentType(part.getContentType());
-        return "text".equalsIgnoreCase(type.getPrimaryType()) &&
-            getFileName(part) == null;
+        return "text".equalsIgnoreCase(type.getPrimaryType()) && getFileName(part) == null;
       } catch (ParseException e) {
         e.printStackTrace();
       }
     }
     return false;
   }
-  
+
   private static String getFileName(Part part) throws MessagingException {
     String fileName = part.getFileName();
-    if (fileName == null) {
+    if (!StringUtil.isDefined(fileName)) {
       try {
         ContentType type = new ContentType(part.getContentType());
         fileName = type.getParameter("name");
@@ -192,7 +202,13 @@ public class EMLExtractor implements MailExtractor {
         e.printStackTrace();
       }
     }
+    if (StringUtil.isDefined(fileName) && fileName.startsWith("=?") && fileName.endsWith("?=")) {
+      try {
+        fileName = MimeUtility.decodeText(part.getFileName());
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+    }
     return fileName;
   }
-
 }
