@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.node.ejb;
+package com.stratelia.webactiv.util.node.control.dao;
 
 import com.silverpeas.util.i18n.I18NHelper;
 import org.junit.BeforeClass;
