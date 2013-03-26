@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,33 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.util.mail;
 
-package com.silverpeas.converter.openoffice;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import static com.silverpeas.converter.DocumentFormat.pdf;
+public class ExtractorException extends SilverpeasException {
 
-import java.io.File;
+  private static final long serialVersionUID = 9169416970570371214L;
 
-import javax.inject.Named;
-
-import com.silverpeas.converter.DocumentFormat;
-import com.silverpeas.converter.ToPDFConverter;
-import com.silverpeas.util.FileUtil;
-
-/**
- * Implementation of the ToPDFConverter interface by using the OpenOffice API to perform its job.
- * @author Yohann Chastagnier
- */
-@Named("toPDFConverter")
-public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToPDFConverter {
-
-  @Override
-  public DocumentFormat[] getSupportedFormats() {
-    return new DocumentFormat[] { pdf };
+  public ExtractorException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
+  
+  public ExtractorException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, null, nested);
   }
 
   @Override
-  public boolean isDocumentSupported(final File document) {
-    return FileUtil.isOpenOfficeCompatible(document.getName());
+  public String getModule() {
+    return "util";
   }
+
 }

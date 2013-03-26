@@ -25,19 +25,27 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.ejb.CreateException;
+import javax.mail.internet.InternetAddress;
 
+import org.antlr.stringtemplate.StringTemplate;
 import org.apache.commons.lang.StringUtils;
+import org.silverpeas.util.mail.Extractor;
+import org.silverpeas.util.mail.Mail;
+import org.silverpeas.util.mail.MailExtractor;
 
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MetaData;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
-
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -50,6 +58,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 public class PublicationImportExport {
 
   final static MetadataExtractor metadataExtractor = new MetadataExtractor();
+  final static ResourceLocator multilang = new ResourceLocator(
+      "org.silverpeas.importExport.multilang.importExportBundle", "fr");
 
   private PublicationImportExport() {
   }
@@ -58,7 +68,6 @@ public class PublicationImportExport {
    * Méthodes permettant de récupérer un objet publication dont les méta-données sont générées à
    * partir des informations du fichier destiné à être attaché à celle ci. Utilisation de l'api POI
    * dans le cas des fichiers MSoffice.
-   *
    * @param userDetail - contient les informations sur l'utilisateur du moteur d'importExport
    * @param file - fichier destiné à être attaché à la publication d'où l'on extrait les
    * informations qui iront renseigner les méta-données de la publication à creer
@@ -72,8 +81,42 @@ public class PublicationImportExport {
     String description = "";
     String motsClefs = "";
     String content = "";
+    Date creationDate = new Date();
 
-    if (isPOIUsed) {
+    if (FileUtil.isMail(file.getName())) {
+      try {
+        MailExtractor extractor = Extractor.getExtractor(file);
+        Mail mail = extractor.getMail();
+
+        creationDate = mail.getDate();
+
+        // define StringTemplate attributes
+        Map<String, String> attributes = new HashMap<String, String>();
+        attributes.put("subject", mail.getSubject());
+        InternetAddress address = mail.getFrom();
+        if (StringUtil.isDefined(address.getPersonal())) {
+          attributes.put("fromPersonal", address.getPersonal());
+          description += address.getPersonal() + " - ";
+        }
+        attributes.put("fromAddress", address.getAddress());
+
+        // generate title of publication
+        StringTemplate titleST =
+            new StringTemplate(multilang.getString("importExport.import.mail.title"));
+        titleST.setAttributes(attributes);
+        nomPub = titleST.toString();
+
+        // generate description of publication
+        StringTemplate descriptionST =
+            new StringTemplate(multilang.getString("importExport.import.mail.description"));
+        descriptionST.setAttributes(attributes);
+        description = descriptionST.toString();
+      } catch (Exception e) {
+        SilverTrace.error("importExport",
+            "PublicationImportExport.convertFileInfoToPublicationDetail",
+            "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+      }
+    } else if (isPOIUsed) {
       try {
         MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
         if (StringUtil.isDefined(metaData.getTitle())) {
@@ -84,26 +127,19 @@ public class PublicationImportExport {
         }
         if (metaData.getKeywords() != null && metaData.getKeywords().length > 0) {
           motsClefs = StringUtils.join(metaData.getKeywords(), ';');
-        } else {
-          motsClefs = "";
         }
-        content = "fichier(s) importé(s)";
       } catch (Exception ex) {
-        // on estime que l'exception est dû au fait que nous ne sommes pas en présence d'un
-        // fichier OLE2 (office)
-        nomPub = fileName;
-        description = nomPub;
-        motsClefs = nomPub;
-        content = nomPub;
+        SilverTrace.error("importExport",
+            "PublicationImportExport.convertFileInfoToPublicationDetail",
+            "importExport.EX_CANT_EXTRACT_PUBLICATION_METADATA_FROM_FILE", ex);
       }
     }
-    return new PublicationDetail("unknown", nomPub, description, new Date(), new Date(), null,
+    return new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
         userDetail.getId(), "5", null, motsClefs, content);
   }
 
   /**
    * Add nodes (coordinatesId) to a publication.
-   *
    * @param pubPK
    * @param nodes List of coordinateId.
    */
@@ -128,10 +164,7 @@ public class PublicationImportExport {
       PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
       return publicationBmHome.create();
-    } catch (RemoteException e) {
-     throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    } catch (CreateException e) {
+    } catch (Exception e) {
       throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
@@ -139,7 +172,6 @@ public class PublicationImportExport {
 
   /**
    * Get unbalanced publications
-   *
    * @param componentId
    * @return ArrayList of publicationDetail
    */
@@ -149,7 +181,7 @@ public class PublicationImportExport {
           new PublicationPK("useless", componentId)));
     } catch (RemoteException e) {
       throw new PublicationRuntimeException("CoordinateImportExport.getUnbalancedPublications()",
-          SilverpeasRuntimeException.ERROR, 
+          SilverpeasRuntimeException.ERROR,
           "importExport.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES", e);
     }
   }

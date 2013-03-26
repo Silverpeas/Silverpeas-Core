@@ -20,6 +20,38 @@
  */
 package com.silverpeas.importExport.control;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.attachment.AttachmentImportExport;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.mail.Extractor;
+import org.silverpeas.util.mail.Mail;
+import org.silverpeas.util.mail.MailAttachment;
+import org.silverpeas.util.mail.MailExtractor;
+
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.RepositoriesType;
 import com.silverpeas.importExport.model.RepositoryType;
@@ -27,28 +59,18 @@ import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
+import com.silverpeas.publication.importExport.PublicationContentType;
+import com.silverpeas.publication.importExport.XMLModelContentType;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.importExport.attachment.AttachmentImportExport;
-import org.silverpeas.importExport.versioning.VersioningImportExport;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Classe manager des importations massives du moteur d'importExport de silverPeas
@@ -56,6 +78,9 @@ import java.util.List;
  * @author sdevolder
  */
 public class RepositoriesTypeManager {
+  
+  public static final CharSequenceTranslator ESCAPE_ISO8859_1 = new LookupTranslator(
+      EntityArrays.ISO8859_1_ESCAPE());
 
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
@@ -165,13 +190,23 @@ public class RepositoriesTypeManager {
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = " + pubDetailToCreate.getStatus());
+          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
+          + pubDetailToCreate.getStatus());
+
       // Création de la publication
-      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport, userDetail,
-          pubDetailToCreate, topicId);
+      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
+          userDetail, pubDetailToCreate, topicId);
+      
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
-          "root.MSG_GEN_PARAM_VALUE",
-          "pubDetailToCreate created");
+          "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
+      
+      if (FileUtil.isMail(file.getName())) {
+        // if imported file is an e-mail, its textual content is saved in a dedicated form
+        // and attached files are attached to newly created publication
+        processMailContent(pubDetailToCreate, file, unitReport, gedIE, isVersioningUsed);
+      }
+      
+      // add attachment
       SimpleDocument document;
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       if (isVersioningUsed) {
@@ -186,7 +221,6 @@ public class RepositoriesTypeManager {
       document.getFile().setCreatedBy(userDetail.getId());
       document.setCreated(new Date());
       document.setForeignId(pubDetailToCreate.getPK().getId());
-      document.setTitle(file.getName());
       document.setContentType(FileUtil.getMimeType(file.getName()));
       if (document.getSize() > 0L) {
         AttachmentServiceFactory.getAttachmentService()
@@ -203,6 +237,109 @@ public class RepositoriesTypeManager {
           .error("importExport", "RepositoriesTypeManager.importFile()", "root.EX_NO_MESSAGE", ex);
     }
     return pubDetailToCreate;
+  }
+  
+  private void processMailContent(PublicationDetail pubDetail, File file, UnitReport unitReport,
+      GEDImportExport gedIE, boolean isVersioningUsed) throws ImportExportException {
+
+    String componentId = gedIE.getCurrentComponentId();
+    UserDetail userDetail = gedIE.getCurentUserDetail();
+    MailExtractor extractor = null;
+    Mail mail = null;
+    try {
+      extractor = Extractor.getExtractor(file);
+      mail = extractor.getMail();
+    } catch (Exception e) {
+      SilverTrace.error("importExport",
+            "RepositoriesTypeManager.processMailContent",
+            "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+    }
+    if (mail != null) {
+      // save mail data into dedicated form
+      String content = mail.getBody();
+      PublicationContentType pubContent = new PublicationContentType();
+      XMLModelContentType modelContent = new XMLModelContentType("mail");
+      pubContent.setXMLModelContentType(modelContent);
+      List<XMLField> fields = new ArrayList<XMLField>();
+      modelContent.setFields(fields);
+
+      XMLField subject = new XMLField("subject", mail.getSubject());
+      fields.add(subject);
+
+      XMLField body = new XMLField("body", ESCAPE_ISO8859_1.translate(content));
+      fields.add(body);
+
+      XMLField date = new XMLField("date", DateUtil.getOutputDateAndHour(mail.getDate(), "fr"));
+      fields.add(date);
+
+      InternetAddress address = mail.getFrom();
+      String from = "";
+      if (StringUtil.isDefined(address.getPersonal())) {
+        from += address.getPersonal() + " - ";
+      }
+      from += "<a href=\"mailto:" + address.getAddress() + "\">" + address.getAddress() + "</a>";
+      XMLField fieldFROM = new XMLField("from", from);
+      fields.add(fieldFROM);
+
+      Address[] recipients = mail.getAllRecipients();
+      String to = "";
+      for (Address recipient : recipients) {
+        InternetAddress ia = (InternetAddress) recipient;
+        if (StringUtil.isDefined(ia.getPersonal())) {
+          to += ia.getPersonal() + " - ";
+        }
+        to += "<a href=\"mailto:" + ia.getAddress() + "\">" + ia.getAddress() + "</a></br>";
+      }
+      XMLField fieldTO = new XMLField("to", to);
+      fields.add(fieldTO);
+
+      // save form
+      gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getPK().getId()),
+          pubContent, userDetail.getId(), null);
+
+      // extract each file from mail...
+      try {
+        List<MailAttachment> attachments = extractor.getAttachments();
+        String dir =
+            FileRepositoryManager.getTemporaryPath() + "mail" +
+                Calendar.getInstance().getTimeInMillis();
+        for (MailAttachment attachment : attachments) {
+          if (attachment != null) {
+            File attachmentFile = new File(dir, attachment.getName());
+            FileUtils.writeByteArrayToFile(attachmentFile,
+                IOUtils.toByteArray(attachment.getFile()));
+
+            AttachmentDetail attDetail = new AttachmentDetail();
+            AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
+            attDetail.setLogicalName(attachment.getName());
+            attDetail.setPhysicalName(attachmentFile.getAbsolutePath());
+            attDetail.setAuthor(userDetail.getId());
+            attDetail.setSize(attachmentFile.length());
+            attDetail.setPK(pk);
+
+            AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+
+            // ... and save it
+            if (isVersioningUsed) {
+              // versioning mode
+              VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+              List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
+              documents.add(attDetail);
+              versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
+                    documents, Integer.parseInt(userDetail.getId()),
+                    pubDetail.isIndexable());
+            } else {
+              // classic mode
+              attachmentIE.importAttachment(pubDetail.getPK().getId(),
+                    componentId, attDetail, attachment.getFile(), pubDetail.isIndexable(), false);
+            }
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent()",
+            "root.EX_NO_MESSAGE", e);
+      }
+    }
   }
 
   /**
