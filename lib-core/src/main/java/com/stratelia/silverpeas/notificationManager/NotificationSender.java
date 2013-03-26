@@ -120,6 +120,10 @@ public class NotificationSender implements java.io.Serializable {
     for (GroupRecipient group : groupRecipients) {
       usersSet.addAll(notificationManager.getUsersFromGroup(group.getGroupId()));
     }
+
+    // Then exclude users that don't have to be notified
+    usersSet.removeAll(metaData.getUserRecipientsToExclude());
+
     Set<String> languages = metaData.getLanguages();
     Map<String, String> usersLanguage = new HashMap<String, String>(usersSet.size());
     for (UserRecipient user : usersSet) {
@@ -128,7 +132,6 @@ public class NotificationSender implements java.io.Serializable {
     }
 
     NotificationParameters params = null;
-    List<String> userIds = null;
 
     // All usersId to notify
     Set<String> allUserIds = usersLanguage.keySet();
@@ -151,14 +154,11 @@ public class NotificationSender implements java.io.Serializable {
           SilverpeasTemplate template = templates.get(language);
           if (template != null) {
             try {
-              String receiver_users = addReceiverUsers(getUserSet(metaData, settings),
-                  getGroupSet(metaData, settings), language, settings);
+              String receiver_users = addReceiverUsers(getUserSet(metaData, settings));
               if (StringUtil.isDefined(receiver_users)) {
                 template.setAttribute(notification_receiver_users.toString(), receiver_users);
               }
-              String receiver_groups =
-                  addReceiverGroups(getUserSet(metaData, settings), getGroupSet(metaData,
-                  settings), language, settings);
+              String receiver_groups = addReceiverGroups(getGroupSet(metaData,settings));
               if (StringUtil.isDefined(receiver_groups)) {
                 template.setAttribute(notification_receiver_groups.toString(), receiver_groups);
               }
@@ -175,7 +175,7 @@ public class NotificationSender implements java.io.Serializable {
       params.nNotificationResourceData = metaData.getNotificationResourceData(language);
 
       // Notify users with their native language
-      userIds = getUserIds(language, usersLanguage);
+      List<String> userIds = getUserIds(language, usersLanguage);
       // remove users already notified in their language
       allUserIds.removeAll(userIds);
       SilverTrace.info("notificationManager",
@@ -207,6 +207,10 @@ public class NotificationSender implements java.io.Serializable {
         usersSet.addAll(new NotificationManager(null).getUsersFromGroup(group.getGroupId()));
       }
     }
+
+    // Then exclude users that don't have to be notified
+    usersSet.removeAll(metaData.getUserRecipientsToExclude());
+
     return usersSet;
   }
 
@@ -236,9 +240,7 @@ public class NotificationSender implements java.io.Serializable {
     return groupsSet;
   }
 
-  private String addReceiverUsers(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
-      String language,
-      ResourceLocator settings) {
+  private String addReceiverUsers(Set<UserRecipient> usersSet) {
     OrganisationController orgaController =  OrganisationControllerFactory.getOrganisationController();
     StringBuilder users = new StringBuilder();
     if (settings.getBoolean("addReceiversInBody", false)) {
@@ -254,8 +256,7 @@ public class NotificationSender implements java.io.Serializable {
     return users.toString();
   }
 
-  private String addReceiverGroups(Set<UserRecipient> usersSet, Set<GroupRecipient> groupsSet,
-      String language, ResourceLocator settings) {
+  private String addReceiverGroups(Set<GroupRecipient> groupsSet) {
     OrganisationController orgaController =  OrganisationControllerFactory
         .getOrganisationController();
     StringBuilder groups = new StringBuilder();

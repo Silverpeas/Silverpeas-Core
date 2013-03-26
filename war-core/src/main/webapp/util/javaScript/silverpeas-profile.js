@@ -437,6 +437,7 @@ function UserProfileManagement(params) {
 
   /**
    * The filtering parameters to consider in the user profile fetch. Any of its property is optional:
+   * @property {String} [ids] requested user identifiers
    * @property {String} [id] the unique identifier of a user profile
    * @property {Boolean} [extended=false] a boolean indicating if the complete user profiles has to be taken into account.
    * @property {Boolean} [contacts=false] a boolean indicating if the relationships of the user has to be taken into account.
@@ -452,6 +453,7 @@ function UserProfileManagement(params) {
    * @type {{id: null, extended: false, contacts: false, group: null, name: null, component: null, domain: null, resource: null, roles: null, pagination: null}
    */
   this.filter = {
+    ids: null, // user identifiers
     id: null, // the unique identifier of a user to get,
     extended: false, // a flag to load user full details
     contacts: false, // the contacts of the referred user. The id must be set to be taken into account
@@ -515,6 +517,7 @@ function UserProfileManagement(params) {
    * The method returns the object itself.
    * @param [params] the parameters to consider when getting the users.
    * @param [params.async=true] the asynchronous property of the communication with the WEB service.
+   * @param [params.ids] requested user identifiers.
    * @param [params.id] the unique identifier of a user profile
    * @param [params.extended=false] a boolean indicating if the complete user profiles has to be taken into account.
    * @param [params.contacts=false] a boolean indicating if the relationships of the user has to be taken into account.
@@ -537,6 +540,12 @@ function UserProfileManagement(params) {
       params = null;
     }
     setUpFilter(params);
+    if (self.filter.ids) {
+      $(self.filter.ids).each(function(index, id) {
+        urlOfUsers += separator + 'ids=' + id;
+        separator = '&';
+      });
+    }
     if (self.filter.id) {
       urlOfUsers += '/' + self.filter.id;
       if (self.filter.contacts)
@@ -602,6 +611,7 @@ function UserProfileManagement(params) {
  * service on user profiles.
  * @param [params] the policy parameters on the user fetch.
  * @param [params.async=true] the asynchronous property of the communication with the WEB service.
+ * @param [params.ids] requested group identifiers.
  * @param [params.id] the unique identifier of a user profile
  * @param [params.name] a pattern about a group name (* is a wildcard)
  * @param [params.component] a unique identifier of a component instance to which the users in the group^must have right accesses.
@@ -621,6 +631,7 @@ function UserGroupManagement(params) {
 
   /**
    * The filtering parameters to consider in the user group fetch. Any of its property is optional:
+   * @property {String} [ids] requested user identifiers
    * @property {String} [id] the unique identifier of a user group
    * @property {String} [url] the URL at which the user group is located. If null, the URL is then the one of the virtual root group.
    * @property {String} [name] a pattern about a group name (* is a wildcard)
@@ -634,6 +645,7 @@ function UserGroupManagement(params) {
    * @type {{id: null, url: null, name: null, component: null, domain: null, roles: null, resource: null}}
    */
   this.filter = {
+    ids: null,
     id: null,
     url: null,
     name: null,
@@ -697,6 +709,7 @@ function UserGroupManagement(params) {
    * The method returns the object itself.
    * @param [params] the parameters to consider when getting the groups.
    * @param [params.async=true] the asynchronous property of the communication with the WEB service.
+   * @param [params.ids] requested group identifiers.
    * @param [params.id] the unique identifier of a user profile
    * @param [params.name] a pattern about a group name (* is a wildcard)
    * @param [params.component] a unique identifier of a component instance to which the users in the group^must have right accesses.
@@ -716,6 +729,12 @@ function UserGroupManagement(params) {
       params = null;
     }
     setUpFilter(params);
+    if (self.filter.ids) {
+      $(self.filter.ids).each(function(index, id) {
+        urlOfGroups += separator + 'ids=' + id;
+        separator = '&';
+      });
+    }
     if (self.filter.id)
       urlOfGroups = groupRootURL + '/' + self.filter.id;
     else if (self.filter.url)

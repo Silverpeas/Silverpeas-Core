@@ -23,15 +23,20 @@
  */
 package com.silverpeas.profile.web;
 
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
-import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
-import static com.silverpeas.util.StringUtil.isDefined;
-
-import java.net.URI;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.socialnetwork.relationShip.RelationShip;
+import com.silverpeas.socialnetwork.relationShip.RelationShipService;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.web.RESTWebService;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.Group;
+import com.stratelia.webactiv.beans.admin.PaginationPage;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import org.silverpeas.util.ListSlice;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -43,20 +48,16 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.socialnetwork.relationShip.RelationShip;
-import com.silverpeas.socialnetwork.relationShip.RelationShipService;
-import com.silverpeas.web.RESTWebService;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.PaginationPage;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import org.silverpeas.util.ListSlice;
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.USERS_BASE_URI;
+import static com.silverpeas.profile.web.UserProfilesSearchCriteriaBuilder.aSearchCriteria;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that acts on the user profiles in Silverpeas. Each provided method is a
@@ -106,6 +107,7 @@ public class UserProfileResource extends RESTWebService {
    * the users that matches the query. This is usefull for clients that use the pagination to filter
    * the count of the answered users.
    *
+   * @param userIds requested user identifiers
    * @param groupId the unique identifier of the group the users must belong to. The particular
    * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
@@ -119,7 +121,7 @@ public class UserProfileResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getUsers(
+  public Response getUsers(@QueryParam("ids") Set<String> userIds,
       @QueryParam("group") String groupId,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
@@ -132,11 +134,14 @@ public class UserProfileResource extends RESTWebService {
     if (getUserDetail().isDomainRestricted()) {
       domainId = getUserDetail().getDomainId();
     }
-    UserDetailsSearchCriteria criteria = aSearchCriteria().withDomainId(domainId).
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = aSearchCriteria().withDomainId(domainId).
         withGroupId(groupId).
         withName(name).
-        withPaginationPage(fromPage(page)).build();
-    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteria);
+        withPaginationPage(fromPage(page));
+    if (CollectionUtil.isNotEmpty(userIds)) {
+      criteriaBuilder.withUserIds(userIds.toArray(new String[userIds.size()]));
+    }
+    ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).build();

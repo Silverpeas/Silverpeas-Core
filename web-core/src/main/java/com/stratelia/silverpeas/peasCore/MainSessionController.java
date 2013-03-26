@@ -53,6 +53,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.subscription.SubscriptionContext;
 
 import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
@@ -95,6 +96,7 @@ public class MainSessionController implements Clipboard {
   private String serverPort = null;
   String m_CurrentSpaceId = null;
   String m_CurrentComponentId = null;
+  private SubscriptionContext subscriptionContext = null;
   /**
    * Maintenance Mode *
    */
@@ -235,6 +237,14 @@ public class MainSessionController implements Clipboard {
       selection = new Selection();
     }
     return selection;
+  }
+
+  // ------------------- Subscription Functions -----------------------------
+  public SubscriptionContext getSubscriptionContext() {
+    if (subscriptionContext == null) {
+      subscriptionContext = new SubscriptionContext(getCurrentUserDetail(), userPreferences);
+    }
+    return subscriptionContext;
   }
 
   // ------------------- AlertUser Functions -----------------------------

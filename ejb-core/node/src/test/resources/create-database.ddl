@@ -61,8 +61,13 @@ ALTER TABLE sb_coordinates_coordinates ADD
 ;
 
 CREATE TABLE subscribe (
-	actorId varchar(100) NOT NULL ,
-	nodeId int NOT NULL ,
-	space varchar(50) NOT NULL ,
-	componentName varchar(50) NOT NULL
+  subscriberId       VARCHAR(100) NOT NULL,
+  subscriberType     VARCHAR(50)  NOT NULL,
+  subscriptionMethod VARCHAR(50)  NOT NULL,
+  resourceId         VARCHAR(100) NOT NULL,
+  resourceType       VARCHAR(50)  NOT NULL,
+  space              VARCHAR(50)  NOT NULL,
+  instanceId         VARCHAR(50)  NOT NULL,
+  creatorId          VARCHAR(100) NOT NULL,
+  creationDate       TIMESTAMP    NOT NULL
 );

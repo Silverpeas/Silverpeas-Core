@@ -31,7 +31,10 @@ import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
+import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -43,6 +46,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -50,11 +54,16 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.subscription.SubscriptionComparator;
+import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.subscription.bean.NodeSubscriptionBean;
+
+import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import javax.ejb.RemoveException;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -101,7 +110,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
+    NodeBm nodeBm;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
           NodeBmHome.class);
@@ -113,33 +122,80 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     return nodeBm;
   }
 
-  public Collection<Collection<NodeDetail>> getUserSubscribe(String userId) {
+  public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
     String currentUserId = userId;
-    Collection<Collection<NodeDetail>> subscribe = new ArrayList<Collection<NodeDetail>>();
+    List<NodeSubscriptionBean> subscribes = new ArrayList<NodeSubscriptionBean>();
     if (!StringUtil.isDefined(currentUserId)) {
       currentUserId = getUserId();
     }
-    Collection<? extends Subscription> list = getSubscribeBm().getUserSubscriptions(currentUserId);
+    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
     for (Subscription subscription : list) {
       try {
-        Collection<NodeDetail> path = getNodeBm().getPath((NodePK) subscription.getTopic());
-        subscribe.add(path);
+        // Subscriptions managed at this level are only those of node subscription.
+        if (SubscriptionResourceType.NODE.equals(subscription.getResource().getType())) {
+          ComponentInstLight componentInstLight = getOrganisationController()
+              .getComponentInstLight(subscription.getResource().getInstanceId());
+          if (componentInstLight != null) {
+            Collection<NodeDetail> path =
+                getNodeBm().getPath((NodePK) subscription.getResource().getPK());
+            subscribes.add(
+                new NodeSubscriptionBean(subscription, path, componentInstLight, getLanguage()));
+          }
+        }
       } catch (RemoteException e) {
         // User subscribed to a non existing component or topic .Do nothing. Process next
         // subscription.
       }
     }
-    return subscribe;
+    Collections.sort(subscribes, new SubscriptionComparator());
+    return subscribes;
+  }
+
+  public Collection<ComponentSubscriptionBean> getComponentUserSubscriptions(String userId) {
+    String currentUserId = userId;
+    List<ComponentSubscriptionBean> subscribes = new ArrayList<ComponentSubscriptionBean>();
+    if (!StringUtil.isDefined(currentUserId)) {
+      currentUserId = getUserId();
+    }
+    Collection<Subscription> list = getSubscribeBm().getByUserSubscriber(currentUserId);
+    for (Subscription subscription : list) {
+      // Subscriptions managed at this level are only those of node subscription.
+      if (SubscriptionResourceType.COMPONENT.equals(subscription.getResource().getType())) {
+        ComponentInstLight componentInstLight = getOrganisationController()
+            .getComponentInstLight(subscription.getResource().getInstanceId());
+        if (componentInstLight != null) {
+          subscribes
+              .add(new ComponentSubscriptionBean(subscription, componentInstLight, getLanguage()));
+        }
+      }
+    }
+    Collections.sort(subscribes, new SubscriptionComparator());
+    return subscribes;
   }
 
   public void deleteThemes(String[] themes) {
-    for (int i = 0; i < themes.length; i++) {
+    for (final String theme : themes) {
       // convertir la chaine en NodePK
-      String nodeId = themes[i].substring(0, themes[i].lastIndexOf("-"));
-      String instanceId = themes[i].substring(themes[i].lastIndexOf("-") + 1,
-          themes[i].length());
+      String[] subscribtionIdentifiers = theme.split("-");
+      String nodeId = subscribtionIdentifiers[0];
+      String instanceId = subscribtionIdentifiers[1];
+      String creatorId = subscribtionIdentifiers[2];
       NodeSubscription subscription =
-          new NodeSubscription(getUserId(), new NodePK(nodeId, instanceId));
+          new NodeSubscription(UserSubscriptionSubscriber.from(getUserId()),
+              new NodePK(nodeId, instanceId), creatorId);
+      getSubscribeBm().unsubscribe(subscription);
+    }
+  }
+
+  public void deleteComponentSubscription(String[] subscriptions) {
+    for (final String subscribtion : subscriptions) {
+      // convertir la chaine en NodePK
+      String[] subscribtionIdentifiers = subscribtion.split("-");
+      String instanceId = subscribtionIdentifiers[0];
+      String creatorId = subscribtionIdentifiers[1];
+      ComponentSubscription subscription =
+          new ComponentSubscription(UserSubscriptionSubscriber.from(getUserId()), instanceId,
+              creatorId);
       getSubscribeBm().unsubscribe(subscription);
     }
   }
@@ -181,8 +237,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public AxisHeader getAxisHeader(String axisId) throws PdcException {
-    AxisHeader axisHeader = getPdcBm().getAxisHeader(axisId);
-    return axisHeader;
+    return getPdcBm().getAxisHeader(axisId);
   }
 
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException {
@@ -209,11 +264,11 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
       for (Criteria sc : searchCriterias) {
         int searchAxisId = sc.getAxisId();
         String searchValue = getLastValueOf(sc.getValue());
-        AxisHeader axis = getAxisHeader(new Integer(searchAxisId).toString());
+        AxisHeader axis = getAxisHeader(Integer.toString(searchAxisId));
 
         String treeId = null;
         if (axis != null) {
-          treeId = new Integer(axis.getRootId()).toString();
+          treeId = Integer.toString(axis.getRootId());
         }
 
         List<Value> fullPath = new ArrayList<Value>();

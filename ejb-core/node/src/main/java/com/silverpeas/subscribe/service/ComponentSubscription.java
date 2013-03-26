@@ -24,64 +24,54 @@
 
 package com.silverpeas.subscribe.service;
 
-import com.silverpeas.subscribe.Subscription;
-import com.silverpeas.util.ForeignPK;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.silverpeas.subscribe.SubscriptionResource;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
+
+import java.util.Date;
 
 /**
  * @author ehugonnet
  */
-public class ComponentSubscription implements Subscription {
-  private final String userId;
-  private final ForeignPK pk = new ForeignPK(NodePK.ROOT_NODE_ID);
+public class ComponentSubscription extends AbstractSubscription {
 
-  public ComponentSubscription(String userId, String instanceId) {
-    this.userId = userId;
-    pk.setSpace(COMPONENT_SUBSCRIPTION);
-    pk.setComponentName(instanceId);
+  /**
+   * Component subscription constructor for which the type of the subscriber is USER.
+   * @param subscriberId id of the subscriber
+   * @param instanceId component instance id aimed by the subscription
+   */
+  public ComponentSubscription(String subscriberId, String instanceId) {
+    super(UserSubscriptionSubscriber.from(subscriberId),
+        ComponentSubscriptionResource.from(instanceId), subscriberId);
   }
 
-  @Override
-  public WAPrimaryKey getTopic() {
-    return pk;
+  /**
+   * Component subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param instanceId component instance id aimed by the subscription
+   */
+  public ComponentSubscription(final SubscriptionSubscriber subscriber, String instanceId) {
+    super(subscriber, ComponentSubscriptionResource.from(instanceId), subscriber.getId());
   }
 
-  @Override
-  public String getSubscriber() {
-    return userId;
+  /**
+   * Component subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param instanceId component instance id aimed by the subscription
+   * @param creatorId the user id that has handled the subscription
+   */
+  public ComponentSubscription(final SubscriptionSubscriber subscriber, final String instanceId,
+      final String creatorId) {
+    super(subscriber, ComponentSubscriptionResource.from(instanceId), SubscriptionMethod.UNKNOWN,
+        creatorId, null);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    ComponentSubscription that = (ComponentSubscription) o;
-
-    if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
-      return false;
-    }
-    if (userId != null ? !userId.equals(that.userId) : that.userId != null) {
-      return false;
-    }
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = userId != null ? userId.hashCode() : 0;
-    result = 31 * result + (pk != null ? pk.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public boolean isComponentSubscription() {
-    return true;
+  /**
+   * @see AbstractSubscription
+   */
+  protected ComponentSubscription(final SubscriptionSubscriber subscriber,
+      final SubscriptionResource resource, final SubscriptionMethod subscriptionMethod,
+      final String creatorId, final Date creationDate) {
+    super(subscriber, resource, subscriptionMethod, creatorId, creationDate);
   }
 }
