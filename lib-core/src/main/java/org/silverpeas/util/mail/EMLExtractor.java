@@ -53,12 +53,12 @@ public class EMLExtractor implements MailExtractor {
     mail.setDate(message.getSentDate());
     mail.setSubject(message.getSubject());
     
-    String content = null;
+    String body = null;
     Object messageContent = message.getContent();
     if (messageContent instanceof Multipart) {
-      content = processMultipart((Multipart) messageContent, null);
+      body = getBody((Multipart) messageContent);
     } else if (messageContent instanceof String) {
-      content = (String) messageContent;
+      body = (String) messageContent;
     }
     
     if (message.getFrom() != null) {
@@ -67,7 +67,7 @@ public class EMLExtractor implements MailExtractor {
     mail.setTo(message.getRecipients(Message.RecipientType.TO));
     mail.setCc(message.getRecipients(Message.RecipientType.CC));
     
-    mail.setBody(ESCAPE_ISO8859_1.translate(content));
+    mail.setBody(ESCAPE_ISO8859_1.translate(body));
     return mail;
   }
   
@@ -80,6 +80,20 @@ public class EMLExtractor implements MailExtractor {
     return attachments;
   }
   
+  private String getBody(Multipart multipart) throws MessagingException, IOException {
+    int partsNumber = multipart.getCount();
+    String body = "";
+    for (int i = 0; i < partsNumber; i++) {
+      Part part = multipart.getBodyPart(i);
+      if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
+        // if present, return always HTML part
+        return (String) part.getContent();
+      } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
+        body = EncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
+      }
+    }
+    return body;
+  }
 
   private String processMultipart(Multipart multipart, List<MailAttachment> attachments) throws MessagingException, IOException {
     int partsNumber = multipart.getCount();
@@ -109,7 +123,7 @@ public class EMLExtractor implements MailExtractor {
       if (part.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
         return (String) part.getContent();
       } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
-        return EncodeHelper.javaStringToHtmlParagraphe(part.getContentType());
+        return EncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
       }
     }
     return "";

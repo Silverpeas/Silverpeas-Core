@@ -18,19 +18,20 @@ import com.silverpeas.util.PathTestUtil;
 
 public class MailExtractorTest {
 
-  private static final String dir = PathTestUtil.TARGET_DIR  + File.separatorChar + "test-classes" + PathTestUtil.SEPARATOR + "org/silverpeas/util/mail/";
-  //private static final String dir = "D:/Silverpeas/MyForks/Silverpeas-Core/lib-core/src/test/resources/org/silverpeas/util/mail/";
+  private static final String dir = PathTestUtil.TARGET_DIR + File.separatorChar + "test-classes" +
+      PathTestUtil.SEPARATOR + "org" + File.separatorChar + "silverpeas" + File.separatorChar +
+      "util" + File.separatorChar + "mail" + File.separatorChar;
 
   @Test
   public void testEMLBrut() throws Exception {
-    String fileName = "Silverpeas test archivage 1_3 (brut).eml";
+    String fileName = "Silverpeas test archivage 1_3 (brut sans pieces jointes).eml";
 
     testBrut(fileName);
   }
 
   @Test
   public void testMSGBrut() throws Exception {
-    String fileName = "Silverpeas test archivage 1 3 (brut).msg";
+    String fileName = "Silverpeas test archivage 1_3 (brut sans pieces jointes).msg";
 
     testBrut(fileName);
   }
@@ -69,14 +70,14 @@ public class MailExtractorTest {
 
   @Test
   public void testEMLHTMLWithoutFiles() throws Exception {
-    String fileName = "Silverpeas test archivage 2_3 (hml sans pièces jointes).eml";
+    String fileName = "Silverpeas test archivage 2_3 (html sans pieces jointes).eml";
 
     testHTMLWithoutFiles(fileName);
   }
 
   @Test
   public void testMSGHTMLWithoutFiles() throws Exception {
-    String fileName = "Silverpeas test archivage 2 3 (hml sans pièces jointes).msg";
+    String fileName = "Silverpeas test archivage 2_3 (html sans pieces jointes).msg";
 
     testHTMLWithoutFiles(fileName);
   }
@@ -106,6 +107,8 @@ public class MailExtractorTest {
 
     // check body
     assertThat(mail.getBody(), is(notNullValue()));
+    assertThat(mail.getBody().startsWith("Bonjour"), is(true));
+    assertThat(mail.getBody().lastIndexOf("Bonjour"), is(0));
 
     // check attachments
     List<MailAttachment> attachments = extractor.getAttachments();
@@ -114,14 +117,14 @@ public class MailExtractorTest {
 
   @Test
   public void testEMLHTMLWithFiles() throws Exception {
-    String fileName = "Silverpeas test archivage 3_3 (hml avec pièces jointes).eml";
+    String fileName = "Silverpeas test archivage 3_3 (html avec pieces jointes).eml";
 
     testHTMLWithFiles(fileName);
   }
 
   @Test
   public void testMSGHTMLWithFiles() throws Exception {
-    String fileName = "Silverpeas test archivage 33 (hml avec pièces jointes).msg";
+    String fileName = "Silverpeas test archivage 3_3 (html avec pieces jointes).msg";
 
     testHTMLWithFiles(fileName);
   }
@@ -161,7 +164,7 @@ public class MailExtractorTest {
     File file1 = new File(dir + "temp" + PathTestUtil.SEPARATOR + attachment.getName());
     FileUtils.copyInputStreamToFile(attachment.getFile(), file1);
     assertThat(attachment.getName(), is(file1.getName()));
-    assertThat(String.valueOf(file1.length()), is("149463"));
+    assertThat(file1.length(), is(149463L));
     IOUtils.closeQuietly(attachment.getFile());
     FileUtils.deleteQuietly(file1);
 
