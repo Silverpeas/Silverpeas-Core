@@ -381,31 +381,14 @@
   <build>
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <excludes>
-          <exclude>**/*.odp</exclude>
-          <exclude>**/index/**/*</exclude>
-          <exclude>**/*.odt</exclude>
-          <exclude>**/*.doc</exclude>
-          <exclude>**/*.docx</exclude>
-          <exclude>**/*.zip</exclude>
-          <exclude>**/*.tif</exclude>
-          <exclude>**/*.tar.gz</exclude>
-          <exclude>**/*.tar.bz2</exclude>
-          <exclude>**/*.sql</exclude>
-          <exclude>opendj/**</exclude>
-        </excludes>
-      </testResource>
-      <testResource>
         <directory>${basedir}/src/test/resources</directory>
         <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
+          <include>index/kmelia*/**/*.*</include>
           <include>**/*.odp</include>
           <include>**/*.odt</include>
           <include>**/*.doc</include>
-          <include>**/*.tif</include>
           <include>**/*.docx</include>
           <include>**/*.zip</include>
           <include>**/*.tar.gz</include>
@@ -413,14 +396,17 @@
           <include>**/*.sql</include>
           <include>opendj/**</include>
           <include>**/*.tif</include>
+          <include>**/*.msg</include>
+          <include>**/*.eml</include>
         </includes>
       </testResource>
       <testResource>
         <directory>${basedir}/src/test/resources</directory>
         <filtering>true</filtering>
         <excludes>
-          <exclude>**/*.odp</exclude>
           <exclude>index/kmelia*/**/*.*</exclude>
+          <exclude>**/index/**/*</exclude>
+          <exclude>**/*.odp</exclude>
           <exclude>**/*.odt</exclude>
           <exclude>**/*.doc</exclude>
           <exclude>**/*.docx</exclude>
@@ -430,6 +416,8 @@
           <exclude>**/*.sql</exclude>
           <exclude>opendj/**</exclude>
           <exclude>**/*.tif</exclude>
+          <exclude>**/*.msg</exclude>
+          <exclude>**/*.eml</exclude>
         </excludes>
       </testResource>      
     </testResources>

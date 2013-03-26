@@ -18,10 +18,8 @@ import com.silverpeas.util.PathTestUtil;
 
 public class MailExtractorTest {
 
-  // private static final String dir = PathTestUtil.TARGET_DIR + "test-classes" +
-  // PathTestUtil.SEPARATOR + "org/silverpeas/util/mail/";
-  private static final String dir =
-      "D:/Silverpeas/MyForks/Silverpeas-Core/lib-core/src/test/resources/org/silverpeas/util/mail/";
+  private static final String dir = PathTestUtil.TARGET_DIR  + File.separatorChar + "test-classes" + PathTestUtil.SEPARATOR + "org/silverpeas/util/mail/";
+  //private static final String dir = "D:/Silverpeas/MyForks/Silverpeas-Core/lib-core/src/test/resources/org/silverpeas/util/mail/";
 
   @Test
   public void testEMLBrut() throws Exception {

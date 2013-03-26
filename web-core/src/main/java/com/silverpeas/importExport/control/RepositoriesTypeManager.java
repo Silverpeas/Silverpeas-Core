@@ -192,23 +192,6 @@ public class RepositoriesTypeManager {
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate.status = "
           + pubDetailToCreate.getStatus());
-      
-      Mail mail = null;
-      MailExtractor extractor = null;
-      if (FileUtil.isMail(file.getName())) {
-        extractor = Extractor.getExtractor(file);
-        mail = extractor.getMail();
-        
-        pubDetailToCreate.setName(mail.getSubject());
-        pubDetailToCreate.setCreationDate(mail.getDate());
-        String description = "Ceci est un message électronique envoyé par ";
-        InternetAddress address = mail.getFrom();
-        if (StringUtil.isDefined(address.getPersonal())) {
-          description += address.getPersonal() + " - ";
-        }
-        description += address.getAddress();
-        pubDetailToCreate.setDescription(description);
-      }
 
       // Création de la publication
       pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
@@ -217,86 +200,13 @@ public class RepositoriesTypeManager {
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
       
-      if (mail != null) {
-        String content = mail.getBody();
-        
-        PublicationContentType pubContent = new PublicationContentType();
-        XMLModelContentType modelContent = new XMLModelContentType("mail");
-        pubContent.setXMLModelContentType(modelContent);
-        List<XMLField> fields = new ArrayList<XMLField>();
-        modelContent.setFields(fields);
-        
-        XMLField subject = new XMLField("subject", mail.getSubject());
-        fields.add(subject);
-        
-        XMLField body = new XMLField("body", ESCAPE_ISO8859_1.translate(content));
-        fields.add(body);
-        
-        XMLField date = new XMLField("date", DateUtil.getOutputDateAndHour(mail.getDate(), "fr"));
-        fields.add(date);
-        
-        InternetAddress address = mail.getFrom();
-        String from = "";
-        if (StringUtil.isDefined(address.getPersonal())) {
-          from += address.getPersonal() + " - ";
-        }
-        from += "<a href=\"mailto:" + address.getAddress() + "\">" + address.getAddress() + "</a>";
-        XMLField fieldFROM = new XMLField("from", from);
-        fields.add(fieldFROM);
-        
-        Address[] recipients = mail.getAllRecipients();
-        String to = "";
-        for (Address recipient : recipients) {
-          InternetAddress ia = (InternetAddress) recipient;
-          if (StringUtil.isDefined(ia.getPersonal())) {
-            to += ia.getPersonal() + " - ";
-          }
-          to += "<a href=\"mailto:" + ia.getAddress() + "\">" + ia.getAddress() + "</a></br>";
-        }
-        XMLField fieldTO = new XMLField("to", to);
-        fields.add(fieldTO);
-        
-        gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetailToCreate.getPK().getId()), pubContent, userDetail.getId(), null);
-        
-        try {
-          List<MailAttachment> attachments = extractor.getAttachments();
-          String dir = FileRepositoryManager.getTemporaryPath() + "mail"+Calendar.getInstance().getTimeInMillis()+File.separator;
-          for (MailAttachment attachment : attachments) {
-            if (attachment != null) {
-              String attachmentPath = dir+attachment.getName();
-              File attachmentFile = new File(dir+attachment.getName());
-              FileUtils.writeByteArrayToFile(attachmentFile, IOUtils.toByteArray(attachment.getFile()));
-              
-              AttachmentDetail attDetail = new AttachmentDetail();
-              AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
-              attDetail.setPhysicalName(attachmentPath);
-              attDetail.setAuthor(userDetail.getId());
-              attDetail.setPK(pk);
-              
-              AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
-              
-              if (isVersioningUsed) {
-                // Mode versioning
-                VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
-                List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
-                documents.add(attDetail);
-                versioningIE.importDocuments(pubDetailToCreate.getPK().getId(), componentId,
-                    documents, Integer.parseInt(userDetail.getId()),
-                    pubDetailToCreate.isIndexable());
-              } else {
-                // Ajout des attachments
-                attachmentIE.importAttachment(pubDetailToCreate.getPK().getId(),
-                    componentId, attDetail, attachment.getFile(), pubDetailToCreate.isIndexable(), false);
-              }
-            }
-          }
-        } catch (Exception e) {
-          SilverTrace.error("importExport", "RepositoriesTypeManager.importFile()",
-              "root.EX_NO_MESSAGE", e);
-        }
+      if (FileUtil.isMail(file.getName())) {
+        // if imported file is an e-mail, its textual content is saved in a dedicated form
+        // and attached files are attached to newly created publication
+        processMailContent(pubDetailToCreate, file, unitReport, gedIE, isVersioningUsed);
       }
       
-      // Ajout de l'attachment
+      // add attachment
       SimpleDocument document;
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       if (isVersioningUsed) {
@@ -311,7 +221,6 @@ public class RepositoriesTypeManager {
       document.getFile().setCreatedBy(userDetail.getId());
       document.setCreated(new Date());
       document.setForeignId(pubDetailToCreate.getPK().getId());
-      document.setTitle(file.getName());
       document.setContentType(FileUtil.getMimeType(file.getName()));
       if (document.getSize() > 0L) {
         AttachmentServiceFactory.getAttachmentService()
@@ -328,6 +237,109 @@ public class RepositoriesTypeManager {
           .error("importExport", "RepositoriesTypeManager.importFile()", "root.EX_NO_MESSAGE", ex);
     }
     return pubDetailToCreate;
+  }
+  
+  private void processMailContent(PublicationDetail pubDetail, File file, UnitReport unitReport,
+      GEDImportExport gedIE, boolean isVersioningUsed) throws ImportExportException {
+
+    String componentId = gedIE.getCurrentComponentId();
+    UserDetail userDetail = gedIE.getCurentUserDetail();
+    MailExtractor extractor = null;
+    Mail mail = null;
+    try {
+      extractor = Extractor.getExtractor(file);
+      mail = extractor.getMail();
+    } catch (Exception e) {
+      SilverTrace.error("importExport",
+            "RepositoriesTypeManager.processMailContent",
+            "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
+    }
+    if (mail != null) {
+      // save mail data into dedicated form
+      String content = mail.getBody();
+      PublicationContentType pubContent = new PublicationContentType();
+      XMLModelContentType modelContent = new XMLModelContentType("mail");
+      pubContent.setXMLModelContentType(modelContent);
+      List<XMLField> fields = new ArrayList<XMLField>();
+      modelContent.setFields(fields);
+
+      XMLField subject = new XMLField("subject", mail.getSubject());
+      fields.add(subject);
+
+      XMLField body = new XMLField("body", ESCAPE_ISO8859_1.translate(content));
+      fields.add(body);
+
+      XMLField date = new XMLField("date", DateUtil.getOutputDateAndHour(mail.getDate(), "fr"));
+      fields.add(date);
+
+      InternetAddress address = mail.getFrom();
+      String from = "";
+      if (StringUtil.isDefined(address.getPersonal())) {
+        from += address.getPersonal() + " - ";
+      }
+      from += "<a href=\"mailto:" + address.getAddress() + "\">" + address.getAddress() + "</a>";
+      XMLField fieldFROM = new XMLField("from", from);
+      fields.add(fieldFROM);
+
+      Address[] recipients = mail.getAllRecipients();
+      String to = "";
+      for (Address recipient : recipients) {
+        InternetAddress ia = (InternetAddress) recipient;
+        if (StringUtil.isDefined(ia.getPersonal())) {
+          to += ia.getPersonal() + " - ";
+        }
+        to += "<a href=\"mailto:" + ia.getAddress() + "\">" + ia.getAddress() + "</a></br>";
+      }
+      XMLField fieldTO = new XMLField("to", to);
+      fields.add(fieldTO);
+
+      // save form
+      gedIE.createPublicationContent(unitReport, Integer.parseInt(pubDetail.getPK().getId()),
+          pubContent, userDetail.getId(), null);
+
+      // extract each file from mail...
+      try {
+        List<MailAttachment> attachments = extractor.getAttachments();
+        String dir =
+            FileRepositoryManager.getTemporaryPath() + "mail" +
+                Calendar.getInstance().getTimeInMillis();
+        for (MailAttachment attachment : attachments) {
+          if (attachment != null) {
+            File attachmentFile = new File(dir, attachment.getName());
+            FileUtils.writeByteArrayToFile(attachmentFile,
+                IOUtils.toByteArray(attachment.getFile()));
+
+            AttachmentDetail attDetail = new AttachmentDetail();
+            AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
+            attDetail.setLogicalName(attachment.getName());
+            attDetail.setPhysicalName(attachmentFile.getAbsolutePath());
+            attDetail.setAuthor(userDetail.getId());
+            attDetail.setSize(attachmentFile.length());
+            attDetail.setPK(pk);
+
+            AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+
+            // ... and save it
+            if (isVersioningUsed) {
+              // versioning mode
+              VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+              List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
+              documents.add(attDetail);
+              versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
+                    documents, Integer.parseInt(userDetail.getId()),
+                    pubDetail.isIndexable());
+            } else {
+              // classic mode
+              attachmentIE.importAttachment(pubDetail.getPK().getId(),
+                    componentId, attDetail, attachment.getFile(), pubDetail.isIndexable(), false);
+            }
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent()",
+            "root.EX_NO_MESSAGE", e);
+      }
+    }
   }
 
   /**
