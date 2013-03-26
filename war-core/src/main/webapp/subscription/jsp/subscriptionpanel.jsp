@@ -77,505 +77,469 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<view:looknfeel/>
-<view:includePlugin name="notifier"/>
-<view:includePlugin name="pagination"/>
-<view:includePlugin name="datepicker"/>
-<view:includePlugin name="popup"/>
-<title><fmt:message key="subscription.panel.title"/></title>
-<style type="text/css">
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    margin: 0;
-    padding: 0
-  }
-
-  div.pageNav .pages_indication {
-    display: none
-  }
-</style>
-<script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-profile.js'/>"></script>
-<script type="text/javascript">
-
-  /**
-   * Go to screen that proposing to select groups and users : User Panel.
-   */
-  function modifyForcedSubscriptions() {
-    $("<form>").attr('method', 'POST').attr('action',
-        '<c:url value="/RSubscription/jsp/ToUserPanel"/>').appendTo(document.body).submit();
-  }
-
-  /**
-   * Subscription management JQuery plugin
-   */
-  (function($) {
-
-    var context = {
-      cache : [],
-      SUB_TYPE : {
-        FORCED_GROUP : 'forced_group_subscription',
-        FORCED_USER : 'forced_user_subscription',
-        SELF_CREATION_USER : 'selfCreation_user_subscription'
-      },
-      subscriptions : [],
-      users : [],
-      groups : [],
-      dateFormat : '',
-      unsubscribeStartUrl : ''
-    };
-    context.subscriptions[context.SUB_TYPE.FORCED_GROUP] = [];
-    context.subscriptions[context.SUB_TYPE.FORCED_USER] = [];
-    context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER] = [];
-
-    function __putInCache(key, value) {
-      context[key] = value;
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <view:looknfeel/>
+  <view:includePlugin name="notifier"/>
+  <view:includePlugin name="pagination"/>
+  <view:includePlugin name="datepicker"/>
+  <view:includePlugin name="popup"/>
+  <title><fmt:message key="subscription.panel.title"/></title>
+  <style type="text/css">
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0
     }
 
-    function __getFromCache(key) {
-      return context[key];
+    div.pageNav .pages_indication {
+      display: none
+    }
+  </style>
+  <script type="text/javascript" src="<c:url value='/util/javaScript/silverpeas-profile.js'/>"></script>
+  <script type="text/javascript">
+
+    /**
+     * Go to screen that proposing to select groups and users : User Panel.
+     */
+    function modifyForcedSubscriptions() {
+      $("<form>").attr('method', 'POST').attr('action',
+          '<c:url value="/RSubscription/jsp/ToUserPanel"/>').appendTo(document.body).submit();
     }
 
-    $.subscription = function() {
-      __loadSubscriptions();
-    };
+    /**
+     * Subscription management JQuery plugin
+     */
+    (function($) {
 
-    function __loadSubscriptions() {
-
-      // Date format
-      var dateFormat = $.datepicker.regional['${requestScope.resources.language}'];
-      if (dateFormat) {
-        context.dateFormat = dateFormat.dateFormat;
-      } else {
-        context.dateFormat = $.datepicker.regional[''].dateFormat;
-      }
-
-      // Subscriptions
-      var url = '<c:url value="/services/subscriptions/${instanceId}"/>';
-      <c:if test="${isNodeResource}">
-      url += '/${resourceId}';
-      </c:if>
-      $.ajax({
-        url : url,
-        type : 'GET',
-        dataType : 'json',
-        cache : false,
-        success : function(subscriptions, status, jqXHR) {
-          __renderSubscriptions(subscriptions);
+      var context = {
+        cache : [],
+        SUB_TYPE : {
+          FORCED_GROUP : 'forced_group_subscription',
+          FORCED_USER : 'forced_user_subscription',
+          SELF_CREATION_USER : 'selfCreation_user_subscription'
         },
-        error : function(jqXHR, textStatus, errorThrown) {
-          alert(errorThrown);
-        }
-      });
+        subscriptions : [],
+        users : [],
+        groups : [],
+        dateFormat : '',
+        unsubscribeStartUrl : ''
+      };
+      context.subscriptions[context.SUB_TYPE.FORCED_GROUP] = [];
+      context.subscriptions[context.SUB_TYPE.FORCED_USER] = [];
+      context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER] = [];
 
-      // Unscubscribe start URL
-      context.unsubscribeStartUrl = '<c:url value="/services/unsubscribe/${instanceId}" />';
-      <c:if test="${isNodeResource}">
-      context.unsubscribeStartUrl += '/topic/${resourceId}';
-      </c:if>
-    }
-
-    /**
-     * Rendering all subscriptions.
-     * @param subscriptions
-     * @private
-     */
-    function __renderSubscriptions(subscriptions) {
-      __classifySubscriptions(subscriptions);
-      __renderSubscriptionBloc({
-        subType : context.SUB_TYPE.FORCED_GROUP
-      });
-      __renderSubscriptionBloc({
-        subType : context.SUB_TYPE.FORCED_USER
-      });
-      __renderSubscriptionBloc({
-        subType : context.SUB_TYPE.SELF_CREATION_USER
-      });
-    }
-
-    /**
-     * Classifying subscription for displaying.
-     * Loading also of all user and group profiles.
-     * @param subscriptions
-     * @private
-     */
-    function __classifySubscriptions(subscriptions) {
-      var userIds = [];
-      var groupIds = [];
-      $(subscriptions).each(function(index, subscription) {
-        if (subscription.subscriber.group) {
-          context.subscriptions[context.SUB_TYPE.FORCED_GROUP].push(subscription);
-          groupIds.push(subscription.subscriber.id);
-        } else if (subscription.subscriber.user) {
-          if (subscription.forced) {
-            context.subscriptions[context.SUB_TYPE.FORCED_USER].push(subscription);
-          } else if (subscription.selfCreation) {
-            context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER].push(subscription);
-          } else {
-            return false;
-          }
-          userIds.push(subscription.subscriber.id);
-        }
-      });
-
-      // User profiles
-      if (userIds.length > 0) {
-        var userProfiles = new UserProfileManagement();
-        userProfiles.get({
-          async : false,
-          ids : userIds
-        }, function(users) {
-          $(users).each(function(index, user) {
-            context.users[user.id] = user;
-          });
-        });
+      function __putInCache(key, value) {
+        context[key] = value;
       }
 
-      // Group profiles
-      if (groupIds.length > 0) {
-        var groupProfiles = new UserGroupManagement();
-        groupProfiles.get({
-          async : false,
-          ids : groupIds
-        }, function(groups) {
-          $(groups).each(function(index, group) {
-            context.groups[group.id] = group;
-          });
-        });
+      function __getFromCache(key) {
+        return context[key];
       }
 
-      // Agregate informations
-      __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_GROUP], context.groups);
-      __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_USER], context.users);
-      __agregatesData(context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER], context.users);
-    }
-
-    /**
-     * Adding profile data on subscription object.
-     * @param subscriptions
-     * @param profiles
-     * @private
-     */
-    function __agregatesData(subscriptions, profiles) {
-      $(subscriptions).each(function(index, subscription) {
-        var subscriber = profiles[subscription.subscriber.id];
-        if (subscription.subscriber.group) {
-          subscription.ui = {
-            classSuffix : 'group',
-            name : subscriber.name,
-            avatarUrl : '<c:url value="/util/icons/component/groupe_Type_gestionCollaborative.png"/>'
-          };
-          subscription.ws = {
-            subscriberType : 'group'
-          };
-        } else {
-          subscription.ui = {
-            classSuffix : 'user',
-            name : subscriber.fullName,
-            avatarUrl : subscriber.avatar
-          };
-          subscription.ws = {
-            subscriberType : 'user'
-          };
-        }
-      });
-
-      // Sorting subscriptions by their names
-      subscriptions.sort(__sortByName);
-    }
-
-    /**
-     * Sort subscriptions by their names
-     * @param a
-     * @param b
-     * @return {number}
-     * @private
-     */
-    function __sortByName(a, b) {
-      var aName = a.ui.name.toLowerCase();
-      var bName = b.ui.name.toLowerCase();
-      return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
-    }
-
-    /**
-     * Rendering a bloc of subscriptions
-     * @param [params] the parameters to consider when rendering bloc of subscriptions.
-     * @param [params.subType] the type of the bloc of subscriptions.
-     * @private
-     */
-    function __renderSubscriptionBloc(params) {
-      var $bloc = $('#' + params.subType);
-      var subscriptions = context.subscriptions[params.subType];
-      if (subscriptions.length > 0) {
-
-        // List
-        var $list = __renderSubscriptionBlocList(params, $bloc, subscriptions);
-
-        // Bloc title
-        var nbSubscriptions = __renderSubscriptionBlocTitle(params);
-
-        // Pagination
-        __renderPaginationFor(params, nbSubscriptions);
-
-        // Displaying
-        $list.show();
-      }
-    }
-
-    /**
-     * Rendering a the title of a bloc of subscriptions
-     * @param [params] the parameters to consider when rendering bloc of subscriptions.
-     * @param [params.subType] the type of the bloc of subscriptions.
-     * @private
-     */
-    function __renderSubscriptionBlocTitle(params) {
-      var $bloc = $('#' + params.subType);
-      var nbSubscriptions = $bloc.find('li[id^="' + params.subType + '"]').length;
-      var blocTitle = (nbSubscriptions <= 1) ? '${listOfOneUser}' : '${listOfSeveralUsers}';
-      if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
-        blocTitle = (nbSubscriptions <= 1) ? '${listOfOneGroup}' : '${listOfSeveralGroups}';
-      }
-      $bloc.find('.nb_results').text(blocTitle.replace(/[0-9]*/, nbSubscriptions));
-      return nbSubscriptions;
-    }
-
-    /**
-     * Rendering a bloc of subscriptions
-     * @param [params] the parameters to consider when rendering bloc of subscriptions.
-     * @param [params.subType] the type of the bloc of subscriptions.
-     * @param $bloc the bloc to manage
-     * @param subscriptions subscriptions to manage
-     * @private
-     */
-    function __renderSubscriptionBlocList(params, $bloc, subscriptions) {
-      var $list = $bloc.find('#' + params.subType + '_list');
-      $(subscriptions).each(function(index, subscription) {
-        $list.append(__renderSubscription(params, index, subscription));
-      });
-      return $list;
-    }
-
-    /**
-     * Rendering a subscription
-     * @param [params] the parameters to consider when rendering bloc of subscriptions.
-     * @param [params.subType] the type of the bloc of subscriptions.
-     * @param index for odd or even classes
-     * @param subscription subscription to manage
-     * @private
-     */
-    function __renderSubscription(params, index, subscription) {
-
-      // Subscriber
-      var subscriber;
-      if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
-        subscriber = context.groups[subscription.subscriber.id];
-      } else {
-        subscriber = context.users[subscription.subscriber.id];
-      }
-
-      // If the user is not found, then the treatment is stopped
-      if (!subscriber) {
-        return null;
-      }
-
-      // Initializing the subscription
-      var $subscription = $('<li>').attr('id',
-              params.subType + '_' + subscription.subscriber.id).addClass('line').addClass(
-              ((index % 2) == 0) ? 'odd' : 'even');
-
-      // Avatar
-      var $avatar = $('<div>').addClass('avatar').append($('<img>').attr('src',
-          subscription.ui.avatarUrl));
-      $subscription.append($avatar);
-
-      // Name
-      $subscription.append($('<span>').addClass('name_' +
-          subscription.ui.classSuffix).text(subscription.ui.name));
-
-      // Details
-      if (subscription.creationDate) {
-        $subscription.append($('<span>').addClass('subscription-date').text('${subscribedSinceLabel} ' +
-            __formatDate(subscription.creationDate)));
-      }
-
-      // Unsubscribe
-      if (params.subType == context.SUB_TYPE.FORCED_GROUP ||
-          params.subType == context.SUB_TYPE.FORCED_USER ||
-          (params.subType == context.SUB_TYPE.SELF_CREATION_USER &&
-              subscription.subscriber.id == '${currentUserId}')) {
-        var unsuncribeAction = $('<a>');
-        $subscription.append(unsuncribeAction.attr('title',
-                '${unsubscribeLabel}').addClass('action unsubscribe').text('${unsubscribeLabel}').click(function() {
-              __confirmSubscriptionDeletion(subscription, function() {
-                $.ajax({
-                  url : context.unsubscribeStartUrl + '/' + subscription.ws.subscriberType + '/' +
-                      subscription.subscriber.id,
-                  type : 'POST',
-                  dataType : 'json',
-                  cache : false,
-                  contentType : "application/json",
-                  success : function(subscriptions, status, jqXHR) {
-                    unsuncribeAction.remove();
-                    notySuccess("${unsubscribeSuccessMessage}".replace('@name@',
-                        subscription.ui.name));
-                    $subscription.attr('id', '');
-                    $subscription.addClass('unsubscribed');
-                    __renderSubscriptionBlocTitle(params);
-                  },
-                  error : function(jqXHR, textStatus, errorThrown) {
-                    window.console &&
-                    window.console.log(('Silverpeas Subscription Management - ERROR - ' +
-                        errorThrown ));
-                    notyError("${unsubscribeErrorMessage}".replace('@name@', subscription.ui.name));
-                  }
-                });
-                return true;
-              });
-            }));
-      }
-
-      // Return the built subscription.
-      return $subscription;
-    }
-
-    /**
-     * Format a date represented by a long into a readable date that takes account of the user language.
-     * @param longDate
-     * @private
-     */
-    function __formatDate(longDate) {
-      return $.datepicker.formatDate(context.dateFormat, new Date(longDate));
-    }
-
-    /**
-     * Handle the pagination of a subscription bloc.
-     * @param params
-     * @param nbSubscriptions
-     * @private
-     */
-    function __renderPaginationFor(params, nbSubscriptions) {
-      var pagination = $('#' + params.subType + '_list_pagination');
-      if (nbSubscriptions > 0) {
-        var paginationContext = __calculatePaginationContext(params, nbSubscriptions);
-        pagination.show();
-        pagination.smartpaginator({
-          totalrecords : nbSubscriptions,
-          recordsperpage : paginationContext.nbPerPage,
-          length : 5,
-          datacontainer : params.subType + '_list',
-          dataelement : 'li',
-          next : $('<img>',
-              {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowRight.gif"/>'}),
-          prev : $('<img>',
-              {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowLeft.gif"/>'}),
-          first : $('<img>',
-              {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif"/>'}),
-          last : $('<img>',
-              {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleRight.gif"/>'}),
-          theme : 'pageNav'
-        });
-      } else {
-        pagination.hide();
-      }
-    }
-
-    /**
-     * Calculate the number of lines that can be displayed for given subscriptions
-     * @param params
-     * @param nbSubscriptions
-     * @return {{nbPerPage: number, blankHeightSize: number, nbPerPageWhenSeveralBlocs: number, nbBlocsWhenSeveral: number}}
-     * @private
-     */
-    function __calculatePaginationContext(params, nbSubscriptions) {
-
-      // Default context
-      var paginationContext = {
-        nbPerPage : 1,
-        blankHeightSize : 100,
-        nbPerPageWhenSeveralBlocs : 1,
-        nbBlocsWhenSeveral : 2
+      $.subscription = function() {
+        __loadSubscriptions();
       };
 
-      // No computing when no more than 2 subscriptions
-      if (!context.pagination && nbSubscriptions > 1) {
+      function __loadSubscriptions() {
 
-        // Simulating a pagination to obtain its size (when the bloc takes the full height of screen)
-        var dummyPagination = $('#' + params.subType + '_list_pagination');
-        dummyPagination.show();
-        dummyPagination.smartpaginator({
-          totalrecords : nbSubscriptions,
-          recordsperpage : 2,
-          datacontainer : params.subType + '_list',
-          dataelement : 'li',
-          theme : 'pageNav'
+        // Date format
+        var dateFormat = $.datepicker.regional['${requestScope.resources.language}'];
+        if (dateFormat) {
+          context.dateFormat = dateFormat.dateFormat;
+        } else {
+          context.dateFormat = $.datepicker.regional[''].dateFormat;
+        }
+
+        // Subscriptions
+        var url = '<c:url value="/services/subscriptions/${instanceId}"/>';
+        <c:if test="${isNodeResource}">
+        url += '/${resourceId}';
+        </c:if>
+        $.ajax({
+          url : url,
+          type : 'GET',
+          dataType : 'json',
+          cache : false,
+          success : function(subscriptions, status, jqXHR) {
+            __renderSubscriptions(subscriptions);
+          },
+          error : function(jqXHR, textStatus, errorThrown) {
+            alert(errorThrown);
+          }
         });
 
-        // Some usefull sizes
-        var modifyButtonSize = $('.compulsory-subscription-management').find('a').outerHeight(true);
-        var blocSize = $('#' + params.subType).outerHeight(true);
-        var lineSize = $('#' + params.subType + '_list').find('li').outerHeight(true);
-        var browseBarSize = $('#browseBar').outerHeight(true);
+        // Unscubscribe start URL
+        context.unsubscribeStartUrl = '<c:url value="/services/unsubscribe/${instanceId}" />';
+        <c:if test="${isNodeResource}">
+        context.unsubscribeStartUrl += '/topic/${resourceId}';
+        </c:if>
+      }
 
-        // Calculate the number of lines per page
-        paginationContext.nbPerPage =
-            Math.ceil(($(window).height() - browseBarSize - modifyButtonSize -
-                paginationContext.blankHeightSize - blocSize) / lineSize) - 1;
-        paginationContext.nbPerPageWhenSeveralBlocs =
-            Math.ceil(($(window).height() - browseBarSize - modifyButtonSize -
-                ((paginationContext.blankHeightSize + blocSize) *
-                    paginationContext.nbBlocsWhenSeveral)) /
-                (lineSize * paginationContext.nbBlocsWhenSeveral));
-        context.pagination = $.extend({}, paginationContext);
-      } else {
+      /**
+       * Rendering all subscriptions.
+       * @param subscriptions
+       * @private
+       */
+      function __renderSubscriptions(subscriptions) {
+        __classifySubscriptions(subscriptions);
+        var $forcedGroups = __renderSubscriptionBloc({
+          subType : context.SUB_TYPE.FORCED_GROUP
+        });
+        var $forcedUsers = __renderSubscriptionBloc({
+          subType : context.SUB_TYPE.FORCED_USER
+        });
+        var $manualUsers = __renderSubscriptionBloc({
+          subType : context.SUB_TYPE.SELF_CREATION_USER
+        });
 
-        // Context already computed
-        if (context.pagination) {
-          paginationContext = $.extend({}, context.pagination);
+        __paginate($('div.compulsory-subscription-management'), [$forcedGroups, $forcedUsers]);
+        __paginate($('div.individual-subscription'), [$manualUsers]);
+      }
+
+      /**
+       * Classifying subscription for displaying.
+       * Loading also of all user and group profiles.
+       * @param subscriptions
+       * @private
+       */
+      function __classifySubscriptions(subscriptions) {
+        var userIds = [];
+        var groupIds = [];
+        $(subscriptions).each(function(index, subscription) {
+          if (subscription.subscriber.group) {
+            context.subscriptions[context.SUB_TYPE.FORCED_GROUP].push(subscription);
+            groupIds.push(subscription.subscriber.id);
+          } else if (subscription.subscriber.user) {
+            if (subscription.forced) {
+              context.subscriptions[context.SUB_TYPE.FORCED_USER].push(subscription);
+            } else if (subscription.selfCreation) {
+              context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER].push(subscription);
+            } else {
+              return false;
+            }
+            userIds.push(subscription.subscriber.id);
+          }
+        });
+
+        // User profiles
+        if (userIds.length > 0) {
+          var userProfiles = new UserProfileManagement();
+          userProfiles.get({
+            async : false,
+            ids : userIds
+          }, function(users) {
+            $(users).each(function(index, user) {
+              context.users[user.id] = user;
+            });
+          });
         }
+
+        // Group profiles
+        if (groupIds.length > 0) {
+          var groupProfiles = new UserGroupManagement();
+          groupProfiles.get({
+            async : false,
+            ids : groupIds
+          }, function(groups) {
+            $(groups).each(function(index, group) {
+              context.groups[group.id] = group;
+            });
+          });
+        }
+
+        // Agregate informations
+        __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_GROUP], context.groups);
+        __agregatesData(context.subscriptions[context.SUB_TYPE.FORCED_USER], context.users);
+        __agregatesData(context.subscriptions[context.SUB_TYPE.SELF_CREATION_USER], context.users);
       }
 
-      // Divide by 2 if necessary
-      if (params.subType != context.SUB_TYPE.SELF_CREATION_USER &&
-          (context.subscriptions[context.SUB_TYPE.FORCED_GROUP].length > 0 &&
-              context.subscriptions[context.SUB_TYPE.FORCED_USER].length > 0)) {
-        paginationContext.nbPerPage = paginationContext.nbPerPageWhenSeveralBlocs;
+      /**
+       * Adding profile data on subscription object.
+       * @param subscriptions
+       * @param profiles
+       * @private
+       */
+      function __agregatesData(subscriptions, profiles) {
+        $(subscriptions).each(function(index, subscription) {
+          var subscriber = profiles[subscription.subscriber.id];
+          if (subscription.subscriber.group) {
+            subscription.ui = {
+              classSuffix : 'group',
+              name : subscriber.name,
+              avatarUrl : '<c:url value="/util/icons/component/groupe_Type_gestionCollaborative.png"/>'
+            };
+            subscription.ws = {
+              subscriberType : 'group'
+            };
+          } else {
+            subscription.ui = {
+              classSuffix : 'user',
+              name : subscriber.fullName,
+              avatarUrl : subscriber.avatar
+            };
+            subscription.ws = {
+              subscriberType : 'user'
+            };
+          }
+        });
+
+        // Sorting subscriptions by their names
+        subscriptions.sort(__sortByName);
       }
 
-      // One line at least
-      if (paginationContext.nbPerPage <= 0) {
-        paginationContext.nbPerPage = 1;
+      /**
+       * Sort subscriptions by their names
+       * @param a
+       * @param b
+       * @return {number}
+       * @private
+       */
+      function __sortByName(a, b) {
+        var aName = a.ui.name.toLowerCase();
+        var bName = b.ui.name.toLowerCase();
+        return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
       }
 
-      // Return the pagination context
-      return paginationContext;
-    }
+      /**
+       * Rendering a bloc of subscriptions
+       * @param [params] the parameters to consider when rendering bloc of subscriptions.
+       * @param [params.subType] the type of the bloc of subscriptions.
+       * @private
+       */
+      function __renderSubscriptionBloc(params) {
+        var $bloc = $('#' + params.subType);
+        var subscriptions = context.subscriptions[params.subType];
+        if (subscriptions.length > 0) {
+
+          // List
+          var $list = __renderSubscriptionBlocList(params, $bloc, subscriptions);
+
+          // Bloc title
+          __renderSubscriptionBlocTitle(params);
+
+          // Displaying
+          $list.show();
+        }
+        return $bloc;
+      }
+
+      /**
+       * Rendering a the title of a bloc of subscriptions
+       * @param [params] the parameters to consider when rendering bloc of subscriptions.
+       * @param [params.subType] the type of the bloc of subscriptions.
+       * @private
+       */
+      function __renderSubscriptionBlocTitle(params) {
+        var $bloc = $('#' + params.subType);
+        var nbSubscriptions = $bloc.find('li[id^="' + params.subType + '"]').length;
+        var blocTitle = (nbSubscriptions <= 1) ? '${listOfOneUser}' : '${listOfSeveralUsers}';
+        if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
+          blocTitle = (nbSubscriptions <= 1) ? '${listOfOneGroup}' : '${listOfSeveralGroups}';
+        }
+        $bloc.find('.nb_results').text(blocTitle.replace(/[0-9]*/, nbSubscriptions));
+        return nbSubscriptions;
+      }
+
+      /**
+       * Rendering a bloc of subscriptions
+       * @param [params] the parameters to consider when rendering bloc of subscriptions.
+       * @param [params.subType] the type of the bloc of subscriptions.
+       * @param $bloc the bloc to manage
+       * @param subscriptions subscriptions to manage
+       * @private
+       */
+      function __renderSubscriptionBlocList(params, $bloc, subscriptions) {
+        var $list = $bloc.find('#' + params.subType + '_list');
+        $(subscriptions).each(function(index, subscription) {
+          $list.append(__renderSubscription(params, index, subscription));
+        });
+        return $list;
+      }
+
+      /**
+       * Rendering a subscription
+       * @param [params] the parameters to consider when rendering bloc of subscriptions.
+       * @param [params.subType] the type of the bloc of subscriptions.
+       * @param index for odd or even classes
+       * @param subscription subscription to manage
+       * @private
+       */
+      function __renderSubscription(params, index, subscription) {
+
+        // Subscriber
+        var subscriber;
+        if (params.subType == context.SUB_TYPE.FORCED_GROUP) {
+          subscriber = context.groups[subscription.subscriber.id];
+        } else {
+          subscriber = context.users[subscription.subscriber.id];
+        }
+
+        // If the user is not found, then the treatment is stopped
+        if (!subscriber) {
+          return null;
+        }
+
+        // Initializing the subscription
+        var $subscription = $('<li>').attr('id',
+                params.subType + '_' + subscription.subscriber.id).addClass('line').addClass(
+                ((index % 2) == 0) ? 'odd' : 'even');
+
+        // Avatar
+        var $avatar = $('<div>').addClass('avatar').append($('<img>').attr('src',
+            subscription.ui.avatarUrl));
+        $subscription.append($avatar);
+
+        // Name
+        $subscription.append($('<span>').addClass('name_' +
+            subscription.ui.classSuffix).text(subscription.ui.name));
+
+        // Details
+        if (subscription.creationDate) {
+          $subscription.append($('<span>').addClass('subscription-date').text('${subscribedSinceLabel} ' +
+              __formatDate(subscription.creationDate)));
+        }
+
+        // Unsubscribe
+        if (params.subType == context.SUB_TYPE.FORCED_GROUP ||
+            params.subType == context.SUB_TYPE.FORCED_USER ||
+            (params.subType == context.SUB_TYPE.SELF_CREATION_USER &&
+                subscription.subscriber.id == '${currentUserId}')) {
+          var unsuncribeAction = $('<a>');
+          $subscription.append(unsuncribeAction.attr('title',
+                  '${unsubscribeLabel}').addClass('action unsubscribe').text('${unsubscribeLabel}').click(function() {
+                __confirmSubscriptionDeletion(subscription, function() {
+                  $.ajax({
+                    url : context.unsubscribeStartUrl + '/' + subscription.ws.subscriberType + '/' +
+                        subscription.subscriber.id,
+                    type : 'POST',
+                    dataType : 'json',
+                    cache : false,
+                    contentType : "application/json",
+                    success : function(subscriptions, status, jqXHR) {
+                      unsuncribeAction.remove();
+                      notySuccess("${unsubscribeSuccessMessage}".replace('@name@',
+                          subscription.ui.name));
+                      $subscription.attr('id', '');
+                      $subscription.addClass('unsubscribed');
+                      __renderSubscriptionBlocTitle(params);
+                    },
+                    error : function(jqXHR, textStatus, errorThrown) {
+                      window.console &&
+                      window.console.log(('Silverpeas Subscription Management - ERROR - ' +
+                          errorThrown ));
+                      notyError("${unsubscribeErrorMessage}".replace('@name@',
+                          subscription.ui.name));
+                    }
+                  });
+                  return true;
+                });
+              }));
+        }
+
+        // Return the built subscription.
+        return $subscription;
+      }
+
+      /**
+       * Format a date represented by a long into a readable date that takes account of the user language.
+       * @param longDate
+       * @private
+       */
+      function __formatDate(longDate) {
+        return $.datepicker.formatDate(context.dateFormat, new Date(longDate));
+      }
+
+      /**
+       * Paginate a container that takes all the height of the screen.
+       * @param $mainContainer
+       * @param blocs
+       * @private
+       */
+      function __paginate($mainContainer, blocs) {
+
+        var notEmptyBlocs = [];
+
+        // Compute the size of blocs
+        var sizeOfBlocs = 0;
+        $(blocs).each(function(index, $bloc) {
+          var currentHeight = $bloc.height();
+          if (currentHeight > 20) {
+            notEmptyBlocs.push($bloc);
+          }
+          sizeOfBlocs += currentHeight;
+        });
+
+        // Sorting blocs by their height
+        notEmptyBlocs.sort(function($blocA, $blocB) {
+          var aHeight = $blocA.height();
+          var bHeight = $blocB.height();
+          return ((aHeight < bHeight) ? -1 : ((aHeight > bHeight) ? 1 : 0));
+        });
+
+        // Compute the available heigth for one bloc
+        var availableBlocHeight = parseInt(($(window).height() -
+            ($mainContainer.height() - sizeOfBlocs) - 75) / notEmptyBlocs.length);
+
+        // Paginate each bloc
+        $(notEmptyBlocs).each(function(index, $bloc) {
+          var blocHeight = $bloc.height();
+          var remainingBlocHeight = availableBlocHeight - blocHeight;
+          if (remainingBlocHeight <= 0) {
+            var blocTitleHeight = $('[id$="_result_count"]', $bloc).height();
+            var $pagination = $('[id$="_list_pagination"]', $bloc).show();
+            var paginationHeight = $('[id$="_list_pagination"]', $bloc).height();
+            var $rows = $('li', $bloc);
+            var rowHeight = $rows.outerHeight(true);
+            $pagination.smartpaginator({
+              totalrecords : $rows.length,
+              recordsperpage : parseInt((availableBlocHeight - blocTitleHeight - paginationHeight) /
+                  rowHeight),
+              length : 5,
+              datacontainer : $('[id$="_list"]', $bloc).attr('id'),
+              dataelement : 'li',
+              next : $('<img>',
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowRight.gif"/>'}),
+              prev : $('<img>',
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowLeft.gif"/>'}),
+              first : $('<img>',
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleLeft.gif"/>'}),
+              last : $('<img>',
+                  {src : '<c:url value="/util/viewGenerator/icons/arrows/arrowDoubleRight.gif"/>'}),
+              theme : 'pageNav'
+            });
+          } else {
+            availableBlocHeight +=
+                parseInt(remainingBlocHeight / (notEmptyBlocs.length - (index + 1)));
+          }
+        });
+      }
+
+      /**
+       * Handle confirmation message.
+       * @param subscription
+       * @param callback
+       * @private
+       */
+      function __confirmSubscriptionDeletion(subscription, callback) {
+        var $confirm = $('<div>').html("${unsubscribeConfirmMessage}".replace('@name@',
+            subscription.ui.name)).hide().appendTo(document.body);
+        $confirm.popup('confirmation', {
+          callback : callback,
+          callbackOnClose : function() {
+            $confirm.dialog('destroy');
+            $confirm.remove();
+          }});
+      }
+    })(jQuery);
 
     /**
-     * Handle confirmation message.
-     * @param subscription
-     * @param callback
-     * @private
+     * Initialization.
      */
-    function __confirmSubscriptionDeletion(subscription, callback) {
-      var $confirm = $('<div>').html("${unsubscribeConfirmMessage}".replace('@name@',
-          subscription.ui.name)).hide().appendTo(document.body);
-      $confirm.popup('confirmation', {
-        callback : callback,
-        callbackOnClose : function() {
-          $confirm.dialog('destroy');
-          $confirm.remove();
-        }});
-    }
-  })(jQuery);
-
-  /**
-   * Initialization.
-   */
-  jQuery(document).ready(function() {
-    jQuery.subscription();
-  });
-</script>
+    jQuery(document).ready(function() {
+      jQuery.subscription();
+    });
+  </script>
 </head>
 <body class="subscription-management userPanel">
 <!-- Breadcrumb -->
@@ -597,14 +561,14 @@
       <p class="nb_results" id="forced_group_subscription_result_count"></p>
       <ul class="group_list" id="forced_group_subscription_list" style="display: none">
       </ul>
-      <div class="pageNav_results_userPanel" id="forced_group_subscription_list_pagination">
+      <div class="pageNav_results_userPanel pager" id="forced_group_subscription_list_pagination" style="display: none">
       </div>
     </div>
     <div id="forced_user_subscription" class="listing_users">
       <p class="nb_results" id="forced_user_subscription_result_count"></p>
       <ul class="user_list" id="forced_user_subscription_list" style="display: none">
       </ul>
-      <div class="pageNav_results_userPanel" id="forced_user_subscription_list_pagination">
+      <div class="pageNav_results_userPanel pager" id="forced_user_subscription_list_pagination" style="display: none">
       </div>
     </div>
   </div>
@@ -617,7 +581,7 @@
       <p id="selfCreation_user_subscription_result_count" class="nb_results"></p>
       <ul class="user_list" id="selfCreation_user_subscription_list" style="display: none">
       </ul>
-      <div class="pageNav_results_userPanel" id="selfCreation_user_subscription_list_pagination">
+      <div class="pageNav_results_userPanel pager" id="selfCreation_user_subscription_list_pagination" style="display: none">
       </div>
     </div>
   </div>
