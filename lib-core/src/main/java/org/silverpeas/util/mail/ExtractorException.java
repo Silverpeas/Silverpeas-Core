@@ -23,28 +23,24 @@
  */
 package org.silverpeas.util.mail;
 
-import java.io.InputStream;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class MailAttachment {
-  
-  private String name;
-  private InputStream file;
-  
-  public MailAttachment(String name) {
-    setName(name);
+public class ExtractorException extends SilverpeasException {
+
+  private static final long serialVersionUID = 9169416970570371214L;
+
+  public ExtractorException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
   }
   
-  public String getName() {
-    return name;
+  public ExtractorException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, null, nested);
   }
-  public void setName(String name) {
-    this.name = name;
-  }
-  public InputStream getFile() {
-    return file;
-  }
-  public void setFile(InputStream file) {
-    this.file = file;
+
+  @Override
+  public String getModule() {
+    return "util";
   }
 
 }
