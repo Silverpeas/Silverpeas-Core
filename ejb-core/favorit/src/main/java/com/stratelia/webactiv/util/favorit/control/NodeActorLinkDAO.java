@@ -24,7 +24,7 @@
 
 //TODO : reporter dans CVS (done)
 
-package com.stratelia.webactiv.util.favorit.ejb;
+package com.stratelia.webactiv.util.favorit.control;
 
 import java.sql.*;
 import java.util.*;

@@ -21,29 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.util.favorit.control;
 
-import javax.ejb.EJBHome;
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
+import com.stratelia.webactiv.util.exception.*;
 
 /**
- * Interface declaration
+ * Class declaration
  * @author
  * @version %I%, %G%
  */
-public interface FavoritBmHome extends EJBHome {
+public class FavoritRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Constructor declaration
+   * @param message
+   * @param nested
+   * @see
+   */
+  public FavoritRuntimeException(String message, Exception nested) {
+    super(null, ERROR, message, nested);
+  }
 
   /**
    * Method declaration
    * @return
-   * @throws CreateException
-   * @throws RemoteException
    * @see
    */
-  FavoritBm create() throws RemoteException, CreateException;
+  @Override
+  public String getModule() {
+    return "favorit";
+  }
+
 }

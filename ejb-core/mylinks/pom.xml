@@ -11,5 +11,32 @@
   <artifactId>mylinks</artifactId>
   <packaging>ejb</packaging>
   <name>EJB My Links - ${project.version}</name>
+  
+   <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ejbVersion>3.0</ejbVersion>
+          <generateClient>true</generateClient>
+          <clientExcludes>
+            <clientExclude>**/*DAO.class</clientExclude>
+            <clientExclude>**/*EJB.class</clientExclude>
+            <clientExclude>META-INF/*.xml</clientExclude>
+          </clientExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+  <dependencies>
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <version>3.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies> 
 
 </project>
