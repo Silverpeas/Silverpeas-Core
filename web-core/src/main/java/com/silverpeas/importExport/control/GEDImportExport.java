@@ -51,7 +51,6 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
-import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.report.ImportReportManager;
@@ -147,9 +146,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
     if (formTemplateBm == null) {
       try {
-        FormTemplateBmHome formTemplateBmHome = EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
-        formTemplateBm = formTemplateBmHome.create();
+        formTemplateBm = EJBUtilitaire.getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME,
+            FormTemplateBm.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -333,7 +331,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public void createPublicationContent(UnitReport unitReport, int pubId,
       PublicationContentType pubContent, String userId, String language) throws
       ImportExportException {
-    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.getApplicationContext(), language);
+    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
+        getApplicationContext(), language);
   }
 
   /**
@@ -459,7 +458,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // le modele existant n'est pas le meme que l'importe
         unitReport.setError(UnitReport.ERROR_CANT_UPDATE_CONTENT);
       }
-    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId, I18NHelper.defaultLanguage)) {
+    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId,
+        I18NHelper.defaultLanguage)) {
       // on ne remplace pas un type de contenu par un autre
       // Preparation des donnees DBModel a  creer
       if (modelDetail == null) {

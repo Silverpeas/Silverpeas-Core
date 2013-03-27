@@ -29,8 +29,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
 
-import sun.security.jca.GetInstance;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
 import com.stratelia.webactiv.util.exception.UtilException;
