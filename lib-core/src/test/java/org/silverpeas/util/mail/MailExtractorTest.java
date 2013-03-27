@@ -161,15 +161,9 @@ public class MailExtractorTest {
 
     MailAttachment attachment = attachments.get(0);
     assertThat(attachment.getName(), is("Liste des applications-V1.0.pdf"));
-    File file1 = new File(dir + "temp" + PathTestUtil.SEPARATOR + attachment.getName());
-    FileUtils.copyInputStreamToFile(attachment.getFile(), file1);
-    assertThat(attachment.getName(), is(file1.getName()));
-    assertThat(file1.length(), is(149463L));
-    IOUtils.closeQuietly(attachment.getFile());
-    FileUtils.deleteQuietly(file1);
-
+    assertThat(attachment.getSize(), is(149463L));
+    
     attachment = attachments.get(1);
     assertThat(attachment.getName(), is("Silverpeas-SearchEngine.odt"));
-    IOUtils.closeQuietly(attachment.getFile());
   }
 }

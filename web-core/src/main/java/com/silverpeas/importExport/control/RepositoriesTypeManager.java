@@ -299,41 +299,35 @@ public class RepositoriesTypeManager {
 
       // extract each file from mail...
       try {
+        List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
+        
         List<MailAttachment> attachments = extractor.getAttachments();
-        String dir =
-            FileRepositoryManager.getTemporaryPath() + "mail" +
-                Calendar.getInstance().getTimeInMillis();
         for (MailAttachment attachment : attachments) {
           if (attachment != null) {
-            File attachmentFile = new File(dir, attachment.getName());
-            FileUtils.writeByteArrayToFile(attachmentFile,
-                IOUtils.toByteArray(attachment.getFile()));
-
             AttachmentDetail attDetail = new AttachmentDetail();
             AttachmentPK pk = new AttachmentPK("unknown", "useless", componentId);
             attDetail.setLogicalName(attachment.getName());
-            attDetail.setPhysicalName(attachmentFile.getAbsolutePath());
+            attDetail.setPhysicalName(attachment.getPath());
             attDetail.setAuthor(userDetail.getId());
-            attDetail.setSize(attachmentFile.length());
+            attDetail.setSize(attachment.getSize());
             attDetail.setPK(pk);
 
-            AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
-
-            // ... and save it
-            if (isVersioningUsed) {
-              // versioning mode
-              VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
-              List<AttachmentDetail> documents = new ArrayList<AttachmentDetail>();
-              documents.add(attDetail);
-              versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
-                    documents, Integer.parseInt(userDetail.getId()),
-                    pubDetail.isIndexable());
-            } else {
-              // classic mode
-              attachmentIE.importAttachment(pubDetail.getPK().getId(),
-                    componentId, attDetail, attachment.getFile(), pubDetail.isIndexable(), false);
-            }
+            documents.add(attDetail);            
           }
+        }
+
+        // ... and save it
+        if (isVersioningUsed) {
+          // versioning mode
+          VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+          versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
+                documents, Integer.parseInt(userDetail.getId()),
+                pubDetail.isIndexable());
+        } else {
+          // classic mode
+          AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+          attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
+              userDetail.getId(), pubDetail.isIndexable());
         }
       } catch (Exception e) {
         SilverTrace.error("importExport", "RepositoriesTypeManager.processMailContent()",

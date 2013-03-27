@@ -37,6 +37,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +45,7 @@ import java.util.Locale;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
@@ -54,6 +56,7 @@ import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class MSGExtractor implements MailExtractor {
@@ -195,10 +198,13 @@ public class MSGExtractor implements MailExtractor {
     AttachmentChunks[] attachmentChunks = message.getAttachmentFiles();
     for (AttachmentChunks attachment : attachmentChunks) {
       byte[] data = attachment.attachData.getValue();
-      
-      MailAttachment mailAttachment = new MailAttachment(attachment.attachLongFileName.getValue());
-      mailAttachment.setFile(new ByteArrayInputStream(data));
-      
+      String fileName = attachment.attachLongFileName.getValue();
+      MailAttachment mailAttachment = new MailAttachment(fileName);
+      String dir = FileRepositoryManager.getTemporaryPath() + "mail" + Calendar.getInstance().getTimeInMillis();
+      File file = new File(dir, fileName);
+      FileUtils.writeByteArrayToFile(file, data);
+      mailAttachment.setPath(file.getAbsolutePath());
+      mailAttachment.setSize(file.length());
       mailAttachments.add(mailAttachment);
     }
     return mailAttachments;

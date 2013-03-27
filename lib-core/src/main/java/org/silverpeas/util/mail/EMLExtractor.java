@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -47,8 +48,10 @@ import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
@@ -158,7 +161,13 @@ public class EMLExtractor implements MailExtractor {
         String fileName = getFileName(part);
         if (fileName != null) {
           MailAttachment attachment = new MailAttachment(fileName);
-          attachment.setFile(part.getInputStream());
+          String dir =
+            FileRepositoryManager.getTemporaryPath() + "mail" +
+                Calendar.getInstance().getTimeInMillis();
+          File file = new File(dir, fileName);
+          FileUtils.writeByteArrayToFile(file, IOUtils.toByteArray(part.getInputStream()));
+          attachment.setPath(file.getAbsolutePath());
+          attachment.setSize(file.length());
           attachments.add(attachment);
         }
       }

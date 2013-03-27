@@ -23,28 +23,38 @@
  */
 package org.silverpeas.util.mail;
 
-import java.io.InputStream;
-
 public class MailAttachment {
-  
+
   private String name;
-  private InputStream file;
-  
+  private String path;
+  private long size;
+
   public MailAttachment(String name) {
     setName(name);
   }
-  
+
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
-  public InputStream getFile() {
-    return file;
+
+  public String getPath() {
+    return path;
   }
-  public void setFile(InputStream file) {
-    this.file = file;
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public void setSize(long size) {
+    this.size = size;
+  }
+
+  public long getSize() {
+    return size;
   }
 
 }
