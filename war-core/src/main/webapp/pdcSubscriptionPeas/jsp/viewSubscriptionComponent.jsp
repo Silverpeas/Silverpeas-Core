@@ -117,16 +117,13 @@
         ArrayLine line = arrayPane.addArrayLine();
         StringBuilder subTypeLabel = new StringBuilder();
         subTypeLabel.append(
-            resource.getString("SubscriptionType." + subscription.getSubscriber().getType()));
+            resource.getString("SubscriptionMethod." + subscription.getSubscriptionMethod()));
         if (SubscriberType.GROUP.equals(subscription.getSubscriber().getType())) {
+          subTypeLabel.append(" ");
+          subTypeLabel.append(resource.getString("SubscriptionType." + subscription.getSubscriber().getType()));
           subTypeLabel.append(" <b>");
           subTypeLabel.append(subscription.getSubscriberName());
           subTypeLabel.append("</b>");
-        }
-        if (!currentUserId.equals(subscription.getCreatorId())) {
-          subTypeLabel.append(" ");
-          subTypeLabel.append(
-              resource.getString("SubscriptionMethod." + subscription.getSubscriptionMethod()));
         }
         line.addArrayCellText(subTypeLabel.toString());
         if (!isReadOnly) {
