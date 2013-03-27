@@ -145,14 +145,6 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
     </c:otherwise>
   </c:choose>
   <c:choose>
-    <c:when test="${param.ShowDownloadEstimation != null}">
-      <c:set var="showDownloadEstimation" scope="page" value="${silfn:booleanValue(param.ShowDownloadEstimation)}" />
-    </c:when>
-    <c:otherwise>
-      <c:set var="showDownloadEstimation" scope="page" value="${true}" />
-    </c:otherwise>
-  </c:choose>
-  <c:choose>
     <c:when test="${param.ShowInfo != null}">
       <c:set var="showInfo" scope="page" value="${silfn:booleanValue(param.ShowInfo)}" />
     </c:when>
@@ -266,10 +258,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
                 <c:if test="${showFileSize}">
                   <c:out value="${view:humanReadableSize(currentAttachment.size)}" />
                 </c:if>
-                <c:if test="${showFileSize && showDownloadEstimation}"> / </c:if>
-              <c:if test="${showDownloadEstimation}">
-                <c:out value="${view:estimateDownload(currentAttachment.size)}" />
-              </c:if> - <view:formatDateTime value="${currentAttachment.updated}" />
+                 - <view:formatDateTime value="${currentAttachment.updated}" />
               <c:if test="${silfn:isPreviewable(currentAttachment.attachmentPath)}">
                 <img onclick="javascript:preview(this, '<c:out value="${currentAttachment.id}" />');" class="preview-file" src='<c:url value="/util/icons/preview.png"/>' alt="<fmt:message key="GML.preview"/>" title="<fmt:message key="GML.preview" />"/>
               </c:if>
