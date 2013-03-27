@@ -150,19 +150,19 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-	  if (!settings.title || settings.title == null || settings.title.length == 0) {
-	    settings.title = $.i18n.prop('GML.help.dialog.title');
-	  }
-	
-	  // Internal settings
-	  $.extend(settings, __buildInternalSettings({
-	    buttonTextNo : $.i18n.prop('GML.ok'),
-	    isMaxWidth : true,
-	    dialogClass : 'help-modal-message'
-	  }));
-	
-	  // Dialog
-	  return __openPopup($(this), settings);
+      if (!settings.title || settings.title == null || settings.title.length == 0) {
+        settings.title = $.i18n.prop('GML.help.dialog.title');
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonTextNo : $.i18n.prop('GML.ok'),
+        isMaxWidth : true,
+        dialogClass : 'help-modal-message'
+      }));
+
+      // Dialog
+      return __openPopup($(this), settings);
     },
 
     /**
@@ -503,4 +503,3 @@
   }
 
 })( jQuery );
-

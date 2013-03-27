@@ -211,7 +211,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
             FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
         document.setDocumentType(attachmentContext);
       }
-      document.setLanguage(language);
+      document.setLanguage(lang);
       document.setTitle(title);
       document.setDescription(description);      
       document.setSize(tempFile.length());
@@ -221,10 +221,10 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
             content, StringUtil.getBooleanValue(indexIt), publicDocument);
       } else {
         document.edit(userId);
-        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, language);
+        AttachmentServiceFactory.getAttachmentService().lock(document.getId(), userId, lang);
         AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content,
             StringUtil.getBooleanValue(indexIt), true);
-        UnlockContext unlockContext = new UnlockContext(document.getId(), userId, language);
+        UnlockContext unlockContext = new UnlockContext(document.getId(), userId, lang);
         unlockContext.addOption(UnlockOption.UPLOAD);
         if (!publicDocument) {
           unlockContext.addOption(UnlockOption.PRIVATE_VERSION);

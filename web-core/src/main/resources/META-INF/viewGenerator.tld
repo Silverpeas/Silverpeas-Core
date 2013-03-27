@@ -1110,6 +1110,74 @@
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to manage upload of files.</description>
+    <name>fileUpload</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.upload.FileUploadTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>If not filled, default id is 'fileUpload'.</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        By this attribute is passed the jQuery selector that permits to identify html forms to
+        manage. If files are being upload, all the html forms aimed by the given selector can not be
+        submitted. When an html forms can not be submitted, a modal warning message is displayed to
+        the user.
+      </description>
+      <name>jqueryFormSelector</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        If filled with a positive value, when the number of uploads reaches the value, it is no more
+        possible to upload files.
+      </description>
+      <name>nbFileLimit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Pass true if the UI has to be displayed in a fieldset.
+      </description>
+      <name>fieldset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Choose several files at one time. If not filled, default is true.
+        If the web browser is not compatible with multiple file selection, the
+        feature is deactivated.
+      </description>
+      <name>multiple</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Default value is true.
+        If true drop zone area is displayed on compatible web browsers. If false a standard input
+        file is displayed in any case.
+      </description>
+      <name>dragAndDropDisplay</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Simple tag to play a video in flowplayer.</description>
     <name>video</name>
     <tag-class>

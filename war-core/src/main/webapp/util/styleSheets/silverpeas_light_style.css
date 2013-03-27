@@ -353,6 +353,7 @@ body, td, div, a , input, select, textarea, #myProfileFiche .statut{
 	padding:0;
 }
 .milieuBoutonV5 a,
+a.milieuBoutonV5,
 button {
 		background-image: none;
 	background-color:#C8ED99;
