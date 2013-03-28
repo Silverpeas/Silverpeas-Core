@@ -20,22 +20,11 @@
  */
 package com.stratelia.webactiv.jaas;
 
-import com.silverpeas.jcrutil.security.impl.DigestCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.exception.WithNested;
 import java.security.Principal;
-import org.apache.jackrabbit.core.security.AnonymousPrincipal;
-import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;
@@ -46,13 +35,24 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.jackrabbit.util.Text;
+import org.apache.jackrabbit.core.security.AnonymousPrincipal;
+import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.crypto.CryptMD5;
+
+import com.silverpeas.jcrutil.security.impl.DigestCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.exception.WithNested;
 
 public class SilverpeasLoginModule implements LoginModule {
 
@@ -62,7 +62,7 @@ public class SilverpeasLoginModule implements LoginModule {
   private CallbackHandler callbackHandler;
   private Set<Principal> principals = new HashSet<Principal>();
   private AuthenticationService authenticator;
-  private OrganizationController controller;
+  private OrganisationController controller;
   private Admin administrator;
 
   public String getUserId() {
@@ -77,7 +77,7 @@ public class SilverpeasLoginModule implements LoginModule {
     this.authenticator = authenticator;
   }
 
-  public void setController(OrganizationController controller) {
+  public void setController(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -232,7 +232,7 @@ public class SilverpeasLoginModule implements LoginModule {
     String md5a1 = CryptMD5.encrypt(user.getPassword());
     String serverDigestValue = md5a1 + ":" + sc.getNonce() + ":" + sc.getNc() + ":" + sc.getCnonce()
         + ":" + sc.getQop() + ":" + sc.getMd5a2();
-    String serverDigest = Text.md5(serverDigestValue);
+    String serverDigest = CryptMD5.encrypt(serverDigestValue);
     return serverDigest.equals(sc.getClientDigest());
   }
 }

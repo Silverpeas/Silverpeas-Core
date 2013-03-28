@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.util.FileUtil;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.io.File;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -38,6 +37,8 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.silverpeas.core.admin.OrganisationController;
+
 import static com.stratelia.webactiv.beans.admin.Admin.*;
 import static com.silverpeas.util.StringUtil.*;
 
@@ -57,7 +58,7 @@ public class SilverpeasLook {
   public static final String SPACE_CSS = "styles";
   private static SilverpeasLook look = new SilverpeasLook();
   @Inject
-  private OrganizationController organizationController;
+  private OrganisationController organizationController;
 
   /**
    * Gets the look of Silverpeas.

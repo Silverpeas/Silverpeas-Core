@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 import org.silverpeas.util.Charsets;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;

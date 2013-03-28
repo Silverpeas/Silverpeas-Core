@@ -124,7 +124,6 @@
       <div id="help" class="inlineMessage">
         ${description}
       </div>
-      <br clear="all"/>
       
       <div id="status"></div>
 

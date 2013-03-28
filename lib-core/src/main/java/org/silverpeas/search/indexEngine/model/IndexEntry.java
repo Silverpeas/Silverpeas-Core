@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * IndexEntry is the base class for all the entries which are indexed in the web'activ index. A
@@ -166,7 +167,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getTitle(String lang) {
-    return getTitles().get(I18NHelper.checkLanguage(lang));
+    String title = getTitles().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(title)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        title = getTitles().get(language);
+        if (StringUtil.isDefined(title)) {
+          return title;
+        }
+      }
+    }
+    return title;
   }
 
   /**
@@ -193,7 +204,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getKeywords(String lang) {
-    return getKeywords().get(I18NHelper.checkLanguage(lang));
+    String keywords = getKeywords().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(keywords)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        keywords = getKeywords().get(language);
+        if (StringUtil.isDefined(keywords)) {
+          return keywords;
+        }
+      }
+    }
+    return keywords;
   }
 
   /**
@@ -222,7 +243,17 @@ public class IndexEntry implements Serializable {
   }
 
   public String getPreview(String lang) {
-    return getPreviews().get(I18NHelper.checkLanguage(lang));
+    String preview = getPreviews().get(I18NHelper.checkLanguage(lang));
+    if (!StringUtil.isDefined(preview)) {
+      Set<String> languages = I18NHelper.getAllSupportedLanguages();
+      for (String language : languages) {
+        preview = getPreviews().get(language);
+        if (StringUtil.isDefined(preview)) {
+          return preview;
+        }
+      }
+    }
+    return preview;
   }
 
   /**

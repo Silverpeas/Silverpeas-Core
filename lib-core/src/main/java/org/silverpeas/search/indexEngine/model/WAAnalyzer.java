@@ -20,31 +20,19 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
-import java.io.Reader;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.TokenStream;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.fr.ElisionFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.util.Version;
-
 import org.silverpeas.search.indexEngine.analysis.SilverTokenizer;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.Reader;
+import java.util.*;
 
 /**
  * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
@@ -99,7 +87,7 @@ public final class WAAnalyzer extends Analyzer {
   }
 
   /**
-   * The constructor is private : use @link #getAnalyzer().
+   * The constructor is private
    */
   private WAAnalyzer(String lang) {
     if (!StringUtil.isDefined(lang) || lang.length() != 2) {

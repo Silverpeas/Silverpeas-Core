@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jobManagerPeas.control;
 
 import com.silverpeas.jobManagerPeas.JobManagerService;
@@ -44,10 +40,10 @@ import static com.stratelia.silverpeas.peasCore.URLManager.*;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class JobManagerPeasSessionController extends AbstractComponentSessionController {
-  // variables gloabes
 
   private Map<String, JobManagerService> services = null;
   private String idCurrentServiceActif = null;
@@ -56,6 +52,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -63,9 +60,9 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   public JobManagerPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.jobManagerPeas.multilang.jobManagerPeasBundle",
-        "com.silverpeas.jobManagerPeas.settings.jobManagerPeasIcons",
-        "com.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings");
+        "org.silverpeas.jobManagerPeas.multilang.jobManagerPeasBundle",
+        "org.silverpeas.jobManagerPeas.settings.jobManagerPeasIcons",
+        "org.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings");
     setComponentRootName(CMP_JOBMANAGERPEAS);
 
     String[] ids = mainSessionCtrl.getUserManageableSpaceIds();
@@ -90,23 +87,23 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
     // initialisation des opérations du services jDesigner
     JobManagerService jdp = new JobManagerService("11", "JDP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBDOMAINPEAS) + "Main", null, false);
+        + getURL(CMP_JOBDOMAINPEAS, null, null) + "Main", null, false);
     JobManagerService jspp = new JobManagerService("12", "JSPP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBSTARTPAGEPEAS) + "Main", null, false);
+        + getURL(CMP_JOBSTARTPAGEPEAS, null, null) + "Main", null, false);
     JobManagerService jrp = new JobManagerService("13", "JRP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBORGANIZATIONPEAS) + "Main", null, false);
+        + getURL(CMP_JOBORGANIZATIONPEAS, null, null) + "Main", null, false);
     JobManagerService jsp = new JobManagerService("14", "JSP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBSEARCHPEAS) + "Main", null, false);
+        + getURL(CMP_JOBSEARCHPEAS, null, null) + "Main", null, false);
     // tools
     JobManagerService jImportExport =
         new JobManagerService("42", "JIE", LEVEL_OPERATION, webContext
-        + getURL("importExportPeas") + "Main", null, false);
+        + getURL("importExportPeas", null, null) + "Main", null, false);
     JobManagerService jSpecificAuthent = new JobManagerService("43", "JSA", LEVEL_OPERATION,
-        webContext + getURL("specificAuthent") + "Main", null, false);
+        webContext + getURL("specificAuthent", null, null) + "Main", null, false);
     JobManagerService jtd = new JobManagerService("44", "JTD", LEVEL_OPERATION, webContext
-        + getURL(CMP_TEMPLATEDESIGNER) + "Main", null, false);
+        + getURL(CMP_TEMPLATEDESIGNER, null, null) + "Main", null, false);
     JobManagerService jWorkflowDesigner = new JobManagerService("45", "JWD", LEVEL_OPERATION,
-        webContext + getURL("workflowDesigner") + "Main", null, false);
+        webContext + getURL("workflowDesigner", null, null) + "Main", null, false);
     JobManagerService portletDeployer = new JobManagerService("46", "portlets", LEVEL_OPERATION,
         webContext + "/portletDeployer", null, false);
     JobManagerService jst = new JobManagerService("47", "JST", LEVEL_OPERATION, webContext
@@ -121,19 +118,19 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
-        + getURL(CMP_PDC) + "Main", null, false);
+        + getURL(CMP_PDC, null, null) + "Main", null, false);
     JobManagerService jKM2 = new JobManagerService("22", "JKM2", LEVEL_OPERATION, webContext
-        + getURL(CMP_THESAURUS) + "Main", null, false);
+        + getURL(CMP_THESAURUS, null, null) + "Main", null, false);
 
     // initialisation des opérations du service jSTAT
     JobManagerService jSTAT1 = new JobManagerService("31", "JSTAT1", LEVEL_OPERATION, webContext
-        + getURL(CMP_SILVERSTATISTICSPEAS) + "Main", null, false); // ViewConnection
+        + getURL(CMP_SILVERSTATISTICSPEAS, null, null) + "Main", null, false); // ViewConnection
     JobManagerService jSTAT2 = new JobManagerService("32", "JSTAT2", LEVEL_OPERATION, webContext
-        + getURL(CMP_SILVERSTATISTICSPEAS) + "ViewAccess", null, false);
+        + getURL(CMP_SILVERSTATISTICSPEAS, null, null) + "ViewAccess", null, false);
     JobManagerService jSTAT3 = new JobManagerService("33", "JSTAT3", LEVEL_OPERATION, webContext
-        + getURL(CMP_SILVERSTATISTICSPEAS) + "ViewVolumeServices", null, false);
+        + getURL(CMP_SILVERSTATISTICSPEAS, null, null) + "ViewVolumeServices", null, false);
     JobManagerService jSTAT4 = new JobManagerService("34", "JSTAT4", LEVEL_OPERATION, webContext
-        + getURL(CMP_SILVERSTATISTICSPEAS) + "ViewPDCAccess", null, false);
+        + getURL(CMP_SILVERSTATISTICSPEAS, null, null) + "ViewPDCAccess", null, false);
 
     boolean kmServiceAllowed = false;
     int nbServices = 0;
@@ -309,7 +306,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   public JobManagerService[] getServices(int level) {
     SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
         "root.MSG_GEN_PARAM_VALUE", "ENTER level=" + level);
-    List<JobManagerService> listServices = new ArrayList<JobManagerService>();
+    List<JobManagerService> listServices = new ArrayList<JobManagerService>(services.size());
     for (JobManagerService jms : services.values()) {
       if (jms.getLevel() == level) {
         SilverTrace.debug("jobManagerPeas", "jobManagerPeasSessionController.getServices()",
@@ -322,22 +319,19 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   }
 
   public JobManagerService[] getSubServices(JobManagerService jmsParent) {
-    SilverTrace.debug(
-        "jobManagerPeas",
+    SilverTrace.debug("jobManagerPeas",
         "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-        "root.MSG_GEN_PARAM_VALUE", "ENTER jmsParent id="
-        + jmsParent.getId() + " jmsParent label="
+        "root.MSG_GEN_PARAM_VALUE", "ENTER jmsParent id=" + jmsParent.getId() + " jmsParent label="
         + jmsParent.getLabel());
-    List<JobManagerService> listChild = new ArrayList<JobManagerService>();
-    String[] idSubServices = jmsParent.getIdSubServices();
+    String[] idSubServices = jmsParent.getIdSubServices();    
+    List<JobManagerService> listChild = new ArrayList<JobManagerService>(idSubServices.length);
     for (String idSubService : idSubServices) {
       JobManagerService jmsChild = services.get(idSubService);
       if (jmsChild != null) {
-        SilverTrace.debug("jobManagerPeas",
+        SilverTrace.debug("jobManagerPeas", 
             "jobManagerPeasSessionController.getSubServices(JobManagerService jmsParent)",
-            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id="
-            + jmsChild.getId() + " jmsChild label="
-            + jmsChild.getLabel());
+            "root.MSG_GEN_PARAM_VALUE", "Add services child jmsChild id=" + jmsChild.getId() 
+            + " jmsChild label=" + jmsChild.getLabel());
         listChild.add(jmsChild);
       }
     }
@@ -439,7 +433,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           validSequence = false;
         }
       }
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
       validSequence = false;
     }
     return validSequence;

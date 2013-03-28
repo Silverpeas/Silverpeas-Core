@@ -24,12 +24,15 @@
 
 package com.silverpeas.admin.spaces;
 
-import com.silverpeas.admin.components.WAComponent;
-import com.silverpeas.util.PathTestUtil;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Test;
+
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.PathTestUtil;
+
 import static org.junit.Assert.*;
 
 /**

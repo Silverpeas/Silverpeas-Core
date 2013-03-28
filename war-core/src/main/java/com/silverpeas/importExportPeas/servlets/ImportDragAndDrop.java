@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.importExportPeas.servlets;
 
 import com.silverpeas.importExport.control.MassiveDocumentImport;
@@ -30,16 +29,17 @@ import com.silverpeas.importExport.report.UnitReport;
 import com.silverpeas.pdc.PdcServiceFactory;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
+
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -51,8 +51,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
+import com.silverpeas.util.FileUtil;
+
 import com.stratelia.silverpeas.peasCore.HTTPSessionInfo;
+import static com.silverpeas.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 
 /**
  * Class declaration
@@ -116,15 +118,14 @@ public class ImportDragAndDrop extends HttpServlet {
       for (FileItem item : items) {
         if (!item.isFormField()) {
           String fileUploadId = item.getFieldName().substring(4);
-          String parentPath =
-              FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
+          String parentPath = FileUploadUtil.getParameter(items, "relpathinfo" + fileUploadId, null);
           String fileName = FileUploadUtil.getFileName(item);
           if (StringUtil.isDefined(parentPath)) {
             if (parentPath.endsWith(":\\")) { // special case for file on root of disk
               parentPath = parentPath.substring(0, parentPath.indexOf(':') + 1);
             }
           }
-          parentPath = FileUploadUtil.convertPathToServerOS(parentPath);
+          parentPath = FileUtil.convertPathToServerOS(parentPath);
           SilverTrace.info("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE",
               "fileName = " + fileName);
           if (fileName != null) {
@@ -156,9 +157,9 @@ public class ImportDragAndDrop extends HttpServlet {
         }
       }
       MassiveReport massiveReport = new MassiveReport();
-      OrganizationController controller = new OrganizationController();
-      UserDetail userDetail = controller.getUserDetail(userId);
-      
+      UserDetail userDetail = OrganisationControllerFactory
+          .getOrganisationController().getUserDetail(userId);
+
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
         List<PublicationDetail> importedPublications =
@@ -176,7 +177,7 @@ public class ImportDragAndDrop extends HttpServlet {
         return;
       }
     } catch (Exception e) {
-      SilverTrace.debug("importExportPeas", "FileUploader.doPost", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("importExportPeas", "Drop.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
       return;
     }

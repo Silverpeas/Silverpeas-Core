@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+  <description>Silverpeas Functions core library</description>
+  <display-name>Silverpeas Functions</display-name>
+  <tlib-version>1.0</tlib-version>
+  <short-name>silfn</short-name>
+  <uri>http://www.silverpeas.com/tld/silverFunctions</uri>
+
+  <function>
+    <description>Function that returns the value of a class constant.</description>
+    <name>constantValue</name>
+    <function-class>org.silverpeas.jstl.constant.reflect.ClassConstantInspector</function-class>
+    <function-signature>
+      java.lang.Object getValue( java.lang.String )
+    </function-signature>
+  </function>  
+  <function>
+    <description>Function that returns the boolean value of a String.</description>
+    <name>booleanValue</name>
+    <function-class>com.silverpeas.util.StringUtil</function-class>
+    <function-signature>
+      boolean getBooleanValue( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a String is defined.</description>
+    <name>isDefined</name>
+    <function-class>com.silverpeas.util.StringUtil</function-class>
+    <function-signature>
+      boolean isDefined( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>com.silverpeas.util.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function that formats as memory size the given value.</description>
+    <name>formatMemSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to tell if Silverpeas is in mode i18N.</description>
+    <name>isI18n</name>
+    <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>
+    <function-signature>boolean isI18nActivated () </function-signature>
+  </function>
+  <function>
+    <description>Function to tell if Silverpeas is in mode i18N.</description>
+    <name>i18nLanguageLabel</name>
+    <function-class>com.silverpeas.util.i18n.I18NHelper</function-class>
+    <function-signature>java.lang.String getLanguageLabel( java.lang.String, java.lang.String) </function-signature>
+  </function>
+</taglib>

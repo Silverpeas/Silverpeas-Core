@@ -43,6 +43,7 @@ fieldset.skinFieldset {
 	border-radius:10px;
 	min-height:80px;
 	display:block;
+	background-color:#F4F4F4;
 	background: -webkit-gradient(linear, left top, right top, from(#fff), to(#e5e5e5));
 	background: -moz-linear-gradient(left, #fff, #e5e5e5);
 	/* For Internet Explorer 5.5 - 7 */

@@ -39,6 +39,8 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
 
+import com.silverpeas.util.ArrayUtil;
+
 public class UserManager {
 
   private final UserDAO userDAO = new UserDAO();
@@ -211,16 +213,15 @@ public class UserManager {
    */
   public String[] getUserIdsOfDomain(DomainDriverManager ddManager, String sDomainId) throws
       AdminException {
-    String[] uids;
     try {
       // Get users from Silverpeas
       ddManager.getOrganizationSchema();
       // Get user ids of domain from Silverpeas database
-      uids = ddManager.getOrganization().user.getUserIdsOfDomain(idAsInt(sDomainId));
+      String[] uids = ddManager.getOrganization().user.getUserIdsOfDomain(idAsInt(sDomainId));
       if (uids != null) {
         return uids;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdsOfDomain",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_USERS_OF_DOMAIN",
@@ -243,7 +244,7 @@ public class UserManager {
       if (uids != null) {
         return uids;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("UserManager.getUserIdsOfDomain",
           SilverpeasException.ERROR,
@@ -762,7 +763,6 @@ public class UserManager {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.ADMIN_DATASOURCE);
-
       return userDAO.getAllUsersFromNewestToOldest(con);
     } catch (Exception e) {
       throw new AdminException("UserManager.getAllUsersFromNewestToOldest",

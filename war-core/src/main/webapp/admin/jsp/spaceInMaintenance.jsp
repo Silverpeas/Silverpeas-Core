@@ -34,7 +34,7 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -47,8 +47,8 @@ Frame 		frame 		= gef.getFrame();
 
 // Get Emails Admins
 String[] idAdmins = new String[0];
-idAdmins = m_MainSessionCtrl.getOrganizationController().getAdministratorUserIds(userId);
-UserDetail[] listAdmins = m_MainSessionCtrl.getOrganizationController().getUserDetails(idAdmins);
+idAdmins = m_MainSessionCtrl.getOrganisationController().getAdministratorUserIds(userId);
+UserDetail[] listAdmins = m_MainSessionCtrl.getOrganisationController().getUserDetails(idAdmins);
 
 %>
 <title></title>
@@ -58,45 +58,45 @@ out.println(gef.getLookStyleSheet());
 </head>
 <body>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr> 
-    <td valign="top" width="45%"> 
+  <tr>
+    <td valign="top" width="45%">
 
  <table width="101" border="0" cellspacing="0" cellpadding="0">
-          <tr> 
+          <tr>
             <td width="80" align="right" valign="middle"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
             <td width="111" valign="middle"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
           </tr>
-          <tr> 
+          <tr>
             <td width="80" align="right" valign="top" nowrap="nowrap"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
             <td width="111" valign="top"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
           </tr>
-          <tr> 
+          <tr>
             <td width="80" align="right" valign="top" nowrap="nowrap"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
             <td width="111" valign="top"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
           </tr>
-          <tr> 
+          <tr>
             <td colspan="2">&nbsp;</td>
           </tr>
-          <tr> 
+          <tr>
             <td colspan="2"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
           </tr>
-          <tr bgcolor="#FFFFFF"> 
+          <tr bgcolor="#FFFFFF">
             <td align="center">&nbsp;</td>
             <td align="center"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
           </tr>
-          <tr> 
-            <td colspan="2" align="center" bgcolor="#FFFFFF"> 
+          <tr>
+            <td colspan="2" align="center" bgcolor="#FFFFFF">
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                <tr> 
+                <tr>
                   <td><img src="../../admin/jsp/icons/1px.gif" width="1" height="1" alt=""/></td>
                 </tr>
-                <tr> 
+                <tr>
                   <td><img src="../../admin/jsp/icons/1px.gif" width="1" height="1" alt=""/></td>
                 </tr>
-                <tr> 
+                <tr>
                   <td><img src="../../admin/jsp/icons/1px.gif" width="1" height="1" alt=""/></td>
                 </tr>
-                <tr> 
+                <tr>
                   <td><img src="../../admin/jsp/icons/1px.gif" width="1" height="1" alt=""/></td>
                 </tr>
               </table>
@@ -107,16 +107,16 @@ out.println(gef.getLookStyleSheet());
     <td width="23%" nowrap="nowrap"><div align="left" class="textePetitBold"></div></td>
     <td width="32%" align="center"></td>
   </tr>
-  <tr align="center"> 
+  <tr align="center">
     <td colspan="3"><img src="../../admin/jsp/icons/fond_logoTrameAppInM2.gif" alt=""/></td>
   </tr>
-  <tr align="center"> 
+  <tr align="center">
     <td colspan="3" bgcolor="#CCCCCC"><img src="../../admin/jsp/icons/1px.gif" alt=""/></td>
   </tr>
-  <tr align="right"> 
+  <tr align="right">
     <td colspan="3"><font size="1" face="Verdana, Arial, Helvetica, sans-serif" color="#999999"><%=message.getString("homePage.trademark")%></font></td>
   </tr>
-  <tr align="center"> 
+  <tr align="center">
     <td colspan="3"><br/><br/>
  <div align="center" class="textePetitBold"><%=message.getString("homePage.spaceMaintenanceOn")%></div><br/>
 <div align="center" class="textePetitBold"><img src="../../util/icons/attachment_to_upload.gif" alt=""/></div><br/>

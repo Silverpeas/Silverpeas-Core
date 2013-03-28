@@ -1,33 +1,31 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
  *
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
+import com.silverpeas.socialnetwork.status.StatusService;
 import com.silverpeas.util.StringUtil;
-import static com.silverpeas.util.StringUtil.areStringEquals;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -41,17 +39,22 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import static com.silverpeas.util.StringUtil.areStringEquals;
+import static com.silverpeas.util.StringUtil.isDefined;
 
 public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   private static final long serialVersionUID = -109886153681824159L;
   private static final String ANONYMOUS_ID_PROPERTY = "anonymousId";
   private static final String AVATAR_PROPERTY =
-          GeneralPropertiesManager.getString("avatar.property", "login");
+      GeneralPropertiesManager.getString("avatar.property", "login");
   private static final String AVATAR_EXTENSION =
-          GeneralPropertiesManager.getString("avatar.extension", "jpg");
+      GeneralPropertiesManager.getString("avatar.extension", "jpg");
   private static final ResourceLocator generalSettings = new ResourceLocator(
-          "com.stratelia.silverpeas.lookAndFeel.generalLook", "");
+      "org.silverpeas.lookAndFeel.generalLook", "");
   private String id = null;
   private String specificId = null;
   private String domainId = null;
@@ -71,7 +74,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   private Date lastLoginCredentialUpdateDate = null;
   private Date expirationDate = null;
   private UserState state = UserState.from(null);
-  private Date stateSaveDate  = null;
+  private Date stateSaveDate = null;
 
   /**
    * Gets the detail about the specified user.
@@ -80,7 +83,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return the detail about the user with the specified identifier or null if no such user exists.
    */
   public static UserDetail getById(String userId) {
-    return getOrganizationController().getUserDetail(userId);
+    return getOrganisationController().getUserDetail(userId);
   }
 
   /**
@@ -89,7 +92,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * @return a list with all the users in Silverpeas.
    */
   public static List<UserDetail> getAll() {
-    return Arrays.asList(getOrganizationController().getAllUsers());
+    return Arrays.asList(getOrganisationController().getAllUsers());
   }
 
   /**
@@ -100,7 +103,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
    * domain exists.
    */
   public static List<UserDetail> getAllInDomain(String domainId) {
-    return Arrays.asList(getOrganizationController().getAllUsersInDomain(domainId));
+    return Arrays.asList(getOrganisationController().getAllUsersInDomain(domainId));
   }
 
   /**
@@ -235,11 +238,12 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * Please use {@link UserDetail#isValidState()} to retrieve user validity information.
-   * Please use {@link UserDetail#isDeletedState()} to retrieve user deletion information.
-   * Please use {@link UserDetail#isBlockedState()} to retrieve user blocked information.
-   * Please use {@link UserDetail#isExpiredState()} to retrieve user expiration information.
-   * This method returns the stored state information but not the functional information.
+   * Please use {@link UserDetail#isValidState()} to retrieve user validity information. Please use
+   * {@link UserDetail#isDeletedState()} to retrieve user deletion information. Please use
+   * {@link UserDetail#isBlockedState()} to retrieve user blocked information. Please use
+   * {@link UserDetail#isExpiredState()} to retrieve user expiration information. This method
+   * returns the stored state information but not the functional information.
+   *
    * @return the state of the user (account)
    */
   public UserState getState() {
@@ -248,6 +252,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   /**
    * The state of the user (account) is updated and the according save date too.
+   *
    * @param state the state of the user (account)
    */
   public void setState(final UserState state) {
@@ -476,20 +481,30 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
+   * Gets the domain to which this user belongs.
+   *
+   * @return a user domain.
+   */
+  public Domain getDomain() {
+    return getOrganisationController().getDomain(getDomainId());
+  }
+
+  /**
    * Is the specified user is restricted to access the resource in its own domain?
    *
    * @return true if he's restricted in its own domain, false otherwise.
    */
   public boolean isDomainRestricted() {
     return (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_EACH
-            || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
-            && !"0".equals(getDomainId()))) && !isAccessAdmin();
+        || (GeneralPropertiesManager.getDomainVisibility() == GeneralPropertiesManager.DVIS_ONE
+        && !"0".equals(getDomainId()))) && !isAccessAdmin();
   }
 
   public boolean isDomainAdminRestricted() {
     return ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ALL)
-            && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility() != GeneralPropertiesManager.DVIS_ONE) || (!"0"
-            .equals(getDomainId()))));
+        && (!isAccessAdmin()) && ((GeneralPropertiesManager.getDomainVisibility()
+        != GeneralPropertiesManager.DVIS_ONE) || (!"0"
+        .equals(getDomainId()))));
   }
 
   public boolean isBackOfficeVisible() {
@@ -521,19 +536,20 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * This method is the only one able to indicate the user validity state.
-   * Please do not use {@link UserDetail#getState()} to retrieve user validity information.
+   * This method is the only one able to indicate the user validity state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user validity information.
+   *
    * @return
    */
   public boolean isValidState() {
-    return isAnonymous() ||
-        (!UserState.UNKNOWN.equals(state) && !isDeletedState() && !isBlockedState() &&
-            !isExpiredState());
+    return isAnonymous() || (!UserState.UNKNOWN.equals(state) && !isDeletedState()
+        && !isBlockedState() && !isExpiredState());
   }
 
   /**
-   * This method is the only one able to indicate the user deletion state.
-   * Please do not use {@link UserDetail#getState()} to retrieve user deletion information.
+   * This method is the only one able to indicate the user deletion state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user deletion information.
+   *
    * @return
    */
   public boolean isDeletedState() {
@@ -541,8 +557,9 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * This method is the only one able to indicate the user blocked state.
-   * Please do not use {@link UserDetail#getState()} to retrieve user blocked information.
+   * This method is the only one able to indicate the user blocked state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user blocked information.
+   *
    * @return
    */
   public boolean isBlockedState() {
@@ -550,13 +567,14 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   }
 
   /**
-   * This method is the only one able to indicate the user expiration state.
-   * Please do not use {@link UserDetail#getState()} to retrieve user expiration information.
+   * This method is the only one able to indicate the user expiration state. Please do not use
+   * {@link UserDetail#getState()} to retrieve user expiration information.
+   *
    * @return true if user is expired.
    */
   public boolean isExpiredState() {
-    return UserState.EXPIRED.equals(state) ||
-        (getExpirationDate() != null && getExpirationDate().compareTo(DateUtil.getDate()) < 0);
+    return UserState.EXPIRED.equals(state) || (getExpirationDate() != null && getExpirationDate().
+        compareTo(DateUtil.getDate()) < 0);
   }
 
   /**
@@ -576,8 +594,8 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public static UserDetail getAnonymousUser() {
     UserDetail anonymousUser = null;
     if (isAnonymousUserExist()) {
-      OrganizationController organizationController = new OrganizationController();
-      anonymousUser = organizationController.getUserDetail(getAnonymousUserId());
+      anonymousUser = OrganisationControllerFactory.getOrganisationController().getUserDetail(
+          getAnonymousUserId());
     }
     return anonymousUser;
   }
@@ -591,13 +609,13 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     if (other instanceof UserDetail) {
       UserDetail cmpUser = (UserDetail) other;
       return areStringEquals(id, cmpUser.getId())
-              && areStringEquals(specificId, cmpUser.getSpecificId())
-              && areStringEquals(domainId, cmpUser.getDomainId())
-              && areStringEquals(login, cmpUser.getLogin())
-              && areStringEquals(firstName, cmpUser.getFirstName())
-              && areStringEquals(lastName, cmpUser.getLastName())
-              && areStringEquals(eMail, cmpUser.geteMail())
-              && accessLevel.equals(cmpUser.getAccessLevel());
+          && areStringEquals(specificId, cmpUser.getSpecificId())
+          && areStringEquals(domainId, cmpUser.getDomainId())
+          && areStringEquals(login, cmpUser.getLogin())
+          && areStringEquals(firstName, cmpUser.getFirstName())
+          && areStringEquals(lastName, cmpUser.getLastName())
+          && areStringEquals(eMail, cmpUser.geteMail())
+          && accessLevel.equals(cmpUser.getAccessLevel());
     }
     return false;
   }
@@ -622,24 +640,24 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
   public void traceUser() {
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Id : " + id);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "SpecificId : "
-            + specificId);
+        + specificId);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "DomainId : "
-            + domainId);
+        + domainId);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "Login : " + login);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "FirstName : "
-            + firstName);
+        + firstName);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "LastName : "
-            + lastName);
+        + lastName);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "eMail : " + eMail);
     SilverTrace.info("admin", "UserDetail.traceUser", "admin.MSG_DUMP_USER", "AccessLevel : "
-            + accessLevel);
+        + accessLevel);
   }
 
   @Override
   public int compareTo(UserDetail o) {
     UserDetail other = o;
     return ((getLastName() + getFirstName()).toLowerCase()).compareTo((other.getLastName() + other.
-            getFirstName()).toLowerCase());
+        getFirstName()).toLowerCase());
   }
 
   public String getAvatar() {
@@ -663,7 +681,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public String getStatus() {
     String status =
-            new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
+        new StatusService().getLastStatusService(Integer.parseInt(getId())).getDescription();
     if (isDefined(status)) {
       return status;
     }
@@ -711,7 +729,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
 
   public boolean isFullyDefined() {
     return StringUtil.isDefined(getId()) && StringUtil.isDefined(getLogin())
-            && StringUtil.isDefined(getLastName());
+        && StringUtil.isDefined(getLastName());
   }
 
   /**
@@ -723,7 +741,7 @@ public class UserDetail implements Serializable, Comparable<UserDetail> {
     return generalSettings.getString(ANONYMOUS_ID_PROPERTY, null);
   }
 
-  protected static OrganizationController getOrganizationController() {
-    return OrganizationControllerFactory.getFactory().getOrganizationController();
+  protected static OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getFactory().getOrganisationController();
   }
 }

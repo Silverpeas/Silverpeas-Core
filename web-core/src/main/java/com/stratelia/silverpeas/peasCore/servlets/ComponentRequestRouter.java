@@ -39,6 +39,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.silverpeas.admin.space.quota.process.check.exception.DataStorageQuotaException;
 import org.silverpeas.authentication.exception.AuthenticationException;
+
 import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import javax.servlet.RequestDispatcher;
@@ -259,7 +260,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     if (componentId == null) { // Personal space
       isAllowed = true;
     } else {
-      isAllowed = controller.getOrganizationController().isComponentAvailable(
+      isAllowed = controller.getOrganisationController().isComponentAvailable(
           componentId, controller.getUserId());
     }
     return isAllowed;
@@ -274,17 +275,14 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       if (destination.startsWith("http") || destination.startsWith("ftp")) {
         response.sendRedirect(destination);
       } else {
-        request
-            .setAttribute(
-                "com.stratelia.webactiv.servlets.ComponentRequestRouter.requestURI",
-                request.getRequestURI());
+        request.setAttribute("org.silverpeas.servlets.ComponentRequestRouter.requestURI",
+            request.getRequestURI());
         RequestDispatcher requestDispatcher = getServletConfig()
             .getServletContext().getRequestDispatcher(destination);
         if (requestDispatcher != null) {
           requestDispatcher.forward(request, response);
         } else {
-          SilverTrace.info("peasCore",
-              "ComponentRequestRouter.redirectService",
+          SilverTrace.info("peasCore", "ComponentRequestRouter.redirectService",
               "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination '"
                   + destination + "' not found !");
         }
@@ -293,8 +291,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
       try {
         request.setAttribute("javax.servlet.jsp.jspException",
             new PeasCoreException("ComponentRequestRouter.redirectService",
-                SilverpeasException.ERROR,
-                "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
+                SilverpeasException.ERROR, "peasCore.EX_REDIRECT_SERVICE_FAILED", "Destination="
                     + destination, e));
         getServletConfig().getServletContext().getRequestDispatcher(
             "/admin/jsp/errorpageMain.jsp").forward(request, response);

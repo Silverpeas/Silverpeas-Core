@@ -24,18 +24,15 @@
 
 package com.stratelia.webactiv.util.coordinates.ejb;
 
-import com.silverpeas.components.model.AbstractJndiCase;
-import com.silverpeas.components.model.SilverpeasJndiCase;
-import com.stratelia.webactiv.util.coordinates.model.Coordinate;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
-import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.naming.NamingException;
+
 import org.dbunit.Assertion;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.Column;
@@ -43,10 +40,19 @@ import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.datatype.DataType;
-import static org.junit.Assert.*;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.matchers.JUnitMatchers;
+
+import com.silverpeas.components.model.AbstractJndiCase;
+import com.silverpeas.components.model.SilverpeasJndiCase;
+
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
+import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -66,6 +72,11 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();
     executeDDL(databaseConnection, baseTest.getDdlFile());
     baseTest.getDatabaseTester().closeConnection(databaseConnection);
+  }
+  
+    @AfterClass
+  public static void generalTearDown() throws IOException, NamingException, Exception {
+    baseTest.shudown();
   }
 
   /**
@@ -210,7 +221,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -218,7 +229,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, hasItem(coordinate2));
     CoordinatesDAO.removeCoordinates(con, pk, coordinateIds);
     result = CoordinatesDAO.selectCoordinatesByCoordinateIds(con, coordinateIds, pk);
     assertNotNull(result);
@@ -229,8 +240,8 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
     coordinate2.setCoordinatePoints(new ArrayList<CoordinatePoint>());
-    assertThat(result, JUnitMatchers.hasItem(coordinate1));
-    assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, hasItem(coordinate1));
+    assertThat(result, hasItem(coordinate2));
     IDataSet databaseDataSet = dataSetConnection.createDataSet();
     ITable actualTable = databaseDataSet.getTable("sb_coordinates_coordinates");
 
@@ -293,7 +304,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -301,7 +312,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, hasItem(coordinate2));
     List<String> removedPoints = new ArrayList<String>();
     removedPoints.add("1064");
     removedPoints.add("1060");
@@ -371,7 +382,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points1.add(new CoordinatePoint(1, 1060, true));
     points1.add(new CoordinatePoint(1, 1064, true));
     coordinate1.setCoordinatePoints(points1);
-    assertThat(result, JUnitMatchers.hasItem(coordinate1));
+    assertThat(result, hasItem(coordinate1));
 
     Coordinate coordinate2 = new Coordinate();
     coordinate2.setCoordinateId(2);
@@ -379,7 +390,7 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     points2.add(new CoordinatePoint(2, 1060, true));
     points2.add(new CoordinatePoint(2, 1058, true));
     coordinate2.setCoordinatePoints(points2);
-    assertThat(result, JUnitMatchers.hasItem(coordinate2));
+    assertThat(result, hasItem(coordinate2));
     baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
@@ -467,8 +478,8 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     Collection<String> result = CoordinatesDAO.getCoordinateIdsByNodeId(con, pk, nodeId);
     assertNotNull(result);
     assertEquals("We should have 2 coordinates", 2, result.size());
-    assertThat(result, JUnitMatchers.hasItem("1"));
-    assertThat(result, JUnitMatchers.hasItem("2"));
+    assertThat(result, hasItem("1"));
+    assertThat(result, hasItem("2"));
     baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 
@@ -486,9 +497,9 @@ public class CoordinatesDAOTest extends AbstractJndiCase {
     Collection<String> result = CoordinatesDAO.getCoordinateIds(con, pk);
     assertNotNull(result);
     assertEquals("We should have 3 coordinates", 3, result.size());
-    assertThat(result, JUnitMatchers.hasItem("1"));
-    assertThat(result, JUnitMatchers.hasItem("2"));
-    assertThat(result, JUnitMatchers.hasItem("3"));
+    assertThat(result, hasItem("1"));
+    assertThat(result, hasItem("2"));
+    assertThat(result, hasItem("3"));
     baseTest.getDatabaseTester().closeConnection(dataSetConnection);
   }
 }

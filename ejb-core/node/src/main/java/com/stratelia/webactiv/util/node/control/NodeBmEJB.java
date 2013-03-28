@@ -37,25 +37,23 @@ import javax.ejb.SessionContext;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.node.ejb.Node;
-import com.stratelia.webactiv.util.node.ejb.NodeDAO;
-import com.stratelia.webactiv.util.node.ejb.NodeHome;
-import com.stratelia.webactiv.util.node.ejb.NodeI18NDAO;
+import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
+import com.stratelia.webactiv.util.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodeI18NDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -80,45 +78,49 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
   /**
    * Method declaration
    *
-   * @return
-   * @see
-   */
-  private NodeHome getNodeHome() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODE_EJBHOME, NodeHome.class);
-    } catch (UtilException re) {
-      throw new NodeRuntimeException("NodeBmEJB.getNodeHome()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", re);
-    }
-  }
-
-  /**
-   * Method declaration
-   *
    * @param pk
    * @return
    * @see
    */
-  private Node findNode(NodePK pk) {
-    NodeHome home = getNodeHome();
+  private NodeDetail findNode(NodePK pk) {
+    Connection con = getConnection();
     try {
-      Node newNodeInstance = home.findByPrimaryKey(pk);
-      return newNodeInstance;
-    } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.findNode()", SilverpeasRuntimeException.ERROR,
-          "node.NODE_UNFINDABLE", "nodeId = " + pk.getId(), re);
+      NodePK primary = NodeDAO.selectByPrimaryKey(con, pk);
+      if (primary != null) {
+        return primary.nodeDetail;
+      } else {
+        throw new NodeRuntimeException("NodeBmEJB.findNode()", SilverpeasRuntimeException.ERROR,
+            "node.NODE_UNFINDABLE", "nodeId = " + pk.getId());
+      }
+    } catch (SQLException e) {
+      throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
+          SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
-  private Node findNodeByNameAndFatherId(NodePK pk, String name, int nodeFatherId) {
-    NodeHome home = getNodeHome();
+  @Override
+  public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) throws
+      RemoteException {
+    Connection con = getConnection();
     try {
-      Node newNodeInstance = home.findByNameAndFatherId(pk, name, nodeFatherId);
-      return newNodeInstance;
-    } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.findNodeByNameAndNodeFatherId()",
-          SilverpeasRuntimeException.ERROR, "node.NODE_UNFINDABLE", "nodeId = "
-          + pk.getId() + ",name=" + name + ",nodeFatherID=" + nodeFatherId, re);
+      NodePK primary = NodeDAO.selectByNameAndFatherId(con, pk, name,
+          nodeFatherId);
+      if (primary != null) {
+        return primary.nodeDetail;
+      } else {
+        throw new NodeRuntimeException("NodeBmEJB.getDetailByNameAndNodeFatherId()",
+            SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
+            "nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" + nodeFatherId);
+      }
+    } catch (SQLException e) {
+      throw new NodeRuntimeException("NodeEJB.ejbFindByNameAndFatherId()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY", "name = " + name
+          + ", component = " + pk.getComponentName() + ", parent ID = " + nodeFatherId, e);
+    } finally {
+      DBUtil.close(con);
     }
   }
 
@@ -131,21 +133,16 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   @Override
   public NodeDetail getDetail(NodePK pk) throws RemoteException {
-    return getDetail(pk, null);
-  }
-
-  @Override
-  public NodeDetail getDetail(NodePK pk, String sorting) throws RemoteException {
-    Node node = findNode(pk);
-
     try {
-      NodeDetail nodeDetail = node.getDetail(sorting);
+      NodeDetail nodeDetail = findNode(pk);
+      if (!NodeDetail.FILE_LINK_TYPE.equals(nodeDetail.getType())) {
+        nodeDetail.setChildrenDetails(getChildrenDetails(pk));
+      }
 
       // Add default translation
-      Translation nodeI18NDetail =
-          new NodeI18NDetail(nodeDetail.getLanguage(), nodeDetail.getName(), nodeDetail.
-          getDescription());
-      nodeDetail.addTranslation((Translation) nodeI18NDetail);
+      Translation nodeI18NDetail = new NodeI18NDetail(nodeDetail.getLanguage(),
+          nodeDetail.getName(), nodeDetail.getDescription());
+      nodeDetail.addTranslation(nodeI18NDetail);
       List<Translation> translations = getTranslations(Integer.parseInt(pk.getId()));
       for (int t = 0; translations != null && t < translations.size(); t++) {
         nodeI18NDetail = translations.get(t);
@@ -158,20 +155,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           "nodeId = " + pk.getId(), re);
     }
 
-  }
-
-  @Override
-  public NodeDetail getDetailByNameAndFatherId(NodePK pk, String name, int nodeFatherId) throws
-      RemoteException {
-    Node node = findNodeByNameAndFatherId(pk, name, nodeFatherId);
-    try {
-      NodeDetail nodeDetail = node.getDetail(null);
-      return nodeDetail;
-    } catch (Exception re) {
-      throw new NodeRuntimeException("NodeBmEJB.getDetailByNameAndNodeFatherId()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_DETAIL_FAILED",
-          "nodeId = " + pk.getId() + ",name=" + name + "nodeFatherId=" + nodeFatherId, re);
-    }
   }
 
   /**
@@ -261,12 +244,12 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       root.setChildrenDetails(new ArrayList<NodeDetail>());
       Map<String, NodeDetail> tree = new HashMap<String, NodeDetail>();
       tree.put(root.getNodePK().getId(), root);
-      for(NodeDetail header : headers) {
+      for (NodeDetail header : headers) {
         header.setChildrenDetails(new ArrayList<NodeDetail>());
         tree.put(header.getNodePK().getId(), header);
       }
 
-     for(NodeDetail header : headers) {
+      for (NodeDetail header : headers) {
         NodeDetail father = tree.get(header.getFatherPK().getId());
         if (father != null) {
           father.getChildrenDetails().add(header);
@@ -277,7 +260,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         root = tree.get(root.getNodePK().getId());
         result = (ArrayList<NodeDetail>) processNode(result, root);
       } else {
-        for(NodeDetail header : headers) {
+        for (NodeDetail header : headers) {
           result.add(header);
         }
       }
@@ -332,9 +315,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
           deltaLevel++;
           node.setOrder(root.getChildrenNumber());
         }
-        // remove node
-        Node nodeEJB = findNode(node.getNodePK());
-        nodeEJB.remove();
+        delete(node.getNodePK());
 
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
@@ -343,9 +324,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);
-        Node newNode = getNodeHome().create(node);
-        NodeDetail newND = newNode.getDetail();
-        createIndex(newND, true);
+        NodePK newNodePK = save(node);
+        NodeDetail newNode = getDetail(newNodePK);
+        createIndex(newNode, true);
       }
 
       NodeDAO.unvalidateTree(con, nodePK);
@@ -386,19 +367,12 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
     try {
       Collection<NodeDetail> children = NodeDAO.getChildrenDetails(con, pk);
-      Iterator<NodeDetail> i = children.iterator();
-      ArrayList<NodeDetail> childrenDetail = new ArrayList<NodeDetail>();
-
-      while (i.hasNext()) {
-        NodeDetail childDetail = i.next();
+      List<NodeDetail> childrenDetail = new ArrayList<NodeDetail>();
+      for (NodeDetail childDetail : children) {
         Collection<NodeDetail> subChildren =
             NodeDAO.getChildrenDetails(con, childDetail.getNodePK());
-        Iterator<NodeDetail> j = subChildren.iterator();
-        ArrayList<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
-
-        while (j.hasNext()) {
-          NodeDetail subChild = j.next();
-
+        List<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
+        for (NodeDetail subChild : subChildren) {
           subChildrenDetail.add(subChild);
         }
         childDetail.setChildrenDetails(subChildrenDetail);
@@ -459,7 +433,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   @Override
   public void setDetail(NodeDetail nd) throws RemoteException {
-    Node node = findNode(nd.getNodePK());
     NodeDetail oldNodeDetail = getHeader(nd.getNodePK());
     Connection con = DBUtil.makeConnection(dbName);
     try {
@@ -477,7 +450,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             nd.setName(translation.getName());
             nd.setDescription(translation.getDescription());
             NodeI18NDAO.removeTranslation(con, translation.getId());
-            node.setDetail(nd);
+            updateNodeDetail(con, nd);
           }
         } else {
           NodeI18NDAO.removeTranslation(con, Integer.parseInt(nd.getTranslationId()));
@@ -500,10 +473,10 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             translation.setNodeId(new Integer(nd.getId()).toString());
 
             String translationId = nd.getTranslationId();
-            if (translationId != null && !translationId.equals("-1")) {
+            if (translationId != null && !"-1".equals(translationId)) {
               // update translation
               translation.setId(Integer.parseInt(translationId));
-              translation.setNodeId(new Integer(nd.getId()).toString());
+              translation.setNodeId(String.valueOf(nd.getId()));
               NodeI18NDAO.updateTranslation(con, translation);
             } else {
               NodeI18NDAO.saveTranslation(con, translation);
@@ -511,11 +484,11 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
             NodeDAO.unvalidateTree(con, nd.getNodePK());
           } else {
             // the default language is modified
-            node.setDetail(nd);
+            updateNodeDetail(con, nd);
           }
         } else {
           // No i18n managed by this object
-          node.setDetail(nd);
+          updateNodeDetail(con, nd);
         }
       }
       // createIndex(nd);
@@ -544,7 +517,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
         @Override
         public void invoke(NodePK pk) throws Exception {
-          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(),  "Node_" + pk.getId());
+          // remove wysiwyg attached to node
+          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(), "Node_" + pk.getId());
+
         }
       });
     } catch (Exception re) {
@@ -567,7 +542,16 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   @Override
   public Collection<NodeDetail> getPath(NodePK pk) throws RemoteException {
-    return getAnotherPath(pk);
+    Connection con = DBUtil.makeConnection(dbName);
+    try {
+      return NodeDAO.getAnotherPath(con, pk);
+    } catch (Exception re) {
+      throw new NodeRuntimeException("NodeBmEJB.getAnotherPath()",
+          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_PATH_FAILED",
+          "nodeId = " + pk.getId(), re);
+    } finally {
+      DBUtil.close(con);
+    }
   }
 
   /**
@@ -680,7 +664,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       node.setLanguage(I18NHelper.defaultLanguage);
     }
     try {
-      NodeDetail newNode = getNodeHome().create(node).getDetail();
+      NodePK newNodePK = save(node);
+      NodeDetail newNode = getDetail(newNodePK);
       createIndex(newNode, false);
       return newNode.getNodePK();
     } catch (Exception e) {
@@ -700,8 +685,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
    */
   @Override
   public NodePK createNode(NodeDetail nd, NodeDetail fatherDetail) throws RemoteException {
-    Node newNode = null;
-    NodeHome home = getNodeHome();
     try {
       if (!NodeDetail.FILE_LINK_TYPE.equals(nd.getType())) {
         nd.setPath(fatherDetail.getPath() + fatherDetail.getNodePK().getId() + "/");
@@ -712,14 +695,140 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         // translation for the first time
         nd.setLanguage(I18NHelper.defaultLanguage);
       }
-      newNode = home.create(nd);
-      NodeDetail newND = newNode.getDetail();
+      NodePK newNodePK = save(nd);
+      NodeDetail newNode = getDetail(newNodePK);
 
-      createIndex(newND, false);
-      return newND.getNodePK();
+      createIndex(newNode, false);
+      return newNode.getNodePK();
     } catch (Exception re) {
       throw new NodeRuntimeException("NodeBmEJB.createNode()",
           SilverpeasRuntimeException.ERROR, "node.CREATING_NODE_FAILED", re);
+    }
+  }
+
+  /**
+   * Create a new Node object.
+   *
+   * @param nd the NodeDetail which contains data
+   * @return the NodePK of the new Node
+   * @see com.stratelia.webactiv.util.node.model.NodeDetail
+   * @throws javax.ejb.CreateException
+   * @since 1.0
+   */
+  private NodePK save(NodeDetail nd) {
+    NodePK newNodePK = null;
+    Connection con = getConnection();
+    try {
+      // insert row in the database
+      newNodePK = NodeDAO.insertRow(con, nd);
+      int rightsDependsOn = nd.getRightsDependsOn();
+
+      if (rightsDependsOn == 0) {
+        rightsDependsOn = Integer.parseInt(newNodePK.getId());
+      }
+
+      if (nd.haveRights()) {
+        NodeDAO.updateRightsDependency(con, newNodePK, rightsDependsOn);
+      }
+
+      nd.setNodePK(newNodePK);
+      createTranslations(con, nd);
+
+    } catch (Exception e) {
+      throw new NodeRuntimeException("NodeBMEJB.create()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_ENTITY_ATTRIBUTES", e);
+    } finally {
+      DBUtil.close(con);
+    }
+    return newNodePK;
+  }
+
+  private void updateNodeDetail(NodeDetail detail) {
+    Connection con = getConnection();
+    try {
+      updateNodeDetail(con, detail);
+    } catch (Exception ex) {
+      throw new NodeRuntimeException("NodeBMEJB.update()", SilverpeasRuntimeException.ERROR,
+          "root.EX_CANT_STORE_ENTITY_ATTRIBUTES", "NodeId = " + detail.getNodePK().getId(), ex);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  private void updateNodeDetail(Connection con, NodeDetail detail) throws SQLException {
+    NodeDetail currentNode = NodeDAO.loadRow(con, detail.getNodePK());
+    if (detail.getName() != null) {
+      currentNode.setName(detail.getName());
+    }
+    if (detail.getDescription() != null) {
+      currentNode.setDescription(detail.getDescription());
+    }
+    if (detail.getCreationDate() != null) {
+      currentNode.setCreationDate(detail.getCreationDate());
+    }
+    if (detail.getCreatorId() != null) {
+      currentNode.setCreatorId(detail.getCreatorId());
+    }
+    if (detail.getModelId() != null) {
+      currentNode.setModelId(detail.getModelId());
+    }
+    if (detail.getStatus() != null) {
+      currentNode.setStatus(detail.getStatus());
+    }
+    if (detail.getType() != null) {
+      currentNode.setType(detail.getType());
+    }
+    if (NodeDetail.FILE_LINK_TYPE.equals(detail.getType())) {
+      currentNode.setPath(detail.getPath());
+    }
+    if (detail.getFatherPK() != null
+        && StringUtil.isInteger(detail.getFatherPK().getId())
+        && StringUtil.isDefined(detail.getFatherPK().getInstanceId())) {
+      currentNode.setFatherPK(detail.getFatherPK());
+    }
+    if (StringUtil.isDefined(detail.getPath())) {
+      currentNode.setPath(detail.getPath());
+    }
+    currentNode.setOrder(detail.getOrder());
+    currentNode.setLanguage(detail.getLanguage());
+    NodeDAO.storeRow(con, currentNode);
+  }
+
+  private void delete(NodePK nodePK) {
+    Connection con = getConnection();
+    try {
+      NodeDAO.deleteRow(con, nodePK);
+    } catch (Exception ex) {
+      throw new NodeRuntimeException("NodeBMEJB.delete()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_DELETE_ENTITY",
+          "NodeId = " + nodePK.getId(), ex);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
+
+  private void createTranslations(Connection con, NodeDetail node)
+      throws SQLException, UtilException {
+    if (node.getTranslations() != null) {
+      Iterator<Translation> translations = node.getTranslations().values().iterator();
+      NodeI18NDetail translation = null;
+      while (translations.hasNext()) {
+        translation = (NodeI18NDetail) translations.next();
+        if (node.getLanguage() != null
+            && !node.getLanguage().equals(translation.getLanguage())) {
+          translation.setObjectId(node.getNodePK().getId());
+          NodeI18NDAO.saveTranslation(con, translation);
+        }
+      }
+    }
+  }
+
+  private Connection getConnection() {
+    try {
+      return DBUtil.makeConnection(JNDINames.NODE_DATASOURCE);
+    } catch (Exception e) {
+      throw new NodeRuntimeException("NodeEJB.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 
@@ -892,10 +1001,9 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
   @Override
   public void updateRightsDependency(NodeDetail nodeDetail) throws RemoteException {
-    Node node = findNode(nodeDetail.getNodePK());
-    node.setRightsDependsOn(nodeDetail.getRightsDependsOn());
+    updateNodeDetail(nodeDetail);
     try {
-      spreadRightsDependency(node, nodeDetail.getRightsDependsOn());
+      spreadRightsDependency(nodeDetail, nodeDetail.getRightsDependsOn());
     } catch (Exception e) {
       throw new NodeRuntimeException("NodeBmEJB.updateRightsDependency()",
           SilverpeasRuntimeException.ERROR, "node.SPREADING_RIGHTS_DEPENDENCY_FAILED", "nodeId = "
@@ -903,14 +1011,14 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     }
   }
 
-  private void spreadRightsDependency(Node currentNode, int rightsDependsOn) throws
+  private void spreadRightsDependency(NodeDetail currentNode, int rightsDependsOn) throws
       RemoteException, SQLException {
-    Collection<NodeDetail> children = currentNode.getChildrenDetails();
+    Collection<NodeDetail> children = getChildrenDetails(currentNode.getNodePK());
     for (NodeDetail child : children) {
-      Node node = findNode(child.getNodePK());
       if (!child.haveLocalRights()) {
-        node.setRightsDependsOn(rightsDependsOn);
-        spreadRightsDependency(node, rightsDependsOn);
+        child.setRightsDependsOn(rightsDependsOn);
+        updateNodeDetail(child);
+        spreadRightsDependency(child, rightsDependsOn);
       }
     }
   }
@@ -957,7 +1065,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
-        
+
         if (processWysiwygContent) {
           updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), language);
         }
@@ -1001,7 +1109,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     try {
       if (nodePK != null) {
         String wysiwygContent =
-            WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK.getId(), language);
+            WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK.getId(), language);        
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
         }

@@ -47,6 +47,7 @@ import com.silverpeas.socialnetwork.relationShip.RelationShipService;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -164,18 +165,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   private List<UserDetail> getAllUsersSorted() {
     if (SORT_NEWEST.equals(getCurrentSort())) {
-      return getOrganizationController().getAllUsersFromNewestToOldest();
+      return getOrganisationController().getAllUsersFromNewestToOldest();
     } else {
-      return Arrays.asList(getOrganizationController().getAllUsers());
+      return Arrays.asList(getOrganisationController().getAllUsers());
     }
   }
 
   private List<UserDetail> getUsersOfDomainsSorted() {
     List<String> domainIds = getCurrentDomainIds();
     if (SORT_NEWEST.equals(getCurrentSort())) {
-      return getOrganizationController().getUsersOfDomainsFromNewestToOldest(domainIds);
+      return getOrganisationController().getUsersOfDomainsFromNewestToOldest(domainIds);
     } else {
-      return getOrganizationController().getUsersOfDomains(domainIds);
+      return getOrganisationController().getUsersOfDomains(domainIds);
     }
   }
 
@@ -269,8 +270,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
-    currentGroup = getOrganizationController().getGroup(groupId);
-    lastAlllistUsersCalled = Arrays.asList(getOrganizationController().getAllUsersOfGroup(groupId));
+    currentGroup = getOrganisationController().getGroup(groupId);
+    lastAlllistUsersCalled = Arrays.asList(getOrganisationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
   }
@@ -311,13 +312,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView("tous");
     setCurrentDirectory(DIRECTORY_SPACE);
     setCurrentQuery(null);
-    currentSpace = getOrganizationController().getSpaceInstLightById(spaceId);
+    currentSpace = getOrganisationController().getSpaceInstLightById(spaceId);
     List<UserDetail> lus = new ArrayList<UserDetail>();
-    String[] componentIds = getOrganizationController().getAllComponentIdsRecur(spaceId);
+    String[] componentIds = getOrganisationController().getAllComponentIdsRecur(spaceId);
     for (String componentId : componentIds) {
-      fillList(lus, getOrganizationController().getAllUsers(componentId));
+      fillList(lus, getOrganisationController().getAllUsers(componentId));
     }
     lastAlllistUsersCalled = lus;
+
     lastListUsersCalled = lastAlllistUsersCalled;
     return lastAlllistUsersCalled;
 
@@ -347,7 +349,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentQuery(null);
     currentDomains = new ArrayList<Domain>();
     for (String domainId : domainIds) {
-      currentDomains.add(getOrganizationController().getDomain(domainId));
+      currentDomains.add(getOrganisationController().getDomain(domainId));
     }
     return getUsers();
   }
@@ -365,7 +367,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     try {
       List<String> contactsIds = relationShipService.getMyContactsIds(Integer.parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
       SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
@@ -384,7 +386,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
               relationShipService.getAllCommonContactsIds(Integer.parseInt(getUserId()), Integer.
                   parseInt(userId));
       for (String contactId : contactsIds) {
-        lastAlllistUsersCalled.add(getOrganizationController().getUserDetail(contactId));
+        lastAlllistUsersCalled.add(getOrganisationController().getUserDetail(contactId));
       }
     } catch (SQLException ex) {
       SilverTrace.error("newsFeedService", "NewsFeedService.getMyContactsIds", "", ex);
@@ -394,7 +396,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public UserFull getUserFul(String userId) {
-    return getOrganizationController().getUserFull(userId);
+    return getOrganisationController().getUserFull(userId);
   }
 
   /**

@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -46,6 +45,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +62,7 @@ import java.util.StringTokenizer;
 
 public class LookSilverpeasV5Helper implements LookHelper {
 
-  private OrganizationController orga = null;
+  private OrganisationController orga = null;
   private ResourceLocator resources = null;
   private ResourceLocator messages = null;
   private ResourceLocator defaultMessages = null;
@@ -202,7 +202,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
   @Override
   public final void init(MainSessionController mainSessionController, ResourceLocator resources) {
     this.mainSC = mainSessionController;
-    this.orga = mainSessionController.getOrganizationController();
+    this.orga = mainSessionController.getOrganisationController();
     this.userId = mainSessionController.getUserId();
     this.resources = resources;
     this.defaultMessages = new ResourceLocator(
@@ -247,7 +247,7 @@ public class LookSilverpeasV5Helper implements LookHelper {
     return mainSC;
   }
 
-  protected OrganizationController getOrganizationController() {
+  protected OrganisationController getOrganisationController() {
     return orga;
   }
 
@@ -639,13 +639,13 @@ public class LookSilverpeasV5Helper implements LookHelper {
 
   public String getSpaceHomePage(String spaceId, HttpServletRequest request)
       throws UnsupportedEncodingException {
-    SpaceInst spaceStruct = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceStruct = getOrganisationController().getSpaceInstById(spaceId);
     // Page d'accueil de l'espace = Composant
     if (spaceStruct != null
         && (spaceStruct.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST)
         && spaceStruct.getFirstPageExtraParam() != null
         && spaceStruct.getFirstPageExtraParam().length() > 0) {
-      if (getOrganizationController().isComponentAvailable(
+      if (getOrganisationController().isComponentAvailable(
           spaceStruct.getFirstPageExtraParam(), getUserId())) {
         return URLManager.getSimpleURL(URLManager.URL_COMPONENT,
             spaceStruct.getFirstPageExtraParam());

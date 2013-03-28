@@ -23,10 +23,10 @@
  */
 package org.silverpeas.admin.space.quota;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.quota.exception.QuotaException;
 
 import com.silverpeas.annotation.Service;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 
 /**
@@ -60,7 +60,7 @@ public class DefaultComponentSpaceQuotaService extends
     // space could be null if user space is performed
     if (key.getSpace() != null) {
       currentCount =
-          OrganizationControllerFactory.getFactory().getOrganizationController()
+          OrganisationControllerFactory.getFactory().getOrganisationController()
               .getAllComponentIdsRecur(key.getResourceId()).length;
     }
 

@@ -52,13 +52,13 @@ import com.silverpeas.util.security.EncryptionContentIterator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
@@ -213,7 +213,7 @@ public class PublicationTemplateManager {
       String xmlFilePath = makePath(templateDir, xmlFileName);
 
       File xmlFile = new File(xmlFilePath);
-      if (xmlFile == null || !xmlFile.exists()) {
+      if (!xmlFile.exists()) {
         // file does not exist in directory, try to locate it in default one
         xmlFilePath = makePath(defaultTemplateDir, xmlFileName);
         xmlFile = new File(xmlFilePath);
@@ -339,12 +339,12 @@ public class PublicationTemplateManager {
    */
   public List<PublicationTemplate> getPublicationTemplates(GlobalContext globalContext)
       throws PublicationTemplateException {
-    List<PublicationTemplate> templates = getPublicationTemplates(true);
+    List<PublicationTemplate> theTemplates = getPublicationTemplates(true);
     if (globalContext == null) {
-      return templates;
+      return theTemplates;
     }
     List<PublicationTemplate> allowedTemplates = new ArrayList<PublicationTemplate>();
-    for (PublicationTemplate template : templates) {
+    for (PublicationTemplate template : theTemplates) {
       if (isPublicationTemplateVisible(template, globalContext)) {
         allowedTemplates.add(template);
       }
@@ -369,8 +369,8 @@ public class PublicationTemplateManager {
           return true;
         }
       } else {
-        OrganizationController oc =
-          OrganizationControllerFactory.getFactory().getOrganizationController();
+        OrganisationController oc =
+            OrganisationControllerFactory.getOrganisationController();
         boolean allowed = true;
         if (template.isRestrictedVisibilityToApplication()) {
           if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
@@ -391,13 +391,14 @@ public class PublicationTemplateManager {
     return false;
   }
   
-  private boolean isTemplateVisibleAccordingToInstance(PublicationTemplate template, GlobalContext context) {
+  private boolean isTemplateVisibleAccordingToInstance(PublicationTemplate template,
+      GlobalContext context) {
     List<String> restrictedInstanceIds = template.getInstances();
     return restrictedInstanceIds.contains(context.getComponentId());
   }
   
   private boolean isTemplateVisibleAccordingToApplication(PublicationTemplate template,
-      GlobalContext context, OrganizationController oc) {
+      GlobalContext context, OrganisationController oc) {
     List<String> restrictedApplications = template.getApplications();
     String componentName = context.getComponentName();
     if (StringUtil.isDefined(context.getComponentId())) {
@@ -407,7 +408,8 @@ public class PublicationTemplateManager {
     return restrictedApplications.contains(componentName);
   }
   
-  private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template, GlobalContext context, OrganizationController oc) {
+  private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template,
+      GlobalContext context, OrganisationController oc) {
     List<String> restrictedSpaceIds = template.getSpaces();
     List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
     for (SpaceInst space : spacePath) {

@@ -34,19 +34,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.silverpeas.external.webConnections.model.ConnectionDetail;
-import org.silverpeas.util.Charsets;
-import org.silverpeas.util.crypto.BlowfishCipher;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherFactory;
 import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+
+import com.silverpeas.external.webConnections.model.ConnectionDetail;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
 public class ConnectionDAO {
   private static String tableName = "SB_webConnections_info";
@@ -227,8 +226,8 @@ public class ConnectionDAO {
     Map<String, String> param = new HashMap<String, String>();
     String login = rs.getString("paramLogin");
     byte[] password = rs.getBytes("paramPassword");
-    OrganizationController orga = new OrganizationController();
-    ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganisationControllerFactory.getOrganisationController()
+        .getComponentInst(connection.getComponentId());
     String nameLogin = inst.getParameterValue("login");
     String namePassword = inst.getParameterValue("password");
     param.put(nameLogin, login);
@@ -256,8 +255,8 @@ public class ConnectionDAO {
     prepStmt.setInt(1, id);
     prepStmt.setInt(2, Integer.parseInt(connection.getUserId()));
     prepStmt.setString(3, connection.getComponentId());
-    OrganizationController orga = new OrganizationController();
-    ComponentInst inst = orga.getComponentInst(connection.getComponentId());
+    ComponentInst inst = OrganisationControllerFactory
+        .getOrganisationController().getComponentInst(connection.getComponentId());
     String login = connection.getParam().get(inst.getParameterValue("login"));
     String password = connection.getParam().get(inst.getParameterValue("password"));
     byte[] crypPassword = null;

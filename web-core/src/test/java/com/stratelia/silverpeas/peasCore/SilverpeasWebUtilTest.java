@@ -33,12 +33,11 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import static org.mockito.Mockito.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.core.admin.OrganisationController;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import static org.junit.Assert.*;
 
 /**
@@ -50,29 +49,14 @@ public class SilverpeasWebUtilTest {
   public SilverpeasWebUtilTest() {
   }
 
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
-  }
-
   /**
    * Test of getMainSessionController method, of class SilverpeasWebUtil.
    */
   @Test
   public void checkDefaultOrganizationController() {
+    OrganisationControllerFactory.getFactory().clearFactory();
     SilverpeasWebUtil util = new SilverpeasWebUtil();
-    assertEquals(OrganizationController.class.getName(), util.getOrganizationController().getClass().getName());
+    assertEquals(OrganizationController.class.getName(), util.getOrganisationController().getClass().getName());
   }
 
   /**
@@ -108,7 +92,7 @@ public class SilverpeasWebUtilTest {
     MockHttpServletRequest request = new MockHttpServletRequest("GET",
         "http://localhost:8000/silverpeas/Rtoolbox/toolbox8/Main");
     request.setPathInfo("/toolbox8/Main");
-    OrganizationController controller = mock(OrganizationController.class);
+    OrganisationController controller = mock(OrganizationController.class);
     ComponentInstLight component = mock(ComponentInstLight.class);
     String spaceId = "12";
     when(component.getDomainFatherId()).thenReturn(spaceId);
@@ -153,7 +137,7 @@ public class SilverpeasWebUtilTest {
     when(request.getSession()).thenReturn(session);
     when(request.getPathInfo()).thenReturn("/toolbox8/ViewAttachments");
 
-    OrganizationController oc = mock(OrganizationController.class);
+    OrganisationController oc = mock(OrganizationController.class);
     SilverpeasWebUtil util = new SilverpeasWebUtil(oc);
     util.getRoles(request);
     verify(oc).getUserProfiles("18", "toolbox8");

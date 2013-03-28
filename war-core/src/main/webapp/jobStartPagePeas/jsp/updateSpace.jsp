@@ -78,7 +78,7 @@ function isCorrectForm() {
 		var name = stripInitialWhitespace(document.infoSpace.NameObject.value);
 		var desc = document.infoSpace.Description;
 
-        if (isWhitespace(name)) {
+    if (isWhitespace(name)) {
 			errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("MustContainsText")%>\n";
 			errorNb++;
 		}

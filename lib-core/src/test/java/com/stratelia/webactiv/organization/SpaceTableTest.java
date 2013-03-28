@@ -29,8 +29,10 @@
 package com.stratelia.webactiv.organization;
 
 import com.silverpeas.components.model.AbstractTestDao;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  *
@@ -102,5 +104,11 @@ public class SpaceTableTest extends AbstractTestDao {
     assertNotNull(result);
     assertEquals(expResult.length, result.length);
     assertArrayEquals(expResult, result);
+  }
+  
+  
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-database.sql";
   }
 }

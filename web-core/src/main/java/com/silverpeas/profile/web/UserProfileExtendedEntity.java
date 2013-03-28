@@ -23,8 +23,6 @@
  */
 package com.silverpeas.profile.web;
 
-import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
-
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,6 +34,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.stratelia.webactiv.beans.admin.UserFull;
+
+import static com.silverpeas.profile.web.ProfileResourceBaseURIs.uriOfUser;
 
 /**
  * The complete profile of a user that is exposable in the WEB. It is a web entity representing the profile

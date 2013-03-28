@@ -211,7 +211,7 @@ public class PdcSearchRequestRouterHelper {
       String authorSearch = queryParameters.getCreatorId();
       // travail sur l'auteur
       if (authorSearch != null) {
-        UserDetail userDetail = pdcSC.getOrganizationController().getUserDetail(authorSearch);
+        UserDetail userDetail = pdcSC.getOrganisationController().getUserDetail(authorSearch);
         queryParameters.setCreatorDetail(userDetail);
       }
       request.setAttribute("QueryParameters", queryParameters);

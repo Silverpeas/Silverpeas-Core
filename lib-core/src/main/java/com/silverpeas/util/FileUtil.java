@@ -47,7 +47,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
-public class FileUtil implements MimeTypes {
+public class FileUtil implements MimeTypes  {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "org.silverpeas.util.attachment.mime_types", "");
@@ -102,7 +102,7 @@ public class FileUtil implements MimeTypes {
         mimeType = MIME_TYPES_EXTENSIONS.getString(fileExtension);
       }
     } catch (final MissingResourceException e) {
-      SilverTrace.warn("attachment", "AttachmentController",
+      SilverTrace.warn("attachment", "FileUtil",
           "attachment.MSG_MISSING_MIME_TYPES_PROPERTIES", null, e);
     }
     if (mimeType == null) {
@@ -256,6 +256,16 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
+   * If 3D document.
+   *
+   * @param filename the name of the file.
+   * @return true or false
+   */
+  public static boolean isSpinfireDocument(String filename) {
+    return SPINFIRE_MIME_TYPE.equals(getMimeType(filename));
+  }
+
+  /**
    * Indicates if the current file is of type archive.
    *
    * @param filename the name of the file.
@@ -366,7 +376,35 @@ public class FileUtil implements MimeTypes {
     }
     FileUtils.copyFile(source, destination);
   }
+  
+  /*
+   * Remove any \ or / from the filename thus avoiding conflicts on the server.
+   *
+   * @param fileName
+   * @return
+   */
+  public static String getFilename(String fileName) {
+     if (!StringUtil.isDefined(fileName)) {
+      return "";
+    }
+    String logicalName = convertPathToServerOS(fileName);
+    return logicalName.substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+  }
 
   private FileUtil() {
+  }
+
+  /**
+   * Convert a path to the current OS path format.
+   * @param undeterminedOsPath
+   * @return server OS pah.
+   */
+  public static String convertPathToServerOS(String undeterminedOsPath) {
+    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
+      return "";
+    }
+    String localPath = undeterminedOsPath;
+    localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
+    return localPath;
   }
 }

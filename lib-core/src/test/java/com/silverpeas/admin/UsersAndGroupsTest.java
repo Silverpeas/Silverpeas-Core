@@ -1,56 +1,120 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.admin;
 
-import com.silverpeas.components.model.AbstractSpringJndiDaoTest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.apache.commons.lang.time.DateUtils;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.admin.user.constant.UserState;
+
+import java.util.Date;
+
+import java.io.InputStream;
+import java.util.List;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+import org.apache.commons.io.IOUtils;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ReplacementDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.junit.Test;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.admin.user.constant.UserState;
-import org.springframework.test.context.ContextConfiguration;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import com.stratelia.webactiv.util.DBUtil;
 
-@ContextConfiguration(
-    locations = {"classpath:/spring-jpa-datasource.xml", "classpath:/spring-domains.xml"})
-public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
+public class UsersAndGroupsTest {
+
+  private static DataSource dataSource;
+  private static ClassPathXmlApplicationContext context;
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext(new String[]{
+      "spring-domains-embbed-datasource.xml", "spring-domains.xml"});
+    dataSource = context.getBean("jpaDataSource", DataSource.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind("jdbc/Silverpeas", dataSource);
+    DBUtil.getInstanceForTest(dataSource.getConnection());
+  }
+
+  @AfterClass
+  public static void tearDownClass() throws Exception {
+    DBUtil.clearTestInstance();
+    SimpleMemoryContextFactory.tearDownAsInitialContext();
+    context.close();
+  }
+
+  @Before
+  public void init() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    connection.close();
+  }
+
+  @After
+  public void after() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    connection.close();
+  }
+
+  private IDatabaseConnection getConnection() throws Exception {
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    return connection;
+  }
+
+  protected IDataSet getDataSet() throws Exception {
+    InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+        "com/silverpeas/admin/test-usersandgroups-dataset.xml");
+    try {
+      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
+    } finally {
+      IOUtils.closeQuietly(in);
+    }
+  }
 
   @Test
   public void shouldAddNewUser() {
@@ -75,9 +139,8 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     user.setExpirationDate(expirationDate);
     user.setState(UserState.EXPIRED);
     user.setStateSaveDate(stateSaveDate);
-    
-    String newUserId = "5";
 
+    String newUserId = "5";
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
     assertThat(userId, is(newUserId));
@@ -105,7 +168,7 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     Date expirationDate = DateUtils.addDays(now, 4);
     Date stateSaveDate = DateUtils.addDays(now, 5);
     AdminController ac = getAdminController();
-    
+
     String updatedUserId = "1";
     UserDetail user = ac.getUserDetail(updatedUserId);
 
@@ -232,7 +295,6 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
   @Test
   public void testGetUsers() {
     OrganizationController oc = new OrganizationController();
-    @SuppressWarnings("unchecked")
     List<UserDetail> users = Arrays.asList(oc.getAllUsers());
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("1"));
@@ -283,8 +345,10 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
   @Test
   public void shouldDeleteGroup() {
     AdminController ac = getAdminController();
-    ac.deleteGroupById("1");
     Group group = ac.getGroupById("1");
+    assertThat(group.getId(), is("1"));
+    ac.deleteGroupById("1");
+    group = ac.getGroupById("1");
     assertThat(group.getId(), is(nullValue()));
   }
 
@@ -324,11 +388,6 @@ public class UsersAndGroupsTest extends AbstractSpringJndiDaoTest {
     ac.updateGroupProfile(profile);
     List<String> managerIds = AdminReference.getAdminService().getUserManageableGroupIds("1");
     assertThat(managerIds, hasSize(1));
-  }
-
-  @Override
-  protected String getDatasetFileName() {
-    return "test-usersandgroups-dataset.xml";
   }
 
   private AdminController getAdminController() {
