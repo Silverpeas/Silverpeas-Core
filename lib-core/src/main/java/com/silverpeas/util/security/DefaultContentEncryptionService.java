@@ -3,13 +3,6 @@ package com.silverpeas.util.security;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import org.silverpeas.util.crypto.Cipher;
-import org.silverpeas.util.crypto.CipherFactory;
-import org.silverpeas.util.crypto.CipherKey;
-import org.silverpeas.util.crypto.CryptoException;
-import org.silverpeas.util.crypto.CryptographicAlgorithmName;
-
-import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,6 +14,12 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Named;
+import org.silverpeas.util.crypto.Cipher;
+import org.silverpeas.util.crypto.CipherFactory;
+import org.silverpeas.util.crypto.CipherKey;
+import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.util.crypto.CryptographicAlgorithmName;
 
 /**
  * It is the default implementation of the {@link ContentEncryptionService} interface in Silverpeas.
@@ -68,7 +67,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    */
   @Override
   public void registerForRenewingContentCipher(final EncryptionContentIterator iterator) {
-    contentIterators.add(iterator);
+    contentIterators.add(new EncryptionContentIteratorWrapper(iterator));
   }
 
   /**
@@ -78,7 +77,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    * encrypt and to decrypt at the demand the content in Silverpeas.
    * </p>
    * The update of the key triggers automatically the renew of the cipher of the encrypted contents
-   * in Silverpeas with the new cipher key.
+   * in Silverpeas with the new cipher key. If one of the cipher renew of one of the encrypted
+   * content failed, the key update is rolled-back (the key isn't updated).
    * </p>
    * The execution of this method will block any other call of the DefaultContentEncryptionService
    * methods for all of its instances in order to prevent incoherent state of encrypted contents.
@@ -86,7 +86,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    * is running, will raise an IllegalStateException exception.
    *
    * @param key the new symmetric key in hexadecimal.
-   * @throws CipherKeyUpdateException if the update of the cipher key has failed.
+   * @throws CipherKeyUpdateException if the replace of the cipher key has failed.
    * @throws CryptoException if an error while renewing the cipher of the encrypted contents with
    * the new cipher key.
    */
@@ -103,14 +103,20 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
 
       @Override
       public Void execute() throws CryptoException {
+        File backupedKeyFile = null;
+        File backupedDeprecatedKeyFile = null;
+        boolean restore = false;
         try {
           boolean renewContentCiphers = false;
           File keyFile = new File(ACTUAL_KEY_FILE_PATH);
           if (keyFile.exists()) {
             renewContentCiphers = true;
+            backupedKeyFile = new File(ACTUAL_KEY_FILE_PATH + ".backup");
+            FileUtil.copyFile(keyFile, backupedKeyFile);
             File deprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH);
             if (deprecatedKeyFile.exists()) {
-              deprecatedKeyFile.setWritable(true);
+              backupedDeprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH + ".backup");
+              FileUtil.moveFile(deprecatedKeyFile, backupedDeprecatedKeyFile);
             }
             FileUtil.moveFile(keyFile, deprecatedKeyFile);
             setHidden(DEPRECATED_KEY_FILE_PATH);
@@ -132,7 +138,34 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
           }
           return null;
         } catch (IOException ex) {
+          restore = true;
           throw new CipherKeyUpdateException("Cannot update the encryption key", ex);
+        } catch (CipherRenewingException ex) {
+          restore = true;
+          throw new CryptoException(ex.getMessage(), ex);
+        } finally {
+          try {
+            if (backupedKeyFile != null) {
+              if (restore) {
+                File keyFile = new File(ACTUAL_KEY_FILE_PATH);
+                FileUtil.copyFile(backupedKeyFile, keyFile);
+                keyFile.setReadOnly();
+                setHidden(ACTUAL_KEY_FILE_PATH);
+              }
+              FileUtil.forceDeletion(backupedKeyFile);
+            }
+            if (backupedDeprecatedKeyFile != null) {
+              if (restore) {
+                File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+                FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
+                keyFile.setReadOnly();
+                setHidden(DEPRECATED_KEY_FILE_PATH);
+              }
+              FileUtil.forceDeletion(backupedDeprecatedKeyFile);
+            }
+          } catch (IOException ex) {
+            Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+          }
         }
       }
     });
@@ -474,6 +507,56 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       return true;
     } catch (Exception e) {
       return false;
+    }
+  }
+  
+  /**
+   * Wrapper of a {@link EncryptionContentIterator} instance in the goal of controlling the
+   * execution flow of the underlying iterator by catching any RuntimeException or Throwable.
+   * </p>
+   * Mainly to be used in the cipher key update.
+   */
+  private static class EncryptionContentIteratorWrapper implements EncryptionContentIterator {
+
+    private final EncryptionContentIterator wrapped;
+
+    public EncryptionContentIteratorWrapper(EncryptionContentIterator iterator) {
+      wrapped = iterator;
+    }
+
+    @Override
+    public Map<String, String> next() {
+      return wrapped.next();
+    }
+
+    @Override
+    public boolean hasNext() {
+      return wrapped.hasNext();
+    }
+
+    @Override
+    public void update(
+        Map<String, String> updatedContent) {
+      wrapped.update(updatedContent);
+    }
+
+    @Override
+    public void onError(Map<String, String> content, CryptoException ex) {
+      try {
+        wrapped.onError(content, ex);
+      } catch (Throwable t) {
+      }
+      throw new CipherRenewingException(ex);
+    }
+
+    @Override
+    public void remove() {
+      wrapped.remove();
+    }
+
+    @Override
+    public void init() {
+      wrapped.init();
     }
   }
 }

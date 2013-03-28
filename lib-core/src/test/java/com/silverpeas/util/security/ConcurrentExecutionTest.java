@@ -455,6 +455,11 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       public void remove() {
         throw new UnsupportedOperationException();
       }
+      
+      @Override
+      public void init() {
+        
+      }
     };
   }
 
@@ -489,6 +494,11 @@ public class ConcurrentExecutionTest extends ContentEncryptionServiceTest {
       @Override
       public void remove() {
         throw new UnsupportedOperationException();
+      }
+      
+      @Override
+      public void init() {
+        
       }
     };
   }

@@ -1,12 +1,9 @@
 package com.silverpeas.util.security;
 
+import java.util.Map;
 import org.silverpeas.util.crypto.Cipher;
 import org.silverpeas.util.crypto.CipherKey;
 import org.silverpeas.util.crypto.CryptoException;
-
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * A cryptographic task the DefaultContentEncryptionService instances can perform on the contents
@@ -19,24 +16,24 @@ import java.util.concurrent.Executors;
  * A cryptographic task is a concurrent one so it can be executed concurrently along other
  * cryptographic tasks.
  * </p>
- * By default, the task will be executed in non-privileged mode, that is to say that the task
- * will not block other cryptographic tasks awaiting execution.
+ * By default, the task will be executed in non-privileged mode, that is to say that the task will
+ * not block other cryptographic tasks awaiting execution.
  */
 class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask {
 
   private static enum Type {
+
     ENCRYPTION,
     DECRYPTION,
     RENEW;
   }
-
   private final Type task;
   private EncryptionContentIterator[] iterators;
   private boolean privileged = false;
 
-
   /**
    * Creates a task to encrypt the contents provided by the specified iterators.
+   *
    * @param contents the iterators on the contents to encrypt.
    * @return an encryption task.
    */
@@ -46,6 +43,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
 
   /**
    * Creates a task to decrypt the contents provided by the specified iterators.
+   *
    * @param contents the iterators on the contents to decrypt.
    * @return an encryption task.
    */
@@ -55,6 +53,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
 
   /**
    * Creates a task to renew the encryption of the contents provided by the specified iterators.
+   *
    * @param contents the iterators on the contents for which the cipher has to be renewed.
    * @return an encryption task.
    */
@@ -65,6 +64,7 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
   /**
    * The task must be executed in a privileged mode, that is to say its execution will block the
    * others cryptographic tasks awaiting execution.
+   *
    * @return itself.
    */
   public CryptographicTask inPrivilegedMode() {
@@ -77,27 +77,24 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
     return privileged;
   }
 
+  /**
+   * Executes a cryptographic task on the contents provided by some
+   * {@link EncryptionContentIterator} iterators among the encryption, the decryption and the
+   * chipher renew. If an error occurs while performing the cryptographic function on a given
+   * content, the exception describing the error is passed to the iterator and the task is stopped.
+   *
+   * @param <T> the type of the result of the task execution.
+   * @return the result of the task.
+   * @throws CryptoException if an error occurs while executing its encryption task.
+   */
   @Override
   public Void execute() throws CryptoException {
     final Cipher cipher = DefaultContentEncryptionService.getCipherForContentEncryption();
     final CipherKey actualKey = DefaultContentEncryptionService.getActualCipherKey();
     final CipherKey previousKey =
         this.task == Type.RENEW ? DefaultContentEncryptionService.getPreviousCipherKey() : null;
-    if (iterators.length > 1) {
-      final ExecutorService executor = getTaskExecutor(iterators.length);
-      for (final EncryptionContentIterator someContents : iterators) {
-        executor.submit(new Runnable() {
-          @Override
-          public void run() {
-            process(someContents, cipher, actualKey, previousKey);
-          }
-        });
-      }
-      executor.shutdown();
-      while (!executor.isTerminated()) {
-      }
-    } else if (iterators.length != 0) {
-      process(iterators[0], cipher, actualKey, previousKey);
+    for (EncryptionContentIterator encryptionContentIterator : iterators) {
+      process(encryptionContentIterator, cipher, actualKey, previousKey);
     }
     return null;
   }
@@ -105,9 +102,10 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
   private void process(EncryptionContentIterator theContents, Cipher cipher, CipherKey actualKey,
       CipherKey previousKey) {
     theContents.init();
-    for (; theContents.hasNext(); ) {
-      Map<String, String> content = theContents.next();
-      try {
+    Map<String, String> content = null;
+    try {
+      for (; theContents.hasNext();) {
+        content = theContents.next();
         switch (task) {
           case ENCRYPTION:
             content = DefaultContentEncryptionService.encryptContent(content, cipher, actualKey);
@@ -121,20 +119,14 @@ class CryptographicTask implements ConcurrentEncryptionTaskExecutor.ConcurrentEn
             break;
         }
         theContents.update(content);
-      } catch (CryptoException ex) {
-        theContents.onError(content, ex);
       }
+    } catch (Throwable ex) {
+      theContents.onError(content, new CryptoException(ex.getMessage(), ex));
     }
   }
 
   CryptographicTask(Type taskType, EncryptionContentIterator... iterators) {
     this.task = taskType;
     this.iterators = iterators;
-  }
-
-  private static ExecutorService getTaskExecutor(int taskCount) {
-    final int maxThreads = Runtime.getRuntime().availableProcessors();
-    final int threads = Math.min(taskCount, maxThreads);
-    return Executors.newFixedThreadPool(threads);
   }
 }

@@ -86,6 +86,10 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       public void remove() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void init() {
+      }
     });
   }
 
@@ -122,6 +126,10 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
         @Override
         public void remove() {
           throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void init() {          
         }
       };
     }
@@ -188,6 +196,11 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       public void remove() {
         throw new UnsupportedOperationException();
       }
+
+      @Override
+      public void init() {
+        
+      }
     });
   }
 
@@ -225,6 +238,11 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
         @Override
         public void remove() {
           throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public void init() {
+          
         }
       };
     }
@@ -267,6 +285,11 @@ public class ContentEncryptionTest extends ContentEncryptionServiceTest {
       @Override
       public void remove() {
         throw new UnsupportedOperationException();
+      }
+      
+      @Override
+      public void init() {
+        
       }
     });
   }
