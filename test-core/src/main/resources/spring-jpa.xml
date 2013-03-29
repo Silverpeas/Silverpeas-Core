@@ -45,7 +45,7 @@
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>
-        
+
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         p:packagesToScan-ref="entities"
         p:dataSource-ref="jpaDataSource"
@@ -58,6 +58,6 @@
   </util:map>
 
   <bean id="hibernateVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-        p:showSql="false" p:generateDdl="false"/>
+        p:showSql="true" p:generateDdl="false"/>
 
 </beans>
