@@ -22,23 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.util.node.ejb;
+package com.stratelia.webactiv.util.node.control.dao;
 
-import com.silverpeas.components.model.AbstractJndiCase;
-import com.silverpeas.components.model.SilverpeasJndiCase;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import org.dbunit.database.IDatabaseConnection;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.naming.NamingException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.naming.NamingException;
+
+import com.silverpeas.components.model.AbstractJndiCase;
+import com.silverpeas.components.model.SilverpeasJndiCase;
+
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
+import org.dbunit.database.IDatabaseConnection;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -52,7 +55,7 @@ public class NodeDAOTest extends AbstractJndiCase {
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
-    baseTest = new SilverpeasJndiCase("com/stratelia/webactiv/util/node/ejb/nodes-test-dataset.xml",
+    baseTest = new SilverpeasJndiCase("com/stratelia/webactiv/util/node/control/dao/nodes-test-dataset.xml",
         "create-database.ddl");
     baseTest.configureJNDIDatasource();
     IDatabaseConnection databaseConnection = baseTest.getDatabaseTester().getConnection();

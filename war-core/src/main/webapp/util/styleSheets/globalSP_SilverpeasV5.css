@@ -55,16 +55,16 @@ a:hover {
 }
 
 input {
-	background-color: #FFFFFF;
-	font-family: "Verdana", "Arial", sans-serif;
-	font-size: 10px;
-	color: #000000;
-	border: 1px solid #999999;
+  background-color: #FFFFFF;
+  font-family: "Verdana", "Arial", sans-serif;
+  font-size: 10px;
+  color: #000000;
+  border: 1px solid #999999;
 }
 
 input[type=radio],
 input[type=checkbox]{
-	border:0px;
+  border:0px;
 }
 
 .invisible {
@@ -182,8 +182,8 @@ Definition des class de style Silverpeas
 .userzoom-tooltip-interaction-action-invitation,
 .userzoom-tooltip-interaction-accessTchat.disabled:hover{
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
@@ -202,8 +202,8 @@ Definition des class de style Silverpeas
   margin:0;
   padding:5px;
   background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-		-pie-background: linear-gradient(#ffffff, #e5e5e5);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
   min-height:14px;
 }
@@ -246,24 +246,24 @@ Definition des class de style Silverpeas
 }
 
 .principal-content-title {
-	color: #333333;
-    font-size: 130%;
-    font-weight: bold;
-	margin:0 0 10px 0;
-	padding:0;
+  color: #333333;
+  font-size: 130%;
+  font-weight: bold;
+  margin:0 0 10px 0;
+  padding:0;
 }
 
 .tag-presentation {
-	float:right;
-	height:30px;
-	line-height:30px;
-	background:transparent url(../icons/bg-tag-part1.png) top left no-repeat;
-	padding-left:19px;
+  float:right;
+  height:30px;
+  line-height:30px;
+  background:transparent url(../icons/bg-tag-part1.png) top left no-repeat;
+  padding-left:19px;
 }
 
 .tag-presentation .tag-presentation-content {
-	background:transparent url(../icons/bg-tag-part2.png) top right no-repeat;
-	padding:0 10px;
+  background:transparent url(../icons/bg-tag-part2.png) top right no-repeat;
+  padding:0 10px;
 }
 
 .clearAll {
@@ -550,6 +550,11 @@ Definition des class de style Silverpeas
   color: #333333
 }
 
+.non-informed {
+  color:#999999;
+  font-style:italic;
+}
+
 .txtdayoff1 {
   font-size: 10px;
   font-weight: normal;
@@ -580,7 +585,7 @@ Definition des class de style Silverpeas
   white-space: nowrap;
 }
 .portlet-content .intfdcolor {
-	white-space: normal;
+  white-space: normal;
 }
 
 #outilsAdmin {
@@ -786,7 +791,7 @@ Style Utilise par le ViewGenerator
 /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
 .ongletOn {
   background-image: url(/silverpeas/util/viewGenerator/icons/ongletOn.gif)
-    ;
+;
   background-repeat: repeat-x;
   font-weight: bold;
 }
@@ -1256,9 +1261,9 @@ td.browsebar a:hover {
   border-color: #C9C9C9;
   border-bottom-width: none;
   z-index:0;
-  .width:100%;
-  _width:100%;
-}
+.width:100%;
+_width:100%;
+  }
 
 .tabSpace {
   padding:3px;
@@ -1270,8 +1275,8 @@ td.browsebar a:hover {
   position:relative;
   float:right;
   padding-right:1px;
-  /position:absolute;
-  /right:0px;
+/position:absolute;
+/right:0px;
   _position:absolute;
   _right:0px;
 }
@@ -1582,10 +1587,10 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 
 /* pour encadrer les boutons et remplacer la balise center utilisée dans les anciennes pages */
 .buttonPane {
-	text-align:center;
+  text-align:center;
 }
 .buttonPane table {
-	margin:0 auto;
+  margin:0 auto;
 }
 
 /* Objet Tabs */
@@ -2338,7 +2343,7 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 .lineResult .content a img{
-	border:0;
+  border:0;
 }
 
 #globalResultFrame {
@@ -2488,11 +2493,11 @@ a.milieuBoutonV5, .milieuBoutonV5 a,#domainsBar .milieuBoutonV5 a {
 }
 
 #searchGroupValues a.toggle.less {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
+  background: transparent url(/silverpeas/util/icons/arrow/arrowTop.gif) right 1px no-repeat;
 }
 
 #searchGroupValues a.toggle.more {
-	background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
+  background: transparent url(/silverpeas/util/icons/arrow/arrowBottom.gif) right 1px no-repeat;
 }
 
 #searchGroupValues ul li.otherEntry {
@@ -3771,10 +3776,10 @@ html > body #invitationProfil .a_invitation , html > body  #contactProfil .a_con
 }
 
 #contactProfil ul li.infoConnection img {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-	border:0;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border:0;
 }
 
 #contactProfil .info li.userType {
@@ -4163,13 +4168,15 @@ span.csv {
 /*- [Generic inline messages BEGIN ] ---------------- */
 .inlineMessage,
 .inlineMessage-ok,
-.inlineMessage-nok {
-  padding: 5px;
-  margin: 10px;
+.inlineMessage-nok,
+.inlineMessage-waiting{
+  padding: 1em;
+  margin: 1em;
   text-align: center;
   border: 2px solid;
-  float: left;
-  width: 95%;
+  border: 2px solid;
+  display:block;
+  /* float: left;*/
 }
 
 .inlineMessage {
@@ -4189,6 +4196,12 @@ span.csv {
 
 .inlineMessage-nok a {
   text-decoration: underline;
+}
+
+
+.inlineMessage-waiting {
+  background-color: #ffd49d;
+  border-color:#ffb85b;
 }
 
 table.pdcPositionsField {
@@ -4664,41 +4677,41 @@ li.application  .applicationName {
 /** BackEnd domain content **/
 /*******************************/
 #domainContent #principal-content-domainContent {
-	position:relative;
-	width:100%;
+  position:relative;
+  width:100%;
 }
 
 #domainContent #link-domain-content {
-	padding-bottom:12px;
+  padding-bottom:12px;
 }
 
 #domainContent .principal-content-title.sql-domain {
-	background:transparent url(../icons/component/domainSmall.gif) 0 0 no-repeat;
-	padding-left:20px;
+  background:transparent url(../icons/component/domainSmall.gif) 0 0 no-repeat;
+  padding-left:20px;
 }
 
 #domainContent #principal-content-domainContent .tag-presentation {
-	position:absolute;
-	top:0;
-	right:0;
+  position:absolute;
+  top:0;
+  right:0;
 }
 
 #domainContent #principal-content-domainContent .tag-presentation.limited-number-user span{
-	background:transparent url(../icons/limited-user.png) right 3px no-repeat;
-	padding-right:30px;
-	display:block;
+  background:transparent url(../icons/limited-user.png) right 3px no-repeat;
+  padding-right:30px;
+  display:block;
 }
 
 #domainContent #description-domainContent {
-	border-left: 6px solid #E4E4E4;
-    color: #666666;
-    font-weight: bold;
-    padding: 8px;
+  border-left: 6px solid #E4E4E4;
+  color: #666666;
+  font-weight: bold;
+  padding: 8px;
 }
 
 #domainContent #number-user-group-domainContent {
-	color:#666;
-	font-size:12px;
+  color:#666;
+  font-size:12px;
 }
 
 /*************************************/
@@ -4787,15 +4800,15 @@ li.application  .applicationName {
 
 
 #filter_userPanel .listing_filter ul .filter{
-	background-image: url("../icons/puce-group.png");
-    background-position: 26px 11px;
-    padding: 6px 0 1px 43px;
+  background-image: url("../icons/puce-group.png");
+  background-position: 26px 11px;
+  padding: 6px 0 1px 43px;
 }
 
 #filter_userPanel .listing_filter ul li#nextGroups .filter{
-	background-image: url("../icons/arrow/arrowDownModal.png");
-    background-position: 25px 6px;
-    padding: 6px 0 1px 43px;
+  background-image: url("../icons/arrow/arrowDownModal.png");
+  background-position: 25px 6px;
+  padding: 6px 0 1px 43px;
 }
 
 #filter_userPanel .listing_filter ul {
@@ -4827,12 +4840,15 @@ li.application  .applicationName {
 }
 
 #filter_userPanel .title,
-#selected_userPanel .title{
+#selected_userPanel .title,
+.subscription-management .title{
   background-color:#353535;
   color:#FFF;
   font-size:120%;
   line-height:28px;
   padding-left:9px;
+  position:relative;
+  height:28px;
 }
 
 #results_userPanel {
@@ -4954,7 +4970,7 @@ input.search:focus {
 .userPanel .remove  {
   background:transparent url(../icons/deleteFiche.png) top left;
 }
-.userPanel  .avatar {
+.userPanel .avatar {
   width:30px;
   height:30px;
   border:1px solid #bcbcbc;
@@ -4964,7 +4980,7 @@ input.search:focus {
   left:6px;
 }
 
-.userPanel  .avatar img{
+.userPanel .avatar img{
   width:30px;
   height:auto;
 }
@@ -4995,24 +5011,91 @@ input.search:focus {
 #sharing-overview a.Node,
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned  {
-	background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
-	padding: 2px 0px 0px 20px;
-	display: block;
-    line-height: 16px;
+  background: transparent url(/silverpeas/util/icons/folder.gif) top left no-repeat;
+  padding: 2px 0px 0px 20px;
+  display: block;
+  line-height: 16px;
 }
 
 #sharing-overview a.Attachment,
 #sharing-overview a.Versionned {
-	background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+  background-image:url(/silverpeas/util/icons/fileType/unknown.gif);
+}
+
+/* subscription-management */
+
+.individual-subscription .title .infoBulle {
+  position:absolute;
+  top:7px;
+  right:5px;
+}
+
+.subscription-management {
+  height: 100%;
+  overflow: auto;
+}
+
+.subscription-management .compulsory-subscription-management {
+  float:left;
+  width:58%;
+  border:1px solid #eaeaea;
+}
+
+.subscription-management .individual-subscription {
+  float:left;
+  width:39%;
+  margin-left:2%;
+  border:1px solid #eaeaea;
+}
+
+.compulsory-subscription-management .listing_groups ,
+.compulsory-subscription-management .listing_users,
+.individual-subscription .listing_groups ,
+.individual-subscription .listing_users {
+  margin:0 8px 8px;
+  clear:right;
+}
+
+.compulsory-subscription-management .action,
+.individual-subscription .action {
+  background: url("../icons/delete.gif") repeat scroll left top transparent;
+  height: 16px;
+  position: absolute;
+  right: 12px;
+  text-indent: -3000px;
+  top: 12px;
+  width: 16px;
+}
+
+.compulsory-subscription-management .unsubscribe,
+.individual-subscription .unsubscribe {
+  cursor: pointer;
+}
+
+.userPanel .listing_users .unsubscribed .name_user,
+.userPanel .listing_groups .unsubscribed .name_group,
+.compulsory-subscription-management .unsubscribed,
+.individual-subscription .unsubscribed {
+  color: #d2d2d2 !important;
+}
+
+.compulsory-subscription-management .unsubscribed img,
+.individual-subscription .unsubscribed img {
+  opacity: 0.3;
+}
+
+.compulsory-subscription-management .buttonPane{
+  float:right;
+  margin:8px -92px 0 0;
 }
 
 /* userzoom-tooltip-profilPhoto */
 .userzoom-tooltip {
-	border:1px solid #aeaeae;
-	position:absolute;
-	width:310px;
-	display: block;
-	z-index: 1000;
+  border:1px solid #aeaeae;
+  position:absolute;
+  width:310px;
+  display: block;
+  z-index: 1000;
 }
 
 .userzoom-infoConnection img {
@@ -5033,55 +5116,55 @@ input.search:focus {
 }
 
 .userzoom-tooltip-info {
-	margin:7px 25px 0 7px;
+  margin:7px 25px 0 7px;
 }
 
 .userzoom-tooltip-info-infoConnection {
-	border: 0 none;
-    position: absolute;
-    right: 10px;
-    top: 10px;
+  border: 0 none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .userzoom-tooltip-info-status {
-	color: #909090;
-	clear: right;
-    float: none;
-    line-height: 120%;
-    max-height: 26px;
-    overflow: hidden;
+  color: #909090;
+  clear: right;
+  float: none;
+  line-height: 120%;
+  max-height: 26px;
+  overflow: hidden;
 }
 
 .userzoom-tooltip-interaction {
-	position:relative;
-	clear:both;
-	height:24px;
+  position:relative;
+  clear:both;
+  height:24px;
 }
 
 .userzoom-tooltip-interaction-action   {
-    bottom: 10px;
-    height: 40px;
-    padding-left: 10px;
-    position: absolute;
-    right: 10px;
-	bottom:24px;
-	z-index:100;
+  bottom: 10px;
+  height: 40px;
+  padding-left: 10px;
+  position: absolute;
+  right: 10px;
+  bottom:24px;
+  z-index:100;
 }
 
 .userzoom-tooltip-interaction-action-invitation  {
-	border: 1px solid #aeaeae;
-    color: #333366;
-    font-size: 11px;
-	line-height:24px;
-	padding:0 8px 0 0;
-	border-radius:3px;
-	display:block;
+  border: 1px solid #aeaeae;
+  color: #333366;
+  font-size: 11px;
+  line-height:24px;
+  padding:0 8px 0 0;
+  border-radius:3px;
+  display:block;
 }
 
 .userzoom-tooltip-interaction-action-invitation span {
-	background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
-	padding-left:32px;
-	display:block;
+  background:transparent url(../icons/add-contact.png) 10px 4px no-repeat;
+  padding-left:32px;
+  display:block;
 }
 
 .userzoom-tooltip-info-userName a{
@@ -5098,167 +5181,167 @@ input.search:focus {
 .userzoom-tooltip-interaction-accessProfil ,
 .userzoom-tooltip-interaction-accessNotification,
 .userzoom-tooltip-interaction-accessTchat {
-	position:absolute;
-	bottom:0px;
-	left:0;
-	width:33%;
-	border:1px solid #cdcdcd;
-	border-right:1px solid #fff;
-	border-bottom:0;
-	height:24px;
-	color:#333366;
-	cursor:pointer;
+  position:absolute;
+  bottom:0px;
+  left:0;
+  width:33%;
+  border:1px solid #cdcdcd;
+  border-right:1px solid #fff;
+  border-bottom:0;
+  height:24px;
+  color:#333366;
+  cursor:pointer;
 }
 
 .userzoom-tooltip-interaction-accessProfil {
-	border-left:0;
+  border-left:0;
 }
 
 .userzoom-tooltip-interaction-accessProfil:hover,
 .userzoom-tooltip-interaction-accessTchat:hover,
 .userzoom-tooltip-interaction-accessNotification:hover {
-	background:#E5E5E5 url();
-	color:#000
+  background:#E5E5E5 url();
+  color:#000
 }
 
 .userzoom-tooltip-interaction-accessTchat {
-	left:auto;
-	right:0;
+  left:auto;
+  right:0;
 }
 
 
 .userzoom-tooltip-interaction-accessNotification {
-	left:33%;
+  left:33%;
 
 }
 .userzoom-tooltip-interaction-accessProfil 	span,
 .userzoom-tooltip-interaction-accessTchat 	span,
 .userzoom-tooltip-interaction-accessNotification 	span{
-	background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
-	display:block;
-	height:24px;
-	line-height:24px;
-	padding-left:32px;
+  background:transparent url(../icons/contactCard.gif) 10px 4px no-repeat;
+  display:block;
+  height:24px;
+  line-height:24px;
+  padding-left:32px;
 }
 
 .userzoom-tooltip-interaction-accessTchat 	span{
-	background-image:url(../icons/talk2user.gif)
+  background-image:url(../icons/talk2user.gif)
 }
 
 .userzoom-tooltip-interaction-accessNotification 	span{
-	background-image:url(../icons/email.gif)
+  background-image:url(../icons/email.gif)
 }
 
 .userzoom-tooltip-interaction-accessTchat.disabled		span{
-	background-image:url(../icons/talk2user-disabled.gif);
-	color:#bbb;
-	cursor:default;
+  background-image:url(../icons/talk2user-disabled.gif);
+  color:#bbb;
+  cursor:default;
 }
 
 .above .userzoom-tooltip-arrow {
-	background:transparent url(../icons/arrow/userzoom-tooltip-arrow.png) 0 0 no-repeat;
-	width:14px;
-	height:10px;
-	position:absolute;
-	bottom:-10px;
-	right:30px;
+  background:transparent url(../icons/arrow/userzoom-tooltip-arrow.png) 0 0 no-repeat;
+  width:14px;
+  height:10px;
+  position:absolute;
+  bottom:-10px;
+  right:30px;
 }
 
 .below .userzoom-tooltip-arrow {
-	background:transparent url(../icons/arrow/userzoom-tooltip-arrow-top.png) 0 0 no-repeat;
-	width:14px;
-	height:10px;
-	position:absolute;
-	top:-103px;
-	right:30px;
+  background:transparent url(../icons/arrow/userzoom-tooltip-arrow-top.png) 0 0 no-repeat;
+  width:14px;
+  height:10px;
+  position:absolute;
+  top:-103px;
+  right:30px;
 }
 
 .above.right .userzoom-tooltip-arrow ,
 .below.right .userzoom-tooltip-arrow
 {
-	right:30px;
+  right:30px;
 }
 .above.left .userzoom-tooltip-arrow ,
 .below.left .userzoom-tooltip-arrow
 {
-	left:30px;
+  left:30px;
 }
 
 .switch,
 .switch a{
-	border:1px solid #ccc;
-	border-radius:8px;
-	padding:6px 8px;
-	width:140px;
-	font-size:11px;
-	line-height:14px;
-	float:left;
-	margin-right:8px;
-	position:relative;
-	z-index:1000;
-	cursor:pointer
+  border:1px solid #ccc;
+  border-radius:8px;
+  padding:6px 8px;
+  width:140px;
+  font-size:11px;
+  line-height:14px;
+  float:left;
+  margin-right:8px;
+  position:relative;
+  z-index:1000;
+  cursor:pointer
 }
 
 .switch a {
-	display:block;
-	border:0;
-	width:30px;
-	padding:6px 4px;
-	margin-right:0;
-	border-left:1px solid #ccc;
-	position:absolute;
-	border-radius:0 8px 8px 0 ;
-	top:0;
-	right:0;
-	text-align:center;
+  display:block;
+  border:0;
+  width:30px;
+  padding:6px 4px;
+  margin-right:0;
+  border-left:1px solid #ccc;
+  position:absolute;
+  border-radius:0 8px 8px 0 ;
+  top:0;
+  right:0;
+  text-align:center;
 }
 
 .switch a:first-child {
-	right:38px;
-	border-radius:0 0 0 0;
+  right:38px;
+  border-radius:0 0 0 0;
 }
 
 .switch a.active  {
-	background-color: #747474;
-    color: #FFFFFF;
-	font-weight:bold
+  background-color: #747474;
+  color: #FFFFFF;
+  font-weight:bold
 }
 
 .switch a:hover  {
-	background-color: #F1790F;
-    color: #FFFFFF;
+  background-color: #F1790F;
+  color: #FFFFFF;
 }
 
 #myprofile-socialnetworks {
-	float: left;
-    padding-top: 10px;
-    width: 100%;
+  float: left;
+  padding-top: 10px;
+  width: 100%;
 }
 
 #myprofile-socialnetworks .switch.socialnetwork{
-	width:160px;
-	float:right;
+  width:160px;
+  float:right;
 }
 
 #myprofile-socialnetworks .a-socialnetwork p {
-	float:left;
-	color:#727272;
-	line-height:32px;
+  float:left;
+  color:#727272;
+  line-height:32px;
 }
 #myprofile-socialnetworks .a-socialnetwork p strong{
-	font-weight:bold;
-	color:#021035;
+  font-weight:bold;
+  color:#021035;
 }
 #myprofile-socialnetworks .a-socialnetwork p img{
-	float:left;
-	margin-right:8px;
+  float:left;
+  margin-right:8px;
 }
 
 #myProfile #FBPublishButton,
 #myProfile #FBLoginButton,
 #myProfile #LinkedInPublishButton,
 #myProfile #LinkedInLoginButton {
-	display: none;
+  display: none;
 }
 
 /*************/
@@ -5342,23 +5425,221 @@ input.search:focus {
 }
 
 /*******************************/
+/**     plugin FileUpload     **/
+/*******************************/
+
+.skinFieldset.fileUpload  legend {
+  background: url("../icons/attachedFiles.gif") no-repeat scroll 11px 0 transparent;
+}
+
+div.fileUpload {
+  width: 90%;
+}
+
+.fileUpload-container {
+  width: auto;
+  clear: both;
+  height: auto;
+  margin: 10px 15px 0;
+}
+
+.fileUpload-container .actions {
+  position: relative;
+  margin-bottom: 3px;
+}
+
+.fileUpload-container .actions.dng {
+}
+
+.fileUpload-container .actions .icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 0;
+}
+
+.fileUpload-container .actions .icon.dng {
+  top: 8px;
+}
+.fileUpload-container .actions .input {
+  margin:0 110px 0 28px;
+
+}
+
+.fileUpload-container .actions .droparea {
+  padding: 0;
+  background: #FFF url(../icons/dropFile.png) no-repeat 6px 2px ;
+  border: 3px dashed #e5e5e5;
+  text-align: center;
+  top: 0;
+  left: 0;
+  height: 32px;
+}
+
+.fileUpload-container .actions.dng .milieuBoutonV5.button {
+  position:absolute;
+  top:0;
+  right:-110px;
+  width:90px;
+  background-image: url(../icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100);
+  -moz-background-size: 100%;
+  -pie-background: linear-gradient(#ffffff, #e5e5e5);
+  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  padding:2px 5px;
+  margin:4px 0;
+  cursor:pointer;
+  background-color:#ece9d8;
+  border:1px solid #999999;
+  height:17px;
+  line-height:18px;
+  display:inline-block;
+  border-radius:5px;
+  text-align:center;
+}
+
+.fileUpload-container .actions.dng .milieuBoutonV5.button a {
+  background:transparent url() no-repeat;
+  padding:0px 8px 0 8px;
+  line-height:18px;
+  border:0;
+}
+
+
+.fileUpload-container .actions .droparea.hover {
+  background-color: #A8DE66;
+  border: 3px solid #9BCD5E;
+}
+
+.fileUpload-container .actions .droparea span {
+  color: #666666;
+  font-weight: bold;
+  line-height: 32px;
+  vertical-align: middle;
+}
+.fileUpload-container .actions a {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fileUpload-container .waiting-list {
+  margin-top:8px;
+  background:url(../icons/uploading.gif) no-repeat  0 3px;
+  padding-left:28px;
+}
+
+.fileUpload-container .waiting-list div {
+  position: relative;
+  margin: 0 0 3px 0;
+  padding: 6px;
+}
+.fileUpload-container .waiting-list .progress-bar {
+  position: absolute;
+  padding: 6px;
+  margin: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  background-color: #808080;
+  opacity: 0.08;
+}
+
+
+.fileUpload-container .uploaded-file-list {
+  width: auto;
+}
+
+.fileUpload-container .uploaded-file {
+  width: 100%;
+}
+
+.fileUpload-container .uploaded-file .details {
+  height: 16px;
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.fileUpload-container .uploaded-file .details img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.fileUpload-container .uploaded-file .details span {
+  white-space:nowrap;
+  max-width:90%;
+  overflow:hidden;
+  color: #878787;
+  position: absolute;
+  top: 2px;
+  left: 25px;
+}
+
+.fileUpload-container .uploaded-file .details .delete-file{
+  position:absolute;
+  right:16px;
+  top:0;
+}
+
+.fileUpload-container .uploaded-file .details .delete-file img{
+  border:0;
+}
+
+.fileUpload-container .uploaded-file .infos > div {
+  margin-top: 3px;
+}
+
+.fileUpload-container .uploaded-file label {
+  margin: 0;
+}
+
+.fileUpload-container .uploaded-file input {
+  padding: 2px;
+  margin: 0;
+  width:99%;
+}
+
+.fileUpload-container .uploaded-file textarea {
+  padding: 2px;
+  margin: 0;
+  width:99%;
+}
+
+.fileUpload-container input[type=file] {
+  width: auto;
+}
+
+.fileUpload-container div.fileinputs {
+  position: relative;
+  margin-left: 5px;
+}
+.fileUpload-container div.fileinputs form{
+  padding:0;
+  margin:0;
+}
+
+.fileUpload-container .legendeFileUpload {
+  font-style: italic;
+}
+
+/*******************************/
 /** Tagit **/
 /*******************************/
 ul.tagit {
-    padding: 1px !important;
-    border: 1px solid #999999 !important;
+  padding: 1px !important;
+  border: 1px solid #999999 !important;
 }
 
 ul.tagit li {
-    margin: 1px 5px 1px 0px !important;
+  margin: 1px 5px 1px 0px !important;
 }
 
 ul.tagit li.tagit-choice {
-	padding: 1px 15px 1px 4px !important;
+  padding: 1px 15px 1px 4px !important;
 }
 
 ul.tagit li.tagit-choice a.tagit-close {
-    padding: 0px 0px 2px 3px !important;
+  padding: 0px 0px 2px 3px !important;
 }
 
 .ui-dialog .label-ui-dialog {

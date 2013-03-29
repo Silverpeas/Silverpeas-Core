@@ -24,63 +24,56 @@
 
 package com.silverpeas.subscribe.service;
 
-import com.silverpeas.subscribe.Subscription;
-import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.silverpeas.subscribe.SubscriptionResource;
+import com.silverpeas.subscribe.SubscriptionSubscriber;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.util.Date;
 
 /**
  * @author ehugonnet
  */
-public class NodeSubscription implements Subscription {
+public class NodeSubscription extends AbstractSubscription {
 
-  private final String userId;
-  private final NodePK pk;
-
-  public NodeSubscription(String userId, NodePK pk) {
-    this.userId = userId;
-    this.pk = pk;
+  /**
+   * Node subscription constructor for which the type of the subscriber is USER and the
+   * subscriber is the one that handles the subscription.
+   * @param subscriberId id of the subscriber
+   * @param nodePK representation of the topic
+   */
+  public NodeSubscription(final String subscriberId, final NodePK nodePK) {
+    super(UserSubscriptionSubscriber.from(subscriberId), NodeSubscriptionResource.from(nodePK),
+        subscriberId);
   }
 
-  @Override
-  public WAPrimaryKey getTopic() {
-    return pk;
+  /**
+   * Node subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param nodePK representation of the topic
+   */
+  public NodeSubscription(final SubscriptionSubscriber subscriber, final NodePK nodePK) {
+    super(subscriber, NodeSubscriptionResource.from(nodePK), subscriber.getId());
   }
 
-  @Override
-  public String getSubscriber() {
-    return userId;
+  /**
+   * Node subscription constructor for a subscriber that handles the subscription too.
+   * @param subscriber the subscriber
+   * @param nodePK representation of the topic
+   * @param creatorId the user id that has handled the subscription
+   */
+  public NodeSubscription(final SubscriptionSubscriber subscriber, final NodePK nodePK,
+      final String creatorId) {
+    super(subscriber, NodeSubscriptionResource.from(nodePK), SubscriptionMethod.UNKNOWN, creatorId,
+        null);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    NodeSubscription that = (NodeSubscription) o;
-
-    if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
-      return false;
-    }
-    if (userId != null ? !userId.equals(that.userId) : that.userId != null) {
-      return false;
-    }
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = userId != null ? userId.hashCode() : 0;
-    result = 31 * result + (pk != null ? pk.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public boolean isComponentSubscription() {
-    return COMPONENT_SUBSCRIPTION.equals(pk.space);
+  /**
+   * @see AbstractSubscription
+   */
+  protected NodeSubscription(final SubscriptionSubscriber subscriber,
+      final SubscriptionResource resource, final SubscriptionMethod subscriptionMethod,
+      final String creatorId, final Date creationDate) {
+    super(subscriber, resource, subscriptionMethod, creatorId, creationDate);
   }
 }

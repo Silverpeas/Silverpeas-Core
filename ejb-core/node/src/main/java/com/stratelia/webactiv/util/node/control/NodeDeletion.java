@@ -24,18 +24,21 @@
 
 package com.stratelia.webactiv.util.node.control;
 
-import com.silverpeas.node.notification.NodeNotificationService;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import com.stratelia.webactiv.util.node.ejb.NodeDAO;
+
+import com.silverpeas.node.notification.NodeNotificationService;
+
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.dao.NodeDAO;
 import com.stratelia.webactiv.util.node.control.dao.NodeI18NDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Process of deleting a node. As the deletion of a given node is performed by different parts of

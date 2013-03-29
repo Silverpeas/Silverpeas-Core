@@ -203,6 +203,8 @@ function deleteSubscription() {
  	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("pdc"), "#", true);
 	tabbedPane.addTab(resource.getString("thematique"), "ViewSubscriptionTheme?userId="+userId+"&action="+action, false);
+   tabbedPane.addTab(resource.getString("application"),
+       "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);
 
       if (!isReadOnly) {
           operationPane.addOperationOfCreation(iconAdd , resource.getString("AddSC"),"javascript:newSubscription()");
