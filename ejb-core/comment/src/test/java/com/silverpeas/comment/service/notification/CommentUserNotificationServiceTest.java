@@ -1,60 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.service.notification;
-
-import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.silverpeas.comment.mock.OrganizationControllerMocking;
 import com.silverpeas.comment.model.Comment;
@@ -67,6 +31,28 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.inject.Inject;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
+import static com.silverpeas.comment.service.notification.NotificationMatchers.isSetIn;
 
 /**
  * Unit tests notification of the users at comment adding on a given Silverpeas content.
@@ -98,7 +84,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * The user notification to test. It is partially mocked.
    */
-  private CommentUserNotificationService notificationService = null;
+  private DefaultCommentUserNotificationService notificationService = null;
   /**
    * The classified service to use in tests.
    */
@@ -120,7 +106,6 @@ public class CommentUserNotificationServiceTest {
    */
   private ArgumentCaptor<NotificationMetaData> notifInfoCaptor =
       ArgumentCaptor.forClass(NotificationMetaData.class);
-
   @Inject
   private OrganizationControllerMocking organizationController;
 
@@ -139,7 +124,7 @@ public class CommentUserNotificationServiceTest {
   public void setUp() throws Exception {
     setUpClassifieds();
     setUpClassifiedComments();
-    notificationService = spy(new CommentUserNotificationService());
+    notificationService = spy(new DefaultCommentUserNotificationService());
     notificationService.register(ClassifiedService.COMPONENT_NAME, classifiedService);
     doReturn(mockCommentService()).when(notificationService).getCommentService();
     doReturn(mockNotificationSender()).when(notificationService).getNotificationSender(
@@ -191,8 +176,8 @@ public class CommentUserNotificationServiceTest {
       commentAuthor.setId(String.valueOf(i));
       Comment aComment =
           new Comment(new CommentPK(String.valueOf(i), CLASSIFIED_INSTANCEID),
-              COMMENT_RESOURCETYPE,
-              classifiedPk, i, "Toto" + i, "comment " + i, date, date);
+          COMMENT_RESOURCETYPE,
+          classifiedPk, i, "Toto" + i, "comment " + i, date, date);
       aComment.setOwnerDetail(commentAuthor);
       classifiedComments.add(aComment);
     }
@@ -230,6 +215,7 @@ public class CommentUserNotificationServiceTest {
    * Mocks the DefaultCommentService to use by the callback. It is expected all of other comments
    * are asked by the callback to get their authors. So that it can notify them about the new
    * comment.
+   *
    * @return the mocked comment controller.
    * @throws Exception - it is just for satisfying the contract of some called methods of
    * DefaultCommentService.
@@ -247,6 +233,7 @@ public class CommentUserNotificationServiceTest {
    * Mocks the NotificationSender instance to use by the callback. It is expected it is used by the
    * callback for sending notification to users. The notification information passed to the sender
    * is captured.
+   *
    * @return the mocked notification sender.
    * @throws Exception - it is just for satisfying the contract of some called methods of
    * NotifySender.
@@ -270,6 +257,7 @@ public class CommentUserNotificationServiceTest {
   /**
    * Gets the captured information from the notification sender at notifiyUser() call by the
    * callback.
+   *
    * @return the notification information passed by the callback to the notification sender.
    */
   protected NotificationMetaData getCapturedInfoInNotificiation() {
