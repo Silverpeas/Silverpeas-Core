@@ -63,7 +63,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
@@ -982,13 +981,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
-        publicationBm = publicationBmHome.create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "PublicationDetail.getPublicationBm()",
+        throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
             SilverpeasRuntimeException.ERROR,
             "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
       }

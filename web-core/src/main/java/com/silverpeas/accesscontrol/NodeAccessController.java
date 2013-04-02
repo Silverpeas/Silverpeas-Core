@@ -32,7 +32,6 @@ import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import org.silverpeas.core.admin.OrganisationController;
@@ -80,9 +79,7 @@ public class NodeAccessController implements AccessController<NodePK> {
   }
 
   public NodeBm getNodeBm() throws Exception {
-    NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-        NodeBmHome.class);
-    return nodeBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 
   /**

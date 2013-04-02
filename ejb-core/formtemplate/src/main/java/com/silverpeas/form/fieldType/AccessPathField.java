@@ -24,23 +24,23 @@
 
 package com.silverpeas.form.fieldType;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * An AccessPathField stores the current access path of the form
@@ -115,9 +115,7 @@ public class AccessPathField extends TextField {
       if (nodeId != null) {
         NodeBm nodeBm = null;
         try {
-          NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-              NodeBmHome.class);
-          nodeBm = nodeBmHome.create();
+          nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
         } catch (Exception e) {
           SilverTrace.error("form", "AccessPathFieldDisplayer.display",
               "form.EX_CANT_CREATE_NODEBM_HOME");
@@ -125,14 +123,7 @@ public class AccessPathField extends TextField {
 
         if (nodeBm != null) {
           NodePK nodePk = new NodePK(nodeId, componentId);
-          Collection<NodeDetail> listPath = null;
-          try {
-            listPath = nodeBm.getPath(nodePk);
-          } catch (RemoteException e) {
-            SilverTrace.error("form", "AccessPathFieldDisplayer.display",
-                "form.EX_CANT_GET_PATH_NODE", nodeId);
-          }
-
+          Collection<NodeDetail> listPath = nodeBm.getPath(nodePk);
           if (listPath != null) {
             String nodeName;
             for (NodeDetail nodeInPath : listPath) {

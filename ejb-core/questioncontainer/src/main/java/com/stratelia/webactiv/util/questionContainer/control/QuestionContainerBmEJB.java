@@ -93,7 +93,6 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
   private final static String nullBeginDate = "0000/00/00";
   // if endDate is null, it will be replace in database with it
   private final static String nullEndDate = "9999/99/99";
-  private final static String dbName = JNDINames.QUESTIONCONTAINER_DATASOURCE;
 
   public QuestionContainerBmEJB() {
   }
@@ -1419,7 +1418,7 @@ public class QuestionContainerBmEJB implements QuestionContainerBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.makeConnection(JNDINames.QUESTIONCONTAINER_DATASOURCE);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException("QuestionContainerBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);

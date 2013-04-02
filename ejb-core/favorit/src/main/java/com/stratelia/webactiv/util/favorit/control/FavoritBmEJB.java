@@ -20,14 +20,15 @@
  */
 package com.stratelia.webactiv.util.favorit.control;
 
-import java.sql.*;
-import java.util.*;
+
+import java.sql.Connection;
+import java.util.Collection;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;

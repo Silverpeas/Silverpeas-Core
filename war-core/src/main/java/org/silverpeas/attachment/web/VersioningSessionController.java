@@ -34,19 +34,14 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -234,7 +229,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
 
   private boolean isUserInRole(String userId, ProfileInst profile) {
     SilverTrace.info("versioningPeas", "VersioningSessionController.isUserInRole()",
-        "root.MSG_GEN_ENTER_METHOD", "document = " + document.getPk().getId() + ", userId = " 
+        "root.MSG_GEN_ENTER_METHOD", "document = " + document.getPk().getId() + ", userId = "
         + userId + "profile=" + profile.getName());
     boolean userInRole = false;
     if (profile.getAllUsers() != null) {
@@ -259,20 +254,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @return
    */
   public NodeBm getNodeBm() {
-    try {
-      NodeBmHome nodeBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      return nodeBmHome.create();
-    } catch (RemoteException ex) {
-      throw new AttachmentException("VersioningSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    } catch (CreateException ex) {
-      throw new AttachmentException("VersioningSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    } catch (UtilException ex) {
-      throw new AttachmentException("VersioningSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
-    }
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
   }
 
   /**

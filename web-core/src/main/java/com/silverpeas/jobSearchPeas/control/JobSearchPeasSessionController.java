@@ -20,6 +20,18 @@
  */
 package com.silverpeas.jobSearchPeas.control;
 
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+
 import com.silverpeas.jobSearchPeas.SearchResult;
 
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -41,25 +53,12 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
-
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
 
 /**
  * Class declaration
@@ -105,10 +104,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private PublicationBm getPublicationBm() {
     if (null == publicationBm) {
       try {
-        PublicationBmHome publicationBmHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
-        publicationBm = publicationBmHome.create();
+        publicationBm =EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new PublicationRuntimeException("JobSearchPeasSessionController.getPublicationBm()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -123,9 +120,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   private NodeBm getNodeBm() {
     if (null == nodeBm) {
       try {
-        NodeBmHome nodeBmHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        nodeBm = nodeBmHome.create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception e) {
         throw new PublicationRuntimeException("JobSearchPeasSessionController.getNodeBm()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

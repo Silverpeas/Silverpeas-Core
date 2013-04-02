@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.util.publication.control;
 
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -31,8 +30,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -47,7 +48,6 @@ import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.notation.ejb.NotationBm;
-import com.silverpeas.notation.ejb.NotationRuntimeException;
 import com.silverpeas.notation.model.Notation;
 import com.silverpeas.notation.model.NotationPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -69,20 +69,16 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.InfoDAO;
@@ -108,14 +104,23 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
  *
  * @author
  */
-public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkeleton {
+@Stateless(name = "Publication", description = "Stateless session bean to manage publications.")
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
+public class PublicationBmEJB implements PublicationBm {
 
+  @EJB
+  private NodeBm nodeBm;
+  @EJB
+  private CoordinatesBm coordinatesBm;
+  @EJB
+  private NotationBm notationBm;
+  @EJB
+  private TagCloudBm tagCloudBm;
   private static final long serialVersionUID = -829288807683338746L;
-  private String dbName = JNDINames.PUBLICATION_DATASOURCE;
   private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
   @Override
-  public PublicationDetail getDetail(PublicationPK pubPK) throws RemoteException {
+  public PublicationDetail getDetail(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       pubPK = PublicationDAO.selectByPrimaryKey(con, pubPK);
@@ -155,7 +160,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public PublicationPK createPublication(PublicationDetail detail) throws RemoteException {
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  public PublicationPK createPublication(PublicationDetail detail) {
     Connection con = getConnection();
     try {
       int indexOperation = detail.getIndexOperation();
@@ -218,8 +224,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void movePublication(PublicationPK pk, NodePK fatherPK, boolean indexIt) throws
-      RemoteException {
+  public void movePublication(PublicationPK pk, NodePK fatherPK, boolean indexIt) {
     Connection con = getConnection();
     try {
       PublicationDetail detail = PublicationDAO.loadRow(con, pk);
@@ -242,7 +247,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void changePublicationsOrder(List<String> ids, NodePK nodePK) throws RemoteException {
+  public void changePublicationsOrder(List<String> ids, NodePK nodePK) {
     if (ids == null || ids.isEmpty()) {
       return;
     }
@@ -265,8 +270,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction) throws
-      RemoteException {
+  public void changePublicationOrder(PublicationPK pubPK, NodePK nodePK, int direction) {
     // get all publications in given node
     List<PublicationDetail> publications = (List<PublicationDetail>) getDetailsByFatherPK(nodePK,
         "P.pubUpdateDate desc");
@@ -319,7 +323,8 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removePublication(PublicationPK pk) throws RemoteException {
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  public void removePublication(PublicationPK pk) {
     Connection con = getConnection();
     try {
       PublicationDetail publi = PublicationDAO.loadRow(con, pk);
@@ -345,12 +350,13 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void setDetail(PublicationDetail detail) throws RemoteException {
+  public void setDetail(PublicationDetail detail) {
     setDetail(detail, false);
   }
 
   @Override
-  public void setDetail(PublicationDetail detail, boolean forceUpdateDate) throws RemoteException {
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
+  public void setDetail(PublicationDetail detail, boolean forceUpdateDate) {
     Connection con = getConnection();
     try {
       PublicationDetail publi = PublicationDAO.loadRow(con, detail.getPK());
@@ -551,7 +557,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public List<ValidationStep> getValidationSteps(PublicationPK pubPK) throws RemoteException {
+  public List<ValidationStep> getValidationSteps(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       return ValidationStepsDAO.getSteps(con, pubPK);
@@ -565,8 +571,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public ValidationStep getValidationStepByUser(PublicationPK pubPK, String userId) throws
-      RemoteException {
+  public ValidationStep getValidationStepByUser(PublicationPK pubPK, String userId) {
     Connection con = getConnection();
     try {
       return ValidationStepsDAO.getStepByUser(con, pubPK, userId);
@@ -580,7 +585,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void addValidationStep(ValidationStep step) throws RemoteException {
+  public void addValidationStep(ValidationStep step) {
     Connection con = getConnection();
     try {
       ValidationStepsDAO.addStep(con, step);
@@ -594,7 +599,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeValidationSteps(PublicationPK pubPK) throws RemoteException {
+  public void removeValidationSteps(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       ValidationStepsDAO.removeSteps(con, pubPK);
@@ -608,7 +613,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void addFather(PublicationPK pubPK, NodePK fatherPK) throws RemoteException {
+  public void addFather(PublicationPK pubPK, NodePK fatherPK) {
     SilverTrace.info("publication", "PublicationEJB.addFather()",
         "root.MSG_GEN_ENTER_METHOD", "fatherId = " + fatherPK.getId());
     Connection con = getConnection();
@@ -624,7 +629,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeFather(PublicationPK pubPK, NodePK fatherPK) throws RemoteException {
+  public void removeFather(PublicationPK pubPK, NodePK fatherPK) {
     SilverTrace.info("publication", "PublicationEJB.removeFather()", "root.MSG_GEN_ENTER_METHOD",
         "fatherId = " + fatherPK.getId());
     Connection con = getConnection();
@@ -641,7 +646,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeFather(NodePK fatherPK) throws RemoteException {
+  public void removeFather(NodePK fatherPK) {
     Connection con = getConnection();
     try {
       PublicationPK pubPK = new PublicationPK("useless", fatherPK);
@@ -656,8 +661,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds)
-      throws RemoteException {
+  public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds) {
     Connection con = getConnection();
     try {
       PublicationFatherDAO.removeFathersToPublications(con, pubPK, fatherIds);
@@ -672,7 +676,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeAllFather(PublicationPK pubPK) throws RemoteException {
+  public void removeAllFather(PublicationPK pubPK) {
     SilverTrace.info("publication", "PublicationEJB.removeAllFather()", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
@@ -688,8 +692,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> pubDetails = PublicationDAO.getOrphanPublications(con, pubPK);
@@ -706,8 +709,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> pubDetails = PublicationDAO.getNotOrphanPublications(con,
@@ -725,8 +727,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId) throws
-      RemoteException {
+  public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId) {
     Connection con = getConnection();
     try {
       PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
@@ -741,7 +742,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(PublicationPK pubPK,
-      String publisherId, String nodeId) throws RemoteException {
+      String publisherId, String nodeId) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> pubDetails = PublicationDAO
@@ -761,7 +762,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) throws RemoteException {
+  public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getAllFatherPK(con, pubPK);
@@ -775,7 +776,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<Alias> getAlias(PublicationPK pubPK) throws RemoteException {
+  public Collection<Alias> getAlias(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getAlias(con, pubPK);
@@ -789,7 +790,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void addAlias(PublicationPK pubPK, List<Alias> aliases) throws RemoteException {
+  public void addAlias(PublicationPK pubPK, List<Alias> aliases) {
     Connection con = getConnection();
     try {
       if (aliases != null && !aliases.isEmpty()) {
@@ -808,7 +809,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void removeAlias(PublicationPK pubPK, List<Alias> aliases) throws RemoteException {
+  public void removeAlias(PublicationPK pubPK, List<Alias> aliases) {
     Connection con = getConnection();
     try {
       if (aliases != null && !aliases.isEmpty()) {
@@ -827,20 +828,18 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK) {
     return getDetailsByFatherPK(fatherPK, null);
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting)
-      throws RemoteException {
+  public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting) {
     return getDetailsByFatherPK(fatherPK, sorting, true);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
-      boolean filterOnVisibilityPeriod) throws RemoteException {
+      boolean filterOnVisibilityPeriod) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> publis = PublicationDAO.selectByFatherPK(con, fatherPK,
@@ -860,7 +859,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherPK(NodePK fatherPK, String sorting,
-      boolean filterOnVisibilityPeriod, String userId) throws RemoteException {
+      boolean filterOnVisibilityPeriod, String userId) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> publis = PublicationDAO.selectByFatherPK(con, fatherPK,
@@ -879,14 +878,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK) {
     return getDetailsNotInFatherPK(fatherPK, null);
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting)
-      throws RemoteException {
+  public Collection<PublicationDetail> getDetailsNotInFatherPK(NodePK fatherPK, String sorting) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> detailList = PublicationDAO.selectNotInFatherPK(con, fatherPK,
@@ -906,7 +903,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatus(PublicationPK pk,
-      String status, int nbPubs) throws RemoteException {
+      String status, int nbPubs) {
     Connection con = getConnection();
     try {
       List<PublicationDetail> result = new ArrayList<PublicationDetail>(nbPubs);
@@ -934,7 +931,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
-      PublicationPK pk, String status, int nbPubs, String fatherId) throws RemoteException {
+      PublicationPK pk, String status, int nbPubs, String fatherId) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> detailList = PublicationDAO.
@@ -954,8 +951,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs)
-      throws RemoteException {
+  public Collection<PublicationDetail> getDetailsByBeginDateDesc(PublicationPK pk, int nbPubs) {
     Connection con = getConnection();
     try {
       List<PublicationDetail> result = new ArrayList<PublicationDetail>(nbPubs);
@@ -981,7 +977,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<ModelDetail> getAllModelsDetail() throws RemoteException {
+  public Collection<ModelDetail> getAllModelsDetail() {
     Connection con = getConnection();
     try {
       return InfoDAO.getAllModelsDetail(con);
@@ -994,7 +990,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public ModelDetail getModelDetail(ModelPK modelPK) throws RemoteException {
+  public ModelDetail getModelDetail(ModelPK modelPK) {
     Connection con = getConnection();
     try {
       return InfoDAO.getModelDetail(con, modelPK);
@@ -1008,8 +1004,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos) throws
-      RemoteException {
+  public void createInfoDetail(PublicationPK pubPK, ModelPK modelPK, InfoDetail infos) {
     SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
     Connection con = getConnection();
@@ -1037,8 +1032,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void createInfoModelDetail(PublicationPK pk, ModelPK modelPK, InfoDetail infos) throws
-      RemoteException {
+  public void createInfoModelDetail(PublicationPK pk, ModelPK modelPK, InfoDetail infos) {
     SilverTrace.info("publication", "PublicationEJB.createInfoDetail()",
         "root.MSG_GEN_ENTER_METHOD", "modelId = " + modelPK.getId());
     Connection con = getConnection();
@@ -1065,7 +1059,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public InfoDetail getInfoDetail(PublicationPK pubPK) throws RemoteException {
+  public InfoDetail getInfoDetail(PublicationPK pubPK) {
     SilverTrace.info("publication", "PublicationEJB.getInfoDetail()", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     PublicationDetail detail = getDetail(pubPK);
@@ -1083,8 +1077,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
-      throws RemoteException {
+  public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos) {
     Connection con = getConnection();
     try {
       PublicationDetail detail = getDetail(pubPK);
@@ -1146,10 +1139,10 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    *
    * @param pubPK
    * @param links list of links to remove
-   * @throws RemoteException
+   * @
    */
   @Override
-  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException {
+  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
     Connection con = getConnection();
     try {
       for (ForeignPK link : links) {
@@ -1169,8 +1162,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public CompletePublication getCompletePublication(PublicationPK pubPK)
-      throws RemoteException {
+  public CompletePublication getCompletePublication(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       PublicationDetail detail = PublicationDAO.loadRow(con, pubPK);
@@ -1193,8 +1185,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> resultList = PublicationDAO.searchByKeywords(con, query, pubPK);
@@ -1213,8 +1204,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs)
-      throws RemoteException {
+  public Collection<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> publications = PublicationDAO.selectByPublicationPKs(con,
@@ -1233,8 +1223,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK) {
     Connection con = getConnection();
 
     try {
@@ -1256,7 +1245,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationPK> getPublicationPKsByStatus(String status,
-      List<String> componentIds) throws RemoteException {
+      List<String> componentIds) {
     Connection con = getConnection();
     try {
       return PublicationDAO.selectPKsByStatus(con, componentIds, status);
@@ -1271,7 +1260,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getPublicationsByStatus(String status,
-      List<String> componentIds) throws RemoteException {
+      List<String> componentIds) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> publications = PublicationDAO.selectByStatus(con, componentIds,
@@ -1290,7 +1279,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) throws RemoteException {
+  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getNbPubInFatherPKs(con, fatherPKs);
@@ -1307,7 +1296,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public NodeTree getDistributionTree(String instanceId, String statusSubQuery,
-      boolean checkVisibility) throws RemoteException {
+      boolean checkVisibility) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getDistributionTree(con, instanceId, statusSubQuery, checkVisibility);
@@ -1321,7 +1310,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath) throws RemoteException {
+  public int getNbPubByFatherPath(NodePK fatherPK, String fatherPath) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getNbPubByFatherPath(con, fatherPK, fatherPath);
@@ -1336,26 +1325,26 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK, boolean filterOnVisibilityPeriod) throws RemoteException {
+      PublicationPK pubPK, boolean filterOnVisibilityPeriod) {
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, null, null,
         filterOnVisibilityPeriod);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK) throws RemoteException {
+      PublicationPK pubPK) {
     return getDetailsByFatherIdsAndStatus(fatherIds, pubPK, null, null);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK, String sorting) throws RemoteException {
+      PublicationPK pubPK, String sorting) {
     return getDetailsByFatherIdsAndStatus(fatherIds, pubPK, sorting, null);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatus(List<String> fatherIds,
-      PublicationPK pubPK, String sorting, String status) throws RemoteException {
+      PublicationPK pubPK, String sorting, String status) {
     ArrayList<String> statusList = null;
     if (status != null) {
       statusList = new ArrayList<String>();
@@ -1366,15 +1355,14 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-      List<String> fatherIds, PublicationPK pubPK, String sorting, List<String> status)
-      throws RemoteException {
+      List<String> fatherIds, PublicationPK pubPK, String sorting, List<String> status) {
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, status, true);
   }
 
   @Override
   public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
       List<String> fatherIds, PublicationPK pubPK, String sorting, List<String> status,
-      boolean filterOnVisibilityPeriod) throws RemoteException {
+      boolean filterOnVisibilityPeriod) {
     Connection con = getConnection();
     try {
       Collection<PublicationDetail> detailList = PublicationDAO.selectByFatherIds(con, fatherIds,
@@ -1393,8 +1381,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs)
-      throws RemoteException {
+  public Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs) {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getPubPKsInFatherPKs(con, fatherPKs);
@@ -1408,7 +1395,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK) throws RemoteException {
+  public Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK) {
     Connection con = getConnection();
     try {
       return PublicationFatherDAO.getPubPKsInFatherPK(con, fatherPK);
@@ -1422,7 +1409,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public void processWysiwyg(PublicationPK pubPK) throws RemoteException {
+  public void processWysiwyg(PublicationPK pubPK) {
     createIndex(pubPK);
   }
 
@@ -1434,8 +1421,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    */
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.makeConnection(dbName);
-      return con;
+      return DBUtil.makeConnection(JNDINames.PUBLICATION_DATASOURCE);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
@@ -1620,7 +1606,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * Called on : - deletePublication()
    */
   @Override
-  public void deleteIndex(PublicationPK pubPK) throws RemoteException {
+  public void deleteIndex(PublicationPK pubPK) {
     SilverTrace.info("publication", "PublicationBmEJB.deleteIndex()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK);
     IndexEntryPK indexEntry = new IndexEntryPK(pubPK.getComponentName(), "Publication", pubPK
@@ -1643,12 +1629,11 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param pubPK
    * @param sorting
    * @return
-   * @throws RemoteException
+   * @
    * @see
    */
   @Override
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting)
-      throws RemoteException {
+  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK, String sorting) {
     Connection con = getConnection();
     try {
       return PublicationDAO.selectAllPublications(con, pubPK, sorting);
@@ -1661,14 +1646,12 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   @Override
-  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK)
-      throws RemoteException {
+  public Collection<PublicationDetail> getAllPublications(PublicationPK pubPK) {
     return getAllPublications(pubPK, null);
   }
 
   @Override
-  public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName)
-      throws RemoteException {
+  public PublicationDetail getDetailByName(PublicationPK pubPK, String pubName) {
     SilverTrace.info("publication", "PublicationBmEJB.getDetailByName()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK + ", pubName = " + pubName);
     Connection con = getConnection();
@@ -1694,7 +1677,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public PublicationDetail getDetailByNameAndNodeId(PublicationPK pubPK,
-      String pubName, int nodeId) throws RemoteException {
+      String pubName, int nodeId) {
     SilverTrace.info("publication", "PublicationBmEJB.getDetailByNameAndNodeId()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK + ", pubName = " + pubName + ", nodeId="
         + nodeId);
@@ -1722,7 +1705,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationDetail> getDetailBetweenDate(String beginDate, String endDate,
-      String instanceId) throws RemoteException {
+      String instanceId) {
     Connection con = getConnection();
     try {
 
@@ -1760,56 +1743,14 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   /**
-   * @return The bean managing tagclouds.
-   */
-  private TagCloudBm getTagCloudBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.TAGCLOUDBM_EJBHOME,
-          TagCloudBm.class);
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getTagCloudBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
-
-  /**
-   * "Kmax" method
-   *
-   * @return
-   */
-  public CoordinatesBm getCoordinatesBm() {
-    try {
-      CoordinatesBmHome coordinatesBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.COORDINATESBM_EJBHOME, CoordinatesBmHome.class);
-      return coordinatesBmHome.create();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getCoordinatesBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
-
-  public NodeBm getNodeBm() {
-    try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      return nodeBmHome.create();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("PublicationBmEJB.getNodeBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
-
-  /**
    * Create the tagclouds corresponding to the publication detail.
    *
    * @param pubDetail The detail of the publication.
-   * @throws RemoteException
+   * @
    */
-  private void createTagCloud(PublicationDetail pubDetail)
-      throws RemoteException {
+  private void createTagCloud(PublicationDetail pubDetail) {
     String keywords = pubDetail.getKeywords();
     if (keywords != null) {
-      TagCloudBm tagCloudBm = getTagCloudBm();
       TagCloud tagCloud = new TagCloud(pubDetail.getInstanceId(), pubDetail.getId(),
           TagCloud.TYPE_PUBLICATION);
       StringTokenizer st = new StringTokenizer(keywords, " ");
@@ -1833,10 +1774,10 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * Delete the tagclouds corresponding to the publication key.
    *
    * @param pubPK The primary key of the publication.
-   * @throws RemoteException
+   * @
    */
-  private void deleteTagCloud(PublicationPK pubPK) throws RemoteException {
-    getTagCloudBm().deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
+  private void deleteTagCloud(PublicationPK pubPK) {
+    tagCloudBm.deleteTagCloud(new TagCloudPK(pubPK.getId(), pubPK.getInstanceId()),
         TagCloud.TYPE_PUBLICATION);
   }
 
@@ -1844,27 +1785,15 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * Update the tagclouds corresponding to the publication detail.
    *
    * @param pubDetail The detail of the publication.
-   * @throws RemoteException
+   * @
    */
-  private void updateTagCloud(PublicationDetail pubDetail) throws RemoteException {
+  private void updateTagCloud(PublicationDetail pubDetail) {
     deleteTagCloud(pubDetail.getPK());
     createTagCloud(pubDetail);
   }
 
-  /**
-   * @return The bean managing notations.
-   */
-  private NotationBm getNotationBm() {
-    try {
-      return EJBUtilitaire.getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBm.class);
-    } catch (Exception e) {
-      throw new NotationRuntimeException("PublicationBmEJB.getNotationBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-  }
-
-  private void deleteNotation(PublicationPK pubPK) throws RemoteException {
-    getNotationBm().deleteNotation(new NotationPK(pubPK.getId(), pubPK.getInstanceId(),
+  private void deleteNotation(PublicationPK pubPK) {
+    notationBm.deleteNotation(new NotationPK(pubPK.getId(), pubPK.getInstanceId(),
         Notation.TYPE_PUBLICATION));
   }
 
@@ -1874,11 +1803,10 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param pubId
    * @param componentId
    * @return
-   * @throws RemoteException
+   * @
    */
   @Override
-  public Collection<Coordinate> getCoordinates(String pubId, String componentId) throws
-      RemoteException {
+  public Collection<Coordinate> getCoordinates(String pubId, String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()",
         "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
@@ -1890,7 +1818,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       String coordinateId = it.next().getId();
       coordinateIds.add(coordinateId);
     }
-    Collection<Coordinate> coordinates = getCoordinatesBm().getCoordinatesByCoordinateIds(
+    Collection<Coordinate> coordinates = coordinatesBm.getCoordinatesByCoordinateIds(
         coordinateIds, coordinatePK);
     // Enrichit les coordonnees avec le nom du noeud
     Iterator<Coordinate> itCoordinates = coordinates.iterator();
@@ -1903,7 +1831,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
       while (pointsIt.hasNext()) {
         CoordinatePoint point = pointsIt.next();
         try {
-          NodeDetail node = getNodeBm().getHeader(new NodePK("" + point.getNodeId(), componentId));
+          NodeDetail node = nodeBm.getHeader(new NodePK("" + point.getNodeId(), componentId));
           point.setName(node.getName());
           point.setLevel(node.getLevel());
           point.setPath(node.getPath());
@@ -1925,10 +1853,10 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
-   * @throws RemoteException
+   * @
    */
   @Override
-  public void addLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException {
+  public void addLinks(PublicationPK pubPK, List<ForeignPK> links) {
     Connection con = getConnection();
     try {
       if (links != null) {
@@ -1957,51 +1885,6 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
   }
 
   /**
-   * Method declaration
-   *
-   * @see
-   */
-  public void ejbCreate() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbRemove() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbActivate() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @see
-   */
-  @Override
-  public void ejbPassivate() {
-  }
-
-  /**
-   * Method declaration
-   *
-   * @param sc
-   * @see
-   */
-  @Override
-  public void setSessionContext(SessionContext sc) {
-  }
-
-  /**
    * get my list of SocialInformationPublication according to options and number of Item and the
    * first Index
    *
@@ -2009,11 +1892,11 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param begin
    * @param end
    * @return List <SocialInformation>
-   * @throws RemoteException
+   * @
    */
   @Override
   public List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId, Date begin,
-      Date end) throws RemoteException {
+      Date end) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getAllPublicationsIDbyUserid(con, userId, begin, end);
@@ -2035,12 +1918,11 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
    * @param begin
    * @param end
    * @return
-   * @throws RemoteException
+   * @
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(
-      List<String> myContactsIds, List<String> options, Date begin, Date end)
-      throws RemoteException {
+      List<String> myContactsIds, List<String> options, Date begin, Date end) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds, options,
@@ -2070,7 +1952,7 @@ public class PublicationBmEJB implements SessionBean, PublicationBmBusinessSkele
 
   @Override
   public Collection<PublicationPK> getUpdatedPublicationPKsByStatus(String status, Date since,
-      int maxSize, List<String> componentIds) throws RemoteException {
+      int maxSize, List<String> componentIds) {
     Connection con = getConnection();
     try {
       return PublicationDAO.selectUpdatedPublicationsSince(con, componentIds, status, since,

@@ -24,33 +24,33 @@
  */
 package com.silverpeas.sharing.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.sharing.mock.NodeSharingTicketService;
 import com.silverpeas.sharing.security.ShareableAttachment;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableVersionDocument;
 import com.silverpeas.util.ForeignPK;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -73,24 +73,20 @@ public class NodeAccessControlTest {
   public void testIsReadableDocument() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays.asList(new NodePK("100", "kmelia10"),
             new NodePK("110", "kmelia11"), new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10"))).thenReturn(fatherPks);
-    PowerMockito.when(home.create()). thenReturn(publicationBm);
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).thenReturn(home);
+            PublicationBm.class)).thenReturn(publicationBm);
 
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("100",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     resourcePk.setOldSilverpeasId(5L);
@@ -114,24 +110,20 @@ public class NodeAccessControlTest {
   public void testIsUnReadableDocument() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays.asList(new NodePK("100", "kmelia10"),
             new NodePK("110", "kmelia11"), new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10"))).thenReturn(fatherPks);
-    PowerMockito.when(home.create()). thenReturn(publicationBm);
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).thenReturn(home);
+            PublicationBm.class)).thenReturn(publicationBm);
 
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("10",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     resourcePk.setOldSilverpeasId(5L);
@@ -156,24 +148,20 @@ public class NodeAccessControlTest {
   public void testIsReadableAttachment() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays.asList(new NodePK("100", "kmelia10"),
             new NodePK("110", "kmelia11"), new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10"))).thenReturn(fatherPks);
-    PowerMockito.when(home.create()). thenReturn(publicationBm);
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).thenReturn(home);
+            PublicationBm.class)).thenReturn(publicationBm);
 
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("100",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     SimpleDocument attachmentDetail = new SimpleDocument();
@@ -197,24 +185,20 @@ public class NodeAccessControlTest {
   public void testIsUnReadableAttachment() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     ForeignPK publicationPK = new ForeignPK("100", "kmelia10");
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = PowerMockito.mock(PublicationBm.class);
     Collection<NodePK> fatherPks = new ArrayList<NodePK>(Arrays.asList(new NodePK("100", "kmelia10"),
             new NodePK("110", "kmelia11"), new NodePK("120", "kmelia12")));
     PowerMockito.when(publicationBm.getAllFatherPK(new PublicationPK("100", "kmelia10"))).thenReturn(fatherPks);
-    PowerMockito.when(home.create()). thenReturn(publicationBm);
     PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class)).thenReturn(home);
+            PublicationBm.class)).thenReturn(publicationBm);
 
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("10",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
 
     SimpleDocumentPK resourcePk = new SimpleDocumentPK("5", "kmelia2");
     SimpleDocument attachmentDetail = new SimpleDocument();
@@ -238,14 +222,12 @@ public class NodeAccessControlTest {
   public void testIsReadableNode() throws Exception {
     PowerMockito.mockStatic(EJBUtilitaire.class);
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("100",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
     NodeDetail nodeDetail = new NodeDetail();
     nodeDetail.setNodePK(pk);
     final String token = "965e985d-c711-47b3-a467-62779505965e985d-c711-47b3-a467-62779505";
@@ -267,14 +249,12 @@ public class NodeAccessControlTest {
     PowerMockito.mockStatic(EJBUtilitaire.class);
 
     NodePK pk = new NodePK("10", "kmelia10");
-    NodeBmHome nodeHome = Mockito.mock(NodeBmHome.class);
     NodeBm nodeBm = PowerMockito.mock(NodeBm.class);
     Collection<NodePK> descendants = new ArrayList<NodePK>(Arrays.asList(new NodePK("10",
             "kmelia10"), new NodePK("11", "kmelia11"), new NodePK("12", "kmelia12")));
     PowerMockito.when(nodeBm.getDescendantPKs(pk)).thenReturn(descendants);
-    PowerMockito.when(nodeHome.create()).thenReturn(nodeBm);
-    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
-            thenReturn(nodeHome);
+    PowerMockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class)).
+            thenReturn(nodeBm);
 
     NodeDetail nodeDetail = new NodeDetail();
     nodeDetail.setNodePK(new NodePK("15", "kmelia10"));

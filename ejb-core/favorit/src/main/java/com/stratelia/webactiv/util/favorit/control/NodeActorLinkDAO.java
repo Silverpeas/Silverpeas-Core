@@ -1,49 +1,48 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-//TODO : reporter dans CVS (done)
-
 package com.stratelia.webactiv.util.favorit.control;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.silverpeas.silvertrace.*;
 
 /**
  * Class declaration
+ *
  * @author
  * @version %I%, %G%
  */
 public class NodeActorLinkDAO {
 
   /* cette classe ne devrait jamais etre instanciee */
-
   /**
    * Constructor declaration
+   *
    * @see
    */
   public NodeActorLinkDAO() {
@@ -51,23 +50,7 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
-   * @param con
-   * @param tableName
-   * @see
-   */
-  /*
-   * public static void createTable(Connection con, String tableName) throws SQLException {
-   * SilverTrace.info( "favorit", "NodeActorLinkDAO.createTable", "root.MSG_GEN_ENTER_METHOD",
-   * "tableName = " + tableName); String createStatement = "CREATE TABLE " + tableName + " ( " +
-   * "actorId        VARCHAR(50)   NOT NULL, " + "nodeId         INT           NOT NULL, " +
-   * "space          VARCHAR(50)   NOT NULL, " + "componentName  VARCHAR(50)   NOT NULL" +
-   * "CONSTRAINT ID_PK PRIMARY KEY (actorID, nodeId, space, componentName));"; PreparedStatement
-   * prepStmt = null; try { prepStmt = con.prepareStatement(createStatement);
-   * prepStmt.executeUpdate(); } finally { DBUtil.close(prepStmt); } }
-   */
-
-  /**
-   * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
@@ -99,6 +82,7 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
@@ -111,24 +95,15 @@ public class NodeActorLinkDAO {
     SilverTrace.info("favorit", "NodeActorLinkDAO.remove",
         "root.MSG_GEN_ENTER_METHOD", "tableName = " + tableName + ", userId = "
         + userId + ", node = " + node.toString());
-
-    // NEWD DLE
-    // String insertStatement = "delete from " + tableName +
-    // " where actorId = ? and nodeId = ? and space = ? and componentName = ?";
     String insertStatement = "delete from " + tableName
         + " where actorId = ? and nodeId = ? and componentName = ?";
-    // NEWF DLE
     PreparedStatement prepStmt = null;
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
       prepStmt.setString(1, userId);
       prepStmt.setInt(2, new Integer(node.getId()).intValue());
-      // NEWD DLE
-      // prepStmt.setString(3, node.getSpace());
-      // prepStmt.setString(4, node.getComponentName());
       prepStmt.setString(3, node.getComponentName());
-      // NEWF DLE
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -137,18 +112,17 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
    * @throws SQLException
    * @see
    */
-  public static void removeByUser(Connection con, String tableName,
-      String userId) throws SQLException {
-    SilverTrace.info("favorit", "NodeActorLinkDAO.removeByUser",
-        "root.MSG_GEN_ENTER_METHOD", "tableName = " + tableName + ", userId = "
-        + userId);
-
+  public static void removeByUser(Connection con, String tableName, String userId) throws
+      SQLException {
+    SilverTrace.info("favorit", "NodeActorLinkDAO.removeByUser", "root.MSG_GEN_ENTER_METHOD",
+        "tableName = " + tableName + ", userId = " + userId);
     String insertStatement = "delete from " + tableName + " where actorId = ?";
     PreparedStatement prepStmt = null;
 
@@ -163,6 +137,7 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param node
@@ -207,6 +182,7 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
@@ -252,6 +228,7 @@ public class NodeActorLinkDAO {
   // NEWD DLE
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
@@ -276,9 +253,9 @@ public class NodeActorLinkDAO {
    * cptName = rs.getString(3); NodePK nodePK = new NodePK(id, sp, cptName); list.add(nodePK); }
    * return list; } finally { DBUtil.close(rs, prepStmt); } }
    */
-
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param userId
@@ -321,6 +298,7 @@ public class NodeActorLinkDAO {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param node
@@ -340,10 +318,10 @@ public class NodeActorLinkDAO {
    * new ArrayList(); while (rs.next()) { String id = rs.getString(1); list.add(id); } return list;
    * } finally { DBUtil.close(rs, prepStmt); } }
    */
-
   // NEWD DLE
   /**
    * Method declaration
+   *
    * @param con
    * @param tableName
    * @param node
@@ -378,5 +356,4 @@ public class NodeActorLinkDAO {
     }
   }
   // NEWF DLE
-
 }

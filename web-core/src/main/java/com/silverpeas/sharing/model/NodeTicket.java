@@ -23,25 +23,22 @@
  */
 package com.silverpeas.sharing.model;
 
-import java.rmi.RemoteException;
+import java.util.Date;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.sharing.services.NodeAccessControl;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import java.util.Date;
-
-import javax.ejb.CreateException;
 
 /**
  *
@@ -76,18 +73,11 @@ public class NodeTicket extends Ticket {
 
   @Override
   public ShareableResource<NodeDetail> getResource() {
-    try {
-      NodeBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      NodeBm nodeBm = home.create();
-      NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
-          getComponentId()));
-      if (node != null) {
-        return new ShareableNode(getToken(), node);
-      }
-    } catch (CreateException e) {
-      SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
-    } catch (RemoteException e) {
-      SilverTrace.error("fileSharing", "Ticket.getResource", "root.MSG_GEN_PARAM_VALUE", e);
+    NodeBm nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
+    NodeDetail node = nodeBm.getDetail(new NodePK(String.valueOf(getSharedObjectId()),
+        getComponentId()));
+    if (node != null) {
+      return new ShareableNode(getToken(), node);
     }
     return null;
   }

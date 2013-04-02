@@ -36,7 +36,6 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
@@ -82,9 +81,7 @@ public class DocumentAccessController implements AccessController<Document> {
   }
 
   protected PublicationBm getPublicationBm() throws Exception {
-    PublicationBmHome pubBmHome = EJBUtilitaire.getEJBObjectRef(
-        JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-    return pubBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
   /**

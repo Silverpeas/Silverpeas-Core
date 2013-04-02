@@ -11,7 +11,7 @@
   <artifactId>node</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Node - ${project.version}</name>
-
+  
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -57,5 +57,20 @@
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>  
+    <plugins>
+      <plugin>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <ejbVersion>3.0</ejbVersion>
+          <generateClient>true</generateClient>
+          <clientExcludes>
+            <clientExclude>**/*DAO.class</clientExclude>
+            <clientExclude>**/*EJB.class</clientExclude>
+            <clientExclude>META-INF/*.xml</clientExclude>
+          </clientExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

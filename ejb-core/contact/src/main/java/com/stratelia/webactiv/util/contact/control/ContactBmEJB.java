@@ -53,7 +53,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class ContactBmEJB implements ContactBm {
 
   private static final long serialVersionUID = 7603553259862289647L;
-  private String dbName = JNDINames.CONTACT_DATASOURCE;
   private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   @Override
@@ -415,7 +414,7 @@ public class ContactBmEJB implements ContactBm {
 
   private Connection getConnection() {
     try {
-      return DBUtil.makeConnection(dbName);
+      return DBUtil.makeConnection(JNDINames.CONTACT_DATASOURCE);
     } catch (UtilException re) {
       throw new ContactRuntimeException("ContactBmEJB.getConnection()",
           SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", re);

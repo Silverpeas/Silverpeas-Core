@@ -30,13 +30,4 @@
       </plugin>
     </plugins>
   </build>
-  
-  <dependencies>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb-api</artifactId>
-      <version>3.0</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies> 
 </project>
