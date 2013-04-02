@@ -498,4 +498,9 @@ public class OrganizationControllerMockWrapper implements OrganisationController
   public List<UserDetail> getUsersOfDomains(List<String> domainIds) {
     return mock.getUsersOfDomains(domainIds);
   }
+
+  @Override
+  public boolean isAdminTool(String toolId) {
+    return mock.isAdminTool(toolId);
+  }
 }

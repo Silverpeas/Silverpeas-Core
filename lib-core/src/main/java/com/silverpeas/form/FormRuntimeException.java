@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2012 Silverpeas
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,24 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
+package com.silverpeas.form;
 
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class CryptageException extends SilverpeasException {
-
-  private static final long serialVersionUID = -390725088083708882L;
-
-  public CryptageException(String callingClass, int errorLevel, String message,
-      Exception nested) {
+public class FormRuntimeException extends SilverpeasRuntimeException {
+  
+  private static final long serialVersionUID = 5946228356840096118L;
+  
+  public FormRuntimeException(String callingClass, int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
-
-  public CryptageException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
+  
+  @Override
   public String getModule() {
-    return "util";
+    return "form";
   }
+
 }

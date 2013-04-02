@@ -43,6 +43,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.templatedesigner.model.TemplateDesignerException;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.security.ContentEncryptionService;
+import com.silverpeas.util.security.ContentEncryptionServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -50,6 +52,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Arrays;
+
+import org.silverpeas.util.crypto.CryptoException;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
 
@@ -72,8 +76,8 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   public TemplateDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.templatedesigner.multilang.templateDesignerBundle",
-        "com.silverpeas.templatedesigner.settings.templateDesignerIcons");
+        "org.silverpeas.templatedesigner.multilang.templateDesignerBundle",
+        "org.silverpeas.templatedesigner.settings.templateDesignerIcons");
     adminController = new AdminController(getUserId());
   }
 
@@ -98,8 +102,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public PublicationTemplate reloadCurrentTemplate()
-      throws TemplateDesignerException {
+  public PublicationTemplate reloadCurrentTemplate() throws TemplateDesignerException {
     return setTemplate(template.getFileName());
   }
 
@@ -132,7 +135,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void createTemplate(PublicationTemplate template)
-      throws TemplateDesignerException {
+      throws TemplateDesignerException, CryptoException {
     this.template = (PublicationTemplateImpl) template;
 
     String fileName = string2fileName(template.getName());
@@ -184,11 +187,12 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public void updateTemplate(PublicationTemplateImpl updatedTemplate)
-      throws TemplateDesignerException {
+      throws TemplateDesignerException, CryptoException {
     this.template.setName(updatedTemplate.getName());
     this.template.setDescription(updatedTemplate.getDescription());
     this.template.setThumbnail(updatedTemplate.getThumbnail());
     this.template.setVisible(updatedTemplate.isVisible());
+    this.template.setDataEncrypted(updatedTemplate.isDataEncrypted());
 
     if (updatedTemplate.isSearchable()) {
       this.template.setSearchFileName(getSubdir(template.getFileName())
@@ -320,7 +324,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     return recordTemplate;
   }
 
-  public void saveTemplate() throws TemplateDesignerException {
+  public void saveTemplate() throws TemplateDesignerException, CryptoException {
     saveTemplateHeader();
     saveTemplateFields(true);
   }
@@ -376,10 +380,16 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
-  private void saveTemplateHeader() throws TemplateDesignerException {
+  private void saveTemplateHeader() throws TemplateDesignerException, CryptoException {
     try {
       // Save main xml File
-      getPublicationTemplateManager().savePublicationTemplate(template);
+      try {
+        getPublicationTemplateManager().savePublicationTemplate(template);
+      } catch (CryptoException e) {
+        // reload current template as it was before saving
+        reloadCurrentTemplate();
+        throw e;
+      }
 
       // reset caches partially
       getPublicationTemplateManager().removePublicationTemplateFromCaches(template.getFileName());
@@ -435,5 +445,11 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     });
     return result;
+  }
+  
+  public boolean isEncryptionAvailable() {
+    ContentEncryptionService encryptionService =
+        ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
+    return encryptionService.isCipherKeyDefined();
   }
 }

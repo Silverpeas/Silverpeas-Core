@@ -22,42 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
-
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
-import javax.crypto.spec.SecretKeySpec;
-
-public class SilverCryptKeysSymetric {
-
-  private Key key = null;
-
-  public SilverCryptKeysSymetric() {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
-    }
-  }
-
-  public SilverCryptKeysSymetric(String keyCode) {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes(keyCode);
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
-    }
-  }
-
-  protected final byte[] getKeyBytes(String keyCode) {
-    byte[] keybyte;
-    try {
-      keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");
-    } catch (UnsupportedEncodingException e) {
-      keybyte = "ƒþX]Lh/‘".getBytes();
-    }
-    return keybyte;
-  }
-
-  public Key getKey() {
-    return key;
-  }
-
-}
+/**
+ * Provides the Silverpeas Cryptography API that is based on some security and cryptography tiers
+ * libraries (as well on the Java Cryptography API).
+ * </p>
+ * It defines the cryptographic functions Silverpeas supports and provides to components.
+ * These can be both one-way hash functions like MD5, symmetric-key ciphers like AES-256 or
+ * asymmetric-keys ciphers like CMS (based on PKS#7).
+ */
+package org.silverpeas.util.crypto;

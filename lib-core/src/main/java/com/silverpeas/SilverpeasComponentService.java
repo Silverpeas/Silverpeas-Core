@@ -27,10 +27,10 @@ package com.silverpeas;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
- * A service providing the transversal operations related to a given Silverpeas component. A
+ * A service providing the transverse operations related to a given Silverpeas component. A
  * Silverpeas component aims to manage a given type of content and it is based upon some settings
  * and i18n messages. Some capabilities of a Silverpeas component are provided by a service that is
- * a bean with business logic transversal methods; the core business logic of the component should
+ * a bean with business logic transverse methods; the core business logic of the component should
  * be provided by the resources themselves (see the DDD (Domain Driven Development) approach).
  */
 public interface SilverpeasComponentService<T extends SilverpeasContent> {

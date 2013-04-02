@@ -22,12 +22,12 @@ package com.silverpeas.jcrutil.servlets;
 
 import javax.jcr.Repository;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
-import com.silverpeas.util.cryptage.CryptMD5;
-
-import com.stratelia.webactiv.util.ResourceLocator;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.silverpeas.util.crypto.CryptMD5;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 

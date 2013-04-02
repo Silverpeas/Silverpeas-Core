@@ -49,7 +49,7 @@ import com.silverpeas.socialnetwork.user.model.SNFullUser;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.cryptage.CryptMD5;
+import org.silverpeas.util.crypto.CryptMD5;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
