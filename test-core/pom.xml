@@ -138,7 +138,7 @@
       <artifactId>mockrunner-jdbc</artifactId>
       <classifier>jdk1.6-j2ee1.4</classifier>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
@@ -172,6 +172,11 @@
     <dependency>
       <groupId>org.forgerock.opendj</groupId>
       <artifactId>opendj-server</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
       <scope>compile</scope>
     </dependency>
   </dependencies>
