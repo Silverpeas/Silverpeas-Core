@@ -30,7 +30,7 @@ public class MailAttachment {
   private long size;
 
   public MailAttachment(String name) {
-    setName(name);
+    this.name = name;
   }
 
   public String getName() {

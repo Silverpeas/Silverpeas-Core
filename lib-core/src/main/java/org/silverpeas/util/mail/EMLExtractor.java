@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -86,12 +85,12 @@ public class EMLExtractor implements MailExtractor {
   private void init(InputStream file) throws MessagingException {
     Properties props = System.getProperties();
     Session mailSession = Session.getDefaultInstance(props, null);
+    mailSession.setDebug(true);
     message = new MimeMessage(mailSession, file);
   }
 
   @Override
   public Mail getMail() throws Exception {
-
     Mail mail = new Mail();
     mail.setDate(message.getSentDate());
     mail.setSubject(message.getSubject());
@@ -109,7 +108,6 @@ public class EMLExtractor implements MailExtractor {
     }
     mail.setTo(message.getRecipients(Message.RecipientType.TO));
     mail.setCc(message.getRecipients(Message.RecipientType.CC));
-
     mail.setBody(ESCAPE_ISO8859_1.translate(body));
     return mail;
   }
@@ -161,11 +159,9 @@ public class EMLExtractor implements MailExtractor {
         String fileName = getFileName(part);
         if (fileName != null) {
           MailAttachment attachment = new MailAttachment(fileName);
-          String dir =
-            FileRepositoryManager.getTemporaryPath() + "mail" +
-                Calendar.getInstance().getTimeInMillis();
+          String dir = FileRepositoryManager.getTemporaryPath() + "mail" + System.currentTimeMillis();
           File file = new File(dir, fileName);
-          FileUtils.writeByteArrayToFile(file, IOUtils.toByteArray(part.getInputStream()));
+          FileUtils.copyInputStreamToFile(part.getInputStream(), file);
           attachment.setPath(file.getAbsolutePath());
           attachment.setSize(file.length());
           attachments.add(attachment);

@@ -27,18 +27,22 @@ import java.io.File;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class Extractor {
-  
-  public static MailExtractor getExtractor(File file) throws ExtractorException  {
+
+  public static MailExtractor getExtractor(File file) throws ExtractorException {
     if (!file.exists() || file.isDirectory()) {
-      throw new ExtractorException("Extractor.getExtractor", SilverpeasException.ERROR, "file not found");
+      throw new ExtractorException("Extractor.getExtractor", SilverpeasException.ERROR,
+          "file not found");
     }
-    if (file.getName().toLowerCase().endsWith(".eml")){
+    if (FilenameUtils.isExtension(file.getName(), "eml")) {
       return new EMLExtractor(file);
-    } else if (file.getName().toLowerCase().endsWith(".msg")) {
+    } 
+    if (FilenameUtils.isExtension(file.getName(), "msg")) {
       return new MSGExtractor(file);
     }
-    return null;
+    throw new ExtractorException("Extractor.getExtractor", SilverpeasException.ERROR,
+          "Extension not supported");
   }
-
 }
