@@ -31,6 +31,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.util.mail.Mail;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
@@ -254,13 +255,23 @@ public class FileUtil implements MimeTypes  {
   }
 
   /**
-   * Indicates if the current file is of type archive.
+   * Indicates if the current file is of type image.
    *
    * @param filename the name of the file.
-   * @return true is the file s of type archive - false otherwise.
+   * @return true is the file is of type image - false otherwise.
    */
   public static boolean isImage(final String filename) {
     return FilenameUtils.isExtension(filename, ImageUtil.IMAGE_EXTENTIONS);
+  }
+  
+  /**
+   * Indicates if the current file is of type mail.
+   *
+   * @param filename the name of the file.
+   * @return true is the file is of type mail - false otherwise.
+   */
+  public static boolean isMail(final String filename) {
+    return FilenameUtils.isExtension(filename, Mail.MAIL_EXTENTIONS);
   }
 
   /**

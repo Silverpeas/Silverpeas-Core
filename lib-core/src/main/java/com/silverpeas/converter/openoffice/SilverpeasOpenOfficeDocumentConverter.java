@@ -23,15 +23,6 @@
  */
 package com.silverpeas.converter.openoffice;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.artofsolving.jodconverter.DocumentFormat;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeException;
@@ -47,6 +38,18 @@ import com.sun.star.ucb.XFileIdentifierConverter;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.CloseVetoException;
 import com.sun.star.util.XCloseable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.silverpeas.util.MimeTypes.RTF_MIME_TYPE;
 
 /**
  * This Object is kind of patch of JODConverter tools in the aim to add some conversion options.
@@ -54,10 +57,12 @@ import com.sun.star.util.XCloseable;
  */
 public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentConverter {
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(SilverpeasOpenOfficeDocumentConverter.class);
+  private static final Logger logger =
+      LoggerFactory.getLogger(SilverpeasOpenOfficeDocumentConverter.class);
 
-  /** Optional filter data option */
+  /**
+   * Optional filter data option
+   */
   private final List<FilterOption> filterData = new ArrayList<FilterOption>();
 
   /**
@@ -96,8 +101,8 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
         propertyValues.add(property(option.getName(), option.getValue()));
       }
 
-      loadProperties.put("FilterData", propertyValues.toArray(new PropertyValue[] {}));
-      storeProperties.put("FilterData", propertyValues.toArray(new PropertyValue[] {}));
+      loadProperties.put("FilterData", propertyValues.toArray(new PropertyValue[]{}));
+      storeProperties.put("FilterData", propertyValues.toArray(new PropertyValue[]{}));
     }
 
     synchronized (openOfficeConnection) {
@@ -116,7 +121,8 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
    * Same function as that of OpenOfficeDocumentConverter
    */
   private void loadAndExport(final String inputUrl, final Map<String, Object> loadProperties,
-      final String outputUrl, final Map<String, Object> storeProperties) throws OpenOfficeException {
+      final String outputUrl, final Map<String, Object> storeProperties)
+      throws OpenOfficeException {
     XComponent document;
     try {
       document = loadDocument(inputUrl, loadProperties);
@@ -176,5 +182,42 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
         document.dispose();
       }
     }
+  }
+
+  /**
+   * Conversion from streams.
+   * @param source
+   * @param inFormat
+   * @param destination
+   * @param outFormat
+   * @param options
+   */
+  public void convert(final InputStream source,
+      final com.silverpeas.converter.DocumentFormat inFormat, final OutputStream destination,
+      final com.silverpeas.converter.DocumentFormat outFormat, final FilterOption... options) {
+    convert(source, getDocumentFormat(inFormat), destination, getDocumentFormat(outFormat));
+  }
+
+  /**
+   * Gets the JODConverter document format from a Silverpeas document format.
+   * @param documentFormat
+   * @return
+   */
+  private com.artofsolving.jodconverter.DocumentFormat getDocumentFormat(
+      com.silverpeas.converter.DocumentFormat documentFormat) {
+    String mimeType = documentFormat.getMimeType();
+    com.artofsolving.jodconverter.DocumentFormat format =
+        getDocumentFormatRegistry().getFormatByMimeType(mimeType);
+    if (format == null) {
+      if (RTF_MIME_TYPE.equals(mimeType)) {
+        mimeType = mimeType.replaceFirst("application", "text");
+      }
+      format = getDocumentFormatRegistry().getFormatByMimeType(mimeType);
+    }
+    if (format == null) {
+      throw new java.lang.IllegalArgumentException(
+          "unknown document format for MIME-TYPE: " + documentFormat.getMimeType());
+    }
+    return format;
   }
 }
