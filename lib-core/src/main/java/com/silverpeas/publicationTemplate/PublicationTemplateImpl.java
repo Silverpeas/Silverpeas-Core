@@ -86,7 +86,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String thumbnail = "";
   @XmlElement(required=true,defaultValue="false")
   private boolean visible = false;
-
+  @XmlElement(required=true,defaultValue="false")
+  private boolean dataEncrypted = false;
   @XmlElementWrapper(name = "spaces")
   @XmlElement(name = "space")
   private List<String> spaces;
@@ -639,6 +640,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setThumbnail(getThumbnail());
     cloneTemplate.setFileName(getFileName());
     cloneTemplate.setVisible(isVisible());
+    cloneTemplate.setDataEncrypted(isDataEncrypted());
     cloneTemplate.setViewFileName(getViewFileName());
     cloneTemplate.setUpdateFileName(getUpdateFileName());
     cloneTemplate.setSearchFileName(getSearchFileName());
@@ -724,5 +726,14 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return isRestrictedVisibilityToSpace() ||
         isRestrictedVisibilityToApplication() ||
         isRestrictedVisibilityToInstance();
+  }
+
+  public void setDataEncrypted(boolean dataEncrypted) {
+    this.dataEncrypted = dataEncrypted;
+  }
+
+  @Override
+  public boolean isDataEncrypted() {
+    return dataEncrypted;
   }
 }

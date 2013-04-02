@@ -60,6 +60,7 @@
   <ctx:component-scan base-package="com.silverpeas.profile"/>
   <ctx:component-scan base-package="com.silverpeas.web"/>
   <ctx:component-scan base-package="com.silverpeas.annotation"/>
+  <ctx:component-scan base-package="com.silverpeas.publicationTemplate"/>
   <ctx:component-scan base-package="org.silverpeas.admin.web"/>
   <ctx:component-scan base-package="org.silverpeas.sharing.web" />
   <ctx:component-scan base-package="com.silverpeas.bundle.web" />
@@ -73,6 +74,8 @@
   <ctx:component-scan base-package="org.silverpeas.token"/>
   <ctx:component-scan base-package="org.silverpeas.util.data"/>
   <ctx:component-scan base-package="com.stratelia.silverpeas.peasCore"/>
+  <ctx:component-scan base-package="com.silverpeas.util.security"/>
+  <ctx:component-scan base-package="org.silverpeas.security.web"/>
   <ctx:component-scan base-package="org.silverpeas.upload"/>
 
   <bean id="domainDriverFactory" class="com.silverpeas.domains.DomainDriverFactory"
@@ -171,5 +174,12 @@
 
   <bean id="userServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.UserServiceProvider"/>
   <bean id="spaceServiceProvider" factory-method="getInstance" class="com.silverpeas.admin.service.SpaceServiceProvider"/>
+  
+  <!-- the content encryption service factory from which Silverpeas components access the content encryption service -->
+  <bean id="contentEncryptionServiceFactory" class="com.silverpeas.util.security.ContentEncryptionServiceFactory"
+        factory-method="getFactory"/>
 
+  <bean id="publicationTemplateManager" class="com.silverpeas.publicationTemplate.PublicationTemplateManager"
+        factory-method="getInstance" init-method="registerForRenewingContentCipher"/>
+        
 </beans>

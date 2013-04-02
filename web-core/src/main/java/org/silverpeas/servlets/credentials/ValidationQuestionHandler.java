@@ -25,7 +25,7 @@
 package org.silverpeas.servlets.credentials;
 
 import com.silverpeas.authentication.SilverpeasSessionOpener;
-import com.silverpeas.util.cryptage.CryptMD5;
+import org.silverpeas.util.crypto.CryptMD5;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.UserDetail;

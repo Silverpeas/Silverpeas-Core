@@ -44,6 +44,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.silverpeas.util.crypto.CryptoException;
+
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -130,6 +132,7 @@ public class TemplateDesignerRequestRouter extends
         destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
       } else if ("GoToTemplateHeader".equals(function)) {
         request.setAttribute("ComponentsUsingForms", templateDesignerSC.getComponentsUsingForms());
+        request.setAttribute("EncryptionAvailable", templateDesignerSC.isEncryptionAvailable());
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
@@ -137,8 +140,13 @@ public class TemplateDesignerRequestRouter extends
         destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
-        templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-        destination = getDestination("Main", templateDesignerSC, request);
+        try {
+          templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
+          destination = getDestination("Main", templateDesignerSC, request);
+        } catch (CryptoException e) {
+          request.setAttribute("CryptoException", e);
+          destination = getDestination("EditTemplate", templateDesignerSC, request);
+        }
       } else if ("ViewFields".equals(function)) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
         request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
@@ -285,13 +293,15 @@ public class TemplateDesignerRequestRouter extends
     boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
     String thumbnail = request.getParameter("Thumbnail");
     boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
+    boolean encrypted = StringUtil.getBooleanValue(request.getParameter("Encrypted"));
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
     template.setDescription(description);
     template.setThumbnail(thumbnail);
     template.setVisible(visible);
-
+    template.setDataEncrypted(encrypted);
+    
     if (searchable) {
       template.setSearchFileName("dummy");
     } else {
