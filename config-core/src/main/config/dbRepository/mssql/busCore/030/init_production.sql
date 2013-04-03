@@ -78,5 +78,3 @@ insert into ST_FormDesigner_Connectors
 	(ID, NAME, DESCRIPTION, DRIVER, URL, LOGIN, PASSWD, SQLQUERY, TYPE) values 
 	(0, '________', ' ', ' ', ' ', ' ', ' ', ' ', '')
 GO
-
-

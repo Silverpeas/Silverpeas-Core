@@ -43,6 +43,7 @@ import java.util.Map;
 
 import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.publication.social.SocialInformationPublication;
 import com.stratelia.webactiv.util.DBUtil;
@@ -1814,7 +1815,7 @@ public class PublicationDAO {
     try {
       PublicationDetail pub = null;
       stmt = con.prepareStatement(selectStatement);
-      stmt.setInt(1, new Integer(pk.getId()).intValue());
+      stmt.setInt(1, Integer.parseInt(pk.getId()));
       rs = stmt.executeQuery();
       if (rs.next()) {
         pub = resultSet2PublicationDetail(rs, pk);

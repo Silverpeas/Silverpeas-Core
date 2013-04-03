@@ -35,7 +35,6 @@ public class SubscriptionServiceFactory {
   private SubscriptionService service;
 
   private SubscriptionServiceFactory() {
-    // service = new SimpleSubscriptionService();
   }
 
   public static SubscriptionServiceFactory getFactory() {

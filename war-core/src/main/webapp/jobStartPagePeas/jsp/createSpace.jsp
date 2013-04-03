@@ -38,6 +38,7 @@ boolean isComponentSpaceQuotaActivated = isUserAdmin && JobStartPagePeasSettings
 long    defaultDataStorageQuota = JobStartPagePeasSettings.dataStorageInSpaceQuotaDefaultMaxCount;
 boolean isDataStorageQuotaActivated = isUserAdmin && JobStartPagePeasSettings.dataStorageInSpaceQuotaActivated;
 
+
 	browseBar.setSpaceId(spaceId);
 	if (m_SousEspace == null)
 		browseBar.setComponentName(resource.getString("JSPP.creationSpace"));

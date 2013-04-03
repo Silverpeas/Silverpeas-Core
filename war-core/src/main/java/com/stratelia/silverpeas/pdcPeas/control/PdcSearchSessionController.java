@@ -41,6 +41,9 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.search.PlainSearchResult;
 import org.silverpeas.search.SearchEngineFactory;
 import org.silverpeas.search.searchEngine.model.AxisFilter;
@@ -106,22 +109,17 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
@@ -141,7 +139,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // in PDC
   private QueryParameters queryParameters = null; // Current parameters for
   // plain search
-  private VersioningUtil versioningUtil = new VersioningUtil();
   private List<String> componentList = null;
   private String isSecondaryShowed = "NO";
   private boolean showOnlyPertinentAxisAndValues = true;
@@ -685,11 +682,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (StringUtil.isDefined(type)) {
       SearchTypeConfigurationVO searchType = getSearchType(instanceId, type);
       if (searchType != null) {
-        FacetEntryVO facetEntry = new FacetEntryVO(searchType.getName(), String.valueOf(searchType
-            .getConfigId()));
+        FacetEntryVO facetEntry = new FacetEntryVO(searchType.getName(), String.valueOf(searchType.
+            getConfigId()));
         if (getSelectedFacetEntries() != null) {
-          if (String.valueOf(searchType.getConfigId()).equals(getSelectedFacetEntries()
-              .getDatatype())) {
+          if (String.valueOf(searchType.getConfigId()).equals(getSelectedFacetEntries().
+              getDatatype())) {
             facetEntry.setSelected(true);
           }
         }
@@ -1568,11 +1565,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       id = id.substring(0, id.indexOf('_'));
     }
 
-    AttachmentPK attachmentPK = new AttachmentPK(id, "useless", componentId);
-    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPK);
+    SimpleDocumentPK documentPk = new SimpleDocumentPK(id, componentId);
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+        .searchDocumentById(documentPk, language);
 
     // check if attachment is previewable and viewable
-    File attachmentFile = new File(attachmentDetail.getAttachmentPath(language));
+    File attachmentFile = new File(document.getAttachmentPath());
     boolean previewable = ViewerFactory.getPreviewService().isPreviewable(attachmentFile);
     boolean viewable = ViewerFactory.getViewService().isViewable(attachmentFile);
 
@@ -1581,7 +1579,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     gsr.setAttachmentId(id);
     gsr.setVersioned(false);
 
-    String urlAttachment = attachmentDetail.getAttachmentURL(language);
+    String urlAttachment = document.getAttachmentURL();
 
     // Utilisation de l'API Acrobat Reader pour ouvrir le document PDF en mode
     // recherche (paramètre 'search')
@@ -1590,7 +1588,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (queryParameters != null) {
       String keywords = queryParameters.getKeywords();
       if (keywords != null && keywords.trim().length() > 0
-          && MimeTypes.PDF_MIME_TYPE.equals(attachmentDetail.getType(language))) {
+          && MimeTypes.PDF_MIME_TYPE.equals(document.getContentType())) {
         // Suppression des éventuelles quotes (ne sont pas acceptées)
         if (keywords.startsWith("\"")) {
           keywords = keywords.substring(1);
@@ -1609,15 +1607,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private String getVersioningUrl(String documentId, String componentId, GlobalSilverResult gsr)
       throws Exception {
     SilverTrace.info("pdcPeas", "PdcSearchRequestRouter.getVersioningUrl",
-        "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId
-        + ", componentId = " + componentId);
-
-    DocumentVersion version = versioningUtil.getLastPublicVersion(new DocumentPK(
-        Integer.parseInt(documentId), "useless", componentId));
+        "root.MSG_GEN_PARAM_VALUE", "documentId = " + documentId + ", componentId = " + componentId);
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService()
+        .searchDocumentById(new SimpleDocumentPK(documentId, componentId), null);
+    SimpleDocument version = document.getLastPublicVersion();
 
     if (version != null) {
       // check if attachment is previewable and viewable
-      File file = new File(version.getDocumentPath());
+      File file = new File(version.getAttachmentPath());
       boolean previewable = ViewerFactory.getPreviewService().isPreviewable(file);
       boolean viewable = ViewerFactory.getViewService().isViewable(file);
 
@@ -1627,9 +1624,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       gsr.setVersioned(true);
 
       // process download link
-      String urlVersioning = versioningUtil.getDocumentVersionURL(componentId,
-          version.getLogicalName(), documentId, version.getPk().getId());
-      return FileServerUtils.getApplicationContext() + urlVersioning;
+      return FileServerUtils.getApplicationContext() + document.getAttachmentURL();
     }
     return null;
   }
@@ -1967,11 +1962,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           if (!word.isEmpty()) {
             // Check that it's not a determiner or a lucene specific characters
             if (!isKeyword(word)
-                && !(word.indexOf("*") >= 0 || word.indexOf("?") >= 0 || word.indexOf(":") >= 0
-                || word.indexOf("+") >= 0 || word.indexOf("-") >= 0)) {
-              if (word.indexOf(":") != -1) {
-                header = word.substring(0, word.indexOf(":") + 1);
-                word = word.substring(word.indexOf(":") + 1, word.length());
+                && !(word.indexOf('*') >= 0 || word.indexOf('?') >= 0 || word.indexOf(':') >= 0
+                || word.indexOf('+') >= 0 || word.indexOf('-') >= 0)) {
+              if (word.indexOf(':') != -1) {
+                header = word.substring(0, word.indexOf(':') + 1);
+                word = word.substring(word.indexOf(':') + 1, word.length());
               }
 
               synonymsString.append("(\"").append(word).append("\"");
@@ -1980,8 +1975,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 synonymsString.append(" OR " + "\"").append(synonym).append("\"");
               }
               synonymsString.append(")");
-            } else // and or
-            {
+            } else {
               synonymsString.append(word);
             }
           }

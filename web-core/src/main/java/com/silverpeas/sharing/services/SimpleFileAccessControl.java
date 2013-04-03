@@ -24,15 +24,15 @@ import com.silverpeas.sharing.model.SimpleFileTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 /**
  * Access control to shared attachments
  */
-public class SimpleFileAccessControl implements ShareableAccessControl<AttachmentDetail> {
+public class SimpleFileAccessControl implements ShareableAccessControl<SimpleDocument> {
 
   @Override
-  public boolean isReadable(ShareableResource<AttachmentDetail> resource) {
+  public boolean isReadable(ShareableResource<SimpleDocument> resource) {
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
     return (ticket != null && ticket instanceof SimpleFileTicket && ((SimpleFileTicket) ticket).
             getResource().getAccessedObject().equals(resource.getAccessedObject()));

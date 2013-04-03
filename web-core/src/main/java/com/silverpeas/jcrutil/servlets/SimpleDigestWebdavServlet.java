@@ -20,20 +20,22 @@
  */
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
 
-import com.silverpeas.util.cryptage.CryptMD5;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.jackrabbit.server.CredentialsProvider;
+import org.silverpeas.util.crypto.CryptMD5;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasDigestCredentialsProvider;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SimpleDigestWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
+
 
   private static final long serialVersionUID = -1609493516113921269L;
   private static final int DIGEST_KEY_SIZE = 16;
   private static final ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.jcr", "");
+      "org.silverpeas.util.jcr", "");
 
   @Override
   public String getAuthenticateHeaderValue() {

@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="org.silverpeas.util.crypto.CryptoException"%>
 <%@page import="com.silverpeas.admin.localized.LocalizedComponent"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -34,12 +35,15 @@
 <%
 PublicationTemplate template = (PublicationTemplate) request.getAttribute("Template");
 List<LocalizedComponent> components = (List<LocalizedComponent>) request.getAttribute("ComponentsUsingForms");
+boolean encryptionAvailable = (Boolean) request.getAttribute("EncryptionAvailable");
+CryptoException cryptoException = (CryptoException) request.getAttribute("CryptoException");
 
 String name = "";
 String description = "";
 String thumbnail = "";
 String fileName = "";
 String visible = "";
+String encrypted = "";
 String searchable = "";
 String action = "AddTemplate";
 List<String> visibilitySpaces = null;
@@ -52,10 +56,13 @@ if (template != null) {
 	thumbnail = template.getThumbnail();
 	fileName = template.getFileName();
 	if (template.isVisible()) {
-		visible = "checked";
+		visible = "checked=\"checked\"";
+	}
+	if (template.isDataEncrypted()) {
+	  	encrypted = "checked=\"checked\"";
 	}
 	if (template.isSearchable()) {
-		searchable = "checked";
+		searchable = "checked=\"checked\"";
 	}
 	visibilitySpaces = template.getSpaces();
 	visibilityApplications = template.getApplications();
@@ -63,7 +70,7 @@ if (template != null) {
 	action = "UpdateTemplate";
 }
 
-Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=sendData();", false);
 Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -175,6 +182,9 @@ out.println(window.printBefore());
 out.println(tabbedPane.print());
 %>
 <view:frame>
+<% if (cryptoException != null) { %>
+<div class="inlineMessage-nok"><%=cryptoException.getMessage()%></div>
+<% } %>
 <form name="templateForm" action="<%=action%>" method="post">
 <fieldset id="main" class="skinFieldset">
 <legend><%=resource.getString("templateDesigner.header.fieldset.main") %></legend>
@@ -197,6 +207,12 @@ out.println(tabbedPane.print());
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.image")%> :</td><td><input type="text" name="Image" value="<%=thumbnail%>" size="60"/></td>
 </tr>
+<% if (encryptionAvailable) { %>
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.header.encrypted")%> :</td>
+  <td><input type="checkbox" name="Encrypted" value="true" <%=encrypted%>/></td>
+</tr>
+<% } %>
 </table>
 </div>
 </fieldset>

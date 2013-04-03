@@ -119,5 +119,7 @@ public interface PublicationTemplate {
   public List<String> getInstances();
   
   public boolean isRestrictedVisibilityToInstance();
+  
+  public boolean isDataEncrypted();
 
 }

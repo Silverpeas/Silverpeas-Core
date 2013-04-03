@@ -20,11 +20,12 @@
  */
 package com.silverpeas.admin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.apache.commons.lang.time.DateUtils;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import java.io.InputStream;
@@ -54,13 +55,11 @@ import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupProfileInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DBUtil;
-import java.util.Arrays;
-
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import com.stratelia.webactiv.util.DBUtil;
 
 public class UsersAndGroupsTest {
 
@@ -140,9 +139,8 @@ public class UsersAndGroupsTest {
     user.setExpirationDate(expirationDate);
     user.setState(UserState.EXPIRED);
     user.setStateSaveDate(stateSaveDate);
-    
-    String newUserId = "5";
 
+    String newUserId = "5";
     AdminController ac = getAdminController();
     String userId = ac.addUser(user);
     assertThat(userId, is(newUserId));
@@ -170,7 +168,7 @@ public class UsersAndGroupsTest {
     Date expirationDate = DateUtils.addDays(now, 4);
     Date stateSaveDate = DateUtils.addDays(now, 5);
     AdminController ac = getAdminController();
-    
+
     String updatedUserId = "1";
     UserDetail user = ac.getUserDetail(updatedUserId);
 
@@ -297,7 +295,6 @@ public class UsersAndGroupsTest {
   @Test
   public void testGetUsers() {
     OrganizationController oc = new OrganizationController();
-    @SuppressWarnings("unchecked")
     List<UserDetail> users = Arrays.asList(oc.getAllUsers());
     assertThat(users.size(), is(3));
     assertThat(users.get(0).getId(), is("1"));

@@ -30,11 +30,9 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PdcSubscriptionPeasRequestRouter extends
@@ -70,6 +68,7 @@ public class PdcSubscriptionPeasRequestRouter extends
       HttpServletRequest request) {
     String destination = "";
     request.setAttribute("language", pdcSC.getLanguage());
+    request.setAttribute("currentUserId", pdcSC.getUserId());
     String rootDest = "/pdcSubscriptionPeas/jsp/";
 
     try {
@@ -85,8 +84,7 @@ public class PdcSubscriptionPeasRequestRouter extends
         String userId = request.getParameter("userId");
         String action = request.getParameter("action");
         // passage des parametres ...
-        Collection<Collection<NodeDetail>> subscribeThemeList = pdcSC.getUserSubscribe(userId);
-        request.setAttribute("SubscribeThemeList", subscribeThemeList);
+        request.setAttribute("subscriptions", pdcSC.getNodeUserSubscriptions(userId));
         request.setAttribute("action", action);
         request.setAttribute("userId", userId);
         destination = rootDest + "viewSubscriptionTheme.jsp";
@@ -97,6 +95,21 @@ public class PdcSubscriptionPeasRequestRouter extends
           pdcSC.deleteThemes(themes);
         }
         destination = getDestination("ViewSubscriptionTheme", pdcSC, request);
+      } else if (function.equals("ViewSubscriptionComponent")) {
+        String userId = request.getParameter("userId");
+        String action = request.getParameter("action");
+        // passage des parametres ...
+        request.setAttribute("subscriptions", pdcSC.getComponentUserSubscriptions(userId));
+        request.setAttribute("action", action);
+        request.setAttribute("userId", userId);
+        destination = rootDest + "viewSubscriptionComponent.jsp";
+      } else if (function.equals("DeleteComponentSubscription")) {
+        Object o = request.getParameterValues("subscriptionCheckbox");
+        if (o != null) {
+          String[] subscriptions = (String[]) o;
+          pdcSC.deleteComponentSubscription(subscriptions);
+        }
+        destination = getDestination("ViewSubscriptionComponent", pdcSC, request);
       }
     } catch (Exception e) {
       SilverTrace.error("pdcSubscriptionPeas",

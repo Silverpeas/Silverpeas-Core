@@ -24,9 +24,11 @@
 
 package org.silverpeas.attachment.notification;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.notification.NotificationSource;
 import com.silverpeas.notification.SilverpeasNotification;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
 
 /**
  * Notification about the deletion of an attachment in a given component instance.
@@ -35,11 +37,11 @@ public class AttachmentDeletionNotification extends SilverpeasNotification {
 
   private static final long serialVersionUID = 3354035649186264026L;
 
-  protected AttachmentDeletionNotification(final AttachmentDetail attachment) {
-    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), attachment);
+  protected AttachmentDeletionNotification(final SimpleDocument attachment) {
+    super(new NotificationSource().withComponentInstanceId(attachment.getInstanceId()), new AttachmentRef(attachment));
   }
 
-  public AttachmentDetail getAttachment() {
-    return (AttachmentDetail) getObject();
+  public AttachmentRef getAttachment() {
+    return (AttachmentRef) getObject();
   }
 }

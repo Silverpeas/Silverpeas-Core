@@ -143,12 +143,12 @@ CREATE TABLE ST_UserRole_Group_Rel
 
 CREATE TABLE ST_SpaceUserRole
 (
-    id            int           NOT NULL,
-    spaceId	  int           NOT NULL,
-    name          varchar(100)  NULL,
-    roleName      varchar(100)  NOT NULL,
-    description   varchar(400),
-    isInherited	  int	        default(0) NOT NULL 
+    id int NOT NULL,
+    spaceId int NOT NULL,
+    name varchar(100)  NULL,
+    roleName varchar(100)  NOT NULL,
+    description varchar(400),
+    isInherited	int	default(0) NOT NULL 
 );
 
 CREATE TABLE ST_SpaceUserRole_User_Rel
@@ -196,14 +196,14 @@ CREATE TABLE DomainSP_Group_User_Rel (
 );
 
 CREATE TABLE ST_Domain (
-	id			int NOT NULL ,
-	name			varchar (100) NOT NULL ,
-	description		varchar (400) NULL ,
-	propFileName		varchar (100) NOT NULL ,
-	className		varchar (100) NOT NULL ,
+	id int NOT NULL ,
+	name varchar (100) NOT NULL ,
+	description varchar (400) NULL ,
+	propFileName varchar (100) NOT NULL ,
+	className varchar (100) NOT NULL ,
 	authenticationServer	varchar (100) NOT NULL ,
-    theTimeStamp            varchar (100) DEFAULT('0') NOT NULL ,
-    silverpeasServerURL     varchar (400) NULL 
+  theTimeStamp varchar (100) DEFAULT('0') NOT NULL ,
+  silverpeasServerURL varchar (400) NULL 
 );
 
 CREATE TABLE ST_KeyStore (
@@ -243,8 +243,7 @@ CREATE TABLE st_instance_modelused
 	instanceId		varchar(50)     NOT NULL,
 	modelId			varchar(50)     NOT NULL,
 	objectId		varchar(50)     DEFAULT('0') NOT NULL
-) 
-;
+);
 
 CREATE TABLE ST_UserFavoriteSpaces
 (

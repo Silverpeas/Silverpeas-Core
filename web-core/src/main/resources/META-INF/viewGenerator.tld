@@ -520,7 +520,7 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>iconName</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -541,7 +541,7 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>cl� de l'icone a afficher</description>
+      <description>clef de l'icone a afficher</description>
       <name>imagePath</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1110,6 +1110,74 @@
     </attribute>
   </tag>
   <tag>
+    <description>Simple tag to manage upload of files.</description>
+    <name>fileUpload</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.upload.FileUploadTag
+    </tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>If not filled, default id is 'fileUpload'.</description>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        By this attribute is passed the jQuery selector that permits to identify html forms to
+        manage. If files are being upload, all the html forms aimed by the given selector can not be
+        submitted. When an html forms can not be submitted, a modal warning message is displayed to
+        the user.
+      </description>
+      <name>jqueryFormSelector</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        If filled with a positive value, when the number of uploads reaches the value, it is no more
+        possible to upload files.
+      </description>
+      <name>nbFileLimit</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>
+        Pass true if the UI has to be displayed in a fieldset.
+      </description>
+      <name>fieldset</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Choose several files at one time. If not filled, default is true.
+        If the web browser is not compatible with multiple file selection, the
+        feature is deactivated.
+      </description>
+      <name>multiple</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>
+        Default value is true.
+        If true drop zone area is displayed on compatible web browsers. If false a standard input
+        file is displayed in any case.
+      </description>
+      <name>dragAndDropDisplay</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+  </tag>
+  <tag>
     <description>Simple tag to play a video in flowplayer.</description>
     <name>video</name>
     <tag-class>
@@ -1247,6 +1315,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Settings of search engine</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.silverpeas.util.ResourcesWrapper</type>
+    </attribute>
   </tag>
   <tag>
     <description>Generate HTML for the site Map.</description>
@@ -1320,6 +1395,42 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag that displays the available languages.</description>
+    <name>langSelect</name>
+    <tag-class>
+      com.stratelia.webactiv.util.viewGenerator.html.LanguageSelectorTag
+    </tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Current lang</description>
+      <name>langCode</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Name for the input field/select</description>
+      <name>elementName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Id for the input field/select</description>
+      <name>elementId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Include label before the input field/select</description>
+      <name>includeLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -1459,8 +1570,50 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
-
-
+  
+  <tag>
+    <description>
+      Establishes a scoped variable that contains the value of the defined settings.
+    </description>
+    <name>settings</name>
+    <tag-class>org.silverpeas.jstl.settings.SettingsValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>The fully qualified name of the ResourceLocator to be used for the settings.</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute> 
+    <attribute>
+      <description>The key of the wanted settings.</description>
+      <name>key</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The default value for the corresponding setting. The type of the value returned is based on the type of the default value.</description>
+      <name>defaultValue</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+    </attribute>    
+    <attribute>
+      <description>The name of the scoped variable to create.</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The scope in which the scoped variable is to be created.</description>
+      <name>scope</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
   <tag>
     <description>
       Display the content of a Wysiwyg.
@@ -1513,8 +1666,7 @@
     <function-signature>
       java.lang.Object getValue( java.lang.String )
     </function-signature>
-  </function>
-
+  </function>  
   <function>
     <description>Function that returns the boolean value of a String.</description>
     <name>booleanValue</name>
@@ -1532,11 +1684,62 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that display the estimated download time.</description>
+    <name>estimateDownload</name>
+    <function-class>com.stratelia.webactiv.util.FileRepositoryManager</function-class>
+    <function-signature>
+      java.lang.String getFileDownloadTime( long )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file size in a human readable format.</description>
+    <name>humanReadableSize</name>
+    <function-class>org.silverpeas.util.UnitUtil</function-class>
+    <function-signature>
+      java.lang.String formatMemSize(long)
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that display the file mime type.</description>
+    <name>mimeType</name>
+    <function-class>com.silverpeas.util.FileUtil</function-class>
+    <function-signature>
+      java.lang.String getMimeType( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file is previewable.</description>
+    <name>isPreviewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isPreviewable( java.lang.String )
+    </function-signature>
+  </function>
+  <function>
+    <description>Function that indicates if a file can be displayed with FlexPaper.</description>
+    <name>isViewable</name>
+    <function-class>org.silverpeas.viewer.ViewerFactory</function-class>
+    <function-signature>
+      boolean isViewable( java.lang.String ) </function-signature>
+  </function>
+  <function>
     <description>Function that formats as memory size the given value.</description>
     <name>formatMemSize</name>
     <function-class>org.silverpeas.util.UnitUtil</function-class>
     <function-signature>
       java.lang.String formatMemSize(long)
     </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a Javascript String.</description>
+    <name>escapeJs</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToJsString( java.lang.String ) </function-signature>
+  </function>
+  <function>
+    <description>Function to encode a java String into a HTML String.</description>
+    <name>escapeHtml</name>
+    <function-class>com.silverpeas.util.EncodeHelper</function-class>
+    <function-signature>java.lang.String javaStringToHtmlString( java.lang.String ) </function-signature>
   </function>
 </taglib>

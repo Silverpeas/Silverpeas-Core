@@ -30,7 +30,7 @@
   <requirement>
   </requirement>
 
-  <current version="010">
+  <current version="011">
     <create_table>
       <file name="postgres\versioning\010\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
@@ -94,6 +94,13 @@
     <create_table>
       <file name="postgres\versioning\up009\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
+  </upgrade>  
+  
+  <upgrade version="010">
+    <create_table>
+      <file name="VersioningMigrator.jar" type="javalib" classname="org.silverpeas.migration.jcr.version.VersioningMigrator" methodname="migrateDocuments"/>
+    </create_table>
   </upgrade>
+
 
 </contribution>

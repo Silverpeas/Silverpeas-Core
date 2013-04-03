@@ -25,6 +25,8 @@
 package com.silverpeas.converter.openoffice;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ConnectException;
 import java.util.Arrays;
 
@@ -47,7 +49,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 public abstract class OpenOfficeConverter implements DocumentFormatConversion {
 
   private static final ResourceLocator settings = new ResourceLocator(
-      "com.silverpeas.converter.openoffice", "");
+      "org.silverpeas.converter.openoffice", "");
   private static final String OPENOFFICE_PORT = "openoffice.port";
   private static final String OPENOFFICE_HOST = "openoffice.host";
 
@@ -61,7 +63,7 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
   @Override
   public File convert(final File source, final DocumentFormat inFormat,
       final FilterOption... options) {
-    final String fileName = FilenameUtils.getBaseName(source.getName()) + "." + inFormat.name();
+    final String fileName = FilenameUtils.getBaseName(source.getName()) + '.' + inFormat.name();
     final File destination = new File(FileRepositoryManager.getTemporaryPath() + fileName);
     return convert(source, destination, inFormat, options);
   }
@@ -90,6 +92,26 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
     return destination;
   }
 
+  @Override
+  public void convert(final InputStream source, final DocumentFormat inFormat,
+      final OutputStream destination, final DocumentFormat outFormat,
+      final FilterOption... options) {
+    if (!isFormatSupported(outFormat)) {
+      throw new DocumentFormatException("The conversion of the stream to the format " +
+          outFormat.toString() + " isn't supported");
+    }
+    OpenOfficeConnection connection = null;
+    try {
+      connection = openConnection();
+      convert(getOpenOfficeDocumentConverterFrom(connection), source, inFormat, destination,
+          outFormat, options);
+    } catch (final Exception e) {
+      throw new DocumentFormatConversionException(e.getMessage(), e);
+    } finally {
+      closeConnection(connection);
+    }
+  }
+
   /**
    * Technical converting operations
    * @param documentConverter
@@ -97,9 +119,48 @@ public abstract class OpenOfficeConverter implements DocumentFormatConversion {
    * @param destination
    * @param options
    */
-  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter, final File source,
-      final File destination, final FilterOption... options) {
+  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final File source, final File destination, final FilterOption... options) {
+
+    // Options
+    applyFilterOptions(documentConverter, options);
+
+    // Conversion
     documentConverter.convert(source, destination);
+  }
+
+  /**
+   * Technical converting operations
+   * @param documentConverter
+   * @param source
+   * @param inFormat
+   * @param destination
+   * @param outFormat
+   * @param options
+   */
+  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final InputStream source, final DocumentFormat inFormat, final OutputStream destination,
+      final DocumentFormat outFormat, final FilterOption... options) {
+
+    // Options
+    applyFilterOptions(documentConverter, options);
+
+    // Conversion
+    documentConverter.convert(source, inFormat, destination, outFormat);
+  }
+
+  /**
+   * Applying options about the conversion.
+   * @param documentConverter
+   * @param options
+   */
+  private void applyFilterOptions(final SilverpeasOpenOfficeDocumentConverter documentConverter,
+      final FilterOption... options) {
+    if (options != null) {
+      for (final FilterOption option : options) {
+        documentConverter.addFilterData(option);
+      }
+    }
   }
 
   /**

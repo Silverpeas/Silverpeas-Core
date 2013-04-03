@@ -23,8 +23,24 @@ package org.silverpeas.search.indexEngine.model;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.search.indexEngine.parser.Parser;
+import org.silverpeas.search.indexEngine.parser.ParserManager;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -40,17 +56,6 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-
-import org.silverpeas.search.indexEngine.parser.Parser;
-import org.silverpeas.search.indexEngine.parser.ParserManager;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -227,16 +232,6 @@ public class IndexManager {
   }
 
   /**
-   * Return the analyzer used to parse indexed texts and queries in the locale language .
-   *
-   * @return the analyzer used to parse indexed texts and queries in the locale language.
-   * @throws IOException
-   */
-  public Analyzer getAnalyzer() throws IOException {
-    return getAnalyzer(null);
-  }
-
-  /**
    * Return the analyzer used to parse indexed texts and queries in the given language.
    *
    * @param language the language used in a document or a query.
@@ -329,15 +324,11 @@ public class IndexManager {
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
-    doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES,
-        Index.NOT_ANALYZED));
-
+    doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES, Index.NOT_ANALYZED));
     Iterator<String> languages = indexEntry.getLanguages();
-    if (indexEntry.getObjectType() != null
-        && indexEntry.getObjectType().startsWith("Attachment")) {
+    if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
       doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry.getTitle(indexEntry.
-          getLang()), Store.YES,
-          Index.NOT_ANALYZED));
+          getLang()), Store.YES, Index.NOT_ANALYZED));
     } else {
       while (languages.hasNext()) {
         String language = languages.next();
@@ -454,7 +445,9 @@ public class IndexManager {
       }
     }
 
-    AttachmentController.updateIndexEntryWithAttachments(indexEntry);
+    if (StringUtil.isDefined(indexEntry.getObjectId())) {
+      AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+    }
 
     List<FileDescription> list2 = indexEntry.getFileContentList();
     for (FileDescription f : list2) {

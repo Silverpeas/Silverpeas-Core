@@ -29,6 +29,7 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPModification;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.AdminException;
@@ -61,6 +62,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
    * @param rs name of resource file
+   * @throws AdminException
    */
   @Override
   public void initFromProperties(ResourceLocator rs) throws AdminException {
@@ -98,6 +100,7 @@ public class LDAPDriver extends AbstractDomainDriver {
 
   /**
    * Called when Admin starts the synchronization
+   * @return
    */
   @Override
   public long getDriverActions() {

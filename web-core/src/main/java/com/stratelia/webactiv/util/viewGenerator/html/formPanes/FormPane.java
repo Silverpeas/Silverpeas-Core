@@ -1,10 +1,9 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -13,34 +12,30 @@
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 /*
  * FormPane.java
  * 
  * Created on 13 decembre 2000
  */
-
 package com.stratelia.webactiv.util.viewGenerator.html.formPanes;
 
 import java.util.Vector;
 import javax.servlet.jsp.PageContext;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
+import org.silverpeas.util.Charsets;
 
 /**
  * The FormPane interface gives us the skeleton for all funtionnalities we need to display typical
  * WA form table pane.
+ *
  * @author frageade
  * @version 1.0
  */
@@ -50,7 +45,6 @@ public abstract class FormPane implements SimpleGraphicElement {
   public static final String PUBLIEUR_CODE = "publieur";
   public static final String UTILISATEUR_CODE = "utilisateur";
   public static final String DEFAULT_LANGUAGE = "fr";
-
   // Membres
   protected Vector formLines;
   protected Vector formHiddenFields;
@@ -64,7 +58,6 @@ public abstract class FormPane implements SimpleGraphicElement {
   protected PageContext pageContext = null;
   protected boolean reply;
   protected ResourceLocator message;
-
   // Modes de gestion
   protected boolean utilisateurArchivageDemandes;
   protected boolean publieurArchivageDemandes;
@@ -72,10 +65,9 @@ public abstract class FormPane implements SimpleGraphicElement {
   protected boolean publieurArchivageReponses;
   protected boolean utilisateurEnvoiDemandes;
 
-  // Constructeurs
-
   /**
    * Constructor declaration
+   *
    * @param nam
    * @param url
    * @param pc
@@ -102,10 +94,9 @@ public abstract class FormPane implements SimpleGraphicElement {
         DEFAULT_LANGUAGE);
   }
 
-  // Assesseurs
-
   /**
    * Method declaration
+   *
    * @param title
    * @see
    */
@@ -115,6 +106,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -124,6 +116,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -133,6 +126,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param nam
    * @see
    */
@@ -142,6 +136,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -151,6 +146,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param nam
    * @see
    */
@@ -160,6 +156,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -169,6 +166,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param des
    * @see
    */
@@ -178,6 +176,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -187,6 +186,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -196,6 +196,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -206,6 +207,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -215,6 +217,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param rep
    * @see
    */
@@ -228,6 +231,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -237,6 +241,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param uad
    * @see
    */
@@ -246,6 +251,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -255,6 +261,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param uad
    * @see
    */
@@ -264,6 +271,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -273,6 +281,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param uad
    * @see
    */
@@ -282,6 +291,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -291,6 +301,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param uad
    * @see
    */
@@ -300,6 +311,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -309,6 +321,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param uad
    * @see
    */
@@ -318,6 +331,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param language
    * @see
    */
@@ -329,10 +343,9 @@ public abstract class FormPane implements SimpleGraphicElement {
     }
   }
 
-  // Methodes metiers
-
   /**
    * Method declaration
+   *
    * @param line
    * @see
    */
@@ -352,6 +365,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param lineName
    * @see
    */
@@ -399,6 +413,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -454,18 +469,13 @@ public abstract class FormPane implements SimpleGraphicElement {
   }
 
   private String toXMLString(String s) {
-    String retour = null;
-    try {
-      byte[] readbytes = s.getBytes("UTF-8");
-      retour = new String(readbytes);
-    } catch (java.io.UnsupportedEncodingException e) {
-      // e.printStackTrace();
-    }
-    return retour;
+    byte[] readbytes = s.getBytes(Charsets.UTF_8);
+    return new String(readbytes);
   }
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -486,6 +496,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param resultVector
    * @see
    */
@@ -505,6 +516,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -513,12 +525,10 @@ public abstract class FormPane implements SimpleGraphicElement {
 
     retour =
         retour
-            +
-            "\n<!ELEMENT formulaire (name, displayName, description, reply, utilisateurArchivageDemandes, publieurArchivageDemandes,";
+        + "\n<!ELEMENT formulaire (name, displayName, description, reply, utilisateurArchivageDemandes, publieurArchivageDemandes,";
     retour =
         retour
-            +
-            "\n       utilisateurArchivageReponses, publieurArchivageReponses, utilisateurEnvoiDemandes, field*)>";
+        + "\n       utilisateurArchivageReponses, publieurArchivageReponses, utilisateurEnvoiDemandes, field*)>";
     retour = retour
         + "\n<!ELEMENT field (name, label, value, rows?, cols?, size?, dbtype?, actions?)>";
     retour = retour + "\n<!ATTLIST field ";
@@ -548,10 +558,9 @@ public abstract class FormPane implements SimpleGraphicElement {
     return retour;
   }
 
-  // Methodes abstraites
-
   /**
    * Method declaration
+   *
    * @return
    * @see
    */
@@ -559,6 +568,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param trueActionPage
    * @param deleteActionCode
    * @param modifyActionCode
@@ -570,6 +580,7 @@ public abstract class FormPane implements SimpleGraphicElement {
 
   /**
    * Method declaration
+   *
    * @param trueActionPage
    * @param submitPage
    * @param modifyActionCode

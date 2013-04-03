@@ -96,7 +96,8 @@ public abstract class WAPrimaryKey implements Serializable {
     setSpace(pk.getSpace());
     setComponentName(pk.getComponentName());
   }
-
+  
+  
   /**
    * This method must be specialized - Check if an another object is equal to this object
    * @return true if obj is equals to this object
@@ -105,6 +106,7 @@ public abstract class WAPrimaryKey implements Serializable {
    */
   @Override
   public abstract boolean equals(Object obj);
+
 
   /**
    * Return the object root table name
@@ -211,6 +213,7 @@ public abstract class WAPrimaryKey implements Serializable {
         append(", componentName = ").append(getComponentName()).append(')');
     return buffer.toString();
   }
+
 
   /**
    * Returns a hash code for the key

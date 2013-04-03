@@ -66,7 +66,7 @@
         $waiting.dialog("close");
       }
     }
-  }
+  };
 
   /**
    * The different methods on messages handled by the plugin.
@@ -150,19 +150,19 @@
 
       // Common settings
       var settings = __extendCommonSettings(options);
-	  if (!settings.title || settings.title == null || settings.title.length == 0) {
-	    settings.title = $.i18n.prop('GML.help.dialog.title');
-	  }
-	
-	  // Internal settings
-	  $.extend(settings, __buildInternalSettings({
-	    buttonTextNo : $.i18n.prop('GML.ok'),
-	    isMaxWidth : true,
-	    dialogClass : 'help-modal-message'
-	  }));
-	
-	  // Dialog
-	  return __openPopup($(this), settings);
+      if (!settings.title || settings.title == null || settings.title.length == 0) {
+        settings.title = $.i18n.prop('GML.help.dialog.title');
+      }
+
+      // Internal settings
+      $.extend(settings, __buildInternalSettings({
+        buttonTextNo : $.i18n.prop('GML.ok'),
+        isMaxWidth : true,
+        dialogClass : 'help-modal-message'
+      }));
+
+      // Dialog
+      return __openPopup($(this), settings);
     },
 
     /**
@@ -354,7 +354,7 @@
     } else if ( typeof method === 'object' || ! method ) {
       return methods.validation.apply( this, arguments );
     } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery.popup' );
+      return $.error( 'Method ' +  method + ' does not exist on jQuery.popup' );
     }
   };
 
@@ -367,7 +367,7 @@
       callback : null,
       keydown : null,
       callbackOnClose : null
-    }
+    };
     if (options) {
       $.extend(settings, options);
     }
@@ -389,7 +389,7 @@
       width : 570,
       height : 'auto',
       dialogClass : ''
-    }
+    };
     if (options) {
       $.extend(settings, options);
     }
@@ -503,4 +503,3 @@
   }
 
 })( jQuery );
-

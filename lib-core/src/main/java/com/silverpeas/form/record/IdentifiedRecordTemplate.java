@@ -41,6 +41,7 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
   private String externalId = null;
   private RecordTemplate wrappedTemplate = null;
   private String templateName = null;
+  private boolean encrypted = false;
 
   /**
    * A IdentifiedRecordTemplate is built upon a wrapped template.
@@ -138,5 +139,13 @@ public class IdentifiedRecordTemplate implements RecordTemplate, Serializable {
 
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
+  }
+
+  public void setEncrypted(boolean encrypted) {
+    this.encrypted = encrypted;
+  }
+
+  public boolean isEncrypted() {
+    return encrypted;
   }
 }

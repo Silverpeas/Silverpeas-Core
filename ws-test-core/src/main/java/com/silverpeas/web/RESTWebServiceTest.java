@@ -89,7 +89,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
 * Gets the component instances to take into account in tests. Theses component instances will be
-* considered as existing. Others than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+* considered as existing. Others than those will be rejected with an HTTP error 404 (NOT FOUND).
 * @return an array with the identifier of the component instances to take into account in tests.
 * The array cannot be null but it can be empty.
 */
@@ -97,7 +97,7 @@ public abstract class RESTWebServiceTest<T extends TestResources> extends Jersey
 
   /**
    * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
-   * than thoses will be rejected with an HTTP error 404 (NOT FOUND).
+   * than those will be rejected with an HTTP error 404 (NOT FOUND).
    * @return an array with the identifier of tools to take into account in tests. The array cannot
    * be null but it can be empty.
    */

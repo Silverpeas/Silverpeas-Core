@@ -33,7 +33,7 @@ public class SetConstantTag extends AbstractSetVarTagSupport {
   private static final long serialVersionUID = 1L;
   private String fieldName;
 
-  public void setKey(String value) {
+  public void setConstant(String value) {
     this.fieldName = value;
   }
 

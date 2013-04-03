@@ -28,6 +28,8 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.dbunit.JndiBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
@@ -41,8 +43,6 @@ import org.junit.BeforeClass;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
 
 /**
  * @author ehugonnet
