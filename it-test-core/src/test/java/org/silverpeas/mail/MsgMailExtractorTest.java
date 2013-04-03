@@ -23,34 +23,28 @@
  */
 package org.silverpeas.mail;
 
-import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import org.apache.commons.io.FileUtils;
-import org.apache.poi.hmef.Attachment;
-import org.apache.poi.hmef.HMEFMessage;
-import org.apache.poi.hmef.attribute.TNEFProperty;
-import org.apache.poi.hsmf.MAPIMessage;
-import org.apache.poi.hsmf.datatypes.AttachmentChunks;
-import org.apache.poi.hsmf.datatypes.RecipientChunks;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
+
+import com.silverpeas.converter.DocumentFormatConverterFactory;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.webactiv.util.DateUtil;
+
+import org.apache.poi.hsmf.MAPIMessage;
+import org.apache.poi.hsmf.datatypes.AttachmentChunks;
+import org.apache.poi.hsmf.datatypes.RecipientChunks;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.silverpeas.converter.DocumentFormat.*;
 

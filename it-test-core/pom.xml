@@ -91,6 +91,8 @@
               <exclude>**/*.txt</exclude>
               <exclude>**/*.xls</exclude>
               <exclude>**/*.xlsx</exclude>
+              <exclude>**/*.msg</exclude>
+              <exclude>**/*.eml</exclude>
             </excludes>
           </testResource>
           <testResource>
@@ -111,6 +113,8 @@
               <include>**/*.txt</include>
               <include>**/*.xls</include>
               <include>**/*.xlsx</include>
+              <include>**/*.msg</include>
+              <include>**/*.eml</include>
             </includes>
           </testResource>
         </testResources>
