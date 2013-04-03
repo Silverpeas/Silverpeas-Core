@@ -993,7 +993,7 @@ public class DocumentRepository {
     if (update) {
       File parentFile = file.getParentFile();
       if (parentFile.isDirectory() && parentFile.list().length > 0) {
-        FileUtils.deleteDirectory(parentFile);
+        FileUtils.deleteQuietly(parentFile);
         FileUtils.forceMkdir(parentFile);
       }
     }
