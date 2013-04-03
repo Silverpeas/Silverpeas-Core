@@ -29,10 +29,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.MissingResourceException;
 import java.util.Set;
 
-import javax.ws.rs.HEAD;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.search.indexEngine.parser.Parser;
+import org.silverpeas.search.indexEngine.parser.ParserManager;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -48,17 +56,6 @@ import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.search.indexEngine.parser.Parser;
-import org.silverpeas.search.indexEngine.parser.ParserManager;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -448,7 +445,9 @@ public class IndexManager {
       }
     }
 
-    AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+    if (StringUtil.isDefined(indexEntry.getObjectId())) {
+      AttachmentServiceFactory.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
+    }
 
     List<FileDescription> list2 = indexEntry.getFileContentList();
     for (FileDescription f : list2) {
