@@ -80,6 +80,15 @@ import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 public final class Admin {
 
+  /**
+   * Identifier of the administration component in Silverpeas. It identifies any administrative tool
+   * or service belonging to the administration component. It can be then passed where an identifier
+   * of a component or of an application instance (named also component instance) is expected.
+   * </p>
+   * Each administrative tool have the same identifier and this identifier refers the administration
+   * component.
+   */
+  public static final String ADMIN_COMPONENT_ID = "ADMIN";
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
   private static final Object semaphore = new Object();
@@ -4669,6 +4678,32 @@ public final class Admin {
     }
   }
 
+  /**
+   * Is the specified tool belongs to the administration component?
+   * </p>
+   * The administration component (or administrive console) forms a particular component made up
+   * of several tools, each of them providing an administrative feature. Each tool in the
+   * administration component have the same identifier that refers in fact the administration
+   * console.
+   * @param toolId the unique identifier of the tool.
+   * @return true if the tool belongs to the administration component.
+   */
+  public boolean isAnAdminTool(String toolId) {
+    return ADMIN_COMPONENT_ID.equals(toolId);
+  }
+
+  /**
+   * Is the specified component instance available among the components instances accessibles by
+   * the specified user?
+   * </p>
+   * A component is an application in Silverpeas to perform some tasks and to manage some resources.
+   * Each component in Silverpeas can be instanciated several times, each of them corresponding then
+   * to a running application in Silverpeas and it is uniquely identified from others instances by
+   * a given identifier.
+   * @param componentId the unique identifier of a component instance.
+   * @param userId the unique identifier of a user.
+   * @return true if the component instance is available, false otherwise.
+   */
   public boolean isComponentAvailable(String componentId, String userId)
       throws AdminException {
     try {

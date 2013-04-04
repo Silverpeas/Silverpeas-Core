@@ -22,24 +22,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.util.cryptage;
-
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-public class CryptageException extends SilverpeasException {
-
-  private static final long serialVersionUID = -390725088083708882L;
-
-  public CryptageException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public CryptageException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
-  }
-
-  public String getModule() {
-    return "util";
-  }
-}
+/**
+ * Provides the Silverpeas Cryptography API that is based on some security and cryptography tiers
+ * libraries (as well on the Java Cryptography API).
+ * </p>
+ * It defines the cryptographic functions Silverpeas supports and provides to components.
+ * These can be both one-way hash functions like MD5, symmetric-key ciphers like AES-256 or
+ * asymmetric-keys ciphers like CMS (based on PKS#7).
+ */
+package org.silverpeas.util.crypto;

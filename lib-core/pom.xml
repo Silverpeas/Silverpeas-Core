@@ -396,6 +396,8 @@
           <include>**/*.sql</include>
           <include>opendj/**</include>
           <include>**/*.tif</include>
+          <include>**/*.msg</include>
+          <include>**/*.eml</include>
         </includes>
       </testResource>
       <testResource>
@@ -414,6 +416,8 @@
           <exclude>**/*.sql</exclude>
           <exclude>opendj/**</exclude>
           <exclude>**/*.tif</exclude>
+          <exclude>**/*.msg</exclude>
+          <exclude>**/*.eml</exclude>
         </excludes>
       </testResource>      
     </testResources>

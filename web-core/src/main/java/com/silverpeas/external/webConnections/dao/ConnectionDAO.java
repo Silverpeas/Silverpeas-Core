@@ -24,32 +24,36 @@
 
 package com.silverpeas.external.webConnections.dao;
 
-import com.silverpeas.external.webConnections.model.ConnectionDetail;
-import com.silverpeas.util.cryptage.CryptageException;
-import com.silverpeas.util.cryptage.SilverCryptFactorySymetric;
-import com.silverpeas.util.cryptage.SilverCryptKeysSymetric;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.UtilException;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.util.crypto.Cipher;
+import org.silverpeas.util.crypto.CipherFactory;
+import org.silverpeas.util.crypto.CipherKey;
+import org.silverpeas.util.crypto.CryptoException;
+import org.silverpeas.util.crypto.CryptographicAlgorithmName;
+
+import com.silverpeas.external.webConnections.model.ConnectionDetail;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ConnectionDAO {
   private static String tableName = "SB_webConnections_info";
   private static ResourceLocator settings =
       new ResourceLocator("com.silverpeas.external.webConnections.settings.webConnectionsSettings",
       "fr");
+  // warning: the key code should be in hexadecimal!
   private static String keyCode = settings.getString("keycode");
-  private static SilverCryptKeysSymetric symetricKeys = new SilverCryptKeysSymetric(keyCode);
 
   /**
    * Return a connection for componentId and userId
@@ -169,7 +173,7 @@ public class ConnectionDAO {
       byte[] crypPassword = null;
       try {
         crypPassword = getCryptString(password);
-      } catch (CryptageException e) {
+      } catch (CryptoException e) {
         crypPassword = null;
       }
       prepStmt.setBytes(2, crypPassword);
@@ -227,13 +231,13 @@ public class ConnectionDAO {
     String nameLogin = inst.getParameterValue("login");
     String namePassword = inst.getParameterValue("password");
     param.put(nameLogin, login);
-    String decrypPassword = "";
+    String decryptPassword;
     try {
-      decrypPassword = getUncryptString(password);
-    } catch (CryptageException e) {
-      decrypPassword = "";
+      decryptPassword = getUncryptString(password);
+    } catch (CryptoException e) {
+      decryptPassword = "";
     }
-    param.put(namePassword, decrypPassword);
+    param.put(namePassword, decryptPassword);
     connection.setParam(param);
 
     return connection;
@@ -258,9 +262,8 @@ public class ConnectionDAO {
     byte[] crypPassword = null;
     try {
       crypPassword = getCryptString(password);
-    } catch (CryptageException e) {
+    } catch (CryptoException e) {
       e.printStackTrace();
-      crypPassword = null;
     }
     prepStmt.setString(4, login);
     prepStmt.setBytes(5, crypPassword);
@@ -268,24 +271,34 @@ public class ConnectionDAO {
 
   /**
    * return the encrypt String corresponding to the string cryptedString
-   * @param cryptedString : String
+   * @param text : String
    * @return the encrypt string : byte[]
-   * @throws CryptageException
+   * @throws org.silverpeas.util.crypto.CryptoException
    */
-  private static byte[] getCryptString(String cryptedString) throws CryptageException {
-    SilverCryptFactorySymetric factory = SilverCryptFactorySymetric.getInstance();
-    return factory.goCrypting(cryptedString, symetricKeys);
+  private static byte[] getCryptString(String text) throws CryptoException {
+    CipherFactory cipherFactory = CipherFactory.getFactory();
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    try {
+      return blowfish.encrypt(text, CipherKey.aKeyFromHexText(keyCode));
+    } catch (ParseException e) {
+      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+    }
   }
 
   /**
    * return the uncrypt string corresponding to the encrypt string cipherText
    * @param cipherText : byte[]
    * @return the uncrypt string : String
-   * @throws CryptageException
+   * @throws org.silverpeas.util.crypto.CryptoException
    */
-  private static String getUncryptString(byte[] cipherText) throws CryptageException {
-    SilverCryptFactorySymetric factory = SilverCryptFactorySymetric.getInstance();
-    return factory.goUnCrypting(cipherText, symetricKeys);
+  private static String getUncryptString(byte[] cipherText) throws CryptoException {
+    CipherFactory cipherFactory = CipherFactory.getFactory();
+    Cipher blowfish = cipherFactory.getCipher(CryptographicAlgorithmName.Blowfish);
+    try {
+      return blowfish.decrypt(cipherText, CipherKey.aKeyFromHexText(keyCode));
+    } catch (ParseException e) {
+      throw new CryptoException("The key isn't in hexadecimal: '" + keyCode + "'", e);
+    }
   }
 
 }

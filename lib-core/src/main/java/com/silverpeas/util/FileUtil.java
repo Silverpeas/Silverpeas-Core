@@ -23,6 +23,21 @@ package com.silverpeas.util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import javax.activation.MimetypesFileTypeMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
@@ -31,10 +46,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-
-import javax.activation.MimetypesFileTypeMap;
-import java.io.*;
-import java.util.*;
+import org.silverpeas.util.mail.Mail;
 
 public class FileUtil implements MimeTypes  {
 
@@ -45,11 +57,11 @@ public class FileUtil implements MimeTypes  {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
       new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-        @Override
-        public ConfigurationClassLoader run() {
-          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-        }
-      });
+    @Override
+    public ConfigurationClassLoader run() {
+      return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+    }
+  });
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -141,6 +153,17 @@ public class FileUtil implements MimeTypes  {
    */
   public static byte[] readFile(final File file) throws IOException {
     return FileUtils.readFileToByteArray(file);
+  }
+
+  /**
+   * Read the content of a file as text (the text is supposed to be in the UTF-8 charset).
+   *
+   * @param file the file to read.
+   * @return the file content as a String.
+   * @throws IOException if an error occurs while reading the file.
+   */
+  public static String readFileToString(final File file) throws IOException {
+    return FileUtils.readFileToString(file);
   }
 
   /**
@@ -254,13 +277,23 @@ public class FileUtil implements MimeTypes  {
   }
 
   /**
-   * Indicates if the current file is of type archive.
+   * Indicates if the current file is of type image.
    *
    * @param filename the name of the file.
-   * @return true is the file s of type archive - false otherwise.
+   * @return true is the file is of type image - false otherwise.
    */
   public static boolean isImage(final String filename) {
     return FilenameUtils.isExtension(filename, ImageUtil.IMAGE_EXTENTIONS);
+  }
+  
+  /**
+   * Indicates if the current file is of type mail.
+   *
+   * @param filename the name of the file.
+   * @return true is the file is of type mail - false otherwise.
+   */
+  public static boolean isMail(final String filename) {
+    return FilenameUtils.isExtension(filename, Mail.MAIL_EXTENTIONS);
   }
 
   /**
@@ -308,6 +341,54 @@ public class FileUtil implements MimeTypes  {
   }
 
   /**
+   * Forces the deletion of the specified file. If the write property of the file to delete isn't
+   * set, this property is then set before deleting.
+   *
+   * @param fileToDelete file to delete.
+   * @throws IOException if the deletion failed or if the file doesn't exist.
+   */
+  public static void forceDeletion(File fileToDelete) throws IOException {
+    if (fileToDelete.exists() && !fileToDelete.canWrite()) {
+      fileToDelete.setWritable(true);
+    }
+    FileUtils.forceDelete(fileToDelete);
+  }
+
+  /**
+   * Moves the specified source file to the specified destination. If the destination exists, it is
+   * then replaced by the source; if the destination is a directory, then it is deleted with all of
+   * its contain.
+   *
+   * @param source the file to move.
+   * @param destination the destination file of the move.
+   * @throws IOException if the source or the destination is invalid or if an error occurs while
+   * moving the file.
+   */
+  public static void moveFile(File source, File destination) throws IOException {
+    if (destination.exists()) {
+      FileUtils.forceDelete(destination);
+    }
+    FileUtils.moveFile(source, destination);
+  }
+
+  /**
+   * Copies the specified source file to the specified destination. If the destination exists, it is
+   * then replaced by the source. If the destination can be overwritten, its write property is set
+   * before the copy.
+   *
+   * @param source the file to copy.
+   * @param destination the destination file of the move.
+   * @throws IOException if the source or the destination is invalid or if an error occurs while
+   * copying the file.
+   */
+  public static void copyFile(File source, File destination) throws IOException {
+    if (destination.exists() && !destination.canWrite()) {
+      destination.setWritable(true);
+    }
+    FileUtils.copyFile(source, destination);
+  }
+  
+  /*
    * Remove any \ or / from the filename thus avoiding conflicts on the server.
    *
    * @param fileName

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,43 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.util.mail;
 
-package com.silverpeas.util.cryptage;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
-import javax.crypto.spec.SecretKeySpec;
+public class ExtractorException extends SilverpeasException {
 
-public class SilverCryptKeysSymetric {
+  private static final long serialVersionUID = 9169416970570371214L;
 
-  private Key key = null;
-
-  public SilverCryptKeysSymetric() {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes("ƒþX]Lh/‘");
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
-    }
+  public ExtractorException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
+  
+  public ExtractorException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, null, nested);
   }
 
-  public SilverCryptKeysSymetric(String keyCode) {
-    if (key == null) {
-      byte[] keybyte = getKeyBytes(keyCode);
-      key = new SecretKeySpec(keybyte, SilverCryptFactorySymetric.ALGORITHM);
-    }
-  }
-
-  protected final byte[] getKeyBytes(String keyCode) {
-    byte[] keybyte;
-    try {
-      keybyte = "ƒþX]Lh/‘".getBytes("ISO-8859-1");
-    } catch (UnsupportedEncodingException e) {
-      keybyte = "ƒþX]Lh/‘".getBytes();
-    }
-    return keybyte;
-  }
-
-  public Key getKey() {
-    return key;
+  @Override
+  public String getModule() {
+    return "util";
   }
 
 }

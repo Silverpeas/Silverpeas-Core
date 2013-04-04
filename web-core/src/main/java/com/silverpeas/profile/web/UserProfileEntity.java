@@ -23,20 +23,25 @@
  */
 package com.silverpeas.profile.web;
 
-import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.web.Exposable;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
 import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.web.Exposable;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -111,7 +116,11 @@ public class UserProfileEntity extends UserDetail implements Exposable {
     } else {
       this.language = DisplayI18NHelper.getDefaultLanguage();
     }
-    this.domainName = user.getDomain().getName();
+    if (user.getDomain() == null) {
+      this.domainName = "";
+    } else {
+      this.domainName = user.getDomain().getName();
+    }
     this.fullName = user.getDisplayedName();
     this.avatar = getAvatarURI();
     this.connected = this.user.isConnected();

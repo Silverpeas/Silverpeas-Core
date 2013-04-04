@@ -45,6 +45,7 @@ import static java.io.File.separatorChar;
  */
 public class FileRepositoryManager {
 
+  static final String securityPath = GeneralPropertiesManager.getString("securityPath");
   static final String exportTemplatePath = GeneralPropertiesManager.getString("exportTemplatePath");
   final static String upLoadPath = GeneralPropertiesManager.getString("uploadsPath");
   final static String avatarPath = GeneralPropertiesManager.getString("avatar.path", upLoadPath
@@ -73,8 +74,21 @@ public class FileRepositoryManager {
   }
 
   /**
+<<<<<<< HEAD
+   * Gets the path of the directory in which all the resources related to the security in Silverpeas
+   * are stored.
+   * @return the path of the Silverpeas security directory.
+   */
+  public static String getSecurityDirPath() {
+    return securityPath + File.separator;
+  }
+
+  /**
+   * @deprecated @param sSpaceId
+=======
    *
    * @param sSpaceId
+>>>>>>> master
    * @param sComponentId
    * @return
    * @deprecated

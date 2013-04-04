@@ -416,4 +416,16 @@ public interface OrganisationController extends java.io.Serializable {
   public List<UserDetail> getUsersOfDomains(
       List<String> domainIds);
 
+  /**
+   * Is the specified tool belongs to the administration component?
+   * </p>
+   * The administration component (or administrative console) forms a particular component made up
+   * of several tools, each of them providing an administrative feature. Each tool in the
+   * administration component have the same identifier that refers in fact the administration
+   * console.
+   * @param toolId the unique identifier of the tool.
+   * @return true if the tool belongs to the administration component.
+   */
+  boolean isAdminTool(String toolId);
+
 }

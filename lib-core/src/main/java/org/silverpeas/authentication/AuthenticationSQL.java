@@ -35,14 +35,12 @@ import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.util.crypto.CryptMD5;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
-
-import com.silverpeas.util.cryptage.CryptMD5;
-
-import com.stratelia.webactiv.util.DBUtil;
 
 /**
  * This class performs the authentication using an SQL table.
