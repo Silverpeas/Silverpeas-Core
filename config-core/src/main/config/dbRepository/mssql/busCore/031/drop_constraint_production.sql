@@ -1,7 +1,6 @@
 ALTER TABLE UniqueId DROP CONSTRAINT PK_UniqueId;
 ALTER TABLE Personalization DROP CONSTRAINT PK_Personalization;
 ALTER TABLE readingControl DROP	CONSTRAINT PK_readingControl;
-ALTER TABLE subscribe DROP CONSTRAINT PK_subscribe;
 ALTER TABLE model_contact DROP CONSTRAINT PK_model_contact;
 ALTER TABLE model DROP CONSTRAINT PK_model;
 ALTER TABLE favorit DROP CONSTRAINT PK_favorit;
