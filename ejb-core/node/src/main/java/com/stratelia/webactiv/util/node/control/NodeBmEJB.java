@@ -95,8 +95,7 @@ public class NodeBmEJB implements NodeBm {
       }
     } catch (SQLException e) {
       throw new NodeRuntimeException("NodeEJB.ejbFindByPrimaryKey()",
-          SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_FIND_ENTITY", "NodeId = " + pk.getId(), e);
     } finally {
       DBUtil.close(con);
     }

@@ -20,16 +20,12 @@
  */
 package com.stratelia.webactiv.util;
 
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.rmi.PortableRemoteObject;
-
-import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.MultilangMessage;
@@ -45,8 +41,7 @@ public class EJBUtilitaire {
 
   private ResourceLocator resources = new ResourceLocator("org.silverpeas.util.jndi", "");
   private static EJBUtilitaire instance;
-   private static EJBUtilitaire realInstance = null;
-  private Map<String, Object> homeFetcher = new HashMap<String, Object>();
+  private static EJBUtilitaire realInstance = null;
 
   private EJBUtilitaire() {
   }
@@ -66,7 +61,7 @@ public class EJBUtilitaire {
       instance = mock;
     }
   }
-  
+
   public static void unmock() {
     synchronized (EJBUtilitaire.class) {
       instance = realInstance;
@@ -106,33 +101,25 @@ public class EJBUtilitaire {
    */
   @SuppressWarnings({"unchecked", "unchecked"})
   public <T> T getObjectReference(String name, Class<T> classObj) throws UtilException {
-    T objRef = (T) homeFetcher.get(name);
-    if (objRef == null) {
-      SilverTrace.debug("util", "EJBUtilitaire.getEJBObjectRef", name);
-      Context ic = initialiseContext();
-      try {
-        Object ref = ic.lookup(name);
-        objRef = (T) PortableRemoteObject.narrow(ref, classObj);
-        String withHomeFetcher = resources.getString("withHomeFetcher");
-        if (withHomeFetcher == null || StringUtil.getBooleanValue(withHomeFetcher)) {
-          homeFetcher.put(name, objRef);
-        }
-      } catch (Exception e) {
-        UtilException ue = new UtilException("EJBUtilitaire.getEJBObjectRef", new MultilangMessage(
-            "util.MSG_EJB_REF_NOT_FOUND", name).toString(), e);
-        throw ue;
-      }
+    SilverTrace.debug("util", "EJBUtilitaire.getEJBObjectRef", name);
+    Context ic = initialiseContext();
+    try {
+      Object ref = ic.lookup(name);
+      return (T) PortableRemoteObject.narrow(ref, classObj);
+    } catch (Exception e) {
+      UtilException ue = new UtilException("EJBUtilitaire.getEJBObjectRef", new MultilangMessage(
+          "util.MSG_EJB_REF_NOT_FOUND", name).toString(), e);
+      throw ue;
     }
-    return objRef;
   }
 
   /**
    * Return a remote object Using example : PublicationHome pubHome = (PublicationHome)
    * EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATION_EJBHOME, PublicationHome.class);
    *
-   * @param <T> 
+   * @param <T>
    * @return a remote object
-   * @throws UtilException 
+   * @throws UtilException
    * @param name the JNDI name of the object
    * @param classObj the class file name of the object
    * @since 1.0

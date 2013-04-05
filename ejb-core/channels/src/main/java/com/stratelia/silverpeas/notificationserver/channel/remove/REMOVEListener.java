@@ -24,10 +24,11 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.remove;
 
+import javax.jms.Message;
+
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
-import javax.jms.Message;
 
 public class REMOVEListener extends AbstractListener {
   private static final long serialVersionUID = 6228192030238517258L;
@@ -35,16 +36,19 @@ public class REMOVEListener extends AbstractListener {
   public REMOVEListener() {
   }
 
+  @Override
   public void ejbCreate() {
   }
 
   /**
    * listener of NotificationServer JMS message
    */
+  @Override
   public void onMessage(Message msg) {
     // we only remove this message
   }
 
+  @Override
   public void send(NotificationData p_Message)
       throws NotificationServerException {
     // we only remove this message
