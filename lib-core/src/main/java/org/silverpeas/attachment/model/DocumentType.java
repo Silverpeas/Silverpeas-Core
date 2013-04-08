@@ -34,29 +34,6 @@ public enum DocumentType {
   private String folderName;
 
   private DocumentType(String folder) {
-<<<<<<< HEAD
-    this.forlderName = folder;
-  }
-
-  public String getForlderName() {
-    return forlderName;
-  }
-
-  public static DocumentType fromFolderName(String folder) {
-    if (attachment.forlderName.equals(folder)) {
-      return attachment;
-    }
-    if (form.forlderName.equals(folder)) {
-      return form;
-    }
-    if (wysiwyg.forlderName.equals(folder)) {
-      return wysiwyg;
-    }
-    if (image.forlderName.equals(folder)) {
-      return image;
-    }
-    if (video.forlderName.equals(folder)) {
-=======
     this.folderName = folder;
   }
 
@@ -78,16 +55,12 @@ public enum DocumentType {
       return image;
     }
     if (video.folderName.equals(folder)) {
->>>>>>> 8defe411a9d1966d0a8fe65a4abbd76140ea49a7
       return video;
     }
     return attachment;
   }
-<<<<<<< HEAD
-=======
 
   public String getName() {
     return this.name();
   }
->>>>>>> 8defe411a9d1966d0a8fe65a4abbd76140ea49a7
 }
