@@ -20,25 +20,32 @@
  */
 package com.stratelia.silverpeas.notificationserver.channel.popup;
 
-import java.util.*;
 
-import javax.jms.*;
+import java.util.Date;
 
-import com.stratelia.silverpeas.notificationserver.*;
-import com.stratelia.silverpeas.notificationserver.channel.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
+import javax.jms.Message;
+
+import com.stratelia.silverpeas.notificationserver.NotificationData;
+import com.stratelia.silverpeas.notificationserver.NotificationServerException;
+import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
+@MessageDriven(activationConfig = {
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='POPUP'"),
+  @ActivationConfigProperty(propertyName = "destination", propertyValue =
+      "java:/queue/notificationsQueue")},
+    description = "Message driven bean for Pop UP notifications")
 public class POPUPListener extends AbstractListener {
 
   private static final long serialVersionUID = 6562344573142185894L;
 
   public POPUPListener() {
-  }
-
-  @Override
-  public void ejbCreate() {
   }
 
   /**
@@ -48,30 +55,30 @@ public class POPUPListener extends AbstractListener {
    */
   @Override
   public void onMessage(Message msg) {
-    SilverTrace.info("popup", "POPUPListener.onMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "JMS message = " + msg);
+    SilverTrace.info("popup", "POPUPListener.onMessage()", "root.MSG_GEN_PARAM_VALUE",
+        "JMS message = " + msg);
     try {
       processMessage(msg);
     } catch (NotificationServerException e) {
-      SilverTrace.error("popup", "POPUPListener.onMessage()",
-          "popup.EX_CANT_PROCESS_MSG", "", e);
+      SilverTrace.error("popup", "POPUPListener.onMessage()", "popup.EX_CANT_PROCESS_MSG", "", e);
     }
   }
 
   /**
    *
+   * @param message
+   * @throws NotificationServerException
    */
   @Override
   public void send(NotificationData message) throws NotificationServerException {
     try {
-      StringBuffer content = new StringBuffer();
+      StringBuilder content = new StringBuilder(500);
       if (message.getTargetParam().get("SOURCE") != null) {
         content.append("Source : ").append(message.getTargetParam().get("SOURCE")).append("\n");
       }
       if (message.getTargetParam().get("DATE") != null) {
-        content.append("Date : ").
-            append(DateUtil.dateToString(((Date) message.getTargetParam().get("DATE")), "")).
-            append("\n");
+        content.append("Date : ").append(DateUtil.dateToString(((Date) message.getTargetParam().get(
+            "DATE")), "")).append("\n");
       }
       content.append(message.getMessage());
       SilverMessageFactory.push(message.getTargetReceipt(), message);

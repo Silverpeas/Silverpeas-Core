@@ -24,24 +24,30 @@
 
 package com.stratelia.silverpeas.notificationserver.channel.remove;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
 import javax.jms.Message;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 
+@MessageDriven(activationConfig = {
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='REMOVE'"),
+  @ActivationConfigProperty(propertyName = "destination", propertyValue =
+      "java:/queue/notificationsQueue")},
+    description = "Message driven bean to remove notifications")
 public class REMOVEListener extends AbstractListener {
   private static final long serialVersionUID = 6228192030238517258L;
 
   public REMOVEListener() {
   }
 
-  @Override
-  public void ejbCreate() {
-  }
-
   /**
    * listener of NotificationServer JMS message
+   * @param msg 
    */
   @Override
   public void onMessage(Message msg) {
@@ -49,8 +55,7 @@ public class REMOVEListener extends AbstractListener {
   }
 
   @Override
-  public void send(NotificationData p_Message)
-      throws NotificationServerException {
+  public void send(NotificationData notificationData) throws NotificationServerException {
     // we only remove this message
   }
 

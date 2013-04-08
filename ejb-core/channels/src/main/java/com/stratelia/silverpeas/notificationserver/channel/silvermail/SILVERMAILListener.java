@@ -25,7 +25,10 @@
 package com.stratelia.silverpeas.notificationserver.channel.silvermail;
 
 import java.util.Date;
+import java.util.Map;
 
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
 import javax.jms.Message;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
@@ -33,16 +36,18 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.util.Map;
 
+@MessageDriven(activationConfig = {
+  @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
+  @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
+  @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = "CHANNEL='SILVERMAIL'"),
+  @ActivationConfigProperty(propertyName = "destination", propertyValue =
+      "java:/queue/notificationsQueue")},
+    description = "Message driven bean to silverpeas notification box")
 public class SILVERMAILListener extends AbstractListener {
   private static final long serialVersionUID = -6357231434570565933L;
 
   public SILVERMAILListener() {
-  }
-
-  @Override
-  public void ejbCreate() {
   }
 
   /**
