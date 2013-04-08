@@ -24,16 +24,18 @@
 
 package com.silverpeas.jcrutil.security.impl;
 
-import com.silverpeas.util.StringUtil;
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.jackrabbit.server.CredentialsProvider;
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.silverpeas.util.StringUtil;
 
 /**
  * @author ehugonnet

@@ -42,7 +42,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminUserConnections;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
@@ -52,6 +51,9 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.subscription.SubscriptionContext;
 
 import javax.ejb.RemoveException;
 import java.rmi.RemoteException;
@@ -80,7 +82,7 @@ public class MainSessionController implements Clipboard {
   Object m_ComponentSOFactory = null;
   private String sessionId = null;
   private String userId = null;
-  private OrganizationController organizationController = null;
+  private OrganisationController organizationController = null;
   private Date userLoginBegin = null;
   private Date userLastRequest = null;
   private String userLanguage = null;
@@ -94,6 +96,7 @@ public class MainSessionController implements Clipboard {
   private String serverPort = null;
   String m_CurrentSpaceId = null;
   String m_CurrentComponentId = null;
+  private SubscriptionContext subscriptionContext = null;
   /**
    * Maintenance Mode *
    */
@@ -236,6 +239,14 @@ public class MainSessionController implements Clipboard {
     return selection;
   }
 
+  // ------------------- Subscription Functions -----------------------------
+  public SubscriptionContext getSubscriptionContext() {
+    if (subscriptionContext == null) {
+      subscriptionContext = new SubscriptionContext(getCurrentUserDetail(), userPreferences);
+    }
+    return subscriptionContext;
+  }
+
   // ------------------- AlertUser Functions -----------------------------
   public AlertUser getAlertUser() {
     if (m_alertUser == null) {
@@ -342,9 +353,9 @@ public class MainSessionController implements Clipboard {
   }
 
   // ------------------- Other functions -----------------------------
-  public OrganizationController getOrganizationController() {
+  public OrganisationController getOrganisationController() {
     if (organizationController == null) {
-      organizationController = new OrganizationController();
+      organizationController = OrganisationControllerFactory.getOrganisationController();
     }
     return organizationController;
   }
@@ -388,7 +399,7 @@ public class MainSessionController implements Clipboard {
    * Return the root spaces ids available for the current user
    */
   public String[] getUserAvailRootSpaceIds() {
-    return getOrganizationController().getAllRootSpaceIds(this.getUserId());
+    return getOrganisationController().getAllRootSpaceIds(this.getUserId());
   }
 
   /**

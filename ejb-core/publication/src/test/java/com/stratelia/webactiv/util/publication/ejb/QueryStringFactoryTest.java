@@ -49,7 +49,6 @@ import com.stratelia.webactiv.util.DBUtil;
 public class QueryStringFactoryTest extends AbstractTestDao {
 
   private Connection dataBaseConnection = null;
-
   private final String TABLE_NAME = "SB_Publication_Publi";
   private final String USER_ID = "USER_ID";
   private final int NB_EXECUTIONS = 5;
@@ -141,6 +140,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
 
   /**
    * Checking a query
+   *
    * @param query
    * @param fileNameContainingExpectedQueryStructureResult
    */
@@ -152,6 +152,7 @@ public class QueryStringFactoryTest extends AbstractTestDao {
 
   /**
    * Checking the string query
+   *
    * @param query
    * @param fileNameContainingExpectedQueryResult
    * @throws Exception
@@ -161,17 +162,18 @@ public class QueryStringFactoryTest extends AbstractTestDao {
     assertThat(
         query.trim().replaceAll("[ ]{2,}", " "),
         is(IOUtils
-            .toString(
-                this.getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "com/stratelia/webactiv/util/publication/ejb/" +
-                            fileNameContainingExpectedQueryResult + ".txt"), "UTF-8").trim()
-            .replaceAll("[\r\n]", "")));
+        .toString(
+        this.getClass()
+        .getClassLoader()
+        .getResourceAsStream(
+        "com/stratelia/webactiv/util/publication/ejb/" + fileNameContainingExpectedQueryResult
+        + ".txt"), "UTF-8").trim()
+        .replaceAll("[\r\n]", "")));
   }
 
   /**
    * Trying to execute the query
+   *
    * @param query
    * @throws Exception
    */
@@ -187,8 +189,8 @@ public class QueryStringFactoryTest extends AbstractTestDao {
         if (queryPart.replaceAll("[\\.a-zA-Z]", "").length() == 0) {
           lastQueryPart = queryPart;
         } else if (queryPart.equals("?")) {
-          if (lastQueryPart.toLowerCase().endsWith("nodeid") ||
-              lastQueryPart.toLowerCase().endsWith("pubid")) {
+          if (lastQueryPart.toLowerCase().endsWith("nodeid") || lastQueryPart.toLowerCase().
+              endsWith("pubid")) {
             prepStmt.setInt(paramCount++, -1);
           } else {
             prepStmt.setString(paramCount++, dummyString + paramCount);
@@ -209,5 +211,10 @@ public class QueryStringFactoryTest extends AbstractTestDao {
       dataBaseConnection = getConnection().getConnection();
     }
     return dataBaseConnection;
+  }
+
+  @Override
+  protected String getTableCreationFileName() {
+    return "create-table.sql";
   }
 }

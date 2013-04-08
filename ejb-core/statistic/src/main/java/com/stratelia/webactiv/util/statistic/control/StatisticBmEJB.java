@@ -26,7 +26,6 @@ package com.stratelia.webactiv.util.statistic.control;
 
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
@@ -36,21 +35,13 @@ import com.stratelia.webactiv.util.statistic.ejb.HistoryObjectDAO;
 import com.stratelia.webactiv.util.statistic.model.HistoryByUser;
 import com.stratelia.webactiv.util.statistic.model.HistoryObjectDetail;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class declaration
@@ -220,9 +211,8 @@ public class StatisticBmEJB implements SessionBean {
 
   public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
       String objectType) {
-    OrganizationController orga = new OrganizationController();
-    UserDetail[] allUsers = orga.getAllUsers(foreignPK.getInstanceId());
-
+    UserDetail[] allUsers = OrganisationControllerFactory
+        .getOrganisationController().getAllUsers(foreignPK.getInstanceId());
     return getHistoryByObject(foreignPK, action, objectType, allUsers);
   }
 
@@ -231,8 +221,8 @@ public class StatisticBmEJB implements SessionBean {
     if (userIds == null || userIds.isEmpty()) {
       return getHistoryByObject(foreignPK, action, objectType);
     } else {
-      OrganizationController orga = new OrganizationController();
-      UserDetail[] users = orga.getUserDetails(userIds.toArray(new String[userIds.size()]));
+      UserDetail[] users = OrganisationControllerFactory.getOrganisationController()
+          .getUserDetails(userIds.toArray(new String[userIds.size()]));
       return getHistoryByObject(foreignPK, action, objectType, users);
     }
   }
@@ -260,9 +250,9 @@ public class StatisticBmEJB implements SessionBean {
       date[i] = historyObject.getDate();
       i++;
     }
-    OrganizationController orga = new OrganizationController();
     UserDetail[] allUsersByComponent = users;
-    UserDetail[] controlledUsers = orga.getUserDetails(readerIds);
+    UserDetail[] controlledUsers = OrganisationControllerFactory.getOrganisationController()
+        .getUserDetails(readerIds);
 
     // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant
     // pas partis d'un rôle

@@ -41,7 +41,7 @@ public class SwfToolManager {
   @PostConstruct
   public void initialize() throws Exception {
 
-    // Im4java settings
+    // SwfTools settings
     for (final Map.Entry<String, String> entry : System.getenv().entrySet()) {
       if ("path".equals(entry.getKey().toLowerCase())) {
         Process process = null;

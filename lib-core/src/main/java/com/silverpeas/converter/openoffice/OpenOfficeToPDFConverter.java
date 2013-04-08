@@ -32,7 +32,6 @@ import javax.inject.Named;
 
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ToPDFConverter;
-import com.silverpeas.converter.option.FilterOption;
 import com.silverpeas.util.FileUtil;
 
 /**
@@ -50,27 +49,5 @@ public class OpenOfficeToPDFConverter extends OpenOfficeConverter implements ToP
   @Override
   public boolean isDocumentSupported(final File document) {
     return FileUtil.isOpenOfficeCompatible(document.getName());
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see
-   * com.silverpeas.converter.openoffice.OpenOfficeConverter#convert(com.artofsolving.jodconverter
-   * .DocumentConverter, java.io.File, java.io.File,
-   * com.silverpeas.converter.option.ConverterOption[])
-   */
-  @Override
-  protected void convert(final SilverpeasOpenOfficeDocumentConverter documentConverter,
-      final File source, final File destination, final FilterOption... options) {
-
-    // Options
-    if (options != null) {
-      for (final FilterOption option : options) {
-        documentConverter.addFilterData(option);
-      }
-    }
-
-    // Convertion
-    documentConverter.convert(source, destination);
   }
 }

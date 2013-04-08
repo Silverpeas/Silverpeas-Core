@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,82 +24,59 @@
 
 package com.silverpeas.subscribe.web;
 
-import com.silverpeas.web.Exposable;
 import com.silverpeas.subscribe.Subscription;
+import com.silverpeas.subscribe.constant.SubscriptionMethod;
 
-import java.net.URI;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
+import java.util.Date;
 
 /**
  * @author ehugonnet
  */
 @XmlRootElement
-public class SubscriptionEntity implements Exposable {
+public class SubscriptionEntity {
 
-  @XmlElement(defaultValue = "")
-  private URI uri;
   @XmlElement(required = true)
-  private int id = 0;
+  private SubscriptionResourceEntity resource;
   @XmlElement(required = true)
-  private String componentId;
+  private SubscriberEntity subscriber;
   @XmlElement(defaultValue = "true")
-  private boolean componentSubscription = true;
-  @XmlElement()
-  private String name;
-  @XmlElement()
-  private String userId;
-  @XmlElement()
-  private String userName;
-  @XmlTransient
-  private static final long serialVersionUID = -621014423925580476L;
+  private boolean forced = true;
+  @XmlElement(defaultValue = "true")
+  private boolean selfCreation = true;
+  @XmlElement(defaultValue = "true")
+  private Date creationDate;
 
-  static SubscriptionEntity fromSubscription(Subscription subscription) {
+  static SubscriptionEntity from(Subscription subscription) {
     SubscriptionEntity entity = new SubscriptionEntity();
-    entity.id = Integer.parseInt(subscription.getTopic().getId());
-    entity.componentId = subscription.getTopic().getComponentName();
-    entity.componentSubscription = subscription.isComponentSubscription();
-    entity.userId = subscription.getSubscriber();
+    entity.resource = SubscriptionResourceEntity.from(subscription.getResource());
+    entity.subscriber = SubscriberEntity.from(subscription.getSubscriber());
+    entity.forced = SubscriptionMethod.FORCED.equals(subscription.getSubscriptionMethod());
+    entity.selfCreation =
+        SubscriptionMethod.SELF_CREATION.equals(subscription.getSubscriptionMethod());
+    entity.creationDate = subscription.getCreationDate();
     return entity;
   }
 
-  SubscriptionEntity withName(String name) {
-    this.name = name;
-    return this;
+  public SubscriptionResourceEntity getResource() {
+    return resource;
   }
 
-  SubscriptionEntity withURI(URI uri) {
-    this.uri = uri;
-    return this;
+  public SubscriberEntity getSubscriber() {
+    return subscriber;
   }
 
-  @Override
-  public URI getURI() {
-    return uri;
+  public boolean isForced() {
+    return forced;
   }
 
-  public String getComponentId() {
-    return componentId;
+  public boolean isSelfCreation() {
+    return selfCreation;
   }
 
-  public boolean isComponentSubscription() {
-    return componentSubscription;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public String getUserName() {
-    return userName;
+  public Date getCreationDate() {
+    return creationDate;
   }
 }

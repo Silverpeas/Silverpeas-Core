@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.form;
 
 import com.silverpeas.util.ArrayUtil;
@@ -39,6 +35,7 @@ import java.util.Set;
 
 /**
  * The TypeManager gives all the known field and displayer type
+ *
  * @see Field
  * @see FieldDisplayer
  */
@@ -68,6 +65,7 @@ public class TypeManager {
 
   /**
    * Returns the class field implementation of the named type.
+   *
    * @throws FormException if the type name is unknown.
    */
   public Class<?> getFieldImplementation(String typeName)
@@ -82,6 +80,7 @@ public class TypeManager {
 
   /**
    * Returns the name of the default FieldDisplayer of the named type.
+   *
    * @throws FormException if the type name is unknown.
    */
   public String getDisplayerName(String typeName) throws FormException {
@@ -96,6 +95,7 @@ public class TypeManager {
 
   /**
    * Returns the names of all the FieldDisplayers which can be used with the named type.
+   *
    * @throws FormException if the type name is unknown.
    */
   public String[] getDisplayerNames(String typeName)
@@ -109,12 +109,11 @@ public class TypeManager {
 
   /**
    * Returns the named FieldDisplayer of the named field.
-   * @throws FormException if the type name is unknown.
-   * @throws FormException if the displayer name is unknown.
-   * @throws FormException if the displayer and the type are not compatible.
+   *
+   * @throws FormException if the type name is unknown, if the displayer name is unknown or if the
+   * displayer and the type are not compatible.
    */
-  public FieldDisplayer getDisplayer(String typeName,
-      String displayerName) throws FormException {
+  public FieldDisplayer getDisplayer(String typeName, String displayerName) throws FormException {
     String displayerId = getDisplayerId(typeName, displayerName);
     Class<?> displayerClass = displayerId2displayerClass.get(displayerId);
 
@@ -320,7 +319,6 @@ public class TypeManager {
           "com.silverpeas.form.settings.types", e);
     }
   }
-
   /**
    * The Map (typeName -> fieldClass)
    */

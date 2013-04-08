@@ -364,7 +364,6 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   protected Node getNode(Session session, ItemId id) throws RepositoryException {
-    NodeId nodeId = (NodeId) id;
     return session.getNodeByIdentifier(id.toString());
   }
 
@@ -377,8 +376,12 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean isGranted(Path path, Name name, int i) throws RepositoryException {
-    throw new UnsupportedOperationException("Not supported yet.");
+  public boolean isGranted(Path path, Name name, int permission) throws RepositoryException {
+    boolean canAccessPath = true;
+    if (path != null) {
+      canAccessPath = isGranted(path, permission);
+    }
+    return canAccessPath ;
   }
 
   @Override

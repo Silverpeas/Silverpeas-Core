@@ -29,6 +29,9 @@
     <name>template</name>
     <description></description>
     <visible>true</visible>
+    <applications>
+        <application>kmelia</application>
+    </applications>
     <viewFileName>template/view.xml</viewFileName>
     <viewTypeFile></viewTypeFile>
     <updateFileName>template/update.xml</updateFileName>

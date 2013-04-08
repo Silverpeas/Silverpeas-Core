@@ -26,27 +26,11 @@
 -->
 
 <ejb-jar id="ejb-jar_ID" version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
   <description>no description</description>
   <display-name>NodeJar</display-name>
   <enterprise-beans>
-    <entity>
-      <description>no description</description>
-      <display-name>Node</display-name>
-      <ejb-name>Node</ejb-name>
-      <home>com.stratelia.webactiv.util.node.ejb.NodeHome</home>
-      <remote>com.stratelia.webactiv.util.node.ejb.Node</remote>
-      <ejb-class>com.stratelia.webactiv.util.node.ejb.NodeEJB</ejb-class>
-      <persistence-type>Bean</persistence-type>
-      <prim-key-class>com.stratelia.webactiv.util.node.model.NodePK</prim-key-class>
-      <reentrant>false</reentrant>
-      <resource-ref>
-        <res-ref-name>jdbc/Silverpeas</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-      </resource-ref>
-    </entity>
     <session>
       <description>no description</description>
       <display-name>NodeBm</display-name>
@@ -56,13 +40,6 @@
       <ejb-class>com.stratelia.webactiv.util.node.control.NodeBmEJB</ejb-class>
       <session-type>Stateless</session-type>
       <transaction-type>Container</transaction-type>
-      <ejb-ref>
-        <ejb-ref-name>Node</ejb-ref-name>
-        <ejb-ref-type>Entity</ejb-ref-type>
-        <home>com.stratelia.webactiv.util.node.ejb.NodeHome</home>
-        <remote>com.stratelia.webactiv.util.node.ejb.Node</remote>
-        <ejb-link>Node</ejb-link>
-      </ejb-ref>
       <resource-ref>
         <res-ref-name>jdbc/Silverpeas</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
@@ -88,17 +65,21 @@
   <assembly-descriptor>
     <container-transaction>
       <method>
-        <ejb-name>Node</ejb-name>
-        <method-name>*</method-name>
-      </method>
-      <trans-attribute>Supports</trans-attribute>
-    </container-transaction>
-    <container-transaction>
-      <method>
         <ejb-name>NodeBm</ejb-name>
         <method-name>*</method-name>
       </method>
       <trans-attribute>Supports</trans-attribute>
+    </container-transaction>
+     <container-transaction>
+      <method>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
     </container-transaction>
     <container-transaction>
       <method>
@@ -111,6 +92,61 @@
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>createNode</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodeDetail</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>updateRightsDependency</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodeDetail</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>setDetail</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodeDetail</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>NodeBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>removeNode</method-name>
+        <method-params>
+          <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction><container-transaction>
+    <method>
+      <ejb-name>NodeBm</ejb-name>
+      <method-intf>Remote</method-intf>
+      <method-name>moveNode</method-name>
+      <method-params>
+        <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+        <method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+      </method-params>
+    </method>
+    <trans-attribute>Required</trans-attribute>
+  </container-transaction>
     <container-transaction>
       <method>
         <ejb-name>CoordinatesBm</ejb-name>

@@ -24,17 +24,19 @@
 
 package com.silverpeas.accesscontrol;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 /**
  * Check the access to a node for a user.
@@ -44,7 +46,7 @@ import javax.inject.Named;
 public class NodeAccessController implements AccessController<NodePK> {
 
   @Inject
-  private OrganizationController controller;
+  private OrganisationController controller;
 
   public NodeAccessController() {
   }
@@ -53,7 +55,7 @@ public class NodeAccessController implements AccessController<NodePK> {
    * For tests only.
    * @param controller
    */
-  NodeAccessController(OrganizationController controller) {
+  NodeAccessController(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -71,7 +73,7 @@ public class NodeAccessController implements AccessController<NodePK> {
       if (!node.haveRights()) {
         return true;
       }
-      return getOrganizationController().isObjectAvailable(node.getRightsDependsOn(),
+      return getOrganisationController().isObjectAvailable(node.getRightsDependsOn(),
           ObjectType.NODE, nodePK.getInstanceId(), userId);
     }
     return false;
@@ -87,9 +89,9 @@ public class NodeAccessController implements AccessController<NodePK> {
    * Gets the organization controller used for performing its task.
    * @return an organization controller instance.
    */
-  private OrganizationController getOrganizationController() {
+  private OrganisationController getOrganisationController() {
     if (controller == null) {
-      controller = new OrganizationController();
+      controller = OrganisationControllerFactory.getOrganisationController();
     }
     return controller;
   }

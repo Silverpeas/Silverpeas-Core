@@ -242,8 +242,7 @@ CREATE TABLE st_instance_modelused
 	instanceId		varchar(50)     NOT NULL,
 	modelId			varchar(50)	NOT NULL,
 	objectId		varchar(50)	NOT NULL DEFAULT ('0')
-) 
-;
+);
 
 CREATE TABLE ST_UserFavoriteSpaces
 (

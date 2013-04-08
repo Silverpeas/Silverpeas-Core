@@ -130,7 +130,7 @@
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+	        <td><input <%=fieldAttribute%> type="password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
 	    </tr>
 		<tr>
 	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>

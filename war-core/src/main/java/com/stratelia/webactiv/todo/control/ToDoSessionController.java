@@ -43,7 +43,6 @@ import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -477,7 +476,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
    * @see
    */
   public UserDetail[] getUserList() {
-    return getOrganizationController().getAllUsers();
+    return getOrganisationController().getAllUsers();
   }
 
   /**
@@ -670,7 +669,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     if (cachedComp != null) {
       resultComp = cachedComp;
     } else {
-      resultComp = getOrganizationController().getComponentInstLight(componentId);
+      resultComp = getOrganisationController().getComponentInstLight(componentId);
       componentsMap.put(componentId, resultComp);
     }
     return resultComp;
@@ -687,7 +686,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     if (cachedSpace != null) {
       resultSpace = cachedSpace;
     } else {
-      resultSpace = getOrganizationController().getSpaceInstLightById(spaceId);
+      resultSpace = getOrganisationController().getSpaceInstLightById(spaceId);
       spacesMap.put(spaceId, resultSpace);
     }
     return resultSpace;

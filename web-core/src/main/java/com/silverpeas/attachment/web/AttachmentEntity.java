@@ -26,12 +26,13 @@ package com.silverpeas.attachment.web;
 
 import com.silverpeas.web.Exposable;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentRuntimeException;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.silverpeas.attachment.AttachmentException;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author ehugonnet
@@ -58,8 +59,6 @@ public class AttachmentEntity implements Exposable {
   private String author;
   @XmlElement(defaultValue = "")
   private String title;
-  @XmlElement(defaultValue = "")
-  private String info;
   @XmlElement(required = true)
   private URI uri;
   @XmlElement(required = true)
@@ -69,49 +68,26 @@ public class AttachmentEntity implements Exposable {
   @XmlElement(required = false)
   private URI sharedUri;
 
-  public static AttachmentEntity fromAttachment(AttachmentDetail detail) {
+  public static AttachmentEntity fromAttachment(SimpleDocument detail) {
     AttachmentEntity entity = new AttachmentEntity();
     try {
-      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
+      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getId()));
     } catch (URISyntaxException e) {
-      throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
+      throw new AttachmentException("AttachmentEntity.fromAttachment(",
+          AttachmentException.ERROR, "Couldn't build the URI to the attachment", e);
     }
-    entity.id = detail.getPK().getId();
-    entity.instanceId = detail.getPK().getComponentName();
-    entity.logicalName = detail.getLogicalName();
+    entity.id = detail.getId();
+    entity.instanceId = detail.getInstanceId();
+    entity.logicalName = detail.getFilename();
     entity.description = detail.getDescription();
     entity.size = detail.getSize();
-    entity.creationDate = detail.getCreationDate().getTime();
-    entity.info = detail.getInfo();
-    entity.author = detail.getAuthor();
+    entity.creationDate = detail.getCreated().getTime();
+    entity.author = detail.getCreatedBy();
     entity.title = detail.getTitle();
-    entity.type = detail.getType();
-    entity.icon = detail.getAttachmentIcon();
-    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
-    return entity;
-  }
+    entity.type = detail.getContentType();
+    entity.icon = detail.getDisplayIcon();
+    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getId());
 
-  public static AttachmentEntity fromAttachment(AttachmentDetail detail, String lang) {
-    AttachmentEntity entity = new AttachmentEntity();
-    try {
-      entity.uri = new URI(URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId()));
-    } catch (URISyntaxException e) {
-      throw new AttachmentRuntimeException("AttachmentEntity.fromAttachment(",
-          AttachmentRuntimeException.ERROR, "Couldn't build the URI to the attachment", e);
-    }
-    entity.id = detail.getPK().getId();
-    entity.instanceId = detail.getPK().getComponentName();
-    entity.logicalName = detail.getLogicalName(lang);
-    entity.description = detail.getDescription();
-    entity.size = detail.getSize(lang);
-    entity.creationDate = detail.getCreationDate(lang).getTime();
-    entity.info = detail.getInfo(lang);
-    entity.author = detail.getAuthor(lang);
-    entity.title = detail.getTitle(lang);
-    entity.type = detail.getType(lang);
-    entity.icon = detail.getAttachmentIcon(lang);
-    entity.permalink = URLManager.getSimpleURL(URLManager.URL_FILE, detail.getPK().getId());
     return entity;
   }
 

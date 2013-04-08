@@ -245,7 +245,7 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Properties used in the site generation -->
-    <installer_stable_version>5.11.1</installer_stable_version>
+    <installer_stable_version>5.11.2</installer_stable_version>
     <installer_version>5.12-SNAPSHOT</installer_version>
   </properties>
 

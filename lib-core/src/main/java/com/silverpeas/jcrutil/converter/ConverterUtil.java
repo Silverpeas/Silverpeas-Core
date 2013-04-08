@@ -1,10 +1,9 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -13,21 +12,14 @@
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil.converter;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.util.DateUtil;
-import org.apache.jackrabbit.util.ISO9075;
-import org.apache.jackrabbit.util.Text;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,8 +28,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import org.apache.jackrabbit.util.ISO9075;
+import org.apache.jackrabbit.util.Text;
+
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.util.DateUtil;
+
 /**
  * Utility class for path and date conversions between JCR and Slverpeas Pojo.
+ *
  * @author Emmanuel Hugonnet
  * @version $revision$
  */
@@ -47,7 +46,6 @@ public class ConverterUtil {
    * Token used to replace space in names.
    */
   public static final String SPACE_TOKEN = "__";
-
   /**
    * Token used in path.
    */
@@ -57,6 +55,7 @@ public class ConverterUtil {
 
   /**
    * Encodes the JCR path to a Xpath compatible path.
+   *
    * @param path the JCR path to be encoded for Xpath.
    * @return the corresponding xpath.
    */
@@ -66,6 +65,7 @@ public class ConverterUtil {
 
   /**
    * Replace all whitespace to SPACE_TOKEN.
+   *
    * @param name the String o be converted.
    * @return the resulting String.
    */
@@ -83,13 +83,14 @@ public class ConverterUtil {
     }
     return buffer.toString();
   }
-  
+
   public static String escapeIllegalJcrChars(String name) {
     return StringUtil.escapeQuote(name).replace(OPENING_BRACKET, " ").replace(CLOSING_BRACKET, " ");
   }
 
   /**
    * Replace all %39 with the char'
+   *
    * @param text
    * @return a String with all %39 replaced by quotes
    */
@@ -99,6 +100,7 @@ public class ConverterUtil {
 
   /**
    * Replace all SPACE_TOKEN to whitespace.
+   *
    * @param name the String o be converted.
    * @return the resulting String.
    */
@@ -108,6 +110,7 @@ public class ConverterUtil {
 
   /**
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
+   *
    * @param date the String to be parsed.
    * @return the corresponding date.
    * @throws ParseException
@@ -118,9 +121,9 @@ public class ConverterUtil {
 
   /**
    * Format a Date to a String of format yyyy/MM/dd.
+   *
    * @param date the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatDate(Date date) {
     return DateUtil.formatDate(date);
@@ -128,9 +131,9 @@ public class ConverterUtil {
 
   /**
    * Format a Calendar to a String of format yyyy/MM/dd.
+   *
    * @param calend the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatDate(Calendar calend) {
     return DateUtil.formatDate(calend);
@@ -139,9 +142,9 @@ public class ConverterUtil {
   /**
    * Parse a String of format HH:mm and set the corresponding hours and minutes to the specified
    * Calendar.
+   *
    * @param time the String to be parsed.
    * @param calend the calendar to be updated.
-   * @throws ParseException
    */
   public static void setTime(Calendar calend, String time) {
     DateUtil.setTime(calend, time);
@@ -149,9 +152,9 @@ public class ConverterUtil {
 
   /**
    * Format a Date to a String of format HH:mm.
+   *
    * @param date the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatTime(Date date) {
     return DateUtil.formatTime(date);
@@ -159,9 +162,9 @@ public class ConverterUtil {
 
   /**
    * Format a Calendar to a String of format HH:mm.
+   *
    * @param calend the date to be formatted.
    * @return the formatted String.
-   * @throws ParseException
    */
   public static String formatTime(Calendar calend) {
     return DateUtil.formatTime(calend);

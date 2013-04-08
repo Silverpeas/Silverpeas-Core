@@ -30,9 +30,6 @@
 
 package com.stratelia.webactiv.util;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 /**
  * @author jpouyadou
  * @version
@@ -46,7 +43,7 @@ public interface ConfigurationStore {
    * @author jpouyadou
    * @version
    */
-  public void serialize() throws FileNotFoundException, IOException;
+  public void serialize() throws Exception;
 
   public void putProperty(String key, String value);
 

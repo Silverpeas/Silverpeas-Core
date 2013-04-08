@@ -24,34 +24,30 @@
 
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.silverpeas.components.model.AbstractTestDao;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
  *
  * @author ehugonnet
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-jdbc-datasource.xml"})
-public class SilverStatisticsPeasDAOAccessTest extends AbstractTestDao {
+public class SilverStatisticsPeasDAOAccessTest extends AbstractSpringDatasourceTest {
 
   private static final String dateForTest = "2011-02-01";
 
   @Override
-  protected String getDatasetFileName() {
+  public String getDatasetFileName() {
     return "test-stats-access-dataset.xml";
   }
 

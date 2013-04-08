@@ -23,6 +23,7 @@
  */
 package org.silverpeas.viewer;
 
+import java.io.File;
 import javax.inject.Inject;
 
 /**
@@ -55,7 +56,44 @@ public class ViewerFactory {
    * @return
    */
   public static PreviewService getPreviewService() {
-    return getInstance().previewService;
+    return instance.previewService;
+  }
+
+  /**
+   * Indicates if file is previewable.
+   * @param file 
+   * @return true if a preview can be produced  - false otherwise.
+   */
+  public static boolean isPreviewable(File file) {
+    return getPreviewService().isPreviewable(file);
+  }
+  
+   /**
+   * Indicates if file is previewable.
+   * @param path 
+   * @return true if a preview can be produced  - false otherwise.
+   */
+  public static boolean isPreviewable(String path) {
+    return getPreviewService().isPreviewable(new File(path));
+  }
+  
+  
+  /**
+   * Indicates if file is displayable with FlexPaper.
+   * @param file 
+   * @return true if a preview can be produced  - false otherwise.
+   */
+  public static boolean isViewable(File file) {
+    return getViewService().isViewable(file);
+  }
+  
+   /**
+   * Indicates if file is displayable with FlexPaper.
+   * @param path 
+   * @return true if a preview can be produced  - false otherwise.
+   */
+  public static boolean isViewable(String path) {
+    return getViewService().isViewable(new File(path));
   }
 
   /**
@@ -63,6 +101,6 @@ public class ViewerFactory {
    * @return
    */
   public static ViewService getViewService() {
-    return getInstance().viewService;
+    return instance.viewService;
   }
 }

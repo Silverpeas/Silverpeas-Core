@@ -20,13 +20,13 @@
  */
 package org.silverpeas.search.indexEngine.model;
 
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import com.silverpeas.util.FileUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * An RepositoryIndexer allow to index files in a whole repository except the directories

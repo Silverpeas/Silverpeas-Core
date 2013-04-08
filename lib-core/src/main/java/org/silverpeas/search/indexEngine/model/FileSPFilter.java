@@ -35,8 +35,9 @@ public class FileSPFilter implements FileFilter {
   }
 
   public synchronized static FileSPFilter getInstance() {
-    if (INSTANCE == null)
+    if (INSTANCE == null) {
       INSTANCE = new FileSPFilter();
+    }
     return INSTANCE;
   }
 

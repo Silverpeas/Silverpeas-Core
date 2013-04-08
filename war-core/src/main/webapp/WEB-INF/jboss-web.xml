@@ -26,5 +26,5 @@
 -->
 
 <jboss-web>
-  <depends>org.hornetq:module=JMS,name="comments",type=Topic</depends>
+  <depends>org.hornetq:module=JMS,name="NettyConnectionFactory",type=ConnectionFactory</depends>
 </jboss-web>

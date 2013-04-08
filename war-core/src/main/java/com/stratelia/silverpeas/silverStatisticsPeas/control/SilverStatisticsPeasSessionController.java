@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
 import com.silverpeas.pdc.ejb.PdcBmHome;
@@ -60,6 +56,7 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class SilverStatisticsPeasSessionController extends AbstractComponentSessionController {
@@ -82,7 +79,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   private String accessFilterLibUser = null;
   private String accessFilterIdUser = null;
   private String accessSpaceId = null;
-  /** current stats list */
+  /**
+   * current stats list
+   */
   private Vector<String[]> currentStats = new Vector<String[]>();
   private Vector<String[]> path = new Vector<String[]>();
   private Collection<String> yearsConnection = null;
@@ -119,6 +118,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Standard Session Controller Constructeur
+   *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
    * @see
@@ -406,6 +406,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   /**
    * donne les stats pour un groupe seulement cad 2 info, la collection contient donc un seul
    * element
+   *
    * @param dateBegin a begin date string representation yyyy/MM/dd
    * @param dateEnd an end date string representation yyyy/MM/dd
    * @param idGroup a user group identifier
@@ -600,6 +601,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Méthode d'envoi de notification aux utilisateurs connectés
+   *
    * @param listUserDetail - liste des utilisateurs connectés
    * @param message
    */
@@ -637,11 +639,11 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (theGroup != null && theGroup.length() != 0) {
       setFilterType("0");
       setFilterId(theGroup);
-      setFilterLib(getOrganizationController().getGroup(theGroup).getName());
+      setFilterLib(getOrganisationController().getGroup(theGroup).getName());
     } else if (theUser != null && theUser.length() != 0) {
       setFilterType("1");
       setFilterId(theUser);
-      setFilterLib(getOrganizationController().getUserDetail(theUser).getLastName());
+      setFilterLib(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourUserPanel()",
@@ -752,7 +754,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     // update FilterType and FilterLib, FilterId
     if (theGroup != null && theGroup.length() != 0) {
       setAccessFilterIdGroup(theGroup);
-      setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
+      setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
@@ -775,7 +777,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     if (theUser != null && theUser.length() != 0) {
       setAccessFilterIdUser(theUser);
-      setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
+      setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
@@ -799,7 +801,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     // update FilterType and FilterLib, FilterId
     if (theGroup != null && theGroup.length() != 0) {
       setAccessFilterIdGroup(theGroup);
-      setAccessFilterLibGroup(getOrganizationController().getGroup(theGroup).getName());
+      setAccessFilterLibGroup(getOrganisationController().getGroup(theGroup).getName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelGroup()",
@@ -822,7 +824,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
     if (theUser != null && theUser.length() != 0) {
       setAccessFilterIdUser(theUser);
-      setAccessFilterLibUser(getOrganizationController().getUserDetail(theUser).getLastName());
+      setAccessFilterLibUser(getOrganisationController().getUserDetail(theUser).getLastName());
     }
     SilverTrace.debug("silverStatisticsPeas",
         "SilverStatisticsPeasSessionController.retourAccessUserPanelUser()",
@@ -836,7 +838,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String filterIdUser, String spaceId) {
     UserPieChartBuilder userBuilder = new UserPieChartBuilder(dateStat,
         formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, this.getMultilang(), getOrganizationController());
+        spaceId, this.getMultilang(), getOrganisationController());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -865,7 +867,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         mois = values[0].substring(5, 7);
         dates[i] = mois + "-" + annee;
         nbAccess[i] = Double.parseDouble(values[1]);
-        currentStats.add(new String[] { values[0], values[1] });
+        currentStats.add(new String[]{values[0], values[1]});
 
         i++;
       }
@@ -923,7 +925,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (StringUtil.isDefined(spaceId) && (!spaceId.equals("WA0"))) {
       try {
         SpaceInstLight space = AdminReference.getAdminService().getSpaceInstLightById(spaceId);
-        path.insertElementAt(new String[] { spaceId, space.getName() }, 0);
+        path.insertElementAt(new String[]{spaceId, space.getName()}, 0);
         buildPath("WA" + space.getFatherId());
       } catch (AdminException e) {
         SilverTrace.error("silverStatisticsPeas",
@@ -958,7 +960,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String[] counts =
           (String[]) statsKMsInstances[1].toArray(new String[statsKMsInstances[1].size()]);
       for (int i = 0; i < kms.length; i++) {
-        currentStats.add(new String[] { kms[i], counts[i] });
+        currentStats.add(new String[]{kms[i], counts[i]});
       }
 
       pieChart = ChartUtil.buildPieChart(getString("silverStatisticsPeas.ServicesNumber"),
@@ -980,7 +982,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String filterIdUser, String spaceId) {
     PubliPieChartBuilder publiBuilder = new PubliPieChartBuilder(dateStat,
         formatDate(dateStat), getUserId(), filterIdGroup, filterIdUser,
-        spaceId, getOrganizationController(), this.getMultilang());
+        spaceId, getOrganisationController(), this.getMultilang());
     resetPath(spaceId);
     return publiBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -996,11 +998,12 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   /**
+   * @param spaceId
    * @return
    */
   public PieChart2D getDocsSizeVentilChart(String spaceId) {
-    DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(
-        getUserId(), spaceId, this.getMultilang());
+    DocSizePieChartBuilder userBuilder = new DocSizePieChartBuilder(getUserId(), spaceId, this
+        .getMultilang());
     resetPath(spaceId);
     return userBuilder.getChart(spaceId, getUserId(), currentStats);
   }
@@ -1028,7 +1031,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
         dates[i] = mois + "-" + annee;
         size[i] = Double.parseDouble(values[2]) / 1024; // size en Mo
 
-        currentStats.add(new String[] { values[0], values[1], values[2] });
+        currentStats.add(new String[]{values[0], values[1], values[2]});
         i++;
       }
 
@@ -1380,8 +1383,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   /**
-   * @return
-   * @throws PdcException
+   * @return @throws PdcException
    */
   public List<StatisticAxisVO> getPrimaryAxis() throws PdcException {
     List<StatisticAxisVO> statsAxes = new ArrayList<StatisticAxisVO>();
@@ -1397,6 +1399,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Retrieve statistics on axis
+   *
    * @param statsFilter an axis stats filter
    * @return a Statistic value object
    */
@@ -1493,6 +1496,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * SEARCH ONLY PDC publications on current selected axis
+   *
    * @param axisId
    * @param valueId
    * @param componentIds
@@ -1522,6 +1526,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * SEARCH ONLY PDC publications on current selected axis
+   *
    * @param searchContext
    * @param componentIds
    * @return
@@ -1581,7 +1586,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (componentId.startsWith("silverCrawler")
         || componentId.startsWith("gallery")
         || componentId.startsWith("kmelia")) {
-      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganizationController().
+      boolean isPrivateSearch = "yes".equalsIgnoreCase(getOrganisationController().
           getComponentParameterValue(componentId, "privateSearch"));
       return !isPrivateSearch;
     } else {
@@ -1591,6 +1596,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Retrieve cross axis statistics
+   *
    * @param statsFilter
    * @return list of statistic value object
    */
@@ -1668,6 +1674,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   /**
    * Compute the number of axis access
+   *
    * @param accessPublis the list of publications that have been accessed on specific time period
    * @param gSC the list of publication which are classified on an axis
    * @return the global number of access on a specific axis

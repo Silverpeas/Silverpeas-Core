@@ -25,18 +25,21 @@
 package com.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.authentication.Authentication;
-import org.silverpeas.authentication.AuthenticationUserStateChecker;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.authentication.Authentication;
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanTryAgainToLoginVerifier;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.exception.AuthenticationNoMoreUserConnectionAttemptException;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -44,6 +47,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
+
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -57,7 +65,7 @@ public class AuthenticationServlet extends HttpServlet {
 
   private static AuthenticationService authService = new AuthenticationService();
   private static final long serialVersionUID = -8695946617361150513L;
-  private static final SilverpeasSessionOpenener silverpeasSessionOpener = new SilverpeasSessionOpenener();
+  private static final SilverpeasSessionOpener silverpeasSessionOpener = new SilverpeasSessionOpener();
   private static final String TECHNICAL_ISSUE = "2";
   private static final String INCORRECT_LOGIN_PWD = "1";
 
@@ -71,7 +79,7 @@ public class AuthenticationServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding("UTF-8");
+      request.setCharacterEncoding(CharEncoding.UTF_8);
     }
     if (silverpeasSessionOpener.isAnonymousUser(request)) {
       silverpeasSessionOpener.closeSession(request);
@@ -84,14 +92,28 @@ public class AuthenticationServlet extends HttpServlet {
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
-    String sDomainId = getDomain(request, authenticationSettings,
+    String domainId = getDomain(request, authenticationSettings,
         authenticationParameters.isCasMode());
+    AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(authenticationParameters.getLogin())
+            .withAsPassword(authenticationParameters.getPassword())
+            .withAsDomainId(domainId);
 
-    String authenticationKey = authenticate(request, authenticationParameters, sDomainId);
+    String authenticationKey = authenticate(request, authenticationParameters, domainId);
     String url;
+
+    // Verify if the user can try again to login.
+    UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier =
+        AuthenticationUserVerifierFactory.getUserCanTryAgainToLoginVerifier(credential);
+    userCanTryAgainToLoginVerifier.clearSession(request);
+
     if (authenticationKey != null && !authenticationKey.startsWith("Error")) {
-      if (sDomainId != null) {
-        storeDomain(response, sDomainId);
+
+      // Clearing user connection attempt cache.
+      userCanTryAgainToLoginVerifier.clearCache();
+
+      if (domainId != null) {
+        storeDomain(response, domainId);
       }
       storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
 
@@ -121,13 +143,22 @@ public class AuthenticationServlet extends HttpServlet {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       if("Error_1".equals(authenticationKey)) {
-        url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+        try {
+          if (userCanTryAgainToLoginVerifier.isActivated()) {
+            storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+            storeDomain(response, domainId);
+          }
+          url = userCanTryAgainToLoginVerifier.verify()
+              .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
+        } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
+          url = userCanTryAgainToLoginVerifier.getErrorDestination();
+        }
       }
       else if(AuthenticationService.ERROR_PWD_EXPIRED.equals(authenticationKey)){
           String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
           if(StringUtil.getBooleanValue(allowPasswordChange)){
             ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-            url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
+            url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+domainId;
           } else {
             url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
           }
@@ -136,14 +167,34 @@ public class AuthenticationServlet extends HttpServlet {
         String allowPasswordChange = (String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED);
         if(StringUtil.getBooleanValue(allowPasswordChange)){
           ResourceLocator settings = new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
-          url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+sDomainId;
+          url = settings.getString("passwordExpiredURL")+"?login="+ authenticationParameters.getLogin()+"&domainId="+domainId;
         } else {
           url = "/Login.jsp?ErrorCode=" + AuthenticationService.ERROR_PWD_EXPIRED;
         }
-      }
-      else if(AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+      } else if (UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN
+          .equals(authenticationKey)) {
+        // User has been successfully authenticated, but he has to change his password on his
+        // first login and login / domain id can be stored
         storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
-        url = AuthenticationUserStateChecker.getErrorDestination();
+        storeDomain(response, domainId);
+        url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
+            .getDestinationOnFirstLogin(request);
+        RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+        dispatcher.forward(request, response);
+        return;
+      }
+      else if(UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(authenticationKey)){
+        if (userCanTryAgainToLoginVerifier.isActivated() ||
+            StringUtil.isDefined(userCanTryAgainToLoginVerifier.getUser().getId())) {
+          // If user can try again to login verifier is activated or if the user has been found
+          // from credential, the login and the domain are stored
+          storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+          storeDomain(response, domainId);
+          url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
+              .getErrorDestination();
+        } else {
+          url = "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD;
+        }
       }
       else {
         url = "/Login.jsp?ErrorCode=" + TECHNICAL_ISSUE;
@@ -224,7 +275,6 @@ public class AuthenticationServlet extends HttpServlet {
       for(Map.Entry<String, Object> capability: credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
       }
-
       return key;
     }
     return null;

@@ -24,6 +24,17 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.result;
 
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspTagException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.search.ResultDisplayer;
@@ -32,21 +43,14 @@ import com.silverpeas.search.ResultSearchRendererUtil;
 import com.silverpeas.search.SearchResultContentVO;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.pdcPeas.model.GlobalSilverResult;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspTagException;
-import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Tag to display result search element (GlobalSilverResult) object. Add extra information from
@@ -67,11 +71,6 @@ public class HtmlSearchResultTag extends TagSupport {
   private Integer sortValue = null;
   private Boolean activeSelection = false;
   private Boolean exportEnabled = false;
-
-  /*
-   * object helper
-   */
-  private OrganizationController orga = new OrganizationController();
   private ResourcesWrapper settings = null;
   private Map<String, Boolean> componentSettings = new HashMap<String, Boolean>();
 
@@ -175,7 +174,8 @@ public class HtmlSearchResultTag extends TagSupport {
         || instanceId.startsWith("pdc"))) {
 
       // Check if this component has a specific template result
-      ComponentInstLight component = orga.getComponentInstLight(instanceId);
+      ComponentInstLight component = OrganisationControllerFactory
+          .getOrganisationController().getComponentInstLight(instanceId);
       if (component != null) {
         componentName = component.getName();
 
@@ -239,16 +239,12 @@ public class HtmlSearchResultTag extends TagSupport {
       String extraInformation) throws JspTagException {
     // initialize html result
     StringBuilder result = new StringBuilder();
-
     String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
         "\" class=\"fileDownload\" alt=\"" + settings.getString("pdcPeas.DownloadInfo") +
         "\"/>";
-
-    String sName = EncodeHelper.javaStringToHtmlString(gsr.getName());
-    String sDescription = gsr.getDescription();
-    if (sDescription != null && sDescription.length() > 400) {
-      sDescription = sDescription.substring(0, 400) + "...";
-    }
+    String language = getSettings().getLanguage();
+    String sName = EncodeHelper.javaStringToHtmlString(gsr.getName(language));
+    String sDescription = StringUtil.abbreviate(gsr.getDescription(language), 400);
     String sURL = gsr.getTitleLink();
     String sDownloadURL = gsr.getDownloadLink();
     String sLocation = gsr.getLocation();
@@ -397,7 +393,7 @@ public class HtmlSearchResultTag extends TagSupport {
 
     return result.toString();
   }
-
+  
   /**
    * @return a UserPreferences object from Personalization service.
    * @throws JspTagException
@@ -408,20 +404,23 @@ public class HtmlSearchResultTag extends TagSupport {
 
   /**
    * @return a ResourcesWrapper which encapsulate pdcPeas settings and bundles
-   * @throws JspTagException
    */
   private ResourcesWrapper getSettings() throws JspTagException {
     if (settings == null) {
       String language = getUserPreferences().getLanguage();
-      ResourceLocator messages = new ResourceLocator(
-          "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
+      ResourceLocator messages =
+          new ResourceLocator("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
       settings =
           new ResourcesWrapper(messages,
-          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
-          new ResourceLocator("com.stratelia.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasIcons", ""),
+          new ResourceLocator("org.silverpeas.pdcPeas.settings.pdcPeasSettings", ""),
           language);
     }
     return settings;
+  }
+  
+  public void setSettings(ResourcesWrapper settings) {
+    this.settings = settings;
   }
 
 }

@@ -58,6 +58,6 @@
   </util:map>
 
   <bean id="hibernateVendor" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-        p:showSql="true" p:generateDdl="false"/>
+        p:showSql="false" p:generateDdl="false"/>
 
 </beans>

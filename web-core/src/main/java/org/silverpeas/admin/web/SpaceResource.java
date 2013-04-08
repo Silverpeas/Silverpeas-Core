@@ -259,7 +259,7 @@ public class SpaceResource extends AbstractAdminResource {
       verifyUserAuthorizedToAccessSpace(spaceId);
       final SpaceInstLight space = loadSpace(spaceId);
       return asWebEntity(space, getLookDelegate().getLook(space),
-          getLookDelegate().getWallpaper(space));
+          getLookDelegate().getWallpaper(space), getLookDelegate().getCSS(space));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

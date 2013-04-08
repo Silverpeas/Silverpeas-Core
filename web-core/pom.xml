@@ -12,7 +12,7 @@
   <packaging>jar</packaging>
   <name>Web Core Library - ${project.version}</name>
   <description>A module providing all the basic services of Silverpeas on which can we can build the Web GUI.</description>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.aspectj</groupId>
@@ -143,13 +143,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>versioning</artifactId>
-      <classifier>client</classifier>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <classifier>client</classifier>
       <version>${project.version}</version>
@@ -219,6 +212,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <scope>provided</scope>
@@ -228,10 +226,6 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jasig.cas</groupId>
@@ -270,28 +264,38 @@
   <build>
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>**/index/**/*</exclude>
-        </excludes>
-        <filtering>true</filtering>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources/</directory>
+        <directory>${basedir}/src/test/resources/</directory>
+        <filtering>false</filtering>
         <includes>
           <include>**/index/**/*</include>
+          <include>**/*.png</include>
+          <include>**/*.sql</include>
+          <include>**/*.css</include>
         </includes>
         <excludes>
           <exclude>**/*.properties</exclude>
           <exclude>**/*.xml</exclude>
+          <exclude>**/*.txt</exclude>
         </excludes>
-        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+          <include>**/*.txt</include>
+        </includes>
+        <excludes>
+          <exclude>**/index/**/*</exclude>
+          <exclude>**/*.png</exclude>
+        </excludes>
       </testResource>
     </testResources>
     <filters>
       <filter>src/test/filters/filters.properties</filter>
     </filters>
-<!--    <plugins>
+    <!--    <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>aspectj-maven-plugin</artifactId>

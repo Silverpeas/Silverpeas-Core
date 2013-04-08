@@ -27,6 +27,7 @@ package com.silverpeas.sharing.security;
  * Resource being accessed through some shared object. May be the shared object itself or an object
  * whose access is controlled by the shared object (for example node).
  *
+ * @param <T> 
  */
 public abstract class ShareableResource<T> {
 

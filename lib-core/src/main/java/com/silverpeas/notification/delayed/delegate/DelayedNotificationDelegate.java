@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.silverpeas.notification.delayed.DelayedNotificationFactory;
 import com.silverpeas.notification.delayed.constant.DelayedNotificationFrequency;
 import com.silverpeas.notification.delayed.model.DelayedNotificationData;
@@ -50,6 +48,7 @@ import com.silverpeas.util.MapUtil;
 import com.silverpeas.util.comparator.AbstractComplexComparator;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+
 import com.stratelia.silverpeas.notificationManager.AbstractNotification;
 import com.stratelia.silverpeas.notificationManager.NotificationParameterNames;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -62,6 +61,8 @@ import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Yohann Chastagnier
@@ -129,11 +130,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
    * @throws Exception
    */
   public static DelayedNotificationUserSetting executeUserSettingsUpdating(final int userId,
-      final NotifChannel channel,
-      final DelayedNotificationFrequency frequency) throws Exception {
-
+      final NotifChannel channel, final DelayedNotificationFrequency frequency) throws Exception {
     DelayedNotificationUserSetting result = null;
-
     // Getting old settings
     final DelayedNotificationUserSetting oldSettings =
         DelayedNotificationFactory.getDelayedNotification()
@@ -439,7 +437,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     syntheseResource.setName(resource.getResourceName());
     syntheseResource.setDescription(resource.getResourceDescription());
     if (syntheseResource.getDescription() != null) {
-      syntheseResource.setDescription(EncodeHelper.javaStringToHtmlParagraphe(syntheseResource.getDescription()));
+      syntheseResource.setDescription(EncodeHelper.convertWhiteSpacesForHTMLDisplay(syntheseResource
+          .getDescription()));
     }
     syntheseResource.setLocation(resource.getResourceLocation().replaceAll(NotificationResourceData.LOCATION_SEPARATOR,
         LOCATION_SEPARATOR));
@@ -476,7 +475,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       syntheseNotification.setPreviousHasMessage(isPreviousHasMessage);
       if (syntheseNotification.getMessage() != null) {
         isPreviousHasMessage = true;
-        syntheseNotification.setMessage(EncodeHelper.javaStringToHtmlParagraphe(syntheseNotification.getMessage()));
+        syntheseNotification.setMessage(EncodeHelper.convertWhiteSpacesForHTMLDisplay(
+            syntheseNotification.getMessage()));
       } else {
         isPreviousHasMessage = false;
       }

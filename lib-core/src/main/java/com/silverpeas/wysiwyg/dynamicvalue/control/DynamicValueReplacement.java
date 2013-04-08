@@ -40,7 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 
+ *
  *
  */
 public class DynamicValueReplacement {
@@ -83,7 +83,7 @@ public class DynamicValueReplacement {
         String firstOption = " ------------------";
         try {
           message =
-              new ResourceLocator("com.stratelia.silverpeas.wysiwyg.multilang.wysiwygBundle",
+              new ResourceLocator("org.silverpeas.wysiwyg.multilang.wysiwygBundle",
               language);
           if (message != null) {
             firstOption = message.getString("DynamicValues");
@@ -213,7 +213,7 @@ public class DynamicValueReplacement {
    */
   public static boolean isActivate() {
     ResourceLocator resource =
-        new ResourceLocator("com.stratelia.silverpeas.wysiwyg.settings.wysiwygSettings", "");
+        new ResourceLocator("org.silverpeas.wysiwyg.settings.wysiwygSettings", "");
     return resource.getBoolean("activateDynamicValue", false);
   }
 

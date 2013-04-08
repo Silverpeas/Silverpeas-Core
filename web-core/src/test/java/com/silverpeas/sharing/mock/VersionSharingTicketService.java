@@ -28,9 +28,10 @@ import com.silverpeas.sharing.model.DownloadDetail;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingTicketService;
-import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import java.util.Date;
 import java.util.List;
+
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 
 /**
  *
@@ -39,9 +40,9 @@ import java.util.List;
 public class VersionSharingTicketService implements SharingTicketService {
 
   private String token;
-  private DocumentPK pk;
+  private SimpleDocumentPK pk;
 
-  public VersionSharingTicketService(String token, DocumentPK pk) {
+  public VersionSharingTicketService(String token, SimpleDocumentPK pk) {
     this.token = token;
     this.pk = pk;
   }

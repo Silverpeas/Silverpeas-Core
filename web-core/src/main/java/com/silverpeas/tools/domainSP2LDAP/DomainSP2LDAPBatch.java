@@ -28,24 +28,22 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SynchroReport;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DomainSP2LDAPBatch {
-  private OrganizationController organizationController;
   private AdminController adminController;
   public static final String DOMAIN_SILVERPEAS_ID = "0";
 
-  public OrganizationController getOrganizationController() {
-    if (organizationController == null)
-      organizationController = new OrganizationController();
-    return organizationController;
+  public OrganisationController getOrganisationController() {
+    return OrganisationControllerFactory.getOrganisationController();
   }
 
   public AdminController getAdminController() {
@@ -84,7 +82,7 @@ public class DomainSP2LDAPBatch {
         return returnListLDAPUsers;
 
       for (String listLDAPUsersId : listLDAPUsersIds) {
-        UserDetail userDetailLDAP = getOrganizationController().getUserDetail(listLDAPUsersId);
+        UserDetail userDetailLDAP = getOrganisationController().getUserDetail(listLDAPUsersId);
         String keyName =
             (userDetailLDAP.getFirstName() + userDetailLDAP.getLastName()).toLowerCase();
         listLDAPUsers.put(keyName, userDetailLDAP);
@@ -94,7 +92,7 @@ public class DomainSP2LDAPBatch {
       String[] listSilverpeasUsersIds = adminController.getUserIdsOfDomain(DOMAIN_SILVERPEAS_ID);
       boolean processGroups = false;
       for (String listSilverpeasUsersId : listSilverpeasUsersIds) {
-        UserDetail userDetail = getOrganizationController().getUserDetail(listSilverpeasUsersId);
+        UserDetail userDetail = getOrganisationController().getUserDetail(listSilverpeasUsersId);
         String keyName = (userDetail.getFirstName() + userDetail.getLastName()).toLowerCase();
         // user to migrate
         if (listLDAPUsers.containsKey(keyName)) {
@@ -117,7 +115,7 @@ public class DomainSP2LDAPBatch {
 
       if (processGroups) {
         // Move groups from domainSP to mixtDomain
-        Group[] groups = getOrganizationController().getAllGroups();
+        Group[] groups = getOrganisationController().getAllGroups();
         SynchroReport.info("DomainSP2LDAPBatch.processMigration()",
             "DEBUT Migration des groupes du domaine SP vers le domaine mixte...", null);
         for (Group group : groups) {
@@ -175,7 +173,7 @@ public class DomainSP2LDAPBatch {
    * @throws AdminException
    */
   public Domain[] getDomains() throws AdminException {
-    return getOrganizationController().getAllDomains();
+    return getOrganisationController().getAllDomains();
   }
 
   public int getNbUsers(String domainId) {

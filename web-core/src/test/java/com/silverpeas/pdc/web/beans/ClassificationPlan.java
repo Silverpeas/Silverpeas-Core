@@ -24,16 +24,20 @@
 
 package com.silverpeas.pdc.web.beans;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.silverpeas.util.i18n.Translation;
+
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
-import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
-import java.util.List;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
-import edu.emory.mathcs.backport.java.util.Collections;
-import java.util.ArrayList;
-import static com.silverpeas.pdc.web.TestConstants.*;
+import com.stratelia.silverpeas.treeManager.model.TreeNodeI18N;
+
+import static com.silverpeas.pdc.web.TestConstants.COMPONENT_INSTANCE_ID;
+import static com.silverpeas.pdc.web.TestConstants.FRENCH;
 
 /**
  * It represents the PdC to use in the tests. As such it defines the differents axis and their values.

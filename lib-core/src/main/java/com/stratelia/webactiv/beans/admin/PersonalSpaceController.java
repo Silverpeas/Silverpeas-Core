@@ -35,13 +35,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.quota.exception.QuotaException;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
 public class PersonalSpaceController {
 
-  public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
+  public List<WAComponent> getVisibleComponents(OrganisationController orgaController) {
     List<WAComponent> visibleComponents = new ArrayList<WAComponent>();
     Collection<WAComponent> components = orgaController.getAllComponents().values();
     for (WAComponent component : components) {

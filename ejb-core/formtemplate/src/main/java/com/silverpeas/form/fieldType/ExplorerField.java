@@ -24,20 +24,13 @@
 
 package com.silverpeas.form.fieldType;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
 import com.silverpeas.form.FormException;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -46,6 +39,12 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An ExplorerField stores a node reference.
@@ -276,11 +275,6 @@ public class ExplorerField implements Field {
   private String pk = null;
 
   /**
-   * The main access to the users set.
-   */
-  private static OrganizationController organizationController = new OrganizationController();
-
-  /**
    * Returns the access path of the object.
    */
   private String getPath(String componentId, String nodeId, String language) {
@@ -288,13 +282,15 @@ public class ExplorerField implements Field {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces = organizationController.getSpacePathToComponent(componentId);
+      List<SpaceInst> listSpaces =  OrganisationControllerFactory.getOrganisationController()
+          .getSpacePathToComponent(componentId);
       for (SpaceInst space : listSpaces) {
         path += space.getName(language) + " > ";
       }
 
       // Service
-      path += organizationController.getComponentInstLight(componentId).getLabel(language);
+      path +=  OrganisationControllerFactory.getOrganisationController().getComponentInstLight(
+          componentId).getLabel(language);
 
       // Theme > SubTheme
       String pathString = "";

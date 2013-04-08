@@ -24,17 +24,18 @@
 
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.web.Exposable;
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.silverpeas.thesaurus.ThesaurusException;
+import com.silverpeas.web.Exposable;
+
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
 /**
  * A web entity representing the classification plan (named PdC). The classification plan can be
  * either the one modeled for the Silverpeas system or the one parametrized for a given Silverpeas

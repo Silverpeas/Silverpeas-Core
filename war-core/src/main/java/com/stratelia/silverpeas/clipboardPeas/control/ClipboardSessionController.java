@@ -329,7 +329,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return the label of the given domain/space
    */
   public String getSpaceLabel(String spaceId) {
-    SpaceInst spaceInst = getOrganizationController().getSpaceInstById(spaceId);
+    SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
     if (spaceInst != null) {
       return spaceInst.getName();
     }
@@ -342,7 +342,7 @@ public class ClipboardSessionController extends AbstractComponentSessionControll
    * @return
    */
   public String getComponentLabel(String componentId) {
-    ComponentInst componentInst = getOrganizationController().getComponentInst(componentId);
+    ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
     if (componentInst != null) {
       if (componentInst.getLabel().length() > 0) {
         return componentInst.getLabel();

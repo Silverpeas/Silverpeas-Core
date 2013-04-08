@@ -31,7 +31,7 @@ import javax.jcr.Session;
 
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 
-public class AbstractJcrService {
+public abstract class AbstractJcrService {
   private Repository repository;
 
   public void setRepository(Repository repository) {

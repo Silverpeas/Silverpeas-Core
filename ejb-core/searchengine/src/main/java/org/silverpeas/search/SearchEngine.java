@@ -25,6 +25,7 @@
 package org.silverpeas.search;
 
 import java.util.Set;
+
 import org.silverpeas.search.searchEngine.model.ParseException;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 
@@ -34,6 +35,9 @@ import org.silverpeas.search.searchEngine.model.QueryDescription;
 public interface SearchEngine {
   /**
    * Search the index for the required documents.
+   * @param query
+   * @return
+   * @throws ParseException  
    */
   PlainSearchResult search(QueryDescription query) throws ParseException;
 

@@ -26,6 +26,7 @@ package com.silverpeas.util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -34,7 +35,6 @@ import java.util.Set;
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Yohann Chastagnier

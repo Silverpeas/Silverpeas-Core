@@ -25,9 +25,13 @@
 package com.silverpeas.importExport.control;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class ComponentImportExport {
 
+   final ResourceLocator resources = new ResourceLocator(
+      "org.silverpeas.importExport.settings.importSettings", "");
+    
   private UserDetail curentUserDetail = null;
   private String currentComponentId = null;
 

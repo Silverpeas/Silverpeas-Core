@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.authentication.encryption.PasswordEncryption;
 import org.silverpeas.authentication.encryption.PasswordEncryptionFactory;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -53,6 +54,7 @@ import static org.junit.Assert.assertThat;
   "classpath:/spring-domains.xml"})
 @TransactionConfiguration(transactionManager = "jpaTransactionManager")
 @Transactional
+@DirtiesContext
 public class SPUserDaoTest {
 
   @Inject

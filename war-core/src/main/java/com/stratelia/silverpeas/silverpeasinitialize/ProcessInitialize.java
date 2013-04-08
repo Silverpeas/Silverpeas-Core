@@ -36,30 +36,25 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Title: Description: Copyright: Copyright (c) 2001 Company:
- * @author eDurand
- * @version 1.0
- */
-
 public class ProcessInitialize implements Runnable {
 
-  protected static Logger logger = LoggerFactory.getLogger(ProcessInitialize.class);
-  protected File m_InitializeSettingsFile;
+  private static Logger logger = LoggerFactory.getLogger(ProcessInitialize.class);
+  private File initConfiguration;
 
   /**
    * Constructor declaration
-   * @param p_InitializeSettingsFile
+   * @param configurationFile
    * @see
    */
-  public ProcessInitialize(File p_InitializeSettingsFile) {
-    m_InitializeSettingsFile = p_InitializeSettingsFile;
+  public ProcessInitialize(File configurationFile) {
+    initConfiguration = configurationFile;
   }
 
   /**
    * Method declaration
    * @see
    */
+  @Override
   public void run() {
     processInitializeSettingsFile();
   }
@@ -70,33 +65,28 @@ public class ProcessInitialize implements Runnable {
    */
   private void processInitializeSettingsFile() {
     try {
-      Properties p = getPropertiesOfFile(m_InitializeSettingsFile.getAbsolutePath());
+      Properties p = getPropertiesOfFile(initConfiguration);
       String initialize = p.getProperty("Initialize");
       if (initialize != null && Boolean.parseBoolean(initialize)) {
-        String InitializeClass = p.getProperty("InitializeClass");
-        Class c = Class.forName(InitializeClass);
-        IInitialize init = (IInitialize) c.newInstance();
-        if (!(init instanceof IInitialize)) {
-          throw new Exception("Class " + InitializeClass + " isn't a IInitialize.");
-        }
+        String initClassName = p.getProperty("InitializeClass");
+        Class<?> initClass = Class.forName(initClassName);
+        IInitialize init = (IInitialize) initClass.newInstance();
         if (!init.Initialize()) {
-          LogMsg(this, "processInitializeSettingsFile", InitializeClass + ".Initialize() failed.",
+          logMessage(this, "processInitializeSettingsFile", initClassName + ".Initialize() failed.",
               null);
         }
       }
-
-      String callBack = p.getProperty("CallBack");
-      if (callBack != null && Boolean.parseBoolean(callBack)) {
+      if (Boolean.parseBoolean(p.getProperty("CallBack"))) {
         String CallBackClass = p.getProperty("CallBackClass");
-        Class c = Class.forName(CallBackClass);
-        CallBack cb = (CallBack) c.newInstance();
-        if (!(CallBack.class.isInstance(cb))) {
+        Class<?> callBackClass = Class.forName(CallBackClass);
+        CallBack callBack = (CallBack) callBackClass.newInstance();
+        if (!(CallBack.class.isInstance(callBack))) {
           throw new Exception("Class " + CallBackClass + " isn't a CallBack.");
         }
-        cb.subscribe();
+        callBack.subscribe();
       }
     } catch (Exception e) {
-      LogMsg(this, "processInitializeSettingsFile", e.getMessage(), e);
+      logMessage(this, "processInitializeSettingsFile", e.getMessage(), e);
     }
   }
 
@@ -106,15 +96,14 @@ public class ProcessInitialize implements Runnable {
    * @return
    * @see
    */
-  private Properties getPropertiesOfFile(String fileName) {
-    Properties result = null;
+  private Properties getPropertiesOfFile(File fileName) {
+    Properties result = new Properties();
     InputStream is = null;
     try {
       is = new FileInputStream(fileName);
-      result = new Properties();
       result.load(is);
     } catch (Exception e) {
-      LogMsg(this, "getPropertiesOfFile( " + fileName + " )", e.getMessage(), e);
+      logMessage(this, "getPropertiesOfFile( " + fileName + " )", e.getMessage(), e);
     } finally {
       IOUtils.closeQuietly(is);
     }
@@ -129,10 +118,10 @@ public class ProcessInitialize implements Runnable {
    * @param msg
    * @see
    */
-  private static void LogMsg(Object obj, String fct, String msg, Exception e) {
+  private static void logMessage(Object obj, String fct, String msg, Exception e) {
     String from = obj.getClass().getName() + "." + fct + "()";
     logger.error(from + " : " + msg, e);
-    System.out.println(from + " : " + msg);
+    System.err.println(from + " : " + msg);
   }
 
 }

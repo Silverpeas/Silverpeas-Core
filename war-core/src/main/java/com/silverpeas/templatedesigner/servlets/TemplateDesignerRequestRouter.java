@@ -43,6 +43,10 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.silverpeas.util.crypto.CryptoException;
+
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -114,7 +118,7 @@ public class TemplateDesignerRequestRouter extends
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
-        destination = root + "templateHeader.jsp";
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
       } else if (function.equals("EditTemplate")) {
         String fileName = request.getParameter("FileName");
         PublicationTemplate template;
@@ -125,6 +129,10 @@ public class TemplateDesignerRequestRouter extends
         }
         request.setAttribute("Template", template);
 
+        destination = getDestination("GoToTemplateHeader", templateDesignerSC, request);
+      } else if ("GoToTemplateHeader".equals(function)) {
+        request.setAttribute("ComponentsUsingForms", templateDesignerSC.getComponentsUsingForms());
+        request.setAttribute("EncryptionAvailable", templateDesignerSC.isEncryptionAvailable());
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
@@ -132,8 +140,13 @@ public class TemplateDesignerRequestRouter extends
         destination = getDestination("ViewFields", templateDesignerSC, request);
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
-        templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
-        destination = getDestination("Main", templateDesignerSC, request);
+        try {
+          templateDesignerSC.updateTemplate((PublicationTemplateImpl) template);
+          destination = getDestination("Main", templateDesignerSC, request);
+        } catch (CryptoException e) {
+          request.setAttribute("CryptoException", e);
+          destination = getDestination("EditTemplate", templateDesignerSC, request);
+        }
       } else if ("ViewFields".equals(function)) {
         request.setAttribute("Fields", templateDesignerSC.getFields());
         request.setAttribute("UpdateInProgress", templateDesignerSC.isUpdateInProgress());
@@ -280,19 +293,40 @@ public class TemplateDesignerRequestRouter extends
     boolean visible = StringUtil.getBooleanValue(request.getParameter("Visible"));
     String thumbnail = request.getParameter("Thumbnail");
     boolean searchable = StringUtil.getBooleanValue(request.getParameter("Searchable"));
+    boolean encrypted = StringUtil.getBooleanValue(request.getParameter("Encrypted"));
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
     template.setDescription(description);
     template.setThumbnail(thumbnail);
     template.setVisible(visible);
-
+    template.setDataEncrypted(encrypted);
+    
     if (searchable) {
       template.setSearchFileName("dummy");
     } else {
       template.setSearchFileName(null);
     }
-
+    String paramSpaceIds = request.getParameter("Visibility_Spaces");
+    if (StringUtil.isDefined(paramSpaceIds)) {
+      String[] spaceIds = paramSpaceIds.split(" ");
+      if (spaceIds != null) {
+        template.setSpaces(Arrays.asList(spaceIds));
+      }
+    }
+    
+    String[] applications = request.getParameterValues("Visibility_Applications");
+    if (applications != null) {
+      template.setApplications(Arrays.asList(applications));
+    }
+    
+    String paramInstances = request.getParameter("Visibility_Instances");
+    if (StringUtil.isDefined(paramInstances)) {
+      String[] instanceIds = paramInstances.split(" ");
+      if (instanceIds != null) {
+        template.setInstances(Arrays.asList(instanceIds));
+      }
+    }
     return template;
   }
 

@@ -24,9 +24,10 @@
 
 package com.stratelia.webactiv.organization;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
+import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
@@ -43,9 +44,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -97,7 +99,7 @@ public class OrganizationSchemaTest {
   protected IDataSet getDataSet() throws DataSetException {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         this.getClass().getClassLoader().getResourceAsStream(
-        "com/stratelia/webactiv/util/attachment/model/test-attachment-dataset.xml")));
+        "com/stratelia/webactiv/organization/test-attachment-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }

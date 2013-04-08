@@ -1,26 +1,26 @@
 /*
-* Copyright (C) 2000 - 2012 Silverpeas
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* As a special exception to the terms and conditions of version 3.0 of
-* the GPL, you may redistribute this Program in connection withWriter Free/Libre
-* Open Source Software ("FLOSS") applications as described in Silverpeas's
-* FLOSS exception. You should have recieved a copy of the text describing
-* the FLOSS exception, and it is also available here:
-* "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2000 - 2012 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.silverpeas.util.i18n.I18NHelper;
@@ -33,15 +33,13 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 
 import static com.stratelia.webactiv.util.viewGenerator.html.JavascriptPluginInclusion.*;
-import static com.stratelia.webactiv.util.viewGenerator.html.SupportedJavaScriptPlugins.*;
 
 /**
-* This tag is for including javascript plugins with their stylesheets.
-*/
+ * This tag is for including javascript plugins with their stylesheets.
+ */
 public class IncludeJSPluginTag extends SimpleTagSupport {
 
   private static final String MAIN_SESSION_CONTROLLER = "SilverSessionController";
-
   private String plugin;
 
   public String getName() {
@@ -55,34 +53,60 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   @Override
   public void doTag() throws JspException, IOException {
     ElementContainer xhtml = new ElementContainer();
-    if (qtip.name().equals(getName())) {
-      includeQTip(xhtml);
-    } else if (datepicker.name().equals(getName())) {
-      includeDatePicker(xhtml, getLanguage());
-    } else if (pagination.name().equals(getName())) {
-      includePagination(xhtml);
-    } else if (breadcrumb.name().equals(getName())) {
-      includeBreadCrumb(xhtml);
-    } else if (userZoom.name().equals(getName())) {
-      includeUserZoom(xhtml);
-    } else if (invitme.name().equals(getName())) {
-      includeInvitMe(xhtml);
-    } else if (messageme.name().equals(getName())) {
-      includeMessageMe(xhtml);
-    } else if (wysiwyg.name().equals(getName())) {
-      includeWysiwygEditor(xhtml);
-    } else if (popup.name().equals(getName())) {
-      includePopup(xhtml);
-    } else if (calendar.name().equals(getName())) {
-      includeCalendar(xhtml);
-    } else if (preview.name().equals(getName())) {
-      includePreview(xhtml);
-    } else if (notifier.name().equals(getName())) {
-      includeNotifier(xhtml);
-    } else if (password.name().equals(getName())) {
-      includePassword(xhtml);
-    } else if (jquery.name().equals(getName())) {
-      includeJQuery(xhtml);
+    try {
+      SupportedJavaScriptPlugins jsPlugin = SupportedJavaScriptPlugins.valueOf(getName());
+      switch (jsPlugin) {
+        case qtip:
+          includeQTip(xhtml);
+          break;
+        case datepicker:
+          includeDatePicker(xhtml, getLanguage());
+          break;
+        case pagination:
+          includePagination(xhtml);
+          break;
+        case breadcrumb:
+          includeBreadCrumb(xhtml);
+          break;
+        case userZoom:
+          includeUserZoom(xhtml);
+          break;
+        case invitme:
+          includeInvitMe(xhtml);
+          break;
+        case messageme:
+          includeMessageMe(xhtml);
+          break;
+        case wysiwyg:
+          includeWysiwygEditor(xhtml);
+          break;
+        case popup:
+          includePopup(xhtml);
+          break;
+        case calendar:
+          includeCalendar(xhtml);
+          break;
+        case iframepost:
+          includeIFramePost(xhtml);
+          break;
+        case preview:
+          includePreview(xhtml);
+          break;
+        case notifier:
+          includeNotifier(xhtml);
+          break;
+        case password:
+          includePassword(xhtml);
+          break;
+        case jquery:
+          includeJQuery(xhtml);
+          break;
+        case tags:
+          includeTags(xhtml);
+          break;
+      }
+    } catch (IllegalArgumentException ex) {
+      //ignore
     }
     xhtml.output(getJspContext().getOut());
   }
@@ -96,10 +120,12 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
     return language;
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getRequestAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.REQUEST_SCOPE);
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> T getSessionAttribute(String name) {
     return (T) getJspContext().getAttribute(name, PageContext.SESSION_SCOPE);
   }

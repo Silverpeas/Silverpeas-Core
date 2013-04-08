@@ -25,6 +25,8 @@
 package com.silverpeas.util.web.servlet;
 
 import java.io.File;
+
+import com.silverpeas.util.FileUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.io.IOUtils;
@@ -101,7 +103,8 @@ public class FileUploadUtilTest {
   
    @Test
   public void testConvertPathToServerOS() throws Exception {
-    String fileName = FileUploadUtil.convertPathToServerOS("C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml");
+    String fileName = FileUtil.convertPathToServerOS(
+        "C:\\Documents and Settings\\rivoirede\\Bureau\\GED KHOLER\\import_kohler_partiel.xml");
     if(File.separatorChar == '/') {
       assertThat(fileName, is("C:/Documents and Settings/rivoirede/Bureau/GED KHOLER/import_kohler_partiel.xml"));
     } else {
@@ -109,7 +112,7 @@ public class FileUploadUtilTest {
     }
     
     
-    fileName = FileUploadUtil.convertPathToServerOS("/home/silverpeas/test/result.txt");
+    fileName = FileUtil.convertPathToServerOS("/home/silverpeas/test/result.txt");
     if(File.separatorChar == '/') {
       assertThat(fileName, is("/home/silverpeas/test/result.txt"));
     } else {

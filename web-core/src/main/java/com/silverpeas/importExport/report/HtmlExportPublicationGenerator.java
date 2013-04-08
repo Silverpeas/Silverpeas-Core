@@ -24,24 +24,6 @@
 
 package com.silverpeas.importExport.report;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Form;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.importExport.model.PublicationType;
-import com.silverpeas.publication.importExport.DBModelContentType;
-import com.silverpeas.publication.importExport.XMLModelContentType;
-import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -62,6 +44,26 @@ import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.meta;
 import org.apache.ecs.xhtml.p;
 import org.apache.ecs.xhtml.ul;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.importExport.model.PublicationType;
+import com.silverpeas.publication.importExport.DBModelContentType;
+import com.silverpeas.publication.importExport.XMLModelContentType;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Classe générant le code html d'une publication exportée

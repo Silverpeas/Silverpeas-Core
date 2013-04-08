@@ -102,8 +102,7 @@
      notificationResourceId="40" creationDate="2012-01-01 08:10:24.023" language="fr" message="Message U3&#xA;A la ligne" />
   <st_delayednotification id="823" userId="53" fromUserId="500" channel="1" action="2"
      notificationResourceId="10" creationDate="2012-01-01 08:10:25.023" language="fr" />
-  <st_delayednotification id="824" userId="53" fromUserId="500" channel="1" action="5"
-     notificationResourceId="10" creationDate="2012-01-01 08:10:25.023" language="fr" message="Message U3 (2ème)&#xD;A la ligne" />
+     <st_delayednotification id="824" userId="53" fromUserId="500" channel="1" action="5" notificationResourceId="10" creationDate="2012-01-01 08:10:25.023" language="fr" message="Message U3 (2ème)&#xD;&#xA;A la ligne" />
   
   <st_delayednotification id="830" userId="54" fromUserId="500" channel="1" action="3"
      notificationResourceId="40" creationDate="2012-01-01 08:10:25.023" language="fr" />

@@ -124,4 +124,6 @@ public interface LookHelper {
   public abstract boolean isEnableUFSContainsState();
 
   public abstract boolean isDisplayPDCInHomePage();
+  
+  public abstract String getSpaceWithCSSToApply();
 }

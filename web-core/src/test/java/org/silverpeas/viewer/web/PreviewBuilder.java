@@ -88,7 +88,7 @@ public class PreviewBuilder {
      */
     @Override
     public String getOriginalFileName() {
-      return null;
+      return fileName;
     }
 
     /*

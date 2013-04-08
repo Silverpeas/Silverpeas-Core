@@ -1,0 +1,13 @@
+#domainsBar {
+	background-color: red;
+}
+
+#menutoggle {
+	background-color: red;
+}
+
+#outils {
+	box-shadow:0 10px 10px 2px red inset;
+	-moz-box-shadow:0 10px 10px 2px red inset;
+	-webkit-box-shadow:0 10px 10px 2px red inset;
+}

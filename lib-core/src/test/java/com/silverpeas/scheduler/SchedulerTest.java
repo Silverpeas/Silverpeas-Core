@@ -25,18 +25,19 @@
 package com.silverpeas.scheduler;
 
 import com.silverpeas.scheduler.trigger.CronJobTrigger;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.silverpeas.scheduler.trigger.TimeUnit;
 import java.util.Calendar;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.concurrent.Callable;
+
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import static org.junit.Assert.*;
 import static com.jayway.awaitility.Awaitility.*;
 import static java.util.concurrent.TimeUnit.*;
@@ -50,8 +51,6 @@ import static java.util.concurrent.TimeUnit.*;
  * a scheduler and keeps actually a backward compability with its old previous API.
  * This test checks the current concrete scheduler is ok.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/spring-scheduling.xml")
 public class SchedulerTest {
 
   private static final String JOB_NAME = "test";
@@ -59,9 +58,21 @@ public class SchedulerTest {
   private boolean isJobExecuted;
   private Scheduler scheduler = null;
   private long time;
-
+  private static ClassPathXmlApplicationContext context;
+  
   public SchedulerTest() {
   }
+  
+  @BeforeClass
+  public static void setUpClass() throws Exception {
+    context = new ClassPathXmlApplicationContext(new String[]{"/spring-scheduling.xml"});
+  }
+  
+   @AfterClass
+  public static void tearDownClass() throws Exception {
+    context.close();
+  }
+
 
   @Before
   public void setUp() {

@@ -30,14 +30,10 @@ import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.services.SharingServiceFactory;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.versioning.model.Document;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -45,13 +41,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import static com.silverpeas.sharing.servlets.FileSharingConstants.*;
 
 public class GetInfoFromKeyServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  private OrganizationController organizationController = new OrganizationController();
-  private static final ResourceLocator settings = new ResourceLocator("com.silverpeas.sharing.settings.sharing", "");
+  private static final ResourceLocator settings = new ResourceLocator("org.silverpeas.sharing.settings.sharing", "");
 
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
@@ -67,13 +65,13 @@ public class GetInfoFromKeyServlet extends HttpServlet {
       response.sendRedirect(url);
     } else {
       if (ticket instanceof SimpleFileTicket) {
-        AttachmentDetail attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
-        request.setAttribute("fileIcon", attachment.getAttachmentIcon());
+        SimpleDocument attachment = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
+        request.setAttribute("fileIcon", attachment.getDisplayIcon());
         request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(attachment.getSize()));
       } else if (ticket instanceof VersionFileTicket) {
-        Document document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
-        DocumentVersion version = new VersioningUtil().getLastPublicVersion(document.getPk());
-        request.setAttribute("fileIcon", version.getDocumentIcon());
+        HistorisedDocument document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
+        SimpleDocument version = document.getPublicVersions().iterator().next();
+        request.setAttribute("fileIcon", version.getDisplayIcon());
         request.setAttribute("fileSize", FileRepositoryManager.formatFileSize(version.getSize()));
       }
       request.setAttribute(ATT_WALLPAPER, getWallpaperFor(ticket));
@@ -91,16 +89,12 @@ public class GetInfoFromKeyServlet extends HttpServlet {
 * @return the URL of the wallpaper.
 */
   private String getWallpaperFor(final Ticket ticket) {
-    ComponentInstLight component = getOrganizationController().getComponentInstLight(ticket.
-        getComponentId());
+    ComponentInstLight component = OrganisationControllerFactory.getOrganisationController()
+        .getComponentInstLight(ticket.getComponentId());
     return SilverpeasLook.getSilverpeasLook().getWallpaperOfSpaceOrDefaultOne(component.
         getDomainFatherId());
   }
 
-  private OrganizationController getOrganizationController() {
-    return organizationController;
-  }
-  
   private String getURLForFolderSharing(HttpServletRequest request, String token) {
     String url = settings.getString("sharing.folder.webapp");
     if (!url.startsWith("http")) {

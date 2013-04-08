@@ -269,6 +269,6 @@ public class UnixMD5Encryption implements PasswordEncryption {
    */
   @Override
   public boolean doUnderstandDigest(String digest) {
-    return digest.matches("\\$1\\$.{0,8}\\$.{22}");
+    return digest.matches("\\$1\\$[a-zA-Z0-9/.]{0,8}\\$[a-zA-Z0-9/.]{22}");
   }
 }

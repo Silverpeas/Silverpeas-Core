@@ -1399,7 +1399,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         (IGlobalSilverContentProcessor) BasicDaoFactory.getBean(contentProcessorId);
 
     for (SilverContentInterface sci : silverContentTempo) {
-      UserDetail creatorDetail = pdcSC.getOrganizationController().getUserDetail(sci.getCreatorId());
+      UserDetail creatorDetail = pdcSC.getOrganisationController().getUserDetail(sci.getCreatorId());
 
       GlobalSilverContent gsc = processor.getGlobalSilverContent(sci, creatorDetail, getLocation(
           instanceId, pdcSC));
@@ -1514,7 +1514,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     // recherche PDC Uniquement
     String spaceId = "";
     ComponentInstLight componentInst =
-        pdcSC.getOrganizationController().getComponentInstLight(componentId);
+        pdcSC.getOrganisationController().getComponentInstLight(componentId);
     if (componentInst != null) {
       spaceId = componentInst.getDomainFatherId();
     }

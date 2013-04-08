@@ -125,7 +125,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   public String toSQLQuery(String fields) {
     String ordering = ORDER_BY_LASTNAME;
-    if (fields.matches("(count|max|min)\\(.*\\)")) {
+    if (fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
       ordering = "";
     }
     return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter(), ordering);

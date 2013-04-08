@@ -28,6 +28,7 @@ import com.silverpeas.admin.components.Instanciateur;
 import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.admin.components.Profile;
 import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.workflow.api.ProcessModelManager;
 import com.silverpeas.workflow.api.Workflow;
@@ -204,9 +205,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         // Make sure that you are not overwriting sth.
         //
         List<String> processList = Workflow.getProcessModelManager().listProcessModels();
-
-        strProcessModelFileName = strProcessModelFileName.replace('\\', File.separatorChar);
-        strProcessModelFileName = strProcessModelFileName.replace('/', File.separatorChar);
+        strProcessModelFileName = FileUtil.convertPathToServerOS(strProcessModelFileName);
 
         if (processList.contains(strProcessModelFileName)) {
           throw new WorkflowDesignerException("WorkflowDesignerSessionController.saveProcesModel",

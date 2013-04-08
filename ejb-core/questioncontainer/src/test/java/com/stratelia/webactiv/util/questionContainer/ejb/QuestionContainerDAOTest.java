@@ -24,16 +24,21 @@
 
 package com.stratelia.webactiv.util.questionContainer.ejb;
 
+import java.io.InputStream;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
@@ -57,7 +62,18 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 @ContextConfiguration(locations = { "/spring-question-container-embbed-datasource.xml" })
 public class QuestionContainerDAOTest {
 
+  private ReplacementDataSet dataSet = null;
   public QuestionContainerDAOTest() {
+     InputStream in  =  QuestionContainerDAOTest.class.getResourceAsStream(
+                "questioncontainer-dataset.xml");
+    try {
+      dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+    } catch (DataSetException ex) {
+      Logger.getLogger(QuestionContainerDAOTest.class.getName()).log(Level.SEVERE, null, ex);
+    }finally {
+      IOUtils.closeQuietly(in);
+    }
   }
 
   @Inject
@@ -68,12 +84,7 @@ public class QuestionContainerDAOTest {
   }
 
   @Before
-  public void generalSetUp() throws Exception {
-    ReplacementDataSet dataSet =
-        new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-            QuestionContainerDAOTest.class.getResourceAsStream(
-                "questioncontainer-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
+  public void generalSetUp() throws Exception {    
     IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
     DatabaseOperation.CLEAN_INSERT.execute(connection, dataSet);
     DBUtil.getInstanceForTest(dataSource.getConnection());

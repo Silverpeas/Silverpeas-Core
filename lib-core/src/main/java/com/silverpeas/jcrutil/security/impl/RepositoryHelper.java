@@ -25,6 +25,7 @@
 package com.silverpeas.jcrutil.security.impl;
 
 import javax.security.auth.spi.LoginModule;
+
 import org.apache.jackrabbit.core.security.AccessManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

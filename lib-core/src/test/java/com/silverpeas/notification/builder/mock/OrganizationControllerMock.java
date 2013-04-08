@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mock;
 import javax.inject.Named;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  * @author Yohann Chastagnier
@@ -37,14 +38,14 @@ public class OrganizationControllerMock extends OrganizationController {
 
   private static final long serialVersionUID = -1284043052264993988L;
 
-  private final OrganizationController mock = mock(OrganizationController.class);
+  private final OrganisationController mock = mock(OrganizationController.class);
 
   @Override
   public boolean isComponentExist(String componentId) {
     return mock.isComponentExist(componentId);
   }
 
-  public OrganizationController getMock() {
+  public OrganisationController getMock() {
     return mock;
   }
 }

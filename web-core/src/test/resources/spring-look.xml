@@ -41,7 +41,7 @@
   <bean id="organizationController"
         class="com.stratelia.webactiv.beans.admin.OrganizationController"
         factory-bean="organizationControllerProvider"
-        factory-method="getOrganizationController" />
+        factory-method="getOrganisationController" />
 
   <!-- the Silverpeas look context gathering all of the look aspects -->
   <bean id="silverpeasLook" class="com.silverpeas.look.SilverpeasLook"

@@ -60,7 +60,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
    * List of all linked attachment in wysiwyg content
    */
   private List<String> embeddedFileIds;
-  
+
   private Map<String, String> formFieldsForFacets;
 
   public GlobalSilverResult(GlobalSilverContent gsc) {
@@ -106,7 +106,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
         image = new File(filePath);
       } else {
         // case of an uploaded image
-        super.setThumbnailURL(FileServerUtils.getUrl(null, mie.getComponent(),
+        super.setThumbnailURL(FileServerUtils.getUrl(mie.getComponent(),
             mie.getThumbnail(), mie.getThumbnailMimeType(), mie.getThumbnailDirectory()));
 
         String[] directory = new String[1];
@@ -228,7 +228,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public Map<String, String> getFormFieldsForFacets() {
     return formFieldsForFacets;
   }
-  
+
   public void setViewable(boolean viewable) {
     this.viewable = viewable;
   }
@@ -244,7 +244,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public boolean isPreviewable() {
     return previewable;
   }
-  
+
   public void setAttachmentId(String attachmentId) {
     this.attachmentId = attachmentId;
   }
@@ -260,7 +260,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   public boolean isVersioned() {
     return versioned;
   }
-  
+
   public boolean isAttachment() {
     return StringUtil.isDefined(getAttachmentId());
   }

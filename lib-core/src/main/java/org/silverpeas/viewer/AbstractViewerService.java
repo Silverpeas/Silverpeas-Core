@@ -43,7 +43,7 @@ public abstract class AbstractViewerService {
 
   /**
    * Generate a tmp file
-   * @param fileType
+   * @param fileExtension
    * @return
    */
   protected File generateTmpFile(final String fileExtension) {

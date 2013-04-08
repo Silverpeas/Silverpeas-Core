@@ -45,6 +45,7 @@ public class JavascriptPluginInclusion {
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
+  private static final String JQUERY_IFRAME_POST = "jquery.iframe-post-form.js";
   private static final String SILVERPEAS_QTIP = "silverpeas-qtip-style.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
@@ -70,6 +71,8 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_NOTIFIER_CENTER = "layouts/topCenter.js";
   private static final String JQUERY_NOTIFIER_THEME = "themes/silverpeas.js";
   private static final String SILVERPEAS_NOTIFIER = "silverpeas-notifier.js";
+  private static final String JQUERY_TAGS = "tagit/tagit.js";
+  private static final String STYLESHEET_TAGS = "tagit/tagit-stylish-yellow.css";
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String wysiwygPath = URLManager.getApplicationURL() + "/wysiwyg/jsp/";
@@ -84,6 +87,12 @@ public class JavascriptPluginInclusion {
             + SILVERPEAS_QTIP);
     xhtml.addElement(qtip);
     xhtml.addElement(silverpeasQtip);
+    return xhtml;
+  }
+  
+  public static ElementContainer includeIFramePost(final ElementContainer xhtml) {
+    script iframePost = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath + JQUERY_IFRAME_POST);
+    xhtml.addElement(iframePost);
     return xhtml;
   }
 
@@ -235,6 +244,16 @@ public class JavascriptPluginInclusion {
     script jquery = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
         + GraphicElementFactory.JQUERY_JS);
     xhtml.addElement(jquery);
+    return xhtml;
+  }
+  
+  public static ElementContainer includeTags(final ElementContainer xhtml) {
+    link css = new link().setType(STYLESHEET_TYPE).setRel(STYLESHEET_REL).setHref(jqueryPath
+            + STYLESHEET_TAGS);
+    script jqueryTags = new script().setType(JAVASCRIPT_TYPE).setSrc(jqueryPath
+            + JQUERY_TAGS);
+    xhtml.addElement(css);
+    xhtml.addElement(jqueryTags);
     return xhtml;
   }
 }

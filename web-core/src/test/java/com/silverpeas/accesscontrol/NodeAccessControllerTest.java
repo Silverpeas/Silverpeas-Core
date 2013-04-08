@@ -24,7 +24,6 @@
 
 package com.silverpeas.accesscontrol;
 
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -41,6 +40,7 @@ import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.silverpeas.core.admin.OrganisationController;
 
 /**
  *
@@ -79,10 +79,10 @@ public class NodeAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class NodeAccessController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
-  public void userIsAuthorizedWhithRightsDependOn() throws Exception {    
+  public void userIsAuthorizedWhithRightsDependOn() throws Exception {
     NodePK nodPk = new NodePK("10", componentId);
     NodeDetail node = new NodeDetail();
     node.setNodePK(nodPk);
@@ -94,7 +94,7 @@ public class NodeAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
         thenReturn(home);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    OrganizationController orga = Mockito.mock(OrganizationController.class);
+    OrganisationController orga = Mockito.mock(OrganizationController.class);
     Mockito.when(orga.isObjectAvailable(5, ObjectType.NODE, componentId, userId)).thenReturn(true);
     NodeAccessController instance = new NodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);
@@ -104,7 +104,7 @@ public class NodeAccessControllerTest {
 
   /**
    * Test of isUserAuthorized method, of class NodeAccessController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void userIsNotAuthorizedWhithRightsDependOn() throws Exception {
@@ -119,7 +119,7 @@ public class NodeAccessControllerTest {
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class)).
         thenReturn(home);
     Mockito.when(nodeBm.getHeader(nodPk, false)).thenReturn(node);
-    OrganizationController orga = Mockito.mock(OrganizationController.class);
+    OrganisationController orga = Mockito.mock(OrganizationController.class);
     Mockito.when(orga.isObjectAvailable(5, ObjectType.NODE, componentId, "5")).thenReturn(false);
     NodeAccessController instance = new NodeAccessController(orga);
     boolean result = instance.isUserAuthorized(userId, nodPk);

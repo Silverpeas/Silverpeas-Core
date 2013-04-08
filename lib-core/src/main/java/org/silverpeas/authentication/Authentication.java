@@ -23,6 +23,9 @@
  */
 package org.silverpeas.authentication;
 
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationPwdChangeNotAvailException;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -90,9 +93,10 @@ public abstract class Authentication {
    * (e.g. wrong password), the AuthenticationException code should be set to
    * EXCEPTION_BAD_CREDENTIALS.
    * @param credential the credential to use to authenticate the user.
-   * @throws AuthenticationException if an error occurs while authenticating the user.
+   * @throws org.silverpeas.authentication.exception.AuthenticationException if an error occurs while authenticating the user.
    */
-  public void authenticate(final AuthenticationCredential credential) throws AuthenticationException {
+  public void authenticate(final AuthenticationCredential credential) throws
+      AuthenticationException {
     doSecurityOperation(new SecurityOperation(SecurityOperation.AUTHENTICATION) {
       @Override
       public <T> void perform(AuthenticationConnection<T> connection) throws AuthenticationException {

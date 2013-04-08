@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Ludovic BERTIN
- * @version 1.0
- * date 21/9/2001
- */
-
 package org.silverpeas.authentication;
 
 import com.silverpeas.util.StringUtil;
@@ -38,6 +31,8 @@ import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -45,7 +40,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
+
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -218,11 +226,11 @@ public class AuthenticationService {
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Authentication test
-      authenticationServer.authenticate(credential);
+      // Verify that the user can login
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
-      // Verify user state
-      AuthenticationUserStateChecker.verify(login, domainId);
+      // Authentification test
+      authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
@@ -250,7 +258,7 @@ public class AuthenticationService {
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED;
+        errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -338,9 +346,8 @@ public class AuthenticationService {
       throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
-
-    // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
     Connection connection = null;
     try {
       // Open connection
@@ -370,7 +377,7 @@ public class AuthenticationService {
    * @return an authentication key.
    */
   public String getAuthenticationKey(String login, String domainId) throws AuthenticationException {
-    String authKey = computeGenerationKey(login, domainId);
+    String authKey = computeGenerationKey(login);
     storeAuthenticationKey(login, domainId, authKey);
     return authKey;
   }
@@ -422,12 +429,10 @@ public class AuthenticationService {
 
   /**
    * Builds a random authentication key.
-   *
    * @param login a user login
-   * @param domainId a user domain identifier.
    * @return the generated authentication key.
    */
-  private String computeGenerationKey(String login, String domainId)
+  private String computeGenerationKey(String login)
       throws AuthenticationException {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
@@ -486,12 +491,9 @@ public class AuthenticationService {
       throw new AuthenticationBadCredentialException("AuthenticationService.resetPassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
-
-    // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
-
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
     Connection connection = null;
-
     try {
       // Open connection
       connection = openConnection();

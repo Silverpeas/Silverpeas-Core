@@ -163,16 +163,21 @@
   }
 })( jQuery );
 
-$(function() {
-  $('.notification').each(function(i, element) {
-    var userParams = $(element).attr('rel');
+/**
+ * Using "jQuery" instead of "$" at this level prevents of getting conficts with another
+ * javascript plugin.
+ */
+jQuery(document).ready(function() {
+  jQuery('.notification').each(function(i, element) {
+    var userParams = jQuery(element).attr('rel');
     if (userParams != null && userParams.length > 1) {
       userParams = userParams.split(',');
-      if ($(element).data('messageMe') == null)
-        $(element).messageMe({
-          id: userParams[0],
-          fullName: userParams[1]
+      if (jQuery(element).data('messageMe') == null) {
+        jQuery(element).messageMe({
+          id : userParams[0],
+          fullName : userParams[1]
         });
+      }
     }
-  });
+  })
 });
