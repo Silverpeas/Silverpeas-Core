@@ -516,7 +516,7 @@
 
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <label for="fileName"><fmt:message key="GML.file" /></label><br/>
     <span id="fileName"></span><br/>
     <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
@@ -531,7 +531,7 @@
   </form>
 </div>
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />

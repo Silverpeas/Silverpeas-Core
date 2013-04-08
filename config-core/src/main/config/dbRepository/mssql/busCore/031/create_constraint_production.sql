@@ -16,13 +16,6 @@ ALTER TABLE readingControl WITH NOCHECK ADD
 		pubId, actorId, space, componentName
 	);
 
-
-ALTER TABLE subscribe WITH NOCHECK ADD 
-	CONSTRAINT PK_subscribe PRIMARY KEY  NONCLUSTERED 
-	(
-		actorId, nodeId, space, componentName
-	);
-
 ALTER TABLE model_contact WITH NOCHECK ADD 
 	CONSTRAINT PK_model_contact PRIMARY KEY  NONCLUSTERED 
 	(

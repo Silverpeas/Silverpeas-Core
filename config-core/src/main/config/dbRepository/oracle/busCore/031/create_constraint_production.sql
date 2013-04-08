@@ -16,13 +16,6 @@ ALTER TABLE readingControl  ADD
 		pubId, actorId, space, componentName
 	);
 
-
-ALTER TABLE subscribe  ADD 
-	CONSTRAINT PK_subscribe PRIMARY KEY   
-	(
-		actorId, nodeId, space, componentName
-	);
-
 ALTER TABLE model_contact  ADD 
 	CONSTRAINT PK_model_contact PRIMARY KEY   
 	(

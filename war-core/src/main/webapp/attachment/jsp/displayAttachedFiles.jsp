@@ -246,7 +246,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
                   <c:set var="title" value="${currentAttachment.title}" />
                 </c:otherwise>
               </c:choose>
-              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href='<c:out value="${attachmentUrl}" escapeXml="false"/>' target="_blank"><c:out value="${title}" /></a>
+              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href="${attachmentUrl}" target="_blank"><c:out value="${title}" /></a>
               <c:if test="${currentAttachment.versioned}">
                 &nbsp;<span class="version-number" id="version_<c:out value="${currentAttachment.oldSilverpeasId}"/>">v<c:out value="${currentAttachment.majorVersion}"/>.<c:out value="${currentAttachment.minorVersion}"/></span>
               </c:if>
@@ -979,7 +979,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
     <c:choose>
 		<c:when test="${not isVersionActive}">
@@ -1021,7 +1021,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 </div>
 
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     
