@@ -20,15 +20,17 @@
  */
 package com.stratelia.webactiv.util;
 
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.util.URLUtils;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.silverpeas.util.URLUtils;
+
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * @author NEY
@@ -114,7 +116,7 @@ public class FileServerUtils {
   public static String getWebUrl(String componentId, String logicalName, String physicalName,
       String mimeType, String subDirectory) {
     StringBuilder url = new StringBuilder();
-    String newLogicalName = URLUtils.encodePathSegment(logicalName);
+    String newLogicalName = URLUtils.encodePathParamValue(logicalName);
     url.append(newLogicalName).append("?ComponentId=").append(componentId).
         append("&SourceFile=").append(physicalName).append("&MimeType=").append(
         mimeType).append("&Directory=").append(subDirectory);
@@ -149,10 +151,11 @@ public class FileServerUtils {
     return url.toString();
   }
 
-  public static String getAttachmentURL(String componentId, String logicalName,
-      String attachmentId, String lang) {
+  public static String getAttachmentURL(String componentId, String logicalName, String attachmentId,
+      String lang) {
+    String newLogicalName = URLUtils.encodePathSegment(logicalName);
     SilverTrace.debug("util", "FileServerUtils.getRestAttachmentURL", "root.MSG_GEN_ENTER_METHOD",
-        "componentId = " + componentId + ", logicalName = " + logicalName + ", attachmentId = "
+        "componentId = " + componentId + ", logicalName = " + newLogicalName + ", attachmentId = "
         + attachmentId + ", lang = " + lang);
     StringBuilder url = new StringBuilder();
     String language = lang;
@@ -164,7 +167,7 @@ public class FileServerUtils {
     url.append("/attached_file/").append("componentId/").append(URLUtils.encodePathSegment(
         componentId)).append("/attachmentId/").append(URLUtils.encodePathSegment(attachmentId)).
         append("/lang/").append(URLUtils.encodePathSegment(language)).append("/name/").
-        append(URLUtils.encodePathSegment(logicalName));
+        append(newLogicalName);
     return url.toString();
   }
 
@@ -197,13 +200,13 @@ public class FileServerUtils {
     StringBuilder url = new StringBuilder();
     String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
-        "?SourceFile=").append(physicalName).append(
-        "&TypeUpload=link&MimeType=").append(mimeType);
+        "?SourceFile=").append(physicalName).append("&TypeUpload=link&MimeType=").append(mimeType);
     return url.toString();
   }
 
-  public static String getUrl(String componentId, String userId, String logicalName, String physicalName, String mimeType,
-      boolean archiveIt, int pubId, int nodeId, String subDirectory) {
+  public static String getUrl(String componentId, String userId, String logicalName,
+      String physicalName, String mimeType, boolean archiveIt, int pubId, int nodeId,
+      String subDirectory) {
     StringBuilder url = new StringBuilder();
     char archiveItStr = 'N';
     if (archiveIt) {
@@ -212,9 +215,9 @@ public class FileServerUtils {
     String newLogicalName = URLUtils.encodePathSegment(logicalName);
     url.append(getApplicationContext()).append("/FileServer/").append(newLogicalName).append(
         "?ComponentId=").append(componentId).append("&UserId=").append(userId).
-        append("&SourceFile=").append(physicalName).append("&MimeType=").append(mimeType);
-    url.append("&ArchiveIt=").append(archiveItStr).append("&PubId=").append(pubId).
-        append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
+        append("&SourceFile=").append(URLUtils.encodePathParamValue(physicalName)).append(
+        "&MimeType=").append(mimeType).append("&ArchiveIt=").append(archiveItStr).append("&PubId=").
+        append(pubId).append("&NodeId=").append(nodeId).append("&Directory=").append(subDirectory);
     return url.toString();
   }
 

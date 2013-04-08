@@ -93,6 +93,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
+   * @param comment 
    * @param context
    * @return
    * @throws IOException
@@ -132,6 +133,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
+   * @param comment 
    * @param context
    * @return
    * @throws IOException
