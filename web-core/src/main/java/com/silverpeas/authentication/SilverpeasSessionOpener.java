@@ -64,7 +64,7 @@ public class SilverpeasSessionOpener {
    * @return true if the user sending the request is an anonymous one, false otherwise.
    */
   public boolean isAnonymousUser(HttpServletRequest request) {
-    HttpSession session = request.getSession();
+    HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (controller != null) {
@@ -196,7 +196,7 @@ public class SilverpeasSessionOpener {
    */
   protected String getHomePageUrl(HttpServletRequest request, String redirectURL) {
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
-    HttpSession session = request.getSession();
+    HttpSession session = request.getSession(false);
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     // Init server name and server port
