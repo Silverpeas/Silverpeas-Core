@@ -1,33 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.authentication;
 
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
-import org.silverpeas.authentication.Authentication;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -42,15 +37,15 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
+import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Enumeration;
+import org.silverpeas.authentication.Authentication;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
  * <p/>
- * It asks for a session opening to the session manager and then  it creates all the required session
+ * It asks for a session opening to the session manager and then it creates all the required session
  * resources for Silverpeas and stores them into the user session.
  *
  * @author ehugonnet
@@ -85,14 +80,14 @@ public class SilverpeasSessionOpener {
    * authentication of the user is represented by an authentication key that is unique for each user
    * so that a user can be also identified by its key.
    * <p/>
-   * With its authentication key and some attributes from the request,a session in Silverpeas can
-   * be opened and set for the user.
+   * With its authentication key and some attributes from the request,a session in Silverpeas can be
+   * opened and set for the user.
    *
    * @param request the HTTP request asking a session opening.
    * @param authKey the authentication key computed from a user authentication process and that is
    * unique to the user.
    * @return the URL of the user home page in Silverpeas or the URL of an error page if a problem
-   *         occurred during the session opening (for example, the user wasn't authenticated).
+   * occurred during the session opening (for example, the user wasn't authenticated).
    */
   public String openSession(HttpServletRequest request, String authKey) {
     HttpSession session = request.getSession();
@@ -138,6 +133,7 @@ public class SilverpeasSessionOpener {
 
   /**
    * Some treatments in case of successful login
+   *
    * @param controller
    */
   private void registerSuccessfulConnexion(MainSessionController controller) {
@@ -191,8 +187,8 @@ public class SilverpeasSessionOpener {
   }
 
   /**
-   * The user was authenticated and its session in Silverpeas was opened successfully, then
-   * computes its home page.
+   * The user was authenticated and its session in Silverpeas was opened successfully, then computes
+   * its home page.
    *
    * @param request the HTTP request asking a session opening.
    * @param redirectURL a redirection URL.
@@ -226,9 +222,11 @@ public class SilverpeasSessionOpener {
     session.setAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT, gef);
 
     String favoriteFrame = gef.getLookFrame();
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
+        "root.MSG_GEN_PARAM_VALUE",
         "controller.getUserAccessLevel()=" + controller.getUserAccessLevel());
-    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.debug("peasCore", "SilverpeasSessionOpenener.openSession",
+        "root.MSG_GEN_PARAM_VALUE",
         "controller.isAppInMaintenance()=" + controller.isAppInMaintenance());
     String sDirectAccessSpace = request.getParameter("DirectAccessSpace");
     String sDirectAccessCompo = request.getParameter("DirectAccessCompo");
@@ -252,15 +250,20 @@ public class SilverpeasSessionOpener {
    */
   protected String getAbsoluteUrl(HttpServletRequest request) {
     StringBuilder absoluteUrl = new StringBuilder(256);
-    if (request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false)) {
-      absoluteUrl.append("http");
+    if (isNavigationSecure(request)) {
+      absoluteUrl.append("https://");
     } else {
-      absoluteUrl.append(request.getScheme());
+      absoluteUrl.append("http://");
     }
-    absoluteUrl.append("://").append(request.getServerName()).append(':');
+    absoluteUrl.append(request.getServerName()).append(':');
     absoluteUrl.append(getServerPort(request));
     absoluteUrl.append(URLManager.getApplicationURL());
     return absoluteUrl.toString();
+  }
+
+  public boolean isNavigationSecure(HttpServletRequest request) {
+    return !(request.isSecure() && !GeneralPropertiesManager.getBoolean("server.ssl", false))
+        && request.isSecure();
   }
 
   private int getServerPort(HttpServletRequest request) {
@@ -268,10 +271,10 @@ public class SilverpeasSessionOpener {
   }
 
   private String alertUserAboutPwdExpiration(String userId, String fromUserId,
-                                             String language, boolean allowPasswordChange) {
+      String language, boolean allowPasswordChange) {
     try {
       ResourceLocator settings =
-          new ResourceLocator("com.silverpeas.authentication.settings.passwordExpiration", "");
+          new ResourceLocator("org.silverpeas.authentication.settings.passwordExpiration", "");
       String notificationType = settings.getString("notificationType", "POPUP");
       String passwordChangeURL =
           settings.getString("passwordChangeURL", "defaultPasswordAboutToExpire.jsp");
@@ -289,14 +292,14 @@ public class SilverpeasSessionOpener {
   }
 
   private void sendPopupNotificationAboutPwdExpiration(String userId, String fromUserId,
-                                                       String language) throws NotificationManagerException {
+      String language) throws NotificationManagerException {
     ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.silverpeas.peasCore.multilang.peasCoreBundle", language);
+        "org.silverpeas.peasCore.multilang.peasCoreBundle", language);
     NotificationSender sender = new NotificationSender(null);
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL,
-            messages.getString("passwordExpirationAlert"), messages
-            .getString("passwordExpirationMessage"));
+        messages.getString("passwordExpirationAlert"), messages
+        .getString("passwordExpirationMessage"));
     notifMetaData.setSender(fromUserId);
     notifMetaData.addUserRecipient(new UserRecipient(userId));
     sender.notifyUser(NotificationParameters.ADDRESS_BASIC_POPUP, notifMetaData);
