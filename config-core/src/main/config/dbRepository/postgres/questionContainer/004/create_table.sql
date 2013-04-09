@@ -25,21 +25,8 @@ CREATE TABLE SB_QuestionContainer_QC
 	qcNbTriesBeforeSolution			int		NULL ,
 	qcMaxTime				int		NULL ,
 	instanceId				varchar (50)	NOT NULL ,
-	anonymous        int   NOT NULL ,
-  resultMode        int   NOT NULL ,
-  resultView        int   NOT NULL 
+	anonymous				int		NOT NULL ,
+	resultMode				int		NOT NULL ,
+	resultView				int		NOT NULL 
 );
 
-ALTER TABLE SB_QuestionContainer_Comment  ADD 
-	 CONSTRAINT PK_QuestionContainer_Comment PRIMARY KEY   
-	(
-		commentId
-	)   
-;
-
-ALTER TABLE SB_QuestionContainer_QC  ADD 
-	 CONSTRAINT PK_QuestionContainer_QC PRIMARY KEY   
-	(
-		qcId
-	)   
-;

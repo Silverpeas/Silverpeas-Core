@@ -3,7 +3,7 @@ CREATE TABLE SB_QuestionContainer_Comment
 	commentId		int		NOT NULL ,
 	commentFatherId		int		NOT NULL ,
 	userId			varchar (100)	NOT NULL ,
-	commentComment		varchar (2000)  NULL,
+	commentComment		varchar (2000)	NULL,
 	commentIsAnonymous	int		NOT NULL ,
 	commentDate		varchar (10)	NOT NULL 
 );
@@ -24,22 +24,9 @@ CREATE TABLE SB_QuestionContainer_QC
 	qcNbMaxParticipations			int		NULL ,
 	qcNbTriesBeforeSolution			int		NULL ,
 	qcMaxTime				int		NULL ,
-	instanceId				varchar (50)	NOT NULL ,
-	anonymous        int   NOT NULL ,
-  resultMode        int   NOT NULL ,
-  resultView        int   NOT NULL 
+	instanceId				varchar (50)	NOT NULL , 
+	anonymous				int		NOT NULL ,
+	resultMode				int		NOT NULL ,
+	resultView				int		NOT NULL 
 );
 
-ALTER TABLE SB_QuestionContainer_Comment  ADD 
-	 CONSTRAINT PK_QuestionContainer_Comment PRIMARY KEY   
-	(
-		commentId
-	)   
-;
-
-ALTER TABLE SB_QuestionContainer_QC  ADD 
-	 CONSTRAINT PK_QuestionContainer_QC PRIMARY KEY   
-	(
-		qcId
-	)   
-;
