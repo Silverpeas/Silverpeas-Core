@@ -286,8 +286,13 @@
         width: 600,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() {
+          '<fmt:message key="GML.ok"/>': function() { 
+            var filename =  $.trim( $("#file_upload").val());
+            if( filename === '') { 
+              return false;
+            }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+            submitUrl = submitUrl + '/' +encodeURI( $("#file_create").val());
             if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -321,7 +326,12 @@
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
-             if ("FormData" in window) {
+            if( $.trim( $("#file_upload").val()) !== '') { 
+              submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val());
+            } else {
+                submitUrl = submitUrl + '/no_file';
+              } 
+            if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
                 processData: false,
