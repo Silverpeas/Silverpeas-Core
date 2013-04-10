@@ -2458,16 +2458,11 @@ public final class Admin {
               getDriverComponentId(component.getId()),
               componentRole);
           if (inheritedProfile != null) {
-            if (spaceProfile.getAllGroups().isEmpty()) {
-              inheritedProfile.removeAllGroups();
-            }
-            if (spaceProfile.getAllUsers().isEmpty()) {
-              inheritedProfile.removeAllUsers();
-            }
+            inheritedProfile.removeAllGroups();
+            inheritedProfile.removeAllUsers();
 
             inheritedProfile.addGroups(spaceProfile.getAllGroups());
             inheritedProfile.addUsers(spaceProfile.getAllUsers());
-            //updateProfileInst(inheritedProfile);
 
             List<String> profilesToCheck = componentRole2SpaceRoles(componentRole,
                 component.getName());
