@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import javax.jms.MessageListener;
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -44,7 +45,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
       "java:/queue/notificationsQueue")},
     description = "Message driven bean to silverpeas notification box")
-public class SILVERMAILListener extends AbstractListener {
+public class SILVERMAILListener extends AbstractListener implements MessageListener {
   private static final long serialVersionUID = -6357231434570565933L;
 
   public SILVERMAILListener() {

@@ -31,6 +31,7 @@ import javax.jms.Message;
 import com.stratelia.silverpeas.notificationserver.NotificationData;
 import com.stratelia.silverpeas.notificationserver.NotificationServerException;
 import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
+import javax.jms.MessageListener;
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -39,7 +40,7 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
       "java:/queue/notificationsQueue")},
     description = "Message driven bean to remove notifications")
-public class REMOVEListener extends AbstractListener {
+public class REMOVEListener extends AbstractListener implements MessageListener {
   private static final long serialVersionUID = 6228192030238517258L;
 
   public REMOVEListener() {

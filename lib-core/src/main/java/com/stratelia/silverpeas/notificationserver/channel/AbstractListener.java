@@ -22,7 +22,6 @@ package com.stratelia.silverpeas.notificationserver.channel;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import com.stratelia.silverpeas.notificationserver.NotificationData;
@@ -32,7 +31,7 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public abstract class AbstractListener implements INotificationServerChannel, MessageListener {
+public abstract class AbstractListener implements INotificationServerChannel {
 
   private static final long serialVersionUID = -5838215003969093865L;
   protected String channel;

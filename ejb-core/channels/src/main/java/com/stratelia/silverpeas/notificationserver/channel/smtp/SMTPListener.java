@@ -46,6 +46,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.lang3.CharEncoding;
 
 import static com.silverpeas.util.MailUtil.*;
+import javax.jms.MessageListener;
+
+import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.*;
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -54,7 +57,7 @@ import static com.silverpeas.util.MailUtil.*;
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
       "java:/queue/notificationsQueue")},
     description = "Message driven bean to send notifications by email")
-public class SMTPListener extends AbstractListener implements SMTPConstant {
+public class SMTPListener extends AbstractListener implements MessageListener {
 
   private static final long serialVersionUID = -241712070051475710L;
 

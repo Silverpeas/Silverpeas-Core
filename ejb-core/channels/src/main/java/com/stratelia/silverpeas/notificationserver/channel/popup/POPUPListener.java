@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.notificationserver.channel.AbstractListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import javax.jms.MessageListener;
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -41,7 +42,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
       "java:/queue/notificationsQueue")},
     description = "Message driven bean for Pop UP notifications")
-public class POPUPListener extends AbstractListener {
+public class POPUPListener extends AbstractListener implements MessageListener {
 
   private static final long serialVersionUID = 6562344573142185894L;
 
