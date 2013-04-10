@@ -1,34 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
  *
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.peasCore;
-
-import java.text.ParseException;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import com.silverpeas.scheduler.*;
 import com.silverpeas.scheduler.trigger.JobTrigger;
@@ -37,11 +27,9 @@ import com.silverpeas.session.SessionManagement;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.notificationManager.*;
 import com.stratelia.silverpeas.notificationserver.channel.popup.POPUPMessageBean;
 import com.stratelia.silverpeas.notificationserver.channel.server.ServerMessageBean;
-import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsManager;
 import com.stratelia.silverpeas.silvertrace.SilverLog;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -50,18 +38,24 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.servlets.LogoutServlet;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.springframework.context.annotation.DependsOn;
+import java.text.ParseException;
+import java.util.*;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.silverpeas.servlets.LogoutServlet;
 
 /**
- * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user log
- * in, ComponentRequestRouter : when the user access a component. It provides functions to manage
- * the sessions, to write a log journal and getFactory informations about the logged users.
+ * Class declaration This object is a singleton used by SilverpeasSessionOpenener : when the user
+ * log in, ComponentRequestRouter : when the user access a component. It provides functions to
+ * manage the sessions, to write a log journal and getFactory informations about the logged users.
  *
-* @author Nicolas Eysseric
+ * @author Nicolas Eysseric
  */
 @Named("sessionManagement")
 public class SessionManager implements SchedulerEventListener, SessionManagement {
@@ -99,7 +93,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    */
   @PostConstruct
   public void initSessionManager() {
-    SilverTrace.info("peasCore", "SessionManagement.initialization", "peasCore.MSG_SERVICE_STARTING",
+    SilverTrace.
+        info("peasCore", "SessionManagement.initialization", "peasCore.MSG_SERVICE_STARTING",
         "Initialization of the session management service");
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
@@ -145,7 +140,8 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
       });
 
     } catch (Exception ex) {
-      SilverTrace.fatal("peasCore", "SessionManagement.initialization", "root.EX_CLASS_NOT_INITIALIZED",
+      SilverTrace.fatal("peasCore", "SessionManagement.initialization",
+          "root.EX_CLASS_NOT_INITIALIZED",
           ex);
     }
   }
@@ -269,7 +265,7 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
   /**
    * Gets all the connected users and the duration of their session.
    *
-* @return
+   * @return
    */
   @Override
   public synchronized Collection<SessionInfo> getConnectedUsersList() {
@@ -512,21 +508,21 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * @param request the HTTP servlet request in which the authentication is performed.
    * @return a SessionInfo instance representing the opened session.
    */
-    @Override
-    public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
-      HTTPSessionInfo si = null;
-      String anIP = request.getRemoteHost();
-      try {
-        HttpSession session = request.getSession();
-        si = new HTTPSessionInfo(session, anIP, user);
-        openSession(si);
-        userDataSessions.put(si.getSessionId(), si);
-        SilverLog.logConnexion("login", si.getIPAddress(), log(si));
-      } catch (Exception ex) {
-        SilverTrace.error("peasCore", "SessionManagement.openSession", "root.EX_NO_MESSAGE", ex);
-      }
-      return si;
+  @Override
+  public SessionInfo openSession(UserDetail user, HttpServletRequest request) {
+    HTTPSessionInfo si = null;
+    String anIP = request.getRemoteHost();
+    try {
+      HttpSession session = request.getSession();
+      si = new HTTPSessionInfo(session, anIP, user);
+      openSession(si);
+      userDataSessions.put(si.getSessionId(), si);
+      SilverLog.logConnexion("login", si.getIPAddress(), log(si));
+    } catch (Exception ex) {
+      SilverTrace.error("peasCore", "SessionManagement.openSession", "root.EX_NO_MESSAGE", ex);
     }
+    return si;
+  }
 
   /**
    * Opens internally the session described by the specified information about that session.

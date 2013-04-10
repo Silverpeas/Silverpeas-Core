@@ -31,6 +31,7 @@ import java.net.URLEncoder;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -83,6 +84,7 @@ public class AuthenticationServlet extends HttpServlet {
     ResourceLocator authenticationSettings = new ResourceLocator(
         "org.silverpeas.authentication.settings.authenticationSettings", "");
     HttpSession session = request.getSession();
+    boolean securedAccess = silverpeasSessionOpener.isNavigationSecure(request);
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     session.setAttribute("Silverpeas_pwdForHyperlink", authenticationParameters.getClearPassword());
@@ -107,13 +109,13 @@ public class AuthenticationServlet extends HttpServlet {
       userCanTryAgainToLoginVerifier.clearCache();
 
       if (domainId != null) {
-        storeDomain(response, domainId);
+        storeDomain(response, domainId, securedAccess);
       }
-      storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
+      storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
 
       // if required by user, store password in cookie
       storePassword(response, authenticationParameters.getStoredPassword(), isNewEncryptMode,
-          authenticationParameters.getClearPassword());
+          authenticationParameters.getClearPassword(), securedAccess);
 
       MandatoryQuestionChecker checker = new MandatoryQuestionChecker();
       if (checker.check(request, authenticationKey)) {
@@ -122,20 +124,21 @@ public class AuthenticationServlet extends HttpServlet {
         return;
       }
       String absoluteUrl = silverpeasSessionOpener.openSession(request, authenticationKey);
-      writeSessionCookie(response, session, silverpeasSessionOpener.isNavigationSecure(request));
+      writeSessionCookie(response, session, securedAccess);
       response.sendRedirect(response.encodeRedirectURL(absoluteUrl));
       return;
     }
     // Authentication failed : remove password from cookies to avoid infinite loop
-    removeStoredPassword(response);
+    removeStoredPassword(response, securedAccess);
     if (authenticationParameters.isCasMode()) {
       url = "/admin/jsp/casAuthenticationError.jsp";
     } else {
       if ("Error_1".equals(authenticationKey)) {
         try {
           if (userCanTryAgainToLoginVerifier.isActivated()) {
-            storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
-            storeDomain(response, domainId);
+            storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(),
+                securedAccess);
+            storeDomain(response, domainId, securedAccess);
           }
           url = userCanTryAgainToLoginVerifier.verify()
               .performRequestUrl(request, "/Login.jsp?ErrorCode=" + INCORRECT_LOGIN_PWD);
@@ -168,8 +171,8 @@ public class AuthenticationServlet extends HttpServlet {
           .equals(authenticationKey)) {
         // User has been successfully authenticated, but he has to change his password on his
         // first login and login / domain id can be stored
-        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
-        storeDomain(response, domainId);
+        storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
+        storeDomain(response, domainId, securedAccess);
         url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential)
             .getDestinationOnFirstLogin(request);
         RequestDispatcher dispatcher = request.getRequestDispatcher(url);
@@ -180,8 +183,8 @@ public class AuthenticationServlet extends HttpServlet {
             userCanTryAgainToLoginVerifier.getUser().getId())) {
           // If user can try again to login verifier is activated or if the user has been found
           // from credential, the login and the domain are stored
-          storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin());
-          storeDomain(response, domainId);
+          storeLogin(response, isNewEncryptMode, authenticationParameters.getLogin(), securedAccess);
+          storeDomain(response, domainId, securedAccess);
           url = AuthenticationUserVerifierFactory.getUserCanLoginVerifier((UserDetail) null)
               .getErrorDestination();
         } else {
@@ -196,52 +199,53 @@ public class AuthenticationServlet extends HttpServlet {
   }
 
   private void storePassword(HttpServletResponse response, String shoudStorePasword,
-      boolean newEncryptMode, String clearPassword) {
+      boolean newEncryptMode, String clearPassword, boolean secured) {
     if (StringUtil.getBooleanValue(shoudStorePasword)) {
       SilverTrace.debug("authentication", "AuthenticationServlet.doPost()",
           "root.MSG_GEN_ENTER_METHOD", "Ok");
       if (newEncryptMode) {
         writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
             encode(
-            clearPassword), -1);
+            clearPassword), -1, secured);
         writeCookie(response, "var2", CredentialEncryptionFactory.getInstance().getEncryption().
             encode(
-            clearPassword), 31536000);
+            clearPassword), 31536000, secured);
       } else {
         writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
             getEncryption()
             .encode(
-            clearPassword), -1);
+            clearPassword), -1, secured);
         writeCookie(response, "svpPassword", CredentialEncryptionFactory.getInstance().
             getEncryption()
             .encode(
-            clearPassword), 31536000);
+            clearPassword), 31536000, secured);
       }
     }
   }
 
-  private void removeStoredPassword(HttpServletResponse response) {
-    writeCookie(response, "var2", "", 0);
-    writeCookie(response, "svpPassword", "", 0);
+  private void removeStoredPassword(HttpServletResponse response, boolean secured) {
+    writeCookie(response, "var2", "", 0, secured);
+    writeCookie(response, "svpPassword", "", 0, secured);
   }
 
-  private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin) {
+  private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin,
+      boolean secured) {
     if (newEncryptMode) {
       writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().
           encode(sLogin),
-          -1);
+          -1, secured);
       writeCookie(response, "var1", CredentialEncryptionFactory.getInstance().getEncryption().
           encode(sLogin),
-          31536000);
+          31536000, secured);
     } else {
-      writeCookie(response, "svpLogin", sLogin, -1);
-      writeCookie(response, "svpLogin", sLogin, 31536000);
+      writeCookie(response, "svpLogin", sLogin, -1, secured);
+      writeCookie(response, "svpLogin", sLogin, 31536000, secured);
     }
   }
 
-  private void storeDomain(HttpServletResponse response, String sDomainId) {
-    writeCookie(response, "defaultDomain", sDomainId, -1);
-    writeCookie(response, "defaultDomain", sDomainId, 31536000);
+  private void storeDomain(HttpServletResponse response, String sDomainId, boolean secured) {
+    writeCookie(response, "defaultDomain", sDomainId, -1, secured);
+    writeCookie(response, "defaultDomain", sDomainId, 31536000, secured);
   }
 
   private String getDomain(HttpServletRequest request, ResourceLocator authSettings, boolean casMode) {
@@ -268,7 +272,7 @@ public class AuthenticationServlet extends HttpServlet {
             .withAsPassword(authenticationParameters.getClearPassword())
             .withAsDomainId(sDomainId));
       }
-      HttpSession session = request.getSession();
+      HttpSession session = request.getSession(false);
       for (Map.Entry<String, Object> capability : credential.getCapabilities().entrySet()) {
         session.setAttribute(capability.getKey(), capability.getValue());
       }
@@ -296,13 +300,21 @@ public class AuthenticationServlet extends HttpServlet {
    *
    * @return
    */
-  private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secure) {
-    String rawCookie = "JSESSIONID=" + session.getId() + ";max-age=-1; path=" + session.
-        getServletContext().getContextPath() + "; HttpOnly;";
-    if (secure) {
-      rawCookie = rawCookie + "secure;";
+  private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secured) {
+//    String rawCookie = "JSESSIONID=" + session.getId() + ";max-age=-1; path=" + session.
+//        getServletContext().getContextPath() + "; HttpOnly;";
+//    if (secure) {
+//      rawCookie = rawCookie + "secure;";
+//    }
+//    response.setHeader("Set-Cookie", rawCookie);
+    Cookie cookie = new Cookie("JSESSIONID", session.getId());
+    cookie.setMaxAge(-1);
+    cookie.setPath(session.getServletContext().getContextPath());
+    cookie.setHttpOnly(true);
+    if (secured) {
+      cookie.setSecure(secured);
     }
-    response.setHeader("Set-Cookie", rawCookie);
+    response.addCookie(cookie);
   }
 
   /**
@@ -313,14 +325,23 @@ public class AuthenticationServlet extends HttpServlet {
    * @param duration
    * @return
    */
-  private void writeCookie(HttpServletResponse response, String name, String value, int duration) {
+  private void writeCookie(HttpServletResponse response, String name, String value, int duration,
+      boolean secure) {
     String cookieValue;
     try {
       cookieValue = URLEncoder.encode(value, CharEncoding.UTF_8);
     } catch (UnsupportedEncodingException ex) {
       cookieValue = value;
     }
-    response.setHeader("Set-Cookie", name + '=' + cookieValue + "; max-age=" + duration
-        + "; path=/; HttpOnly; secure;");
+    Cookie cookie = new Cookie(name, cookieValue);
+    cookie.setMaxAge(duration);
+    cookie.setPath("/");
+    cookie.setHttpOnly(true);
+    if (secure) {
+      cookie.setSecure(true);
+    }
+    response.addCookie(cookie);
+//    response.setHeader("Set-Cookie", name + '=' + cookieValue + "; max-age=" + duration
+//        + "; path=/; HttpOnly; secure;");
   }
 }
