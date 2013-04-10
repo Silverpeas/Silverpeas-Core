@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
@@ -419,7 +419,7 @@
           <exclude>**/*.msg</exclude>
           <exclude>**/*.eml</exclude>
         </excludes>
-      </testResource>      
+      </testResource>
     </testResources>
     <filters>
       <filter>${basedir}/src/test/filters/filters.properties</filter>

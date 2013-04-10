@@ -20,14 +20,9 @@
  */
 package com.silverpeas.authentication;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import com.google.common.collect.Lists;
-import com.silverpeas.jcrutil.RandomGenerator;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,7 +53,7 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/spring-authentication.xml")
 public class SilverpeasSessionOpenenerTest {
-  
+
   public SilverpeasSessionOpenenerTest() {
   }
 
@@ -85,7 +80,7 @@ public class SilverpeasSessionOpenenerTest {
   public void testIsAnonymousUser() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
-    when(request.getSession()).thenReturn(session);
+    when(request.getSession(false)).thenReturn(session);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     boolean result = instance.isAnonymousUser(request);
     assertThat(result, is(false));
@@ -116,8 +111,8 @@ public class SilverpeasSessionOpenenerTest {
 
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
-    when(session.getId()).thenReturn("mysessionid");    
-    
+    when(session.getId()).thenReturn("mysessionid");
+
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(request);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
@@ -158,7 +153,7 @@ public class SilverpeasSessionOpenenerTest {
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
     when(session.getAttributeNames()).thenReturn(Collections.enumeration(
-            Lists.newArrayList("test1", "test2")));    
+        Lists.newArrayList("test1", "test2")));
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     instance.closeSession(request);
     verify(session, times(1)).removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
