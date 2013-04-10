@@ -81,14 +81,16 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
-  <view:settings var="spinfireViewerEnable"  settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
+  <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
   <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
   <view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
   <c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
-  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
+  <c:set var="dnd" value="${fn:toLowerCase(param.dnd)}" scope="page"/>
+  <c:set var="dndDisabledLocally" value="${'false' eq dnd}" scope="page" />
+  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
 
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
@@ -195,13 +197,13 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
 %>
+<c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:AddAttachment();"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
     <ul id="attachmentList">
-      <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
         <c:forEach items="${pageScope.attachments}" var="varAttachment" >
         <c:choose>
           <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
@@ -323,7 +325,6 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
             <c:if test="${isAttachmentPositionRight}"></li></c:if>
           </c:if>
         </c:forEach>
-      </c:if>
     </ul>
     <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
       <c:choose>
@@ -353,6 +354,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
     </c:choose>
   </c:if>
 </div>
+</c:if>
 <div id="attachmentModalDialog" style="display: none"> </div>
 <c:if test="${spinfireViewerEnable}">
   <script type="text/javascript">
@@ -551,7 +553,8 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
       alertUsersAttachment(attachmentId); //dans publication.jsp
     }
 
-    function AddAttachment() {
+    function addAttachment(foreignId) {
+      $("#add-attachment-form #foreignId").val(foreignId);
       $("#dialog-attachment-add").dialog("open");
     }
 
