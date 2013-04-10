@@ -301,12 +301,6 @@ public class AuthenticationServlet extends HttpServlet {
    * @return
    */
   private void writeSessionCookie(HttpServletResponse response, HttpSession session, boolean secured) {
-//    String rawCookie = "JSESSIONID=" + session.getId() + ";max-age=-1; path=" + session.
-//        getServletContext().getContextPath() + "; HttpOnly;";
-//    if (secure) {
-//      rawCookie = rawCookie + "secure;";
-//    }
-//    response.setHeader("Set-Cookie", rawCookie);
     Cookie cookie = new Cookie("JSESSIONID", session.getId());
     cookie.setMaxAge(-1);
     cookie.setPath(session.getServletContext().getContextPath());
@@ -341,7 +335,5 @@ public class AuthenticationServlet extends HttpServlet {
       cookie.setSecure(true);
     }
     response.addCookie(cookie);
-//    response.setHeader("Set-Cookie", name + '=' + cookieValue + "; max-age=" + duration
-//        + "; path=/; HttpOnly; secure;");
   }
 }
