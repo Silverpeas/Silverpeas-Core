@@ -93,12 +93,13 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
-   * @param comment 
+   * @param comment
    * @param context
    * @return
    * @throws IOException
    */
   @POST
+  @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_XHTML_XML)
   public String createDocumentForInternetExplorer(
@@ -111,9 +112,10 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("indexIt") String indexIt,
       final @FormDataParam("versionType") String type,
       final @FormDataParam("commentMessage") String comment,
-      final @FormDataParam("context") String context) throws IOException {
-    SimpleDocumentEntity entity = createSimpleDocument(uploadedInputStream,
-        fileDetail, language, fileTitle, description, foreignId, indexIt, type, comment, context);
+      final @FormDataParam("context") String context,
+      final @PathParam("filename") String filename) throws IOException {
+    SimpleDocumentEntity entity = createSimpleDocument(uploadedInputStream, fileDetail, filename,
+        language, fileTitle, description, foreignId, indexIt, type, comment, context);
     String result = null;
     if (entity != null) {
       ObjectMapper mapper = new ObjectMapper();
@@ -133,12 +135,13 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
    * @param foreignId
    * @param indexIt
    * @param type
-   * @param comment 
+   * @param comment
    * @param context
    * @return
    * @throws IOException
    */
   @POST
+  @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_JSON)
   public SimpleDocumentEntity createDocument(
@@ -151,19 +154,23 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       final @FormDataParam("indexIt") String indexIt,
       final @FormDataParam("versionType") String type,
       final @FormDataParam("commentMessage") String comment,
-      final @FormDataParam("context") String context) throws IOException {
-    return createSimpleDocument(uploadedInputStream, fileDetail, language, fileTitle, description,
-        foreignId, indexIt, type, comment, context);
+      final @FormDataParam("context") String context,
+      final @PathParam("filename") String filename) throws IOException {
+    return createSimpleDocument(uploadedInputStream, fileDetail, filename, language, fileTitle,
+        description, foreignId, indexIt, type, comment, context);
   }
 
   protected SimpleDocumentEntity createSimpleDocument(InputStream uploadedInputStream,
-      FormDataContentDisposition fileDetail, String language, String fileTitle, String fileDescription,
+      FormDataContentDisposition fileDetail, String filename, String language, String fileTitle, String fileDescription,
       String foreignId, String indexIt, String type, String comment, String context) throws IOException {
-    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
-        getFileName())) {
-      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
+    String uploadedFilename = filename;
+    if (StringUtil.isNotDefined(filename)) {
+      uploadedFilename = fileDetail.getFileName();
+    }
+    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)) {
+      File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-      
+
       String lang = I18NHelper.checkLanguage(language);
       String title = fileTitle;
       String description = fileDescription;
@@ -182,7 +189,7 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       if (!StringUtil.isDefined(description)) {
         description = "";
       }
-     
+
       DocumentType attachmentContext;
       if (!StringUtil.isDefined(context)) {
         attachmentContext = DocumentType.attachment;
@@ -196,26 +203,26 @@ public class SimpleDocumentResourceCreator extends RESTWebService {
       boolean publicDocument = true;
       if (StringUtil.isDefined(type) && StringUtil.isInteger(type)) {
         document = AttachmentServiceFactory.getAttachmentService().findExistingDocument(pk,
-            fileDetail.getFileName(), new ForeignPK(foreignId, componentId), lang);
+            uploadedFilename, new ForeignPK(foreignId, componentId), lang);
         publicDocument = Integer.parseInt(type) == DocumentVersion.TYPE_PUBLIC_VERSION;
         needCreation = document == null;
         if (document == null) {
           document = new HistorisedDocument(pk, foreignId, 0, userId,
-              new SimpleAttachment(fileDetail.getFileName(), lang, title, description, fileDetail.getSize(),
-              FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
+              new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
+              FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
           document.setDocumentType(attachmentContext);
         }
         document.setPublicDocument(publicDocument);
         document.setComment(comment);
       } else {
         document = new SimpleDocument(pk, foreignId, 0, false, null,
-            new SimpleAttachment(fileDetail.getFileName(), lang, title, description, fileDetail.getSize(),
-            FileUtil.getMimeType(fileDetail.getFileName()), userId, new Date(), null));
+            new SimpleAttachment(uploadedFilename, lang, title, description, fileDetail.getSize(),
+            FileUtil.getMimeType(uploadedFilename), userId, new Date(), null));
         document.setDocumentType(attachmentContext);
       }
       document.setLanguage(lang);
       document.setTitle(title);
-      document.setDescription(description);      
+      document.setDescription(description);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (needCreation) {
