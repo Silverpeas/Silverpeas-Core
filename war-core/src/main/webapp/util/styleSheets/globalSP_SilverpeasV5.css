@@ -5383,9 +5383,13 @@ input.search:focus {
     margin-bottom:14px;
 }
 
-/********************************/
+/*******************************/
 /** created action bar **/
 /*******************************/
+#menubar-creation-actions {
+	display: none;	
+}
+
 #menubar-creation-actions,
 #attachment-creation-actions {
     background-color:#fff4eb;
