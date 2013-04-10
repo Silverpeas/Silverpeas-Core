@@ -145,7 +145,8 @@ public class SimpleDocumentResource extends RESTWebService {
    * @return
    * @throws IOException
    */
-  @POST
+  @POST 
+  @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_XHTML_XML)
   public String updateDocumentForInternetExplorer(
@@ -154,9 +155,10 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
       final @FormDataParam("fileDescription") String description,
       final @FormDataParam("versionType") String versionType,
-      final @FormDataParam("commentMessage") String comment) throws IOException {
-    SimpleDocumentEntity entity = updateSimpleDocument(uploadedInputStream, fileDetail, lang, title,
-        description, versionType, comment);
+      final @FormDataParam("commentMessage") String comment,
+      final @PathParam("filename") String filename) throws IOException {
+    SimpleDocumentEntity entity = updateSimpleDocument(uploadedInputStream, fileDetail, filename, 
+        lang, title, description, versionType, comment);
     String result = null;
     if (entity != null) {
       ObjectMapper mapper = new ObjectMapper();
@@ -179,6 +181,7 @@ public class SimpleDocumentResource extends RESTWebService {
    * @throws IOException
    */
   @POST
+  @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces({MediaType.APPLICATION_JSON})
   public SimpleDocumentEntity updateDocument(
@@ -187,8 +190,9 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("fileLang") String lang, final @FormDataParam("fileTitle") String title,
       final @FormDataParam("fileDescription") String description,
       final @FormDataParam("versionType") String versionType,
-      final @FormDataParam("commentMessage") String comment) throws IOException {
-    return updateSimpleDocument(uploadedInputStream, fileDetail, lang, title, description,
+      final @FormDataParam("commentMessage") String comment,
+      final @PathParam("filename") String filename) throws IOException {
+    return updateSimpleDocument(uploadedInputStream, fileDetail, filename, lang, title, description,
         versionType, comment);
   }
 
@@ -206,8 +210,8 @@ public class SimpleDocumentResource extends RESTWebService {
    * @throws IOException
    */
   protected SimpleDocumentEntity updateSimpleDocument(InputStream uploadedInputStream,
-      FormDataContentDisposition fileDetail, String lang, String title, String description,
-      String versionType, String comment) throws IOException {
+      FormDataContentDisposition fileDetail, String filename, String lang, String title,
+      String description, String versionType, String comment) throws IOException {
     SimpleDocument document = getSimpleDocument(lang);
     boolean isPublic = false;
     if (StringUtil.isDefined(versionType) && StringUtil.isInteger(versionType)) {
@@ -219,20 +223,22 @@ public class SimpleDocumentResource extends RESTWebService {
     document.setTitle(title);
     document.setDescription(description);
     document.setComment(comment);
-    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(fileDetail.
-        getFileName())) {
-      document.setFilename(fileDetail.getFileName());
-      document.setContentType(FileUtil.getMimeType(fileDetail.getFileName()));
-      document.setSize(fileDetail.getSize());
-      File tempFile = File.createTempFile("silverpeas_", fileDetail.getFileName());
+    String uploadedFilename = filename;
+    if (StringUtil.isNotDefined(filename)) {
+      uploadedFilename = fileDetail.getFileName();
+    }
+    if (uploadedInputStream != null && fileDetail != null && StringUtil.isDefined(uploadedFilename)
+        && !"no_file".equalsIgnoreCase(uploadedFilename)) {
+      document.setFilename(uploadedFilename);
+      document.setContentType(FileUtil.getMimeType(uploadedFilename));
+      File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
       FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
       document.setSize(tempFile.length());
       InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
       if (!StringUtil.isDefined(document.getEditedBy())) {
         document.edit(getUserDetail().getId());
       }
-      AttachmentServiceFactory.getAttachmentService()
-          .updateAttachment(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
