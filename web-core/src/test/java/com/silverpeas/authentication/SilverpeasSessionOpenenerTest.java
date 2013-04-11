@@ -20,27 +20,22 @@
  */
 package com.silverpeas.authentication;
 
-import java.util.Collections;
-
 import com.google.common.collect.Lists;
+import com.silverpeas.jcrutil.RandomGenerator;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.silverpeas.jcrutil.RandomGenerator;
-
-import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -80,7 +75,7 @@ public class SilverpeasSessionOpenenerTest {
   public void testIsAnonymousUser() {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
-    when(request.getSession(false)).thenReturn(session);
+    when(request.getSession()).thenReturn(session);
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     boolean result = instance.isAnonymousUser(request);
     assertThat(result, is(false));

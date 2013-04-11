@@ -73,6 +73,7 @@ public class AuthenticationServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException {
+    HttpSession session = request.getSession();
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
       request.setCharacterEncoding(CharEncoding.UTF_8);
     }
@@ -83,7 +84,6 @@ public class AuthenticationServlet extends HttpServlet {
     // Get the authentication settings
     ResourceLocator authenticationSettings = new ResourceLocator(
         "org.silverpeas.authentication.settings.authenticationSettings", "");
-    HttpSession session = request.getSession();
     boolean securedAccess = silverpeasSessionOpener.isNavigationSecure(request);
     boolean isNewEncryptMode = StringUtil.isDefined(request.getParameter("Var2"));
     AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
@@ -330,7 +330,6 @@ public class AuthenticationServlet extends HttpServlet {
     Cookie cookie = new Cookie(name, cookieValue);
     cookie.setMaxAge(duration);
     cookie.setPath("/");
-    cookie.setHttpOnly(true);
     if (secure) {
       cookie.setSecure(true);
     }

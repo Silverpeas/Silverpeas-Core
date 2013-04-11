@@ -64,7 +64,7 @@ public class SilverpeasSessionOpener {
    * @return true if the user sending the request is an anonymous one, false otherwise.
    */
   public boolean isAnonymousUser(HttpServletRequest request) {
-    HttpSession session = request.getSession(false);
+    HttpSession session = request.getSession();
     MainSessionController controller = (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (controller != null) {
