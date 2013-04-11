@@ -26,7 +26,7 @@ CREATE TABLE SB_QuestionContainer_QC
 	qcMaxTime				int		NULL ,
 	instanceId				varchar (50)	NOT NULL , 
 	anonymous				int		NOT NULL ,
-	resultMode				int		NOT NULL ,
-	resultView				int		NOT NULL 
+	resultMode				int	DEFAULT(1)	NOT NULL,
+	resultView				int	DEFAULT(4)	NOT NULL 
 );
 
