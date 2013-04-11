@@ -885,6 +885,12 @@ public class GraphicElementFactory {
   }
 
   public Pagination getPagination(int nbItems, int nbItemsPerPage, int firstItemIndex) {
+    Pagination pagination = getPagination();
+    pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
+    return pagination;
+  }
+  
+  public Pagination getPagination() {
     String paginationClassName = getFavoriteLookSettings().getString("Pagination");
     Pagination pagination;
     if (paginationClassName == null) {
@@ -898,7 +904,6 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_PAGINATION", "", e);
       pagination = new PaginationSP();
     }
-    pagination.init(nbItems, nbItemsPerPage, firstItemIndex);
     pagination.setMultilang(getMultilang());
     return pagination;
   }

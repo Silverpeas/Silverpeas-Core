@@ -24,8 +24,12 @@
 
 package com.silverpeas.form;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.silverpeas.form.record.Parameter;
 
 /**
  * A field template implementation for testing purpose.
@@ -95,6 +99,11 @@ public class MyFieldTemplate implements FieldTemplate {
   @Override
   public Map<String, String> getParameters(final String language) {
     return new HashMap<String, String>();
+  }
+  
+  @Override
+  public List<Parameter> getParametersObj() {
+    return new ArrayList<Parameter>();
   }
 
   @Override
