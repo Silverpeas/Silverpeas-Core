@@ -26,6 +26,9 @@ import java.util.Properties;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.jms.MessageListener;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -46,9 +49,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.apache.commons.lang3.CharEncoding;
 
 import static com.silverpeas.util.MailUtil.*;
-import javax.jms.MessageListener;
-
-import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.*;
+import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SECURE_TRANSPORT;
+import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConstant.SIMPLE_TRANSPORT;
 
 @MessageDriven(activationConfig = {
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
@@ -57,6 +59,7 @@ import static com.stratelia.silverpeas.notificationserver.channel.smtp.SMTPConst
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
       "java:/queue/notificationsQueue")},
     description = "Message driven bean to send notifications by email")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SMTPListener extends AbstractListener implements MessageListener {
 
   private static final long serialVersionUID = -241712070051475710L;

@@ -24,6 +24,8 @@ import java.util.StringTokenizer;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
@@ -44,13 +46,13 @@ import static com.stratelia.silverpeas.silverstatistics.control.SilverStatistics
   @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
   @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "AutoAcknowledge"),
   @ActivationConfigProperty(propertyName = "destination", propertyValue =
-      "java:/queue/statisticsQueue")},
-    description = "Message driven bean for statistics insertion")
+      "java:/queue/statisticsQueue")}, description = "Message driven bean for statistics insertion")
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SilverStatisticsMessageDriven implements MessageListener {
 
   private static final long serialVersionUID = -7349058052737871887L;
 
-  public void SilverStatisticsMessageDriven() {
+  public SilverStatisticsMessageDriven() {
     StatisticsConfig myStatsConfig = new StatisticsConfig();
     try {
       myStatsConfig.init();
