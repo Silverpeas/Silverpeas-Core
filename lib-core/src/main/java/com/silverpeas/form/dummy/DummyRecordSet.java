@@ -118,6 +118,10 @@ public class DummyRecordSet implements RecordSet {
   @Override
   public void delete(DataRecord record) throws FormException {
   }
+  
+  @Override
+  public void delete(String objectId) throws FormException {
+  }
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,

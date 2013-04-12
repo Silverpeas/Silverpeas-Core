@@ -220,6 +220,11 @@ public class GenericRecordSet implements RecordSet, Serializable {
       getGenericRecordSetManager().deleteRecord(recordTemplate, record);
     }
   }
+  
+  public void delete(String objectId) throws FormException {
+    DataRecord data = getRecord(objectId);
+    delete(data);
+  }
 
   @Override
   public void clone(String originalExternalId, String originalComponentId, String cloneExternalId,
