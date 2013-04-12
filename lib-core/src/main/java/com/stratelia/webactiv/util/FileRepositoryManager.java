@@ -74,7 +74,6 @@ public class FileRepositoryManager {
   }
 
   /**
-<<<<<<< HEAD
    * Gets the path of the directory in which all the resources related to the security in Silverpeas
    * are stored.
    * @return the path of the Silverpeas security directory.
@@ -84,11 +83,8 @@ public class FileRepositoryManager {
   }
 
   /**
-   * @deprecated @param sSpaceId
-=======
-   *
+   * @deprecated
    * @param sSpaceId
->>>>>>> master
    * @param sComponentId
    * @return
    * @deprecated
