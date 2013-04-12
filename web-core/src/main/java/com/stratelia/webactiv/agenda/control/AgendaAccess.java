@@ -33,14 +33,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class AgendaAccess {
 
-  static private SilverpeasCalendar calendarBm = null;
+  private static SilverpeasCalendar calendarBm = null;
 
-  /**
-   * getEJB
-   *
-   * @return instance of CalendarBmHome
-   */
-  static private SilverpeasCalendar getEJB() throws AgendaException {
+  private static SilverpeasCalendar getEJB() throws AgendaException {
     if (calendarBm == null) {
       try {
         calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
@@ -61,8 +56,7 @@ public class AgendaAccess {
    * @throws AgendaException
    * @see
    */
-  static public boolean hasTentativeSchedulables(String userId)
-      throws AgendaException {
+  static public boolean hasTentativeSchedulables(String userId) throws AgendaException {
     try {
       return getEJB().hasTentativeSchedulablesForUser(userId);
     } catch (Exception e) {
@@ -77,9 +71,8 @@ public class AgendaAccess {
 
   static public Collection<JournalHeader> getDaySchedulables(String userId) throws AgendaException {
     try {
-      return getEJB().
-          getDaySchedulablesForUser(DateUtil.date2SQLDate(getCurrentDay()), userId, null,
-          ParticipationStatus.ACCEPTED);
+      return getEJB().getDaySchedulablesForUser(DateUtil.date2SQLDate(getCurrentDay()), userId, 
+          null, ParticipationStatus.ACCEPTED);
     } catch (Exception e) {
       throw new AgendaException("AgendaAccess.getDaySchedulables()", SilverpeasException.ERROR,
           "agenda.EX_CANT_GET_TENTATIVE_SCHEDULABLES", "userId=" + userId, e);
@@ -98,7 +91,7 @@ public class AgendaAccess {
   }
 
   static public Collection<JournalHeader> getJournalHeadersForUserAfterDate(String userIdAgenda,
-      java.util.Date startDate, int nbReturned) throws AgendaException {
+      Date startDate, int nbReturned) throws AgendaException {
     try {
       return getEJB().getJournalHeadersForUserAfterDate(userIdAgenda, startDate, nbReturned);
     } catch (Exception e) {

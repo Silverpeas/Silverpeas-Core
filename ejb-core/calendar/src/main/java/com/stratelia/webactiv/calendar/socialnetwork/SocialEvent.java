@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.calendar.Date;
+import com.silverpeas.socialnetwork.model.SocialInformation;
 import com.silverpeas.socialnetwork.provider.SocialEventsInterface;
 
 import com.stratelia.webactiv.calendar.control.CalendarException;
@@ -43,11 +44,6 @@ public class SocialEvent implements SocialEventsInterface {
 
   static private SilverpeasCalendar calendarBm = null;
 
-  /**
-   * getEJB
-   *
-   * @return instance of CalendarBmHome
-   */
   private static synchronized SilverpeasCalendar getEJB() throws CalendarException {
     if (calendarBm == null) {
       try {
@@ -72,9 +68,9 @@ public class SocialEvent implements SocialEventsInterface {
    * @throws UtilException
    */
   @Override
-  public List getSocialInformationsList(String userId, String classification, Date begin, Date end)
-      throws CalendarException, UtilException {
-    List<SocialInformationEvent> listEvent = new ArrayList<SocialInformationEvent>();
+  public List<SocialInformation> getSocialInformationsList(String userId, String classification,
+      Date begin, Date end) throws CalendarException, UtilException {
+    List<SocialInformation> listEvent = new ArrayList<SocialInformation>();
     try {
       String now = DateUtil.date2SQLDate(new java.util.Date());
       List<JournalHeader> list = getEJB().getNextEventsForUser(now, userId, classification, begin,
@@ -83,7 +79,7 @@ public class SocialEvent implements SocialEventsInterface {
         SocialInformationEvent event = new SocialInformationEvent((Schedulable) jh);
         listEvent.add(event);
       }
-    } catch (Exception ex) {
+    } catch (CalendarException ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
@@ -95,14 +91,16 @@ public class SocialEvent implements SocialEventsInterface {
    *
    * @param myId
    * @param myContactsIds
+   * @param begin 
+   * @param end 
    * @param numberOfElement
    * @param firstIndex
    * @return
    * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      Date begin, Date end) throws SilverpeasException {
+  public List getSocialInformationsListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
     String day = DateUtil.date2SQLDate(new java.util.Date());
     try {
       return getEJB().getNextEventsForMyContacts(day, myId, myContactsIds, begin, end);

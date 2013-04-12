@@ -55,11 +55,6 @@ public class SocialPublications implements SocialPublicationsInterface {
     return getEJB().getAllPublicationsWithStatusbyUserid(userId, begin, end);
   }
 
-  /**
-   * getEJB
-   *
-   * @return instance of CalendarBmHome
-   */
   private PublicationBm getEJB() {
     try {
       return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);

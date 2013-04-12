@@ -31,21 +31,16 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ToDoAccess {
 
-  static private SilverpeasCalendar calendarBm = null;
+  private static SilverpeasCalendar calendarBm = null;
 
-  /**
-   * getEJB
-   *
-   * @return instance of CalendarBmHome
-   */
-  static private SilverpeasCalendar getEJB() throws TodoException {
+  private static SilverpeasCalendar getEJB() throws TodoException {
     if (calendarBm == null) {
       try {
         calendarBm = EJBUtilitaire.getEJBObjectRef(JNDINames.CALENDARBM_EJBHOME,
             SilverpeasCalendar.class);
       } catch (Exception e) {
-        throw new TodoException("ToDoAccess.getEJB()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new TodoException("ToDoAccess.getEJB()", SilverpeasException.ERROR,
+            "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
     return calendarBm;
@@ -54,18 +49,17 @@ public class ToDoAccess {
   /**
    * getNotCompletedToDos
    *
-   * @param userId 
+   * @param userId
    * @return Collection of TodoHeaders
    * @throws TodoException
    */
   static public Collection<ToDoHeader> getNotCompletedToDos(String userId) throws TodoException {
-    SilverTrace.info("todo", "ToDoAccess.getNotCompletedToDos()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("todo", "ToDoAccess.getNotCompletedToDos()", "root.MSG_GEN_ENTER_METHOD");
     try {
-      return  getEJB().getNotCompletedToDosForUser(userId);
+      return getEJB().getNotCompletedToDosForUser(userId);
     } catch (Exception e) {
-      throw new TodoException("ToDoAccess.getNotCompletedToDos()",
-          SilverpeasException.ERROR, "todo.MSG_CANT_GET_ENDED_TODOS", e);
+      throw new TodoException("ToDoAccess.getNotCompletedToDos()", SilverpeasException.ERROR,
+          "todo.MSG_CANT_GET_ENDED_TODOS", e);
     }
   }
 }
