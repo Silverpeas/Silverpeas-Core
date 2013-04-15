@@ -24,7 +24,10 @@
 
 package com.silverpeas.form;
 
+import java.util.List;
 import java.util.Map;
+
+import com.silverpeas.form.record.Parameter;
 
 /**
  * A FieldTemplate describes a specific field of a DataRecord. A FieldTemplate gives the field name,
@@ -88,6 +91,8 @@ public interface FieldTemplate {
    * (max-size, length ...).
    */
   public Map<String, String> getParameters(String language);
+  
+  public List<Parameter> getParametersObj();
 
   /**
    * Returns an empty Field built on this template.
