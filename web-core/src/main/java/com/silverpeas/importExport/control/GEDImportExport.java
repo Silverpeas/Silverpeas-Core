@@ -1137,10 +1137,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
         XMLModelContentType xmlModel = new XMLModelContentType(publicationDetail.getInfoId());
         xmlModel.setFields(xmlFields);
         pubContent.setXMLModelContentType(xmlModel);
-      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()))) {
+      } else if (WysiwygController.haveGotWysiwyg(componentId, pubId, I18NHelper.checkLanguage(publicationDetail.getLanguage()))) {
         pubContent = new PublicationContentType();
         WysiwygContentType wysiwygContentType = new WysiwygContentType();
-        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper.checkLanguage(publicationType.getPublicationDetail().getLanguage()));
+        String wysiwygFileName = WysiwygController.getWysiwygFileName(pubId, I18NHelper.checkLanguage(publicationDetail.getLanguage()));
         wysiwygContentType.setPath(wysiwygFileName);
         pubContent.setWysiwygContentType(wysiwygContentType);
       }
