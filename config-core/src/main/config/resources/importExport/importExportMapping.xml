@@ -91,7 +91,7 @@
     </castor:class>
     <castor:class name="com.stratelia.webactiv.util.publication.model.PublicationDetail">
         <castor:map-to xml="publicationHeader" ns-uri="http://intranoo.oevo.com/websilverpeas/exchange/v5"/>
-        <castor:field name="Name" type="java.lang.String">
+        <castor:field name="name" type="string">
             <castor:bind-xml name="sp:name" node="element"/>
         </castor:field>
         <castor:field name="description" type="string">
