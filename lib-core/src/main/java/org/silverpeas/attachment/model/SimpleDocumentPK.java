@@ -47,6 +47,7 @@ public class SimpleDocumentPK extends WAPrimaryKey {
 
   public SimpleDocumentPK(String id) {
     super(id);
+    componentName = "";
     if (StringUtil.isLong(id)) {
       this.oldSilverpeasId = Long.parseLong(id);
     }
