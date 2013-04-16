@@ -4865,7 +4865,7 @@ public final class Admin {
       // check TreeCache to know if component is not removed neither into a removed space
       List<String> shortIds = new ArrayList<String>();
       for (String componentId : matchingComponentIds) {
-        ComponentInstLight component = TreeCache.getComponent(componentId);
+        ComponentInstLight component = TreeCache.getComponent(sComponentName+componentId);
         if (component != null) {
           shortIds.add(componentId);
         }
