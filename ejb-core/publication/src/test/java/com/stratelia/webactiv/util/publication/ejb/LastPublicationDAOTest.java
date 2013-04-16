@@ -28,6 +28,7 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
+import com.stratelia.webactiv.util.publication.control.PublicationDAO;
 import java.util.Collection;
 import java.util.Calendar;
 import java.util.List;

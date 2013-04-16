@@ -23,12 +23,12 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getLoadRow;
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId;
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByFatherPK;
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByName;
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectByNameAndNodeId;
-import static com.stratelia.webactiv.util.publication.ejb.QueryStringFactory.getSelectNotInFatherPK;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getLoadRow;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getSelectByFatherPK;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getSelectByName;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getSelectByNameAndNodeId;
+import static com.stratelia.webactiv.util.publication.control.QueryStringFactory.getSelectNotInFatherPK;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

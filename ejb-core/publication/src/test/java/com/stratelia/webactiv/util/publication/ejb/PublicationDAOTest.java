@@ -20,6 +20,7 @@
  */
 package com.stratelia.webactiv.util.publication.ejb;
 
+import com.stratelia.webactiv.util.publication.control.PublicationDAO;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Calendar;

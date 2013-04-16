@@ -11,4 +11,5 @@
   <artifactId>notation</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Notation - ${project.version}</name>
+  
 </project>

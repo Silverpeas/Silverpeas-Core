@@ -1,63 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
  *
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.webactiv.util.publication.model;
-
-import com.google.common.base.Objects;
-import com.silverpeas.SilverpeasContent;
-import com.silverpeas.form.*;
-import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
-import com.silverpeas.form.importExport.XMLField;
-import com.silverpeas.form.record.GenericFieldTemplate;
-import com.silverpeas.formTemplate.ejb.FormTemplateBm;
-import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.thumbnail.control.ThumbnailController;
-import com.silverpeas.thumbnail.model.ThumbnailDetail;
-import com.silverpeas.util.EncodeHelper;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.contentManager.ContentManager;
-import com.stratelia.silverpeas.contentManager.ContentManagerException;
-import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
-import com.stratelia.silverpeas.contentManager.SilverContentInterface;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import org.silverpeas.importExport.attachment.AttachmentPK;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -68,7 +29,44 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
+import com.silverpeas.SilverpeasContent;
+import com.silverpeas.form.*;
+import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
+import com.silverpeas.form.importExport.XMLField;
+import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.formTemplate.ejb.FormTemplateBm;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.contentManager.ContentManager;
+import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.ContentManagerFactory;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
+import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
+
+import com.google.common.base.Objects;
 
 /**
  * This object contains the description of a publication
@@ -928,9 +926,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
 
   private FormTemplateBm getFormTemplateBm() {
     try {
-      FormTemplateBmHome formTemplateBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
-      return formTemplateBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBm.class);
     } catch (Exception e) {
       throw new PublicationRuntimeException("PublicationDetail.getFormTemplateBm()",
           SilverpeasRuntimeException.ERROR,
@@ -985,13 +981,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   public PublicationBm getPublicationBm() {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
-        publicationBm = publicationBmHome.create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
-        throw new PublicationRuntimeException(
-            "PublicationDetail.getPublicationBm()",
+        throw new PublicationRuntimeException("PublicationDetail.getPublicationBm()",
             SilverpeasRuntimeException.ERROR,
             "publication.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
       }

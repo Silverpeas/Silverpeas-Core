@@ -20,30 +20,32 @@
  */
 package com.silverpeas.sharing.services;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+import org.silverpeas.importExport.versioning.Document;
+
 import com.silverpeas.sharing.model.NodeTicket;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
 import com.silverpeas.util.ForeignPK;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.apache.commons.collections.CollectionUtils;
 
-import javax.ejb.CreateException;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.importExport.versioning.Document;
+import org.apache.commons.collections.CollectionUtils;
 
 /**
  * Access control to shared nodes and their content.
@@ -126,18 +128,15 @@ public class NodeAccessControl implements ShareableAccessControl {
 
   private PublicationBm findPublicationBm() throws CreateException, RemoteException {
     if (publicationBm == null) {
-      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+          PublicationBm.class);
     }
     return publicationBm;
   }
 
   private NodeBm findNodeBm() throws CreateException, RemoteException {
     if (nodeBm == null) {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     }
     return nodeBm;
   }
