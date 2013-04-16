@@ -1247,6 +1247,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Settings of search engine</description>
+      <name>settings</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>com.stratelia.silverpeas.util.ResourcesWrapper</type>
+    </attribute>
   </tag>
   <tag>
     <description>Generate HTML for the site Map.</description>
