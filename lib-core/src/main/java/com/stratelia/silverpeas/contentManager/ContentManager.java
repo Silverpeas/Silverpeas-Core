@@ -24,16 +24,6 @@
 
 package com.stratelia.silverpeas.contentManager;
 
-import com.stratelia.silverpeas.containerManager.ContainerManager;
-import com.stratelia.silverpeas.containerManager.URLIcone;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.JoinStatement;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-
-import javax.inject.Named;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +38,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.inject.Named;
+
+import com.stratelia.silverpeas.containerManager.ContainerManager;
+import com.stratelia.silverpeas.containerManager.URLIcone;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.JoinStatement;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents

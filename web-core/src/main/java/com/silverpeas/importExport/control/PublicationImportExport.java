@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -22,7 +21,6 @@
 package com.silverpeas.importExport.control;
 
 import java.io.File;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,8 +29,6 @@ import java.util.Map;
 
 import javax.mail.internet.InternetAddress;
 
-import org.antlr.stringtemplate.StringTemplate;
-import org.apache.commons.lang.StringUtils;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
 import org.silverpeas.util.mail.MailExtractor;
@@ -41,19 +37,20 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.MetaData;
 import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+
+import org.antlr.stringtemplate.StringTemplate;
+import org.apache.commons.lang.StringUtils;
 
 public class PublicationImportExport {
 
@@ -144,14 +141,8 @@ public class PublicationImportExport {
    * @param nodes List of coordinateId.
    */
   public static void addNodesToPublication(PublicationPK pubPK, List<Integer> nodes) {
-    try {
-      for (Integer coordinateId : nodes) {
-        getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
-      }
-    } catch (RemoteException e) {
-      throw new PublicationRuntimeException("CoordinateImportExport.addNodesToPublication()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.ATTACHING_NODES_TO_PUBLICATION_FAILED", e);
+    for (Integer coordinateId : nodes) {
+      getPublicationBm().addFather(pubPK, new NodePK(coordinateId.toString(), pubPK));
     }
   }
 
@@ -160,14 +151,7 @@ public class PublicationImportExport {
    * @throws CoordinateRuntimeException
    */
   private static PublicationBm getPublicationBm() {
-    try {
-      PublicationBmHome publicationBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-      return publicationBmHome.create();
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("ImportExport.getPublicationBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
   /**
@@ -176,13 +160,7 @@ public class PublicationImportExport {
    * @return ArrayList of publicationDetail
    */
   public static List<PublicationDetail> getUnbalancedPublications(String componentId) {
-    try {
-      return new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
-          new PublicationPK("useless", componentId)));
-    } catch (RemoteException e) {
-      throw new PublicationRuntimeException("CoordinateImportExport.getUnbalancedPublications()",
-          SilverpeasRuntimeException.ERROR,
-          "importExport.EX_IMPOSSIBLE_DOBTENIR_LA_LISTE_DES_PUBLICATIONS_NON_CLASSEES", e);
-    }
+    return new ArrayList<PublicationDetail>(getPublicationBm().getOrphanPublications(
+        new PublicationPK("useless", componentId)));
   }
 }

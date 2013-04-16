@@ -11,4 +11,5 @@
   <artifactId>tagcloud</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Tagcloud - ${project.version}</name>
+  
 </project>

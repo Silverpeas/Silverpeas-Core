@@ -23,8 +23,6 @@
  */
 package com.silverpeas.pdc.service;
 
-
-import java.rmi.RemoteException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -44,7 +42,6 @@ import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import com.stratelia.webactiv.node.NodeBmProvider;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
@@ -107,9 +104,6 @@ public class DefaultPdcClassificationService implements PdcClassificationService
         classification = getPreDefinedClassification(instanceId);
       }
       return classification;
-    } catch (RemoteException ex) {
-      throw new PdcRuntimeException(getClass().getSimpleName() + ".getPreDefinedClassification()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     } catch (Exception ex) {
       throw new EntityNotFoundException(ex.getMessage());
     }
@@ -134,9 +128,8 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       return getPreDefinedClassification(instanceId);
     }
     NodePK nodeToSeek = new NodePK(nodeId, instanceId);
-    PdcClassification classification =
-        classificationRepository.findPredefinedClassificationByNodeId(nodeToSeek.getId(),
-        nodeToSeek.getInstanceId());
+    PdcClassification classification = classificationRepository.
+        findPredefinedClassificationByNodeId(nodeToSeek.getId(), nodeToSeek.getInstanceId());
     if (classification == null) {
       classification = NONE_CLASSIFICATION;
     }
@@ -176,6 +169,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * predefined classification will serv for the whole component instance.
    *
    * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
+   * @return
    */
   @Override
   public PdcClassification savePreDefinedClassification(final PdcClassification classification) {
@@ -231,6 +225,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    *
    * @param content the Silverpeas content to classify.
    * @param withClassification the classification with which the content is positioned on the PdC.
+   * @throws PdcRuntimeException
    */
   @Override
   public void classifyContent(final SilverpeasContent content,

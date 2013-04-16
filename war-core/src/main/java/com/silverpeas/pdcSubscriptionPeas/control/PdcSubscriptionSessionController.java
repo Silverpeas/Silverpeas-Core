@@ -1,32 +1,38 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdcSubscriptionPeas.control;
+
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.silverpeas.subscription.SubscriptionComparator;
+import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
+import org.silverpeas.subscription.bean.NodeSubscriptionBean;
 
 import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
 import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
@@ -36,6 +42,7 @@ import com.silverpeas.subscribe.service.ComponentSubscription;
 import com.silverpeas.subscribe.service.NodeSubscription;
 import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
@@ -51,19 +58,8 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.subscription.SubscriptionComparator;
-import org.silverpeas.subscription.bean.ComponentSubscriptionBean;
-import org.silverpeas.subscription.bean.NodeSubscriptionBean;
-
-import javax.ejb.RemoveException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class PdcSubscriptionSessionController extends AbstractComponentSessionController {
 
@@ -72,6 +68,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
+   *
    * @param mainSessionCtrl
    * @param componentContext
    */
@@ -88,9 +85,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   private void initEJB() {
     if (scBm == null) {
       try {
-        PdcSubscriptionBmHome icEjbHome = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBmHome.class);
-        scBm = icEjbHome.create();
+        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME,
+            PdcSubscriptionBm.class);
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
             SilverTrace.TRACE_LEVEL_ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -110,16 +106,12 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
   }
 
   public NodeBm getNodeBm() {
-    NodeBm nodeBm;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
-          NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+     return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return nodeBm;
   }
 
   public Collection<NodeSubscriptionBean> getNodeUserSubscriptions(String userId) {
@@ -142,7 +134,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
                 new NodeSubscriptionBean(subscription, path, componentInstLight, getLanguage()));
           }
         }
-      } catch (RemoteException e) {
+      } catch (Exception e) {
         // User subscribed to a non existing component or topic .Do nothing. Process next
         // subscription.
       }
@@ -284,14 +276,8 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   @Override
   public void close() {
-    try {
-      if (scBm != null) {
-        scBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("pdcSubscription", "PdcSubscriptionSessionController.close", "", e);
+    if (scBm != null) {
+      scBm = null;
     }
   }
 }

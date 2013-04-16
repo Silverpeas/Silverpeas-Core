@@ -1,21 +1,21 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
-* This program is free software: you can redistribute it and/or modify it under the terms of the
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
-* As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
  *
-* You should have received a copy of the GNU Affero General Public License along with this program.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
 package com.stratelia.silverpeas.pdcPeas.control;
@@ -114,7 +114,6 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.indexation.UserIndexation;
-
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -124,7 +123,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
@@ -284,7 +282,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * PDC search methods (via DomainsBar) /
    *
-* @throws Exception
+   * @throws Exception
    * ****************************************************************************************************************
    */
   public void setPDCResults(List<GlobalSilverContent> globalSilverContents) throws Exception {
@@ -473,7 +471,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Main method to add external components to a query description object
    *
-* @param query the query description used to build Lucene query
+   * @param query the query description used to build Lucene query
    */
   private void addExternalComponents(QueryDescription query) {
     if (isEnableExternalSearch && !query.isSearchBySpace()) {
@@ -491,7 +489,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * This method retrieve the list of subfolders from external server configuration path. Then it
    * filters each directory using the external list of authorized components.
    *
-* @param query the QueryDescription where adding new ExternalComponent search
+   * @param query the QueryDescription where adding new ExternalComponent search
    * @param extServerCfg the external server configuration read from properties file
    */
   private void browseExternalServerDirectory(QueryDescription query, ExternalSPConfigVO extServerCfg) {
@@ -514,7 +512,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Filter the list of external component for Lucene search purpose
    *
-* @param query : the query description used to build lucene query
+   * @param query : the query description used to build lucene query
    * @param extServerCfg : the external server configuration
    * @param file : current external directory
    */
@@ -602,7 +600,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Build the list of result group filter from current global search result
    *
-* @return new ResultGroupFilter object which contains all data to filter result
+   * @return new ResultGroupFilter object which contains all data to filter result
    */
   public ResultGroupFilter getResultGroupFilter() {
     // Return object declaration
@@ -887,32 +885,22 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (isPopularityCompliant(result)) {
         pk.setComponentName(result.getInstanceId());
         pk.setId(result.getId());
-        try {
-          int nbAccess = statisticBm.getCount(pk, 1, "Publication");
-          result.setHits(nbAccess);
-        } catch (RemoteException e) {
-          SilverTrace.error("pdcPeas", "PdcSearchSessionController.setPopularityToResults()",
-              "root.EX_CANT_GET_REMOTE_OBJECT", "pk = " + pk.toString(), e);
-        }
+        int nbAccess = statisticBm.getCount(pk, 1, "Publication");
+        result.setHits(nbAccess);
       }
     }
   }
 
   private boolean isPopularityCompliant(GlobalSilverResult gsr) {
-    return (gsr != null
-        && (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().startsWith(
-        "kmelia")
-        || gsr.getInstanceId().startsWith("kmax") || gsr.getInstanceId().startsWith("toolbox")))
-        && ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(gsr.getURL()) && gsr.
-        getURL().indexOf("Publication") != -1)));
+    return (gsr != null && (StringUtil.isDefined(gsr.getInstanceId()) && (gsr.getInstanceId().
+        startsWith("kmelia") || gsr.getInstanceId().startsWith("kmax") || gsr.getInstanceId().
+        startsWith("toolbox"))) && ("Publication".equals(gsr.getType()) || (StringUtil.isDefined(
+        gsr.getURL()) && gsr.getURL().indexOf("Publication") != -1)));
   }
 
   public StatisticBm getStatisticBm() {
     try {
-      StatisticBmHome statisticHome = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-          StatisticBmHome.class);
-      StatisticBm statisticBm = statisticHome.create();
-      return statisticBm;
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
     } catch (Exception e) {
       throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -922,7 +910,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * This method filter current array of global silver result with filter parameters
    *
-* @param filter
+   * @param filter
    * @param listGSR
    * @return list of GlobalSilverResult to display
    */
@@ -1028,7 +1016,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Enhance information from result before sending them to the view
    *
-* @param results a list of GlobalSilverResult to enhance
+   * @param results a list of GlobalSilverResult to enhance
    */
   private void setExtraInfoToResultsToDisplay(List<GlobalSilverResult> results) {
     String titleLink = "";
@@ -1197,13 +1185,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-
-
   /**
    * Only called when isEnableExternalSearch is activated. Build an external link using Silverpeas
    * permalink
    *
-* @see URLManager.getSimpleURL
+   * @see URLManager.getSimpleURL
    * @param resultType the result type
    * @param markAsReadJS javascript string to mark this result as read
    * @param indexEntry the current indexEntry
@@ -1280,7 +1266,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Cette methode construit un tableau contenant toutes les informations utiles à la construction
    * de la JSP resultat
    *
-* @param matchingIndexEntries - un tableau de MatchingIndexEntry
+   * @param matchingIndexEntries - un tableau de MatchingIndexEntry
    * @return un tableau contenant les informations relatives aux parametres d'entrée
    */
   private List<GlobalSilverResult> matchingIndexEntries2GlobalSilverResults(
@@ -1475,7 +1461,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * Converts a MatchingIndexEntry to a GlobalSilverResult, mainly duplicate code from
    * matchingIndexEntries2GlobalSilverResults, needs a Silverpeas Guru to refactor the two methods
    *
-* @param matchingIndexEntry
+   * @param matchingIndexEntry
    * @return GlobalSilverResult or null if the MatchingIndexEntry was null
    * @throws Exception
    */
@@ -2346,7 +2332,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * This method allow user to search over multiple component selection
    *
-* @param space
+   * @param space
    * @param components a list of selected components
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
@@ -2823,7 +2809,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * gets suggestions or spelling words if a search doesn't return satisfying results. A minimal
    * score trigger the suggestions search (0.5 by default)
    *
-* @return array that contains suggestions.
+   * @return array that contains suggestions.
    */
   public List<String> getSpellingwords() {
     return spellingwords;
@@ -2839,7 +2825,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Set the list of current global silver result
    *
-* @param globalSR : the current list of result
+   * @param globalSR : the current list of result
    */
   private void setGlobalSR(List<GlobalSilverResult> globalSR, boolean setExtraInfo) {
     if (setExtraInfo) {
@@ -2883,7 +2869,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Gets the XML form field used to realize sorting
    *
-* @return the xmlFormSortValue
+   * @return the xmlFormSortValue
    */
   public String getXmlFormSortValue() {
     return xmlFormSortValue;
@@ -2892,7 +2878,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Sets the XML form field used to realize sorting
    *
-* @param xmlFormSortValue the xmlFormSortValue to set
+   * @param xmlFormSortValue the xmlFormSortValue to set
    */
   public void setXmlFormSortValue(String xmlFormSortValue) {
     this.xmlFormSortValue = xmlFormSortValue;
@@ -2901,7 +2887,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Gets the keyword to retreive the implementation class name to realize sorting or filtering
    *
-* @return the sortImplemtor
+   * @return the sortImplemtor
    */
   public String getSortImplemtor() {
     if (sortImplementor == null) {
@@ -2931,7 +2917,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Retrieve configuration from properties file
    *
-* @return a list of search type configuration value object
+   * @return a list of search type configuration value object
    */
   public List<SearchTypeConfigurationVO> getSearchTypeConfig() {
     if (dataSearchTypes == null) {
@@ -2998,7 +2984,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   /**
    * Add restriction on advanced search data type
    *
-* @param curComp the current component identifier
+   * @param curComp the current component identifier
    * @return true if search engine must search through this component, false else if
    */
   public boolean isDataTypeSearch(String curComp) {
@@ -3032,5 +3018,4 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   public boolean isPlatformUsesPDC() {
     return platformUsesPDC;
   }
-
 }
