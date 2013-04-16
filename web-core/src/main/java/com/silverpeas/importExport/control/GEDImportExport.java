@@ -51,7 +51,6 @@ import com.silverpeas.form.fieldType.FileField;
 import com.silverpeas.form.importExport.FormTemplateImportExport;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.ejb.FormTemplateBm;
-import com.silverpeas.formTemplate.ejb.FormTemplateBmHome;
 import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.model.PublicationType;
 import com.silverpeas.importExport.report.ImportReportManager;
@@ -83,11 +82,9 @@ import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoPK;
@@ -133,9 +130,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected PublicationBm getPublicationBm() throws ImportExportException {
     if (publicationBm == null) {
       try {
-        PublicationBmHome publicationBmHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-        publicationBm = publicationBmHome.create();
+        publicationBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+            PublicationBm.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -147,9 +143,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected FormTemplateBm getFormTemplateBm() throws ImportExportException {
     if (formTemplateBm == null) {
       try {
-        FormTemplateBmHome formTemplateBmHome = EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME, FormTemplateBmHome.class);
-        formTemplateBm = formTemplateBmHome.create();
+        formTemplateBm = EJBUtilitaire.getEJBObjectRef(JNDINames.FORMTEMPLATEBM_EJBHOME,
+            FormTemplateBm.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getPublicationBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -165,9 +160,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
   protected NodeBm getNodeBm() throws ImportExportException {
     if (nodeBm == null) {
       try {
-        NodeBmHome kscEjbHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        nodeBm = kscEjbHome.create();
+        nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
       } catch (Exception e) {
         throw new ImportExportException("GEDImportExport.getNodeBm()",
             "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -333,7 +326,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
   public void createPublicationContent(UnitReport unitReport, int pubId,
       PublicationContentType pubContent, String userId, String language) throws
       ImportExportException {
-    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.getApplicationContext(), language);
+    createPublicationContent(unitReport, pubId, pubContent, userId, FileServerUtils.
+        getApplicationContext(), language);
   }
 
   /**
@@ -459,7 +453,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         // le modele existant n'est pas le meme que l'importe
         unitReport.setError(UnitReport.ERROR_CANT_UPDATE_CONTENT);
       }
-    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId, I18NHelper.defaultLanguage)) {
+    } else if (!WysiwygController.haveGotWysiwyg(getCurrentComponentId(), pubId,
+        I18NHelper.defaultLanguage)) {
       // on ne remplace pas un type de contenu par un autre
       // Preparation des donnees DBModel a  creer
       if (modelDetail == null) {
@@ -927,11 +922,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
     NodePK nodePk = addSubTopicToTopic(nodeDetail, parentTopicId, unitReport);
     try {
       return getNodeBm().getDetail(nodePk);
-    } catch (RemoteException ex) {
+    } catch (Exception ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_TOPIC);
-      SilverTrace
-          .error("importExport", "GEDImportExport.createTopicForUnitImport()", "root.EX_NO_MESSAGE",
-          ex);
+      SilverTrace.error("importExport", "GEDImportExport.createTopicForUnitImport()",
+          "root.EX_NO_MESSAGE", ex);
       throw new ImportExportException("GEDImportExport.createTopicForUnitImport",
           "importExport.EX_NODE_CREATE", ex);
     }
@@ -1107,39 +1101,24 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public List<NodePK> getAllTopicsOfPublication(String pubId, String componentId)
       throws ImportExportException {
-    Collection<NodePK> listNodePk = new ArrayList<NodePK>();
     PublicationPK pubPK = new PublicationPK(pubId, "Useless", componentId);
-    try {
-      listNodePk = getPublicationBm().getAllFatherPK(pubPK);
-    } catch (RemoteException ex) {
-      throw new ImportExportException("", "", ex);// TODO: completer!!
-    }
+    Collection<NodePK> listNodePk = getPublicationBm().getAllFatherPK(pubPK);
     return new ArrayList<NodePK>(listNodePk);
 
   }
 
   public List<NodePK> getTopicTree(NodePK pk) throws ImportExportException {
     List<NodePK> listNodePk = new ArrayList<NodePK>();
-    try {
-      Collection<NodeDetail> path = getNodeBm().getPath(pk);
-      for (NodeDetail detail : path) {
-        listNodePk.add(detail.getNodePK());
-      }
-    } catch (RemoteException ex) {
-      throw new ImportExportException("", "", ex);// TODO: completer!!
+    Collection<NodeDetail> path = getNodeBm().getPath(pk);
+    for (NodeDetail detail : path) {
+      listNodePk.add(detail.getNodePK());
     }
     return listNodePk;
 
   }
 
   public ModelDetail getModelDetail(int idModelDetail) throws ImportExportException {
-    ModelDetail modelDetail = null;
-    try {
-      modelDetail = getPublicationBm().getModelDetail(new ModelPK(String.valueOf(idModelDetail)));
-    } catch (RemoteException ex) {
-      throw new ImportExportException("", "", ex);// TODO: completer!!
-    }
-    return modelDetail;
+    return getPublicationBm().getModelDetail(new ModelPK(String.valueOf(idModelDetail)));
   }
 
   /**

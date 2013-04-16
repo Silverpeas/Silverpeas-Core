@@ -1,34 +1,45 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.peasCore;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.subscription.SubscriptionContext;
 
 import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
@@ -45,25 +56,9 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.clipboard.control.ejb.Clipboard;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-import org.silverpeas.subscription.SubscriptionContext;
-
-import javax.ejb.RemoveException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 
@@ -76,7 +71,7 @@ import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 public class MainSessionController implements Clipboard {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
-  ClipboardBm clipboardBm = null;
+  Clipboard clipboard = null;
   final UserPreferences userPreferences;
   PdcBm pdcBm = null;
   Object m_ComponentSOFactory = null;
@@ -157,8 +152,12 @@ public class MainSessionController implements Clipboard {
     userPreferences = null;
   }
 
-  /** Creates new MainSessionController */
-  /** Return an exception if the user is not openSession */
+  /**
+   * Creates new MainSessionController
+   */
+  /**
+   * Return an exception if the user is not openSession
+   */
   /**
    * parameter authenticationKey replaced by sUserId
    */
@@ -257,29 +256,25 @@ public class MainSessionController implements Clipboard {
 
   // ------------------- Clipboard Functions -----------------------------
   public synchronized void initClipboard() {
-    clipboardBm = null;
+    clipboard = null;
   }
 
   /**
    * Return the clipboard EJB
    */
-  public synchronized ClipboardBm getClipboard() {
-    if (clipboardBm == null) {
+  public synchronized Clipboard getClipboard() {
+    if (clipboard == null) {
       SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
           "root.MSG_GEN_ENTER_METHOD");
       try {
-        clipboardBm = EJBUtilitaire.getEJBObjectRef(
-            JNDINames.CLIPBOARD_EJBHOME, ClipboardBmHome.class).create(
-            "MainClipboard");
+        clipboard = create("MainClipboard");
       } catch (Exception e) {
-        throw new PeasCoreRuntimeException(
-            "MainSessionController.getClipboard()", SilverpeasException.ERROR,
-            "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        throw new PeasCoreRuntimeException("MainSessionController.getClipboard()",
+            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
-    SilverTrace.info("peasCore", "MainSessionController.getClipboard()",
-        "root.MSG_GEN_EXIT_METHOD");
-    return clipboardBm;
+    SilverTrace.info("peasCore", "MainSessionController.getClipboard()", "root.MSG_GEN_EXIT_METHOD");
+    return clipboard;
   }
 
   /**
@@ -337,8 +332,7 @@ public class MainSessionController implements Clipboard {
   }
 
   /**
-   * @return
-   * @deprecated use isWebDAVEditingEnabled instead.
+   * @return @deprecated use isWebDAVEditingEnabled instead.
    */
   public boolean isOnlineEditingEnabled() {
     return userPreferences.isWebdavEditionEnabled();
@@ -460,7 +454,8 @@ public class MainSessionController implements Clipboard {
 
   public boolean isBackOfficeVisible() {
     return (getCurrentUserDetail().isBackOfficeVisible()
-        || getUserManageableSpaceIds().length > 0 || !getUserManageableGroupIds().isEmpty() || isPDCBackOfficeVisible());
+        || getUserManageableSpaceIds().length > 0 || !getUserManageableGroupIds().isEmpty()
+        || isPDCBackOfficeVisible());
   }
 
   public boolean isPDCBackOfficeVisible() {
@@ -542,6 +537,7 @@ public class MainSessionController implements Clipboard {
 
   /**
    * Update the current space for the current user
+   *
    * @deprecated
    */
   public void updateUserSpace(String sSpaceId) {
@@ -550,6 +546,7 @@ public class MainSessionController implements Clipboard {
 
   /**
    * Update the current component for the current user
+   *
    * @deprecated
    */
   public void updateUserComponent(String sComponent) {
@@ -559,7 +556,6 @@ public class MainSessionController implements Clipboard {
   // ---------------------------------
   // Profile functions
   // ---------------------------------
-
   /**
    * @deprecated
    */
@@ -616,17 +612,9 @@ public class MainSessionController implements Clipboard {
     }
   }
 
-  public void close() {
-    try {
-      if (clipboardBm != null) {
-        clipboardBm.remove();
-      }
-    } catch (RemoteException e) {
-      SilverTrace.error("peasCore", "MainSessionController.close",
-          "peasCore.EX_UNABLE_TO_REMOVE_EJB", e);
-    } catch (RemoveException e) {
-      SilverTrace.error("peasCore", "MainSessionController.close",
-          "peasCore.EX_UNABLE_TO_REMOVE_EJB", e);
+  public void remove() {
+    if (clipboard != null) {
+      clipboard.remove();
     }
   }
 
@@ -654,139 +642,141 @@ public class MainSessionController implements Clipboard {
   }
 
   @Override
-  public void add(ClipboardSelection clipObject) throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public Clipboard create(final String name) {
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.CLIPBOARD_EJBHOME, Clipboard.class).create(name);
+  }
+
+  @Override
+  public void add(ClipboardSelection clipObject) throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.add(clipObject);
     }
   }
 
   @Override
-  public ClipboardSelection getObject() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public ClipboardSelection getObject() {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getObject();
     }
   }
 
   @Override
-  public void PasteDone() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void PasteDone() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.PasteDone();
     }
   }
 
   @Override
-  public Collection<ClipboardSelection> getSelectedObjects() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getSelectedObjects();
     }
   }
 
   @Override
-  public Collection<ClipboardSelection> getObjects() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public Collection<ClipboardSelection> getObjects() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getObjects();
     }
   }
 
   @Override
-  public int size() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public int size() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.size();
     }
   }
 
   @Override
-  public ClipboardSelection getObject(int index) throws
-      RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public ClipboardSelection getObject(int index) throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getObject(index);
     }
   }
 
   @Override
-  public void setSelected(int index, boolean setIt) throws
-      RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void setSelected(int index, boolean setIt) throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.setSelected(index, setIt);
     }
   }
 
   @Override
-  public void removeObject(int index) throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void removeObject(int index) throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.removeObject(index);
     }
   }
 
   @Override
-  public void clear() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void clear() {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.clear();
     }
   }
 
   @Override
-  public void setMultiClipboard() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void setMultiClipboard() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.setMultiClipboard();
     }
   }
 
   @Override
-  public void setSingleClipboard() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void setSingleClipboard() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.setSingleClipboard();
     }
   }
 
   @Override
-  public String getName() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public String getName() {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getName();
     }
   }
 
   @Override
-  public Integer getCount() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public int getCount() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getCount();
     }
   }
 
   @Override
-  public String getMessageError() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public String getMessageError() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getMessageError();
     }
   }
 
   @Override
-  public Exception getExceptionError() throws RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public Exception getExceptionError() throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       return clipboard.getExceptionError();
     }
   }
 
   @Override
-  public void setMessageError(String messageID, Exception e) throws
-      RemoteException {
-    ClipboardBm clipboard = getClipboard();
+  public void setMessageError(String messageID, Exception e) throws ClipboardException {
+    Clipboard clipboard = getClipboard();
     synchronized (clipboard) {
       clipboard.setMessageError(messageID, e);
     }

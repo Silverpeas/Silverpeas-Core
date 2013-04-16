@@ -23,6 +23,7 @@
 package com.stratelia.webactiv.util;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -87,6 +88,7 @@ public class DateUtilTest {
     calend.set(Calendar.DATE, 27);
     calend.set(Calendar.MONTH, Calendar.JUNE);
     calend.set(Calendar.YEAR, 2012);
+    calend.setTimeZone(TimeZone.getTimeZone("GMT+01"));
     assertThat(calend.get(Calendar.DAY_OF_WEEK), is(Calendar.WEDNESDAY));
     DateUtil.addDaysExceptWeekEnds(calend, 2);
     assertThat(calend.get(Calendar.DAY_OF_WEEK), is(Calendar.FRIDAY));
@@ -99,12 +101,12 @@ public class DateUtilTest {
     calend.set(Calendar.DATE, 27);
     calend.set(Calendar.MONTH, Calendar.JUNE);
     calend.set(Calendar.YEAR, 2012);
+    calend.setTimeZone(TimeZone.getTimeZone("GMT+01"));
     assertThat(calend.get(Calendar.DAY_OF_WEEK), is(Calendar.WEDNESDAY));
     DateUtil.addDaysExceptWeekEnds(calend, 4);
     assertThat(calend.get(Calendar.DAY_OF_WEEK), is(Calendar.TUESDAY));
     assertThat(calend.get(Calendar.DATE), is(3));
     assertThat(calend.get(Calendar.MONTH), is(Calendar.JULY));
     assertThat(calend.get(Calendar.YEAR), is(2012));
-
   }
 }

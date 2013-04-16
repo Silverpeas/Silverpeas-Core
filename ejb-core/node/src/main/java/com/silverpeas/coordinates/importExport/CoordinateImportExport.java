@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.coordinates.importExport;
 
 import java.rmi.RemoteException;
@@ -30,25 +26,23 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.coordinates.control.CoordinatesBm;
-import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.coordinates.model.CoordinateRuntimeException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Classe gerant la manipulation des axes de coordinates pour le module d'importExport.
+ *
  * @author dlesimple
  */
 public class CoordinateImportExport {
@@ -108,6 +102,7 @@ public class CoordinateImportExport {
 
   /**
    * Get a node by its name.
+   *
    * @param name
    * @param nodeRootId
    * @param componentId
@@ -129,6 +124,7 @@ public class CoordinateImportExport {
 
   /**
    * Get ArrayList of valuePath (/xx/yyy, /xx/yyy/zzzz/ to arrayList with /xx/yy then /xx/yyy/zzzz)
+   *
    * @param valuePath
    * @return ArrayList
    */
@@ -146,6 +142,7 @@ public class CoordinateImportExport {
   /**
    * Get ArrayList of valuePath labels (/xx/yyy, /xx/yyy/zzzz/ to arrayList with Axe1 > value15 then
    * Axe2 > value5)
+   *
    * @param combination
    * @param componentId
    * @return a List of displayName: Axe1 > value15
@@ -177,24 +174,18 @@ public class CoordinateImportExport {
   }
 
   public Collection<NodeDetail> getPathOfNode(NodePK nodePk) {
-    Collection<NodeDetail> listNodeDetail = null;
-    try {
-      listNodeDetail = getNodeBm().getPath(nodePk);
-    } catch (RemoteException ex) {
-      throw new NodeRuntimeException("NodeImportExport.getPathOfNode()",
-          SilverpeasRuntimeException.ERROR, "node.GETTING_NODE_PATH_FAILED", ex);
-    }
-    return listNodeDetail;
+    return getNodeBm().getPath(nodePk);
   }
 
   /**
    * Get axis of the component
+   *
    * @param componentId
    * @return
    */
   public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
-        "com.stratelia.webactiv.util.node.nodeSettings", "");
+        "org.silverpeas.util.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
     String sortOrder = nodeSettings.getString("sortOrder", "asc");
     List<NodeDetail> axis = new ArrayList<NodeDetail>();
@@ -206,8 +197,7 @@ public class CoordinateImportExport {
         // Do not get hidden nodes (Basket and unclassified)
         if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) // get content of this axis
         {
-          axis.addAll(getNodeBm().getSubTree(header.getNodePK(),
-              sortField + " " + sortOrder));
+          axis.addAll(getNodeBm().getSubTree(header.getNodePK(), sortField + " " + sortOrder));
         }
       }
     } catch (Exception e) {
@@ -220,6 +210,7 @@ public class CoordinateImportExport {
 
   /**
    * Get axis header with Children
+   *
    * @param componentId
    * @return
    */
@@ -253,6 +244,7 @@ public class CoordinateImportExport {
 
   /**
    * Get children of an axis
+   *
    * @param nodePK
    * @param takeAxisInChildrenList
    * @return
@@ -293,6 +285,7 @@ public class CoordinateImportExport {
 
   /**
    * Add position top the axis
+   *
    * @param position , ComponentId
    * @return nodePK
    */
@@ -330,6 +323,7 @@ public class CoordinateImportExport {
 
   /**
    * Get node Detail
+   *
    * @param nodePK
    * @param componentId
    * @return
@@ -349,6 +343,7 @@ public class CoordinateImportExport {
 
   /**
    * Get node Detail
+   *
    * @param id
    * @param componentId
    * @return
@@ -359,10 +354,8 @@ public class CoordinateImportExport {
     try {
       nodeDetail = getNodeBm().getHeader(pk);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getNodeHeader()",
-          SilverpeasRuntimeException.ERROR,
-          "coordinates.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
+      throw new CoordinateRuntimeException("CoordinateImportExport.getNodeHeader()",
+          SilverpeasRuntimeException.ERROR, "coordinates.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
     }
     return nodeDetail;
   }
@@ -374,13 +367,10 @@ public class CoordinateImportExport {
   private CoordinatesBm getCoordinatesBm() {
     CoordinatesBm coordinatesBm = null;
     try {
-      CoordinatesBmHome kscEjbHome = (CoordinatesBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.COORDINATESBM_EJBHOME,
-          CoordinatesBmHome.class);
-      coordinatesBm = kscEjbHome.create();
+      coordinatesBm = EJBUtilitaire.getEJBObjectRef(JNDINames.COORDINATESBM_EJBHOME,
+          CoordinatesBm.class);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getCoordinatesBm()",
+      throw new CoordinateRuntimeException("CoordinateImportExport.getCoordinatesBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return coordinatesBm;
@@ -393,12 +383,9 @@ public class CoordinateImportExport {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      nodeBm = EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
-      throw new CoordinateRuntimeException(
-          "CoordinateImportExport.getNodeBm()",
+      throw new CoordinateRuntimeException("CoordinateImportExport.getNodeBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return nodeBm;
@@ -406,6 +393,7 @@ public class CoordinateImportExport {
 
   /**
    * Generate index files with combination
+   *
    * @param filesNames
    * @param nodeIds
    * @param cur

@@ -22,9 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Based on code from 
+// Based on code from
 // GCALDaemon is an OS-independent Java program that offers two-way
-// synchronization between Google Calendar and various iCalalendar (RFC 2445)
+// synchronization between Google SilverpeasCalendar and various iCalalendar (RFC 2445)
 // compatible calendar applications (Sunbird, Rainlendar, iCal, Lightning, etc).
 // Project home:
 // http://gcaldaemon.sourceforge.net
@@ -43,7 +43,7 @@ import java.nio.charset.Charset;
 import org.silverpeas.util.Charsets;
 
 /**
- * Common String utilities (formatters, converters, etc). 
+ * Common String utilities (formatters, converters, etc).
  */
 public final class StringUtils {
 
@@ -75,8 +75,8 @@ public final class StringUtils {
       throws UnsupportedEncodingException {
     return new String(decodeToArray(bytes, Charsets.toCharset(encoding)));
   }
- 
-  
+
+
   public static String decodeToString(byte[] bytes, Charset encoding)
       throws UnsupportedEncodingException {
     return new String(decodeToArray(bytes, encoding));
@@ -195,7 +195,7 @@ public final class StringUtils {
    * Decodes a BASE64-encoded string.
    * @param string BASE64 string
    * @return String the decoded bytes
-   * @throws UnsupportedEncodingException  
+   * @throws UnsupportedEncodingException
    */
   public static String decodeBASE64(String string) throws UnsupportedEncodingException {
     return decodeToString(DatatypeConverter.parseBase64Binary(string), CharEncoding.UTF_8);

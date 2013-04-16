@@ -51,8 +51,7 @@
     }
     </script>
     <%    
-    StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-    StatisticBm statisticBm =  statisticHome.create();
+    StatisticBm statisticBm =  EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBm.class);
     
     ForeignPK foreignPK = new ForeignPK(id, componentId);
     Collection<HistoryByUser> readingState = statisticBm.getHistoryByObject(foreignPK, 1, objectType, userIds);
