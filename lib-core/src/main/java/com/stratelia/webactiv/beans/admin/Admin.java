@@ -1794,17 +1794,7 @@ public final class Admin {
           deleteSpaceProfileInst(profile.getId(), false);
         }
 
-        // local rights must be spreaded
-        List<SpaceProfileInst> profiles = space.getProfiles();
-        for (SpaceProfileInst profile : profiles) {
-          spreadSpaceProfile(shortSpaceId, profile);
-        }
-
-        if (moveOnTop) {
-          // on top level, space inheritance is not applicable
-          space.setInheritanceBlocked(false);
-          spaceManager.updateSpaceInst(domainDriverManager, space);
-        } else {
+        if (!moveOnTop) {
           if (!space.isInheritanceBlocked()) {
             // space inherits rights from parent
             SpaceInst father = getSpaceInstById(shortFatherId);
@@ -1813,6 +1803,36 @@ public final class Admin {
             // space uses only local rights
             // let it as it is
           }
+        }
+
+        // Merge inherited and specific for each type of profile
+        Map<String, SpaceProfileInst> mergedProfiles = new HashMap<String, SpaceProfileInst>();
+        List<SpaceProfileInst> allProfiles = new ArrayList<SpaceProfileInst>();
+        allProfiles.addAll(space.getProfiles());
+        if (!moveOnTop) {
+          allProfiles.addAll(space.getInheritedProfiles());
+        }
+        for (SpaceProfileInst profile : allProfiles) {
+          SpaceProfileInst mergedProfile = mergedProfiles.get(profile.getName());
+          if (mergedProfile == null) {
+            mergedProfile = new SpaceProfileInst();
+            mergedProfile.setName(profile.getName());
+            mergedProfile.setInherited(true);
+            mergedProfiles.put(profile.getName(),mergedProfile);
+          }
+          mergedProfile.addGroups(profile.getAllGroups());
+          mergedProfile.addUsers(profile.getAllUsers());
+        }
+
+        // Spread profiles
+        for (SpaceProfileInst profile : mergedProfiles.values()) {
+          spreadSpaceProfile(shortSpaceId, profile);
+        }
+
+        if (moveOnTop) {
+          // on top level, space inheritance is not applicable
+          space.setInheritanceBlocked(false);
+          spaceManager.updateSpaceInst(domainDriverManager, space);
         }
       }
 
@@ -2213,14 +2233,14 @@ public final class Admin {
   /**
    * Get the space profile instance corresponding to the given ID
    *
-   * @param speceProfileId
+   * @param spaceProfileId
    * @return
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  public SpaceProfileInst getSpaceProfileInst(String speceProfileId) throws AdminException {
+  public SpaceProfileInst getSpaceProfileInst(String spaceProfileId) throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
-    return spaceProfileManager.getSpaceProfileInst(domainDriverManager, speceProfileId, null);
+    return spaceProfileManager.getSpaceProfileInst(domainDriverManager, spaceProfileId, null);
   }
 
   public String addSpaceProfileInst(SpaceProfileInst spaceProfile, String userId) throws
@@ -2386,13 +2406,25 @@ public final class Admin {
           updateSpaceInst(spaceInstFather);
         }
         // Add inherited users and groups for this role
-        SpaceProfileInst inheritedProfile = spaceProfileManager.getInheritedSpaceProfileInstByName(
-            domainDriverManager, spaceId, oldSpaceProfile.getName());
-        if (inheritedProfile != null) {
-          newSpaceProfile.addGroups(inheritedProfile.getAllGroups());
-          newSpaceProfile.addUsers(inheritedProfile.getAllUsers());
+        List<SpaceProfileInst> allProfileSources = new ArrayList<SpaceProfileInst>();
+        allProfileSources.add(newSpaceProfile);
+        if (newSpaceProfile.isInherited()) {
+          allProfileSources.add(spaceProfileManager
+              .getSpaceProfileInstByName(domainDriverManager, spaceId, oldSpaceProfile.getName()));
+        } else {
+          allProfileSources.add(spaceProfileManager
+              .getInheritedSpaceProfileInstByName(domainDriverManager, spaceId,
+                  oldSpaceProfile.getName()));
         }
-        spreadSpaceProfile(spaceId, newSpaceProfile);
+        SpaceProfileInst profileToSpread = new SpaceProfileInst();
+        profileToSpread.setName(oldSpaceProfile.getName());
+        profileToSpread.setInherited(true);
+        allProfileSources.remove(null);
+        for (SpaceProfileInst spaceProfile : allProfileSources) {
+          profileToSpread.addGroups(spaceProfile.getAllGroups());
+          profileToSpread.addUsers(spaceProfile.getAllUsers());
+        }
+        spreadSpaceProfile(spaceId, profileToSpread);
       }
       if (startNewTransaction) {
         domainDriverManager.commit();
@@ -2459,16 +2491,11 @@ public final class Admin {
               getDriverComponentId(component.getId()),
               componentRole);
           if (inheritedProfile != null) {
-            if (spaceProfile.getAllGroups().isEmpty()) {
-              inheritedProfile.removeAllGroups();
-            }
-            if (spaceProfile.getAllUsers().isEmpty()) {
-              inheritedProfile.removeAllUsers();
-            }
+            inheritedProfile.removeAllGroups();
+            inheritedProfile.removeAllUsers();
 
             inheritedProfile.addGroups(spaceProfile.getAllGroups());
             inheritedProfile.addUsers(spaceProfile.getAllUsers());
-            //updateProfileInst(inheritedProfile);
 
             List<String> profilesToCheck = componentRole2SpaceRoles(componentRole,
                 component.getName());
@@ -2501,9 +2528,9 @@ public final class Admin {
     List<SpaceInstLight> subSpaces = TreeCache.getSubSpaces(spaceId);
     for (SpaceInstLight subSpace : subSpaces) {
       if (!subSpace.isInheritanceBlocked()) {
-        SpaceProfileInst subSpaceProfile =
-            spaceProfileManager.getInheritedSpaceProfileInstByName(domainDriverManager,
-            subSpace.getShortId(), spaceProfile.getName());
+        SpaceProfileInst subSpaceProfile = spaceProfileManager
+            .getInheritedSpaceProfileInstByName(domainDriverManager, subSpace.getShortId(),
+                spaceProfile.getName());
         if (subSpaceProfile != null) {
           subSpaceProfile.setGroups(spaceProfile.getAllGroups());
           subSpaceProfile.setUsers(spaceProfile.getAllUsers());
@@ -2515,7 +2542,8 @@ public final class Admin {
           subSpaceProfile.setSpaceFatherId(subSpace.getShortId());
           subSpaceProfile.addGroups(spaceProfile.getAllGroups());
           subSpaceProfile.addUsers(spaceProfile.getAllUsers());
-          if (!subSpaceProfile.getAllGroups().isEmpty() || !subSpaceProfile.getAllUsers().isEmpty()) {
+          if (!subSpaceProfile.getAllGroups().isEmpty() ||
+              !subSpaceProfile.getAllUsers().isEmpty()) {
             addSpaceProfileInst(subSpaceProfile, null);
           }
         }
