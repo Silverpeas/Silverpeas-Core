@@ -1,5 +1,7 @@
 package com.silverpeas.importExport.control;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 
@@ -94,6 +96,13 @@ public class ImportSettings {
     } else {
       return settings.getBoolean("manual.publication.merge", false);
     }
+  }
+  
+  public String getPublicationName(String filename) {
+    if (settings.getBoolean("publication.name.with.extension", false)) {
+      return FilenameUtils.getBaseName(filename);
+    }
+    return filename;
   }
   
 }

@@ -609,7 +609,7 @@ public class PublicationsTypeManager {
               AttachmentDetail attachment = attachments.get(0);
               File file = new File(attachment.getPhysicalName());
               pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(
-                  userDetail, file, settings.isPoiUsed());
+                  file, settings);
             } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
               pubDetailToCreate =
                   new PublicationDetail("unknown", "pub temp", "description", new Date(),

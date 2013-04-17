@@ -173,8 +173,7 @@ public class RepositoriesTypeManager {
       massiveReport.addUnitReport(unitReport);
 
       // On récupére les infos nécéssaires à la création de la publication
-      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(userDetail,
-          file, settings.isPoiUsed());
+      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
       pubDetailToCreate.setPk(new PublicationPK("unknown", "useless", componentId));
       if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.isDraftUsed()) {
         pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
