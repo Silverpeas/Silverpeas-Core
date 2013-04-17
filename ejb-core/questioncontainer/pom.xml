@@ -31,7 +31,7 @@
       <artifactId>test-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>        
   </dependencies>
   
   <build>
@@ -40,6 +40,6 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
       </testResource>
-    </testResources>
+    </testResources> 
   </build>
 </project>

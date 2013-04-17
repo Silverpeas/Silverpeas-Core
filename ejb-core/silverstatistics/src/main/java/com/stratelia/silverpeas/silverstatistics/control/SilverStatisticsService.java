@@ -24,20 +24,23 @@
 
 package com.stratelia.silverpeas.silverstatistics.control;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.inject.Named;
+
+import com.silverpeas.annotation.Service;
+
 import com.stratelia.silverpeas.silverstatistics.model.SilverStatisticsConfigException;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsConfig;
 import com.stratelia.silverpeas.silverstatistics.model.StatisticsRuntimeException;
 import com.stratelia.silverpeas.silverstatistics.util.StatType;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
-import org.apache.commons.lang3.text.StrTokenizer;
-import com.silverpeas.annotation.Service;
 
-import javax.inject.Named;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import org.apache.commons.lang3.text.StrTokenizer;
 
 import static com.stratelia.silverpeas.silverstatistics.control.SilverStatisticsConstants.SEPARATOR;
 import static com.stratelia.webactiv.util.JNDINames.SILVERSTATISTICS_DATASOURCE;

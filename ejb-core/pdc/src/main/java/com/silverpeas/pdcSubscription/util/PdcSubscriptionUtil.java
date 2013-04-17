@@ -24,15 +24,15 @@
 
 package com.silverpeas.pdcSubscription.util;
 
-import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
-import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBmHome;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
-import com.stratelia.silverpeas.classifyEngine.Value;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-
 import java.rmi.RemoteException;
 import java.util.List;
+
+import com.silverpeas.pdcSubscription.PdcSubscriptionRuntimeException;
+import com.silverpeas.pdcSubscription.ejb.PdcSubscriptionBm;
+import com.silverpeas.pdcSubscription.model.PDCSubscription;
+
+import com.stratelia.silverpeas.classifyEngine.Value;
+import com.stratelia.webactiv.util.EJBUtilitaire;
 
 /**
  * Utility class. Contains calls of PdcSubscription Ejb
@@ -43,9 +43,7 @@ public class PdcSubscriptionUtil {
   private void initEJB() {
     if (scBm == null)
       try {
-        PdcSubscriptionBmHome icEjbHome =
-            EJBUtilitaire.getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBmHome.class);
-        scBm = icEjbHome.create();
+        scBm = EJBUtilitaire.getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBm.class);
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
             PdcSubscriptionRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

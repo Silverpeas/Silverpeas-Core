@@ -27,9 +27,12 @@ package com.silverpeas.form.dummy;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.fieldType.TextFieldImpl;
+import com.silverpeas.form.record.Parameter;
 import com.silverpeas.util.ArrayUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -134,6 +137,11 @@ public class DummyFieldTemplate implements FieldTemplate {
   @Override
   public Map<String, String> getParameters(String language) {
     return new HashMap<String, String>();
+  }
+  
+  @Override
+  public List<Parameter> getParametersObj() {
+    return new ArrayList<Parameter>();
   }
 
   /**

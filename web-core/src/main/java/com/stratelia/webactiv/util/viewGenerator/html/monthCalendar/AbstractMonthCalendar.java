@@ -298,7 +298,7 @@ public abstract class AbstractMonthCalendar implements MonthCalendar {
    * to obtain the numbers of week in current month
    * @param int: the current month
    * @param int: the firstDayOf Week
-   * @see: java.util.Calendar
+   * @see: java.util.SilverpeasCalendar
    * @return int: the number of week in the given month and firstDayOfWeek
    */
   private int weeksIn(int month, int firstDayOfWeek, int year) {

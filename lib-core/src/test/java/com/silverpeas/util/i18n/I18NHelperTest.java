@@ -24,23 +24,26 @@
 
 package com.silverpeas.util.i18n;
 
-import com.google.common.collect.Lists;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -196,7 +199,7 @@ public class I18NHelperTest {
     tradEN.setId(2);
     tradEN.setLanguage("en");
     tradEN.setObjectId("28");
-    Hashtable<String, Translation> translations = new Hashtable<String, Translation>(2);
+    Map<String, Translation> translations = new Hashtable<String, Translation>(2);
     translations.put("fr", tradFR);
     translations.put("en", tradEN);
     when(bean.getTranslation("fr")).thenReturn(tradFR);

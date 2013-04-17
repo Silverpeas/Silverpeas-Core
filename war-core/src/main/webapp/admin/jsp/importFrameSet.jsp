@@ -46,7 +46,7 @@
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.favorit.control.*, com.stratelia.webactiv.util.node.model.NodePK, com.stratelia.webactiv.util.node.control.*, com.stratelia.webactiv.util.node.model.*, com.stratelia.webactiv.util.exception.* "%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodePK, com.stratelia.webactiv.util.node.control.*, com.stratelia.webactiv.util.node.model.*, com.stratelia.webactiv.util.exception.* "%>
 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
@@ -60,30 +60,27 @@
 <%@ page import="org.silverpeas.core.admin.OrganisationController" %>
 
 <%
-MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-OrganisationController organizationCtrl 	= null;
-GraphicElementFactory 	gef 				= null;
-String 					language 			= null;
-ResourceLocator 		message 			= null;
-ResourceLocator 		homePageSettings 	= null;
-String 					m_sContext 			= null;
-if (m_MainSessionCtrl == null)
-{
+  MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
+      MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  OrganisationController organizationCtrl = null;
+  GraphicElementFactory gef = null;
+  String language = null;
+  ResourceLocator message = null;
+  ResourceLocator homePageSettings = null;
+  String m_sContext = null;
+  if (m_MainSessionCtrl == null) {
 %>
-	<script>
-		top.location="../../Login.jsp";
-	</script>
-<%
-}
-else
-{
-	organizationCtrl 	= m_MainSessionCtrl.getOrganisationController();
-	gef 				= (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+<script>
+  top.location = "../../Login.jsp";
+</script>
+<%  } else {
+    organizationCtrl = m_MainSessionCtrl.getOrganisationController();
+    gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
-	language 			= m_MainSessionCtrl.getFavoriteLanguage();
-	message 			= new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-	homePageSettings 	= new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
+    language = m_MainSessionCtrl.getFavoriteLanguage();
+    message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+    homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
 
-	m_sContext 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-}
+    m_sContext = URLManager.getApplicationURL();
+  }
 %>

@@ -617,6 +617,7 @@ public class GenericRecordSetManager {
       fieldTemplate.setDisplayerName((displayName != null) ? displayName : "");
       fieldTemplate.setLabel(field.getLabel());
       fieldTemplate.setUsedAsFacet(field.isUsedAsFacet());
+      fieldTemplate.setParametersObj(field.getParametersObj());
 
       wrapped.addFieldTemplate(fieldTemplate);
     }

@@ -97,6 +97,8 @@ public interface RecordSet {
    * @throw FormException when the delete fail.
    */
   public void delete(DataRecord record) throws FormException;
+  
+  public void delete(String objectId) throws FormException;
 
   /**
    * Clones the given DataRecord. Set to cloneExternalId its externalId and insert it.

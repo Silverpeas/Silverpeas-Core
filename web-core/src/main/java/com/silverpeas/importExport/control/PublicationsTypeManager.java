@@ -375,10 +375,7 @@ public class PublicationsTypeManager {
    * @param topicId - id du topic dont on veut la branche
    * @param componentId - id du composant de la publication
    * @param componentLabel - label du composant
-<<<<<<< HEAD
-=======
    * @param pub - la publication
->>>>>>> master
    * @return le chemin relatif créé
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,

@@ -6980,16 +6980,41 @@ public final class Admin {
 
       // Add space
       newSpaceId = addSpaceInst(userId, newSpace);
+      
+      // verify space homepage
+      String componentIdAsHomePage = null;
+      if (newSpace.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) {
+        componentIdAsHomePage = newSpace.getFirstPageExtraParam();
+      }
 
       // paste components of space
       for (ComponentInst component : components) {
-        copyAndPasteComponent(component.getId(), newSpaceId, userId);
+        String componentId = copyAndPasteComponent(component.getId(), newSpaceId, userId);
+        // check if new component must be used as home page of new space
+        if (componentIdAsHomePage != null && componentIdAsHomePage.equals(component.getId())) {
+          componentIdAsHomePage = componentId;
+        }
       }
 
       // paste subspaces
       String[] subSpaceIds = newSpace.getSubSpaceIds();
       for (String subSpaceId : subSpaceIds) {
         copyAndPasteSpace(subSpaceId, newSpaceId, userId);
+      }
+      
+      // update parameter of space home page if needed
+      String newFirstPageExtraParam = null;
+      if (StringUtil.isDefined(componentIdAsHomePage)) {
+        newFirstPageExtraParam = componentIdAsHomePage;
+      } else if (newSpace.getFirstPageType() == SpaceInst.FP_TYPE_HTML_PAGE) {
+        String oldURL = newSpace.getFirstPageExtraParam();
+        newFirstPageExtraParam = oldURL.replaceAll(spaceId, newSpaceId);
+      }
+      
+      if (StringUtil.isDefined(newFirstPageExtraParam)) {
+        SpaceInst space = getSpaceInstById(newSpaceId);
+        space.setFirstPageExtraParam(newFirstPageExtraParam);
+        updateSpaceInst(space);
       }
     }
     return newSpaceId;

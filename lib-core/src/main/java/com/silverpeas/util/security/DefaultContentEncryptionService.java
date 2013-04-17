@@ -157,6 +157,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
             if (backupedDeprecatedKeyFile != null) {
               if (restore) {
                 File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+                keyFile.delete();
                 FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
                 keyFile.setReadOnly();
                 setHidden(DEPRECATED_KEY_FILE_PATH);

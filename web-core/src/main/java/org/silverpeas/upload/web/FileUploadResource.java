@@ -138,8 +138,8 @@ public class FileUploadResource extends RESTWebService {
   @Produces(MediaType.TEXT_HTML)
   public Response uploadFile(InputStream inputStream) {
     try {
-      String fileName =
-          new String(getHttpServletRequest().getHeader(X_FILENAME).getBytes(), Charsets.UTF_8);
+      String fileName = new String(getHttpServletRequest().getHeader(X_FILENAME).getBytes(
+          Charsets.ISO_8859_1), Charsets.UTF_8);
       if (!StringUtil.isDefined(fileName)) {
         throw new WebApplicationException(Response.Status.BAD_REQUEST);
       }

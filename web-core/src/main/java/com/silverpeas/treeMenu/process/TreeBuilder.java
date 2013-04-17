@@ -1,63 +1,61 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.treeMenu.process;
-
-import com.silverpeas.treeMenu.model.MenuItem;
-import com.silverpeas.treeMenu.model.MenuRuntimeException;
-import com.silverpeas.treeMenu.model.NodeType;
-import com.silverpeas.treeMenu.model.TreeFilter;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import org.silverpeas.core.admin.OrganisationController;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.silverpeas.core.admin.OrganisationController;
+
+import com.silverpeas.treeMenu.model.MenuItem;
+import com.silverpeas.treeMenu.model.MenuRuntimeException;
+import com.silverpeas.treeMenu.model.NodeType;
+import com.silverpeas.treeMenu.model.TreeFilter;
+
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
+
 import static com.silverpeas.treeMenu.model.MenuConstants.ICON_STYLE_PREFIX;
 
 /**
  * Allows the level menu building
+ *
  * @author david derigent
  */
 public class TreeBuilder {
 
   private TreeBuilder() {
-
   }
 
   /**
    * Build one level of menu according to the parameters
+   *
    * @param filter determines what type of node and/or component must be display in the menu
    * @param father the father of menu level to build
    * @param userId the user identifier to display only the authorized item menu
@@ -80,6 +78,7 @@ public class TreeBuilder {
 
   /**
    * Build the level menu other than the first
+   *
    * @param filter determines what type of node and/or component must be display in the menu
    * @param father the father of menu level to build
    * @param userId the user identifier to display only the authorized item menu
@@ -174,6 +173,7 @@ public class TreeBuilder {
 
   /**
    * determines if a component is a leaf or not
+   *
    * @param componentId identifier or name of component
    * @return true if the component is a leaf
    */
@@ -183,6 +183,7 @@ public class TreeBuilder {
 
   /**
    * Build the first level of the menu
+   *
    * @param filter determines what type of node and/or component must be display in the menu
    * @param userId the user identifier to display only the authorized item menu
    * @param language the user language to display the label menu in the correct language
@@ -229,16 +230,11 @@ public class TreeBuilder {
   }
 
   private static NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome =
-          EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new MenuRuntimeException("TreeBuilder.getNodeBm()", SilverpeasRuntimeException.ERROR,
           "treeMenu.EX_FAILED_BUILDING_NODEBM_HOME", e);
     }
-    return nodeBm;
   }
-
 }

@@ -69,6 +69,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
+
 /**
  *
  * @author ehugonnet
@@ -191,7 +192,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
         .getBytes(Charsets.UTF_8)), MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
     WebResource webResource = resource();
-    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf").header(
         HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
         .post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
@@ -216,7 +217,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.field("fileTitle", "Upload test");
     form.field("fileDescription", "This test is trying to simulate the update of a content");
     WebResource webResource = resource();
-    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID).header(
+    SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf").header(
         HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
         .post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));

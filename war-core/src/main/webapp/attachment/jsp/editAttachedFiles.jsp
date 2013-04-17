@@ -74,7 +74,8 @@
   </c:otherwise>
 </c:choose>
 <c:set var="indexIt" value="${view:booleanValue(param.IndexIt)}" />
-<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18N %></c:set>
+<c:set var="i18n"><%=com.silverpeas.util.i18n.I18NHelper.isI18N%></c:set>
+<c:set var="i18n" value="${view:booleanValue(i18n) && !view:booleanValue(param.notI18n)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
           listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
@@ -286,8 +287,13 @@
         width: 600,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() {
+          '<fmt:message key="GML.ok"/>': function() { 
+            var filename =  $.trim( $("#file_create").val());
+            if( filename === '') { 
+              return false;
+            }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+            submitUrl = submitUrl + '/' +encodeURI( $("#file_create").val());
             if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -321,7 +327,12 @@
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
-             if ("FormData" in window) {
+            if( $.trim( $("#file_upload").val()) !== '') { 
+              submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val());
+            } else {
+                submitUrl = submitUrl + '/no_file';
+              } 
+            if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
                 processData: false,
@@ -516,7 +527,7 @@
 
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <label for="fileName"><fmt:message key="GML.file" /></label><br/>
     <span id="fileName"></span><br/>
     <input type="hidden" name="IdAttachment" id="attachmentId"/><br/>
@@ -531,7 +542,7 @@
   </form>
 </div>
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     <input type="hidden" name="context" id="context" value="<c:out value="${context}" />" />

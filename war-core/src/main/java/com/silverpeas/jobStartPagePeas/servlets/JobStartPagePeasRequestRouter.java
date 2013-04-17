@@ -31,7 +31,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.UnitUtil;
@@ -49,9 +48,11 @@ import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
 import com.silverpeas.jobStartPagePeas.control.JobStartPagePeasSessionController;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardException;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
+
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
@@ -68,6 +69,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+import org.apache.commons.fileupload.FileItem;
 
 public class JobStartPagePeasRequestRouter extends
     ComponentRequestRouter<JobStartPagePeasSessionController> {
@@ -104,7 +107,7 @@ public class JobStartPagePeasRequestRouter extends
    */
   public String getDestinationStartPage(String function,
       JobStartPagePeasSessionController jobStartPageSC, HttpServletRequest request) throws
-      RemoteException {
+      ClipboardException {
     if (!jobStartPageSC.getClipboardSelectedObjects().isEmpty()) {
       request.setAttribute("ObjectsSelectedInClipboard", "true");
     }

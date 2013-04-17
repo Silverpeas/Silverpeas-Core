@@ -70,6 +70,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
+import org.silverpeas.util.URLUtils;
 
 /**
  *
@@ -131,9 +132,9 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
         new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
         MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
-    SimpleDocumentEntity result = resource().path(aResourceURI()).header(
-        HTTP_SESSIONKEY, getSessionKey()).type(MULTIPART_FORM_DATA).accept(APPLICATION_JSON_TYPE).
-        post(SimpleDocumentEntity.class, form);
+    SimpleDocumentEntity result = resource().path(aResourceURI() + URLUtils.encodePathSegment(
+        "test.pdf")).header(HTTP_SESSIONKEY, getSessionKey()).type(MULTIPART_FORM_DATA).accept(
+        APPLICATION_JSON_TYPE).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Test"));
     assertThat(result.getDescription(), is("Ceci est un test."));
@@ -167,9 +168,9 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
         new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
         MediaType.APPLICATION_OCTET_STREAM_TYPE);
     form.bodyPart(fdp);
-    SimpleDocumentEntity result = resource().path(aResourceURI()).header(
-        HTTP_SESSIONKEY, getSessionKey()).type(MULTIPART_FORM_DATA).accept(APPLICATION_JSON_TYPE).
-        post(SimpleDocumentEntity.class, form);
+    SimpleDocumentEntity result = resource().path(aResourceURI() + URLUtils.encodePathSegment(
+        "test.pdf")).header(HTTP_SESSIONKEY, getSessionKey()).type(MULTIPART_FORM_DATA).accept(
+        APPLICATION_JSON_TYPE).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -184,7 +185,7 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
 
   @Override
   public String aResourceURI() {
-    return RESOURCE_PATH + "create";
+    return RESOURCE_PATH + "create/";
   }
 
   @Override
@@ -221,7 +222,8 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
           MediaType.APPLICATION_OCTET_STREAM_TYPE);
       form.bodyPart(fdp);
-      resource().path(aResourceURI()).type(MULTIPART_FORM_DATA).post(form);
+      resource().path(aResourceURI() + URLUtils.encodePathSegment("test.pdf")).type(
+          MULTIPART_FORM_DATA).post(form);
       fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -244,8 +246,8 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
           MediaType.APPLICATION_OCTET_STREAM_TYPE);
       form.bodyPart(fdp);
-      resource().path(aResourceURI()).type(MULTIPART_FORM_DATA).header(HTTP_SESSIONKEY, UUID.
-          randomUUID().toString()).post(form);
+      resource().path(aResourceURI() + URLUtils.encodePathSegment("test.pdf")).type(
+          MULTIPART_FORM_DATA).header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).post(form);
       fail("A non authenticated user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -269,8 +271,8 @@ public class SimpleDocumentResourceCreatorTest extends ResourceGettingTest<Simpl
           new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)),
           MediaType.APPLICATION_OCTET_STREAM_TYPE);
       form.bodyPart(fdp);
-      resource().path(aResourceURI()).type(MULTIPART_FORM_DATA).header(HTTP_SESSIONKEY,
-          getSessionKey()).post(form);
+      resource().path(aResourceURI() + URLUtils.encodePathSegment("test.pdf")).type(
+          MULTIPART_FORM_DATA).header(HTTP_SESSIONKEY, getSessionKey()).post(form);
       fail("An unauthorized user shouldn't access the resource");
     } catch (UniformInterfaceException ex) {
       int receivedStatus = ex.getResponse().getStatus();

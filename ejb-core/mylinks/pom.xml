@@ -11,5 +11,5 @@
   <artifactId>mylinks</artifactId>
   <packaging>ejb</packaging>
   <name>EJB My Links - ${project.version}</name>
-
+  
 </project>

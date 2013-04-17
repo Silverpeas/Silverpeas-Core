@@ -48,7 +48,8 @@
 <!-- 
 isI18n: <c:out value="${silfn:isI18n()}" />
 isVersionActive: <c:out value="${not isVersionActive}" />
-value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
+use I18n <c:out value="${not view:booleanValue(param.notI18n)}" />
+value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)} " />
   -->
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
@@ -81,14 +82,15 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 <script type="text/javascript" src='<c:url value="/util/yui/menu/menu-min.js" />' ></script>
 <link rel="stylesheet" type="text/css" href='<c:url value="/util/yui/menu/assets/menu.css" />'/>
 
-  <view:settings var="spinfireViewerEnable"  settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
+  <view:settings var="spinfireViewerEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="SpinfireViewerEnable" />
   <view:setConstant var="spinfire" constant="com.silverpeas.util.MimeTypes.SPINFIRE_MIME_TYPE" />
   <view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT" />
   <c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}" />
   <view:settings var="onlineEditingEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="OnlineEditingEnable" />
   <view:settings var="dAndDropEnable" settings="org.silverpeas.util.attachment.Attachment" defaultValue="${false}" key="DragAndDropEnable" />
   <c:set var="webdavEditingEnable" value="${mainSessionController.webDAVEditingEnabled && onlineEditingEnable}" />
-  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable}" />
+  <c:set var="dndDisabledLocally" value="${'false' eq fn:toLowerCase(param.dnd)}" scope="page"/>
+  <c:set var="dragAndDropEnable" value="${mainSessionController.dragNDropEnabled && dAndDropEnable && not dndDisabledLocally}" />
 
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
@@ -195,13 +197,13 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);
 %>
+<c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
 <div class="attachments bgDegradeGris">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
-  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:AddAttachment();"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
+  <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
   </c:if>
     <ul id="attachmentList">
-      <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
         <c:forEach items="${pageScope.attachments}" var="varAttachment" >
         <c:choose>
           <c:when test="${varAttachment.versioned && !(varAttachment.public) && ('user' eq userProfile)}">
@@ -246,7 +248,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
                   <c:set var="title" value="${currentAttachment.title}" />
                 </c:otherwise>
               </c:choose>
-              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href='<c:out value="${attachmentUrl}" escapeXml="false"/>' target="_blank"><c:out value="${title}" /></a>
+              <a id='url_<c:out value="${currentAttachment.oldSilverpeasId}"/>' href="${attachmentUrl}" target="_blank"><c:out value="${title}" /></a>
               <c:if test="${currentAttachment.versioned}">
                 &nbsp;<span class="version-number" id="version_<c:out value="${currentAttachment.oldSilverpeasId}"/>">v<c:out value="${currentAttachment.majorVersion}"/>.<c:out value="${currentAttachment.minorVersion}"/></span>
               </c:if>
@@ -323,7 +325,6 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
             <c:if test="${isAttachmentPositionRight}"></li></c:if>
           </c:if>
         </c:forEach>
-      </c:if>
     </ul>
     <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
       <c:choose>
@@ -353,6 +354,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
     </c:choose>
   </c:if>
 </div>
+</c:if>
 <div id="attachmentModalDialog" style="display: none"> </div>
 <c:if test="${spinfireViewerEnable}">
   <script type="text/javascript">
@@ -551,7 +553,8 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
       alertUsersAttachment(attachmentId); //dans publication.jsp
     }
 
-    function AddAttachment() {
+    function addAttachment(foreignId) {
+      $("#add-attachment-form #foreignId").val(foreignId);
       $("#dialog-attachment-add").dialog("open");
     }
 
@@ -674,7 +677,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
       open:function() {
     	  var filename = $(this).data("filename");
     	  $("#button-delete-all").hide();
-      <c:if test="${silfn:isI18n() && not isVersionActive}">
+      <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
         translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data("id") + '/translations';
         $.ajax({
           url: translationsUrl,
@@ -704,7 +707,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
         '<fmt:message key="GML.delete"/>': function() {
           var attachmentId = $(this).data("id");
       <c:choose>
-        <c:when test="${silfn:isI18n() && not isVersionActive}">      
+        <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">      
           $("input[name='languagesToDelete']").filter(':checked').each(function() {
             deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
             $.ajax({
@@ -763,8 +766,13 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
         width: 550,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() {             
+          '<fmt:message key="GML.ok"/>': function() { 
+              var filename =  $.trim( $("#file_create").val());
+              if( filename === '') { 
+                return false;
+              }
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
+              submitUrl = submitUrl + '/' +encodeURI(filename);
               if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -797,6 +805,11 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {              
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
+              if( $.trim( $("#file_upload").val()) !== '') { 
+                submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val());
+              } else {
+                submitUrl = submitUrl + '/no_file';
+              }  
               if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -814,7 +827,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
               $('#update-attachment-form').attr('action', submitUrl);
               $('#update-attachment-form').submit();
             } },
-          <c:if test="${silfn:isI18n() && not isVersionActive}">
+          <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
           '<fmt:message key="attachment.dialog.delete.lang"/>': function() {
           if(confirm('<fmt:message key="attachment.suppressionConfirmation" />')) {
             $.ajax({
@@ -979,11 +992,11 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 </script>
 
 <div id="dialog-attachment-update" style="display:none">
-  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
     <c:choose>
 		<c:when test="${not isVersionActive}">
-			<c:if test="${silfn:isI18n()}">
+			<c:if test="${silfn:isI18n() && not view:booleanValue(param.notI18n) }">
 		    	<label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
 		    	<span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
 		    </c:if>
@@ -1021,11 +1034,11 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 </div>
 
 <div id="dialog-attachment-add" style="display:none">
-  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data" accept-charset="UTF-8" target="iframe-post-form">
+  <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
     
-    <c:if test="${silfn:isI18n() && not isVersionActive}">
+    <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
@@ -1049,7 +1062,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive}" />
 
 <div id="dialog-attachment-delete" style="display:none">
   <span id="attachment-delete-warning-message"><fmt:message key="attachment.suppressionConfirmation" /></span>
-    <c:if test="${silfn:isI18n() && not isVersionActive}">
+    <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
       <div id="attachment-delete-select-lang" style="display:none">
         <div id="languages">
           <c:forEach items="<%=com.silverpeas.util.i18n.I18NHelper.getAllSupportedLanguages()%>" var="supportedLanguage">

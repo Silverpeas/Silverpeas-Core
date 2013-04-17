@@ -92,7 +92,7 @@ public class HTTPSessionInfo extends com.silverpeas.session.SessionInfo {
                 getName());
           } else if (element instanceof MainSessionController) {
             MainSessionController controller = (MainSessionController) element;
-            controller.close();
+            controller.remove();
             SilverTrace.debug("peasCore", "SessionManager.cleanSession()", "MainSessionController");
           }
           httpSession.removeAttribute(attributeName);
