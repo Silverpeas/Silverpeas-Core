@@ -120,7 +120,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public GEDImportExport(UserDetail curentUserDetail, String currentComponentId) {
     super(curentUserDetail, currentComponentId);
-    attachmentIE = new AttachmentImportExport(curentUserDetail);
+    attachmentIE = new AttachmentImportExport();
   }
 
   /**
@@ -188,10 +188,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * jour.
    * @throws ImportExportException
    */
-  private PublicationDetail processPublicationDetail(UnitReport unitReport, UserDetail userDetail,
+  private PublicationDetail processPublicationDetail(UnitReport unitReport, ImportSettings settings,
       PublicationDetail pubDetailToCreate, List<NodePositionType> listOfNodeTypes) {
     // checking topics
-    List<NodePositionType> existingTopics = processTopics(userDetail.getId(), listOfNodeTypes,
+    List<NodePositionType> existingTopics = processTopics(settings.getUser().getId(), listOfNodeTypes,
         pubDetailToCreate.getPK().getInstanceId());
 
     if (existingTopics.isEmpty() && !isKmax()) {
@@ -214,15 +214,19 @@ public abstract class GEDImportExport extends ComponentImportExport {
         pubIdExists = StringUtil.isInteger(pubDetailToCreate.getId());
       }
       if (!pubIdExists) {
-        try {
-          Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
-          if (itListNode_Type.hasNext()) {
-            NodePositionType node_Type = itListNode_Type.next();
-            pubDet_temp = getPublicationBm().getDetailByNameAndNodeId(pubDetailToCreate.getPK(),
-                pubDetailToCreate.getName(), node_Type.getId());
-          }
-        } catch (Exception pre) {
+        if (!settings.isPublicationMergeEnabled()) {
           pubAlreadyExist = false;
+        } else {
+          try {
+            Iterator<NodePositionType> itListNode_Type = existingTopics.iterator();
+            if (itListNode_Type.hasNext()) {
+              NodePositionType node_Type = itListNode_Type.next();
+              pubDet_temp = getPublicationBm().getDetailByNameAndNodeId(pubDetailToCreate.getPK(),
+                  pubDetailToCreate.getName(), node_Type.getId());
+            }
+          } catch (Exception pre) {
+            pubAlreadyExist = false;
+          }
         }
       } else {
         try {
@@ -245,7 +249,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
 
       if (pubAlreadyExist) {
         try {
-          updatePublication(pubDet_temp, pubDetailToCreate, userDetail);
+          updatePublication(pubDet_temp, pubDetailToCreate, settings.getUser());
           unitReport.setStatus(UnitReport.STATUS_PUBLICATION_UPDATED);
         } catch (Exception e) {
           unitReport.setError(UnitReport.ERROR_ERROR);
@@ -278,7 +282,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
           try {
             NodePK topicPK =
                 new NodePK(Integer.toString(node_Type.getId()), pubDetailToCreate.getPK());
-            pubId = createPublicationIntoTopic(pubDet_temp, topicPK, userDetail);
+            pubId = createPublicationIntoTopic(pubDet_temp, topicPK, settings.getUser());
             pubDet_temp.getPK().setId(pubId);
           } catch (Exception e) {
             unitReport.setError(UnitReport.ERROR_ERROR);
@@ -350,6 +354,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     XMLModelContentType xmlModel = pubContent.getXMLModelContentType();
     try {
       if (dbModelType != null) { // Contenu DBModel
+        // TODO : remove this case
         createDBModelContent(unitReport, dbModelType, String.valueOf(pubId));
       } else if (wysiwygType != null) { // Contenu Wysiwyg
         createWysiwygContent(unitReport, pubId, wysiwygType, userId, webContext, language);
@@ -942,10 +947,10 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @return
    */
   public PublicationDetail createPublicationForUnitImport(UnitReport unitReport,
-      UserDetail userDetail, PublicationDetail pubDetail, List<NodePositionType> listNode_Type) {
+      ImportSettings settings, PublicationDetail pubDetail, List<NodePositionType> listNode_Type) {
     unitReport.setItemName(pubDetail.getName());
     // On cree la publication
-    return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
+    return processPublicationDetail(unitReport, settings, pubDetail, listNode_Type);
   }
 
   /**
@@ -959,13 +964,13 @@ public abstract class GEDImportExport extends ComponentImportExport {
    * @throws ImportExportException
    */
   public PublicationDetail createPublicationForMassiveImport(UnitReport unitReport,
-      UserDetail userDetail, PublicationDetail pubDetail, int nodeId) throws ImportExportException {
+      PublicationDetail pubDetail, ImportSettings settings) throws ImportExportException {
     unitReport.setItemName(pubDetail.getName());
     NodePositionType nodePosType = new NodePositionType();
-    nodePosType.setId(nodeId);
+    nodePosType.setId(Integer.valueOf(settings.getFolderId()));
     List<NodePositionType> listNode_Type = new ArrayList<NodePositionType>(1);
     listNode_Type.add(nodePosType);
-    return processPublicationDetail(unitReport, userDetail, pubDetail, listNode_Type);
+    return processPublicationDetail(unitReport, settings, pubDetail, listNode_Type);
   }
 
   /**

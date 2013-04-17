@@ -82,17 +82,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
 import static java.io.File.separator;
 
 /**
@@ -120,7 +109,7 @@ public class PublicationsTypeManager {
   public PublicationsType processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
       boolean bExportPublicationPath) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     PublicationsType publicationsType = new PublicationsType();
     List<PublicationType> listPubType = new ArrayList<PublicationType>();
@@ -437,7 +426,7 @@ public class PublicationsTypeManager {
   public void processExportOfFilesOnly(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath)
       throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
 
     // Parcours des publications à exporter
@@ -458,7 +447,7 @@ public class PublicationsTypeManager {
   public List<AttachmentDetail> processPDFExport(ExportPDFReport exportReport,
       UserDetail userDetail, List<WAAttributeValuePair> listItemsToExport, String exportPath,
       boolean useNameForFolders) throws ImportExportException, IOException {
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
     List<AttachmentDetail> result = new ArrayList<AttachmentDetail>();
 
@@ -555,11 +544,6 @@ public class PublicationsTypeManager {
     return relativeExportPathAscii;
   }
 
-  public void processImport(UserDetail userDetail, PublicationsType publicationsType,
-      String targetComponentId) throws ImportExportException {
-    processImport(userDetail, publicationsType, targetComponentId, true);
-  }
-
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications unitaires définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
@@ -570,26 +554,26 @@ public class PublicationsTypeManager {
    * @param targetComponentId - id du composant dans lequel creer les publications unitaires
    * @param isPOIUsed
    */
-  public void processImport(UserDetail userDetail, PublicationsType publicationsType,
-      String targetComponentId, boolean isPOIUsed) {
+  public void processImport(PublicationsType publicationsType, ImportSettings settings) {
     GEDImportExport gedIE =
-        ImportExportFactory.createGEDImportExport(userDetail, targetComponentId);
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+        ImportExportFactory.createGEDImportExport(settings.getUser(), settings.getComponentId());
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
     PdcImportExport pdcIE = new PdcImportExport();
-    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+    VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     CoordinateImportExport coordinateIE = new CoordinateImportExport();
 
     List<PublicationType> listPub_Type = publicationsType.getListPublicationType();
     List<Integer> nodesKmax = new ArrayList<Integer>();
     List<NodePositionType> nodes = new ArrayList<NodePositionType>();
     int nbItem = 1;
+    UserDetail userDetail = settings.getUser();
 
     // On parcours les objets PublicationType
     for (PublicationType pubType : listPub_Type) {
       String componentId;
       // On détermine si on doit utiliser le componentId par défaut
       if (pubType.getComponentId() == null || pubType.getComponentId().length() == 0) {
-        componentId = targetComponentId;
+        componentId = settings.getComponentId();
       } else {
         componentId = pubType.getComponentId();
       }
@@ -625,7 +609,7 @@ public class PublicationsTypeManager {
               AttachmentDetail attachment = attachments.get(0);
               File file = new File(attachment.getPhysicalName());
               pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(
-                  userDetail, file, isPOIUsed);
+                  userDetail, file, settings.isPoiUsed());
             } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
               pubDetailToCreate =
                   new PublicationDetail("unknown", "pub temp", "description", new Date(),
@@ -714,7 +698,7 @@ public class PublicationsTypeManager {
 
           // Création ou modification de la publication
           PublicationDetail pubDetail = gedIE
-              .createPublicationForUnitImport(unitReport, userDetail, pubDetailToCreate, nodes);
+              .createPublicationForUnitImport(unitReport, settings, pubDetailToCreate, nodes);
           try {
             if (pubDetail != null) {
               if (isKmax(componentId)) {
