@@ -1,32 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.comment.service.notification;
 
+import com.silverpeas.comment.model.Comment;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +38,7 @@ public final class NotificationMatchers {
   /**
    * A matcher on the presence of a comment in a notification message for all supported languages in
    * Silverpeas.
+   *
    * @param notification the notification message.
    * @return the matcher with the specified notification message.
    */
@@ -72,7 +69,7 @@ public final class NotificationMatchers {
           return false;
         }
         Comment theComment = (Comment) template.getAttributes().get(
-            CommentUserNotificationService.NOTIFICATION_COMMENT_ATTRIBUTE);
+            DefaultCommentUserNotificationService.NOTIFICATION_COMMENT_ATTRIBUTE);
         if (theComment == null || !theComment.equals(expectedComment)) {
           return false;
         }

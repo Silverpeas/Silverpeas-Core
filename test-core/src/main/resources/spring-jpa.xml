@@ -45,7 +45,7 @@
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>
-        
+
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         p:packagesToScan-ref="entities"
         p:dataSource-ref="jpaDataSource"
