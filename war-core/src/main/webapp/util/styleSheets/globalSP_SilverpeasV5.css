@@ -5671,3 +5671,9 @@ ul.tagit li.tagit-choice a.tagit-close {
  width:70%;
  margin-bottom: 14px;
 }
+
+.ui-dialog .champ-ui-dialog input[type=text],
+.ui-dialog .champ-ui-dialog input[type=file],
+.ui-dialog .champ-ui-dialog textarea {
+  width: 90%;
+}
