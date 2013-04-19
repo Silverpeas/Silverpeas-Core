@@ -103,6 +103,16 @@ public class ServletRequestWrapper {
   }
 
   /**
+   * Get a date from a date parameter.
+   * @param dateParameterName
+   * @return
+   */
+  public Date getParameterAsDate(String dateParameterName)
+      throws ParseException {
+    return asDate(getParameter(dateParameterName), null);
+  }
+
+  /**
    * Get a date from one date parameter and one hour parameter.
    * @param dateParameterName
    * @param hourParameterName

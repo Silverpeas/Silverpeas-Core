@@ -22,15 +22,16 @@
 
 package com.stratelia.webactiv.util;
 
-import java.util.Calendar;
-
+import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author ehugonnet
  */
 public class DateUtilTest {
@@ -106,5 +107,238 @@ public class DateUtilTest {
     assertThat(calend.get(Calendar.MONTH), is(Calendar.JULY));
     assertThat(calend.get(Calendar.YEAR), is(2012));
 
+  }
+
+  @Test
+  public void testDatesAreEqual() {
+    Date date1 = java.sql.Date.valueOf("2013-01-01");
+    Date date2 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 3);
+    assertThat(false, is(DateUtil.datesAreEqual(date1, date2)));
+
+    date1 = java.sql.Date.valueOf("2013-01-02");
+    assertThat(false, is(date1.compareTo(date2) == 0));
+    assertThat(true, is(DateUtil.datesAreEqual(date1, date2)));
+  }
+
+  @Test
+  public void testCompareTo() {
+    Date date1 = java.sql.Date.valueOf("2013-01-01");
+    Date date2 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 3);
+    assertThat(false, is(DateUtil.compareTo(date1, date2) == 0));
+    assertThat(false, is(DateUtil.compareTo(date1, date2) > 0));
+    assertThat(true, is(DateUtil.compareTo(date1, date2) < 0));
+
+    date1 = java.sql.Date.valueOf("2013-01-02");
+    assertThat(true, is(DateUtil.compareTo(date1, date2) == 0));
+    assertThat(false, is(DateUtil.compareTo(date1, date2) > 0));
+    assertThat(false, is(DateUtil.compareTo(date1, date2) < 0));
+
+    assertThat(false, is(DateUtil.compareTo(date1, date2, false) == 0));
+    assertThat(false, is(DateUtil.compareTo(date1, date2, false) > 0));
+    assertThat(true, is(DateUtil.compareTo(date1, date2, false) < 0));
+
+    date1 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 4);
+    assertThat(false, is(DateUtil.compareTo(date1, date2, false) == 0));
+    assertThat(true, is(DateUtil.compareTo(date1, date2, false) > 0));
+    assertThat(false, is(DateUtil.compareTo(date1, date2, false) < 0));
+  }
+
+  @Test
+  public void testGetDayNumberBetween() {
+    Date date1 = java.sql.Date.valueOf("2013-01-01");
+    Date date2 = java.sql.Date.valueOf("2013-01-02");
+    assertThat(1, is(DateUtil.getDayNumberBetween(date1, date2)));
+
+    date1 = java.sql.Date.valueOf("2013-01-03");
+    assertThat(-1, is(DateUtil.getDayNumberBetween(date1, date2)));
+
+    date1 = java.sql.Date.valueOf("2013-01-02");
+    assertThat(0, is(DateUtil.getDayNumberBetween(date1, date2)));
+
+    date1 = java.sql.Date.valueOf("2013-01-01");
+    date2 = java.sql.Date.valueOf("2013-01-30");
+    assertThat(29, is(DateUtil.getDayNumberBetween(date1, date2)));
+  }
+
+  @Test
+  public void testGetFirstDateOfYear() {
+    Date dateTest = DateUtil.getFirstDateOfYear(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.JANUARY));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(1));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfYear() {
+    Date dateTest = DateUtil.getEndDateOfYear(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.DECEMBER));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(31));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetFirstDateOfMonth() {
+    Date dateTest = DateUtil.getFirstDateOfMonth(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(1));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfMonth() {
+    Date dateTest = DateUtil.getEndDateOfMonth(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(30));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetFirstDateOfWeekFR() {
+    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(15));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfWeekFR() {
+    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(21));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetFirstDateOfWeekFRBetween2Months() {
+    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-29"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(29));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfWeekFRBetween2Months() {
+    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-29"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.MAY));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(5));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetFirstDateOfWeekFRBetween2Years() {
+    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-12-31"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.DECEMBER));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(30));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfWeekFRBetween2Years() {
+    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-12-31"), "fr");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2014));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.JANUARY));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(5));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetFirstDateOfWeekEN() {
+    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "en");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(14));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndDateOfWeekEN() {
+    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "en");
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(20));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
+  }
+
+  @Test
+  public void testGetBeginOfDay() {
+    Date dateTest = DateUtil.getBeginOfDay(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(20));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(0));
+    assertThat(cal.get(Calendar.MINUTE), is(0));
+    assertThat(cal.get(Calendar.SECOND), is(0));
+    assertThat(cal.get(Calendar.MILLISECOND), is(0));
+  }
+
+  @Test
+  public void testGetEndOfDay() {
+    Date dateTest = DateUtil.getEndOfDay(java.sql.Date.valueOf("2013-04-20"));
+    Calendar cal = DateUtil.convert(dateTest);
+    assertThat(cal.get(Calendar.YEAR), is(2013));
+    assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
+    assertThat(cal.get(Calendar.DAY_OF_MONTH), is(20));
+    assertThat(cal.get(Calendar.HOUR_OF_DAY), is(23));
+    assertThat(cal.get(Calendar.MINUTE), is(59));
+    assertThat(cal.get(Calendar.SECOND), is(59));
+    assertThat(cal.get(Calendar.MILLISECOND), is(999));
   }
 }
