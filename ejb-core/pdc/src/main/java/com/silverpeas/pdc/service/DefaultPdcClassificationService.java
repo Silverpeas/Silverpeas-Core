@@ -226,6 +226,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * is already classified, then the given classification replaces the existing one. The content
    * must exist in Silverpeas before being classified. If an error occurs while classifying the
    * content, a runtime exception PdcRuntimeException is thrown.
+   * Subscribers are notified if at least one of their subscription matches given classification.
    *
    * @param content the Silverpeas content to classify.
    * @param withClassification the classification with which the content is positioned on the PdC.
@@ -233,6 +234,21 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   @Override
   public void classifyContent(final SilverpeasContent content,
       final PdcClassification withClassification) throws PdcRuntimeException {
+    classifyContent(content, withClassification, true);
+  }
+  
+  /**
+   * Classifies the specified content on the PdC with the specified classification. If the content
+   * is already classified, then the given classification replaces the existing one. The content
+   * must exist in Silverpeas before being classified. If an error occurs while classifying the
+   * content, a runtime exception PdcRuntimeException is thrown.
+   * @param content the Silverpeas content to classify.
+   * @param withClassification the classification with which the content is positioned on the PdC.
+   * @param alertSubscribers indicates if subscribers must be notified or not
+   */
+  @Override
+  public void classifyContent(final SilverpeasContent content,
+      final PdcClassification withClassification, boolean alertSubscribers) throws PdcRuntimeException {
     List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
       int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
@@ -240,7 +256,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
           getComponentInstanceId());
       for (ClassifyPosition aClassifyPosition : classifyPositions) {
         int positionId = pdcBm.addPosition(silverObjectId, aClassifyPosition, content.
-            getComponentInstanceId());
+            getComponentInstanceId(), alertSubscribers);
         aClassifyPosition.setPositionId(positionId);
       }
       if (!existingPositions.isEmpty()) {
