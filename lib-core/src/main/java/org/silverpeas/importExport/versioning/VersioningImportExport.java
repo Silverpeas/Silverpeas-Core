@@ -105,7 +105,7 @@ public class VersioningImportExport {
     SilverTrace.info("versioning", "VersioningImportExport.importDocuments()",
         "root.GEN_PARAM_VALUE", componentId);
     int nbFilesProcessed = 0;
-    AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
+    AttachmentImportExport attachmentImportExport = new AttachmentImportExport();
     ForeignPK pubPK = new ForeignPK(objectId, componentId);
 
     // get existing documents of object

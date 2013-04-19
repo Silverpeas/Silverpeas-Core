@@ -23,7 +23,6 @@ package com.silverpeas.importExport.control;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +30,6 @@ import java.util.List;
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
@@ -67,7 +64,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -92,12 +88,11 @@ public class RepositoriesTypeManager {
    * @return un objet ComponentReport contenant les informations de création des publications
    * unitaires et nécéssaire au rapport détaillé
    */
-  public void processImport(UserDetail userDetail, RepositoriesType repositoriesType,
-      boolean isPOIUsed) {
+  public void processImport(RepositoriesType repositoriesType, ImportSettings settings) {
     List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
     Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
-    AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
-    VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+    AttachmentImportExport attachmentIE = new AttachmentImportExport();
+    VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
     PdcImportExport pdcIE = new PdcImportExport();
 
     while (itListRep_Type.hasNext()) {
@@ -125,18 +120,15 @@ public class RepositoriesTypeManager {
           // La variable path ne peut contenir qu'un dossier
           massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
         } else {
-          boolean isVersioningUsed = ImportExportHelper.isVersioningUsed(componentInst);
-          boolean isDraftUsed = ImportExportHelper.isDraftUsed(componentInst);
-
           GEDImportExport gedIE =
-              ImportExportFactory.createGEDImportExport(userDetail, componentId);
+              ImportExportFactory.createGEDImportExport(settings.getUser(), componentId);
 
           Iterator<File> itListcontenuPath = getPathContent(path);
           while (itListcontenuPath.hasNext()) {
             File file = itListcontenuPath.next();
             if (file.isFile()) {
-              importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
-                  isDraftUsed);
+              settings.setFolderId(String.valueOf(topicId));
+              importFile(file, massiveReport, gedIE, pdcIE, settings);
             } else if (file.isDirectory()) {
               switch (rep_Type.getMassiveTypeInt()) {
                 case RepositoryType.NO_RECURSIVE:
@@ -144,18 +136,18 @@ public class RepositoriesTypeManager {
                   break;
                 case RepositoryType.RECURSIVE_NOREPLICATE:
                   // traitement récursif spécifique
-                  processImportRecursiveNoReplicate(massiveReport, userDetail, file, gedIE,
-                      attachmentIE, versioningIE, pdcIE, componentId, topicId, isPOIUsed,
-                      isVersioningUsed, isDraftUsed);
+                  settings.setPathToImport(file.getAbsolutePath());
+                  processImportRecursiveNoReplicate(massiveReport, gedIE,
+                      attachmentIE, versioningIE, pdcIE, settings);
                   break;
                 case RepositoryType.RECURSIVE_REPLICATE:
                   try {
                     NodeDetail nodeDetail = gedIE.addSubTopicToTopic(file, topicId, massiveReport);
-                    // massiveReport.addOneTopicCreated();
                     // Traitement récursif spécifique
-                    processImportRecursiveReplicate(massiveReport, userDetail, file, gedIE,
-                        attachmentIE, versioningIE, pdcIE, componentId, Integer.parseInt(nodeDetail.
-                        getNodePK().getId()), isPOIUsed, isVersioningUsed, isDraftUsed);
+                    settings.setPathToImport(file.getAbsolutePath());
+                    settings.setFolderId(nodeDetail.getNodePK().getId());
+                    processImportRecursiveReplicate(massiveReport, gedIE, attachmentIE,
+                        versioningIE, pdcIE, settings);
                   } catch (ImportExportException ex) {
                     massiveReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_DIRECTORY);
                   }
@@ -168,9 +160,8 @@ public class RepositoriesTypeManager {
     }
   }
 
-  private PublicationDetail importFile(File file, int topicId, MassiveReport massiveReport,
-      GEDImportExport gedIE, PdcImportExport pdcIE, boolean isPOIUsed, boolean isVersioningUsed,
-      boolean isDraftUsed) {
+  private PublicationDetail importFile(File file, MassiveReport massiveReport,
+      GEDImportExport gedIE, PdcImportExport pdcIE, ImportSettings settings) {
     SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
         "root.MSG_GEN_ENTER_METHOD", "file = " + file.getName());
     String componentId = gedIE.getCurrentComponentId();
@@ -182,10 +173,9 @@ public class RepositoriesTypeManager {
       massiveReport.addUnitReport(unitReport);
 
       // On récupére les infos nécéssaires à la création de la publication
-      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(userDetail,
-          file, isPOIUsed);
+      pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(file, settings);
       pubDetailToCreate.setPk(new PublicationPK("unknown", "useless", componentId));
-      if ((isDraftUsed && pdcIE.isClassifyingMandatory(componentId)) || isDraftUsed) {
+      if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.isDraftUsed()) {
         pubDetailToCreate.setStatus(PublicationDetail.DRAFT);
         pubDetailToCreate.setStatusMustBeChecked(false);
       }
@@ -194,8 +184,8 @@ public class RepositoriesTypeManager {
           + pubDetailToCreate.getStatus());
 
       // Création de la publication
-      pubDetailToCreate = gedIE.createPublicationForMassiveImport(unitReport,
-          userDetail, pubDetailToCreate, topicId);
+      pubDetailToCreate =
+          gedIE.createPublicationForMassiveImport(unitReport, pubDetailToCreate, settings);
       
       SilverTrace.debug("importExport", "RepositoriesTypeManager.importFile",
           "root.MSG_GEN_PARAM_VALUE", "pubDetailToCreate created");
@@ -203,13 +193,13 @@ public class RepositoriesTypeManager {
       if (FileUtil.isMail(file.getName())) {
         // if imported file is an e-mail, its textual content is saved in a dedicated form
         // and attached files are attached to newly created publication
-        processMailContent(pubDetailToCreate, file, unitReport, gedIE, isVersioningUsed);
+        processMailContent(pubDetailToCreate, file, unitReport, gedIE, settings.isVersioningUsed());
       }
       
       // add attachment
       SimpleDocument document;
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
-      if (isVersioningUsed) {
+      if (settings.isVersioningUsed()) {
         document = new HistorisedDocument();
       } else {
         document = new SimpleDocument();
@@ -325,7 +315,7 @@ public class RepositoriesTypeManager {
                 pubDetail.isIndexable());
         } else {
           // classic mode
-          AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
+          AttachmentImportExport attachmentIE = new AttachmentImportExport();
           attachmentIE.importAttachments(pubDetail.getPK().getId(), componentId, documents,
               userDetail.getId(), pubDetail.isIndexable());
         }
@@ -349,20 +339,19 @@ public class RepositoriesTypeManager {
    * même dans le cas présent
    * @throws ImportExportException
    */
-  public void processImportRecursiveNoReplicate(MassiveReport massiveReport, UserDetail userDetail,
-      File path, GEDImportExport gedIE, AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, PdcImportExport pdcIE, String componentId, int topicId,
-      boolean isPOIUsed, boolean isVersioningUsed, boolean isDraftUsed) {
-    Iterator<File> itListcontenuPath = getPathContent(path);
+  public void processImportRecursiveNoReplicate(MassiveReport massiveReport,
+      GEDImportExport gedIE, AttachmentImportExport attachmentIE,
+      VersioningImportExport versioningIE, PdcImportExport pdcIE, ImportSettings settings) {
+    Iterator<File> itListcontenuPath = getPathContent(new File(settings.getPathToImport()));
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
-            isDraftUsed);
+        importFile(file, massiveReport, gedIE, pdcIE, settings);
       } else if (file.isDirectory()) {
         // traitement récursif spécifique
-        processImportRecursiveNoReplicate(massiveReport, userDetail, file, gedIE, attachmentIE,
-            versioningIE, pdcIE, componentId, topicId, isPOIUsed, isVersioningUsed, isDraftUsed);
+        settings.setPathToImport(file.getAbsolutePath());
+        processImportRecursiveNoReplicate(massiveReport, gedIE, attachmentIE,
+            versioningIE, pdcIE, settings);
       }
     }
   }
@@ -382,29 +371,29 @@ public class RepositoriesTypeManager {
    * @throws ImportExportException
    */
   public List<PublicationDetail> processImportRecursiveReplicate(MassiveReport massiveReport,
-      UserDetail userDetail, File path, GEDImportExport gedIE, AttachmentImportExport attachmentIE,
-      VersioningImportExport versioningIE, PdcImportExport pdcIE, String componentId, int topicId,
-      boolean isPOIUsed, boolean isVersioningUsed, boolean isDraftUsed)
+      GEDImportExport gedIE, AttachmentImportExport attachmentIE,
+      VersioningImportExport versioningIE, PdcImportExport pdcIE, ImportSettings settings)
       throws ImportExportException {
     List<PublicationDetail> publications = new ArrayList<PublicationDetail>();
+    File path = new File(settings.getPathToImport());
     Iterator<File> itListcontenuPath = getPathContent(path);
     while (itListcontenuPath.hasNext()) {
       File file = itListcontenuPath.next();
       if (file.isFile()) {
-        PublicationDetail publication =
-            importFile(file, topicId, massiveReport, gedIE, pdcIE, isPOIUsed, isVersioningUsed,
-            isDraftUsed);
+        PublicationDetail publication = importFile(file, massiveReport, gedIE, pdcIE, settings);
         if (publication != null) {
           publications.add(publication);
         }
       } else if (file.isDirectory()) {
-        NodeDetail nodeDetail = gedIE.addSubTopicToTopic(file, topicId, massiveReport);
+        NodeDetail nodeDetail =
+            gedIE.addSubTopicToTopic(file, Integer.valueOf(settings.getFolderId()), massiveReport);
         // massiveReport.addOneTopicCreated();
         // Traitement récursif spécifique
+        settings.setPathToImport(file.getAbsolutePath());
+        settings.setFolderId(nodeDetail.getNodePK().getId());
         publications.addAll(
-            processImportRecursiveReplicate(massiveReport, userDetail, file, gedIE, attachmentIE,
-            versioningIE, pdcIE, componentId, Integer.parseInt(nodeDetail.
-            getNodePK().getId()), isPOIUsed, isVersioningUsed, isDraftUsed));
+            processImportRecursiveReplicate(massiveReport, gedIE, attachmentIE,
+            versioningIE, pdcIE, settings));
       }
     }
     return publications;
