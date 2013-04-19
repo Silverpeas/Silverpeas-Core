@@ -24,7 +24,6 @@
 
 --%>
 
-
 <%@page import="com.silverpeas.util.FileUtil"%>
 <%@page import="org.apache.commons.lang3.CharEncoding"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -137,8 +136,8 @@ for (SimpleDocument publicVersion : vVersions) {
     } else {
       arrayLine.addArrayCellText("");
     }
-    if (StringUtil.isDefined(publicVersion.getUpdatedBy())) {
-      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getUpdatedBy())));
+    if (StringUtil.isDefined(publicVersion.getCreatedBy())) {
+      arrayLine.addArrayCellText(versioningSC.getUserNameByID(Integer.parseInt(publicVersion.getCreatedBy())));
     } else {
       arrayLine.addArrayCellText("????");
     }

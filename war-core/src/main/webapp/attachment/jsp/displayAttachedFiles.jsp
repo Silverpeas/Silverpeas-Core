@@ -767,7 +767,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() { 
-              var filename =  $.trim( $("#file_create").val());
+              var filename =  $.trim( $("#file_create").val().split('\\').pop());
               if( filename === '') { 
                 return false;
               }
@@ -806,7 +806,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
           '<fmt:message key="GML.ok"/>': function() {              
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
               if( $.trim( $("#file_upload").val()) !== '') { 
-                submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val());
+                submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val().split('\\').pop());
               } else {
                 submitUrl = submitUrl + '/no_file';
               }  
@@ -1003,7 +1003,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
 			<label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
 		    <span id="fileName" class="champ-ui-dialog"></span>
 		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
 		    
 			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
 		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
@@ -1023,7 +1023,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
 		    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
 		    <span id="fileName" class="champ-ui-dialog"></span>
 		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_upload" /></span>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
 		    
 		    <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
 		    <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
@@ -1044,7 +1044,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
     </c:if>
     
     <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
-    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="60" id="file_create" /></span>
+    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" /></span>
     <c:if test="${isVersionActive}">
       <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
       <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="typeVersionPublic" checked="checked"/><fmt:message key="attachment.version_public.label"/>
@@ -1055,7 +1055,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
     <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
     <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
     <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescriptionCreate"></textarea></span>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
