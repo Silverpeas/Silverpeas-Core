@@ -43,7 +43,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -56,32 +55,11 @@ import org.apache.commons.io.IOUtils;
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
  */
 public class AttachmentImportExport {
-  private UserDetail user;
+  
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
 
-  public AttachmentImportExport(UserDetail user) {
-    this.user = user;
-  }
-
-  // Methodes
-  /**
-   * Methode utilisee par l'import massive du moteur d'importExport de silverpeaseffectuant la copie
-   * de fichier ainsi que sa liaison avec une publication cible.
-   *
-   * @param pubId - publication dans laquelle creer l'attachement
-   * @param componentId - id du composant contenant la publication (necessaire pour determiner le
-   * chemin physique du fichier importe)
-   * @param attachmentDetail - objet contenant les details necessaires a la creation du fichier
-   * importe et a sa liaison avec la publication
-   * @param indexIt
-   */
-  public void importAttachment(String pubId, String componentId,
-      AttachmentDetail attachmentDetail, InputStream file, boolean indexIt,
-      boolean updateLogicalName) {
-    if (attachmentDetail.getSize() > 0) {
-      addAttachmentToPublication(pubId, componentId, attachmentDetail, file, indexIt);
-    }
+  public AttachmentImportExport() {
   }
 
   /* TODO : à reprendre pour feature_82

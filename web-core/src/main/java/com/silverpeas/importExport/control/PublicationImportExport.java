@@ -39,7 +39,6 @@ import com.silverpeas.util.MetadataExtractor;
 import com.silverpeas.util.StringUtil;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -71,10 +70,9 @@ public class PublicationImportExport {
    * @param isPOIUsed
    * @return renvoie un objet PublicationDetail
    */
-  public static PublicationDetail convertFileInfoToPublicationDetail(UserDetail userDetail,
-      File file, boolean isPOIUsed) {
+  public static PublicationDetail convertFileInfoToPublicationDetail(File file, ImportSettings settings) {
     String fileName = file.getName();
-    String nomPub = fileName;
+    String nomPub = settings.getPublicationName(fileName);
     String description = "";
     String motsClefs = "";
     String content = "";
@@ -113,7 +111,7 @@ public class PublicationImportExport {
             "PublicationImportExport.convertFileInfoToPublicationDetail",
             "importExport.EX_CANT_EXTRACT_MAIL_DATA", e);
       }
-    } else if (isPOIUsed) {
+    } else if (settings.isPoiUsed()) {
       try {
         MetaData metaData = metadataExtractor.extractMetadata(file.getAbsolutePath());
         if (StringUtil.isDefined(metaData.getTitle())) {
@@ -132,7 +130,7 @@ public class PublicationImportExport {
       }
     }
     return new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,
-        userDetail.getId(), "5", null, motsClefs, content);
+        settings.getUser().getId(), "5", null, motsClefs, content);
   }
 
   /**

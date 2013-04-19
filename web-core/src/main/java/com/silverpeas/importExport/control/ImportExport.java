@@ -397,16 +397,19 @@ public class ImportExport {
     if (silverExType.getPublicationsType() != null) {
       // Traitement de l'élément <publications>
       PublicationsTypeManager typeMgr = new PublicationsTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getPublicationsType(), silverExType.
-          getTargetComponentId(), silverExType.isPOIUsed());
+      ImportSettings settings = new ImportSettings(null, userDetail, silverExType.
+          getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
+      typeMgr.processImport(silverExType.getPublicationsType(), settings);
     }
 
     // Cas des imports en masse de thèmes et de publications
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      typeMgr.processImport(userDetail, silverExType.getRepositoriesType(), silverExType
-          .isPOIUsed());
+      ImportSettings settings =
+          new ImportSettings(null, userDetail, silverExType.
+              getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
+      typeMgr.processImport(silverExType.getRepositoriesType(), settings);
     }
     ImportReportManager.setEndDate(new Date());
     return ImportReportManager.getImportReport();
