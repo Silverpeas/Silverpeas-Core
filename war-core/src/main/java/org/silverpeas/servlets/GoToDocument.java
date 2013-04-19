@@ -20,17 +20,20 @@
  */
 package org.silverpeas.servlets;
 
-import com.silverpeas.peasUtil.GoTo;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.ComponentSecurity;
-import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.permalinks.PermalinkServiceFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.silverpeas.peasUtil.GoTo;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.security.ComponentSecurity;
+
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class GoToDocument extends GoTo {
 
@@ -39,8 +42,14 @@ public class GoToDocument extends GoTo {
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-        new SimpleDocumentPK(objectId), null);
+    SimpleDocument document;
+    if (StringUtil.isInteger(objectId)) {
+      document = PermalinkServiceFactory.getPermalinkCompatibilityService().
+          findVersionnedDocumentByOldId(Integer.parseInt(objectId));
+    } else {
+      document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+          new SimpleDocumentPK(objectId), null);
+    }
     if (document != null) {
       SimpleDocument version = document.getLastPublicVersion();
       if (version != null) {
@@ -76,7 +85,7 @@ public class GoToDocument extends GoTo {
         }
 
         if (isAccessAuthorized) {
-          return URLManager.getFullApplicationURL(req) + version.getUniversalURL();
+          return URLManager.getServerURL(req) + version.getUniversalURL();
         }
       }
     }

@@ -26,6 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.permalinks.PermalinkServiceFactory;
+
+import com.silverpeas.util.StringUtil;
 
 public class GoToVersion extends GoToDocument {
 
@@ -34,8 +37,14 @@ public class GoToVersion extends GoToDocument {
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
-    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
-        new SimpleDocumentPK(objectId), null);
+    SimpleDocument document;
+    if (StringUtil.isInteger(objectId)) {
+      document = PermalinkServiceFactory.getPermalinkCompatibilityService().
+          findDocumentVersionByOldId(Integer.parseInt(objectId));
+    } else {
+      document = AttachmentServiceFactory.getAttachmentService().searchDocumentById(
+          new SimpleDocumentPK(objectId), null);
+    }
     if (document != null) {
       SimpleDocument version = document.getLastPublicVersion();
       if (version != null) {

@@ -23,20 +23,19 @@
  */
 package com.stratelia.webactiv.util;
 
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import javax.inject.Inject;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.dbunit.DatabaseUnitException;
+import com.silverpeas.jndi.SimpleMemoryContextFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.dbunit.operation.DatabaseOperation;
@@ -45,73 +44,68 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.silverpeas.jndi.SimpleMemoryContextFactory;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author ehugonnet
- */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"/spring-jdbc-datasource.xml"})
 public class DBUtilTest {
 
   private static final String DATASOURCE_NAME = "SilverpeasDB";
-  @Inject
-  private DataSource dataSource;
+  private static DataSource dataSource;
+  private static ClassPathXmlApplicationContext context;
 
   public DBUtilTest() {
   }
 
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
     SimpleMemoryContextFactory.setUpAsInitialContext();
+    context = new ClassPathXmlApplicationContext(new String[]{
+      "spring-h2-datasource.xml"});
+    dataSource = context.getBean("dataSource", DataSource.class);
+    InitialContext ic = new InitialContext();
+    ic.rebind(DATASOURCE_NAME, dataSource);
+    DBUtil.getInstanceForTest(dataSource.getConnection());
   }
 
   @AfterClass
-  public static void tearDownClass() {
+  public static void tearDownClass() throws Exception {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
+    context.close();
+    DBUtil.clearTestInstance();
   }
 
   @Before
-  public void setUp() throws SQLException, NamingException, DataSetException, DatabaseUnitException {
-    InitialContext ic = new InitialContext();
-    ic.bind(DATASOURCE_NAME, dataSource);
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        DBUtilTest.class.getClassLoader().getResourceAsStream(
-        "com/stratelia/webactiv/util/dbutil-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-
-    Connection connection = dataSource.getConnection();
-    try {
-      IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
-      DatabaseOperation.CLEAN_INSERT.execute(databaseConnection, dataSet);
-    } finally {
-      connection.close();
-    }
+  public void init() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
+    connection.close();
   }
 
   @After
-  public void tearDown() throws NamingException, DataSetException, DatabaseUnitException,
-      SQLException {
-    InitialContext ic = new InitialContext();
-    ic.unbind(DATASOURCE_NAME);
+  public void after() throws Exception {
+    IDatabaseConnection connection = getConnection();
+    DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+    connection.close();
+  }
 
-    ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
-        DBUtilTest.class.getClassLoader().getResourceAsStream(
-        "com/stratelia/webactiv/util/dbutil-dataset.xml")));
-    dataSet.addReplacementObject("[NULL]", null);
-    Connection connection = dataSource.getConnection();
+  private IDatabaseConnection getConnection() throws Exception {
+    IDatabaseConnection connection = new DatabaseConnection(dataSource.getConnection());
+    return connection;
+  }
+
+  protected IDataSet getDataSet() throws Exception {
+    InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+        "com/stratelia/webactiv/util/dbutil-dataset.xml");
     try {
-      IDatabaseConnection databaseConnection = new DatabaseConnection(connection);
-      DatabaseOperation.DELETE.execute(databaseConnection, dataSet);
+      FlatXmlDataSetBuilder builder = new FlatXmlDataSetBuilder();
+      ReplacementDataSet dataSet = new ReplacementDataSet(builder.build(in));
+      dataSet.addReplacementObject("[NULL]", null);
+      return dataSet;
     } finally {
-      connection.close();
+      IOUtils.closeQuietly(in);
     }
   }
 
@@ -265,5 +259,4 @@ public class DBUtilTest {
     }
   }
 
-  
 }
