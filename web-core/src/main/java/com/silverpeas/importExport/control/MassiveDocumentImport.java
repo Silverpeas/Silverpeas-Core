@@ -24,7 +24,6 @@ import com.silverpeas.importExport.model.ImportExportException;
 import com.silverpeas.importExport.report.ImportReportManager;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.pdc.importExport.PdcImportExport;
-import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -37,15 +36,6 @@ import java.util.Date;
 import java.util.List;
 
 public class MassiveDocumentImport {
-
-  public List<PublicationDetail> importDocuments(ComponentSessionController sessionController,
-      String directory, int topicId, boolean draftMode, boolean isPOIUsed)
-      throws ImportExportException {
-    ImportSettings settings =
-        new ImportSettings(directory, sessionController.getUserDetail(),
-            sessionController.getComponentId(), String.valueOf(topicId), draftMode, isPOIUsed, ImportSettings.FROM_MANUAL);
-    return importDocuments(settings, new MassiveReport());
-  }
 
   public List<PublicationDetail> importDocuments(ImportSettings importSettings,
       MassiveReport massiveReport) throws ImportExportException {

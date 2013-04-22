@@ -31,18 +31,6 @@
   </requirement>
 
   <current version="012">
-    <create_table>
-      <file name="postgres\attachment\011\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-    </create_table>
-    <create_constraint>
-      <file name="postgres\attachment\011\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-    </create_constraint>
-    <drop_table>
-      <file name="postgres\attachment\011\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-    </drop_table>
-    <drop_constraint>
-      <file name="postgres\attachment\011\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-    </drop_constraint>
   </current>
 
   <upgrade version="003">

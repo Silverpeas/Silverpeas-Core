@@ -34,6 +34,7 @@ import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
 import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.DocumentType;
 import org.silverpeas.attachment.model.HistorisedDocument;
 import org.silverpeas.attachment.model.SimpleAttachment;
 import org.silverpeas.attachment.model.SimpleDocument;
@@ -42,6 +43,7 @@ import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentPK;
+import org.silverpeas.importExport.versioning.DocumentVersion;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
 import org.silverpeas.util.mail.Extractor;
 import org.silverpeas.util.mail.Mail;
@@ -201,6 +203,7 @@ public class RepositoriesTypeManager {
       SimpleDocumentPK pk = new SimpleDocumentPK(null, componentId);
       if (settings.isVersioningUsed()) {
         document = new HistorisedDocument();
+        document.setPublicDocument(settings.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION);
       } else {
         document = new SimpleDocument();
       }
