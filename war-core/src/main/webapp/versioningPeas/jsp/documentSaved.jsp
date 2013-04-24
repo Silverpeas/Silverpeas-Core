@@ -41,7 +41,7 @@ function init()
 	<% if (StringUtil.isDefined(callback)) { %>
 		window.opener.<%=callback%>('<%=documentId%>','<%=version.getMajorNumber()%>','<%=version.getMinorNumber()%>');
 	<% } else { %>
-		window.opener.parent.MyMain.location.reload(); 
+		window.opener.parent.MyMain.location.href = window.opener.parent.MyMain.location.href; 
 	<% } %>
 	window.close();
 }
