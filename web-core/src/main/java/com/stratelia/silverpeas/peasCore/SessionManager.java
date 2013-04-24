@@ -530,8 +530,10 @@ public class SessionManager implements SchedulerEventListener, SessionManagement
    * @param sessionInfo information about the session to open.
    */
   private void openSession(SessionInfo sessionInfo) {
-    removeInQueueMessages(sessionInfo.getUserDetail().getId(), sessionInfo.getSessionId());
-    removeSession(sessionInfo.getSessionId());
+    // TODO: remove the commented lines below. A session must be opened and therefore shouldn't be
+    // existed before, so we shouldn't remove it in the case it is already opened!
+    //removeInQueueMessages(sessionInfo.getUserDetail().getId(), sessionInfo.getSessionId());
+    //removeSession(sessionInfo.getSessionId());
     userDataSessions.put(sessionInfo.getSessionId(), sessionInfo);
     SilverLog.logConnexion("login", sessionInfo.getIPAddress(), log(sessionInfo));
   }
