@@ -947,7 +947,7 @@
     </attribute>
     <attribute>
       <description>
-        Total number of pages.
+        Index of current page.
       </description>
       <name>currentPage</name>
       <required>true</required>
@@ -977,6 +977,15 @@
         Alt message for next page.
       </description>
       <name>altNextAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Alt message for go to page.
+      </description>
+      <name>altGoToAction</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

@@ -24,6 +24,9 @@
 
 package com.silverpeas.workflow.engine.dataRecord;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FormException;
@@ -39,6 +42,9 @@ import com.silverpeas.workflow.api.instance.ProcessInstance;
  * participant.<participantName>
  */
 public class ProcessInstanceDataRecord implements DataRecord {
+
+  private static final long serialVersionUID = 4538018078050395139L;
+
   /**
    * Builds the data record representation of a process instance.
    */
@@ -104,6 +110,12 @@ public class ProcessInstanceDataRecord implements DataRecord {
 
   public void setLanguage(String lang) {
     // do nothing
+  }
+  
+  @Override
+  public Map<String, String> getValues(String language) {
+    // no implemented yet !
+    return new HashMap<String, String>();
   }
 
   /**

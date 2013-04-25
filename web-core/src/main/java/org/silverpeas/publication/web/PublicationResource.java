@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -21,12 +20,8 @@
  */
 package org.silverpeas.publication.web;
 
-import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
-import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,23 +37,25 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-
-import com.silverpeas.web.RESTWebService;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.security.ShareableNode;
 import com.silverpeas.sharing.services.SharingServiceFactory;
+import com.silverpeas.web.RESTWebService;
+
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
+
+import static com.stratelia.webactiv.util.JNDINames.NODEBM_EJBHOME;
+import static com.stratelia.webactiv.util.JNDINames.PUBLICATIONBM_EJBHOME;
 
 /**
  * A REST Web resource representing a given node. It is a web service that provides an access to a
@@ -89,12 +86,8 @@ public class PublicationResource extends RESTWebService {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
 
-    Collection<PublicationDetail> publications;
-    try {
-      publications = getPublicationBm().getDetailsByFatherPK(nodePK, null, true);
-    } catch (RemoteException e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
+    Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(nodePK,
+        null, true);
 
     String baseUri = getUriInfo().getAbsolutePath().toString();
 
@@ -129,37 +122,25 @@ public class PublicationResource extends RESTWebService {
 
   @SuppressWarnings("unchecked")
   private boolean isNodeReadable(NodePK nodePK) {
-    NodeDetail node;
-    try {
-      node = getNodeBm().getDetail(nodePK);
-    } catch (RemoteException e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }
+    NodeDetail node = getNodeBm().getDetail(nodePK);
     ShareableNode nodeResource = new ShareableNode(token, node);
     Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(token);
     return ticket != null && ticket.getAccessControl().isReadable(nodeResource);
   }
 
   private NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(NODEBM_EJBHOME, NodeBm.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
-    return nodeBm;
   }
 
   private PublicationBm getPublicationBm() {
-    PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome =
-          EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-      publicationBm = publicationBmHome.create();
+      return EJBUtilitaire.getEJBObjectRef(PUBLICATIONBM_EJBHOME, PublicationBm.class);
     } catch (Exception e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
-    return publicationBm;
   }
 }

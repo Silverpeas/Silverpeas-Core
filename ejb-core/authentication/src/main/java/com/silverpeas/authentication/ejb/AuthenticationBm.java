@@ -24,11 +24,11 @@
 
 package com.silverpeas.authentication.ejb;
 
-import java.rmi.RemoteException;
+import javax.ejb.Remote;
 
-import javax.ejb.EJBObject;
 
-public interface AuthenticationBm extends EJBObject {
+@Remote
+public interface AuthenticationBm {
 
-  public String authenticate(String login, String password, String domainId) throws RemoteException;
+  public String authenticate(String login, String password, String domainId);
 }

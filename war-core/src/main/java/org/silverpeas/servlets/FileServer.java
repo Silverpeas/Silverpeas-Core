@@ -20,10 +20,23 @@
  */
 package org.silverpeas.servlets;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -33,20 +46,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
-import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
 
-import javax.ejb.CreateException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
+import org.apache.commons.io.FileUtils;
 
 import static com.stratelia.webactiv.util.FileServerUtils.*;
 
@@ -159,14 +160,10 @@ public class FileServer extends AbstractFileSender {
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
       ForeignPK pubPK = new ForeignPK(pubId, componentId);
       try {
-        StatisticBmHome statisticBmHome =
-            EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME, StatisticBmHome.class);
-        StatisticBm statisticBm = statisticBmHome.create();
+        StatisticBm statisticBm = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticBm.class);
         statisticBm.addStat(userId, pubPK, 1, "Publication");
-      } catch (CreateException ex) {
-        SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
-            "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
-      } catch (RemoteException ex) {
+      } catch (Exception ex) {
         SilverTrace.warn("peasUtil", "FileServer.doPost", "peasUtil.CANNOT_WRITE_STATISTICS",
             "pubPK = " + pubPK + " and nodeId = " + nodeId, ex);
       }

@@ -20,11 +20,17 @@
  */
 package com.stratelia.silverpeas.silverStatisticsPeas.control;
 
-import com.silverpeas.pdc.ejb.PdcBmHome;
+import java.sql.SQLException;
+import java.util.*;
+
+
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -32,8 +38,8 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.*;
+import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.peasCore.*;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silverStatisticsPeas.vo.*;
@@ -44,15 +50,10 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.UtilException;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.*;
-import javax.ejb.CreateException;
+
 import org.apache.commons.lang.StringUtils;
 import org.jCharts.axisChart.AxisChart;
 import org.jCharts.nonAxisChart.PieChart2D;
-import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 /**
  * Class declaration
@@ -1516,7 +1517,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       if (!componentIds.isEmpty()) {
         try {
           silverContentsMetier = pdcBm.findGlobalSilverContents(context, componentIds, true, true);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
           SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
         }
       }
@@ -1539,9 +1540,9 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     if (pdcBm != null) {
       if (componentIds.size() > 0) {
         try {
-          silverContentsMetier =
-              pdcBm.findGlobalSilverContents(searchContext, componentIds, true, true);
-        } catch (RemoteException e) {
+          silverContentsMetier = pdcBm.findGlobalSilverContents(searchContext, componentIds, true,
+              true);
+        } catch (Exception e) {
           SilverTrace.error("LookINPI", "LookINPIHelper", "getPdCPublications exception", e);
         }
       }
@@ -1550,18 +1551,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   private com.silverpeas.pdc.ejb.PdcBm getPdcBmEJB() {
-    com.silverpeas.pdc.ejb.PdcBm pdcBm = null;
-    try {
-      pdcBm = ((PdcBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PDCBM_EJBHOME, PdcBmHome.class)).create();
-    } catch (RemoteException e) {
-      SilverTrace.error("LookINPI", "LookINPIHelper", "getPdcBmEJB exception", e);
-    } catch (UtilException e) {
-      SilverTrace.error("LookINPI", "LookINPIHelper", "getPdcBmEJB exception", e);
-    } catch (CreateException e) {
-      SilverTrace.error("LookINPI", "LookINPIHelper", "getPdcBmEJB exception", e);
-    }
-    return pdcBm;
+    return EJBUtilitaire.
+        getEJBObjectRef(JNDINames.PDCBM_EJBHOME, com.silverpeas.pdc.ejb.PdcBm.class);
   }
 
   /**

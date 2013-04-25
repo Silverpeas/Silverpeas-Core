@@ -11,7 +11,7 @@
   <artifactId>contact</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Contact - ${project.version}</name>
-
+  
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

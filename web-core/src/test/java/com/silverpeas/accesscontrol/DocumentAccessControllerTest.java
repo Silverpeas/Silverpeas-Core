@@ -24,25 +24,28 @@
 
 package com.silverpeas.accesscontrol;
 
-import org.hamcrest.Matchers;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import com.google.common.collect.Lists;
-import com.silverpeas.util.ForeignPK;
 import java.util.Collection;
-import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
-import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.junit.Test;
 
 import org.silverpeas.importExport.versioning.Document;
-import static org.junit.Assert.*;
+
+import com.silverpeas.util.ForeignPK;
+
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import com.google.common.collect.Lists;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -69,11 +72,9 @@ public class DocumentAccessControllerTest {
     Collection<NodePK> fathers = Lists.asList(nodePk1, new NodePK[]{nodePk2});
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = Mockito.mock(PublicationBm.class);
-    Mockito.when(home.create()).thenReturn(publicationBm);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-        PublicationBmHome.class)).thenReturn(home);
+        PublicationBm.class)).thenReturn(publicationBm);
     Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));
@@ -99,12 +100,9 @@ public class DocumentAccessControllerTest {
     Collection<NodePK> fathers = Lists.asList(nodePk1, new NodePK[]{nodePk2});
     PublicationPK pk = new PublicationPK("50");
     PowerMockito.mockStatic(EJBUtilitaire.class);
-    PublicationBmHome home = Mockito.mock(PublicationBmHome.class);
     PublicationBm publicationBm = Mockito.mock(PublicationBm.class);
-    Mockito.when(home.create()).thenReturn(publicationBm);
     Mockito.when(EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-        PublicationBmHome.class)).
-        thenReturn(home);
+        PublicationBm.class)).thenReturn(publicationBm);
     Mockito.when(publicationBm.getAllFatherPK(pk)).thenReturn(fathers);
     Document document = new Document();
     document.setForeignKey(new ForeignPK(pk));

@@ -24,12 +24,15 @@
 
 package com.silverpeas.workflow.engine.dataRecord;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.record.Parameter;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 
 /**
@@ -120,6 +123,11 @@ public abstract class ProcessInstanceFieldTemplate implements FieldTemplate {
    */
   public Map<String, String> getParameters(String language) {
     return new HashMap<String, String>();
+  }
+  
+  @Override
+  public List<Parameter> getParametersObj() {
+    return new ArrayList<Parameter>();
   }
 
   /**

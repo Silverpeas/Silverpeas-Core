@@ -23,6 +23,7 @@
  */
 package com.silverpeas.importExportPeas.servlets;
 
+import com.silverpeas.importExport.control.ImportSettings;
 import com.silverpeas.importExport.control.MassiveDocumentImport;
 import com.silverpeas.importExport.report.MassiveReport;
 import com.silverpeas.importExport.report.UnitReport;
@@ -162,9 +163,10 @@ public class ImportDragAndDrop extends HttpServlet {
 
       try {
         MassiveDocumentImport massiveImporter = new MassiveDocumentImport();
+        ImportSettings settings =
+            new ImportSettings(savePath, userDetail, componentId, topicId, draftUsed, true, ImportSettings.FROM_DRAGNDROP);
         List<PublicationDetail> importedPublications =
-            massiveImporter.importDocuments(userDetail, componentId, savePath,
-                Integer.parseInt(topicId), draftUsed, true, massiveReport);
+            massiveImporter.importDocuments(settings, massiveReport);
 
         if (isDefaultClassificationModifiable(topicId, componentId)) {
           for (PublicationDetail publicationDetail : importedPublications) {
