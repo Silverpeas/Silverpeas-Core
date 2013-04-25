@@ -33,6 +33,7 @@ import com.silverpeas.pdcSubscription.model.PDCSubscription;
 
 import com.stratelia.silverpeas.classifyEngine.Value;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Utility class. Contains calls of PdcSubscription Ejb
@@ -43,7 +44,7 @@ public class PdcSubscriptionUtil {
   private void initEJB() {
     if (scBm == null)
       try {
-        scBm = EJBUtilitaire.getEJBObjectRef("ejb/pdcSubscription", PdcSubscriptionBm.class);
+        scBm = EJBUtilitaire.getEJBObjectRef(JNDINames.PDC_SUBSCRIPTION_EJBHOME, PdcSubscriptionBm.class);
       } catch (Exception e) {
         throw new PdcSubscriptionRuntimeException("PdcSubscriptionSessionController.initEJB()",
             PdcSubscriptionRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

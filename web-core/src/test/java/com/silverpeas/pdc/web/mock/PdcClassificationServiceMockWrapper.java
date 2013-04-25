@@ -27,7 +27,6 @@ import com.silverpeas.SilverpeasContent;
 import com.silverpeas.pdc.model.PdcAxisValue;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import static com.silverpeas.util.StringUtil.isDefined;
 import com.stratelia.silverpeas.pdc.model.PdcRuntimeException;
 import java.util.List;
 import java.util.Set;
@@ -36,13 +35,16 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * It plays the role of a PdcClassificationService instance for the unit tests. It wraps a mock of
@@ -104,7 +106,7 @@ public class PdcClassificationServiceMockWrapper implements PdcClassificationSer
 
   @Override
   public void classifyContent(SilverpeasContent content, PdcClassification withClassification)
-          throws PdcRuntimeException {
+      throws PdcRuntimeException {
     mock.classifyContent(content, withClassification);
   }
 
@@ -120,44 +122,49 @@ public class PdcClassificationServiceMockWrapper implements PdcClassificationSer
 
   private void initializeBehaviour() {
     when(mock.findAPreDefinedClassification(anyString(), anyString())).thenReturn(
-            PdcClassification.NONE_CLASSIFICATION);
+        PdcClassification.NONE_CLASSIFICATION);
     when(mock.getPreDefinedClassification(anyString())).thenReturn(
-            PdcClassification.NONE_CLASSIFICATION);
+        PdcClassification.NONE_CLASSIFICATION);
     when(mock.getPreDefinedClassification(anyString(), anyString())).thenReturn(
-            PdcClassification.NONE_CLASSIFICATION);
+        PdcClassification.NONE_CLASSIFICATION);
     when(mock.savePreDefinedClassification(any(PdcClassification.class))).thenAnswer(
-            new Answer<PdcClassification>() {
+        new Answer<PdcClassification>() {
+      @Override
+      public PdcClassification answer(InvocationOnMock invocation) throws Throwable {
+        PdcClassificationService mock = (PdcClassificationService) invocation.getMock();
+        PdcClassification classification = (PdcClassification) invocation.getArguments()[0];
+        if (classification.getId() != null && classification.isEmpty()
+            && findAPreDefinedClassification(classification.getNodeId(), classification.
+            getComponentInstanceId()) != PdcClassification.NONE_CLASSIFICATION) {
+          when(mock.findAPreDefinedClassification(classification.getNodeId(),
+              classification.getComponentInstanceId())).thenReturn(
+              PdcClassification.NONE_CLASSIFICATION);
+          return PdcClassification.NONE_CLASSIFICATION;
+        }
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Set<ConstraintViolation<PdcClassification>> violations = validatorFactory.
+            getValidator().validate(classification);
+        if (!violations.isEmpty()) {
+          throw new ConstraintViolationException("Error", null);
+        }
+        ReflectionTestUtils.setField(classification, "id", id++);
+        when(mock.findAPreDefinedClassification(classification.getNodeId(), classification.
+            getComponentInstanceId())).thenReturn(classification);
+        if (classification.isPredefinedForANode()) {
+          when(mock.getPreDefinedClassification(classification.getNodeId(), classification.
+              getComponentInstanceId())).thenReturn(classification);
+        } else {
+          when(mock.getPreDefinedClassification(classification.getComponentInstanceId())).
+              thenReturn(classification);
+        }
+        return classification;
+      }
+    });
+  }
 
-              @Override
-              public PdcClassification answer(InvocationOnMock invocation) throws Throwable {
-                PdcClassificationService mock = (PdcClassificationService) invocation.getMock();
-                PdcClassification classification = (PdcClassification) invocation.getArguments()[0];
-                if (classification.getId() != null && classification.isEmpty()
-                        && findAPreDefinedClassification(classification.getNodeId(), classification.
-                        getComponentInstanceId()) != PdcClassification.NONE_CLASSIFICATION) {
-                  when(mock.findAPreDefinedClassification(classification.getNodeId(),
-                          classification.getComponentInstanceId())).thenReturn(
-                          PdcClassification.NONE_CLASSIFICATION);
-                  return PdcClassification.NONE_CLASSIFICATION;
-                }
-                ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-                Set<ConstraintViolation<PdcClassification>> violations = validatorFactory.
-                        getValidator().validate(classification);
-                if (!violations.isEmpty()) {
-                  throw new ConstraintViolationException("Error", null);
-                }
-                ReflectionTestUtils.setField(classification, "id", id++);
-                when(mock.findAPreDefinedClassification(classification.getNodeId(), classification.
-                        getComponentInstanceId())).thenReturn(classification);
-                if (classification.isPredefinedForANode()) {
-                  when(mock.getPreDefinedClassification(classification.getNodeId(), classification.
-                          getComponentInstanceId())).thenReturn(classification);
-                } else {
-                  when(mock.getPreDefinedClassification(classification.getComponentInstanceId())).
-                          thenReturn(classification);
-                }
-                return classification;
-              }
-            });
+  @Override
+  public void classifyContent(SilverpeasContent content, PdcClassification withClassification,
+      boolean alertSubscribers) throws PdcRuntimeException {
+    mock.classifyContent(content, withClassification, alertSubscribers);
   }
 }
