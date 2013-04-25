@@ -628,37 +628,43 @@ $(document).ready(function() {
 var pageMustBeReloadingAfterSorting = false;
 function checkout(id, webdav, edit, download) {
   if (id > 0) {
-    $.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'Checkout'},
-        function(data) {
-          if (data == "ok") {
-            var oMenu = eval("oMenu" + id);
-            oMenu.getItem(0).cfg.setProperty("disabled", true); //checkout
-            oMenu.getItem(1).cfg.setProperty("disabled", true); //checkout and download
-            if (!webdav) {
-              oMenu.getItem(2).cfg.setProperty("disabled", true); //edit online
-            }
-            oMenu.getItem(3).cfg.setProperty("disabled", false); //add new version
-            oMenu.getItem(4).cfg.setProperty("disabled", false); //checkin
+	$.ajax({
+		type: "GET",
+		url: '<%=m_context%>/AjaxVersioning',
+		data: { DocId: id, Action: "Checkout" },
+		dataType: "text",
+		cache: false,
+		success: function(data) {
+	          if (data == "ok") {
+	              var oMenu = eval("oMenu" + id);
+	              oMenu.getItem(0).cfg.setProperty("disabled", true); //checkout
+	              oMenu.getItem(1).cfg.setProperty("disabled", true); //checkout and download
+	              if (!webdav) {
+	                oMenu.getItem(2).cfg.setProperty("disabled", true); //edit online
+	              }
+	              oMenu.getItem(3).cfg.setProperty("disabled", false); //add new version
+	              oMenu.getItem(4).cfg.setProperty("disabled", false); //checkin
 
-            $('#worker' + id).html("<%=attResources.getString("lockedBy")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
-            $('#worker' + id).css({'visibility':'visible'});
+	              $('#worker' + id).html("<%=attResources.getString("lockedBy")%> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <%=attResources.getString("at")%> <%=DateUtil.getOutputDate(new Date(), language)%>");
+	              $('#worker' + id).css({'visibility':'visible'});
 
-            if (edit) {
-              var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav" + id);
-              window.open(url, '_self');
-            } else if (download) {
-              var url = $('#url' + id).attr('href');
-              window.open(url);
-            }
-          }
-          else if (data == "alreadyCheckouted") {
-            alert("<%=attResources.getString("versioning.dialog.checkout.nok")%>");
-            window.location.href = window.location.href;
-          }
-          else {
-            alert(data);
-          }
-        }, 'text');
+	              if (edit) {
+	                var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav" + id);
+	                window.open(url, '_self');
+	              } else if (download) {
+	                var url = $('#url' + id).attr('href');
+	                window.open(url);
+	              }
+	            }
+	            else if (data == "alreadyCheckouted") {
+	              alert("<%=attResources.getString("versioning.dialog.checkout.nok")%>");
+	              window.location.href = window.location.href;
+	            }
+	            else {
+	              alert(data);
+	            }
+	          }
+	});
     pageMustBeReloadingAfterSorting = true;
   }
 }
@@ -674,22 +680,26 @@ function checkoutAndEdit(id) {
 function checkin(id, force) {
   if (id > 0) {
     //release the file without changing it
-    $.get('<%=m_context%>/AjaxVersioning', {DocId:id,Action:'IsLocked',force_release:force},
-        function(data) {
-          data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-          if (data == "locked") {
-            displayWarning();
-          }
-          else {
-            if (data == "ok") {
-              SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=' + id + '&ComponentId=<%=componentId%>&documentId=' + id + '&force_release=' + force + '&Callback=newVersionAdded',
-                  "test", "600", "400", "scrollbars=1, resizable, alwaysRaised");
-            }
-          }
-        }, "html");
-  }
-  else {
-    SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=' + id + '&ComponentId=<%=componentId%>&documentId=' + id + '&force_release=' + force + '&Callback=newVersionAdded',
+    $.ajax({
+		type: "GET",
+		url: '<%=m_context%>/AjaxVersioning',
+		data: { DocId: id, Action: "IsLocked", force_release:force },
+		dataType: "html",
+		cache: false,
+		success: function(data) {
+			data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
+	        if (data == "locked") {
+	          displayWarning();
+	        } else {
+	          if (data == "ok") {
+	            SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=' + id + '&ComponentId=<%=componentId%>&documentId=' + id + '&force_release=' + force,
+	                  "test", "600", "400", "scrollbars=1, resizable, alwaysRaised");
+	          }
+	        }
+		}
+    });
+  } else {
+    SP_openWindow('<%=m_context%>/RVersioningPeas/jsp/AddNewOnlineVersion?Id=' + id + '&ComponentId=<%=componentId%>&documentId=' + id + '&force_release=' + force,
         "test", "600", "400", "scrollbars=1, resizable, alwaysRaised");
   }
   pageMustBeReloadingAfterSorting = true;
@@ -730,16 +740,21 @@ function AddAttachment() {
 
 function deleteAttachment(attachmentId) {
   if (window.confirm("<%=attResources.getString("confirmDelete")%>")) {
-    $.get('<%=m_context%>/AjaxVersioning', {Id:attachmentId,Action:'Delete'},
-        function(data) {
-          data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
-          if (data == "ok") {
-            $('#attachment_' + attachmentId).remove();
-          }
-          else {
-            alert(data);
-          }
-        }, 'text');
+	  $.ajax({
+			type: "GET",
+			url: '<%=m_context%>/AjaxVersioning',
+			data: { Id:attachmentId,Action:"Delete" },
+			dataType: "text",
+			cache: false,
+			success: function(data) {
+			  data = data.replace(/^\s+/g, '').replace(/\s+$/g, '');
+	          if (data == "ok") {
+	            $('#attachment_' + attachmentId).remove();
+	          } else {
+	            alert(data);
+	          }
+			}
+	    });
     pageMustBeReloadingAfterSorting = true;
   }
 }
