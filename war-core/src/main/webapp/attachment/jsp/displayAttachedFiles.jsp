@@ -99,7 +99,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
   <c:set var="useFileSharing" value="${'yes' eq fn:toLowerCase(useFileSharingParam) && 'admin' eq userProfile }" />
   <c:choose>
     <c:when test="${contextualMenuEnabled}">
-      <c:set var="iconStyle" scope="page" value="${'style=\"cursor:move\"'}" />
+      <c:set var="iconStyle" scope="page">style="cursor:move"</c:set>
     </c:when>
     <c:otherwise>
       <c:set var="iconStyle" scope="page" value="${''}" />
@@ -334,7 +334,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
               <a href="javascript:showDnD()" id="dNdActionLabel"><fmt:message key="GML.DragNDropExpand"/></a>
             </div>
             <div id="DragAndDrop" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
-            <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; paddding: 0px" align="top"> </div>
+            <div id="DragAndDropDraft" style="background-color: #CDCDCD; border: 1px solid #CDCDCD; padding: 0px" align="top"> </div>
           </div>
         </c:when>
         <c:otherwise>
@@ -668,7 +668,7 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
         } else {
           displayWarning(response.attachmentId);
         }
-        clearCheckin();
+        reloadIncludingPage();
       }
     });
 
@@ -843,7 +843,8 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
                 }
               });
               $(this).dialog("close");
-              } },</c:if>
+              } },
+          </c:if>
             '<fmt:message key="GML.cancel"/>': function() {
               $(this).dialog("close");
             }
@@ -860,6 +861,28 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
           height: 'auto',
           width: 550
         });
+        
+        function submitCheckin(submitUrl) {
+          if ("FormData" in window) {
+            var formData = new FormData($("#checkin-attachment-form")[0]);
+            $.ajax(submitUrl, {
+              processData: false,
+              contentType: false,
+              type: 'POST',
+              dataType: "json",
+              data: formData,
+              success:function(data) {     
+                reloadIncludingPage();
+                $(this).dialog("close");
+              }
+            });
+          } else {              
+            $('#checkin-attachment-form').attr('action', submitUrl);
+            $('#checkin-attachment-form').submit();
+            reloadIncludingPage();
+            $(this).dialog("close");
+          }
+        }
 
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
@@ -873,17 +896,13 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
             $('#webdav').val($(this).data('webdav'));
             $('#checkin_oldId').val($(this).data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-            $('#checkin-attachment-form').attr('action', submitUrl);
-            $('#checkin-attachment-form').submit();
-            $(this).dialog("close");
+            submitCheckin(submitUrl);
           },
           '<fmt:message key="attachment.revert"/>': function() {
               $('#force').val('true');
               $('#webdav').val('false');
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-              $('#checkin-attachment-form').attr('action', submitUrl);
-              $('#checkin-attachment-form').submit();
-              $(this).dialog("close");
+              submitCheckin(submitUrl);              
             },
             '<fmt:message key="GML.cancel"/>': function() {
               clearCheckin();
