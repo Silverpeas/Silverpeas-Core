@@ -11,14 +11,7 @@
   <artifactId>comment</artifactId>
   <packaging>jar</packaging>
   <name>Lib Comment - ${project.version}</name>
-	
   <dependencies>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>node</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
