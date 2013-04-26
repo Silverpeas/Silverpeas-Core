@@ -130,7 +130,12 @@ for (SimpleDocument publicVersion : vVersions) {
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\">"+publicVersion.getMajorVersion()+"."+publicVersion.getMinorVersion()+"</a>" + permalink + spinFire);
     arrayLine.addArrayCellText("<a href=\""+url+"\" target=\"_blank\"><img src=\""+
         FileRepositoryManager.getFileIcon(publicVersion.getFilename()) +"\" border=\"0\" title=\"" +publicVersion.getFilename() + "\"/> " + publicVersion.getFilename() + "</a>");
-    arrayLine.addArrayCellText(publicVersion.getTitle());
+ 
+    if (StringUtil.isDefined(publicVersion.getTitle())) {
+      arrayLine.addArrayCellText(publicVersion.getTitle());
+    } else {
+      arrayLine.addArrayCellText("");
+    }
     if (StringUtil.isDefined(publicVersion.getDescription())) {
       arrayLine.addArrayCellText(publicVersion.getDescription());
     } else {
