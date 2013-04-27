@@ -1,27 +1,23 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.pdc.control;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -45,7 +41,6 @@ import com.stratelia.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,16 +82,14 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     try {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
-      connection.setAutoCommit(false);
+
       // Vérification de la contrainte invariante
       int nPositionId = classifyEngine.classifySilverObject(connection, silverObjectId, position);
       // Call the containerManager to register the association containerInstance
       // - ContentInstance(SilverObjectId)
       containerManager.addContainerContentInstanceLink(connection, nPositionId, sComponentId);
-      connection.commit();
       return 0;
     } catch (Exception e) {
-      DBUtil.rollback(connection);
       throw new PdcException("PdcClassifyBmImpl.addPosition",
           SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
     } finally {
@@ -134,8 +127,6 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     try {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
-      connection.setAutoCommit(false);
-
       classifyEngine.unclassifySilverObjectByPositionId(connection, nPositionId);
 
       // Call the containerManager to unregister the association
@@ -143,10 +134,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       containerManager.removeContainerContentInstanceLink(connection,
           nPositionId, sComponentId);
 
-      // Commit
-      connection.commit();
     } catch (Exception e) {
-      DBUtil.rollback(connection);
       throw new PdcException("PdcClassifyBmImpl.deletePosition",
           SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_POSITION", e);
     } finally {
@@ -237,6 +225,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * Create two lists of Value. Then, we replace the first Value list by the second
+   *
    * @param con - a connection to the database
    * @param axisId - the id of the axis
    * @param oldPath - a list of path
@@ -303,6 +292,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * search a defined position for one usedAxis
+   *
    * @param objectIdList
    * @param usedAxis - the UsedAxis object
    * @return true if for one UsedAxis, a position exists, false otherwise
@@ -430,6 +420,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * Remove all the positions of the given content.
+   *
    * @param connection
    * @param nSilverContentId
    * @return
@@ -460,6 +451,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * Find all the SilverContentId with the given position.
+   *
    * @param containerPosition
    * @param alComponentId
    * @param authorId
@@ -478,6 +470,7 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
 
   /**
    * Find all the SilverContentId with the given position.
+   *
    * @param containerPosition
    * @param alComponentId
    * @param authorId

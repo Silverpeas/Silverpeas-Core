@@ -20,6 +20,17 @@
  */
 package org.silverpeas.attachment.web;
 
+import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +42,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -47,28 +57,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataParam;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.attachment.model.UnlockContext;
 import org.silverpeas.attachment.model.UnlockOption;
 import org.silverpeas.importExport.versioning.DocumentVersion;
-
-import com.silverpeas.annotation.Authorized;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.web.RESTWebService;
-import com.silverpeas.web.UserPriviledgeValidation;
 
 @Service
 @RequestScoped
@@ -145,7 +141,7 @@ public class SimpleDocumentResource extends RESTWebService {
    * @return
    * @throws IOException
    */
-  @POST 
+  @POST
   @Path("{filename}")
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Produces(MediaType.APPLICATION_XHTML_XML)
@@ -157,7 +153,7 @@ public class SimpleDocumentResource extends RESTWebService {
       final @FormDataParam("versionType") String versionType,
       final @FormDataParam("commentMessage") String comment,
       final @PathParam("filename") String filename) throws IOException {
-    SimpleDocumentEntity entity = updateSimpleDocument(uploadedInputStream, fileDetail, filename, 
+    SimpleDocumentEntity entity = updateSimpleDocument(uploadedInputStream, fileDetail, filename,
         lang, title, description, versionType, comment);
     String result = null;
     if (entity != null) {
@@ -238,7 +234,8 @@ public class SimpleDocumentResource extends RESTWebService {
       if (!StringUtil.isDefined(document.getEditedBy())) {
         document.edit(getUserDetail().getId());
       }
-      AttachmentServiceFactory.getAttachmentService().updateAttachment(document, content, true, true);
+      AttachmentServiceFactory.getAttachmentService().
+          updateAttachment(document, content, true, true);
       content.close();
       FileUtils.deleteQuietly(tempFile);
     } else {
@@ -416,19 +413,27 @@ public class SimpleDocumentResource extends RESTWebService {
    *
    * @param force
    * @param webdav
-   * @param publicVersion
+   * @param privateVersion
    * @param comment
-   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * @return XML status to true if the document was locked successfully - XML status to false
    * otherwise..
    */
   @POST
   @Path("unlock")
-  @Produces(MediaType.APPLICATION_JSON)
-  public String unlock(@FormParam("force") final boolean force,
+  @Produces(MediaType.APPLICATION_XHTML_XML)
+  public String unlockDocumentForInternetExplorer(@FormParam("force") final boolean force,
       @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
       @FormParam("comment") final String comment) {
     SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    boolean result = unlock(document, force, webdav, privateVersion, comment);
+    return MessageFormat.format("<result><status>{0}</status><id>{1}</id>"
+        + "<attachmentId>{2}</attachmentId></result>", result, document.getOldSilverpeasId(),
+        document.getId());
+  }
+
+  protected boolean unlock(final SimpleDocument document, final boolean force, final boolean webdav,
+      final boolean privateVersion, final String comment) {
     if (document == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -443,7 +448,28 @@ public class SimpleDocumentResource extends RESTWebService {
     if (privateVersion) {
       unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
     }
-    boolean result = AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+    return AttachmentServiceFactory.getAttachmentService().unlock(unlockContext);
+  }
+
+  /**
+   * Unlock the specified document for exclusive edition.
+   *
+   * @param force
+   * @param webdav
+   * @param privateVersion
+   * @param comment
+   * @return JSON status to true if the document was locked successfully - JSON status to false
+   * otherwise..
+   */
+  @POST
+  @Path("unlock")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String unlockDocument(@FormParam("force") final boolean force,
+      @FormParam("webdav") final boolean webdav, @FormParam("private") final boolean privateVersion,
+      @FormParam("comment") final String comment) {
+    SimpleDocument document = AttachmentServiceFactory.getAttachmentService().
+        searchDocumentById(new SimpleDocumentPK(getSimpleDocumentId()), I18NHelper.defaultLanguage);
+    boolean result = unlock(document, force, webdav, privateVersion, comment);
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1}, \"attachmentId\":\"{2}\"}", result,
         document.getOldSilverpeasId(), document.getId());
   }
