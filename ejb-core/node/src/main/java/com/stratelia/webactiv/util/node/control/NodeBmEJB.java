@@ -356,8 +356,8 @@ public class NodeBmEJB implements NodeBm {
       Collection<NodeDetail> children = NodeDAO.getChildrenDetails(con, pk);
       List<NodeDetail> childrenDetail = new ArrayList<NodeDetail>();
       for (NodeDetail childDetail : children) {
-        Collection<NodeDetail> subChildren =
-            NodeDAO.getChildrenDetails(con, childDetail.getNodePK());
+        Collection<NodeDetail> subChildren = NodeDAO
+            .getChildrenDetails(con, childDetail.getNodePK());
         List<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
         for (NodeDetail subChild : subChildren) {
           subChildrenDetail.add(subChild);
@@ -766,6 +766,7 @@ public class NodeBmEJB implements NodeBm {
     if (StringUtil.isDefined(detail.getPath())) {
       currentNode.setPath(detail.getPath());
     }
+    currentNode.setRightsDependsOn(detail.getRightsDependsOn());
     currentNode.setOrder(detail.getOrder());
     currentNode.setLanguage(detail.getLanguage());
     NodeDAO.storeRow(con, currentNode);
@@ -1025,8 +1026,7 @@ public class NodeBmEJB implements NodeBm {
 
     if (nodeDetail != null) {
       // Index the Node
-      indexEntry =
-          new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
+      indexEntry = new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
           getNodePK().getId());
 
       Iterator<String> languages = nodeDetail.getLanguages();
@@ -1077,8 +1077,8 @@ public class NodeBmEJB implements NodeBm {
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry + ", nodePK = " + nodePK);
     try {
       if (nodePK != null) {
-        String wysiwygContent =
-            WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK.getId(), language);
+        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK
+            .getId(), language);
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
         }
