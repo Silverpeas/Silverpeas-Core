@@ -45,12 +45,6 @@
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <view:componentParam var="isComponentVersioned" componentId="${param.ComponentId}" parameter="versionControl" />
 <c:set var="isVersionActive" value="${silfn:booleanValue(isComponentVersioned)}" />
-<!-- 
-isI18n: <c:out value="${silfn:isI18n()}" />
-isVersionActive: <c:out value="${not isVersionActive}" />
-use I18n <c:out value="${not view:booleanValue(param.notI18n)}" />
-value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)} " />
-  -->
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="iframepost"/>
 <view:includePlugin name="popup"/>
@@ -805,10 +799,11 @@ value: <c:out value="${silfn:isI18n() && not isVersionActive && not view:boolean
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {              
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
-              if( $.trim( $("#file_upload").val()) !== '') { 
-                submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val().split('\\').pop());
+              var filename =  $.trim( $("#file_upload").val().split('\\').pop());
+              if( filename !== '') { 
+                submitUrl = submitUrl + '/' +encodeURI(filename);
               } else {
-                submitUrl = submitUrl + '/no_file';
+              submitUrl = submitUrl + '/no_file';
               }  
               if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
