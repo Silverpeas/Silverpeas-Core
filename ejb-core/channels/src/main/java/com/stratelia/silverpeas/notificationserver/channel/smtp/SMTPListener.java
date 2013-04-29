@@ -111,7 +111,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     } else {
       String body = notification.getMessage();
       // Transform text to html format
-      body = EncodeHelper.javaStringToHtmlParagraphe(body + "\n\n");
+      body = EncodeHelper.convertWhiteSpacesForHTMLDisplay(body + "\n\n");
       if (tmpUrlString != null) {
         body += "<a href=\"" + tmpUrlString + "\" target=_blank>" + messages.getString("clickHere")
             + "</a> " + messages.getString("ToAccessDocument");
