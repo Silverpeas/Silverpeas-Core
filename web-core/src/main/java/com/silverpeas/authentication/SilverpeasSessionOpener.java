@@ -20,6 +20,7 @@
  */
 package com.silverpeas.authentication;
 
+import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
 import com.silverpeas.util.StringUtil;
@@ -82,6 +83,13 @@ public class SilverpeasSessionOpener {
    * <p/>
    * With its authentication key and some attributes from the request,a session in Silverpeas can be
    * opened and set for the user.
+   * <p/>
+   * In the case a session was already opened for the user with the same web browser, the current
+   * session is then taken into account and the user access information is updated. In this case, no
+   * new session is opened and the previous one isn't invalidated. If this behavior isn't what you
+   * expect, then you have to close explicitly the current session of the user before calling this
+   * method. In the case the user is already connected but with another web browser, a new session
+   * is opened without invalidating the other one.
    *
    * @param request the HTTP request asking a session opening.
    * @param authKey the authentication key computed from a user authentication process and that is
@@ -111,12 +119,18 @@ public class SilverpeasSessionOpener {
             StringUtil.getBooleanValue(allowPasswordChange));
       }
       if (!controller.getCurrentUserDetail().isDeletedState()) {
-        // Init session management and session object !!! This method reset theSession Object
+        // Open a new session if not already opened
         if (!UserDetail.isAnonymousUser(controller.getUserId())) {
           SessionManagementFactory factory = SessionManagementFactory.getFactory();
           SessionManagement sessionManagement = factory.getSessionManagement();
-          sessionManagement.openSession(controller.getCurrentUserDetail(), request);
-          registerSuccessfulConnexion(controller);
+          // is the current session is valid? If it is valid, then the information about the session
+          // is updated with, for example, the timestamp of the last access (this one), and then it
+          // is returned.
+          SessionInfo sessionInfo = sessionManagement.validateSession(session.getId());
+          if (sessionInfo == null) {
+            sessionManagement.openSession(controller.getCurrentUserDetail(), request);
+            registerSuccessfulConnexion(controller);
+          }
         }
         // Put the main session controller in the session
         session.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, controller);
