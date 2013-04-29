@@ -496,7 +496,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Builds the message
-   * @param language
+   * @param synthese
    * @return
    * @throws Exception
    */
@@ -515,7 +515,7 @@ public class DelayedNotificationDelegate extends AbstractNotification {
 
   /**
    * Builds the subject
-   * @param language
+   * @param synthese
    * @return
    */
   private String buildSubject(final DelayedNotificationSyntheseData synthese) {
