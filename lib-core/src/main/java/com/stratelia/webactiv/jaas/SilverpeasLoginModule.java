@@ -36,8 +36,6 @@ import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
-import org.apache.jackrabbit.core.security.AnonymousPrincipal;
-import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
 import org.silverpeas.core.admin.OrganisationController;
@@ -47,12 +45,16 @@ import com.silverpeas.jcrutil.security.impl.DigestCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.AdminReference;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.exception.WithNested;
+
+import org.apache.jackrabbit.core.security.AnonymousPrincipal;
+import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
 public class SilverpeasLoginModule implements LoginModule {
 
@@ -137,7 +139,8 @@ public class SilverpeasLoginModule implements LoginModule {
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
-              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
+                  isRoot(userId));
               fillPrincipal(principal);
               principals.add(principal);
             }
@@ -148,7 +151,8 @@ public class SilverpeasLoginModule implements LoginModule {
           authenticated = true;
         } else if (creds instanceof SilverpeasCredentials) {
           String theUserId = ((SilverpeasCredentials) creds).getUserId();
-          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId);
+          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId, isRoot(
+              theUserId));
           fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;
@@ -166,7 +170,8 @@ public class SilverpeasLoginModule implements LoginModule {
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
-              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
+                  isRoot(userId));
               validateDigestUser(principal, sc);
               fillPrincipal(principal);
               principals.add(principal);
@@ -207,6 +212,18 @@ public class SilverpeasLoginModule implements LoginModule {
       principals.clear();
       throw new FailedLoginException();
     }
+  }
+
+  private boolean isRoot(String userId) {
+    boolean isAdmin = false;
+    try {
+      UserDetail currentUser = administrator.getUserDetail(userId);
+      if (currentUser != null) {
+        isAdmin = currentUser.isAccessAdmin();
+      }
+    } catch (AdminException ex) {
+    }
+    return isAdmin;
   }
 
   @Override
