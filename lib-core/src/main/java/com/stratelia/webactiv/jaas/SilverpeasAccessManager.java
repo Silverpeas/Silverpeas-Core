@@ -1,44 +1,27 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.webactiv.jaas;
 
-import com.silverpeas.jcrutil.JcrConstants;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import org.apache.jackrabbit.core.HierarchyManager;
-import org.apache.jackrabbit.core.id.ItemId;
-import org.apache.jackrabbit.core.id.NodeId;
-import org.apache.jackrabbit.core.security.AMContext;
-import org.apache.jackrabbit.core.security.AccessManager;
-import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
-import org.apache.jackrabbit.core.security.authorization.Permission;
-import org.apache.jackrabbit.core.security.authorization.PrivilegeRegistry;
-import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
-import org.apache.jackrabbit.spi.Name;
-import org.apache.jackrabbit.spi.Path;
-import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
+import java.util.Set;
 
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemNotFoundException;
@@ -51,14 +34,30 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.security.auth.Subject;
-import java.util.Set;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+
+import org.apache.jackrabbit.api.security.authorization.PrivilegeManager;
+import org.apache.jackrabbit.core.HierarchyManager;
+import org.apache.jackrabbit.core.id.ItemId;
+import org.apache.jackrabbit.core.security.AMContext;
+import org.apache.jackrabbit.core.security.AccessManager;
+import org.apache.jackrabbit.core.security.authorization.AccessControlProvider;
+import org.apache.jackrabbit.core.security.authorization.Permission;
+import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
+import org.apache.jackrabbit.spi.Name;
+import org.apache.jackrabbit.spi.Path;
+import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
+
+import static com.silverpeas.jcrutil.JcrConstants.*;
 
 public class SilverpeasAccessManager implements AccessManager {
 
   private HierarchyManager manager;
   private NamePathResolver resolver;
   private WorkspaceAccessManager wspAccessMgr;
-  private PrivilegeRegistry privilegeRegistry;
+  private PrivilegeManager privilegeManager;
   private Subject subject;
   private boolean initialized;
   private boolean isSystem = false;
@@ -99,7 +98,7 @@ public class SilverpeasAccessManager implements AccessManager {
     }
     this.manager = context.getHierarchyManager();
     this.resolver = context.getNamePathResolver();
-    this.privilegeRegistry = new PrivilegeRegistry(resolver);
+    this.privilegeManager = context.getPrivilegeManager();
     this.subject = context.getSubject();
     this.isSystem = !subject.getPrincipals(SilverpeasSystemPrincipal.class).isEmpty();
     this.initialized = true;
@@ -116,10 +115,10 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(id)) {
-        Set<SilverpeasUserPrincipal> principals =
-            subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(
+            SilverpeasUserPrincipal.class);
         for (SilverpeasUserPrincipal principal : principals) {
-          if (checkUserIsOwner(principal, id)) {
+          if (principal.isAdministrator() || checkUserIsOwner(principal, id)) {
             return true;
           }
         }
@@ -131,6 +130,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   *
    * @param principal
    * @param id
    * @return
@@ -142,14 +142,12 @@ public class SilverpeasAccessManager implements AccessManager {
     try {
       session = repository.login(new SilverpeasSystemCredentials());
       Node node = getNode(session, id);
-      if (node.hasProperty(JcrConstants.SLV_PROPERTY_OWNER)) {
-        return principal.getUserId().equals(
-            node.getProperty(JcrConstants.SLV_PROPERTY_OWNER).getValue().getString());
+      if (node.hasProperty(SLV_PROPERTY_OWNER)) {
+        return principal.getUserId().equals(node.getProperty(SLV_PROPERTY_OWNER).getString());
       }
       return true;
     } catch (ItemNotFoundException ex) {
-      // The node doesn't exist so we may assume that it is transient in the
-      // user's session
+      // The node doesn't exist so we may assume that it is transient in the user's session
       return true;
     } catch (RepositoryException ex) {
       throw ex;
@@ -162,6 +160,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine
+   *
    * @param principal
    * @param path
    * @return
@@ -173,11 +172,9 @@ public class SilverpeasAccessManager implements AccessManager {
     try {
       session = repository.login(new SilverpeasSystemCredentials());
       Node node = getNode(session, path);
-      return principal.getUserId().equals(
-          node.getProperty(JcrConstants.SLV_PROPERTY_OWNER).getValue().getString());
+      return principal.getUserId().equals(node.getProperty(SLV_PROPERTY_OWNER).getString());
     } catch (ItemNotFoundException ex) {
-      // The node doesn't exist so we may assume that it is transient in the
-      // user's session
+      // The node doesn't exist so we may assume that it is transient in the user's session
       return true;
     } catch (RepositoryException ex) {
       throw ex;
@@ -193,7 +190,8 @@ public class SilverpeasAccessManager implements AccessManager {
     Path.Element[] elements = path.getElements();
     for (SilverpeasUserPrincipal principal : principals) {
       for (Path.Element element : elements) {
-        if (principal.getUserProfile(element.getName().getLocalName()) != null) {
+        if (principal.isAdministrator() || principal.getUserProfile(
+            element.getName().getLocalName()) != null) {
           return true;
         }
       }
@@ -203,6 +201,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   *
    * @param id
    * @return
    * @throws LoginException
@@ -242,11 +241,12 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   protected boolean validateNode(Node node) throws RepositoryException {
-    return node.getPrimaryNodeType().isNodeType(JcrConstants.NT_FOLDER);
+    return node.getPrimaryNodeType().isNodeType(NT_FOLDER);
   }
 
   /**
    * Rustine pour bloquer l'acces au fichier webdav. Attention
+   *
    * @param path
    * @return
    * @throws LoginException
@@ -270,10 +270,10 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   protected boolean validateFileNode(Node node) throws RepositoryException {
-    if (JcrConstants.NT_FILE.equals(node.getPrimaryNodeType().getName())) {
+    if (NT_FILE.equals(node.getPrimaryNodeType().getName())) {
       NodeType[] mixins = node.getMixinNodeTypes();
       for (NodeType mixin : mixins) {
-        if (JcrConstants.SLV_OWNABLE_MIXIN.equals(mixin.getName())) {
+        if (SLV_OWNABLE_MIXIN.equals(mixin.getName())) {
           return true;
         }
       }
@@ -293,7 +293,7 @@ public class SilverpeasAccessManager implements AccessManager {
     }
     this.manager = context.getHierarchyManager();
     this.resolver = context.getNamePathResolver();
-    this.privilegeRegistry = new PrivilegeRegistry(resolver);
+    this.privilegeManager = context.getPrivilegeManager();
     this.wspAccessMgr = wspAccessManager;
     this.subject = context.getSubject();
     this.isSystem = !subject.getPrincipals(SilverpeasSystemPrincipal.class).isEmpty();
@@ -314,10 +314,10 @@ public class SilverpeasAccessManager implements AccessManager {
       if (path.getDepth() > 2 && validateNode(path)) {
         return isPathAutorized(path);
       } else if (validateFileNode(path)) {
-        Set<SilverpeasUserPrincipal> principals =
-            subject.getPrincipals(SilverpeasUserPrincipal.class);
+        Set<SilverpeasUserPrincipal> principals = subject.getPrincipals(
+            SilverpeasUserPrincipal.class);
         for (SilverpeasUserPrincipal principal : principals) {
-          if (checkUserIsOwner(principal, path)) {
+          if (principal.isAdministrator() || checkUserIsOwner(principal, path)) {
             return true;
           }
         }
@@ -381,7 +381,7 @@ public class SilverpeasAccessManager implements AccessManager {
     if (path != null) {
       canAccessPath = isGranted(path, permission);
     }
-    return canAccessPath ;
+    return canAccessPath;
   }
 
   @Override
@@ -395,6 +395,6 @@ public class SilverpeasAccessManager implements AccessManager {
 
   @Override
   public void checkRepositoryPermission(int permissions) throws AccessDeniedException,
-          RepositoryException {
+      RepositoryException {
   }
 }

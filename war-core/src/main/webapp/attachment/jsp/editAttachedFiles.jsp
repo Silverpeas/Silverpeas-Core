@@ -288,12 +288,12 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() { 
-            var filename =  $.trim( $("#file_create").val());
+            var filename =  $.trim( $("#file_create").val().split('\\').pop());
             if( filename === '') { 
               return false;
             }
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
-            submitUrl = submitUrl + '/' +encodeURI( $("#file_create").val());
+            submitUrl = submitUrl + '/' +encodeURI(filename);
             if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -327,11 +327,12 @@
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
-            if( $.trim( $("#file_upload").val()) !== '') { 
-              submitUrl = submitUrl + '/' +encodeURI( $("#file_upload").val());
+            var filename =  $.trim( $("#file_upload").val().split('\\').pop());
+            if( filename !== '') { 
+              submitUrl = submitUrl + '/' +encodeURI(filename);
             } else {
-                submitUrl = submitUrl + '/no_file';
-              } 
+              submitUrl = submitUrl + '/no_file';
+            }  
             if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
