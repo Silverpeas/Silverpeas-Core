@@ -20,19 +20,9 @@
  */
 package com.stratelia.webactiv.util.viewGenerator.html;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import com.silverpeas.look.SilverpeasLook;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
-
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -57,8 +47,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.frame.Frame;
 import com.stratelia.webactiv.util.viewGenerator.html.frame.FrameSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane;
 import com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPaneWA;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
 import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList;
 import com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationListSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane;
@@ -71,8 +59,15 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane;
 import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV5;
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
-
 import org.apache.commons.lang3.CharEncoding;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
 import static com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
 
@@ -549,7 +544,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_BUTTON", "", e);
       button = new ButtonSilverpeasV5();
     } finally {
-      button.init(label, action, disabled);
+      if (button != null) {
+        button.init(label, action, disabled);
+      }
     }
     return button;
   }
@@ -557,7 +554,6 @@ public class GraphicElementFactory {
   /**
    * Construct a new frame.
    *
-   * @param title The new frame title
    * @return returns an object implementing the Frame interface. That's the new frame to use.
    */
   public Frame getFrame() {
@@ -647,7 +643,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_TABBED_PANE", "", e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
-      tabbedPane.init(1);
+      if (tabbedPane != null) {
+        tabbedPane.init(1);
+      }
     }
     return tabbedPane;
   }
@@ -669,7 +667,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_TABBED_PANE", " nbLines = " + nbLines, e);
       tabbedPane = new TabbedPaneSilverpeasV5();
     } finally {
-      tabbedPane.init(nbLines);
+      if (tabbedPane != null) {
+        tabbedPane.init(nbLines);
+      }
     }
     return tabbedPane;
   }
@@ -697,7 +697,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, pageContext);
+      if (arrayPane != null) {
+        arrayPane.init(name, pageContext);
+      }
     }
     return arrayPane;
   }
@@ -723,7 +725,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, request, session);
+      if (arrayPane != null) {
+        arrayPane.init(name, request, session);
+      }
     }
     return arrayPane;
   }
@@ -751,7 +755,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_ARRAY_PANE", " name = " + name, e);
       arrayPane = new ArrayPaneSilverpeasV5();
     } finally {
-      arrayPane.init(name, url, request, session);
+      if (arrayPane != null) {
+        arrayPane.init(name, url, request, session);
+      }
     }
     return arrayPane;
   }
@@ -771,7 +777,9 @@ public class GraphicElementFactory {
           "viewgenerator.EX_CANT_GET_WINDOW", "", e);
       window = new WindowWeb20V5();
     } finally {
-      window.init(this);
+      if (window != null) {
+        window.init(this);
+      }
     }
     return window;
   }
@@ -865,18 +873,8 @@ public class GraphicElementFactory {
   }
 
   /**
-   * Build a new monthCalendar.
-   *
-   * @param String : the language to use by the monthCalendar
-   * @return an object implementing the monthCalendar interface
-   */
-  public MonthCalendar getMonthCalendar(String language) {
-    return new MonthCalendarWA1(language);
-  }
-
-  /**
    * Build a new SilverpeasCalendar.
-   * @param String : the language to use by the monthCalendar
+   * @param language : the language to use by the monthCalendar
    * @return an object implementing the monthCalendar interface
    */
   public Calendar getCalendar(String context, String language, Date date) {

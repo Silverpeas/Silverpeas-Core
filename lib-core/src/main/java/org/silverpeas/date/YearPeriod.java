@@ -1,5 +1,5 @@
-/**
- * Copyright (C) 2000 - 2012 Silverpeas
+/*
+ * Copyright (C) 2000 - 2013 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,52 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.date;
 
-/*
- * SilverpeasCalendar.java
- * 
- * Created on 11 juin 2001, 14:38
- */
-
-package com.stratelia.webactiv.util.viewGenerator.html.monthCalendar;
+import com.stratelia.webactiv.util.DateUtil;
 
 import java.util.Date;
 
-import com.stratelia.webactiv.util.viewGenerator.html.SimpleGraphicElement;
-import java.util.List;
-
 /**
- * @author groccia
- * @version
+ * User: Yohann Chastagnier
+ * Date: 21/04/13
  */
-public interface MonthCalendar extends SimpleGraphicElement {
+public class YearPeriod extends Period {
+  private static final long serialVersionUID = 2619196735517207878L;
 
   /**
-   * Method declaration
-   * @param currentDate
-   * @see
+   * Constructor : Constructs a newly allocated <code>period</code>.
+   * @param referenceDate the reference date to compute a year period.
    */
-  public void setCurrentMonth(Date currentDate);
-
-  /**
-   * Method declaration
-   * @param listEventMonth
-   * @see
-   */
-  public void addEvent(List<Event> listEventMonth);
-
-  /**
-   * Method declaration
-   * @param eventMonth
-   * @see
-   */
-  public void addEvent(Event eventMonth);
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String print();
-
+  protected YearPeriod(final Date referenceDate) {
+    super(DateUtil.getFirstDateOfYear(referenceDate), DateUtil.getEndDateOfYear(referenceDate));
+    setPeriodType(PeriodType.year);
+  }
 }
