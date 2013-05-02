@@ -37,7 +37,72 @@ import static org.junit.Assert.assertThat;
  */
 public class DateUtilTest {
 
+  private static final String LANGUAGE = "en";
+
   public DateUtilTest() {
+  }
+
+  @Test
+  public void testGetOutputDateAndHour() {
+    Date date = DateUtil.resetHour(java.sql.Date.valueOf("2013-05-21"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21"));
+
+    Date year = DateUtils.addYears(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(year, LANGUAGE), is("2014/05/21"));
+
+    Date month = DateUtils.addMonths(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(month, LANGUAGE), is("2013/06/21"));
+
+    Date day = DateUtils.addDays(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(day, LANGUAGE), is("2013/05/22"));
+
+    Date hour = DateUtils.addHours(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 01:00"));
+    hour = DateUtils.addHours(date, 12);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 12:00"));
+    hour = DateUtils.addHours(date, 22);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 22:00"));
+
+    Date minute = DateUtils.addMinutes(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:01"));
+    minute = DateUtils.addMinutes(date, 59);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:59"));
+    minute = DateUtils.addMinutes(date, 60);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:00"));
+    minute = DateUtils.addMinutes(date, 61);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:01"));
+
+    Date second = DateUtils.addSeconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    second = DateUtils.addSeconds(date, 59);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    second = DateUtils.addSeconds(date, 60);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+    second = DateUtils.addSeconds(date, 61);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+
+    Date millisecond = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 999);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 1000);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 1001);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+
+    // 2013-05-21 23:59:59.999
+    date = DateUtils.addHours(
+        DateUtils.addMinutes(DateUtils.addSeconds(DateUtils.addMilliseconds(date, 999), 59), 59),
+        23);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21 23:59"));
+
+    // 2013-05-22 00:00:00.000
+    date = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22"));
+
+    // 2013-05-22 00:00:00.001
+    date = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22 00:00"));
   }
 
   /**
@@ -294,7 +359,7 @@ public class DateUtilTest {
 
   @Test
   public void testGetFirstDateOfWeekEN() {
-    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "en");
+    Date dateTest = DateUtil.getFirstDateOfWeek(java.sql.Date.valueOf("2013-04-20"), LANGUAGE);
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
     assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
@@ -307,7 +372,7 @@ public class DateUtilTest {
 
   @Test
   public void testGetEndDateOfWeekEN() {
-    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), "en");
+    Date dateTest = DateUtil.getEndDateOfWeek(java.sql.Date.valueOf("2013-04-20"), LANGUAGE);
     Calendar cal = DateUtil.convert(dateTest);
     assertThat(cal.get(Calendar.YEAR), is(2013));
     assertThat(cal.get(Calendar.MONTH), is(Calendar.APRIL));
