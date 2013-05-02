@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.notification.delayed.delegate.DelayedNotificationDelegate;
+import com.silverpeas.util.ArrayUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.security.X509Factory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -31,15 +32,13 @@ import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.util.ListSlice;
 
-import com.silverpeas.util.ArrayUtil;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserManager {
 
@@ -104,7 +103,7 @@ public class UserManager {
    */
   public UserDetail[] getAllUsersOfGroups(List<String> groupIds) throws AdminException {
     if (groupIds == null || groupIds.isEmpty()) {
-      return new UserDetail[0];
+      return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
     Connection con = null;
     try {
@@ -734,7 +733,7 @@ public class UserManager {
       ddManager.releaseOrganizationSchema();
     }
   }
-  
+
   /**
    * Get all users (except deleted ones) from all domains
    * @return a List of UserDetail sort by alphabetical order
@@ -753,7 +752,7 @@ public class UserManager {
       DBUtil.close(con);
     }
   }
-  
+
   /**
    * Get all users (except deleted ones) from all domains
    * @return a List of UserDetail sort by reverse creation order
@@ -771,7 +770,7 @@ public class UserManager {
       DBUtil.close(con);
     }
   }
-  
+
   /**
    * Get all users (except deleted ones) from specified domains
    * @return a List of UserDetail sort by alphabetical order
@@ -790,7 +789,7 @@ public class UserManager {
       DBUtil.close(con);
     }
   }
-  
+
   /**
    * Get all users (except deleted ones) from specified domains
    * @return a List of UserDetail sort by reverse creation order

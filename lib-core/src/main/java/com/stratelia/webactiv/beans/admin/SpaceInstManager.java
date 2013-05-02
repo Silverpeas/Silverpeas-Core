@@ -362,7 +362,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -381,7 +381,7 @@ public class SpaceInstManager {
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceIds",
           SilverpeasException.ERROR, "admin.EX_ERR_GET_ALL_SPACE_IDS", e);
@@ -416,7 +416,7 @@ public class SpaceInstManager {
     try {
       ddManager.getOrganizationSchema();
       List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(Integer.parseInt(spaceId));
-      
+
       return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[0]));
 
     } catch (Exception e) {
@@ -488,7 +488,7 @@ public class SpaceInstManager {
       if (asSpaceProfileIds != null) {
         return asSpaceProfileIds;
       } else {
-        return new String[0];
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
     } catch (Exception e) {
       throw new AdminException("SpaceInstManager.getAllSpaceProfileIds",
@@ -564,7 +564,7 @@ public class SpaceInstManager {
           "spaceId = " + spaceId, e);
     }
   }
-  
+
   /*
    * Move space from current location to space defined by fatherId
    */

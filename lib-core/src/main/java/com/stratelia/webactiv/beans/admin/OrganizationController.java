@@ -27,20 +27,19 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import com.silverpeas.admin.components.WAComponent;
+import com.silverpeas.util.ArrayUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
+
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Named;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.util.ListSlice;
-
-import com.silverpeas.admin.components.WAComponent;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
@@ -77,7 +76,7 @@ public class OrganizationController implements OrganisationController {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSpaceIds",
           "admin.MSG_ERR_GET_ALL_SPACE_IDS", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -90,7 +89,7 @@ public class OrganizationController implements OrganisationController {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getAllSubSpaceIds",
           "admin.MSG_ERR_GET_SUBSPACE_IDS", "father space id: '" + sSpaceId + "'", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -102,7 +101,7 @@ public class OrganizationController implements OrganisationController {
     } catch (Exception e) {
       SilverTrace.error("admin", "OrganizationController.getSpaceNames",
           "admin.MSG_ERR_GET_SPACE_NAMES", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -165,7 +164,7 @@ public class OrganizationController implements OrganisationController {
           "OrganizationController.getAvailCompoIdsAtRoot",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" + sClientSpaceId
           + "', user Id: '" + sUserId + "'", e);
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -405,7 +404,7 @@ public class OrganizationController implements OrganisationController {
     }
     return null;
   }
-  
+
   @Override
   public List<UserDetail> getUsersOfDomains(List<String> domainIds) {
     try {
@@ -416,7 +415,7 @@ public class OrganizationController implements OrganisationController {
     }
     return null;
   }
-  
+
   @Override
   public List<UserDetail> getUsersOfDomainsFromNewestToOldest(List<String> domainIds) {
     try {
@@ -529,7 +528,7 @@ public class OrganizationController implements OrganisationController {
       return null;
     }
   }
-  
+
   /**
    * Return all the users of Silverpeas
    */
@@ -1046,7 +1045,7 @@ public class OrganizationController implements OrganisationController {
             "root.MSG_GEN_PARAM_VALUE", "pIds = " + Arrays.toString(pIds));
         return getAdminService().searchUsersIds(null, null, pIds, new UserDetail());
       }
-      return new String[0];
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       SilverTrace.error("admin",
           "OrganizationController.getUsersIdsByRoleNames",

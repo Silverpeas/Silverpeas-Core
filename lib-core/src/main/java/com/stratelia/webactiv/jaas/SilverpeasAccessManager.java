@@ -21,23 +21,9 @@
 
 package com.stratelia.webactiv.jaas;
 
-import java.util.Set;
-
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.LoginException;
-import javax.jcr.NamespaceException;
-import javax.jcr.NoSuchWorkspaceException;
-import javax.jcr.Node;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
-import javax.security.auth.Subject;
-
+import com.silverpeas.jcrutil.BasicDaoFactory;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
 import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-
 import org.apache.jackrabbit.api.security.authorization.PrivilegeManager;
 import org.apache.jackrabbit.core.HierarchyManager;
 import org.apache.jackrabbit.core.id.ItemId;
@@ -49,6 +35,18 @@ import org.apache.jackrabbit.core.security.authorization.WorkspaceAccessManager;
 import org.apache.jackrabbit.spi.Name;
 import org.apache.jackrabbit.spi.Path;
 import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
+
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.LoginException;
+import javax.jcr.NamespaceException;
+import javax.jcr.Node;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+import javax.security.auth.Subject;
+import java.util.Set;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 
@@ -64,8 +62,7 @@ public class SilverpeasAccessManager implements AccessManager {
   private Repository repository;
 
   @Override
-  public boolean canAccess(String workspaceName) throws NoSuchWorkspaceException,
-      RepositoryException {
+  public boolean canAccess(String workspaceName) throws RepositoryException {
     if (isSystem || wspAccessMgr == null) {
       return true;
     }
@@ -73,8 +70,7 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public void checkPermission(ItemId id, int permissions) throws AccessDeniedException,
-      ItemNotFoundException, RepositoryException {
+  public void checkPermission(ItemId id, int permissions) throws RepositoryException {
     if (!initialized) {
       throw new IllegalStateException("not initialized");
     }
@@ -92,7 +88,7 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public void init(AMContext context) throws AccessDeniedException, Exception {
+  public void init(AMContext context) throws Exception {
     if (initialized) {
       throw new IllegalStateException("already initialized");
     }
@@ -105,8 +101,7 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public boolean isGranted(ItemId id, int permissions) throws ItemNotFoundException,
-      RepositoryException {
+  public boolean isGranted(ItemId id, int permissions) throws RepositoryException {
     if (!initialized) {
       throw new IllegalStateException("not initialized");
     }
@@ -149,12 +144,8 @@ public class SilverpeasAccessManager implements AccessManager {
     } catch (ItemNotFoundException ex) {
       // The node doesn't exist so we may assume that it is transient in the user's session
       return true;
-    } catch (RepositoryException ex) {
-      throw ex;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
@@ -176,12 +167,8 @@ public class SilverpeasAccessManager implements AccessManager {
     } catch (ItemNotFoundException ex) {
       // The node doesn't exist so we may assume that it is transient in the user's session
       return true;
-    } catch (RepositoryException ex) {
-      throw ex;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
@@ -208,35 +195,25 @@ public class SilverpeasAccessManager implements AccessManager {
    * @throws ItemNotFoundException
    * @throws RepositoryException
    */
-  protected boolean validateFileNode(ItemId id) throws LoginException, ItemNotFoundException,
-      RepositoryException {
+  protected boolean validateFileNode(ItemId id) throws RepositoryException {
     Session session = null;
     try {
       session = repository.login(new SilverpeasSystemCredentials());
       Node node = getNode(session, id);
       return validateFileNode(node);
-    } catch (RepositoryException ex) {
-      throw ex;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
-  protected boolean validateNode(Path path) throws LoginException, ItemNotFoundException,
-      RepositoryException {
+  protected boolean validateNode(Path path) throws RepositoryException {
     Session session = null;
     try {
       session = repository.login(new SilverpeasSystemCredentials());
       Node node = getNode(session, path);
       return validateNode(node);
-    } catch (RepositoryException ex) {
-      throw ex;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
@@ -253,8 +230,7 @@ public class SilverpeasAccessManager implements AccessManager {
    * @throws ItemNotFoundException
    * @throws RepositoryException
    */
-  protected boolean validateFileNode(Path path) throws LoginException, ItemNotFoundException,
-      RepositoryException {
+  protected boolean validateFileNode(Path path) throws RepositoryException {
     Session session = null;
     try {
       session = repository.login(new SilverpeasSystemCredentials());
@@ -263,9 +239,7 @@ public class SilverpeasAccessManager implements AccessManager {
     } catch (RepositoryException rex) {
       return false;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
@@ -287,7 +261,7 @@ public class SilverpeasAccessManager implements AccessManager {
 
   @Override
   public void init(AMContext context, AccessControlProvider acProvider,
-      WorkspaceAccessManager wspAccessManager) throws AccessDeniedException, Exception {
+      WorkspaceAccessManager wspAccessManager) throws Exception {
     if (initialized) {
       throw new IllegalStateException("already initialized");
     }
@@ -301,8 +275,7 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public void checkPermission(Path absPath, int permissions) throws AccessDeniedException,
-      RepositoryException {
+  public void checkPermission(Path absPath, int permissions) throws RepositoryException {
     if (!isGranted(absPath, permissions)) {
       throw new AccessDeniedException("Access denied");
     }
@@ -344,9 +317,7 @@ public class SilverpeasAccessManager implements AccessManager {
     } catch (RepositoryException ex) {
       return false;
     } finally {
-      if (session != null) {
-        session.logout();
-      }
+      BasicDaoFactory.logout(session);
     }
   }
 
@@ -394,7 +365,6 @@ public class SilverpeasAccessManager implements AccessManager {
   }
 
   @Override
-  public void checkRepositoryPermission(int permissions) throws AccessDeniedException,
-      RepositoryException {
+  public void checkRepositoryPermission(int permissions) throws RepositoryException {
   }
 }

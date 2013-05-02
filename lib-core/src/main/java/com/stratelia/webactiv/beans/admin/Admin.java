@@ -50,16 +50,10 @@ import com.stratelia.webactiv.organization.OrganizationSchemaPool;
 import com.stratelia.webactiv.organization.ScheduledDBReset;
 import com.stratelia.webactiv.organization.UserRow;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
-import java.sql.Connection;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
@@ -70,7 +64,13 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ListSlice;
 
-import com.stratelia.webactiv.util.JNDINames;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.sql.Connection;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.stratelia.silverpeas.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
@@ -88,6 +88,9 @@ public final class Admin {
    * Each administrative tool have the same identifier and this identifier refers the administration
    * component.
    */
+
+  private static final String PARAM_MSG_KEY = "root.MSG_GEN_PARAM_VALUE";
+  private static final String START_SERVER_MSG = "Admin.startServer";
   public static final String ADMIN_COMPONENT_ID = "ADMIN";
   public static final String SPACE_KEY_PREFIX = "WA";
   // Divers
@@ -170,14 +173,14 @@ public final class Admin {
     TreeCache.clearCache();
     GroupCache.clearCache();
     try {
-      SilverTrace.info(MODULE_ADMIN, "admin.startServer", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, START_SERVER_MSG, PARAM_MSG_KEY,
           "Start filling tree cache...");
       List<SpaceInstLight> spaces =
           spaceManager.getAllSpaces(DomainDriverManagerFactory.getCurrentDomainDriverManager());
       for (SpaceInstLight space : spaces) {
         addSpaceInTreeCache(space, false);
       }
-      SilverTrace.info(MODULE_ADMIN, "admin.startServer", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, START_SERVER_MSG, PARAM_MSG_KEY,
           "Tree cache filled !");
     } catch (Exception e) {
       SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
@@ -196,7 +199,7 @@ public final class Admin {
     try {
       domains = ddm.getAllDomains();
     } catch (AdminException e) {
-      SilverTrace.error("admin", "Admin.startServer()",
+      SilverTrace.error("admin", START_SERVER_MSG,
           "admin.CANT_LOAD_DOMAINS_DURING_INITIALIZATION", e);
     }
     if (domains != null) {
@@ -208,7 +211,7 @@ public final class Admin {
             synchroDomainIds.add(domain.getId());
           }
         } catch (Exception e) {
-          SilverTrace.error("admin", "Admin.startServer()",
+          SilverTrace.error("admin", START_SERVER_MSG,
               "admin.CANT_LOAD_DOMAIN_DURING_INITIALIZATION", "domainId = " + domain.getId(), e);
         }
       }
@@ -221,7 +224,7 @@ public final class Admin {
     try {
       groups = getSynchronizedGroups();
     } catch (AdminException e) {
-      SilverTrace.error("admin", "Admin.startServer()",
+      SilverTrace.error("admin", START_SERVER_MSG,
           "admin.CANT_LOAD_SYNCHRONIZED_GROUPS_DURING_INITIALIZATION", e);
     }
     List<String> synchronizedGroupIds = new ArrayList<String>();
@@ -277,14 +280,14 @@ public final class Admin {
       SpaceInstLight space = getSpaceInstLight(String.valueOf(spaceId));
       createSpaceIndex(space);
     } catch (AdminException e) {
-      SilverTrace.error(MODULE_ADMIN, "admin.createSpaceIndex", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.error(MODULE_ADMIN, "admin.createSpaceIndex", PARAM_MSG_KEY,
           "spaceId = " + spaceId);
     }
   }
 
   public void createSpaceIndex(SpaceInstLight spaceInst) {
     SilverTrace.info(MODULE_ADMIN, "admin.createSpaceIndex",
-        "root.MSG_GEN_PARAM_VALUE", "Space Name : " + spaceInst.getName() + " Space Id : "
+        PARAM_MSG_KEY, "Space Name : " + spaceInst.getName() + " Space Id : "
         + spaceInst.getShortId());
 
     // Index the space
@@ -297,7 +300,7 @@ public final class Admin {
   }
 
   public void deleteSpaceIndex(SpaceInst spaceInst) {
-    SilverTrace.info("admin", "admin.deleteSpaceIndex", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("admin", "admin.deleteSpaceIndex", PARAM_MSG_KEY,
         "Space Name : " + spaceInst.getName() + " Space Id : " + spaceInst.getId());
     String spaceId = getSpaceId(spaceInst);
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
@@ -317,7 +320,7 @@ public final class Admin {
         getCurrentDomainDriverManager();
     domainDriverManager.startTransaction(false);
     try {
-      SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst", PARAM_MSG_KEY,
           "Space Name : " + spaceInst.getName() + " NbCompo: " + spaceInst.getNumComponentInst());
       connectionProd = openConnection(false);
 
@@ -355,7 +358,7 @@ public final class Admin {
       addSpaceInTreeCache(space, true);
 
       // indexation de l'espace
-      SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.addSpaceInst", PARAM_MSG_KEY,
           "Indexation : spaceInst = " + spaceInst.getName());
       createSpaceIndex(space);
 
@@ -558,7 +561,7 @@ public final class Admin {
       domainDriverManager.commit();
       // indexation de l'espace
       SilverTrace.info(MODULE_ADMIN, "admin.restoreSpaceFromBasket",
-          "root.MSG_GEN_PARAM_VALUE", "Indexation : spaceInst = " + spaceInst.getName());
+          PARAM_MSG_KEY, "Indexation : spaceInst = " + spaceInst.getName());
       createSpaceIndex(Integer.parseInt(driverSpaceId));
       // reset space and eventually subspace
       cache.opAddSpace(spaceInst);
@@ -721,7 +724,7 @@ public final class Admin {
       TreeCache.updateSpace(spaceLight);
 
       // indexation de l'espace
-      SilverTrace.info(MODULE_ADMIN, "admin.updateSpaceInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.updateSpaceInst", PARAM_MSG_KEY,
           "Indexation : spaceInst = " + spaceInstNew.getName());
       createSpaceIndex(spaceLight);
       return spaceInstNew.getId();
@@ -1874,12 +1877,12 @@ public final class Admin {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerFactory.getFactory().getDomainDriverManager();
     try {
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
           "spaceId= " + spaceId + " componentId=" + componentId);
       String sDriverComponentId = getDriverComponentId(componentId);
       // Convert the client space Id in driver space Id
       String sDriverSpaceId = getDriverSpaceId(spaceId);
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
           "sDriverSpaceId= " + sDriverSpaceId + " sDriverComponentId=" + sDriverComponentId);
       ComponentInst componentInst = getComponentInst(componentId);
       String oldSpaceId = componentInst.getDomainFatherId();
@@ -1896,7 +1899,7 @@ public final class Admin {
 
       if (StringUtil.isDefined(idComponentBefore) && componentInsts != null) {
         // Set component in order
-        SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
             "Avant setComponentPlace: componentId=" + componentId + " idComponentBefore="
             + idComponentBefore);
         setComponentPlace(componentId, idComponentBefore, componentInsts);
@@ -1908,7 +1911,7 @@ public final class Admin {
       // Update extraParamPage from Space if necessary
       SpaceInst fromSpace = getSpaceInstById(getDriverSpaceId(oldSpaceId));
       String spaceHomePage = fromSpace.getFirstPageExtraParam();
-      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.info(MODULE_ADMIN, "admin.moveComponentInst", PARAM_MSG_KEY,
           "FirstPageExtraParam=" + spaceHomePage + " oldSpaceId=" + oldSpaceId);
       if (StringUtil.isDefined(spaceHomePage) && spaceHomePage.equals(componentId)) {
         fromSpace.setFirstPageExtraParam("");
@@ -3189,7 +3192,7 @@ public final class Admin {
     }
     return users.toArray(new UserDetail[users.size()]);
   }
-  
+
   /**
    * Get all users (except delete ones) from all domains.
    * @return the user details from all domains sort by alphabetical order
@@ -3918,7 +3921,7 @@ public final class Admin {
           e);
     }
   }
-  
+
   /**
    * Get all users (except delete ones) from specified domains.
    * @return the user details from specified domains sort by alphabetical order
@@ -4311,7 +4314,7 @@ public final class Admin {
     Collection<SpaceInstLight> spacesLight = getSubSpacesOfUser(userId, spaceId);
     Collection<ComponentInstLight> componentsLight = getAvailCompoInSpace(userId, spaceId);
 
-    SilverTrace.info("admin", "Admin.getTreeView", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info("admin", "Admin.getTreeView", PARAM_MSG_KEY,
         "SQL Queries done !");
 
     // Step 2 - build HashTable
@@ -4405,7 +4408,7 @@ public final class Admin {
         "#componentIds = " + componentsId.size());
     if (space != null && !SpaceInst.STATUS_REMOVED.equals(space.getStatus())
         && !spaces.contains(space.getShortId())) {
-      SilverTrace.debug("admin", "Admin.addAuthorizedSpace", "root.MSG_GEN_PARAM_VALUE",
+      SilverTrace.debug("admin", "Admin.addAuthorizedSpace", PARAM_MSG_KEY,
           "space = " + space.getFullId());
       String spaceId = getDriverSpaceId(space.getFullId());
       spaces.add(spaceId);
@@ -4987,9 +4990,9 @@ public final class Admin {
         DomainDriverManagerFactory.getCurrentDomainDriverManager();
     try {
       // Build the list of instanciated components with given componentName
-      String[] matchingComponentIds = 
+      String[] matchingComponentIds =
           componentManager.getAllCompoIdsByComponentName(domainDriverManager, sComponentName);
-      
+
       // check TreeCache to know if component is not removed neither into a removed space
       List<String> shortIds = new ArrayList<String>();
       for (String componentId : matchingComponentIds) {
@@ -5376,7 +5379,7 @@ public final class Admin {
       String componentNameRoot, boolean inCurrentSpace, boolean inAllSpaces)
       throws Exception {
     SilverTrace.info("admin", "Admin.getAllComponentIdsRecur",
-        "root.MSG_GEN_PARAM_VALUE", "inCurrentSpace=" + inCurrentSpace + " inAllSpaces="
+        PARAM_MSG_KEY, "inCurrentSpace=" + inCurrentSpace + " inAllSpaces="
         + inAllSpaces);
     ArrayList<String> alCompoIds = new ArrayList<String>();
     // In All silverpeas
@@ -6123,7 +6126,7 @@ public final class Admin {
       for (UserDetail distantUD : distantUDs) {
         bFound = false;
         specificId = distantUD.getSpecificId();
-        SilverTrace.info("admin", "admin.synchronizeUsers", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.info("admin", "admin.synchronizeUsers", PARAM_MSG_KEY,
             "%%%%FULLSYNCHRO%%%%>Deal with user : " + specificId);
 
         // search for user in Silverpeas database
@@ -6213,7 +6216,7 @@ public final class Admin {
     String specificId = distantUD.getSpecificId();
     try {
       SilverTrace.info("admin", "admin.updateUserDuringSynchronization",
-          "root.MSG_GEN_PARAM_VALUE",
+          PARAM_MSG_KEY,
           "%%%%FULLSYNCHRO%%%%>Update User : " + distantUD.getId());
 
       String silverpeasId = userManager.updateUser(domainDriverManager, distantUD);
@@ -6225,7 +6228,7 @@ public final class Admin {
       sReport += message + "\n";
     } catch (AdminException aeMaj) {
       SilverTrace.info("admin", "admin.updateUserDuringSynchronization",
-          "root.MSG_GEN_PARAM_VALUE",
+          PARAM_MSG_KEY,
           "%%%%FULLSYNCHRO%%%%>PB Updating User ! " + specificId, aeMaj);
       String message = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeMaj.getMessage();
@@ -6242,7 +6245,7 @@ public final class Admin {
       String silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
       if (silverpeasId.equals("")) {
         SilverTrace.info("admin", "admin.addUserDuringSynchronization",
-            "root.MSG_GEN_PARAM_VALUE",
+            PARAM_MSG_KEY,
             "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId);
         String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
             + specificId + ") - Login and LastName must be set !!!";
@@ -6251,7 +6254,7 @@ public final class Admin {
         sReport += "user has not been added\n";
       } else {
         SilverTrace.info("admin", "admin.addUserDuringSynchronization",
-            "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Add User : " + silverpeasId);
+            PARAM_MSG_KEY, "%%%%FULLSYNCHRO%%%%>Add User : " + silverpeasId);
         addedUsers.add(distantUD);
         String message = "user " + distantUD.getDisplayedName() + " added (id:" + silverpeasId
             + " / specificId:" + specificId + ")";
@@ -6260,7 +6263,7 @@ public final class Admin {
       }
     } catch (AdminException ae) {
       SilverTrace.info("admin", "admin.addUserDuringSynchronization",
-          "root.MSG_GEN_PARAM_VALUE",
+          PARAM_MSG_KEY,
           "%%%%FULLSYNCHRO%%%%>PB Adding User ! " + specificId, ae);
       String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
           + specificId + ") - " + ae.getMessage();
@@ -6275,7 +6278,7 @@ public final class Admin {
     String specificId = silverpeasUD.getSpecificId();
     try {
       SilverTrace.info("admin", "admin.deleteUserDuringSynchronization",
-          "root.MSG_GEN_PARAM_VALUE",
+          PARAM_MSG_KEY,
           "%%%%FULLSYNCHRO%%%%>Delete User : " + silverpeasUD);
       userManager.deleteUser(domainDriverManager, silverpeasUD, true);
       deletedUsers.add(silverpeasUD);
@@ -6285,7 +6288,7 @@ public final class Admin {
       SynchroReport.warn("admin.synchronizeUsers", message, null);
     } catch (AdminException aeDel) {
       SilverTrace.info("admin", "admin.deleteUserDuringSynchronization",
-          "root.MSG_GEN_PARAM_VALUE",
+          PARAM_MSG_KEY,
           "%%%%FULLSYNCHRO%%%%>PB deleting User ! " + specificId, aeDel);
       String message =
           "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:"
@@ -6325,7 +6328,7 @@ public final class Admin {
         }
       } catch (Exception e) {
         SilverTrace.warn("admin", "admin.synchronizeOnlyExistingUsers",
-            "root.MSG_GEN_PARAM_VALUE", "Pb Loading class traitement Users ! ", e);
+            PARAM_MSG_KEY, "Pb Loading class traitement Users ! ", e);
       }
     }
   }
@@ -6377,7 +6380,7 @@ public final class Admin {
         // if found, do nothing, else delete
         if (!bFound) {
           try {
-            SilverTrace.info("admin", "admin.synchronizeGroups", "root.MSG_GEN_PARAM_VALUE",
+            SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
                 "%%%%FULLSYNCHRO%%%%>Delete group : " + silverpeasGroup.getId() + " - "
                 + specificId);
             groupManager.deleteGroupById(domainDriverManager, silverpeasGroup, true);
@@ -6386,7 +6389,7 @@ public final class Admin {
             SynchroReport.warn("admin.synchronizeGroups", "Group " + silverpeasGroup.getName()
                 + " deleted (SpecificId:" + specificId + ")", null);
           } catch (AdminException aeDel) {
-            SilverTrace.info("admin", "admin.synchronizeGroups", "root.MSG_GEN_PARAM_VALUE",
+            SilverTrace.info("admin", "admin.synchronizeGroups", PARAM_MSG_KEY,
                 "%%%%FULLSYNCHRO%%%%>PB deleting group ! " + specificId, aeDel);
             sReport += "problem deleting group " + silverpeasGroup.getName() + " (specificId:"
                 + specificId + ") - " + aeDel.getMessage() + "\n";
@@ -6435,7 +6438,7 @@ public final class Admin {
       specificId = testedGroup.getSpecificId();
 
       SilverTrace.info("admin", "admin.checkOutGroups",
-          "root.MSG_GEN_PARAM_VALUE", "%%%%FULLSYNCHRO%%%%>Deal with group : " + specificId);
+          PARAM_MSG_KEY, "%%%%FULLSYNCHRO%%%%>Deal with group : " + specificId);
       // search for group in Silverpeas database
       for (int nJ = 0;
           nJ < existingGroups.length && !bFound;
@@ -6489,7 +6492,7 @@ public final class Admin {
       if (bFound)// MAJ
       {
         try {
-          SilverTrace.info("admin", "admin.checkOutGroups", "root.MSG_GEN_PARAM_VALUE",
+          SilverTrace.info("admin", "admin.checkOutGroups", PARAM_MSG_KEY,
               "%%%%FULLSYNCHRO%%%%>Update group : " + testedGroup.getId());
           result = groupManager.updateGroup(domainDriverManager, testedGroup, true);
           if (StringUtil.isDefined(result)) {
@@ -6502,13 +6505,13 @@ public final class Admin {
           } else// le name groupe non renseigné
           {
             SilverTrace.info("admin", "admin.checkOutGroups",
-                "root.MSG_GEN_PARAM_VALUE",
+                PARAM_MSG_KEY,
                 "%%%%FULLSYNCHRO%%%%>PB Updating Group ! " + specificId);
             report += "problem updating group id : " + specificId + "\n";
           }
         } catch (AdminException aeMaj) {
           SilverTrace.info("admin", "admin.checkOutGroups",
-              "root.MSG_GEN_PARAM_VALUE",
+              PARAM_MSG_KEY,
               "%%%%FULLSYNCHRO%%%%>PB Updating Group ! " + specificId, aeMaj);
           report += "problem updating group " + testedGroup.getName() + " (id:" + specificId + ") "
               + aeMaj.getMessage() + "\n";
@@ -6519,19 +6522,19 @@ public final class Admin {
           silverpeasId = groupManager.addGroup(domainDriverManager, testedGroup, true);
           if (StringUtil.isDefined(silverpeasId)) {
             iNbGroupsAdded++;
-            SilverTrace.info("admin", "admin.checkOutGroups", "root.MSG_GEN_PARAM_VALUE",
+            SilverTrace.info("admin", "admin.checkOutGroups", PARAM_MSG_KEY,
                 "%%%%FULLSYNCHRO%%%%>Add group : " + silverpeasId);
             report += "adding group " + testedGroup.getName() + "(id:" + specificId + ")\n";
             SynchroReport.warn("admin.checkOutGroups", "ajout groupe " + testedGroup.getName()
                 + " (id:" + silverpeasId + ") OK",
                 null);
           } else { // le name groupe non renseigné
-            SilverTrace.info("admin", "admin.checkOutGroups", "root.MSG_GEN_PARAM_VALUE",
+            SilverTrace.info("admin", "admin.checkOutGroups", PARAM_MSG_KEY,
                 "%%%%FULLSYNCHRO%%%%>PB Adding Group ! " + specificId);
             report += "problem adding group id : " + specificId + "\n";
           }
         } catch (AdminException aeAdd) {
-          SilverTrace.info("admin", "admin.checkOutGroups", "root.MSG_GEN_PARAM_VALUE",
+          SilverTrace.info("admin", "admin.checkOutGroups", PARAM_MSG_KEY,
               "%%%%FULLSYNCHRO%%%%>PB Adding Group ! " + specificId, aeAdd);
           report += "problem adding group " + testedGroup.getName() + " (id:" + specificId + ") "
               + aeAdd.getMessage() + "\n";
@@ -6569,7 +6572,7 @@ public final class Admin {
       if (allIncluededGroups.get(subGroup.getSpecificId()) == null) {
         cleanSubGroups.add(subGroup);
       } else {
-        SilverTrace.warn("admin", "Admin.removeCrossReferences", "root.MSG_GEN_PARAM_VALUE",
+        SilverTrace.warn("admin", "Admin.removeCrossReferences", PARAM_MSG_KEY,
             "Cross removed for child : " + subGroup.getSpecificId() + " of father : " + fatherId);
       }
     }
@@ -7019,7 +7022,7 @@ public final class Admin {
 
       // Add space
       newSpaceId = addSpaceInst(userId, newSpace);
-      
+
       // verify space homepage
       String componentIdAsHomePage = null;
       if (newSpace.getFirstPageType() == SpaceInst.FP_TYPE_COMPONENT_INST) {
@@ -7040,7 +7043,7 @@ public final class Admin {
       for (String subSpaceId : subSpaceIds) {
         copyAndPasteSpace(subSpaceId, newSpaceId, userId);
       }
-      
+
       // update parameter of space home page if needed
       String newFirstPageExtraParam = null;
       if (StringUtil.isDefined(componentIdAsHomePage)) {
@@ -7049,7 +7052,7 @@ public final class Admin {
         String oldURL = newSpace.getFirstPageExtraParam();
         newFirstPageExtraParam = oldURL.replaceAll(spaceId, newSpaceId);
       }
-      
+
       if (StringUtil.isDefined(newFirstPageExtraParam)) {
         SpaceInst space = getSpaceInstById(newSpaceId);
         space.setFirstPageExtraParam(newFirstPageExtraParam);

@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.silverpeas.util.ArrayUtil;
 import org.silverpeas.profile.token.UserTokenKey;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
@@ -110,7 +111,7 @@ public class UserFull extends UserDetail {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getPropertiesNames();
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
 
   }
 

@@ -153,7 +153,7 @@ public class DateUtil {
     if (date == null) {
       return "";
     }
-    if (DateUtils.getFragmentInMilliseconds(date, Calendar.HOUR_OF_DAY) == 0) {
+    if (DateUtils.getFragmentInMilliseconds(date, Calendar.DAY_OF_MONTH) == 0L) {
       // this case is useful on data recovery
       // avoiding to display an useless information about hour (00:00) when given date have an hour
       // like 0:00:00.000

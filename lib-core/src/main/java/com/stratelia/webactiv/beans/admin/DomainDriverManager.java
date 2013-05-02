@@ -1220,7 +1220,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     }
     return userIndexation;
   }
-  
+
   @Override
   public void resetPassword(UserDetail user, String password) throws Exception {
     try {

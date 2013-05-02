@@ -24,24 +24,22 @@
 
 package com.silverpeas.util.i18n;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.apache.commons.fileupload.FileItem;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 public class I18NHelper {
 
@@ -53,12 +51,11 @@ public class I18NHelper {
   private static int nbLanguages = 0;
   public static boolean isI18N = false;
   public static String defaultLanguage = null;
+  public static Locale defaultLocale = Locale.getDefault();
   private final static List<String> allCodes = new ArrayList<String>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
-  public static final String HTMLLink1 = "View";
-  public static final String HTMLLink2 = "Translation?Code=";
 
   static {
     ResourceLocator rs = new ResourceLocator("org.silverpeas.util.i18n", "");
@@ -70,6 +67,7 @@ public class I18NHelper {
       nbLanguages++;
       if (defaultLanguage == null) {
         defaultLanguage = language;
+        defaultLocale = new Locale(language);
       }
       ResourceLocator rsLanguage = new ResourceLocator("org.silverpeas.util.multilang.i18n",
           language);
@@ -132,40 +130,32 @@ public class I18NHelper {
     if (!isI18N) {
       return "";
     }
+    String baseUrl = url;
+    if (url.contains("?")) {
+      baseUrl = baseUrl + "&SwitchLanguage=";
+    } else {
+      baseUrl = baseUrl + "?SwitchLanguage=";
+    }
 
-    String links = "";
-    String link = "";
 
-    String begin = "";
-    String end = "";
-
-    Iterator<String> it = allCodes.iterator();
-    int i = 0;
-    while (it.hasNext()) {
-      String code = it.next();
+    StringBuilder links = new StringBuilder(512);
+    boolean first = true;
+    for(String code : allCodes) {
       String className = "";
-      if (url.contains("?")) {
-        link = url + "&SwitchLanguage=" + code;
-      } else {
-        link = url + "?SwitchLanguage=" + code;
+      String link = baseUrl + code;
+      if (!first) {
+        links.append("&nbsp;");
       }
-      if (i != 0) {
-        links += "&nbsp;";
-      }
-
       if (code.equals(currentLanguage)) {
         className = "ArrayNavigationOn";
       }
-
-      begin = "<a href=\"" + link + "\" class=\"" + className
-          + "\" id=\"translation_" + code + "\">";
-      end = "</a>";
-
-      links += begin + code.toUpperCase() + end;
-      i++;
+      links.append("<a href=\"").append(link).append("\" class=\"").append(className)
+          .append("\" id=\"translation_").append(code).append("\">")
+          .append(code.toUpperCase(defaultLocale)).append("</a>");
+      first = false;
     }
 
-    return links;
+    return links.toString();
   }
 
   public static String getHTMLLinks(List<String> languages, String currentLanguage) {
@@ -173,38 +163,33 @@ public class I18NHelper {
       return "";
     }
 
-    String links = "";
+    StringBuilder links = new StringBuilder(512);
     String link = "";
 
     String begin = "";
     String end = "";
 
-    Iterator<String> it = allCodes.iterator();
-    int i = 0;
-    while (it.hasNext()) {
+    boolean first = true;
+    for(String code : allCodes) {
       String className = "";
-      String code = it.next();
 
       if (languages.contains(code)) {
         link = "javaScript:showTranslation('" + code + "');";
-        if (i != 0) {
-          links += "&nbsp;";
+        if (!first) {
+          links.append("&nbsp;");
         }
 
         if (code.equals(currentLanguage) || languages.size() == 1) {
           className = "ArrayNavigationOn";
         }
 
-        begin = "<a href=\"" + link + "\" class=\"" + className
-            + "\" id=\"translation_" + code + "\">";
-        end = "</a>";
-
-        links += begin + code.toUpperCase() + end;
-        i++;
+        links.append("<a href=\"").append(link).append("\" class=\"").append(className)
+            .append("\" id=\"translation_").append(code).append("\">")
+            .append(code.toUpperCase(defaultLocale)).append("</a>");
+        first = false;
       }
     }
-
-    return links;
+    return links.toString();
   }
 
   public static String getHTMLLinks(I18NBean bean, String currentLanguage) {

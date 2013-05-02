@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -23,8 +22,10 @@
 package com.stratelia.webactiv.util;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -36,7 +37,72 @@ import static org.junit.Assert.assertThat;
  */
 public class DateUtilTest {
 
+  private static final String LANGUAGE = "en";
+
   public DateUtilTest() {
+  }
+
+  @Test
+  public void testGetOutputDateAndHour() {
+    Date date = DateUtil.resetHour(java.sql.Date.valueOf("2013-05-21"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21"));
+
+    Date year = DateUtils.addYears(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(year, LANGUAGE), is("2014/05/21"));
+
+    Date month = DateUtils.addMonths(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(month, LANGUAGE), is("2013/06/21"));
+
+    Date day = DateUtils.addDays(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(day, LANGUAGE), is("2013/05/22"));
+
+    Date hour = DateUtils.addHours(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 01:00"));
+    hour = DateUtils.addHours(date, 12);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 12:00"));
+    hour = DateUtils.addHours(date, 22);
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 22:00"));
+
+    Date minute = DateUtils.addMinutes(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:01"));
+    minute = DateUtils.addMinutes(date, 59);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:59"));
+    minute = DateUtils.addMinutes(date, 60);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:00"));
+    minute = DateUtils.addMinutes(date, 61);
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:01"));
+
+    Date second = DateUtils.addSeconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    second = DateUtils.addSeconds(date, 59);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    second = DateUtils.addSeconds(date, 60);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+    second = DateUtils.addSeconds(date, 61);
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+
+    Date millisecond = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 999);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 1000);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    millisecond = DateUtils.addMilliseconds(date, 1001);
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+
+    // 2013-05-21 23:59:59.999
+    date = DateUtils.addHours(
+        DateUtils.addMinutes(DateUtils.addSeconds(DateUtils.addMilliseconds(date, 999), 59), 59),
+        23);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21 23:59"));
+
+    // 2013-05-22 00:00:00.000
+    date = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22"));
+
+    // 2013-05-22 00:00:00.001
+    date = DateUtils.addMilliseconds(date, 1);
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22 00:00"));
   }
 
   /**
@@ -44,39 +110,37 @@ public class DateUtilTest {
    */
   @Test
   public void testFormatDuration() {
-    long duration = 0l;
+    long duration = 0L;
     String expResult = "0s";
     String result = DateUtil.formatDuration(duration);
     assertThat("Duration of 0s", result, is(expResult));
 
-
-    duration = 10000l;
+    duration = 10000L;
     expResult = "10s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 10 secondes ", result, is(expResult));
 
-    duration = 60000l;
+    duration = 60000L;
     expResult = "1m00s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 1 minute", result, is(expResult));
 
-    duration = 305000l;
+    duration = 305000L;
     expResult = "5m05s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 5 minutes and 5 seconds", result, is(expResult));
 
-
-    duration = 3600000l;
+    duration = 3600000L;
     expResult = "01h00m00s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 1 hour", result, is(expResult));
 
-    duration = 3600000l + 15 * 60000l + 30000l;
+    duration = 3600000L + 15 * 60000L + 30000L;
     expResult = "01h15m30s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 1 hour 15 minutes and 30 seconds", result, is(expResult));
 
-    duration = 36000000l + 15 * 60000l + 15000l;
+    duration = 36000000L + 15 * 60000L + 15000L;
     expResult = "10h15m15s";
     result = DateUtil.formatDuration(duration);
     assertThat("Duration of 10 hours 15 minutes and 15 seconds", result, is(expResult));
@@ -96,7 +160,6 @@ public class DateUtilTest {
     assertThat(calend.get(Calendar.MONTH), is(Calendar.JUNE));
     assertThat(calend.get(Calendar.YEAR), is(2012));
 
-
     calend = Calendar.getInstance();
     calend.set(Calendar.DATE, 27);
     calend.set(Calendar.MONTH, Calendar.JUNE);
@@ -108,5 +171,16 @@ public class DateUtilTest {
     assertThat(calend.get(Calendar.DATE), is(3));
     assertThat(calend.get(Calendar.MONTH), is(Calendar.JULY));
     assertThat(calend.get(Calendar.YEAR), is(2012));
+  }
+
+  @Test
+  public void testDatesAreEqual() {
+    Date date1 = java.sql.Date.valueOf("2013-01-01");
+    Date date2 = DateUtils.addHours(java.sql.Date.valueOf("2013-01-02"), 3);
+    assertThat(false, is(DateUtil.datesAreEqual(date1, date2)));
+
+    date1 = java.sql.Date.valueOf("2013-01-02");
+    assertThat(false, is(date1.compareTo(date2) == 0));
+    assertThat(true, is(DateUtil.datesAreEqual(date1, date2)));
   }
 }

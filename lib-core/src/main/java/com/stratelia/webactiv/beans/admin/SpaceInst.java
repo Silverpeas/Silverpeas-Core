@@ -24,11 +24,15 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import com.google.common.base.Objects;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.AbstractI18NBean;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import org.silverpeas.admin.space.SpaceServiceFactory;
 import org.silverpeas.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -39,14 +43,10 @@ import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.quota.model.Quota;
 import org.silverpeas.util.UnitUtil;
 
-import com.google.common.base.Objects;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -139,7 +139,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
     orderNum = 0;
     components = new ArrayList<ComponentInst>();
     spaceProfiles = new ArrayList<SpaceProfileInst>();
-    subSpaceIds = new String[0];
+    subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     level = 0;
     displaySpaceFirst = true;
     isPersonalSpace = false;
@@ -314,7 +314,7 @@ public class SpaceInst extends AbstractI18NBean implements Serializable, Compara
    */
   public void setSubSpaceIds(String[] asSubSpaceIds) {
     if (asSubSpaceIds == null) {
-      subSpaceIds = new String[0];
+      subSpaceIds = ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
       subSpaceIds = asSubSpaceIds;
     }

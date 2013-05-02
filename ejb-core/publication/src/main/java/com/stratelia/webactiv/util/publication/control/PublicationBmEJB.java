@@ -123,9 +123,9 @@ public class PublicationBmEJB implements PublicationBm {
   public PublicationDetail getDetail(PublicationPK pubPK) {
     Connection con = getConnection();
     try {
-      pubPK = PublicationDAO.selectByPrimaryKey(con, pubPK);
-      if (pubPK != null) {
-        return loadTranslations(pubPK.pubDetail);
+      PublicationPK publicationPk = PublicationDAO.selectByPrimaryKey(con, pubPK);
+      if (publicationPk != null) {
+        return loadTranslations(publicationPk.pubDetail);
       }
       return null;
     } catch (SQLException e) {
@@ -171,21 +171,24 @@ public class PublicationBmEJB implements PublicationBm {
 
       try {
         id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
-      } catch (Exception ex) {
+      } catch (UtilException ex) {
         throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
             SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
       }
       detail.getPK().setId(String.valueOf(id));
       try {
         PublicationDAO.insertRow(con, detail);
-      } catch (Exception ex) {
+      } catch (SQLException ex) {
         throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_ENTITY_ATTRIBUTES", ex);
       }
       if (I18NHelper.isI18N) {
         try {
           createTranslations(con, detail);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
+          throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_TRANSLATIONS", ex);
+        } catch (UtilException ex) {
           throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
               SilverpeasRuntimeException.ERROR, "root.EX_CANT_INSERT_TRANSLATIONS", ex);
         }
@@ -237,7 +240,7 @@ public class PublicationBmEJB implements PublicationBm {
       if (indexIt) {
         createIndex(pk);
       }
-    } catch (Exception re) {
+    } catch (SQLException re) {
       throw new PublicationRuntimeException("PublicationBmEJB.movePublication()",
           SilverpeasRuntimeException.ERROR, "publication.MOVING_PUBLICATION_FAILED", "pubId = "
           + pk.getId(), re);
@@ -259,7 +262,7 @@ public class PublicationBmEJB implements PublicationBm {
         pubPK.setId(id);
         PublicationFatherDAO.updateOrder(con, pubPK, nodePK, i);
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.changePublicationsOrder()",
           SilverpeasRuntimeException.ERROR, "publication.SORTING_PUBLICATIONS_FAILED", "pubIds = "
           + ids, e);
@@ -540,9 +543,8 @@ public class PublicationBmEJB implements PublicationBm {
 
   private void getTranslations(PublicationDetail publi) {
     PublicationI18N translation = new PublicationI18N(publi.getLanguage(), publi.getName(), publi
-        .getDescription(),
-        publi.getKeywords());
-    List<Translation> translations = new ArrayList();
+        .getDescription(), publi.getKeywords());
+    List<Translation> translations = new ArrayList<Translation>();
     translations.add(translation);
     Connection con = getConnection();
     try {
@@ -561,7 +563,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return ValidationStepsDAO.getSteps(con, pubPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getValidationSteps()",
           SilverpeasRuntimeException.ERROR,
           "publication.GETTING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK.toString(), e);
@@ -575,7 +577,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return ValidationStepsDAO.getStepByUser(con, pubPK, userId);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getValidationStepByUser()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_VALIDATION_STEP_FAILED",
           pubPK.toString(), e);
@@ -589,7 +591,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       ValidationStepsDAO.addStep(con, step);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.addValidationStep()",
           SilverpeasRuntimeException.ERROR, "publication.ADDING_PUBLICATION_VALIDATION_STEP_FAILED",
           step.getPubPK().toString(), e);
@@ -603,7 +605,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       ValidationStepsDAO.removeSteps(con, pubPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeValidationSteps()",
           SilverpeasRuntimeException.ERROR,
           "publication.REMOVING_PUBLICATION_VALIDATION_STEPS_FAILED", pubPK.toString(), e);
@@ -651,7 +653,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       PublicationPK pubPK = new PublicationPK("useless", fatherPK);
       PublicationFatherDAO.removeFatherToPublications(con, pubPK, fatherPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeFather()",
           SilverpeasRuntimeException.ERROR, "publication.REMOVING_FATHER_TO_ALL_PUBLICATIONS_FAILED",
           "fatherId = " + fatherPK.getId(), e);
@@ -665,7 +667,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       PublicationFatherDAO.removeFathersToPublications(con, pubPK, fatherIds);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeFathers()",
           SilverpeasRuntimeException.ERROR,
           "publication.REMOVING_FATHERS_TO_ALL_PUBLICATIONS_FAILED",
@@ -682,7 +684,7 @@ public class PublicationBmEJB implements PublicationBm {
     try {
       PublicationFatherDAO.removeAllFather(con, pubPK);
       deleteIndex(pubPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.removeAllFather()",
           SilverpeasRuntimeException.ERROR, "publication.REMOVING_FATHERS_TO_PUBLICATION_FAILED",
           "pubId = " + pubPK.getId(), e);
@@ -700,7 +702,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getOrphanPublications()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", e);
     } finally {
@@ -718,7 +720,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getNotOrphanPublications()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", e);
     } finally {
@@ -731,7 +733,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.deleteOrphanPublicationsByCreatorId()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "creatorId = " + creatorId, e);
@@ -751,7 +753,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, pubDetails);
       }
       return pubDetails;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getUnavailablePublicationsByPublisherId()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
@@ -848,7 +850,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, publis);
       }
       return publis;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByFatherPK()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
           + fatherPK, e);
@@ -868,7 +870,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, publis);
       }
       return publis;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByFatherPK()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
           + fatherPK, e);
@@ -892,7 +894,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, detailList);
       }
       return detailList;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsNotInFatherPK()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherPK = "
           + fatherPK, e);
@@ -907,8 +909,8 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       List<PublicationDetail> result = new ArrayList<PublicationDetail>(nbPubs);
-      Collection<PublicationDetail> detailList =
-          PublicationDAO.selectByBeginDateDescAndStatus(con, pk, status);
+      Collection<PublicationDetail> detailList = PublicationDAO.selectByBeginDateDescAndStatus(con,
+          pk, status);
       Iterator<PublicationDetail> it = detailList.iterator();
       int i = 0;
       while (it.hasNext() && i < nbPubs) {
@@ -919,7 +921,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, result);
       }
       return result;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByBeginDateDescAndStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "status = "
           + status, e);
@@ -940,7 +942,7 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, detailList);
       }
       return detailList;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException(
           "PublicationBmEJB.getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", "fatherId = "
@@ -966,11 +968,10 @@ public class PublicationBmEJB implements PublicationBm {
         setTranslations(con, result);
       }
       return result;
-    } catch (Exception e) {
-      throw new PublicationRuntimeException(
-          "PublicationBmEJB.getDetailsByBeginDateDesc()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.GETTING_PUBLICATIONS_FAILED", "nbPubs = " + nbPubs, e);
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.getDetailsByBeginDateDesc()",
+          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
+          "nbPubs = " + nbPubs, e);
     } finally {
       DBUtil.close(con);
     }
@@ -981,7 +982,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return InfoDAO.getAllModelsDetail(con);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getAllModelsDetail()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_MODELS_FAILED", e);
     } finally {
@@ -994,7 +995,7 @@ public class PublicationBmEJB implements PublicationBm {
     Connection con = getConnection();
     try {
       return InfoDAO.getModelDetail(con, modelPK);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getModelDetail()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_MODEL_FAILED", "modelPK = "
           + modelPK, e);
@@ -1067,7 +1068,7 @@ public class PublicationBmEJB implements PublicationBm {
       InfoDetail result = InfoDAO.getInfoDetailByInfoPK(con, new InfoPK(detail.getInfoId(), detail
           .getPK()));
       return result;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.getInfoDetail()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATION_DETAIL_FAILED",
           "pubId = " + pubPK.getId(), e);
@@ -1125,7 +1126,11 @@ public class PublicationBmEJB implements PublicationBm {
           }
         }
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
+      throw new PublicationRuntimeException("PublicationBmEJB.updateInfoDetail()",
+          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
+          "pubId = " + pubPK.getId(), e);
+    } catch (UtilException e) {
       throw new PublicationRuntimeException("PublicationBmEJB.updateInfoDetail()",
           SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
           "pubId = " + pubPK.getId(), e);

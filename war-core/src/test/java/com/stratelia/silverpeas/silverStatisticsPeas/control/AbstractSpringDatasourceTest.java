@@ -62,7 +62,8 @@ public abstract class AbstractSpringDatasourceTest {
   }
 
   private static void configureJNDIDatasource() throws Exception {
-    springContext = new ClassPathXmlApplicationContext("/spring-jdbc-datasource.xml");
+    springContext = new ClassPathXmlApplicationContext("/spring-silverpeas.xml",
+        "/com/stratelia/silverpeas/silverStatisticsPeas/control/spring-h2-datasource.xml");
     datasource = springContext.getBean("dataSource", DataSource.class);
     InitialContext ic = new InitialContext();
     ic.bind("java:/datasources/silverpeas-jdbc", datasource);

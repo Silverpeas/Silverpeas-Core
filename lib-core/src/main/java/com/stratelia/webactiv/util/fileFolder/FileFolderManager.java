@@ -33,19 +33,16 @@ import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ImageUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.UtilException;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.comparator.NameFileComparator;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.comparator.NameFileComparator;
-
-import org.silverpeas.search.indexEngine.model.FilenameComparator;
 
 public class FileFolderManager {
 
@@ -82,7 +79,7 @@ public class FileFolderManager {
    * @return
    * @throws UtilException
    */
-  public static Collection<File> getAllFile(String chemin) throws UtilException {   
+  public static Collection<File> getAllFile(String chemin) throws UtilException {
     List<File> resultat = new ArrayList<File>();
     File directory = new File(chemin);
     if (directory.isDirectory()) {
