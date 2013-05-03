@@ -21,31 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.annotation;
+package org.silverpeas.date;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonValue;
 
 /**
- * This annotation is to tag an object as being a repository of business objects. A repository is an
- * object aimed to store and to retrieve objects in a given data source. It wraps the type of the
- * used data source and the mechanism to access them.
- *
- * Beans annoted with this annotation are marked to be managed by the underlying IoC container.
- *
- * The annotation is an abstraction above the IoC container used by Silverpeas so that it is can
- * possible to change the IoC container (Spring or CDI for example) by changing the wrapped
- * annnotation to those specific at this IoC implementation without impacting the annotated IoC
- * managed beans.
+ * User: Yohann Chastagnier
+ * Date: 17/04/13
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@org.springframework.stereotype.Repository
-public @interface Repository {
+public enum PeriodType {
+  unknown, year, month, week, day;
 
-  public String value() default "";
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  @JsonCreator
+  public static PeriodType from(String name) {
+    if (name != null) {
+      for (PeriodType periodeType : PeriodType.values()) {
+        if (name.equals(periodeType.name())) {
+          return periodeType;
+        }
+      }
+    }
+    return unknown;
+  }
 }

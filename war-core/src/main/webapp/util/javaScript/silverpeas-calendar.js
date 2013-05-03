@@ -99,16 +99,16 @@
   
   function renderFullCalendar( target ) {
     var calendar = target.data(CALENDAR_KEY);
-    
-    target.fullCalendar({
+
+    var options = {
       header: false,
       monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
-      $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
-      $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
+        $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
+        $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
       dayNames: [$.i18n.prop("GML.jour1"), $.i18n.prop("GML.jour2"), $.i18n.prop("GML.jour3"), $.i18n.prop("GML.jour4"),
-      $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
+        $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
       dayNamesShort: [$.i18n.prop("GML.shortJour1"), $.i18n.prop("GML.shortJour2"), $.i18n.prop("GML.shortJour3"),
-      $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
+        $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
       buttonText: {
         prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
         next:     '&nbsp;&#9658;&nbsp;',  // right triangle
@@ -141,9 +141,26 @@
           calendar.onevent(calEvent);
         }
       },
+      eventMouseover : function(calEvent, jsEvent, view) {
+        if (calendar.oneventmouseover) {
+          calendar.oneventmouseover(calEvent);
+        }
+      },
       events: calendar.events,
       weekends: calendar.weekends
-    });
+    };
+
+    if (calendar.allDaySlot !== 'undefined') {
+      options.allDaySlot = calendar.allDaySlot
+    }
+
+    if (calendar.eventrender) {
+      options.eventRender = function(calEvent, $element, view) {
+        calendar.eventrender(calEvent, $element);
+      };
+    }
+
+    target.fullCalendar(options);
     
     target.fullCalendar('gotoDate', calendar.currentDate);
     
