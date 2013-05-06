@@ -65,7 +65,7 @@ public class TreeBuilder {
    * @throws RemoteException throws if a error occurred during a ejb call
    */
   public static MenuItem buildLevelMenu(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganisationController controller) throws RemoteException {
+      String language, OrganisationController controller) {
     if (father == null) {
       // build the first level of menu
       return buildFirstLevel(filter, userId, language, controller);
@@ -88,7 +88,7 @@ public class TreeBuilder {
    * @throws RemoteException
    */
   private static MenuItem buildOtherLevel(TreeFilter filter, MenuItem father, String userId,
-      String language, OrganisationController controller) throws RemoteException {
+      String language, OrganisationController controller) {
 
     ArrayList<MenuItem> children = new ArrayList<MenuItem>();
     father.setChildren(children);

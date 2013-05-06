@@ -282,7 +282,7 @@ public class SPDesktopServlet extends HttpServlet {
    * @return the initialized portlet content.
    */
   private PortletContent initPortletContent(final PortletContent portletContent,
-      final HttpServletRequest request) throws InvokerException {
+      final HttpServletRequest request) {
     String portletWindowName = portletContent.getPortletWindowName();
     portletContent.setPortletWindowMode(getPortletWindowMode(request, portletWindowName));
     portletContent.setPortletWindowState(getPortletWindowState(request, portletWindowName));

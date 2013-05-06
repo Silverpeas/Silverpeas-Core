@@ -60,8 +60,7 @@ public class TreeHandler {
    * @return
    * @throws RemoteException
    */
-  public static String ProcessMenu(HttpServletRequest request, String menuType)
-      throws RemoteException {
+  public static String ProcessMenu(HttpServletRequest request, String menuType) {
     MainSessionController mainSessionCtrl =
         new SilverpeasWebUtil().getMainSessionController(request);
     OrganisationController controller = mainSessionCtrl.getOrganisationController();

@@ -376,7 +376,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
   }
 
   private File processFormUpload(AgendaSessionController agendaSc,
-      HttpServletRequest request) throws FileUploadException {
+      HttpServletRequest request) {
     String logicalName = "";
     String tempFolderName = "";
     String tempFolderPath = "";

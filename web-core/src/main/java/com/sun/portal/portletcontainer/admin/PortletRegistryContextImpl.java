@@ -50,7 +50,7 @@ public class PortletRegistryContextImpl implements PortletRegistryContext {
   private PortletWindowRegistryContext portletWindowRegistryContext;
   private PortletWindowPreferenceRegistryContext portletWindowPreferenceRegistryContext;
 
-  public PortletRegistryContextImpl() throws PortletRegistryException {
+  public PortletRegistryContextImpl() {
   }
 
   public void init(String context) throws PortletRegistryException {

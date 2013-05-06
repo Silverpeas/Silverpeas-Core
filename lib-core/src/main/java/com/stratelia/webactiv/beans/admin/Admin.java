@@ -991,7 +991,7 @@ public final class Admin {
    * @return all the components name available in Silverpeas
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  public Map<String, String> getAllComponentsNames() throws AdminException {
+  public Map<String, String> getAllComponentsNames() {
     SilverTrace.debug(MODULE_ADMIN, "Admin.getAllComponentsNames", "root.MSG_GEN_ENTER_METHOD");
     Map<String, String> components = Instanciateur.getAllComponentsNames();
     for (Map.Entry<String, String> entry : components.entrySet()) {
@@ -1979,7 +1979,7 @@ public final class Admin {
    * @return
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  public String[] getAllProfilesNames(String sComponentName) throws AdminException {
+  public String[] getAllProfilesNames(String sComponentName) {
     String[] asProfiles = null;
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
     if (wac != null) {
@@ -2005,8 +2005,7 @@ public final class Admin {
    * @return
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang)
-      throws AdminException {
+  public String getProfileLabelfromName(String sComponentName, String sProfileName, String lang) {
     WAComponent wac = Instanciateur.getWAComponent(sComponentName);
     if (wac != null) {
       List<Profile> profiles = wac.getProfiles();
@@ -3176,7 +3175,7 @@ public final class Admin {
    * @return the user details corresponding to the given user Ids.
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
-  public UserDetail[] getUserDetails(String[] userIds) throws AdminException {
+  public UserDetail[] getUserDetails(String[] userIds) {
     if (userIds == null) {
       return ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
     }
@@ -5054,8 +5053,7 @@ public final class Admin {
   /**
    * Get the profile names of the given user for the given component
    */
-  public String[] getCurrentProfiles(String sUserId, ComponentInst componentInst)
-      throws AdminException {
+  public String[] getCurrentProfiles(String sUserId, ComponentInst componentInst) {
     ArrayList<String> alProfiles = new ArrayList<String>();
 
     try {

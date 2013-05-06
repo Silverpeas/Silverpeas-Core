@@ -20,15 +20,6 @@
  */
 package com.silverpeas.ical;
 
-import java.io.FileWriter;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ExportDescriptor;
@@ -36,7 +27,6 @@ import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.silverpeas.export.ical.ExportableCalendar;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.agenda.control.AgendaException;
 import com.stratelia.webactiv.agenda.control.AgendaRuntimeException;
@@ -54,6 +44,14 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import java.io.FileWriter;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.silverpeas.calendar.CalendarEvent.anEventAt;
 
@@ -323,7 +321,7 @@ public class ExportIcalManager {
    * @throws ParseException if the specified dates aren't formatted as expected.
    */
   private Collection<JournalHeader> getSchedulableCalendar(String startDate, String endDate)
-      throws RemoteException, ParseException {
+      throws ParseException {
     return calendarBm.getPeriodSchedulablesForUser(DateUtil.date2SQLDate(
         startDate, getLanguage()), DateUtil.date2SQLDate(endDate, getLanguage()), getUserId(),
         null,
@@ -341,7 +339,7 @@ public class ExportIcalManager {
    */
   @SuppressWarnings("rawtypes")
   private List<CalendarEvent> getCalendarEvents(String startDate, String endDate) throws
-      RemoteException, ParseException {
+      ParseException {
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
     String fromDate = at(startDate, or(firstDate));
     String toDate = at(endDate, or(lastDate));

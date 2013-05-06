@@ -51,8 +51,7 @@ public class NotificationServerUtil {
     parserFactory.setValidating(false);
   }
 
-  public static String convertNotificationDataToXML(NotificationData p_Data)
-      throws NotificationServerException {
+  public static String convertNotificationDataToXML(NotificationData p_Data) {
     StringBuilder xml = new StringBuilder();
 
     if (p_Data != null) {

@@ -99,11 +99,11 @@ public class JMSTestFacade extends JMSTestCaseAdapter {
     return super.getTopic(string);
   }
 
-  private void prepareJndi() throws IOException {
+  private void prepareJndi() {
     SimpleMemoryContextFactory.setUpAsInitialContext();
   }
 
-  private void cleanJndi() throws IOException {
+  private void cleanJndi() {
     SimpleMemoryContextFactory.tearDownAsInitialContext();
   }
 

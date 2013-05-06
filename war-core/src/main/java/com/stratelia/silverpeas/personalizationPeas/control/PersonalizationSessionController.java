@@ -321,8 +321,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
   /**
    * Supprime les doublons
    */
-  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds)
-      throws PeasCoreException {
+  private ArrayList<String> getDistinctInstanceIds(String[] givenInstancesIds) {
     ArrayList<String> instancesIds = new ArrayList<String>();
     String instanceId = null;
     ArrayList<String> intermed = new ArrayList<String>();

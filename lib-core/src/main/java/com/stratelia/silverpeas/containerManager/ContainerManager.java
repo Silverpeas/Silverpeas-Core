@@ -73,7 +73,7 @@ public class ContainerManager implements java.io.Serializable {
    * Constructor declaration
    * @see
    */
-  public ContainerManager() throws ContainerManagerException {
+  public ContainerManager() {
     // If the container descriptors (.xml) have not been read, do it
     if (!s_bDescriptorsRead) {
       // -------------------------------------------------
@@ -372,7 +372,7 @@ public class ContainerManager implements java.io.Serializable {
     return instanceId;
   }
 
-  private Hashtable<String, String> getAsso() throws ContainerManagerException {
+  private Hashtable<String, String> getAsso() {
     /*
      * synchronized (assoComponentIdInstanceId) { if (assoComponentIdInstanceId.isEmpty())
      * assoComponentIdInstanceId.putAll(loadAsso(null)); }
@@ -381,17 +381,15 @@ public class ContainerManager implements java.io.Serializable {
     return assoComponentIdInstanceId;
   }
 
-  private String getInstanceId(String componentId)
-      throws ContainerManagerException {
+  private String getInstanceId(String componentId) {
     return getAsso().get(componentId);
   }
 
-  private void addAsso(String componentId, int instanceId)
-      throws ContainerManagerException {
+  private void addAsso(String componentId, int instanceId) {
     getAsso().put(componentId, Integer.toString(instanceId));
   }
 
-  private void removeAsso(String componentId) throws ContainerManagerException {
+  private void removeAsso(String componentId) {
     getAsso().remove(componentId);
   }
 

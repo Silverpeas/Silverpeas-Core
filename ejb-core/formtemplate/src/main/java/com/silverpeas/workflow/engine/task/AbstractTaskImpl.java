@@ -25,7 +25,6 @@
 package com.silverpeas.workflow.engine.task;
 
 import com.silverpeas.form.DataRecord;
-import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.event.QuestionEvent;
 import com.silverpeas.workflow.api.event.ResponseEvent;
 import com.silverpeas.workflow.api.event.TaskDoneEvent;
@@ -45,15 +44,13 @@ public abstract class AbstractTaskImpl implements Task {
   /**
    * Builds a TaskImpl.
    */
-  public AbstractTaskImpl(User user, String roleName, ProcessModel processModel)
-      throws WorkflowException {
+  public AbstractTaskImpl(User user, String roleName, ProcessModel processModel) {
     this.user = user;
     this.roleName = roleName;
     this.processModel = processModel;
   }
 
-  public AbstractTaskImpl(User user, String roleName, String groupId, ProcessModel processModel)
-      throws WorkflowException {
+  public AbstractTaskImpl(User user, String roleName, String groupId, ProcessModel processModel) {
     this.user = user;
     this.roleName = roleName;
     this.groupId = groupId;

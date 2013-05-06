@@ -261,7 +261,7 @@ public class SQLDomainService extends AbstractDomainService {
    * @param domainToRemove domain to remove
    * @throws DomainDeletionException
    */
-  private void removeDomainPropertiesFile(Domain domainToRemove) throws DomainDeletionException {
+  private void removeDomainPropertiesFile(Domain domainToRemove) {
     SilverTrace
         .info(
         "admin",

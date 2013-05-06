@@ -261,7 +261,7 @@ public class SILVERMAILPersistence {
    * @return
    * @throws SILVERMAILException
    */
-  protected static long convertFolderNameToId(String folderName) throws SILVERMAILException {
+  protected static long convertFolderNameToId(String folderName) {
     // pas de gestion de folder pour l'instant
     return 0; // 0 = INBOX
   }

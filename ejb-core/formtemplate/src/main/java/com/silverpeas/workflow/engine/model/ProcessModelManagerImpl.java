@@ -494,17 +494,15 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
   /**
    * Search the cache for the required process model.
    */
-  private ProcessModel getCachedProcessModel(String modelId)
-      throws WorkflowException {
-    ProcessModel model = (ProcessModel) models.get(modelId);
+  private ProcessModel getCachedProcessModel(String modelId) {
+    ProcessModel model = models.get(modelId);
     return model;
   }
 
   /**
    * Put the given process model in the the cache.
    */
-  private void cacheProcessModel(String modelId, ProcessModel model,
-      String filename) throws WorkflowException {
+  private void cacheProcessModel(String modelId, ProcessModel model, String filename) {
     synchronized (models) {
       models.put(modelId, model);
     }
