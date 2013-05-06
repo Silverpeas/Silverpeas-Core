@@ -344,9 +344,9 @@ public class WorkflowDesignerRequestRouter extends
          */
         if (items.size() == 1) {
           FileItem item = items.get(0);
-    
+
           workflowDesignerSC.uploadProcessModel(item);
-    
+
         }
 
         return hndlListWorkflow.getDestination("Main", workflowDesignerSC,
@@ -426,7 +426,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Roles", workflowDesignerSC.getProcessModel()
           .getRolesEx());
 
@@ -440,8 +440,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strRoleName = request.getParameter("role");
       Role role;
 
@@ -504,7 +503,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Presentation", workflowDesignerSC.getProcessModel()
           .getPresentation());
       return root + "presentation.jsp";
@@ -517,8 +516,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       Columns columns;
 
       if ("AddColumns".equals(function)) {
@@ -598,7 +596,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Participants", workflowDesignerSC.getProcessModel()
           .getParticipantsEx());
       return root + "participants.jsp";
@@ -611,8 +609,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strParticipantName = request.getParameter("participant");
       Participant participant;
 
@@ -683,7 +680,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("States", workflowDesignerSC.getProcessModel()
           .getStatesEx());
       return root + "states.jsp";
@@ -696,8 +693,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strStateName = request.getParameter("state");
       State state;
 
@@ -937,7 +933,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Actions", workflowDesignerSC.getProcessModel()
           .getActionsEx());
 
@@ -951,8 +947,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strActionName = request.getParameter("action");
       Action action;
 
@@ -990,7 +985,7 @@ public class WorkflowDesignerRequestRouter extends
       Action action = workflowDesignerSC.createAction();
 
       action.setName(request.getParameter("name"));
-      
+
       Forms forms = workflowDesignerSC.getProcessModel().getForms();
       if (forms != null) {
         action.setForm(forms.getForm(request.getParameter("form")));
@@ -1184,7 +1179,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Items", workflowDesignerSC.getProcessModel()
           .getUserInfos());
       request.setAttribute("context",
@@ -1200,7 +1195,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Items", workflowDesignerSC.getProcessModel()
           .getDataFolder());
       request.setAttribute("context",
@@ -1215,7 +1210,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException {
+        HttpServletRequest request) {
       request.setAttribute("Forms", workflowDesignerSC.getProcessModel()
           .getForms());
       return root + "forms.jsp";
@@ -1228,8 +1223,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) {
       String strContext = request.getParameter("context"), strFormType =
           WorkflowDesignerSessionController.FORM_TYPE_ACTION;
       Form form;
@@ -1271,8 +1265,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowDesignerException {
       Form form = workflowDesignerSC.createForm();
       String strHTMLFileName = request.getParameter("HTMLFileName"), strRole = request
           .getParameter("role"), strRoleOriginal = request
@@ -1457,8 +1450,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       RelatedUser relatedUser;
       String strContext = request.getParameter("context"), strParticipant = request
           .getParameter("participant"), strFolderItem = request
@@ -1584,8 +1576,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       RelatedUser relatedUser = workflowDesignerSC.getProcessModel()
           .createRelatedUser();
       String strContext = request.getParameter("context"), strParticipant = request
@@ -1725,8 +1716,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strContext = request.getParameter("context");
       Item item;
 
@@ -1907,8 +1897,7 @@ public class WorkflowDesignerRequestRouter extends
 
     public String getDestination(String function,
         WorkflowDesignerSessionController workflowDesignerSC,
-        HttpServletRequest request) throws WorkflowDesignerException,
-        WorkflowException {
+        HttpServletRequest request) throws WorkflowException {
       String strContext = request.getParameter("context"), strName = request
           .getParameter("name");
 

@@ -4,17 +4,17 @@
 * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- * 
+ *
 * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
  * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
  * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
  * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- * 
+ *
 * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Affero General Public License for more details.
- * 
+ *
 * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
@@ -111,7 +111,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Replaces
-   *   
+   *
 * @param name
    * @return a String with all quotes replaced by spaces
    */
@@ -130,7 +130,7 @@ public class StringUtil extends StringUtils {
    * java.text.MessageFormat to string arguments. For instance, the string '{key}' contained in the
    * original string to format will be replaced by the value corresponding to this key contained
    * into the values map.
-   *   
+   *
 * @param label The string to format
    * @param values The values to insert into the string
    * @return The formatted string, filled with values of the map.
@@ -191,7 +191,7 @@ public class StringUtil extends StringUtils {
    * {@link hirondelle.web4j.util.Util#textHasContent}. </ul> <P> The second condition arises since
    * local email addresses, simply of the form "<tt>albert</tt>", for example, are valid for
    * {@link javax.mail.internet.InternetAddress}, but almost always undesired.
-   *   
+   *
 * @param aEmailAddress the address to be validated
    * @return true is the address is a valid email address - false otherwise.
    */
@@ -219,7 +219,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Evaluate the expression and return true if expression equals "true", "yes", "y", "1" or "oui".
-   *   
+   *
 * @param expression the expression to be evaluated
    * @return true if expression equals "true", "yes", "y", "1" or "oui".
    */
@@ -231,7 +231,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Method for trying to detect encoding
-   *   
+   *
 * @param data some data to try to detect the encoding.
    * @param declaredEncoding expected encoding.
    * @return
@@ -250,7 +250,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Method for trying to detect encoding
-   *   
+   *
 * @param data some data to try to detect the encoding.
    * @param declaredEncoding expected encoding.
    * @return
@@ -272,7 +272,7 @@ public class StringUtil extends StringUtils {
     return declaredEncoding;
   }
 
-  private static boolean checkEncoding(String value) throws UnsupportedEncodingException {
+  private static boolean checkEncoding(String value) {
     if (value != null) {
       char[] chars = value.toCharArray();
       for (char currentChar : chars) {
@@ -302,7 +302,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Method for trying to detect encoding
-   *   
+   *
 * @param data some data to try to detect the encoding.
    * @param declaredEncoding expected encoding.
    * @return
@@ -325,7 +325,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Indicates if two Strings are equals, managing null.
-   *   
+   *
 * @param s1 the first String.
    * @param s2 the second String.
    * @return true ifthe two Strings are equals.
@@ -339,7 +339,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Parse a String into a float using the default locale.
-   *   
+   *
 * @param value the string to be parsed into a float.
    * @return the float value.
    * @throws ParseException
@@ -350,7 +350,7 @@ public class StringUtil extends StringUtils {
 
   /**
    * Parse a String into a float using the specified locale.
-   *   
+   *
 * @param value the string to be parsed into a float
    * @param language the language for defining the locale
    * @return the float value.

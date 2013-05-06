@@ -384,7 +384,7 @@ public class WysiwygController {
     return objectId + WYSIWYG_IMAGES;
   }
 
-  public static void deleteFileAndAttachment(String componentId, String id) throws WysiwygException {
+  public static void deleteFileAndAttachment(String componentId, String id) {
     ForeignPK foreignKey = new ForeignPK(id, componentId);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
         listDocumentsByForeignKey(foreignKey, null);
@@ -624,8 +624,7 @@ public class WysiwygController {
    * @return
    * @throws WysiwygException
    */
-  public static List<String> getEmbeddedAttachmentIds(String content)
-      throws WysiwygException {
+  public static List<String> getEmbeddedAttachmentIds(String content) {
     List<String> attachmentIds = new ArrayList<String>();
 
     if (content != null) {
@@ -710,8 +709,7 @@ public class WysiwygController {
    *
    * @throws WysiwygException
    */
-  public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier)
-      throws WysiwygException {
+  public static void updateWebsite(String cheminFichier, String nomFichier, String contenuFichier) {
     SilverTrace.info("wysiwyg", "WysiwygController.updateWebsite()", "root.MSG_GEN_PARAM_VALUE",
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
     createFile(cheminFichier, nomFichier, contenuFichier);
@@ -726,8 +724,7 @@ public class WysiwygController {
    * @return the created file.
    * @throws WysiwygException
    */
-  protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier)
-      throws WysiwygException {
+  protected static File createFile(String cheminFichier, String nomFichier, String contenuFichier) {
     SilverTrace.info("wysiwyg", "WysiwygController.createFile()", "root.MSG_GEN_ENTER_METHOD",
         "cheminFichier=" + cheminFichier + " nomFichier=" + nomFichier);
     FileFolderManager.createFile(cheminFichier, nomFichier, contenuFichier);
@@ -858,7 +855,7 @@ public class WysiwygController {
   }
 
   public static void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
-      String newComponentId, String newObjectId) throws WysiwygException {
+      String newComponentId, String newObjectId) {
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       String wysiwyg = load(newComponentId, newObjectId, language);
       if (StringUtil.isDefined(wysiwyg)) {

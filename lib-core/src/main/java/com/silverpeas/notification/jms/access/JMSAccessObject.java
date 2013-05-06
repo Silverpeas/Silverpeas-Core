@@ -195,7 +195,7 @@ public final class JMSAccessObject {
    * @return a TopicSession instance.
    * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
-  protected TopicSession getTopicSessionForPublishing() throws JMSException {
+  protected TopicSession getTopicSessionForPublishing() {
     return publishingSession;
   }
 
@@ -205,7 +205,7 @@ public final class JMSAccessObject {
    * @return a TopicSession instance.
    * @throws JMSException if an error occurs while creating or fetching a JMS session.
    */
-  protected TopicSession getTopicSessionForSubscription() throws JMSException {
+  protected TopicSession getTopicSessionForSubscription() {
     return subscriptionSession;
   }
 

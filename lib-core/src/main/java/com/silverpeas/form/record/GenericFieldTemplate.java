@@ -65,7 +65,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   /**
    * Builds a GenericFieldTemplate
    */
-  public GenericFieldTemplate() throws FormException {
+  public GenericFieldTemplate() {
   }
 
   /**
@@ -451,11 +451,11 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   public void setTemplateName(String templateName) {
     this.templateName = templateName;
   }
-  
+
   public boolean isUsedAsFacet() {
     return usedAsFacet;
   }
-  
+
   public void setUsedAsFacet(boolean usedAsFacet) {
     this.usedAsFacet = usedAsFacet;
   }

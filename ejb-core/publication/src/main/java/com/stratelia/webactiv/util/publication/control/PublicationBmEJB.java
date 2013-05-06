@@ -42,7 +42,6 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
@@ -1451,20 +1450,14 @@ public class PublicationBmEJB implements PublicationBm {
             indexEntry.addFileContent(wysiwygPath, null, "text/html", language);
             String wysiwygContent = WysiwygController.loadContent(docs.get(0), language);
             // index embedded linked attachment (links presents in wysiwyg content)
-            try {
-              List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(
-                  wysiwygContent);
-              WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-            } catch (WysiwygException e) {
-              SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent",
-                  "root.MSG_GEN_ENTER_METHOD", "Unable to extract linked files from object"
-                  + indexEntry.getObjectId(), e);
-            }
+            List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(
+                wysiwygContent);
+            WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
           }
         }
       }
     } catch (Exception e) {
-      // No wysiwyg associated
+      SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithWysiwygContent", "", e);
     }
   }
 
@@ -1477,12 +1470,11 @@ public class PublicationBmEJB implements PublicationBm {
       try {
         PublicationTemplate pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
             pubDetail.getPK().getInstanceId() + ':' + pubDetail.getInfoId());
-
         RecordSet set = pub.getRecordSet();
         set.indexRecord(pubDetail.getPK().getId(), pubDetail.getInfoId(), indexEntry);
       } catch (Exception e) {
-        SilverTrace.error("publication",
-            "PublicationBmEJB.updateIndexEntryWithXMLFormContent()", "", e);
+        SilverTrace.error("publication", "PublicationBmEJB.updateIndexEntryWithXMLFormContent", "",
+            e);
       }
     }
   }

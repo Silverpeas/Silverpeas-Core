@@ -1,37 +1,45 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.importExport.control;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BadPdfFormatException;
-import com.lowagie.text.pdf.PRAcroForm;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.SimpleBookmark;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+import org.silverpeas.importExport.attachment.AttachmentDetail;
+
 import com.silverpeas.admin.importExport.AdminImportExport;
 import com.silverpeas.coordinates.importExport.CoordinateImportExport;
 import com.silverpeas.coordinates.importExport.CoordinatesPositionsType;
@@ -55,6 +63,7 @@ import com.silverpeas.pdc.importExport.PdcPositionsType;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -65,7 +74,6 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
-import org.silverpeas.importExport.attachment.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -74,6 +82,15 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.BadPdfFormatException;
+import com.lowagie.text.pdf.PRAcroForm;
+import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
+import com.lowagie.text.pdf.SimpleBookmark;
 import org.apache.commons.io.IOUtils;
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.mapping.MappingException;
@@ -81,33 +98,18 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import static com.google.common.base.Charsets.UTF_8;
 import static java.io.File.separator;
 
 /**
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
+ *
  * @author sDevolder.
  */
 public class ImportExport {
@@ -129,6 +131,7 @@ public class ImportExport {
 
   /**
    * Méthode créant le fichier xml corespondant à l'arbre des objets.
+   *
    * @param silverPeasExchangeType - arbre des objets à mapper sur le fichier xml
    * @param xmlToExportPath - chemin et nom du fichier xml à créer
    * @throws ImportExportException
@@ -181,6 +184,7 @@ public class ImportExport {
 
   /**
    * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
+   *
    * @param xmlFileName le fichier xml interprêté par Castor
    * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML Castor
    * @throws ImportExportException
@@ -281,8 +285,8 @@ public class ImportExport {
       unmar.setValidation(false);
 
       // Unmarshall the process model
-      SilverPeasExchangeType silverpeasExchange =
-          (SilverPeasExchangeType) unmar.unmarshal(xmlInputSource);
+      SilverPeasExchangeType silverpeasExchange = (SilverPeasExchangeType) unmar.unmarshal(
+          xmlInputSource);
       SilverTrace.debug("importExport", "ImportExportSessionController.loadSilverpeasExchange",
           "root.MSG_GEN_PARAM_VALUE", "Unmarshalling complete");
       return silverpeasExchange;
@@ -324,6 +328,7 @@ public class ImportExport {
 
   /**
    * Cherche et retourne un nom de ressource extrait du chemin d'un URI donné.
+   *
    * @param uri l'URI dans lequel on cherche le nom de ressource.
    * @return le nom de ressource dans la chaîne uri ou chaîne vide (jamais null) sir uri est
    * <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
@@ -361,6 +366,7 @@ public class ImportExport {
   /**
    * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans le
    * fichier xml passé en paramètre sont générées grace à l'outil castor.
+   *
    * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
    * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
    * @return un rapport détaillé sur l'execution de l'import/export
@@ -406,9 +412,8 @@ public class ImportExport {
     if (silverExType.getRepositoriesType() != null) {
       // Traitement de l'élément <repositories>
       RepositoriesTypeManager typeMgr = new RepositoriesTypeManager();
-      ImportSettings settings =
-          new ImportSettings(null, userDetail, silverExType.
-              getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
+      ImportSettings settings = new ImportSettings(null, userDetail, silverExType.
+          getTargetComponentId(), null, false, silverExType.isPOIUsed(), ImportSettings.FROM_XML);
       typeMgr.processImport(silverExType.getRepositoriesType(), settings);
     }
     ImportReportManager.setEndDate(new Date());
@@ -710,8 +715,8 @@ public class ImportExport {
             } catch (IOException ioe) {
               // Attached file is not physically present on disk, ignore it and log event
               SilverTrace.error("importExport", "PublicationTypeManager.processExportPDF",
-                  "CANT_FIND_PDF_FILE", "PDF file '" + attDetail.getLogicalName() +
-                  "' is not present on disk", ioe);
+                  "CANT_FIND_PDF_FILE", "PDF file '" + attDetail.getLogicalName()
+                  + "' is not present on disk", ioe);
             }
             if (reader != null) {
               reader.consolidateNamedDestinations();
@@ -783,6 +788,7 @@ public class ImportExport {
 
   /**
    * Export Kmax Publications
+   *
    * @param userDetail
    * @param language
    * @param itemsToExport
@@ -844,7 +850,6 @@ public class ImportExport {
           adminIE.getComponents(new ArrayList<String>(listComponentId)));
 
       // ================ EXPORT SELECTED PUBLICATIONS ======================
-
       if (combination != null) {
         // Création du sommaire HTML
         File fileHTML = new File(tempDir + thisExportDir + separator + "index.html");
@@ -916,8 +921,7 @@ public class ImportExport {
           exportReport.addHtmlIndex(pubDetail.getId(), unbalanced);
           fileWriter = null;
           try {
-            fileWriter =
-                new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(),
+            fileWriter = new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(),
                 true), UTF_8);
             fileWriter.write(unbalanced.toHtmlSommairePublication(iframePublication));
           } catch (IOException ex) {
@@ -1099,6 +1103,7 @@ public class ImportExport {
 
   /**
    * Méthode générant le nom de l'export nommé: "exportAAAA-MM-JJ-hh'H'mm'm'ss's'_userId"
+   *
    * @param userDetail - UserDetail de l'utilisateur
    * @param name : nom du fichier final
    * @return - la chaine représentant le nom généré du répertoire d'exportation
@@ -1139,6 +1144,7 @@ public class ImportExport {
 
   /**
    * Add father of nodeDetail to List
+   *
    * @param nodesIds
    * @param nodeDetail
    * @return
@@ -1159,23 +1165,18 @@ public class ImportExport {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
+    // Creates export folder
+    File fileExportDir = createExportDir(userDetail);
+
+    // Export files attached to publications
     try {
-      // Creates export folder
-      File fileExportDir = createExportDir(userDetail);
-
-      // Export files attached to publications
-      try {
-        pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath());
-      } catch (IOException e1) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
-      }
-
-      // Create ZIP file
-      createZipFile(fileExportDir, exportReport);
+      pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
+          fileExportDir.getPath());
     } catch (IOException e1) {
-      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+      throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
     }
+    // Create ZIP file
+    createZipFile(fileExportDir, exportReport);
     return exportReport;
   }
 
@@ -1184,29 +1185,25 @@ public class ImportExport {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
+    // Stockage de la date de démarrage de l'export dans l'objet rapport
+    exportReport.setDateDebut(new Date());
+
+    File fileExportDir = createExportDir(userDetail);
+
     try {
-      // Stockage de la date de démarrage de l'export dans l'objet rapport
-      exportReport.setDateDebut(new Date());
-
-      File fileExportDir = createExportDir(userDetail);
-
-      try {
-        // création des répertoires avec le nom des thèmes et des publications
-        pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), true, false);
-      } catch (IOException e1) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
-      }
-
-      // Création du zip
-      createZipFile(fileExportDir, exportReport);
+      // création des répertoires avec le nom des thèmes et des publications
+      pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
+          fileExportDir.getPath(), true, false);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     }
+
+    // Création du zip
+    createZipFile(fileExportDir, exportReport);
     return exportReport;
   }
 
-  private File createExportDir(UserDetail userDetail) throws ImportExportException, IOException {
+  private File createExportDir(UserDetail userDetail) throws ImportExportException {
     String thisExportDir = generateExportDirName(userDetail, "export");
     String tempDir = FileRepositoryManager.getTemporaryPath();
     File fileExportDir = new File(tempDir + thisExportDir);

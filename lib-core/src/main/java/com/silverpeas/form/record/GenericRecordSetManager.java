@@ -482,15 +482,15 @@ public class GenericRecordSetManager {
       closeConnection(con);
     }
   }
-  
+
   public void encryptData(String templateName) throws CryptoException {
     encryptOrDecryptData(templateName, true);
   }
-  
+
   public void decryptData(String templateName) throws CryptoException {
     encryptOrDecryptData(templateName, false);
   }
-  
+
   private void encryptOrDecryptData(String templateName, boolean encrypt) throws CryptoException {
     ContentEncryptionService encryptionService = getEncryptionService();
     EncryptionContentIterator contentIterator = new FormEncryptionContentIterator(templateName);
@@ -511,11 +511,11 @@ public class GenericRecordSetManager {
       }
     }
   }
-  
+
   private ContentEncryptionService getEncryptionService() {
     return ContentEncryptionServiceFactory.getFactory().getContentEncryptionService();
   }
-  
+
   protected void updateFieldRows(Connection con, List<RecordRow> rows) throws SQLException {
     PreparedStatement update = con.prepareStatement(UPDATE_FIELD);
 
@@ -524,7 +524,7 @@ public class GenericRecordSetManager {
         update.setString(1, row.getFieldValue());
         update.setInt(2, row.getRecordId());
         update.setString(3, row.getFieldName());
-        
+
         int nbRowsUpdated = update.executeUpdate();
         if (nbRowsUpdated != 1) {
           // do something ?
@@ -534,7 +534,7 @@ public class GenericRecordSetManager {
       DBUtil.close(update);
     }
   }
-  
+
   protected List<RecordRow> getAllRecordsOfTemplate(String templateName) throws FormException {
     Connection con = null;
     PreparedStatement select = null;
@@ -559,7 +559,7 @@ public class GenericRecordSetManager {
       DBUtil.close(con);
     }
   }
-  
+
   private String selectRecordFieldsRow(Connection con,
       String templateExternalId, String recordExternalId, String fieldName) throws SQLException {
     PreparedStatement select = null;
@@ -899,7 +899,7 @@ public class GenericRecordSetManager {
 
   /**
    * Creates a row for each template_fields.
-   * @throws CryptoException 
+   * @throws CryptoException
    */
   private void insertFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
@@ -916,11 +916,11 @@ public class GenericRecordSetManager {
         String fieldValue = field.getStringValue();
         rows.put(fieldName, fieldValue);
       }
-      
+
       if (template.isEncrypted()) {
         rows = getEncryptionService().encryptContent(rows);
       }
-      
+
       for (String fieldName : rows.keySet()) {
         String fieldValue = rows.get(fieldName);
         insert.setInt(1, recordId);
@@ -984,7 +984,7 @@ public class GenericRecordSetManager {
 
   /**
    * Select the template field declarations.
-   * @throws CryptoException 
+   * @throws CryptoException
    */
   private void selectFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
@@ -1000,14 +1000,14 @@ public class GenericRecordSetManager {
       while (rs.next()) {
         String fieldName = rs.getString("fieldName");
         String fieldValue = rs.getString("fieldValue");
-        
+
         rows.put(fieldName, fieldValue);
       }
-      
+
       if (template.isEncrypted()) {
         rows = getEncryptionService().decryptContent(rows);
       }
-      
+
       for(String fieldName : rows.keySet()) {
         Field field = record.getField(fieldName);
         String fieldValue = rows.get(fieldName);
@@ -1024,7 +1024,7 @@ public class GenericRecordSetManager {
 
   private List<String> selectLanguagesOfRecord(Connection con,
       IdentifiedRecordTemplate template, String externalId)
-      throws SQLException, FormException {
+      throws SQLException {
     PreparedStatement select = null;
     ResultSet rs = null;
     List<String> languages = new ArrayList<String>();
@@ -1048,7 +1048,7 @@ public class GenericRecordSetManager {
 
   /**
    * Updates the records fields.
-   * @throws CryptoException 
+   * @throws CryptoException
    */
   private void updateFieldRows(Connection con,
       IdentifiedRecordTemplate template, GenericDataRecord record)
@@ -1069,10 +1069,10 @@ public class GenericRecordSetManager {
             "root.MSG_GEN_PARAM_VALUE", "fieldName = " + fieldName
             + ", fieldValue = " + fieldValue
             + ", recordId = " + recordId);
-        
+
         rows.put(fieldName, fieldValue);
       }
-      
+
       if (template.isEncrypted()) {
         rows = getEncryptionService().encryptContent(rows);
       }
@@ -1141,7 +1141,7 @@ public class GenericRecordSetManager {
 
   private void updateTemplateId(Connection con, int oldTemplateId, int newTemplateId,
       String externalId)
-      throws SQLException, FormException {
+      throws SQLException {
     PreparedStatement update = null;
 
     try {
@@ -1247,7 +1247,7 @@ public class GenericRecordSetManager {
           +
           TEMPLATE_TABLE +
           " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
-  
+
   static final private String SELECT_TEMPLATE_RECORD_ENTRIES =
       "SELECT * FROM " +
           FIELDS_TABLE +
