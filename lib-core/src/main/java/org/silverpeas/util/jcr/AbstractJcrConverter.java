@@ -31,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -57,6 +55,7 @@ import org.apache.jackrabbit.JcrConstants;
 
 import com.silverpeas.jcrutil.converter.ConverterUtil;
 import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.CollectionUtil;
 import com.silverpeas.util.FileUtil;
 
 import com.stratelia.webactiv.util.DBUtil;
@@ -284,7 +283,7 @@ public abstract class AbstractJcrConverter {
    */
   protected Value[] removeReference(Value[] values, String uuid) throws ValueFormatException,
       IllegalStateException, RepositoryException {
-    List<Value> references = new ArrayList<Value>(Arrays.asList(values));
+    List<Value> references = CollectionUtil.asList(values);
     Iterator<Value> iter = references.iterator();
     while (iter.hasNext()) {
       Value value = iter.next();
@@ -389,6 +388,7 @@ public abstract class AbstractJcrConverter {
 
   /**
    * Add binary content to the specified node.
+   *
    * @param fileNode the node.
    * @param content the binary content.
    * @param mimeType the mime type of the content.

@@ -1,29 +1,28 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.util.i18n;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.Set;
 
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
-import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -93,7 +92,8 @@ public class I18NHelperTest {
   @Test
   public void testGetLanguages() {
     Iterator<String> result = I18NHelper.getLanguages();
-    List<String> languages = Lists.newArrayList(result);
+    List<String> languages = new ArrayList<String>(3);
+    CollectionUtils.addAll(languages, result);
     assertThat(languages, containsInAnyOrder("en", "fr", "de"));
   }
 
@@ -157,18 +157,18 @@ public class I18NHelperTest {
     String result = I18NHelper.getHTMLLinks(url, currentLanguage);
     assertThat(result,
         is(
-        "<a href=\"http://www.google.fr?SwitchLanguage=fr\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
-        "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=en\" class=\"\" id=\"translation_en\">EN</a>" +
-        "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
+        "<a href=\"http://www.google.fr?SwitchLanguage=fr\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>"
+        + "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=en\" class=\"\" id=\"translation_en\">EN</a>"
+        + "&nbsp;<a href=\"http://www.google.fr?SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
 
     url = "http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8";
     currentLanguage = "en";
     result = I18NHelper.getHTMLLinks(url, currentLanguage);
     assertThat(result,
         is(
-        "<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=fr\" class=\"\" id=\"translation_fr\">FR</a>" +
-        "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=en\" class=\"ArrayNavigationOn\" id=\"translation_en\">EN</a>" +
-        "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
+        "<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=fr\" class=\"\" id=\"translation_fr\">FR</a>"
+        + "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=en\" class=\"ArrayNavigationOn\" id=\"translation_en\">EN</a>"
+        + "&nbsp;<a href=\"http://www.google.com/search?client=ubuntu&ie=utf-8&oe=utf-8&SwitchLanguage=de\" class=\"\" id=\"translation_de\">DE</a>"));
   }
 
   /**
@@ -176,13 +176,13 @@ public class I18NHelperTest {
    */
   @Test
   public void testGetHTMLLinksForLanguages() {
-    List<String> languages = Lists.newArrayList("fr", "en");
+    List<String> languages = Arrays.asList("fr", "en");
     String currentLanguage = "fr";
     String result = I18NHelper.getHTMLLinks(languages, currentLanguage);
     assertThat(result,
         is(
-        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
-        "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
+        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>"
+        + "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
   }
 
   /**
@@ -209,8 +209,8 @@ public class I18NHelperTest {
     String result = I18NHelper.getHTMLLinks(bean, currentLanguage);
     assertThat(result,
         is(
-        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>" +
-        "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
+        "<a href=\"javaScript:showTranslation('fr');\" class=\"ArrayNavigationOn\" id=\"translation_fr\">FR</a>"
+        + "&nbsp;<a href=\"javaScript:showTranslation('en');\" class=\"\" id=\"translation_en\">EN</a>"));
   }
 
   /**
@@ -222,10 +222,11 @@ public class I18NHelperTest {
     when(resources.getString("GML.language")).thenReturn("Langue");
     when(resources.getLanguage()).thenReturn("fr");
     String result = I18NHelper.getFormLine(resources);
-    assertThat(result, is("<tr>\n<td class=\"txtlibform\">Langue :</td>\n<td><SELECT name=\"I18NLanguage\" >\n" +
-        "<option value=\"fr_-1\" >Français</option>\n" +
-        "<option value=\"en_-1\" >Anglais</option>\n" +
-        "<option value=\"de_-1\" >Allemand</option>\n</SELECT></td></tr>\n"));
+    assertThat(result, is(
+        "<tr>\n<td class=\"txtlibform\">Langue :</td>\n<td><SELECT name=\"I18NLanguage\" >\n"
+        + "<option value=\"fr_-1\" >Français</option>\n"
+        + "<option value=\"en_-1\" >Anglais</option>\n"
+        + "<option value=\"de_-1\" >Allemand</option>\n</SELECT></td></tr>\n"));
   }
 //
 //  /**

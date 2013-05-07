@@ -20,25 +20,26 @@
  */
 package com.silverpeas.subscribe.service;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.naming.NamingException;
+
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
-import com.silverpeas.subscribe.SubscriptionResource;
 import com.silverpeas.subscribe.SubscriptionSubscriber;
+
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.dbunit.database.IDatabaseConnection;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.naming.NamingException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -47,15 +48,15 @@ import static org.junit.Assert.assertThat;
  * @author ehugonnet
  */
 public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
+
   private static SubscriptionDao subscriptionDao = new SubscriptionDao();
-  private static final List<SubscriptionResource> nodePks = Lists
-      .asList(NodeSubscriptionResource.from(new NodePK("0", "100", "kmelia60")),
-          new SubscriptionResource[]{
-              NodeSubscriptionResource.from(new NodePK("1", "100", "kmelia60")),
-              NodeSubscriptionResource.from(new NodePK("10", "100", "kmelia60")),
-              NodeSubscriptionResource.from(new NodePK("20", "100", "kmelia60")),
-              NodeSubscriptionResource.from(new NodePK("30", "100", "kmelia60")),
-              NodeSubscriptionResource.from(new NodePK("40", "100", "kmelia60"))});
+  private static final List<NodeSubscriptionResource> nodePks = Arrays.asList(
+      NodeSubscriptionResource.from(new NodePK("0", "100", "kmelia60")),
+      NodeSubscriptionResource.from(new NodePK("1", "100", "kmelia60")),
+      NodeSubscriptionResource.from(new NodePK("10", "100", "kmelia60")),
+      NodeSubscriptionResource.from(new NodePK("20", "100", "kmelia60")),
+      NodeSubscriptionResource.from(new NodePK("30", "100", "kmelia60")),
+      NodeSubscriptionResource.from(new NodePK("40", "100", "kmelia60")));
 
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException, Exception {
@@ -83,8 +84,8 @@ public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
       Connection connection = dataSetConnection.getConnection();
       long startTime = System.currentTimeMillis();
       for (int i = 0; i < 10000; i++) {
-        Collection<SubscriptionSubscriber> result =
-            subscriptionDao.getSubscribers(connection, nodePks, null);
+        Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(connection,
+            nodePks, null);
         assertThat(result, hasSize(15));
         assertThat(result, hasItem("1"));
         assertThat(result, hasItem("2"));
@@ -111,6 +112,7 @@ public class SubscriptionDAOPerformanceTest extends AbstractJndiCase {
 
   /**
    * Centralization.
+   *
    * @param userId
    * @return
    */

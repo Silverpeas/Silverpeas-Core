@@ -29,17 +29,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import org.apache.commons.io.FileUtils;
-
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.SimpleDocument;
 import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.silverpeas.importExport.attachment.AttachmentDetail;
 import org.silverpeas.importExport.attachment.AttachmentImportExport;
 import org.silverpeas.importExport.attachment.AttachmentsType;
 import org.silverpeas.importExport.versioning.Document;
 import org.silverpeas.importExport.versioning.VersioningImportExport;
+import org.silverpeas.util.Charsets;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.coordinates.importExport.CoordinateImportExport;
 import com.silverpeas.coordinates.importExport.CoordinatePointType;
@@ -67,7 +67,6 @@ import com.silverpeas.wysiwyg.importExport.WysiwygContentType;
 
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -80,7 +79,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import org.apache.commons.io.FileUtils;
 
 import static java.io.File.separator;
 
@@ -144,8 +144,8 @@ public class PublicationsTypeManager {
       String exportPublicationPath;
       if (gedIE.isKmax()) {
         publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
-        exportPublicationRelativePath =
-            createPathDirectoryForKmaxPublicationExport(exportPath, componentId,
+        exportPublicationRelativePath = createPathDirectoryForKmaxPublicationExport(exportPath,
+            componentId,
             componentInst.getLabel(), publicationDetail, useNameForFolders);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
       } else {
@@ -156,8 +156,8 @@ public class PublicationsTypeManager {
         // Création de l'arborescence de dossiers pour la création de l'export de publication
         NodePositionType nodePositionType = publicationType.getNodePositionsType().
             getListNodePositionType().get(0);
-        exportPublicationRelativePath =
-            createPathDirectoryForPublicationExport(exportPath, nodePositionType.getId(),
+        exportPublicationRelativePath = createPathDirectoryForPublicationExport(exportPath,
+            nodePositionType.getId(),
             componentId, componentInst.getLabel(), publicationDetail, useNameForFolders,
             bExportPublicationPath);
         exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
@@ -236,8 +236,8 @@ public class PublicationsTypeManager {
       PublicationType publicationType, String exportPublicationRelativePath,
       String exportPublicationPath, ModelDetail modelDetail, int nbThemes) {
     String htmlNameIndex = "index.html";
-    HtmlExportPublicationGenerator s =
-        new HtmlExportPublicationGenerator(publicationType, modelDetail, wysiwygText,
+    HtmlExportPublicationGenerator s = new HtmlExportPublicationGenerator(publicationType,
+        modelDetail, wysiwygText,
         exportPublicationRelativePath + separator + htmlNameIndex, nbThemes);
     exportReport.addHtmlIndex(pubId, s);
     File fileHTML = new File(exportPublicationPath + separator + htmlNameIndex);
@@ -257,8 +257,8 @@ public class PublicationsTypeManager {
       PublicationType publicationType) throws ImportExportException {
     // Récupération du classement pdc
     try {
-      List<ClassifyPosition> listClassifyPostion =
-          pdc_impExp.getPositions(gedIE.getSilverObjectId(pubId), publicationType.getComponentId());
+      List<ClassifyPosition> listClassifyPostion = pdc_impExp.getPositions(gedIE.getSilverObjectId(
+          pubId), publicationType.getComponentId());
       if (listClassifyPostion != null && !listClassifyPostion.isEmpty()) {
         publicationType.setPdcPositionsType(new PdcPositionsType());
         publicationType.getPdcPositionsType().setListClassifyPosition(listClassifyPostion);
@@ -403,8 +403,8 @@ public class PublicationsTypeManager {
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii =
-        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
+    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath
+        .toString());
     SilverTrace
         .debug("importExport", "PublicationTypeManager.createPathDirectoryForPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
@@ -516,16 +516,16 @@ public class PublicationsTypeManager {
     }
 
     StringBuilder relativeExportPath = new StringBuilder(componentLabelForm);
-    StringBuilder pathToCreate =
-        new StringBuilder(exportPath).append(File.separatorChar).append(componentLabelForm);
+    StringBuilder pathToCreate = new StringBuilder(exportPath).append(File.separatorChar).append(
+        componentLabelForm);
 
     relativeExportPath.append(separator).append(pubNameForm);
     pathToCreate.append(separator).append(pubNameForm);
 
     // L'api zip ne prends que les caractères ascii, aussi pour être
     // cohérent, on crée nos dossiers comme tel
-    String relativeExportPathAscii =
-        FileServerUtils.replaceAccentChars(relativeExportPath.toString());
+    String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath
+        .toString());
     SilverTrace
         .debug("importExport", "PublicationTypeManager.createPathDirectoryForKmaxPublicationExport",
         "root.MSG_GEN_PARAM_VALUE", "relativeExportPathAscii = " + relativeExportPathAscii);
@@ -555,8 +555,8 @@ public class PublicationsTypeManager {
    * @param isPOIUsed
    */
   public void processImport(PublicationsType publicationsType, ImportSettings settings) {
-    GEDImportExport gedIE =
-        ImportExportFactory.createGEDImportExport(settings.getUser(), settings.getComponentId());
+    GEDImportExport gedIE = ImportExportFactory.createGEDImportExport(settings.getUser(), settings
+        .getComponentId());
     AttachmentImportExport attachmentIE = new AttachmentImportExport();
     PdcImportExport pdcIE = new PdcImportExport();
     VersioningImportExport versioningIE = new VersioningImportExport(settings.getUser());
@@ -611,8 +611,9 @@ public class PublicationsTypeManager {
               pubDetailToCreate = PublicationImportExport.convertFileInfoToPublicationDetail(
                   file, settings);
             } else {/* TODO: jeter exception ou trouver une autre solution de nommage */
-              pubDetailToCreate =
-                  new PublicationDetail("unknown", "pub temp", "description", new Date(),
+
+              pubDetailToCreate = new PublicationDetail("unknown", "pub temp", "description",
+                  new Date(),
                   new Date(), null, userDetail.getId(), "5", null, null, null);
             }
           } else {
@@ -634,8 +635,8 @@ public class PublicationsTypeManager {
             // kmax : Get coordinates with value (name of the position)
             List<Coordinate> coordinates = pubType.getCoordinatesPositionsType().
                 getCoordinatesPositions();
-            boolean createCoordinateAllowed =
-                pubType.getCoordinatesPositionsType().getCreateEnable();
+            boolean createCoordinateAllowed = pubType.getCoordinatesPositionsType()
+                .getCreateEnable();
             if (coordinates != null) {
               for (Coordinate coordinate : coordinates) {
                 if (coordinate != null) {
@@ -757,8 +758,6 @@ public class PublicationsTypeManager {
                 ImportReportManager.addNumberOfFilesNotImported(nbFiles - copiedFiles.size());
 
                 // Create documents and versions in DB
-
-
                 // On additionne la taille des fichiers importés au niveau du rapport
                 for (SimpleDocument version : copiedFiles) {
                   ImportReportManager.addImportedFileSize(version.getSize(), componentId);

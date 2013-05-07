@@ -1,25 +1,22 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 /*
@@ -28,13 +25,6 @@
  */
 package com.silverpeas.form.displayers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -42,18 +32,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.junit.Test;
+import org.silverpeas.util.Charsets;
 
-import com.google.common.base.Charsets;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.fieldType.TextField;
+
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.Value;
+
+import org.apache.commons.fileupload.FileItem;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -68,7 +64,7 @@ public class PdcPositionsFieldDisplayerTest {
 
   public PdcPositionsFieldDisplayerTest() {
   }
-  
+
   /**
    * Test of getManagedTypes method, of class PdcPositionsFieldDisplayer.
    */
@@ -100,19 +96,19 @@ public class PdcPositionsFieldDisplayerTest {
   public void testDisplay() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     PrintWriter printer = new PrintWriter(new OutputStreamWriter(out, Charsets.UTF_8), true);
-    
+
     HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put("axisId", AXIS_ID);
-    
-    FieldTemplate template = mock(FieldTemplate.class);    
+
+    FieldTemplate template = mock(FieldTemplate.class);
     when(template.getParameters(LANGUAGE)).thenReturn(parameters);
-    
+
     PagesContext pagesContext = mockPageContext();
     PdcBm pdcBm = mockPdcBm();
-    
+
     ContentManager contentManager = mock(ContentManager.class);
     when(contentManager.getSilverContentId(OBJECT_ID, COMPONENT_ID)).thenReturn(55);
-    
+
     PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcBm, contentManager);
     instance.display(printer, null, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
@@ -127,17 +123,17 @@ public class PdcPositionsFieldDisplayerTest {
   public void testDisplayNotParameterized() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     PrintWriter printer = new PrintWriter(new OutputStreamWriter(out, Charsets.UTF_8), true);
-    
+
     HashMap<String, String> emptyParameters = new HashMap<String, String>();
-    FieldTemplate template = mock(FieldTemplate.class);    
+    FieldTemplate template = mock(FieldTemplate.class);
     when(template.getParameters(LANGUAGE)).thenReturn(emptyParameters);
-    
+
     PagesContext pagesContext = mockPageContext();
     PdcBm pdcBm = mockPdcBm();
-    
+
     ContentManager contentManager = mock(ContentManager.class);
     when(contentManager.getSilverContentId(OBJECT_ID, COMPONENT_ID)).thenReturn(55);
-    
+
     PdcPositionsFieldDisplayer instance = new PdcPositionsFieldDisplayer(pdcBm, contentManager);
     instance.display(printer, null, template, pagesContext);
     String display = new String(out.toByteArray(), Charsets.UTF_8).trim();
@@ -155,7 +151,7 @@ public class PdcPositionsFieldDisplayerTest {
     assertNotNull(updates);
     assertEquals(0, updates.size());
   }
-  
+
   /**
    * Test of update method, of class PdcPositionsFieldDisplayer.
    */
@@ -182,28 +178,28 @@ public class PdcPositionsFieldDisplayerTest {
     when(value1.getName()).thenReturn("chimie");
     Value value2 = mock(Value.class);
     when(value1.getName()).thenReturn("géographie");
-    
+
     PdcBm pdcBm = mock(PdcBm.class);
-    when(pdcBm.getPositions(55, COMPONENT_ID)).thenReturn(positions); 
+    when(pdcBm.getPositions(55, COMPONENT_ID)).thenReturn(positions);
     when(pdcBm.getValue(AXIS_ID, "2")).thenReturn(value1);
     when(pdcBm.getValue(AXIS_ID, "5")).thenReturn(value2);
-    
+
     return pdcBm;
   }
-  
+
   private ArrayList<ClassifyPosition> buildPositions() {
     ClassifyPosition position1 = mock(ClassifyPosition.class);
     when(position1.getValueOnAxis(2)).thenReturn("/0/2/");
 
     ClassifyPosition position2 = mock(ClassifyPosition.class);
     when(position1.getValueOnAxis(2)).thenReturn("/0/3/5/");
-    
+
     ArrayList<ClassifyPosition> results = new ArrayList<ClassifyPosition>();
     results.add(position1);
     results.add(position2);
     return results;
   }
-  
+
   /**
    * Test of isDisplayedMandatory method, of class PdcPositionsFieldDisplayer.
    */

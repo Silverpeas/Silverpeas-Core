@@ -1,45 +1,40 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.silverpeas.form.displayers;
 
-import com.google.common.base.Charsets;
-import com.silverpeas.form.fieldType.JdbcField;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FieldTemplate;
-import com.silverpeas.form.PagesContext;
-import com.silverpeas.jcrutil.RandomGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.silverpeas.util.Charsets;
+import com.silverpeas.form.FieldTemplate;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.fieldType.JdbcField;
+import com.silverpeas.jcrutil.RandomGenerator;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -51,7 +46,7 @@ public class JdbcFieldDisplayerTest {
 
   public JdbcFieldDisplayerTest() {
   }
-  
+
   /**
    * Test of getManagedTypes method, of class JdbcFieldDisplayer.
    */
@@ -88,9 +83,7 @@ public class JdbcFieldDisplayerTest {
     String lineSeparator = System.getProperty("line.separator");
     assertEquals("if (isWhitespace(stripInitialWhitespace(field.value))) {" + lineSeparator
         + "\t\terrorMsg+=\"  - 'Mon champs JDBC' doit être renseigné\\n \";" + lineSeparator
-        + "\t\terrorNb++;" + lineSeparator
-        + "\t}" + lineSeparator
-        + " try { " + lineSeparator
+        + "\t\terrorNb++;" + lineSeparator + "\t}" + lineSeparator + " try { " + lineSeparator
         + "if (typeof(checkmonChamps) == 'function')" + lineSeparator
         + " 	checkmonChamps('fr');" + lineSeparator
         + " } catch (e) { " + lineSeparator
@@ -105,7 +98,7 @@ public class JdbcFieldDisplayerTest {
   public void testDisplay() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
     PrintWriter printer = new PrintWriter(new OutputStreamWriter(out, Charsets.UTF_8), true);
-    FieldTemplate template = mock(FieldTemplate.class);    
+    FieldTemplate template = mock(FieldTemplate.class);
     when(template.getTypeName()).thenReturn(JdbcField.TYPE);
     when(template.isMandatory()).thenReturn(true);
     when(template.getLabel("fr")).thenReturn("Mon champs JDBC");
@@ -121,7 +114,7 @@ public class JdbcFieldDisplayerTest {
     when(field.getTypeName()).thenReturn(JdbcField.TYPE);
     int size = 5;
     List<String> resList = new ArrayList<String>(size);
-    for(int i = 0; i< size; i++) {
+    for (int i = 0; i < size; i++) {
       resList.add(String.valueOf(i));
     }
     when(field.selectSql(null, null, "0")).thenReturn(resList);
@@ -145,16 +138,16 @@ public class JdbcFieldDisplayerTest {
     pagesContext.setLanguage("fr");
     pagesContext.setEncoding("UTF-8");
     pagesContext.setUserId("0");
-    JdbcField field =  mock(JdbcField.class);
+    JdbcField field = mock(JdbcField.class);
     when(field.getTypeName()).thenReturn(JdbcField.TYPE);
     when(field.isReadOnly()).thenReturn(false);
-    when(field.acceptValue("newValue", "fr")).thenReturn(true);    
+    when(field.acceptValue("newValue", "fr")).thenReturn(true);
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();
     instance.update(newValue, field, null, pagesContext);
     verify(field).setValue("newValue", "fr");
   }
-  
-  @Test(expected=com.silverpeas.form.FormException.class)
+
+  @Test(expected = com.silverpeas.form.FormException.class)
   public void testUpdateIncorrectField() throws Exception {
     String newValue = "";
     JdbcField field = mock(JdbcField.class);
@@ -162,8 +155,8 @@ public class JdbcFieldDisplayerTest {
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();
     instance.update(newValue, field, null, null);
   }
-  
-  @Test(expected=com.silverpeas.form.FormException.class)
+
+  @Test(expected = com.silverpeas.form.FormException.class)
   public void testUpdateIncorrectValue() throws Exception {
     String newValue = "";
     PagesContext pagesContext = new PagesContext();
@@ -173,7 +166,7 @@ public class JdbcFieldDisplayerTest {
     pagesContext.setLanguage("fr");
     pagesContext.setEncoding("UTF-8");
     pagesContext.setUserId("0");
-    JdbcField field =  mock(JdbcField.class);
+    JdbcField field = mock(JdbcField.class);
     when(field.getTypeName()).thenReturn(JdbcField.TYPE);
     when(field.isReadOnly()).thenReturn(true);
     JdbcFieldDisplayer instance = new JdbcFieldDisplayer();

@@ -20,7 +20,6 @@
  */
 package com.silverpeas.authentication;
 
-import com.google.common.collect.Lists;
 import com.silverpeas.jcrutil.RandomGenerator;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -28,6 +27,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import com.silverpeas.util.CollectionUtil;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -147,8 +148,8 @@ public class SilverpeasSessionOpenenerTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     HttpSession session = mock(HttpSession.class);
     when(request.getSession()).thenReturn(session);
-    when(session.getAttributeNames()).thenReturn(Collections.enumeration(
-        Lists.newArrayList("test1", "test2")));
+    when(session.getAttributeNames()).thenReturn(Collections.enumeration(CollectionUtil.asList(
+        "test1", "test2")));
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     instance.closeSession(request);
     verify(session, times(1)).removeAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);

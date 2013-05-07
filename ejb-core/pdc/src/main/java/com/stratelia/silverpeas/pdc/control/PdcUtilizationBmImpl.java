@@ -1,35 +1,35 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.stratelia.silverpeas.pdc.control;
 
-import com.google.common.collect.Lists;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.silverpeas.search.searchEngine.model.AxisFilter;
+
+import com.silverpeas.util.CollectionUtil;
 
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
@@ -42,13 +42,13 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Class declaration
+ *
  * @author
  */
 public class PdcUtilizationBmImpl implements PdcUtilizationBm {
@@ -71,6 +71,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns an axis used by an instance
+   *
    * @param usedAxisId - the whished used axis.
    * @return an UsedAxis
    */
@@ -89,6 +90,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of used axis sorted.
+   *
    * @return a list sorted or null otherwise
    */
   @Override
@@ -110,13 +112,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns a list of axis header sorted.
+   *
    * @return a list sorted or null otherwise
    */
   @Override
-  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId)
-      throws PdcException {
-    List<String> instanceIds = Lists.newArrayList(instanceId);
-    return getAxisHeaderUsedByInstanceIds(instanceIds);
+  public List<AxisHeader> getAxisHeaderUsedByInstanceId(String instanceId) throws PdcException {
+    return getAxisHeaderUsedByInstanceIds(CollectionUtil.asList(instanceId));
   }
 
   @Override
@@ -151,12 +152,12 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
         first = false;
       }
 
-      SilverpeasBeanDAO<AxisHeaderPersistence> dao =
-          SilverpeasBeanDAOFactory.<AxisHeaderPersistence> getDAO(
+      SilverpeasBeanDAO<AxisHeaderPersistence> dao = SilverpeasBeanDAOFactory
+          .<AxisHeaderPersistence>getDAO(
           "com.stratelia.silverpeas.pdc.model.AxisHeaderPersistence");
       con = DBUtil.makeConnection(JNDINames.PDC_DATASOURCE);
-      Collection<AxisHeaderPersistence> result =
-          dao.findByWhereClause(con, new AxisPK("useless"), "id IN (" + inClause.toString() + ")");
+      Collection<AxisHeaderPersistence> result = dao.findByWhereClause(con, new AxisPK("useless"),
+          "id IN (" + inClause.toString() + ")");
 
       List<AxisHeader> axisHeaders = new ArrayList<AxisHeader>();
       if (result != null) {
@@ -177,6 +178,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Returns the usedAxis based on a defined axis
+   *
    * @param axisId - the id of the axis
    */
   private List<UsedAxis> getUsedAxisByAxisId(Connection con, int axisId)
@@ -192,6 +194,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Create an used axis into the data base.
+   *
    * @param usedAxis - the object which contains all data about utilization of an axis
    * @param treeId
    * @return usedAxisId
@@ -219,6 +222,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update an used axis into the data base.
+   *
    * @param usedAxis - the object which contains all data about utilization of the axis
    */
   @Override
@@ -253,6 +257,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * delete the used axis from the data base
+   *
    * @param usedAxisId - the id of the used axe
    */
   @Override
@@ -267,6 +272,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
+   *
    * @param usedAxisIds
    * @throws PdcException
    * @see
@@ -291,6 +297,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
+   *
    * @param con
    * @param axisId
    * @throws PdcException
@@ -309,6 +316,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Method declaration
+   *
    * @param valueId
    * @throws PdcException
    * @see
@@ -347,6 +355,7 @@ public class PdcUtilizationBmImpl implements PdcUtilizationBm {
 
   /**
    * Update a base value from the PdcUtilizationDAO
+   *
    * @param valueId - the base value that must be updated
    */
   private void updateBaseValue(Connection con, int oldBaseValue,

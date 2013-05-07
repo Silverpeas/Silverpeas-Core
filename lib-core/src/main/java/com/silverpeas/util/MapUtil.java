@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -39,6 +41,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -46,9 +49,8 @@ public class MapUtil {
    * @param value
    * @return
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  public static <K, V> Collection<V> putAdd(
-      final Class<? extends Collection> collectionClass,
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  public static <K, V> Collection<V> putAdd(final Class<? extends Collection> collectionClass,
       Map<K, Collection<V>> map, final K key, final V value) {
 
     if (map == null) {
@@ -75,6 +77,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing list collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -105,6 +108,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map adding that containing set collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -135,6 +139,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map removing that containing list collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -142,12 +147,9 @@ public class MapUtil {
    * @param value
    * @return
    */
-  public static <K, V> List<V> removeValueList(final Map<K, List<V>> map,
-      final K key, final V value) {
-
+  public static <K, V> List<V> removeValueList(final Map<K, List<V>> map, final K key, final V value) {
     List<V> result = null;
     if (map != null) {
-
       // Old value
       result = map.get(key);
       if (result != null) {
@@ -161,6 +163,7 @@ public class MapUtil {
 
   /**
    * Centralizes the map removing that containing set collections
+   *
    * @param <K>
    * @param <V>
    * @param map
@@ -187,6 +190,7 @@ public class MapUtil {
 
   /**
    * Transforming a map into an other map with same keys
+   *
    * @param <K>
    * @param <VI>
    * @param <VO>
@@ -212,10 +216,11 @@ public class MapUtil {
 
   /**
    * Convert a list into a map
+   *
    * @param map
    * @param collection
    */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public static void toMap(final Map map,
       final Collection<? extends Object> collection) {
     if (map != null && collection != null) {
@@ -223,5 +228,23 @@ public class MapUtil {
         map.put(object, object);
       }
     }
+  }
+
+  public static <K, V> boolean equals(Map<? extends K, ? extends V> left,
+      Map<? extends K, ? extends V> right) {
+    Map<K, V> onlyOnRight = new HashMap<K, V>(right);
+    for (Map.Entry<? extends K, ? extends V> entry : left.entrySet()) {
+      K leftKey = entry.getKey();
+      V leftValue = entry.getValue();
+      if (right.containsKey(leftKey)) {
+        V rightValue = onlyOnRight.remove(leftKey);
+        if (!ObjectUtils.equals(leftValue, rightValue)) {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    return onlyOnRight.isEmpty();
   }
 }

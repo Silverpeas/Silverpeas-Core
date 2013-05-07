@@ -23,7 +23,13 @@
  */
 package com.silverpeas.subscribe.service;
 
-import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
 import com.silverpeas.jndi.SimpleMemoryContextFactory;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionResource;
@@ -32,11 +38,13 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.mock.OrganizationControllerMock;
+
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.IDataSet;
@@ -52,25 +60,18 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * Same database environment as DAO tests.
- * User: Yohann Chastagnier
- * Date: 24/02/13
+ * Same database environment as DAO tests. User: Yohann Chastagnier Date: 24/02/13
  */
 public class SubscriptionServiceTest {
-  private static final String USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5 =
-      "userFromGroupOnly_GroupId_5";
+
+  private static final String USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5
+      = "userFromGroupOnly_GroupId_5";
   private static final String INSTANCE_ID = "kmelia60";
 
   // Spring context
@@ -108,7 +109,7 @@ public class SubscriptionServiceTest {
   protected IDataSet getDataSet() throws DataSetException {
     ReplacementDataSet dataSet = new ReplacementDataSet(new FlatXmlDataSetBuilder().build(
         this.getClass().getClassLoader()
-            .getResourceAsStream("com/silverpeas/subscribe/service/node-actors-test-dataset.xml")));
+        .getResourceAsStream("com/silverpeas/subscribe/service/node-actors-test-dataset.xml")));
     dataSet.addReplacementObject("[NULL]", null);
     return dataSet;
   }
@@ -148,8 +149,7 @@ public class SubscriptionServiceTest {
   public void testSubscribe() {
     NodePK nodePk = new NodePK("26", INSTANCE_ID);
     nodePk.setSpace("100");
-    Subscription subscription =
-        new NodeSubscription(UserSubscriptionSubscriber.from("100"), nodePk);
+    Subscription subscription = new NodeSubscription(UserSubscriptionSubscriber.from("100"), nodePk);
 
     // Verifying that subscription doesn't exist
     Collection<Subscription> result = subscriptionService.
@@ -223,8 +223,8 @@ public class SubscriptionServiceTest {
     SubscriptionSubscriber user11Subscriber = UserSubscriptionSubscriber.from("11");
 
     // Verifying state of subscription before removing
-    Collection<Subscription> result =
-        subscriptionService.getBySubscriberAndComponent(userSubscriber, INSTANCE_ID);
+    Collection<Subscription> result = subscriptionService
+        .getBySubscriberAndComponent(userSubscriber, INSTANCE_ID);
     assertThat(result, hasSize(8));
     result = subscriptionService.getBySubscriberAndComponent(user11Subscriber, INSTANCE_ID);
     assertThat(result, hasSize(2));
@@ -240,9 +240,9 @@ public class SubscriptionServiceTest {
 
     subscriptionService.unsubscribeByResources(Arrays
         .asList(NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID)),
-            NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)),
-            NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID)),
-            NodeSubscriptionResource.from(new NodePK("20", INSTANCE_ID))));
+        NodeSubscriptionResource.from(new NodePK("1", INSTANCE_ID)),
+        NodeSubscriptionResource.from(new NodePK("10", INSTANCE_ID)),
+        NodeSubscriptionResource.from(new NodePK("20", INSTANCE_ID))));
 
     // Verifying the deleted subscriptions
     result = subscriptionService.getBySubscriberAndComponent(userSubscriber, INSTANCE_ID);
@@ -265,7 +265,7 @@ public class SubscriptionServiceTest {
     // Node - User 2 - Self creation method
     assertThat(subscriptionService.
         existsSubscription(
-            new NodeSubscription(subscriber, new NodePK("0", INSTANCE_ID), "unknownUser")),
+        new NodeSubscription(subscriber, new NodePK("0", INSTANCE_ID), "unknownUser")),
         is(true));
 
     // Node - User 2 - Self creation method
@@ -387,7 +387,7 @@ public class SubscriptionServiceTest {
 
     result = subscriptionService
         .getSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
-            SubscriptionMethod.SELF_CREATION);
+        SubscriptionMethod.SELF_CREATION);
     assertThat(result, hasSize(5));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("2")));
@@ -401,8 +401,8 @@ public class SubscriptionServiceTest {
    */
   @Test
   public void testGetSubscribersForComponentResource() {
-    Collection<SubscriptionSubscriber> result =
-        subscriptionService.getSubscribers(ComponentSubscriptionResource.from(INSTANCE_ID));
+    Collection<SubscriptionSubscriber> result = subscriptionService.getSubscribers(
+        ComponentSubscriptionResource.from(INSTANCE_ID));
     assertThat(result, hasSize(6));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("3")));
@@ -430,7 +430,7 @@ public class SubscriptionServiceTest {
 
     result = subscriptionService
         .getUserSubscribers(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
-            SubscriptionMethod.SELF_CREATION);
+        SubscriptionMethod.SELF_CREATION);
     assertThat(result, hasSize(5));
     assertThat(result, hasItem("1"));
     assertThat(result, hasItem("2"));
@@ -445,8 +445,8 @@ public class SubscriptionServiceTest {
   @Test
   public void testGetUserSubscribersForComponentResource() {
     initializeUsersAndGroups();
-    Collection<String> result =
-        subscriptionService.getUserSubscribers(ComponentSubscriptionResource.from(INSTANCE_ID));
+    Collection<String> result = subscriptionService.getUserSubscribers(ComponentSubscriptionResource
+        .from(INSTANCE_ID));
     assertThat(result, hasSize(4));
     assertThat(result, hasItem("1"));
     assertThat(result, hasItem("3"));
@@ -459,10 +459,9 @@ public class SubscriptionServiceTest {
    */
   @Test
   public void testGetSubscribersForNodeResources() {
-    List<SubscriptionResource> resources = Lists
-        .asList(NodeSubscriptionResource.from(new NodePK("0", "100", INSTANCE_ID)),
-            new SubscriptionResource[]{
-                NodeSubscriptionResource.from(new NodePK("10", "100", INSTANCE_ID))});
+    List<NodeSubscriptionResource> resources = Arrays.asList(NodeSubscriptionResource.from(
+        new NodePK("0", "100", INSTANCE_ID)), NodeSubscriptionResource.from(new NodePK("10",
+        "100", INSTANCE_ID)));
     Collection<SubscriptionSubscriber> result = subscriptionService.getSubscribers(resources);
     assertThat(result, hasSize(10));
     assertThat(result, hasItem(UserSubscriptionSubscriber.from("1")));
@@ -495,7 +494,7 @@ public class SubscriptionServiceTest {
     // User is subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("1"),
-            NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
+        NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
 
     // User is subscribed through a group
     assertThat(subscriptionService.isSubscriberSubscribedToResource(
@@ -505,7 +504,7 @@ public class SubscriptionServiceTest {
     // User is not subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("2563"),
-            NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(false));
+        NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(false));
   }
 
   /**
@@ -518,7 +517,7 @@ public class SubscriptionServiceTest {
     // User is subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("1"),
-            ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
+        ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
 
     // User is subscribed through a group
     assertThat(subscriptionService.isSubscriberSubscribedToResource(
@@ -528,7 +527,7 @@ public class SubscriptionServiceTest {
     // User is not subscribed
     assertThat(subscriptionService
         .isSubscriberSubscribedToResource(UserSubscriptionSubscriber.from("2563"),
-            ComponentSubscriptionResource.from(INSTANCE_ID)), is(false));
+        ComponentSubscriptionResource.from(INSTANCE_ID)), is(false));
   }
 
   /**
@@ -545,7 +544,7 @@ public class SubscriptionServiceTest {
     // User is subscribed through a group
     assertThat(subscriptionService
         .isUserSubscribedToResource(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5,
-            NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
+        NodeSubscriptionResource.from(new NodePK("0", INSTANCE_ID))), is(true));
 
     // User is not subscribed
     assertThat(subscriptionService.isUserSubscribedToResource("2563",
@@ -567,7 +566,7 @@ public class SubscriptionServiceTest {
     // User is subscribed through a group
     assertThat(subscriptionService
         .isUserSubscribedToResource(USER_SUBSCRIBER_FROM_GROUP_ONLY_GROUPID_5,
-            ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
+        ComponentSubscriptionResource.from(INSTANCE_ID)), is(true));
 
     // User is not subscribed
     assertThat(subscriptionService

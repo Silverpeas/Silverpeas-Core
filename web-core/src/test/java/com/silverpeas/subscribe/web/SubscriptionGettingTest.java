@@ -1,30 +1,26 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.subscribe.web;
 
-import com.google.common.collect.Lists;
 import com.silverpeas.subscribe.Subscription;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
@@ -51,6 +47,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.util.CollectionUtil;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
 import static com.silverpeas.subscribe.web.SubscriptionTestResources.SUBSCRIPTION_RESOURCE_PATH;
 import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
@@ -103,19 +100,18 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
     String sessionKey = authenticate(user);
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
-    Collection<Subscription> subscriptions = Lists.newArrayList((Subscription) subscription);
+    Collection<Subscription> subscriptions = CollectionUtil.asList((Subscription) subscription);
     when(mockedSubscriptionService.
         getByResource(ComponentSubscriptionResource.from(COMPONENT_ID))).thenReturn(subscriptions);
     getTestResources().getMockableSubscriptionService()
         .setImplementation(mockedSubscriptionService);
-    SubscriptionEntity[] entities =
-        resource.path(SUBSCRIPTION_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).get(SubscriptionEntity[].class);
+    SubscriptionEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH)
+        .header(HTTP_SESSIONKEY, sessionKey).
+        accept(MediaType.APPLICATION_JSON).get(SubscriptionEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(1));
     assertThat(entities[0], SubscriptionEntityMatcher.matches(subscription));
   }
-
 
   @Test
   @SuppressWarnings("unchecked")
@@ -141,7 +137,7 @@ public class SubscriptionGettingTest extends RESTWebServiceTest<SubscriptionTest
         .setImplementation(mockedSubscriptionService);
     SubscriberEntity[] entities = resource.path(SUBSCRIPTION_RESOURCE_PATH + "/subscribers/0")
         .header(HTTP_SESSIONKEY, sessionKey).
-            accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
+        accept(MediaType.APPLICATION_JSON).get(SubscriberEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(4));
     Iterator<SubscriptionSubscriber> it = subscribers.iterator();

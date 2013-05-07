@@ -23,27 +23,30 @@
  */
 package com.stratelia.silverpeas.domains.ldapdriver;
 
-import com.google.common.base.Charsets;
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPEntry;
+import java.util.List;
+
+import org.silverpeas.ldap.CreateLdapServer;
+import org.silverpeas.ldap.OpenDJRule;
+import org.silverpeas.util.Charsets;
+
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Group;
-import java.util.List;
+
+import com.novell.ldap.LDAPAttribute;
+import com.novell.ldap.LDAPEntry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.silverpeas.ldap.CreateLdapServer;
-import org.silverpeas.ldap.OpenDJRule;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@CreateLdapServer(ldifConfig = "opendj/config/config.ldif", serverHome = "opendj", ldifFile =
-"silverpeas-ldap.ldif")
+@CreateLdapServer(ldifConfig = "opendj/config/config.ldif", serverHome = "opendj", ldifFile
+    = "silverpeas-ldap.ldif")
 public class LDAPGroupAllRootTest {
 
   @ClassRule
@@ -168,7 +171,7 @@ public class LDAPGroupAllRootTest {
     when(uuidAttribute.getName()).thenReturn("entryUUID");
     when(uuidAttribute.getStringValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54");
     when(uuidAttribute.getStringValueArray()).thenReturn(new String[]{
-          "a95b39de-ea91-45cb-9af0-890670075d54"});
+      "a95b39de-ea91-45cb-9af0-890670075d54"});
     when(uuidAttribute.getByteValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
@@ -177,12 +180,12 @@ public class LDAPGroupAllRootTest {
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
-          "uid=user.0,ou=People,dc=silverpeas,dc=org",
-          "uid=user.1,ou=People,dc=silverpeas,dc=org",
-          "uid=user.2,ou=People,dc=silverpeas,dc=org",
-          "uid=user.3,ou=People,dc=silverpeas,dc=org",
-          "uid=user.4,ou=People,dc=silverpeas,dc=org"
-        });
+      "uid=user.0,ou=People,dc=silverpeas,dc=org",
+      "uid=user.1,ou=People,dc=silverpeas,dc=org",
+      "uid=user.2,ou=People,dc=silverpeas,dc=org",
+      "uid=user.3,ou=People,dc=silverpeas,dc=org",
+      "uid=user.4,ou=People,dc=silverpeas,dc=org"
+    });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
 
@@ -203,7 +206,7 @@ public class LDAPGroupAllRootTest {
     when(uuidAttribute.getName()).thenReturn("entryUUID");
     when(uuidAttribute.getStringValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54");
     when(uuidAttribute.getStringValueArray()).thenReturn(new String[]{
-          "a95b39de-ea91-45cb-9af0-890670075d54"});
+      "a95b39de-ea91-45cb-9af0-890670075d54"});
     when(uuidAttribute.getByteValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
@@ -212,12 +215,12 @@ public class LDAPGroupAllRootTest {
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
-          "uid=user.0,ou=People,dc=silverpeas,dc=org",
-          "uid=user.1,ou=People,dc=silverpeas,dc=org",
-          "uid=user.2,ou=People,dc=silverpeas,dc=org",
-          "uid=user.3,ou=People,dc=silverpeas,dc=org",
-          "uid=user.4,ou=People,dc=silverpeas,dc=org"
-        });
+      "uid=user.0,ou=People,dc=silverpeas,dc=org",
+      "uid=user.1,ou=People,dc=silverpeas,dc=org",
+      "uid=user.2,ou=People,dc=silverpeas,dc=org",
+      "uid=user.3,ou=People,dc=silverpeas,dc=org",
+      "uid=user.4,ou=People,dc=silverpeas,dc=org"
+    });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
     List<String> result = instance.getTRUEUserIds(connectionId, groupEntry);
@@ -264,23 +267,23 @@ public class LDAPGroupAllRootTest {
     when(uuidAttribute.getName()).thenReturn("entryUUID");
     when(uuidAttribute.getStringValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54");
     when(uuidAttribute.getStringValueArray()).thenReturn(new String[]{
-          "a95b39de-ea91-45cb-9af0-890670075d54"});
+      "a95b39de-ea91-45cb-9af0-890670075d54"});
     when(uuidAttribute.getByteValue()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("a95b39de-ea91-45cb-9af0-890670075d54".getBytes(
         Charsets.UTF_8).length);
     when(groupEntry.getDN()).thenReturn("cn=Groupe 1,dc=silverpeas,dc=org");
-    
+
     LDAPAttribute uniqueMembers = mock(LDAPAttribute.class);
     when(uniqueMembers.getName()).thenReturn("uniqueMember");
     when(uniqueMembers.getStringValueArray()).thenReturn(new String[]{
-          "uid=user.0,ou=People,dc=silverpeas,dc=org",
-          "uid=user.1,ou=People,dc=silverpeas,dc=org",
-          "uid=user.2,ou=People,dc=silverpeas,dc=org",
-          "uid=user.3,ou=People,dc=silverpeas,dc=org",
-          "uid=user.4,ou=People,dc=silverpeas,dc=org",
-          "cn=Groupe 2,dc=silverpeas,dc=org"
-        });
+      "uid=user.0,ou=People,dc=silverpeas,dc=org",
+      "uid=user.1,ou=People,dc=silverpeas,dc=org",
+      "uid=user.2,ou=People,dc=silverpeas,dc=org",
+      "uid=user.3,ou=People,dc=silverpeas,dc=org",
+      "uid=user.4,ou=People,dc=silverpeas,dc=org",
+      "cn=Groupe 2,dc=silverpeas,dc=org"
+    });
     when(groupEntry.getAttribute("entryUUID")).thenReturn(uuidAttribute);
     when(groupEntry.getAttribute("uniqueMember")).thenReturn(uniqueMembers);
     when(groupEntry.getDN()).thenReturn("cn=Groupe 1,dc=silverpeas,dc=org");
@@ -294,7 +297,7 @@ public class LDAPGroupAllRootTest {
     when(uuidAttribute.getName()).thenReturn("entryUUID");
     when(uuidAttribute.getStringValue()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57");
     when(uuidAttribute.getStringValueArray()).thenReturn(new String[]{
-          "b475049f-f640-400a-b643-3a8d047e8d57"});
+      "b475049f-f640-400a-b643-3a8d047e8d57"});
     when(uuidAttribute.getByteValue()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57".getBytes(
         Charsets.UTF_8));
     when(uuidAttribute.size()).thenReturn("b475049f-f640-400a-b643-3a8d047e8d57".getBytes(
@@ -334,7 +337,7 @@ public class LDAPGroupAllRootTest {
     assertThat(result[index].getRule(), is(nullValue()));
     assertThat(result[index].getUserIds(), is(not(nullValue())));
     assertThat(result[index].getUserIds(), arrayWithSize(2));
-    
+
     index = 0;
     assertThat(result[index].getSpecificId(), is("04d0ceff-2ccc-4c78-8c55-e819875cb0ae"));
     assertThat(result[index].getName(), is("Groupe 3"));

@@ -1,44 +1,44 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.form.fieldType;
-
-import com.google.common.base.Joiner;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import com.silverpeas.util.ArrayUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
+import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  * A UserField stores user references.
+ *
  * @see Field
  * @see com.silverpeas.form.FieldDisplayer
  */
@@ -52,6 +52,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the type name.
+   *
    * @return
    */
   @Override
@@ -67,6 +68,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the user id referenced by this field.
+   *
    * @return
    */
   public String[] getUserIds() {
@@ -75,6 +77,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Set the user ids referenced by this field.
+   *
    * @param currentUserIds
    */
   public void setUserIds(String[] currentUserIds) {
@@ -89,6 +92,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if the value is read only.
+   *
    * @return
    */
   public boolean isReadOnly() {
@@ -97,6 +101,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the string value of this field : aka the user name.
+   *
    * @return
    */
   @Override
@@ -111,7 +116,7 @@ public class MultipleUserField implements Field {
     }
 
     StringBuilder value = new StringBuilder();
-    UserDetail[] users =  OrganisationControllerFactory.getOrganisationController()
+    UserDetail[] users = OrganisationControllerFactory.getOrganisationController()
         .getUserDetails(getUserIds());
     for (int i = 0; i < users.length; i++) {
       if (i > 0) {
@@ -130,6 +135,7 @@ public class MultipleUserField implements Field {
   /**
    * Returns the local value of this field. There is no local format for a user field, so the
    * language parameter is unused.
+   *
    * @param language
    * @return
    */
@@ -140,6 +146,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
+   *
    * @param value
    * @throws FormException
    */
@@ -149,6 +156,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Does nothing since a user reference can't be computed from a user name.
+   *
    * @param value
    * @param language
    * @throws FormException
@@ -159,6 +167,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
+   *
    * @param value
    * @return
    */
@@ -169,6 +178,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Always returns false since a user reference can't be computed from a user name.
+   *
    * @param value
    * @param language
    * @return
@@ -180,6 +190,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns the User referenced by this field.
+   *
    * @return
    */
   @Override
@@ -187,11 +198,12 @@ public class MultipleUserField implements Field {
     if (this.userIds == null || this.userIds.length == 0) {
       return null;
     }
-    return  OrganisationControllerFactory.getOrganisationController().getUserDetails(getUserIds());
+    return OrganisationControllerFactory.getOrganisationController().getUserDetails(getUserIds());
   }
 
   /**
    * Set user referenced by this field.
+   *
    * @param value
    * @throws FormException
    */
@@ -212,6 +224,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if the value is a String and this field isn't read only.
+   *
    * @param value
    * @return
    */
@@ -225,6 +238,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns this field value as a normalized String : a user id
+   *
    * @return
    */
   @Override
@@ -232,12 +246,12 @@ public class MultipleUserField implements Field {
     if (userIds == null) {
       return "";
     }
-    Joiner joiner = Joiner.on(",").skipNulls();
-    return joiner.join(userIds);
+    return StringUtil.join(userIds, ',');
   }
 
   /**
    * Set this field value from a normalized String : a user id
+   *
    * @param value
    */
   @Override
@@ -258,6 +272,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if this field isn't read only.
+   *
    * @param value
    * @return
    */
@@ -268,6 +283,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Returns true if this field is not set.
+   *
    * @return
    */
   @Override
@@ -277,6 +293,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Set to null this field.
+   *
    * @throws FormException when the field is read only or when the field is mandatory.
    */
   @Override
@@ -286,6 +303,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Tests equality beetwen this field and the specified field.
+   *
    * @param o
    * @return
    */
@@ -315,6 +333,7 @@ public class MultipleUserField implements Field {
 
   /**
    * Compares this field with the specified field. This is nonsense to compare arrays.
+   *
    * @param o
    * @return
    */

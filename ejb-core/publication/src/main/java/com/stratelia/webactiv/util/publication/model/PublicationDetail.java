@@ -66,7 +66,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 
-import com.google.common.base.Objects;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * This object contains the description of a publication
@@ -829,8 +829,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     DataRecord data = null;
     PublicationTemplate pub = null;
     try {
-      pub =
-          PublicationTemplateManager.getInstance().getPublicationTemplate(
+      pub = PublicationTemplateManager.getInstance().getPublicationTemplate(
           getPK().getInstanceId() + ":" + getInfoId());
       data = pub.getRecordSet().getRecord(pk.getId());
     } catch (Exception e) {
@@ -848,10 +847,10 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
     for (String fieldName : fieldNames) {
       try {
         Field field = data.getField(fieldName);
-        GenericFieldTemplate fieldTemplate =
-            (GenericFieldTemplate) pub.getRecordTemplate().getFieldTemplate(fieldName);
-        FieldDisplayer fieldDisplayer =
-            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) pub.getRecordTemplate()
+            .getFieldTemplate(fieldName);
+        FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate
+            .getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
@@ -1233,7 +1232,7 @@ public class PublicationDetail extends AbstractI18NBean implements SilverContent
   }
 
   public boolean isPublicationEditor(String userId) {
-    return Objects.equal(creatorId, userId) || Objects.equal(updaterId, userId);
+    return ObjectUtils.equals(creatorId, userId) || ObjectUtils.equals(updaterId, userId);
   }
 
   @Override
