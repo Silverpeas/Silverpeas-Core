@@ -373,6 +373,17 @@ button:hover{
 	background-color:#A8DE66;
 }
 
+/* reglage nouvelle taille boutons */
+#directory #indexAndSearch .milieuBoutonV5 a,
+#blog #zoneRecherche .buttonPane .milieuBoutonV5 a,
+.yellowpages .tableBoard  .buttonPane  .milieuBoutonV5 a,
+#pdcFrame .milieuBoutonV5 a {
+    line-height: 100%;
+    padding: 4px 10px;
+}
+#directory #indexAndSearch .milieuBoutonV5 {
+	border:0;
+}
 
 #topBar #shortcuts {
     top: 68px;
