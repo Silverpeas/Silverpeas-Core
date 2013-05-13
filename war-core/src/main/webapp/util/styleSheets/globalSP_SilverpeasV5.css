@@ -5095,7 +5095,7 @@ input.search:focus {
   position:absolute;
   width:310px;
   display: block;
-  z-index: 1000;
+  z-index: 100000;
 }
 
 .userzoom-infoConnection img {
@@ -5676,4 +5676,47 @@ ul.tagit li.tagit-choice a.tagit-close {
 .ui-dialog .champ-ui-dialog input[type=file],
 .ui-dialog .champ-ui-dialog textarea {
   width: 90%;
+}
+
+/*******************************/
+/** Responsibles **/
+/*******************************/
+
+.responsibles-roles {
+  max-width: 750px;
+}
+
+.responsibles-roles ul {
+  list-style-type: none;
+}
+
+.responsibles-roles .role {
+  font-weight: bold;
+  font-size: 10pt;
+  margin-bottom: 5px;
+}
+
+.responsibles-roles .user {
+  width: 200px;
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.responsibles-roles .user div {
+  display: table-cell;
+}
+
+.responsibles-roles .user .avatar {
+  padding-right: 5px;
+  vertical-align: middle;
+}
+
+.responsibles-roles .user .avatar img {
+  width: 50px;
+  height: auto;
+}
+
+.responsibles-roles .user .user-identity {
+  vertical-align: middle;
 }

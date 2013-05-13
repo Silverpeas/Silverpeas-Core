@@ -26,6 +26,33 @@
 -->
 
 <PortletAppRegistry version="1.0">
+  <PortletApp name="silverpeas.SpaceResponsiblesPortlet" portletName="silverpeas.SpaceResponsiblesPortlet">
+    <Properties>
+      <String name="archiveType" value="war"/>
+      <String name="title" value="Silverpeas Space Responsibles Portlet"/>
+      <String name="shortTitle" value="Silverpeas Space Responsibles Portlet"/>
+      <String name="description" value="Silverpeas SpaceResponsiblesPortlet"/>
+      <String name="archiveName" value="war-ic-exp.war"/>
+      <Collection name="supportedContentTypes">
+        <String value="text/html"/>
+      </Collection>
+      <Collection name="displayNameMap">
+        <String name="fr" value="Responsables(s) de l'espace"/>
+        <String name="en" value="Responsible(s) for application"/>
+        <String name="de" value="Responsible(s) for application"/>
+      </Collection>
+      <Collection name="descriptionMap">
+        <String name="fr" value="SpaceResponsiblesPortlet"/>
+        <String name="en" value="SpaceResponsiblesPortlet"/>
+        <String name="de" value="SpaceResponsiblesPortlet"/>
+      </Collection>
+      <Collection name="supportsMap">
+        <Collection name="text/html">
+          <String value="VIEW"/>
+        </Collection>
+      </Collection>
+    </Properties>
+  </PortletApp>
   <PortletApp name="silverpeas.MyTodosPortlet" portletName="silverpeas.MyTodosPortlet">
     <Properties>
       <String name="archiveType" value="war"/>
@@ -144,8 +171,8 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Une application"/>
-		<String name="en" value="An application"/>
-		<String name="de" value="Eine Komponente"/>
+        <String name="en" value="An application"/>
+        <String name="de" value="Eine Komponente"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="ComponentInstancePortlet"/>
@@ -171,8 +198,8 @@
       </Collection>
       <Collection name="displayNameMap">
         <String name="fr" value="Mes requêtes favorites"/>
-		<String name="en" value="Favourite searches"/>
-		<String name="de" value="Meine Lieblings-Queries"/>
+        <String name="en" value="Favourite searches"/>
+        <String name="de" value="Meine Lieblings-Queries"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="FavoriteQueriesPortlet"/>

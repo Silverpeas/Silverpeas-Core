@@ -80,6 +80,9 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
         case wysiwyg:
           includeWysiwygEditor(xhtml);
           break;
+        case responsibles:
+          includeResponsibles(xhtml);
+          break;
         case popup:
           includePopup(xhtml);
           break;

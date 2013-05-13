@@ -60,6 +60,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPaneSilverpeasV
 import com.stratelia.webactiv.util.viewGenerator.html.window.Window;
 import com.stratelia.webactiv.util.viewGenerator.html.window.WindowWeb20V5;
 import org.apache.commons.lang3.CharEncoding;
+import org.apache.ecs.ElementContainer;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -381,6 +382,8 @@ public class GraphicElementFactory {
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
+      code.append(JavascriptPluginInclusion.includeResponsibles(new ElementContainer()).toString())
+          .append("\n");
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",

@@ -23,20 +23,20 @@
  */
 package org.silverpeas.admin.web;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.silverpeas.admin.web.AdminResourceURIs.FORCE_GETTING_FAVORITE_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_NOT_USED_COMPONENTS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_USED_COMPONENTS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.GET_USED_TOOLS_PARAM;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_APPEARANCE_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_BASE_URI;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_COMPONENTS_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_CONTENT_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_PERSONAL_URI_PART;
-import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_SPACES_URI_PART;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import com.silverpeas.annotation.Authenticated;
+import com.silverpeas.annotation.RequestScoped;
+import com.silverpeas.annotation.Service;
+import com.silverpeas.profile.web.ProfileResourceBaseURIs;
+import com.silverpeas.util.CollectionUtil;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.SpaceInst;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceProfileInst;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -48,13 +48,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.silverpeas.annotation.Authenticated;
-import com.silverpeas.annotation.RequestScoped;
-import com.silverpeas.annotation.Service;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.silverpeas.admin.web.AdminResourceURIs.*;
 
 /**
  * A REST Web resource giving space data.
@@ -74,7 +75,7 @@ public class SpaceResource extends AbstractAdminResource {
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Produces(APPLICATION_JSON)
@@ -101,7 +102,7 @@ public class SpaceResource extends AbstractAdminResource {
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path("{spaceId}")
@@ -119,6 +120,81 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
+   * Gets users and groups roles indexed by role names.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * If the user isn't authentified, a 401 HTTP code is returned.
+   * If the user isn't authorized to access the space, a 403 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * @param spaceId the id of space to process.
+   * @param roles aimed roles (each one separated by comma). If empty, all roles are returned.
+   * @return the JSON response to the HTTP GET request.
+   */
+  @GET
+  @Path("{spaceId}/" + USERS_AND_GROUPS_ROLES_URI_PART)
+  @Produces(APPLICATION_JSON)
+  public Map<SilverpeasRole, UsersAndGroupsRoleEntity> getUsersAndGroupsRoles(
+      @PathParam("spaceId") final String spaceId, @QueryParam(ROLES_PARAM) final String roles) {
+    try {
+      verifyUserAuthorizedToAccessSpace(spaceId);
+
+      // Initializing the result
+      Map<SilverpeasRole, UsersAndGroupsRoleEntity> result =
+          new LinkedHashMap<SilverpeasRole, UsersAndGroupsRoleEntity>();
+
+      // Aimed roles or all roles ?
+      Collection<String> aimedRoles = new ArrayList<String>(0);
+      if (StringUtil.isDefined(roles)) {
+        aimedRoles = CollectionUtil.asList(StringUtils.split(roles, ","));
+      }
+
+      // Getting space profiles
+      SpaceInst spaceInst = getOrganisationController().getSpaceInstById(spaceId);
+      List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
+      profiles.addAll(spaceInst.getInheritedProfiles());
+      profiles.addAll(spaceInst.getProfiles());
+
+      // Building entities
+      ResourceLocator resource =
+          new ResourceLocator("com.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle",
+              getUserPreferences().getLanguage());
+      UsersAndGroupsRoleEntity roleEntity;
+      for (SpaceProfileInst profile : profiles) {
+        if (SilverpeasRole.exists(profile.getName()) &&
+            (aimedRoles.isEmpty() || aimedRoles.contains(profile.getName()))) {
+          SilverpeasRole role = SilverpeasRole.from(profile.getName());
+          roleEntity = result.get(role);
+          if (roleEntity == null) {
+            roleEntity = UsersAndGroupsRoleEntity.createFrom(role,
+                (StringUtil.isDefined(profile.getLabel()) ? profile.getLabel() :
+                    resource.getString("JSPP." + profile.getName())));
+            roleEntity.withURI(buildURIOfSpaceUsersAndGroupsRoles(spaceId, role, getUriInfo()))
+                .withParentURI(buildURIOfSpace(spaceId, getUriInfo()));
+            result.put(role, roleEntity);
+          }
+
+          // Users
+          for (String userId : profile.getAllUsers()) {
+            roleEntity.addUser(buildURI(getUriInfo().getBaseUri().toString(),
+                ProfileResourceBaseURIs.USERS_BASE_URI, userId));
+          }
+
+          // Groups
+          for (String groupId : profile.getAllGroups()) {
+            roleEntity.addGroup(buildURI(getUriInfo().getBaseUri().toString(),
+                ProfileResourceBaseURIs.GROUPS_BASE_URI, groupId));
+          }
+        }
+      }
+
+      return result;
+    } catch (final WebApplicationException ex) {
+      throw ex;
+    } catch (final Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  /**
    * Updates the space data from its JSON representation and returns it once updated.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
@@ -127,7 +203,7 @@ public class SpaceResource extends AbstractAdminResource {
    * @param spaceId the id of space to process.
    * @param spaceEntity space entity to update.
    * @return the response to the HTTP PUT request with the JSON representation of the updated
-   * space.
+   *         space.
    */
   @PUT
   @Path("{spaceId}")
@@ -169,7 +245,7 @@ public class SpaceResource extends AbstractAdminResource {
    * @param spaceId the id of space to process.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path("{spaceId}/" + SPACES_SPACES_URI_PART)
@@ -196,7 +272,7 @@ public class SpaceResource extends AbstractAdminResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path("{spaceId}/" + SPACES_COMPONENTS_URI_PART)
@@ -204,8 +280,8 @@ public class SpaceResource extends AbstractAdminResource {
   public Collection<ComponentEntity> getComponents(@PathParam("spaceId") final String spaceId) {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
-      return asWebEntities(ComponentEntity.class, loadComponents(getAdminServices()
-          .getAllComponentIds(spaceId, getUserDetail().getId())));
+      return asWebEntities(ComponentEntity.class,
+          loadComponents(getAdminServices().getAllComponentIds(spaceId, getUserDetail().getId())));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -221,7 +297,7 @@ public class SpaceResource extends AbstractAdminResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path("{spaceId}/" + SPACES_CONTENT_URI_PART)
@@ -249,7 +325,7 @@ public class SpaceResource extends AbstractAdminResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path("{spaceId}/" + SPACES_APPEARANCE_URI_PART)
@@ -278,7 +354,7 @@ public class SpaceResource extends AbstractAdminResource {
    * @param getUsedComponents
    * @param getUsedTools
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @GET
   @Path(SPACES_PERSONAL_URI_PART)
@@ -305,8 +381,8 @@ public class SpaceResource extends AbstractAdminResource {
             getAdminPersonalDelegate().getUsedComponents()));
       }
       if (getAll || getUsedTools) {
-        personals.addAll(asWebPersonalEntities(PersonalToolEntity.class, getAdminPersonalDelegate()
-            .getUsedTools()));
+        personals.addAll(asWebPersonalEntities(PersonalToolEntity.class,
+            getAdminPersonalDelegate().getUsedTools()));
       }
       return personals;
     } catch (final WebApplicationException ex) {
@@ -324,12 +400,13 @@ public class SpaceResource extends AbstractAdminResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param componentName the name of component to add in the user's personal space
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @PUT
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
   @Produces(APPLICATION_JSON)
-  public PersonalComponentEntity useComponent(@PathParam("componentName") final String componentName) {
+  public PersonalComponentEntity useComponent(
+      @PathParam("componentName") final String componentName) {
     try {
       return asWebPersonalEntity(getAdminPersonalDelegate().useComponent(componentName));
     } catch (final AdminException ex) {
@@ -344,14 +421,15 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Removes from the user's personal space the instantiation of the requested component. It returns
+   * Removes from the user's personal space the instantiation of the requested component. It
+   * returns
    * the JSON representation of WAComponent.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param componentName the name of component to add in the user's personal space
    * @return the response to the HTTP GET request with the JSON representation of the asked
-   * space.
+   *         space.
    */
   @DELETE
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
