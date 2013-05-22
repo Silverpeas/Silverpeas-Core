@@ -22,6 +22,7 @@ package com.stratelia.webactiv.calendar.backbone;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -95,7 +96,8 @@ public class TodoBackboneAccess {
           "id=" + id);
 
       if (todo.getAttendees() != null) {
-        Collection<UserRecipient> selectedUsers = new ArrayList<UserRecipient>();
+        Collection<UserRecipient> selectedUsers = new ArrayList<UserRecipient>(todo.getAttendees()
+            .size());
         for (Attendee attendee : todo.getAttendees()) {
           getCalendarBm().addToDoAttendee(id, attendee);
           if (notifyAttendees && (!todo.getDelegatorId().equals(attendee.getUserId()))) {
@@ -145,7 +147,7 @@ public class TodoBackboneAccess {
       ToDoHeader header = getCalendarBm().getToDoHeader(id);
       TodoDetail detail = todoHeaderToDetail(header);
       Collection<Attendee> list = getCalendarBm().getToDoAttendees(id);
-      Vector<Attendee> vector = new Vector<Attendee>(list);
+      List<Attendee> vector = new ArrayList<Attendee>(list);
       detail.setAttendees(vector);
       return detail;
     } catch (Exception e) {
@@ -167,7 +169,6 @@ public class TodoBackboneAccess {
       Vector<TodoDetail> result = new Vector<TodoDetail>();
       for (ToDoHeader header : headers) {
         TodoDetail detail = todoHeaderToDetail(header);
-
         Collection<Attendee> list = getCalendarBm().getToDoAttendees(detail.getId());
         detail.setAttendees(new Vector<Attendee>(list));
         result.add(detail);

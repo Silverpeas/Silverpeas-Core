@@ -574,6 +574,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>SubscriptionRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.subscription.servlets.SubscriptionRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>OutlookSyncCalendarServlet</servlet-name>
+    <servlet-class>org.silverpeas.calendar.OutlookSyncCalendarServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>REST Container</servlet-name>
     <url-pattern>/services/*</url-pattern>
@@ -982,6 +986,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   <servlet-mapping>
     <servlet-name>SubscriptionRequestRouter</servlet-name>
     <url-pattern>/RSubscription/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>OutlookSyncCalendarServlet</servlet-name>
+    <url-pattern>/ImportCalendar/*</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>Login.jsp</welcome-file>

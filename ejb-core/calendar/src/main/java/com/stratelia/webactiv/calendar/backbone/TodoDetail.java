@@ -26,9 +26,9 @@ package com.stratelia.webactiv.calendar.backbone;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.stratelia.webactiv.calendar.model.Attendee;
-import java.util.List;
 
 public class TodoDetail implements Serializable {
 
@@ -101,19 +101,19 @@ public class TodoDetail implements Serializable {
     return description;
   }
 
-  public java.util.Date getStartDate() {
+  public Date getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(java.util.Date start) {
+  public void setStartDate(Date start) {
     this.startDate = start;
   }
 
-  public java.util.Date getEndDate() {
+  public Date getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(java.util.Date end) {
+  public void setEndDate(Date end) {
     this.endDate = end;
   }
 
@@ -125,11 +125,11 @@ public class TodoDetail implements Serializable {
     percentCompleted = newValue;
   }
 
-  public void setCompletedDate(java.util.Date date) {
+  public void setCompletedDate(Date date) {
     completedDate = date;
   }
 
-  public java.util.Date getCompletedDate() {
+  public Date getCompletedDate() {
     return completedDate;
   }
 
