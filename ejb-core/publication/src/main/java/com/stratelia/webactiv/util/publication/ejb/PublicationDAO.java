@@ -1,26 +1,26 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2011 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.com/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 package com.stratelia.webactiv.util.publication.ejb;
 
 import java.sql.Connection;
@@ -55,9 +55,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException
 import com.stratelia.webactiv.util.publication.model.PublicationWithStatus;
 
 /**
- * This is the Publication Data Access Object.
- * @author Nicolas Eysseric
- */
+* This is the Publication Data Access Object.
+* @author Nicolas Eysseric
+*/
 public class PublicationDAO {
   // if beginDate is null, it will be replace in database with it
 
@@ -80,20 +80,20 @@ public class PublicationDAO {
       + "pubCreatorId = ?, pubImportance = ?, pubVersion = ?, pubKeywords = ?, pubContent = ?, "
       + "pubStatus = ?, pubUpdateDate = ?, pubUpdaterId = ?, "
       + "instanceId = ?, pubValidatorId = ?, pubValidateDate = ?, pubBeginHour = ?, pubEndHour = ?, "
-      + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ?, pubDraftOutDate = ?  "
+      + "pubAuthor = ?, pubTargetValidatorId = ?, pubCloneId = ?, pubCloneStatus = ?, lang = ?, pubDraftOutDate = ? "
       + "WHERE pubId = ? ";
 
   /**
-   * This class must not be instanciated
-   * @since 1.0
-   */
+* This class must not be instanciated
+* @since 1.0
+*/
   public PublicationDAO() {
   }
 
   /**
-   * Invalidate last publications for a given instance
-   * @param instanceId
-   */
+* Invalidate last publications for a given instance
+* @param instanceId
+*/
   public static void invalidateLastPublis(String instanceId) {
     lastPublis.remove(instanceId);
   }
@@ -164,13 +164,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param fatherPKs
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param fatherPKs
+* @return
+* @throws SQLException
+* @see
+*/
   public static int getNbPubInFatherPKs(Connection con, Collection<NodePK> fatherPKs)
       throws SQLException {
     ResultSet rs = null;
@@ -251,14 +251,14 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param fatherPK
-   * @param fatherPath
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param fatherPK
+* @param fatherPath
+* @return
+* @throws SQLException
+* @see
+*/
   public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
       String fatherPath) throws SQLException {
     int result = 0;
@@ -274,7 +274,7 @@ public class PublicationDAO {
       selectStatement.append(" where F.pubId = P.pubId ");
       selectStatement.append(" and F.nodeId = N.nodeId ");
       selectStatement.append(" and P.instanceId = ? ");
-      selectStatement.append(" and N.instanceId  = ? ");
+      selectStatement.append(" and N.instanceId = ? ");
       selectStatement.append(" and (");
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
       selectStatement.append(
@@ -401,8 +401,8 @@ public class PublicationDAO {
         }else {
           nodeTree = new NodeTree(new NodePK(nodeIdentifier, instanceId));
           nodes.put(nodeIdentifier, nodeTree);
-        }         
-        nodeTree.setNbPublications(rs.getInt("nbPubli"));        
+        }
+        nodeTree.setNbPublications(rs.getInt("nbPubli"));
         String fatherId = rs.getString("nodefatherid");
         NodeTree father;
         if (nodes.containsKey(fatherId)) {
@@ -433,12 +433,12 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param detail
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param detail
+* @throws SQLException
+* @see
+*/
   public static void insertRow(Connection con, PublicationDetail detail)
       throws SQLException {
     StringBuilder insertStatement = new StringBuilder(128);
@@ -552,12 +552,12 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pk
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pk
+* @throws SQLException
+* @see
+*/
   public static void deleteRow(Connection con, PublicationPK pk)
       throws SQLException {
     PublicationFatherDAO.removeAllFather(con, pk); // Delete associations
@@ -590,9 +590,9 @@ public class PublicationDAO {
 
     } catch (PublicationRuntimeException e) {
       /*
-       * NodeRuntimeException thrown by loadRow() should be replaced by
-       * returning null (not found)
-       */
+* NodeRuntimeException thrown by loadRow() should be replaced by
+* returning null (not found)
+*/
       return null;
     }
   }
@@ -628,6 +628,11 @@ public class PublicationDAO {
 
   private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
       PublicationPK pubPK) throws SQLException {
+    return resultSet2PublicationDetail(rs, pubPK, false);
+  }
+
+  private static PublicationDetail resultSet2PublicationDetail(ResultSet rs,
+      PublicationPK pubPK, boolean getSort) throws SQLException {
     // SilverTrace.debug("publication",
     // "PublicationDAO.resultSet2PublicationDetail()",
     // "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
@@ -741,6 +746,10 @@ public class PublicationDAO {
           "PublicationDAO : resultSet2PublicationDetail() : internal error : draftOutDate format unknown for publication.pk = "
           + pk + " : " + e.toString());
     }
+    int order = -1;
+    if (getSort) {
+      order = rs.getInt("pubOrder");
+    }
     pub = new PublicationDetail(pk, name, description, creationDate, beginDate,
         endDate, creatorId, importance, version, keywords, content, status,
         updateDate, updaterId, validateDate, validatorId,
@@ -754,17 +763,18 @@ public class PublicationDAO {
     pub.setCloneStatus(cloneStatus);
     pub.setLanguage(lang);
     pub.setDraftOutDate(draftOutDate);
+    pub.setExplicitRank(order); 
     return pub;
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param fatherPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param fatherPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectByFatherPK(con, fatherPK, null);
@@ -785,13 +795,9 @@ public class PublicationDAO {
       throws SQLException {
     PublicationPK pubPK = new PublicationPK("unknown", fatherPK);
     StringBuilder selectStatement = new StringBuilder(QueryStringFactory.getSelectByFatherPK(
-        pubPK.getTableName(), filterOnVisibilityPeriod));
-    if (userId != null) {
-      selectStatement.append(" AND (P.pubUpdaterId = ? OR P.pubCreatorId = ? )");
-    }
-    selectStatement.append(" ORDER BY F.pubOrder ASC");
+        pubPK.getTableName(), filterOnVisibilityPeriod, userId)); 
     if (sorting != null) {
-      selectStatement.append(", ").append(sorting);
+      selectStatement.append(" ORDER BY ").append(sorting);
     }
     SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()", "root.MSG_GEN_PARAM_VALUE",
         "selectStatement = " + selectStatement);
@@ -803,6 +809,11 @@ public class PublicationDAO {
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
       int index = 3;
+      if (userId != null) {
+        prepStmt.setString(3, userId);
+        prepStmt.setString(4, userId);
+        index = 5;
+      }
       if (filterOnVisibilityPeriod) {
         java.util.Date now = new java.util.Date();
         String dateNow = DateUtil.formatDate(now);
@@ -812,29 +823,25 @@ public class PublicationDAO {
         hourNow = DateUtil.formatTime(now);
         SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()",
             "root.MSG_GEN_PARAM_VALUE", "hourNow = " + hourNow);
-        prepStmt.setString(3, dateNow);
-        prepStmt.setString(4, dateNow);
-        prepStmt.setString(5, dateNow);
-        prepStmt.setString(6, dateNow);
-        prepStmt.setString(7, hourNow);
-        prepStmt.setString(8, dateNow);
-        prepStmt.setString(9, dateNow);
-        prepStmt.setString(10, hourNow);
-        prepStmt.setString(11, dateNow);
-        prepStmt.setString(12, dateNow);
-        prepStmt.setString(13, hourNow);
-        prepStmt.setString(14, hourNow);
-        index = 15;
+        prepStmt.setString(index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, dateNow);
+        prepStmt.setString(++index, hourNow);
+        prepStmt.setString(++index, hourNow);
       }
-      if (userId != null) {
-        prepStmt.setString(index, userId);
-        prepStmt.setString(index + 1, userId);
-      }
+      
       rs = prepStmt.executeQuery();
       List<PublicationDetail> list = new ArrayList<PublicationDetail>();
       PublicationDetail pub = null;
       while (rs.next()) {
-        pub = resultSet2PublicationDetail(rs, pubPK);
+        pub = resultSet2PublicationDetail(rs, pubPK, true); 
         list.add(pub);
       }
       return list;
@@ -849,13 +856,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param fatherPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param fatherPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
     return selectNotInFatherPK(con, fatherPK, null);
@@ -942,11 +949,11 @@ public class PublicationDAO {
 
     StringBuilder selectStatement = new StringBuilder(128);
     selectStatement.append(
-        "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
+        "select distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
     selectStatement.append(
-        "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
+        " P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
     selectStatement.append(
-        "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate, F.puborder ");
+        " P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate, F.puborder ");
     selectStatement.append("from ").append(pubPK.getTableName()).append(" P, ").append(pubPK.
         getTableName()).append("Father F ");
 
@@ -1049,14 +1056,14 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param status
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @param status
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectByStatus(Connection con, PublicationPK pubPK,
       String status) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -1091,11 +1098,11 @@ public class PublicationDAO {
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
       selectStatement.append(
-          "select  distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
+          "select distinct P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, P.pubBeginDate, ");
       selectStatement.append(
-          "         P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
+          " P.pubEndDate, P.pubCreatorId, P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
       selectStatement.append(
-          "		 P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate ");
+          " P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubdraftoutdate ");
       selectStatement.append("from ").append(publicationTableName).append(
           " P, ").append(publicationTableName).append("Father F ");
       selectStatement.append("where P.pubStatus = '").append(status).append("'");
@@ -1177,7 +1184,7 @@ public class PublicationDAO {
     List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
+      selectStatement.append("SELECT DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
       selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
       selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
@@ -1248,7 +1255,7 @@ public class PublicationDAO {
     List<PublicationPK> list = new ArrayList<PublicationPK>();
     if (componentIds != null && componentIds.size() > 0) {
       StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("SELECT  DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
+      selectStatement.append("SELECT DISTINCT(P.pubId), P.instanceId, P.pubUpdateDate ");
       selectStatement.append("FROM SB_Publication_Publi P, SB_Publication_PubliFather F ");
       selectStatement.append("WHERE P.pubStatus = ? AND F.nodeId <> 1 AND (");
       selectStatement.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
@@ -1317,13 +1324,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectAllPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     return selectAllPublications(con, pubPK, null);
@@ -1359,14 +1366,14 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param status
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @param status
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
       PublicationPK pubPK, String status) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -1492,13 +1499,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -1556,13 +1563,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -1589,13 +1596,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> getNotOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
     StringBuilder selectStatement = new StringBuilder(128);
@@ -1654,13 +1661,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param creatorId
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @param creatorId
+* @throws SQLException
+* @see
+*/
   public static void deleteOrphanPublicationsByCreatorId(Connection con,
       PublicationPK pubPK, String creatorId) throws SQLException {
     StringBuilder deleteStatement = new StringBuilder(128);
@@ -1681,15 +1688,15 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pubPK
-   * @param publisherId
-   * @param nodeId
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pubPK
+* @param publisherId
+* @param nodeId
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
       Connection con, PublicationPK pubPK, String publisherId, String nodeId)
       throws SQLException {
@@ -1739,17 +1746,17 @@ public class PublicationDAO {
   }
 
   /*
-   * @deprecated
-   */
+* @deprecated
+*/
   /**
-   * Method declaration
-   * @param con
-   * @param query
-   * @param pubPK
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param query
+* @param pubPK
+* @return
+* @throws SQLException
+* @see
+*/
   public static Collection<PublicationDetail> searchByKeywords(Connection con, String query,
       PublicationPK pubPK) throws SQLException {
     List<PublicationDetail> result = new ArrayList<PublicationDetail>();
@@ -1757,13 +1764,13 @@ public class PublicationDAO {
   }
 
   /**
-   * Method declaration
-   * @param con
-   * @param pk
-   * @return
-   * @throws SQLException
-   * @see
-   */
+* Method declaration
+* @param con
+* @param pk
+* @return
+* @throws SQLException
+* @see
+*/
   public static PublicationDetail loadRow(Connection con, PublicationPK pk)
       throws SQLException {
     String selectStatement = QueryStringFactory.getLoadRow(pk.getTableName());
@@ -2006,21 +2013,21 @@ public class PublicationDAO {
   }
 
   /**
-   * get my SocialInformationPublication  accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
-   * @param con
-   * @param userId
-   * @param firstIndex
-   * @param nbElement
-   * @return List<SocialInformationPublication>
-   * @throws SQLException
-   */
+* get my SocialInformationPublication accordint to
+* the type of data base used(PostgreSQL,Oracle,MMS) .
+* @param con
+* @param userId
+* @param firstIndex
+* @param nbElement
+* @return List<SocialInformationPublication>
+* @throws SQLException
+*/
   public static List<SocialInformation> getAllPublicationsIDbyUserid(Connection con,
       String userId, Date begin, Date end) throws SQLException {
     
     List<SocialInformation> listPublications = new ArrayList<SocialInformation>();
 
-    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type  FROM sb_publication_publi WHERE pubcreatorid = ? and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
+    String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type FROM sb_publication_publi WHERE pubcreatorid = ? and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
         + "UNION (SELECT pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi WHERE pubupdaterid = ? and pubstatus = 'Valid' and pubupdatedate >= ? and pubupdatedate <= ? )"
         + "ORDER BY dateinformation DESC, pubid DESC";
     PreparedStatement prepStmt = null;
@@ -2049,14 +2056,14 @@ public class PublicationDAO {
   }
 
   /**
-   * get list of socialInformation of my contacts according to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
-   * @return: List <SocialInformation>
-   * @param : String myId
-   * @param :List<String> myContactsIds
-   * @param :List<String> options list of Available Components name
-   * @param int numberOfElement, int firstIndex
-   */
+* get list of socialInformation of my contacts according to
+* the type of data base used(PostgreSQL,Oracle,MMS) .
+* @return: List <SocialInformation>
+* @param : String myId
+* @param :List<String> myContactsIds
+* @param :List<String> options list of Available Components name
+* @param int numberOfElement, int firstIndex
+*/
   public static List<SocialInformation> getSocialInformationsListOfMyContacts(
       Connection con, List<String> myContactsIds, List<String> options, Date begin, Date end)
       throws SQLException {
@@ -2064,8 +2071,8 @@ public class PublicationDAO {
 
     String query = "(SELECT pubcreationdate AS dateinformation, pubid, 'false' as type FROM sb_publication_publi WHERE pubcreatorid in(" + toSqlString(
         myContactsIds) + ") and instanceid in(" + toSqlString(options) + ") and pubstatus = 'Valid' and pubCreationDate >= ? and pubCreationDate <= ? )"
-        + "UNION (SELECT  pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi WHERE pubupdaterid in(" + toSqlString(
-        myContactsIds) + ")  and instanceid in(" + toSqlString(options) + ")and pubstatus = 'Valid' and pubupdatedate >= ? and pubupdatedate <= ? )"
+        + "UNION (SELECT pubupdatedate AS dateinformation, pubid, 'true' as type FROM sb_publication_publi WHERE pubupdaterid in(" + toSqlString(
+        myContactsIds) + ") and instanceid in(" + toSqlString(options) + ")and pubstatus = 'Valid' and pubupdatedate >= ? and pubupdatedate <= ? )"
         + "ORDER BY dateinformation DESC, pubid DESC";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -2088,10 +2095,10 @@ public class PublicationDAO {
   }
 
   /**
-   * tronsform the list of string to String for using in query sql
-   * @param list
-   * @return String
-   */
+* tronsform the list of string to String for using in query sql
+* @param list
+* @return String
+*/
   private static String toSqlString(List<String> list) {
     StringBuilder result = new StringBuilder(100);
     if (list == null || list.isEmpty()) {
