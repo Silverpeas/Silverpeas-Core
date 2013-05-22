@@ -1,37 +1,42 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+* Copyright (C) 2000 - 2012 Silverpeas
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as
+* published by the Free Software Foundation, either version 3 of the
+* License, or (at your option) any later version.
+*
+* As a special exception to the terms and conditions of version 3.0 of
+* the GPL, you may redistribute this Program in connection with Free/Libre
+* Open Source Software ("FLOSS") applications as described in Silverpeas's
+* FLOSS exception. You should have received a copy of the text describing
+* the FLOSS exception, and it is also available here:
+* "http://www.silverpeas.org/legal/licensing"
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.stratelia.webactiv.util.publication.ejb;
+
+import com.silverpeas.util.StringUtil;
 
 public class QueryStringFactory extends Object {
 
   /**
-   * Hashtable which contains the specifics code encoded as key and their values are right code
-   * encoded
-   */
+* Hashtable which contains the specifics code encoded as key and their values are right code
+* encoded
+*/
   private static String selectByBeginDateDescAndStatusAndNotLinkedToFatherId = null;
   private static String selectByFatherPK = null;
   private static String selectByFatherPKPeriodSensitive = null;
+  private static String selectByFatherPKAndUserId = null;
+  private static String selectByFatherPKPeriodSensitiveAndUserId = null;
   private static String loadRow = null;
   private final static String selectByName;
   private static final String selectByNameAndNodeId;
@@ -53,23 +58,25 @@ public class QueryStringFactory extends Object {
 
   public static String getSelectByBeginDateDescAndStatusAndNotLinkedToFatherId(
       String tableName) {
-    synchronized(QueryStringFactory.class) {
+    synchronized (QueryStringFactory.class) {
       if (selectByBeginDateDescAndStatusAndNotLinkedToFatherId == null) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT DISTINCT(P.pubId), P.infoId, P.pubName, P.pubDescription, ");
         query.append("P.pubCreationDate, P.pubBeginDate, P.pubEndDate, P.pubCreatorId, ");
         query.append("P.pubImportance, P.pubVersion, P.pubKeywords, P.pubContent, ");
-        query.append("	P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
+        query.append(" P.pubStatus, P.pubUpdateDate, P.instanceId, P.pubUpdaterId, ");
         query.append("P.pubValidateDate, P.pubValidatorId, P.pubBeginHour, P.pubEndHour, ");
-        query.append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+        query
+            .append("P.pubAuthor, P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
         query.append("P.pubDraftOutDate FROM ").append(tableName).append(" P, ").append(tableName);
         query.append("Father F WHERE F.pubId = P.pubId AND F.instanceId = ? ");
-        query.append(" AND F.nodeId <> ?  AND P.pubStatus = ? AND (");
+        query.append(" AND F.nodeId <> ? AND P.pubStatus = ? AND (");
         query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
         query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
         query.append("( ? > P.pubBeginDate AND ? = P.pubEndDate AND ? < P.pubEndHour ) OR ");
         query.append("( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour ");
-        query.append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
+        query
+            .append("AND ? < P.pubEndHour )) ORDER BY P.pubBeginDate DESC, P.pubCreationDate DESC ");
         selectByBeginDateDescAndStatusAndNotLinkedToFatherId = query.toString();
       }
     }
@@ -77,16 +84,25 @@ public class QueryStringFactory extends Object {
   }
 
   public static String getSelectByFatherPK(String tableName) {
-    return getSelectByFatherPK(tableName, true);
+    return getSelectByFatherPK(tableName, true, null);
   }
 
-  public static String getSelectByFatherPK(String tableName,
-      boolean periodSensitive) {
-    if (periodSensitive && selectByFatherPKPeriodSensitive != null) {
-      return selectByFatherPKPeriodSensitive;
-    } else if (!periodSensitive && selectByFatherPK != null) {
-      return selectByFatherPK;
+  public static String getSelectByFatherPK(String tableName, boolean periodSensitive, String userId) {
+    if (StringUtil.isDefined(userId)) {
+      if (periodSensitive && selectByFatherPKPeriodSensitiveAndUserId != null) {
+        return selectByFatherPKPeriodSensitiveAndUserId;
+      } else if (!periodSensitive && selectByFatherPKAndUserId != null) {
+        return selectByFatherPKAndUserId;
+      }
+    } else {
+      if (periodSensitive && selectByFatherPKPeriodSensitive != null) {
+        return selectByFatherPKPeriodSensitive;
+      } else if (!periodSensitive && selectByFatherPK != null) {
+        return selectByFatherPK;
+      }
     }
+    
+    String orderClause = " ORDER BY F.pubOrder ASC";
 
     StringBuilder query = new StringBuilder();
     query.append("SELECT P.pubId, P.infoId, P.pubName, P.pubDescription, P.pubCreationDate, ");
@@ -94,10 +110,15 @@ public class QueryStringFactory extends Object {
     query.append("P.pubKeywords, P.pubContent, P.pubStatus, ");
     query.append("P.pubUpdateDate, P.instanceId, P.pubUpdaterId, P.pubValidateDate, ");
     query.append("P.pubValidatorId, P.pubBeginHour, P.pubEndHour, P.pubAuthor, ");
-    query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, P.pubDraftOutDate FROM ");
+    query.append("P.pubTargetValidatorId, P.pubCloneId, P.pubCloneStatus, P.lang, ");
+    query.append("P.pubDraftOutDate, F.pubOrder FROM ");
     query.append(tableName).append(" P, ").append(tableName).append("Father F ");
     query.append("WHERE F.instanceId = ? AND F.nodeId = ? AND F.pubId = P.pubId ");
     selectByFatherPK = query.toString();
+    if (StringUtil.isDefined(userId)) {
+      query.append(" AND (P.pubUpdaterId = ? OR P.pubCreatorId = ? )");
+      selectByFatherPKAndUserId = query.toString();
+    }
     query.append("AND (");
     query.append("( ? > P.pubBeginDate AND ? < P.pubEndDate ) OR ");
     query.append("( ? = P.pubBeginDate AND ? < P.pubEndDate AND ? > P.pubBeginHour ) OR ");
@@ -105,10 +126,23 @@ public class QueryStringFactory extends Object {
     query.append(
         "( ? = P.pubBeginDate AND ? = P.pubEndDate AND ? > P.pubBeginHour AND ? < P.pubEndHour )");
     query.append(" ) ");
+    query.append(orderClause);
     selectByFatherPKPeriodSensitive = query.toString();
 
     if (periodSensitive) {
-      return selectByFatherPKPeriodSensitive;
+      if (StringUtil.isDefined(userId)) {
+        selectByFatherPKPeriodSensitiveAndUserId = query.toString();
+        return selectByFatherPKPeriodSensitiveAndUserId;
+      } else {
+        return selectByFatherPKPeriodSensitive;
+      }
+    }
+    
+    // adding order by clause
+    selectByFatherPK += orderClause;
+    if (StringUtil.isDefined(userId)) {
+      selectByFatherPKAndUserId += orderClause;
+      return selectByFatherPKAndUserId;
     }
     return selectByFatherPK;
   }
