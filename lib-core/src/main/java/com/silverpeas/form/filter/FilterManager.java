@@ -100,7 +100,6 @@ public class FilterManager {
 
           if (fieldsParameter.containsKey(filteredName)) {
             FieldTemplate field = fieldsParameter.get(filteredName);
-            
             Map<String, String> parameters = field.getParameters(lang);
             Set<String> keys = parameters.keySet();
             for (String key : keys) {
