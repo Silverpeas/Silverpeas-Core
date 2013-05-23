@@ -38,6 +38,7 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.i18n.Translation;
 
@@ -142,8 +143,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDetail nodeDetail = node.getDetail(sorting);
 
       // Add default translation
-      Translation nodeI18NDetail =
-          new NodeI18NDetail(nodeDetail.getLanguage(), nodeDetail.getName(), nodeDetail.
+      Translation nodeI18NDetail
+          = new NodeI18NDetail(nodeDetail.getLanguage(), nodeDetail.getName(), nodeDetail.
           getDescription());
       nodeDetail.addTranslation((Translation) nodeI18NDetail);
       List<Translation> translations = getTranslations(Integer.parseInt(pk.getId()));
@@ -261,12 +262,12 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       root.setChildrenDetails(new ArrayList<NodeDetail>());
       Map<String, NodeDetail> tree = new HashMap<String, NodeDetail>();
       tree.put(root.getNodePK().getId(), root);
-      for(NodeDetail header : headers) {
+      for (NodeDetail header : headers) {
         header.setChildrenDetails(new ArrayList<NodeDetail>());
         tree.put(header.getNodePK().getId(), header);
       }
 
-     for(NodeDetail header : headers) {
+      for (NodeDetail header : headers) {
         NodeDetail father = tree.get(header.getFatherPK().getId());
         if (father != null) {
           father.getChildrenDetails().add(header);
@@ -277,7 +278,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         root = tree.get(root.getNodePK().getId());
         result = (ArrayList<NodeDetail>) processNode(result, root);
       } else {
-        for(NodeDetail header : headers) {
+        for (NodeDetail header : headers) {
           result.add(header);
         }
       }
@@ -311,8 +312,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + "/";
 
-    int deltaLevel = 0;
-
     String oldRootPath = null;
 
     Connection con = DBUtil.makeConnection(dbName);
@@ -324,12 +323,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         if (t == 0) {
           oldRootPath = node.getPath();
           node.setFatherPK(toNode);
-          if (node.getLevel() > root.getLevel()) {
-            deltaLevel = root.getLevel() - node.getLevel();
-          } else {
-            deltaLevel = node.getLevel() - root.getLevel();
-          }
-          deltaLevel++;
           node.setOrder(root.getChildrenNumber());
         }
         // remove node
@@ -339,7 +332,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
         node.setPath(newPath);
-        node.setLevel(node.getLevel() + deltaLevel);
+        node.setLevel(StringUtil.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);
@@ -391,8 +384,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
       while (i.hasNext()) {
         NodeDetail childDetail = i.next();
-        Collection<NodeDetail> subChildren =
-            NodeDAO.getChildrenDetails(con, childDetail.getNodePK());
+        Collection<NodeDetail> subChildren = NodeDAO
+            .getChildrenDetails(con, childDetail.getNodePK());
         Iterator<NodeDetail> j = subChildren.iterator();
         ArrayList<NodeDetail> subChildrenDetail = new ArrayList<NodeDetail>();
 
@@ -544,7 +537,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
       NodeDeletion.deleteNodes(pk, connection, new AnonymousMethodOnNode() {
         @Override
         public void invoke(NodePK pk) throws Exception {
-          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(),  "Node_" + pk.getId());
+          WysiwygController.deleteWysiwygAttachments(pk.getInstanceId(), "Node_" + pk.getId());
         }
       });
     } catch (Exception re) {
@@ -946,8 +939,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
     if (nodeDetail != null) {
       // Index the Node
-      indexEntry =
-          new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
+      indexEntry = new FullIndexEntry(nodeDetail.getNodePK().getComponentName(), "Node", nodeDetail.
           getNodePK().getId());
 
       Iterator<String> languages = nodeDetail.getLanguages();
@@ -957,7 +949,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
 
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
-        
+
         if (processWysiwygContent) {
           updateIndexEntryWithWysiwygContent(indexEntry, nodeDetail.getNodePK(), language);
         }
@@ -1000,8 +992,8 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         + ", nodePK = " + nodePK.toString());
     try {
       if (nodePK != null) {
-        String wysiwygContent =
-            WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK.getId(), language);
+        String wysiwygContent = WysiwygController.load(nodePK.getComponentName(), "Node_" + nodePK
+            .getId(), language);
         if (wysiwygContent != null) {
           indexEntry.addTextContent(wysiwygContent);
         }
