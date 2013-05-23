@@ -66,7 +66,8 @@
         try {
           loadApplet('outlook', '<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${pageContext.session.id}"/>', '${baseURL}/ImportCalendar/', 'Can\'t display applet');
         } catch (e) {
-        } alert(e);
+          alert(e);
+        } 
       </script>
     </c:if>
   </body>
