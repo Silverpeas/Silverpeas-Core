@@ -230,13 +230,11 @@ public class PublicationBmEJB implements PublicationBm {
   public void movePublication(PublicationPK pk, NodePK fatherPK, boolean indexIt) {
     Connection con = getConnection();
     try {
-      PublicationDetail detail = PublicationDAO.loadRow(con, pk);
       deleteIndex(pk);
       PublicationDAO.changeInstanceId(con, pk, fatherPK.getInstanceId());
       pk.setComponentName(fatherPK.getInstanceId());
       PublicationFatherDAO.removeAllFather(con, pk);
       PublicationFatherDAO.addFather(con, pk, fatherPK);
-      PublicationDAO.storeRow(con, detail);
       if (indexIt) {
         createIndex(pk);
       }
