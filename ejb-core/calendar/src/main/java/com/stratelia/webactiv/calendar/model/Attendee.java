@@ -34,12 +34,13 @@ public class Attendee implements java.io.Serializable {
   }
 
   public Attendee(String userId) {
-    setUserId(userId);
+    this.userId = userId;
   }
 
   public Attendee(String userId, String participationStatus) {
-    setUserId(userId);
-    getParticipationStatus().setString(participationStatus);
+    this.userId = userId;
+    this.participationStatus = new ParticipationStatus();
+    this.participationStatus.setString(participationStatus);
   }
 
   public String getUserId() {

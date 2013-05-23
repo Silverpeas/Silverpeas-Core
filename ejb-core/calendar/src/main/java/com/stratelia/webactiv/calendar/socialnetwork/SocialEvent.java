@@ -69,21 +69,22 @@ public class SocialEvent implements SocialEventsInterface {
    */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, String classification,
-      Date begin, Date end) throws CalendarException, UtilException {
-    List<SocialInformation> listEvent = new ArrayList<SocialInformation>();
+      Date begin, Date end) throws CalendarException {
     try {
       String now = DateUtil.date2SQLDate(new java.util.Date());
       List<JournalHeader> list = getEJB().getNextEventsForUser(now, userId, classification, begin,
           end);
+      List<SocialInformation> listEvent = new ArrayList<SocialInformation>(list.size());
       for (JournalHeader jh : list) {
         SocialInformationEvent event = new SocialInformationEvent((Schedulable) jh);
         listEvent.add(event);
       }
+      return listEvent;
     } catch (CalendarException ex) {
       throw new CalendarException("SocialEvent.getSocialInformationsList()",
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", ex);
     }
-    return listEvent;
+
   }
 
   /**
@@ -91,8 +92,8 @@ public class SocialEvent implements SocialEventsInterface {
    *
    * @param myId
    * @param myContactsIds
-   * @param begin 
-   * @param end 
+   * @param begin
+   * @param end
    * @param numberOfElement
    * @param firstIndex
    * @return
