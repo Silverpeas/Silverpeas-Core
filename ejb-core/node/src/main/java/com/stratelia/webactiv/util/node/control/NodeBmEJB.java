@@ -283,7 +283,6 @@ public class NodeBmEJB implements NodeBm {
   public void moveNode(NodePK nodePK, NodePK toNode) {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + '/';
-    int deltaLevel = 0;
     String oldRootPath = null;
 
     Connection con = getConnection();
@@ -295,12 +294,6 @@ public class NodeBmEJB implements NodeBm {
         if (t == 0) {
           oldRootPath = node.getPath();
           node.setFatherPK(toNode);
-          if (node.getLevel() > root.getLevel()) {
-            deltaLevel = root.getLevel() - node.getLevel();
-          } else {
-            deltaLevel = node.getLevel() - root.getLevel();
-          }
-          deltaLevel++;
           node.setOrder(root.getChildrenNumber());
         }
         delete(node.getNodePK());
@@ -308,7 +301,7 @@ public class NodeBmEJB implements NodeBm {
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
         node.setPath(newPath);
-        node.setLevel(node.getLevel() + deltaLevel);
+        node.setLevel(StringUtil.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);
