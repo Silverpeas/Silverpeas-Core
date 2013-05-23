@@ -1,31 +1,31 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.calendar.model;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import static com.silverpeas.util.StringUtil.*;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 import static com.stratelia.webactiv.util.DateUtil.*;
 
 public abstract class Schedulable implements java.io.Serializable {
@@ -129,9 +129,7 @@ public abstract class Schedulable implements java.io.Serializable {
       startDate = null;
       return; // this is also a normal case
     }
-
     parseDate(date);
-
     this.startDate = date;
   }
 
@@ -152,7 +150,7 @@ public abstract class Schedulable implements java.io.Serializable {
     return startDate;
   }
 
-  public java.util.Date getStartDate() {
+  public Date getStartDate() {
     if (getStartDay() == null) {
       return null;
     }
@@ -167,18 +165,12 @@ public abstract class Schedulable implements java.io.Serializable {
     }
   }
 
-  public void setStartDate(java.util.Date start) {
+  public void setStartDate(Date start) {
     if (start == null) {
       startDate = null;
       return;
     }
-    try {
-      setStartDay(formatDate(start));
-    } catch (java.text.ParseException e) {
-      SilverTrace.warn("calendar",
-          "Schedulable.setStartDate(setStartDate(java.util.Date start)",
-          "calendar_MSG_NOT_PARSE_DATE");
-    }
+    startDate = formatDate(start);
   }
 
   public String getStartHour() {
@@ -216,7 +208,7 @@ public abstract class Schedulable implements java.io.Serializable {
     return endHour;
   }
 
-  public java.util.Date getEndDate() {
+  public Date getEndDate() {
     if (getEndDay() == null) {
       return null;
     }
@@ -231,47 +223,36 @@ public abstract class Schedulable implements java.io.Serializable {
     }
   }
 
-  public void setEndDate(java.util.Date end) {
+  public void setEndDate(Date end) {
     if (end == null) {
       endDate = null;
       return;
     }
-    try {
-      setEndDay(formatDate(end));
-    } catch (java.text.ParseException e) {
-      SilverTrace.warn("calendar",
-          "Schedulable.setStartDate(setStartDate(java.util.Date start)",
-          "calendar_MSG_NOT_PARSE_DATE");
-    }
+    endDate = formatDate(end);
   }
 
   public String getStringDuration() {
     try {
-      java.util.Date aStartDate = parseDateTime(getStartDay() + " "
-          + getStartHour());
-      java.util.Date anEndDate = parseDateTime(getEndDay() + " "
-          + getEndHour());
+      Date aStartDate = parseDateTime(getStartDay() + " " + getStartHour());
+      Date anEndDate = parseDateTime(getEndDay() + " " + getEndHour());
       long ms = anEndDate.getTime() - aStartDate.getTime();
-      return Schedulable.hourMinuteToString((int) ((ms / (60000)) % 60),
-          (int) (ms / 3600000));
-    } catch (Exception e) {
-      SilverTrace.warn("calendar", "Schedulable.getStringDuration",
-          "calendar_MSG_NOT_SCEDULE", "return = 00:00");
+      return Schedulable.hourMinuteToString((int) ((ms / (60000)) % 60), (int) (ms / 3600000));
+    } catch (ParseException e) {
+      SilverTrace.warn("calendar", "Schedulable.getStringDuration", "calendar_MSG_NOT_SCEDULE",
+          "return = 00:00");
       return "00:00";
     }
   }
 
   public int getMinuteDuration() {
     try {
-      java.util.Date aStartDate = parseDateTime(getStartDay() + " "
-          + getStartHour());
-      java.util.Date anEndDate = parseDateTime(getEndDay() + " "
-          + getEndHour());
+      Date aStartDate = parseDateTime(getStartDay() + " " + getStartHour());
+      Date anEndDate = parseDateTime(getEndDay() + " " + getEndHour());
       long ms = anEndDate.getTime() - aStartDate.getTime();
       return (int) (ms / (60000));
-    } catch (Exception e) {
-      SilverTrace.warn("calendar", "Schedulable.getMinuteDuration() ",
-          "calendar_MSG_NOT_SCEDULE", "return = 0");
+    } catch (ParseException e) {
+      SilverTrace.warn("calendar", "Schedulable.getMinuteDuration() ", "calendar_MSG_NOT_SCEDULE",
+          "return = 0");
       return 0;
     }
   }
