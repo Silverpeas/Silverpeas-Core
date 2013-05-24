@@ -97,7 +97,7 @@ public class UserField implements Field {
       return "user(" + getUserId() + ")";
     }
 
-    return user.getFirstName() + " " + user.getLastName();
+    return user.getDisplayedName();
   }
 
   /**
