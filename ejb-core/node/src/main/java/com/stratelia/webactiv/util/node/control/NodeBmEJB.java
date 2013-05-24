@@ -34,6 +34,7 @@ import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
@@ -311,8 +312,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
     NodeDetail root = getDetail(toNode);
     String newRootPath = root.getPath() + toNode.getId() + "/";
 
-    int deltaLevel = 0;
-
     String oldRootPath = null;
 
     Connection con = DBUtil.makeConnection(dbName);
@@ -324,12 +323,6 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         if (t == 0) {
           oldRootPath = node.getPath();
           node.setFatherPK(toNode);
-          if (node.getLevel() > root.getLevel()) {
-            deltaLevel = root.getLevel() - node.getLevel();
-          } else {
-            deltaLevel = node.getLevel() - root.getLevel();
-          }
-          deltaLevel++;
           node.setOrder(root.getChildrenNumber());
         }
         // remove node
@@ -339,7 +332,7 @@ public class NodeBmEJB implements SessionBean, NodeBmBusinessSkeleton {
         // change data
         String newPath = node.getPath().replaceAll(oldRootPath, newRootPath);
         node.setPath(newPath);
-        node.setLevel(node.getLevel() + deltaLevel);
+        node.setLevel(StringUtils.countMatches(newPath, "/"));
         node.getNodePK().setComponentName(toNode.getInstanceId());
         node.setRightsDependsOn(root.getRightsDependsOn());
         node.setUseId(true);
