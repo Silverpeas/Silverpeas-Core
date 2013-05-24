@@ -42,6 +42,7 @@ import com.silverpeas.form.Util;
 import com.silverpeas.form.fieldType.JdbcField;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.util.DBUtil;
 
 /**
@@ -191,15 +192,15 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
         (pageContext.getLastFieldIndex() - Integer.parseInt(pageContext.getCurrentFieldIndex())) * 9000;
     html.append("<style type=\"text/css\">\n").append(" #listAutocomplete").append(fieldName).
         append(" {\n");
-    html.append("   width:15em;\n");
-    html.append("   padding-bottom:2em;\n");
+    html.append("  width:15em;\n");
+    html.append("  padding-bottom:2em;\n");
     html.append(" }\n");
     html.append(" #listAutocomplete").append(fieldName).append(" {\n");
-    html.append("   z-index:").append(zindex).append(
+    html.append("  z-index:").append(zindex).append(
         "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n");
     html.append(" }\n");
     html.append(" #").append(fieldName).append(" {\n");
-    html.append("   _position:absolute; /* abs pos needed for ie quirks */\n");
+    html.append("  _position:absolute; /* abs pos needed for ie quirks */\n");
     html.append(" }\n");
     html.append("</style>\n");
 
@@ -260,12 +261,12 @@ public class JdbcFieldDisplayer extends AbstractFieldDisplayer<JdbcField> {
 
     html.append(" this.oAutoComp").append(fieldName).append(
         ".textboxFocusEvent.subscribe(function(){\n");
-    html.append("   var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
+    html.append("  var sInputValue = YAHOO.util.Dom.get('").append(fieldName).append(
         "').value;\n");
-    html.append("   if(sInputValue.length == 0) {\n");
-    html.append("     var oSelf = this;\n");
-    html.append("     setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
-    html.append("   }\n");
+    html.append("  if(sInputValue.length == 0) {\n");
+    html.append("   var oSelf = this;\n");
+    html.append("   setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n");
+    html.append("  }\n");
     html.append(" });\n");
     html.append("</script>\n");
   }
