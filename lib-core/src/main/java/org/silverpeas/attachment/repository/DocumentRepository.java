@@ -156,7 +156,9 @@ public class DocumentRepository {
     if (converter.isVersioned(originDocumentNode) && !originDocumentNode.isCheckedOut()) {
       checkoutNode(originDocumentNode, document.getUpdatedBy());
     }
-    session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
+    if (!document.getFullJcrPath().equals(targetDoc.getFullJcrPath())) {
+      session.move(originDocumentNode.getPath(), targetDoc.getFullJcrPath());
+    }
     Node targetDocumentNode = session.getNode(targetDoc.getFullJcrPath());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_FOREIGN_KEY, destination.getId());
     converter.addStringProperty(targetDocumentNode, SLV_PROPERTY_INSTANCEID, destination.
@@ -1076,7 +1078,9 @@ public class DocumentRepository {
       source = source.getParentFile();
       target = target.getParentFile();
     }
-    FileUtils.moveDirectory(source, target);
+    if (!source.equals(target)) {
+      FileUtils.moveDirectory(source, target);
+    }
   }
 
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
