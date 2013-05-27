@@ -797,7 +797,7 @@ public class PublicationDAO {
     StringBuilder selectStatement = new StringBuilder(QueryStringFactory.getSelectByFatherPK(
         pubPK.getTableName(), filterOnVisibilityPeriod, userId)); 
     if (sorting != null) {
-      selectStatement.append(" ORDER BY ").append(sorting);
+      selectStatement.append(", ").append(sorting);
     }
     SilverTrace.info("publication", "PublicationDAO.selectByFatherPK()", "root.MSG_GEN_PARAM_VALUE",
         "selectStatement = " + selectStatement);
@@ -809,7 +809,7 @@ public class PublicationDAO {
       prepStmt.setString(1, pubPK.getComponentName());
       prepStmt.setInt(2, Integer.parseInt(fatherPK.getId()));
       int index = 3;
-      if (userId != null) {
+      if (StringUtil.isDefined(userId)) { 
         prepStmt.setString(3, userId);
         prepStmt.setString(4, userId);
         index = 5;
