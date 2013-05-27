@@ -42,7 +42,7 @@ import org.dbunit.database.IDatabaseConnection;
  */
 public class TestJournalDAO extends AbstractTestDao {
 
-  private JournalDAO dao = new JournalDAO();;
+  private JournalDAO dao = new JournalDAO();
 
   @Override
   protected String getDatasetFileName() {

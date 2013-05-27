@@ -37,8 +37,8 @@ public class HolidayDetail implements Serializable {
   private String userId = null;
 
   public HolidayDetail(Date holidayDate, String userId) {
-    setDate(holidayDate);
-    setUserId(userId);
+    this.holidayDate = holidayDate;
+    this.userId = userId;
   }
 
   /**
