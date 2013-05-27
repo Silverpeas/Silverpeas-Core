@@ -34,6 +34,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 
 import javax.ws.rs.Path;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,8 +67,8 @@ public class ContributionContentResourceMock extends ContributionContentResource
         RecordTemplate recordTemplateMock = mock(RecordTemplate.class);
         DataRecord dataRecordMock = mock(DataRecord.class);
         when(recordTemplateMock.getFieldTemplates()).thenReturn(new FieldTemplate[0]);
-        when(recordSetMock.getRecordTemplate()).thenReturn(recordTemplateMock);
-        when(recordSetMock.getRecord("3")).thenReturn(dataRecordMock);
+        when(recordSetMock.getRecord(eq("3"), anyString())).thenReturn(dataRecordMock);
+        when(publicationTemplateMock.getRecordTemplate()).thenReturn(recordTemplateMock);
         when(publicationTemplateMock.getRecordSet()).thenReturn(recordSetMock);
       }
       return publicationTemplateMock;
