@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
@@ -32,16 +33,16 @@ import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
- *
+ * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
- *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
 
   private static final String javascriptPath = URLManager.getApplicationURL() + "/util/javaScript/";
-  private static final String stylesheetPath = URLManager.getApplicationURL() + "/util/styleSheets/";
+  private static final String stylesheetPath =
+      URLManager.getApplicationURL() + "/util/styleSheets/";
   private static final String jqueryPath = javascriptPath + "jquery/";
   private static final String jqueryCssPath = stylesheetPath + "jquery/";
   private static final String JQUERY_QTIP = "jquery.qtip-1.0.0-rc3.min.js";
@@ -165,8 +166,17 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  public static ElementContainer includeResponsibles(final ElementContainer xhtml) {
+  public static ElementContainer includeResponsibles(final ElementContainer xhtml,
+      String language) {
     xhtml.addElement(script(javascriptPath + SILVERPEAS_RESPONSIBLES));
+    StringBuilder responsiblePluginLabels = new StringBuilder();
+    responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
+        GeneralPropertiesManager.getGeneralMultilang(language)
+            .getString("GML.platform.responsibles", "")).append("';");
+    responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
+        GeneralPropertiesManager.getGeneralMultilang(language)
+            .getString("GML.notification.send", "")).append("';");
+    xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
 

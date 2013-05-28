@@ -81,7 +81,7 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
           includeWysiwygEditor(xhtml);
           break;
         case responsibles:
-          includeResponsibles(xhtml);
+          includeResponsibles(xhtml, getLanguage());
           break;
         case popup:
           includePopup(xhtml);

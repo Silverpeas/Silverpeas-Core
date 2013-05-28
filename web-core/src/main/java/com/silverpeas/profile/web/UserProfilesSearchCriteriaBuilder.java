@@ -25,6 +25,7 @@ package com.silverpeas.profile.web;
 
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -82,6 +83,13 @@ public class UserProfilesSearchCriteriaBuilder {
   public UserProfilesSearchCriteriaBuilder withDomainId(String domainId) {
     if (isDefined(domainId) && Integer.valueOf(domainId) >= 0) {
       searchCriteria.onDomainId(domainId);
+    }
+    return this;
+  }
+
+  public UserProfilesSearchCriteriaBuilder withAccessLevels(UserAccessLevel[] accessLevels) {
+    if (accessLevels != null && accessLevels.length > 0) {
+      searchCriteria.onAccessLevels(accessLevels);
     }
     return this;
   }

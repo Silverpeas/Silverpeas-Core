@@ -382,8 +382,9 @@ public class GraphicElementFactory {
     if (getFavoriteLookSettings() != null
         && getFavoriteLookSettings().getString("OperationPane").toLowerCase().endsWith("web20")) {
       code.append(getYahooElements());
-      code.append(JavascriptPluginInclusion.includeResponsibles(new ElementContainer()).toString())
-          .append("\n");
+      code.append(
+          JavascriptPluginInclusion.includeResponsibles(new ElementContainer(), getLanguage())
+              .toString()).append("\n");
     }
 
     SilverTrace.info("viewgenerator", "GraphicElementFactory.getLookStyleSheet()",

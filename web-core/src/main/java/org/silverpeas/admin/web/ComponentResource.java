@@ -134,9 +134,8 @@ public class ComponentResource extends AbstractAdminResource {
           SilverpeasRole role = SilverpeasRole.from(profile.getName());
           roleEntity = result.get(role);
           if (roleEntity == null) {
-            roleEntity = UsersAndGroupsRoleEntity.createFrom(role,
-                (StringUtil.isDefined(profile.getLabel()) ? profile.getLabel() :
-                    resource.getString("JSPP." + profile.getName())));
+            roleEntity = UsersAndGroupsRoleEntity
+                .createFrom(role, resource.getString("JSPP." + profile.getName()));
             roleEntity
                 .withURI(buildURIOfComponentUsersAndGroupsRoles(componentId, role, getUriInfo()))
                 .withParentURI(buildURIOfComponent(componentId, getUriInfo()));

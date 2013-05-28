@@ -6749,6 +6749,9 @@ public final class Admin {
     if (searchCriteria.isCriterionOnDomainIdSet()) {
       criteria.and().onDomainId(searchCriteria.getCriterionOnDomainId());
     }
+    if (searchCriteria.isCriterionOnAccessLevelsSet()) {
+      criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
+    }
     if (searchCriteria.isCriterionOnNameSet()) {
       criteria.and().onName(searchCriteria.getCriterionOnName());
     }

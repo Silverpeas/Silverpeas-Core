@@ -35,11 +35,14 @@
   var cache = [];
 
   $.responsibles = {
+    labels : {
+      platformResponsible : ''
+    },
     renderSpaceResponsibles : function(target, userId, spaceId) {
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
-      $(target).append(__prepareContent(userId, data.usersAndGroupsRoles));
+      $(target).append(__prepareContent(userId, true, data.usersAndGroupsRoles));
       __loadUserZoomPlugins();
     },
     displaySpaceResponsibles : function(userId, spaceId) {
@@ -70,7 +73,7 @@
     }
     $display = $('<div>', {id : 'responsible-popup-content'}).css('display',
         'none').appendTo(document.body);
-    $display.append(__prepareContent(userId, data.usersAndGroupsRoles));
+    $display.append(__prepareContent(userId, isSpace, data.usersAndGroupsRoles));
     __loadUserZoomPlugins();
 
     // Popup
@@ -91,8 +94,8 @@
     if (!result) {
       var spaceOrComponent = __getJSonData(webServiceContext + '/' +
           (isSpace ? 'spaces' : 'components') + '/' + id);
-      var usersAndGroupsRoles = __getJSonData(spaceOrComponent.usersAndGroupsRolesURI +
-          '?roles=Manager,admin');
+      var usersAndGroupsRoles = __getJSonData(spaceOrComponent.usersAndGroupsRolesURI + '?roles=' +
+          (isSpace ? 'Manager' : 'admin'));
       result = {
         usersAndGroupsRoles : usersAndGroupsRoles
       };
@@ -104,30 +107,63 @@
   /**
    * Prepares the content to display.
    * @param userId
+   * @param isSpace
    * @param usersAndGroupsRoles
    * @private
    */
-  function __prepareContent(userId, usersAndGroupsRoles) {
+  function __prepareContent(userId, isSpace, usersAndGroupsRoles) {
     var $roles = $('<ul>');
     $.each(['Manager', 'admin'], function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
       var dataOfUsers = __getAllDataOfUsers(usersAndGroups);
       if (dataOfUsers.length > 0) {
         $roles.append($('<li>', {class : 'role'}).append(usersAndGroups.label));
-        var $users = $('<ul>', {class : 'users'}).appendTo($roles);
-        $.each(dataOfUsers, function(index, user) {
-          var $user = $('<span>').append(' ' + user.fullName);
-          if (userId !== user.id && !user.anonymous) {
-            $user.addClass('userToZoom');
-            $user.attr('rel', user.id);
-          }
-          $users.append($('<li>', {class : 'user'}).append($('<div>',
-                  {class : 'avatar'}).append($('<img>', {src : user.avatar}))).append($('<div>',
-                  {class : 'user-identity'}).append($user)));
-        });
+        __renderRoleResponsibles(userId, dataOfUsers).appendTo($roles);
       }
     });
+    if (isSpace) {
+      var administrators = [];
+      var userProfiles = new UserProfileManagement();
+      userProfiles.get({
+        async : false,
+        accessLevels : ['ADMINISTRATOR']
+      }, function(users) {
+        $(users).each(function(index, administrator) {
+          administrators.push(administrator);
+        });
+      });
+      if (administrators.length > 0) {
+        $roles.append($('<li>',
+            {class : 'role'}).append($.responsibles.labels.platformResponsible));
+        __renderRoleResponsibles(userId, administrators).appendTo($roles);
+      }
+    }
     return $('<div>', {class : 'responsibles-roles'}).append($roles);
+  }
+
+  /**
+   * Render role responsibles.
+   * @param userId
+   * @param dataOfUsers
+   * @returns {null}
+   * @private
+   */
+  function __renderRoleResponsibles(userId, dataOfUsers) {
+    var $users = null;
+    if (dataOfUsers.length > 0) {
+      $users = $('<ul>', {class : 'users'});
+      $.each(dataOfUsers, function(index, user) {
+        var $user = $('<span>').append(' ' + user.fullName);
+        if (userId !== user.id && !user.anonymous) {
+          $user.addClass('userToZoom');
+          $user.attr('rel', user.id);
+        }
+        $users.append($('<li>', {class : 'user'}).append($('<div>',
+                {class : 'avatar'}).append($('<img>', {src : user.avatar}))).append($('<div>',
+                {class : 'user-identity'}).append($user)));
+      });
+    }
+    return $users;
   }
 
   /**
