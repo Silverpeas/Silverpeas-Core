@@ -23,20 +23,19 @@
  */
 package com.silverpeas.sharing.services;
 
+import org.silverpeas.attachment.model.HistorisedDocument;
 import com.silverpeas.sharing.model.Ticket;
 import com.silverpeas.sharing.model.VersionFileTicket;
 import com.silverpeas.sharing.security.ShareableAccessControl;
 import com.silverpeas.sharing.security.ShareableResource;
-import com.stratelia.silverpeas.versioning.model.Document;
 
 /**
  * Access control to shared version documents.
  */
-public class VersionFileAccessControl implements ShareableAccessControl<Document> {
+public class VersionFileAccessControl implements ShareableAccessControl<HistorisedDocument> {
   @Override
-    public boolean isReadable(ShareableResource<Document> resource) {
-      Ticket ticket =
-          SharingServiceFactory.getFactory().getSharingTicketService().getTicket(resource.getToken());
+    public boolean isReadable(ShareableResource<HistorisedDocument> resource) {
+      Ticket ticket = SharingServiceFactory.getSharingTicketService().getTicket(resource.getToken());
       return (ticket != null && ticket instanceof VersionFileTicket &&
           ((VersionFileTicket) ticket).getDocument().equals(resource.getAccessedObject()));
     }

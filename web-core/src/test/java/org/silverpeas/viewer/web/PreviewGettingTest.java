@@ -29,7 +29,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.silverpeas.viewer.web.PreviewEntityMatcher.matches;
 import static org.silverpeas.viewer.web.ViewerTestResources.JAVA_PACKAGE;
 import static org.silverpeas.viewer.web.ViewerTestResources.SPRING_CONTEXT;
 
@@ -39,12 +38,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
 import org.silverpeas.viewer.Preview;
 
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * Tests on the comment getting by the CommentResource web service.
@@ -67,23 +68,26 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
   public void prepareTestResources() {
     user = aUser();
     sessionKey = authenticate(user);
-    expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "logicalName7");
+    expected = PreviewBuilder.getPreviewBuilder().buildFileName("previewId", "originalFileName7");
 
-    when(getTestResources().getAttachmentServiceMock().getAttachment(any(AttachmentPK.class)))
-        .thenAnswer(new Answer<AttachmentDetail>() {
+    when(getTestResources().getAttachmentServiceMock().searchDocumentById(
+        any(SimpleDocumentPK.class), any(String.class)))
+        .thenAnswer(new Answer<SimpleDocument>() {
 
           /*
            * (non-Javadoc)
            * @see org.mockito.stubbing.Answer#answer(org.mockito.invocation.InvocationOnMock)
            */
           @Override
-          public AttachmentDetail answer(final InvocationOnMock invocation) throws Throwable {
-            final AttachmentPK attachmentPK = (AttachmentPK) invocation.getArguments()[0];
-            AttachmentDetail attachmentDetail = null;
+          public SimpleDocument answer(final InvocationOnMock invocation) throws Throwable {
+            final SimpleDocumentPK attachmentPK = (SimpleDocumentPK) invocation.getArguments()[0];
+            SimpleDocument attachmentDetail = null;
             if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(attachmentPK.getId())) {
-              attachmentDetail = new AttachmentDetail();
-              attachmentDetail.setLogicalName("originalFileName" + attachmentPK.getId());
-              attachmentDetail.setPhysicalName("physicalName" + attachmentPK.getId());
+              attachmentDetail = new SimpleDocument();
+              attachmentDetail.setPK(attachmentPK);
+              attachmentDetail.setOldSilverpeasId(Long.parseLong(attachmentPK.getId()));
+              attachmentDetail.setFile(new SimpleAttachment());
+              attachmentDetail.setFilename("originalFileName" + attachmentPK.getId());
             }
             return attachmentDetail;
           }
@@ -112,7 +116,7 @@ public class PreviewGettingTest extends ResourceGettingTest<ViewerTestResources>
   public void getPreview() {
     final PreviewEntity entity = getAt(aResourceURI(), PreviewEntity.class);
     assertNotNull(entity);
-    assertThat(entity, matches(expected));
+    assertThat(entity, PreviewEntityMatcher.matches(expected));
   }
 
   @Override

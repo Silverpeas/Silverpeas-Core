@@ -24,13 +24,13 @@
 
 package com.silverpeas.personalization;
 
-import com.silverpeas.personalization.service.PersonalizationService;
-import com.silverpeas.util.StringUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.silverpeas.personalization.service.PersonalizationService;
+import com.silverpeas.util.StringUtil;
 
 @Entity
 @Table(name = "personalization")

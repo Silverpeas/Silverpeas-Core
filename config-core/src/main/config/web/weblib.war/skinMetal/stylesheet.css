@@ -74,7 +74,7 @@ a:hover {
 }
 
 #pdcFrame {
-	background-color:#AE0000;
+	background-color:#E0DFE0;
 	color:#222222;
 }
 
@@ -121,7 +121,7 @@ a:hover {
     display: block;
     font-size: 12px;
     height: 85px;
-    line-height: 104px;
+    padding-top:40px;
     padding-left: 84px;
     text-align: left;
     text-transform: uppercase;
@@ -224,8 +224,8 @@ a:hover {
 	}
 
 #myProfileFiche .action .link, #publicProfileFiche #contactCommun .link, #publicProfileFiche #allContact .link ,.txtnav, .txtbigdate, .txttitrecol{
-	color:#252122;
-	border-color:#ccc;
+   border-color: #D8B1B1;
+    color: #AE0000;
 	}
 .txtnav {
 	font-size:12px;
@@ -264,8 +264,11 @@ button {
 		border-radius: 5px;
 			-moz-border-radius: 5px;
 			-webkit-border-radius: 5px;
-		background-color:#fff !important;
-		padding-right:20px;
+		background-color:#AE0000 !important;
+		padding:5px 20px 5px 5px;
+		color:#FFF !important;
+		border:1px solid #2a2a2a;
+		background-position:11px 4px !important;
 }
 
 #dNdActionLabel, #footer {color:#FFF}
@@ -285,3 +288,67 @@ button {
 }
 
 
+.help-modal-message .ui-widget-header,
+.ui-widget-header {
+    background: none repeat scroll 0 0 #AE0000;
+    border: 1px solid #AE0000;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    color: #AE0000;
+}
+
+.vsplitbar {
+    background-color:#EFEFEF;
+    margin-left: 3px;
+}
+
+.jstree-default .jstree-clicked,
+.jstree-default .jstree-hovered
+{
+    background-color: #EBEBEB !important;
+    border: 1px solid #CCCCCC !important;
+}
+
+#menubar-creation-actions {
+    background-color: #EBEBEB;
+    border-bottom: 1px solid #000;
+    border-top: 1px solid #000;
+}
+
+
+#menubar-creation-actions .menubar-creation-actions-item:hover {
+    background-color: #AE0000;
+}
+
+.publicationManager .legend {
+	color:#FFF;
+}
+
+div.eventBeginDate {
+    background-image: url("imgDesign/bgCalendar.png") ;
+}
+
+.jstree-default a .jstree-icon {
+    background-image: url("imgDesign/guitare-dossier.png") ;
+	background-position:0 0 !important;
+}
+
+.jstree-0 li[rel="bin"] > a > .jstree-icon {
+    background-image: url("imgDesign/trash.png") !important;
+}
+
+.jstree-0 li[rel="tovalidate"] > a > .jstree-icon {
+	background-image: url("imgDesign/to-validate.png") !important;
+}
+.jstree a {
+
+    height: 24px !important;
+    line-height: 24px !important;
+   
+}
+
+.jstree a > ins {
+    height: 24px !important;
+    width: 24px !important;
+}

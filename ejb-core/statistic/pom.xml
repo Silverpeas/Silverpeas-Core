@@ -11,7 +11,7 @@
   <artifactId>statistic</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Statistic - ${project.version}</name>
-	
+  
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

@@ -24,24 +24,25 @@
 
 package com.silverpeas.accesscontrol;
 
+import java.util.Collection;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.silverpeas.importExport.versioning.Document;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
-import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Collection;
 
 /**
  * Check the access to a document for a user.
  * @author ehugonnet
  */
-@Named
+@Named("documentAccessController")
 public class DocumentAccessController implements AccessController<Document> {
 
   @Inject
@@ -80,9 +81,7 @@ public class DocumentAccessController implements AccessController<Document> {
   }
 
   protected PublicationBm getPublicationBm() throws Exception {
-    PublicationBmHome pubBmHome = EJBUtilitaire.getEJBObjectRef(
-        JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
-    return pubBmHome.create();
+    return EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBm.class);
   }
 
   /**

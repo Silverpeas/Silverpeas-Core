@@ -23,14 +23,15 @@
  */
 package org.silverpeas.util;
 
-import com.stratelia.webactiv.util.ResourceLocator;
-
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.EnumSet;
 
+import com.stratelia.webactiv.util.ResourceLocator;
+
 /**
  * Unit values handling tools
+ *
  * @author Yohann Chastagnier
  */
 public class UnitUtil {
@@ -40,8 +41,8 @@ public class UnitUtil {
 
   /* Byte, Kilo-Byte, Mega-Byte, ... */
   public static enum memUnit {
-    B(1, "o", "bytes"), KB(2, "ko", "Kb"), MB(3, "mo", "Mb"), GB(4, "go", "Gb"), TB(5, "to", "Tb");
 
+    B(1, "o", "bytes"), KB(2, "ko", "Kb"), MB(3, "mo", "Mb"), GB(4, "go", "Gb"), TB(5, "to", "Tb");
     private final String bundleKey;
     private final String bundleDefault;
     private final BigDecimal limit;
@@ -70,11 +71,11 @@ public class UnitUtil {
       return power;
     }
   }
-
   private static BigDecimal byteMultiplier = new BigDecimal(String.valueOf(1024));
 
   /**
    * Converting a computer data storage value
+   *
    * @param value
    * @param from
    * @param to
@@ -87,6 +88,7 @@ public class UnitUtil {
 
   /**
    * Converting a computer data storage value
+   *
    * @param value
    * @param from
    * @param to
@@ -96,34 +98,17 @@ public class UnitUtil {
     final int fromPower = from.getPower();
     final int toPower = to.getPower();
     final int offsetPower = fromPower - toPower;
-    if (offsetPower != 0) {
-      if (offsetPower > 0) {
-        value = value.multiply(byteMultiplier.pow(Math.abs(offsetPower)));
-      } else {
-        value = value.divide(byteMultiplier.pow(Math.abs(offsetPower)));
-      }
+    if (offsetPower > 0) {
+      return value.multiply(byteMultiplier.pow(Math.abs(offsetPower)));
+    } else if (offsetPower < 0) {
+      return value.divide(byteMultiplier.pow(Math.abs(offsetPower)));
     }
     return value;
   }
 
   /**
-   * Centralizes enum index search
-   * @param unit
-   * @return
-   */
-  private static int indexOf(final memUnit unit) {
-    int i = 0;
-    for (final memUnit currentUnit : memUnit.values()) {
-      if (currentUnit.equals(unit)) {
-        break;
-      }
-      i++;
-    }
-    return i;
-  }
-
-  /**
    * Format a byte memory value
+   *
    * @param byteValue
    * @param to
    * @return
@@ -134,6 +119,7 @@ public class UnitUtil {
 
   /**
    * Format a byte memory value
+   *
    * @param byteValue
    * @param to
    * @return
@@ -144,6 +130,7 @@ public class UnitUtil {
 
   /**
    * Format a memory value
+   *
    * @param value
    * @param from
    * @param to
@@ -155,13 +142,14 @@ public class UnitUtil {
 
   /**
    * Format a memory value
+   *
    * @param value
    * @param from
    * @param to
    * @return formated value
    */
   public static String formatValue(final BigDecimal value, final memUnit from, final memUnit to) {
-    final StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder(128);
     BigDecimal convertedValue = convertTo(value, from, to);
     int nbMaximumFractionDigits = 2;
     if (EnumSet.of(memUnit.B, memUnit.KB).contains(to)) {
@@ -176,6 +164,7 @@ public class UnitUtil {
 
   /**
    * Get the memory size with the suitable unit
+   *
    * @param memSize size in bytes
    * @return String
    */
@@ -185,6 +174,7 @@ public class UnitUtil {
 
   /**
    * Get the memory size with the suitable unit
+   *
    * @param memSize size in bytes
    * @return String
    */
@@ -194,6 +184,7 @@ public class UnitUtil {
 
   /**
    * Get the memory size with the suitable unit
+   *
    * @param memSize size
    * @param from the unit of the given size
    * @return String
@@ -204,6 +195,7 @@ public class UnitUtil {
 
   /**
    * Get the memory size with the suitable unit
+   *
    * @param memSize size
    * @param from the unit of the given size
    * @return String

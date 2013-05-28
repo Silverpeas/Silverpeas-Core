@@ -36,6 +36,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.taglibs.standard.tag.common.core.Util;
 
 import com.silverpeas.util.StringUtil;
+
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SetBundleTag extends TagSupport {

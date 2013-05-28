@@ -28,11 +28,6 @@
  */
 package com.silverpeas.interestCenter.ejb;
 
-import com.silverpeas.interestCenter.model.InterestCenter;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DBUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,6 +36,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.silverpeas.interestCenter.model.InterestCenter;
+
+import com.stratelia.silverpeas.classifyEngine.Criteria;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 
 public class InterestCenterDAO {
 
@@ -142,15 +143,15 @@ public class InterestCenterDAO {
       String afterDate = rs.getString(7);
       String beforeDate = (rs.getString(8));
 
-      if (afterDate != null && !afterDate.equals("")) {
+      if (afterDate != null && !afterDate.isEmpty()) {
         ic.setAfterDate(formatter.parse(afterDate));
       } else {
         ic.setAfterDate(null);
       }
-      if (beforeDate != null && !beforeDate.equals("")) {
-        ic.setBeforeDate(formatter.parse(beforeDate));
-      } else {
+      if (beforeDate == null || beforeDate.isEmpty()) {
         ic.setBeforeDate(null);
+      } else {
+        ic.setBeforeDate(formatter.parse(beforeDate));
       }
     } catch (ParseException e) {
       throw new DAOException("InterestCenterDAO.getICByUserID",

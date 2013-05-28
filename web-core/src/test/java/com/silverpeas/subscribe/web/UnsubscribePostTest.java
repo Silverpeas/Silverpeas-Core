@@ -27,23 +27,27 @@ package com.silverpeas.subscribe.web;
 import com.silverpeas.subscribe.SubscriptionService;
 import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.GroupSubscriptionSubscriber;
 import com.silverpeas.subscribe.service.NodeSubscription;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
-import static com.silverpeas.subscribe.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
+import com.silverpeas.subscribe.service.UserSubscriptionSubscriber;
 import com.silverpeas.web.RESTWebServiceTest;
-import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 import com.silverpeas.web.mock.UserDetailWithProfiles;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import org.junit.Before;
+import org.junit.Test;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.COMPONENT_ID;
+import static com.silverpeas.subscribe.web.SubscriptionTestResources.UNSUBSCRIBE_RESOURCE_PATH;
+import static com.silverpeas.web.UserPriviledgeValidation.HTTP_SESSIONKEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestResources> {
@@ -88,9 +92,51 @@ public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestReso
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     ComponentSubscription subscription = new ComponentSubscription(user.getId(), COMPONENT_ID);
     getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
-    String result = resource.path(UNSUBSCRIBE_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey).accept(
-            MediaType.APPLICATION_JSON).post(String.class);
-    assertThat(result, is("OK"));
+    String[] result = resource.path(UNSUBSCRIBE_RESOURCE_PATH).header(HTTP_SESSIONKEY, sessionKey)
+        .accept(MediaType.APPLICATION_JSON).post(String[].class);
+    assertThat(result[0], is("OK"));
+    verify(mockedSubscriptionService, only()).unsubscribe(subscription);
+    verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void unsubscribeOtherUserFromComponentByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    ComponentSubscription subscription =
+        new ComponentSubscription(UserSubscriptionSubscriber.from("6"), COMPONENT_ID, "2");
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    String[] result =
+        resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/user/6").header(HTTP_SESSIONKEY, sessionKey)
+            .accept(MediaType.APPLICATION_JSON).post(String[].class);
+    assertThat(result[0], is("OK"));
+    verify(mockedSubscriptionService, only()).unsubscribe(subscription);
+    verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void unsubscribeGroupFromComponentByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    ComponentSubscription subscription =
+        new ComponentSubscription(GroupSubscriptionSubscriber.from("4"), COMPONENT_ID, "2");
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    String[] result =
+        resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/group/4").header(HTTP_SESSIONKEY, sessionKey)
+            .accept(MediaType.APPLICATION_JSON).post(String[].class);
+    assertThat(result[0], is("OK"));
     verify(mockedSubscriptionService, only()).unsubscribe(subscription);
     verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
   }
@@ -106,9 +152,54 @@ public class UnsubscribePostTest extends RESTWebServiceTest<SubscriptionTestReso
     SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
     NodeSubscription subscription = new NodeSubscription(user.getId(), new NodePK("205", COMPONENT_ID));
     getTestResources().getMockableSubscriptionService().setImplementation(mockedSubscriptionService);
-    String result = resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/topic/205").header(HTTP_SESSIONKEY, sessionKey).accept(
-            MediaType.APPLICATION_JSON).post(String.class);
-    assertThat(result, is("OK"));
+
+
+    String[] result =
+        resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/topic/205").header(HTTP_SESSIONKEY, sessionKey)
+            .accept(MediaType.APPLICATION_JSON).post(String[].class);
+    assertThat(result[0], is("OK"));
+    verify(mockedSubscriptionService, only()).unsubscribe(subscription);
+    verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void unsubscribeOtherUserFromTopicByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    NodeSubscription subscription = new NodeSubscription(UserSubscriptionSubscriber.from("26"),
+        new NodePK("205", COMPONENT_ID), "2");
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    String[] result = resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/topic/205/user/26")
+        .header(HTTP_SESSIONKEY, sessionKey).accept(MediaType.APPLICATION_JSON)
+        .post(String[].class);
+    assertThat(result[0], is("OK"));
+    verify(mockedSubscriptionService, only()).unsubscribe(subscription);
+    verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void unsubscribeGroupFromTopicByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+    UserDetailWithProfiles user = getTestResources().aUserNamed("Bart", "Simpson");
+    user.addProfile(COMPONENT_ID, SilverpeasRole.writer);
+    user.addProfile(COMPONENT_ID, SilverpeasRole.user);
+    String sessionKey = authenticate(user);
+    SubscriptionService mockedSubscriptionService = mock(SubscriptionService.class);
+    NodeSubscription subscription = new NodeSubscription(GroupSubscriptionSubscriber.from("14"),
+        new NodePK("205", COMPONENT_ID));
+    getTestResources().getMockableSubscriptionService()
+        .setImplementation(mockedSubscriptionService);
+    String[] result = resource.path(UNSUBSCRIBE_RESOURCE_PATH + "/topic/205/group/14")
+        .header(HTTP_SESSIONKEY, sessionKey).accept(MediaType.APPLICATION_JSON)
+        .post(String[].class);
+    assertThat(result[0], is("OK"));
     verify(mockedSubscriptionService, only()).unsubscribe(subscription);
     verify(mockedSubscriptionService, times(1)).unsubscribe(subscription);
   }

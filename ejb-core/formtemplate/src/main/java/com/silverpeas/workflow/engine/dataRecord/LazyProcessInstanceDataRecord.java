@@ -55,6 +55,8 @@ import com.silverpeas.workflow.api.user.UserSettings;
  */
 public class LazyProcessInstanceDataRecord implements DataRecord {
 
+  private static final long serialVersionUID = 1L;
+  
   /**
    * Builds the data record representation of a process instance.
    */
@@ -233,6 +235,12 @@ public class LazyProcessInstanceDataRecord implements DataRecord {
 
   public void setLanguage(String lang) {
     // do nothing
+  }
+  
+  @Override
+  public Map<String, String> getValues(String language) {
+    // no implemented yet !
+    return new HashMap<String, String>();
   }
 
   /**

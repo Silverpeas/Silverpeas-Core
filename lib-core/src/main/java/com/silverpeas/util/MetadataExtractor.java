@@ -35,7 +35,7 @@ import org.apache.tika.Tika;
 import org.apache.tika.metadata.Metadata;
 
 public class MetadataExtractor {
-
+  
   public MetadataExtractor() {
   }
 

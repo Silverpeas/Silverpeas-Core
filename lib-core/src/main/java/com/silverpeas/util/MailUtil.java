@@ -1,36 +1,39 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.silverpeas.util;
 
-import com.google.common.base.Splitter;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.lang3.CharEncoding;
 
 /**
  * @author ehugonnet
@@ -44,7 +47,6 @@ public class MailUtil {
   public static final String SMTP_PASSWORD = "SMTPPwd";
   public static final String SMTP_DEBUG = "SMTPDebug";
   public static final String SMTP_SECURE = "SMTPSecure";
-  static final Splitter DOMAIN_SPLITTER = Splitter.on(',').trimResults();
   private static final String mailhost;
   private static final boolean authenticated;
   private static final boolean secure;
@@ -57,8 +59,7 @@ public class MailUtil {
   private static final boolean forceReplyToSenderField;
   private static Iterable<String> domains;
   public static final ResourceLocator configuration = new ResourceLocator(
-      "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
-  private static final MessageFormat emailFormatter = new MessageFormat("\"{0}\"<{1}>");
+      "org.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
 
   static {
     mailhost = configuration.getString(SMTP_SERVER);
@@ -80,11 +81,19 @@ public class MailUtil {
 
   /**
    * Should be used only in tests.
+   *
    * @param domainsList the list of coma separated authorized domains for email sender addresses.
    */
   static void reloadConfiguration(String domainsList) {
     if (StringUtil.isDefined(domainsList)) {
-      domains = DOMAIN_SPLITTER.split(domainsList);
+      String[] authorizedDomains = StringUtil.split(domainsList, ',');
+      domains = new ArrayList<String>(authorizedDomains.length);
+      for (String domain : authorizedDomains) {
+        if (StringUtil.isDefined(domain)) {
+          ((List<String>) domains).add(domain.trim());
+        }
+
+      }
     } else {
       domains = Collections.singletonList("");
     }
@@ -92,9 +101,9 @@ public class MailUtil {
 
   public synchronized static boolean isDomainAuthorized(String email) {
     if (StringUtil.isDefined(email)) {
-      String emailAddress = email.toLowerCase();
+      String emailAddress = email.toLowerCase(I18NHelper.defaultLocale);
       for (String domain : domains) {
-        if (emailAddress.endsWith(domain.toLowerCase())) {
+        if (emailAddress.endsWith(domain.toLowerCase(I18NHelper.defaultLocale))) {
           return true;
         }
       }
@@ -111,7 +120,7 @@ public class MailUtil {
     //   personal name too (notificationPersonalName)
     String personal = senderAddress.equals(pFrom) ? personalName : notificationPersonalName;
     if (StringUtil.isDefined(personal)) {
-      address.setPersonal(personal, "UTF-8");
+      address.setPersonal(personal, CharEncoding.UTF_8);
     }
     return address;
   }

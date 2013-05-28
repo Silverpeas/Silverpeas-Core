@@ -1,31 +1,23 @@
 package org.silverpeas.viewer.web;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.io.File;
-
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.attachment.AttachmentService;
-import org.silverpeas.viewer.DocumentView;
-import org.silverpeas.viewer.ViewService;
-import org.silverpeas.viewer.exception.PreviewException;
-
 import com.silverpeas.annotation.Authorized;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.web.RESTWebService;
-import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.model.DocumentVersionPK;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import org.silverpeas.attachment.AttachmentService;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.viewer.DocumentView;
+import org.silverpeas.viewer.ViewService;
+import org.silverpeas.viewer.exception.PreviewException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /*
  * Copyright (C) 2000 - 2012 Silverpeas
@@ -50,7 +42,6 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  * @author Yohann Chastagnier
  */
@@ -61,19 +52,19 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 public class DocumentViewResource extends RESTWebService {
 
   @Inject
+  @Named("simpleDocumentService")
   private AttachmentService attachmentService;
 
   @Inject
   private ViewService viewService;
-
   @PathParam("componentId")
   private String componentId;
 
   /**
-   * Gets the JSON representation of document view information.
-   * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of document view information. If it doesn't exist, a 404 HTTP code
+   * is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
+   * when processing the request, a 503 HTTP code is returned.
+   *
    * @return the response to the HTTP GET request with the JSON representation of preview
    * information.
    */
@@ -84,8 +75,8 @@ public class DocumentViewResource extends RESTWebService {
     try {
 
       // Retrieve attachment data
-      final AttachmentDetail attachment =
-          attachmentService.getAttachment(new AttachmentPK(id, getComponentId()));
+      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
+          id, getComponentId()), getUserPreferences().getLanguage());
 
       // Checking availability
       if (attachment == null) {
@@ -93,8 +84,8 @@ public class DocumentViewResource extends RESTWebService {
       }
 
       // Computing the document view entity
-      return asWebEntity(viewService.getDocumentView(attachment.getLogicalName(), new File(
-          attachment.getAttachmentPath(getUserPreferences().getLanguage()))));
+      return asWebEntity(viewService.getDocumentView(attachment.getFilename(), new File(attachment.
+          getAttachmentPath())));
 
     } catch (final PreviewException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);
@@ -106,10 +97,10 @@ public class DocumentViewResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of document view information.
-   * If it doesn't exist, a 404 HTTP code is returned.
-   * If the user isn't authentified, a 401 HTTP code is returned.
-   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * Gets the JSON representation of document view information. If it doesn't exist, a 404 HTTP code
+   * is returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
+   * when processing the request, a 503 HTTP code is returned.
+   *
    * @return the response to the HTTP GET request with the JSON representation of document view
    * information.
    */
@@ -120,19 +111,17 @@ public class DocumentViewResource extends RESTWebService {
     try {
 
       // Retrieve attachment data
-      final VersioningUtil versioning = new VersioningUtil();
-      final DocumentVersion version =
-          versioning.getDocumentVersion(new DocumentVersionPK(Integer.parseInt(id), null,
-              getComponentId()));
+      final SimpleDocument attachment = attachmentService.searchDocumentById(new SimpleDocumentPK(
+          id, getComponentId()), getUserPreferences().getLanguage());
 
       // Checking availability
-      if (version == null) {
+      if (attachment == null) {
         throw new PreviewException("ATTACHMENT DOESN'T EXIST");
       }
 
       // Computing the document view entity
-      return asWebEntity(viewService.getDocumentView(version.getLogicalName(),
-          new File(version.getDocumentPath())));
+      return asWebEntity(viewService.getDocumentView(attachment.getFilename(),new File(attachment.
+          getAttachmentPath())));
 
     } catch (final PreviewException pe) {
       throw new WebApplicationException(pe, Status.NOT_FOUND);
@@ -145,6 +134,7 @@ public class DocumentViewResource extends RESTWebService {
 
   /**
    * Converts the document view into its corresponding web entity.
+   *
    * @param documentView the view to convert.
    * @return the corresponding view entity.
    */

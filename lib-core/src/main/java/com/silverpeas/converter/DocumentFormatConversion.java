@@ -24,13 +24,16 @@
 
 package com.silverpeas.converter;
 
-import java.io.File;
-
 import com.silverpeas.converter.option.FilterOption;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This interface defines the ability to convert a document in a given format into a specified
- * another format. An object with a such property should implement this interface. A converter takes
+ * another format. An object with a such property should implement this interface. A converter
+ * takes
  * into account a specific format of documents and provides the capability to convert it into
  * another format. It can support only a subset of available conversions in Silverpeas.
  */
@@ -45,7 +48,7 @@ public interface DocumentFormatConversion {
    * @param options additional options such as "PageRange"
    * @return the file with the converted document.
    */
-  File convert(File source, DocumentFormat inFormat, FilterOption ... options);
+  File convert(File source, DocumentFormat inFormat, FilterOption... options);
 
   /**
    * Converts the specified document in the specified format. The format should be supported by the
@@ -56,13 +59,23 @@ public interface DocumentFormatConversion {
    * @param inFormat the format into which the document has to be converted.
    * @return the destination file.
    */
-  File convert(File source, File destination, DocumentFormat inFormat, FilterOption ... options);
+  File convert(File source, File destination, DocumentFormat inFormat, FilterOption... options);
+
+  /**
+   * Converts the specified inputstream/format in the specified outputstream/format.
+   * @param source the source stream to convert.
+   * @param inFormat the format from which the document has to be converted.
+   * @param destination the converted stream.
+   * @param outFormat the format into which the document has to be converted.
+   */
+  void convert(InputStream source, DocumentFormat inFormat, OutputStream destination,
+      DocumentFormat outFormat, FilterOption... options);
 
 
   /**
    * Gets the formats of documents supported by the converter.
    * @return an array with the different formats into which the object implementing this interface
-   * can convert a document.
+   *         can convert a document.
    */
   DocumentFormat[] getSupportedFormats();
 }

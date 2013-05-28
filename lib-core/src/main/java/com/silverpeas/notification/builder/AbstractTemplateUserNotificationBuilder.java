@@ -26,13 +26,13 @@ package com.silverpeas.notification.builder;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.webactiv.beans.admin.OrganizationControllerFactory;
 
 /**
  * @author Yohann Chastagnier
@@ -131,9 +131,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
-    if (OrganizationControllerFactory.getFactory().getOrganizationController()
+    if (OrganisationControllerFactory.getFactory().getOrganisationController()
         .isComponentExist(getComponentInstanceId()) ||
-        OrganizationControllerFactory.getFactory().getOrganizationController()
+        OrganisationControllerFactory.getFactory().getOrganisationController()
             .isToolAvailable(getComponentInstanceId())) {
       template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
     } else {

@@ -30,37 +30,37 @@
   <requirement>
   </requirement>
 
-  <current version="030">
+  <current version="031">
     <create_table>
-      <file name="mssql\busCore\030\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\create_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
     <create_constraint>
-      <file name="mssql\busCore\030\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\create_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_constraint>
     <init>
-      <file name="mssql\busCore\030\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\init_production.sql" type="sqlstatementlist" delimiter="\nGO" keepdelimiter="NO"/>
       <file name="java\passwordencryption.jar" type="javalib" classname="org.silverpeas.passwordencryption.UserPasswordEncryption" methodname="run"/>
     </init>
     <create_index>
-      <file name="mssql\busCore\030\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\create_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_index>
     <drop_index>
-      <file name="mssql\busCore\030\drop_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\drop_index_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </drop_index>
     <drop_table>
-      <file name="mssql\busCore\030\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\drop_table_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </drop_table>
     <drop_constraint>
-      <file name="mssql\busCore\030\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\drop_constraint_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </drop_constraint>
     <clean>
-      <file name="mssql\busCore\030\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
-      <file name="mssql\busCore\030\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\clean.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+      <file name="mssql\busCore\031\clean_production.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </clean>
   </current>
 
@@ -230,7 +230,7 @@
       <file name="mssql\busCore\up026\alter_init.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
-  
+
   <upgrade version="027">
     <create_table>
       <file name="mssql\busCore\up027\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
@@ -253,6 +253,12 @@
     </create_table>
     <create_table>
       <file name="passwordTypeModification.jar" type="javalib" classname="org.silverpeas.migration.sqldomain.PasswordSizeIncrease" methodname="migrate"/>
+    </create_table>
+  </upgrade>
+
+  <upgrade version="030">
+    <create_table>
+      <file name="mssql\busCore\up030\alter_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
     </create_table>
   </upgrade>
 

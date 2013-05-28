@@ -11,4 +11,5 @@
   <artifactId>clipboard</artifactId>
   <packaging>ejb</packaging>
   <name>EJB Clipboard - ${project.version}</name>
+
 </project>

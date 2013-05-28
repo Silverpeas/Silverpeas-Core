@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2000 - 2012 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,14 +27,14 @@
  * Its aim is to wraps the JQuery plugin used to display a calendar. It also predefine the look&feel
  * as well to extends it with some additional features.
  */
-(function( $ ){
-  
+(function($) {
+
   $.calendar = {
     initialized: false
   };
-  
+
   var CALENDAR_KEY = 'calendar';
-  
+
   /**
    * The Silverpeas calendar plugin accepts as parameter an object representing the calendar to render
    * and that is defined by the following attributes:
@@ -58,12 +58,12 @@
    * in the yearly, monthly and weekly views. Theses callbacks must accept one parameter: a date in
    * international format "yyyy-MM-dd'T'HH:mm"
    */
-  $.fn.calendar = function( calendar ) {
-    
-    if (! this.length || ! calendar)
+  $.fn.calendar = function(calendar) {
+
+    if (!this.length || !calendar)
       return this;
-    
-    if (! $.calendar.initialized) {
+
+    if (!$.calendar.initialized) {
       $.i18n.properties({
         name: 'generalMultilang',
         path: webContext + '/services/bundles/com/stratelia/webactiv/multilang/',
@@ -72,7 +72,7 @@
       });
       $.calendar.initialized = true;
     }
-    
+
     return this.each(function() {
       var $this = $(this);
       $this.data(CALENDAR_KEY, calendar);
@@ -84,45 +84,45 @@
         renderMonthlyView($this);
     })
   };
-  
-  function renderMonthlyView( target ) {
+
+  function renderMonthlyView(target) {
     renderFullCalendar(target);
   }
-  
-  function renderWeeklyView( target ) {
+
+  function renderWeeklyView(target) {
     renderFullCalendar(target);
   }
-  
-  function renderYearlyView( target ) {
+
+  function renderYearlyView(target) {
     renderFullCalendar(target);
   }
-  
-  function renderFullCalendar( target ) {
+
+  function renderFullCalendar(target) {
     var calendar = target.data(CALENDAR_KEY);
-    
-    target.fullCalendar({
+
+    var options = {
       header: false,
       monthNames: [$.i18n.prop("GML.mois0"), $.i18n.prop("GML.mois1"), $.i18n.prop("GML.mois2"), $.i18n.prop("GML.mois3"),
-      $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
-      $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
+        $.i18n.prop("GML.mois4"), $.i18n.prop("GML.mois5"), $.i18n.prop("GML.mois6"), $.i18n.prop("GML.mois7"),
+        $.i18n.prop("GML.mois8"), $.i18n.prop("GML.mois9"), $.i18n.prop("GML.mois10"), $.i18n.prop("GML.mois11")],
       dayNames: [$.i18n.prop("GML.jour1"), $.i18n.prop("GML.jour2"), $.i18n.prop("GML.jour3"), $.i18n.prop("GML.jour4"),
-      $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
+        $.i18n.prop("GML.jour5"), $.i18n.prop("GML.jour6"), $.i18n.prop("GML.jour7")],
       dayNamesShort: [$.i18n.prop("GML.shortJour1"), $.i18n.prop("GML.shortJour2"), $.i18n.prop("GML.shortJour3"),
-      $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
+        $.i18n.prop("GML.shortJour4"), $.i18n.prop("GML.shortJour5"), $.i18n.prop("GML.shortJour6"), $.i18n.prop("GML.shortJour7")],
       buttonText: {
-        prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-        next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+        prev: '&nbsp;&#9668;&nbsp;', // left triangle
+        next: '&nbsp;&#9658;&nbsp;', // right triangle
         prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
         nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-        today:    $.i18n.prop("GML.Today"),
-        month:    $.i18n.prop("GML.month"),
-        week:     $.i18n.prop("GML.week"),
-        day:      $.i18n.prop("GML.day")
+        today: $.i18n.prop("GML.Today"),
+        month: $.i18n.prop("GML.month"),
+        week: $.i18n.prop("GML.week"),
+        day: $.i18n.prop("GML.day")
       },
       minHour: 8,
       allDayText: '',
       allDayDefault: false,
-      ignoreTimezone: false,
+      ignoreTimezone: true,
       timeFormat: 'HH:mm{ - HH:mm}',
       axisFormat: 'HH:mm',
       columnFormat: {
@@ -141,15 +141,32 @@
           calendar.onevent(calEvent);
         }
       },
+      eventMouseover: function(calEvent, jsEvent, view) {
+        if (calendar.oneventmouseover) {
+          calendar.oneventmouseover(calEvent);
+        }
+      },
       events: calendar.events,
       weekends: calendar.weekends
-    });
-    
+    };
+
+    if (calendar.allDaySlot !== 'undefined') {
+      options.allDaySlot = calendar.allDaySlot
+    }
+
+    if (calendar.eventrender) {
+      options.eventRender = function(calEvent, $element, view) {
+        calendar.eventrender(calEvent, $element);
+      };
+    }
+
+    target.fullCalendar(options);
+
     target.fullCalendar('gotoDate', calendar.currentDate);
-    
+
   }
-    
-  function getFullCalendarView( view ) {
+
+  function getFullCalendarView(view) {
     if (view == 'monthly')
       return 'month';
     else if (view == 'yearly')
@@ -158,5 +175,5 @@
       return 'agendaWeek';
     return undefined;
   }
-  
-})( jQuery );
+
+})(jQuery);

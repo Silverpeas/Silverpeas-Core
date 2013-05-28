@@ -29,8 +29,6 @@ date 14/09/2000
 */
 package com.stratelia.webactiv.beans.admin;
 
-import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +40,10 @@ import org.silverpeas.quota.exception.QuotaException;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.spaces.SpaceTemplate;
 import com.silverpeas.util.ArrayUtil;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
 /*
 This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc...
 It provides access functions to query and modify the domains as well as the company organization

@@ -24,8 +24,9 @@
 
 package com.silverpeas.web.mock;
 
-import com.silverpeas.accesscontrol.AccessController;
 import javax.inject.Named;
+
+import com.silverpeas.accesscontrol.AccessController;
 
 /**
  * A mock of an user access controller for testing purpose.

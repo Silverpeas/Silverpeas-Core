@@ -1,43 +1,24 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * @author Ludovic BERTIN
- * @version 1.0
- * date 21/9/2001
- */
-
 package org.silverpeas.authentication;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -45,7 +26,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
+
+import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.authentication.exception.AuthenticationException;
+import org.silverpeas.authentication.exception.AuthenticationHostException;
+import org.silverpeas.authentication.exception.AuthenticationPasswordExpired;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedAtNextLogon;
+import org.silverpeas.authentication.exception.AuthenticationPasswordMustBeChangedOnFirstLogin;
+import org.silverpeas.authentication.exception.AuthenticationPwdNotAvailException;
+import org.silverpeas.authentication.exception.AuthenticationUserAccountBlockedException;
+import org.silverpeas.authentication.verifier.AuthenticationUserVerifierFactory;
+import org.silverpeas.authentication.verifier.UserCanLoginVerifier;
+import org.silverpeas.authentication.verifier.UserMustChangePasswordVerifier;
+
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.Domain;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -93,8 +103,8 @@ public class AuthenticationService {
     m_DomainTableName = propFile.getString("SQLDomainTableName");
     m_DomainIdColumnName = propFile.getString("SQLDomainIdColumnName");
     m_DomainNameColumnName = propFile.getString("SQLDomainNameColumnName");
-    m_DomainAuthenticationServerColumnName =
-        propFile.getString("SQLDomainAuthenticationServerColumnName");
+    m_DomainAuthenticationServerColumnName = propFile.getString(
+        "SQLDomainAuthenticationServerColumnName");
 
     m_KeyStoreTableName = propFile.getString("SQLKeyStoreTableName");
     m_KeyStoreKeyColumnName = propFile.getString("SQLKeyStoreKeyColumnName");
@@ -127,8 +137,8 @@ public class AuthenticationService {
       driverSQL = (Driver) Class.forName(m_DriverClass).newInstance();
     } catch (Exception iex) {
       throw new AuthenticationHostException("AuthenticationService.openConnection()",
-          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" +
-          m_DriverClass, iex);
+          SilverpeasException.ERROR, "root.EX_CANT_INSTANCIATE_DB_DRIVER", "Driver=" + m_DriverClass,
+          iex);
     }
     try {
       con = driverSQL.connect(m_JDBCUrl, info);
@@ -160,8 +170,7 @@ public class AuthenticationService {
     try {
       domains = Arrays.asList(AdminReference.getAdminService().getAllDomains());
     } catch (AdminException e) {
-      SilverTrace.error(module, "AuthenticationService",
-          "Problem to retrieve all the domains", e);
+      SilverTrace.error(module, "AuthenticationService", "Problem to retrieve all the domains", e);
       domains = Collections.EMPTY_LIST;
     }
     return domains;
@@ -170,9 +179,10 @@ public class AuthenticationService {
   /**
    * Authenticates a user with the specified authentication credential.
    *
-   * If the authentication succeed, the security-related capabilities, mapped to the
-   * user's credential, are set from information sent back by the authentication server related to
-   * the domain to which the user belongs.
+   * If the authentication succeed, the security-related capabilities, mapped to the user's
+   * credential, are set from information sent back by the authentication server related to the
+   * domain to which the user belongs.
+   *
    * @param userCredential the credential of the user to use to authenticate him.
    * @return an authentication key or null if the authentication fails. The authentication key
    * identifies uniquely the status of the user authentication and it is unique to the user so that
@@ -214,15 +224,15 @@ public class AuthenticationService {
 
       AuthenticationServer authenticationServer = getAuthenticationServer(connection, domainId);
 
-        // Store information about password change capabilities
+      // Store information about password change capabilities
       credential.getCapabilities().put(Authentication.PASSWORD_CHANGE_ALLOWED,
           (authenticationServer.isPasswordChangeAllowed()) ? "yes" : "no");
 
-      // Authentication test
-      authenticationServer.authenticate(credential);
+      // Verify that the user can login
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
-      // Verify user state
-      AuthenticationUserStateChecker.verify(login, domainId);
+      // Authentification test
+      authenticationServer.authenticate(credential);
 
       // Generate a random key and store it in database
       return getAuthenticationKey(login, domainId);
@@ -249,8 +259,10 @@ public class AuthenticationService {
         errorCause = ERROR_PWD_EXPIRED;
       } else if (ex instanceof AuthenticationPasswordMustBeChangedAtNextLogon) {
         errorCause = ERROR_PWD_MUST_BE_CHANGED;
+      } else if (ex instanceof AuthenticationPasswordMustBeChangedOnFirstLogin) {
+        errorCause = UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
       } else if (ex instanceof AuthenticationUserAccountBlockedException) {
-        errorCause = AuthenticationUserStateChecker.ERROR_USER_ACCOUNT_BLOCKED;
+        errorCause = UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED;
       }
       return errorCause;
     } finally {
@@ -309,8 +321,8 @@ public class AuthenticationService {
         key = getAuthenticationKey(login, domainId);
       } catch (Exception e) {
         SilverTrace.warn(module, "AuthenticationService.authenticate()",
-            "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User=" +
-            login, e);
+            "authentication.EX_CANT_GET_AUTHENTICATION_KEY", "DomainId=" + domainId + ";User="
+            + login, e);
         return "Error_2";
       }
     }
@@ -319,9 +331,10 @@ public class AuthenticationService {
   }
 
   /**
-   * Changes the password of the specified user credential with the specified new one.
-   * In order to change the password of a user, the user will be first authenticated.
-   * The specified credential won't be updated by the password change.
+   * Changes the password of the specified user credential with the specified new one. In order to
+   * change the password of a user, the user will be first authenticated. The specified credential
+   * won't be updated by the password change.
+   *
    * @param credential the current authentication credential of the user.
    * @param newPassword User new password the new password to set.
    * @throws AuthenticationException if an error occurs while changing the password of the specified
@@ -339,8 +352,8 @@ public class AuthenticationService {
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
-    // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
     Connection connection = null;
     try {
       // Open connection
@@ -357,20 +370,23 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
+
+    // Treatments on password change
+    onPasswordChanged(credential);
   }
 
   /**
-   * Gets an authentication key for a given user from its specified login and from the domain to which
-   * he belongs. This method doesn't perform any authentication but it only set a new authentication
-   * key for the given user. This method can be used, for example, to let a user who has forgotten its
-   * password of setting a new one.
+   * Gets an authentication key for a given user from its specified login and from the domain to
+   * which he belongs. This method doesn't perform any authentication but it only set a new
+   * authentication key for the given user. This method can be used, for example, to let a user who
+   * has forgotten its password of setting a new one.
    *
    * @param login the user login.
    * @param domainId the unique identifier of the domain of the user.
    * @return an authentication key.
    */
   public String getAuthenticationKey(String login, String domainId) throws AuthenticationException {
-    String authKey = computeGenerationKey(login, domainId);
+    String authKey = computeGenerationKey(login);
     storeAuthenticationKey(login, domainId, authKey);
     return authKey;
   }
@@ -424,10 +440,9 @@ public class AuthenticationService {
    * Builds a random authentication key.
    *
    * @param login a user login
-   * @param domainId a user domain identifier.
    * @return the generated authentication key.
    */
-  private String computeGenerationKey(String login, String domainId)
+  private String computeGenerationKey(String login)
       throws AuthenticationException {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
@@ -466,14 +481,15 @@ public class AuthenticationService {
 
   /**
    * Resets the specified password of the user behind the specified authentication credential with
-   * the specified one.
-   * The reset operation can only be performed if the password change is allowed by the domain to
-   * which the user belongs. It doesn't require the user to be authenticated but, as consequence,
-   * requires to be run in a privileged mode (only an administrator or the system itself can do
-   * this operation). The privileged mode isn't checked by this method, hence it is the responsibility
-   * of the caller to ensure this.
-   * The specified credential won't be updated by the password reset.
-   * @param credential the authentication credential of the user for which the password has to be reset.
+   * the specified one. The reset operation can only be performed if the password change is allowed
+   * by the domain to which the user belongs. It doesn't require the user to be authenticated but,
+   * as consequence, requires to be run in a privileged mode (only an administrator or the system
+   * itself can do this operation). The privileged mode isn't checked by this method, hence it is
+   * the responsibility of the caller to ensure this. The specified credential won't be updated by
+   * the password reset.
+   *
+   * @param credential the authentication credential of the user for which the password has to be
+   * reset.
    * @param newPassword the password with which the credential password will be reset.
    * @throws AuthenticationException if an error occurs while resetting the credential password.
    */
@@ -487,11 +503,10 @@ public class AuthenticationService {
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
 
-    // Verify user state
-    AuthenticationUserStateChecker.verify(login, domainId);
+    // Verify that the user can login
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
     Connection connection = null;
-
     try {
       // Open connection
       connection = openConnection();
@@ -508,10 +523,38 @@ public class AuthenticationService {
     } finally {
       closeConnection(connection);
     }
+
+    // Treatments on password change
+    onPasswordChanged(credential);
+  }
+
+  /**
+   * Treatments on password change.
+   *
+   * @param credential
+   */
+  private void onPasswordChanged(AuthenticationCredential credential) {
+    AdminController admin = new AdminController(null);
+    UserDetail user = UserDetail
+        .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
+
+    // Notify that the user has changed his password.
+    AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
+        .notifyPasswordChange();
+
+    // Reset the counter of number of successful connections for the given user.
+    user.setNbSuccessfulLoginAttempts(0);
+
+    // Register the date of credential change
+    user.setLastLoginCredentialUpdateDate(new Date());
+
+    // Persisting user data changes.
+    admin.updateUser(user);
   }
 
   /**
    * Is the change of a user password is allowed by specified user domain?
+   *
    * @param domainId the unique identifier of the user domain.
    * @return true if the password of the users in the specified domain can be changed, false
    * otherwise.
@@ -528,8 +571,8 @@ public class AuthenticationService {
       return authenticationServer.isPasswordChangeAllowed();
     } catch (AuthenticationException ex) {
       SilverTrace.error(module, "AuthenticationService.isPasswordChangeAllowed()",
-          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception=" +
-          ex.getMessage());
+          "authentication.EX_AUTHENTICATION_STATUS_ERROR", "DomainId=" + domainId + " exception="
+          + ex.getMessage());
     } finally {
       closeConnection(connection);
     }

@@ -29,16 +29,17 @@
 
 <%@ include file="checkSilverStatistics.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%!
 
-	private String formatDate(ResourcesWrapper resources, String date) 
+	private String formatDate(ResourcesWrapper resources, String date)
 	{//date au format AAAA-MM-jj
-	
+
 		String dateFormate = "";
-		
+
 		String annee = date.substring(0, 4);
 		int mois = new Integer(date.substring(5, 7)).intValue();
-		
+
 		if(mois == 1) {
 			dateFormate = resources.getString("silverStatisticsPeas.January");
 		} else if(mois == 2) {
@@ -64,14 +65,14 @@
 		} else if(mois == 12) {
 			dateFormate = resources.getString("silverStatisticsPeas.December");
 		}
-		
+
 		dateFormate += " "+annee;
-		
+
 		return dateFormate;
 	}
 %>
 
-<%  
+<%
     Vector<String[]> vStatsData = (Vector<String[]>)request.getAttribute("StatsData");
     UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile");
 
@@ -80,7 +81,7 @@
 		tabbedPane.addTab(resources.getString("silverStatisticsPeas.JobPeas"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServices",false);
 	}
 	tabbedPane.addTab(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumePublication",false);
-	tabbedPane.addTab(resources.getString("GML.attachments"), m_context+"/RsilverStatisticsPeas/jsp/ViewVolumeServer",true);
+	tabbedPane.addTab(resources.getString("GML.attachments"), "javascript:displayVolumes();",true);
 %>
 
 <html>
@@ -90,8 +91,13 @@
 <script type="text/javascript">
 	function changeDisplay() {
 		document.volumeServerFormulaire.action = document.volumeServerFormulaire.Display.value;
-		document.volumeServerFormulaire.submit();		
+		document.volumeServerFormulaire.submit();
 	}
+
+  function displayVolumes() {
+    $.progressMessage();
+    location.href = '<c:url value="/RsilverStatisticsPeas/jsp/ViewVolumeServer" />';
+  }
 </script>
 </head>
 <body>
@@ -100,7 +106,7 @@
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));
     browseBar.setComponentName(resources.getString("GML.attachments"));
     browseBar.setPath(resources.getString("silverStatisticsPeas.AttachmentsTotalSize"));
-    
+
 	out.println(window.printBefore());
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
@@ -130,32 +136,32 @@
           	if (arrayPane.getColumnToSort()==0) {
 	      		arrayPane.setColumnToSort(1);
           	}
-	      	
+
 	      	ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.date"));
             ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("GML.name"));
             ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("GML.size"));
-	      	
+
 	      	if (vStatsData != null) {
 	        	ArrayCellText cellText;
-	        	
+
 	        	for (String[] item : vStatsData) {
 					ArrayLine arrayLine = arrayPane.addArrayLine();
-	            	
-	            	//transformation de la date 2007-02-01 -> Fév. 2007            	
+
+	            	//transformation de la date 2007-02-01 -> Fév. 2007
 					cellText = arrayLine.addArrayCellText(formatDate(resources, item[0]));
 					cellText.setCompareOn(item[0]);
 
 	          		arrayLine.addArrayCellText(item[1]);
-	          		
+
 	          		cellText = arrayLine.addArrayCellText(FileRepositoryManager.formatFileSize(new Long(item[2]).longValue() * 1024));
 	          		cellText.setCompareOn(new Integer(item[2]));
 	        	}
-			
+
 				out.println(arrayPane.print());
 		        out.println("");
 	    }
   %>
-  
+
  </form>
 <%
 out.println(frame.printAfter());

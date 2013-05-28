@@ -35,8 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.jobDomainPeas.control.JobDomainPeasSessionController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
+import org.silverpeas.core.admin.OrganisationController;
 
 public class JobDomainPeasComponentPathServlet extends HttpServlet {
 
@@ -71,7 +71,7 @@ public class JobDomainPeasComponentPathServlet extends HttpServlet {
   private String getComponentPath(JobDomainPeasSessionController sc, String componentId) {
     String componentPath = "";
 
-    OrganizationController orgaController = sc.getOrganizationController();
+    OrganisationController orgaController = sc.getOrganisationController();
 
     // Espace > Sous-espaces
     List<SpaceInst> spaceList = orgaController.getSpacePathToComponent(componentId);

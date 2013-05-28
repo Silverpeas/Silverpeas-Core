@@ -1,46 +1,30 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.jaas;
 
-import com.silverpeas.jcrutil.security.impl.DigestCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
-import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
-import org.silverpeas.authentication.AuthenticationCredential;
-import org.silverpeas.authentication.AuthenticationService;
-import com.stratelia.webactiv.beans.admin.Admin;
-import com.stratelia.webactiv.beans.admin.AdminException;
-import com.stratelia.webactiv.beans.admin.AdminReference;
-import com.stratelia.webactiv.beans.admin.Domain;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.beans.admin.UserFull;
-import com.stratelia.webactiv.util.exception.WithNested;
 import java.security.Principal;
-import org.apache.jackrabbit.core.security.AnonymousPrincipal;
-import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;
@@ -51,10 +35,26 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import org.apache.jackrabbit.util.Text;
+
+import org.silverpeas.authentication.AuthenticationCredential;
+import org.silverpeas.authentication.AuthenticationService;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.crypto.CryptMD5;
+
+import com.silverpeas.jcrutil.security.impl.DigestCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemCredentials;
+import com.silverpeas.jcrutil.security.impl.SilverpeasSystemPrincipal;
+
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.AdminException;
+import com.stratelia.webactiv.beans.admin.AdminReference;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.exception.WithNested;
+
+import org.apache.jackrabbit.core.security.AnonymousPrincipal;
+import org.apache.jackrabbit.core.security.authentication.CredentialsCallback;
 
 public class SilverpeasLoginModule implements LoginModule {
 
@@ -64,7 +64,7 @@ public class SilverpeasLoginModule implements LoginModule {
   private CallbackHandler callbackHandler;
   private Set<Principal> principals = new HashSet<Principal>();
   private AuthenticationService authenticator;
-  private OrganizationController controller;
+  private OrganisationController controller;
   private Admin administrator;
 
   public String getUserId() {
@@ -79,7 +79,7 @@ public class SilverpeasLoginModule implements LoginModule {
     this.authenticator = authenticator;
   }
 
-  public void setController(OrganizationController controller) {
+  public void setController(OrganisationController controller) {
     this.controller = controller;
   }
 
@@ -125,23 +125,22 @@ public class SilverpeasLoginModule implements LoginModule {
     try {
       // Get credentials using a JAAS callback
       CredentialsCallback ccb = new CredentialsCallback();
-      callbackHandler.handle(new Callback[] { ccb });
+      callbackHandler.handle(new Callback[]{ccb});
       Credentials creds = ccb.getCredentials();
       // Use the credentials to set up principals
       if (creds != null) {
         if (creds instanceof SimpleCredentials) {
           SimpleCredentials sc = (SimpleCredentials) creds;
           // authenticate
-          Domain[] domains = controller.getAllDomains();
-          for (Domain domain : domains) {
-            AuthenticationCredential credential = AuthenticationCredential
-                .newWithAsLogin(sc.getUserID())
-                .withAsPassword(new String(sc.getPassword()))
-                .withAsDomainId(domain.getId());
+          List<String> domains = administrator.getAllDomainIdsForLogin(sc.getUserID());
+          for (String domainId : domains) {
+            AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(sc
+                .getUserID()).withAsPassword(new String(sc.getPassword())).withAsDomainId(domainId);
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
-              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
+                  isRoot(userId));
               fillPrincipal(principal);
               principals.add(principal);
             }
@@ -152,7 +151,8 @@ public class SilverpeasLoginModule implements LoginModule {
           authenticated = true;
         } else if (creds instanceof SilverpeasCredentials) {
           String theUserId = ((SilverpeasCredentials) creds).getUserId();
-          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId);
+          SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId, isRoot(
+              theUserId));
           fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;
@@ -163,15 +163,15 @@ public class SilverpeasLoginModule implements LoginModule {
         } else if (creds instanceof DigestCredentials) {
           DigestCredentials sc = (DigestCredentials) creds;
           // authenticate
-          Domain[] domains = controller.getAllDomains();
-          for (Domain domain : domains) {
-            AuthenticationCredential credential = AuthenticationCredential
-                .newWithAsLogin(sc.getUsername())
-                .withAsDomainId(domain.getId());
+          List<String> domains = administrator.getAllDomainIdsForLogin(sc.getUsername());
+          for (String domainId : domains) {
+            AuthenticationCredential credential = AuthenticationCredential.newWithAsLogin(sc
+                .getUsername()).withAsDomainId(domainId);
             String key = authenticator.authenticate(credential);
             if (key != null && !key.startsWith("Error_")) {
               userId = administrator.authenticate(key, null, false);
-              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId);
+              SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
+                  isRoot(userId));
               validateDigestUser(principal, sc);
               fillPrincipal(principal);
               principals.add(principal);
@@ -214,6 +214,18 @@ public class SilverpeasLoginModule implements LoginModule {
     }
   }
 
+  private boolean isRoot(String userId) {
+    boolean isAdmin = false;
+    try {
+      UserDetail currentUser = administrator.getUserDetail(userId);
+      if (currentUser != null) {
+        isAdmin = currentUser.isAccessAdmin();
+      }
+    } catch (AdminException ex) {
+    }
+    return isAdmin;
+  }
+
   @Override
   public boolean logout() throws LoginException {
     subject.getPrincipals().removeAll(principals);
@@ -234,10 +246,10 @@ public class SilverpeasLoginModule implements LoginModule {
   public boolean validateDigestUser(SilverpeasUserPrincipal principal, DigestCredentials sc) throws
       AdminException {
     UserFull user = AdminReference.getAdminService().getUserFull(userId);
-    String md5a1 = Text.md5(user.getPassword());
-    String serverDigestValue = md5a1 + ":" + sc.getNonce() + ":" + sc.getNc() + ":" +
-        sc.getCnonce() + ":" + sc.getQop() + ":" + sc.getMd5a2();
-    String serverDigest = Text.md5(serverDigestValue);
+    String md5a1 = CryptMD5.encrypt(user.getPassword());
+    String serverDigestValue = md5a1 + ":" + sc.getNonce() + ":" + sc.getNc() + ":" + sc.getCnonce()
+        + ":" + sc.getQop() + ":" + sc.getMd5a2();
+    String serverDigest = CryptMD5.encrypt(serverDigestValue);
     return serverDigest.equals(sc.getClientDigest());
   }
 }

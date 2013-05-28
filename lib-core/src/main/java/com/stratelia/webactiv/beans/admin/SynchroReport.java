@@ -25,8 +25,10 @@
 package com.stratelia.webactiv.beans.admin;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import edu.emory.mathcs.backport.java.util.Collections;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SynchroReport {
 
@@ -46,13 +48,14 @@ public class SynchroReport {
   private static final String moduleName = "synchro";
 
   private static int iTraceLevel;
-  private static Vector<String> VMessage;
+  @SuppressWarnings("unchecked")
+  private static final List<String> VMessage = (List<String>)Collections.synchronizedList(
+      new ArrayList<String>());
   private static int iState;
 
   // Initialisation
   static {
     iTraceLevel = TRACE_LEVEL_WARN;
-    VMessage = new Vector<String>();
     iState = STATE_NOSYNC;
   }
 
@@ -77,20 +80,23 @@ public class SynchroReport {
 
   /**
    * Recupere le niveau de trace ds une chaine
+   * @return
    */
   static public String getTraceLevelStr() {
-    if (iTraceLevel == TRACE_LEVEL_WARN)
-      return "warning";
-    else if (iTraceLevel == TRACE_LEVEL_DEBUG)
-      return "debug";
-    else if (iTraceLevel == TRACE_LEVEL_INFO)
-      return "info";
-    else if (iTraceLevel == TRACE_LEVEL_ERROR)
-      return "error";
-    else if (iTraceLevel == TRACE_LEVEL_FATAL)
-      return "fatal";
-    else
-      return "unknown";
+    switch (iTraceLevel) {
+      case TRACE_LEVEL_WARN:
+        return "warning";
+      case TRACE_LEVEL_DEBUG:
+        return "debug";
+      case TRACE_LEVEL_INFO:
+        return "info";
+      case TRACE_LEVEL_ERROR:
+        return "error";
+      case TRACE_LEVEL_FATAL:
+        return "fatal";
+      default:
+        return "unknown";
+    }
   }
 
   /**
@@ -110,16 +116,16 @@ public class SynchroReport {
   }
 
   /**
-     
+
      */
   static public String getMessage() {
-    String Message = null;
+    String message = null;
     synchronized (VMessage) {
-      if (VMessage.size() > 0) {
-        Message = VMessage.remove(0);
+      if (!VMessage.isEmpty()) {
+        message = VMessage.remove(0);
       }
     }
-    return Message;
+    return message;
   }
 
   static public void startSynchro() {
@@ -147,8 +153,7 @@ public class SynchroReport {
     if (isSynchroActive()) {
       addMessage(msgFormat(TRACE_LEVEL_INFO, classe, message, ex),
           TRACE_LEVEL_INFO);
-      SilverTrace.info(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE",
-          message, ex);
+      SilverTrace.info(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE", message, ex);
     }
   }
 
@@ -156,8 +161,7 @@ public class SynchroReport {
     if (isSynchroActive()) {
       addMessage(msgFormat(TRACE_LEVEL_WARN, classe, message, ex),
           TRACE_LEVEL_WARN);
-      SilverTrace.warn(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE",
-          message, ex);
+      SilverTrace.warn(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE", message, ex);
     }
   }
 
@@ -165,8 +169,7 @@ public class SynchroReport {
     if (isSynchroActive()) {
       addMessage(msgFormat(TRACE_LEVEL_ERROR, classe, message, ex),
           TRACE_LEVEL_ERROR);
-      SilverTrace.error(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE",
-          message, ex);
+      SilverTrace.error(getModuleName(), classe, "root.MSG_GEN_PARAM_VALUE", message, ex);
     }
   }
 
@@ -182,22 +185,27 @@ public class SynchroReport {
     return (iState == STATE_STARTED);
   }
 
-  static protected String msgFormat(int traceLvl, String classe,
-      String msgToTrace, Throwable ex) {
-    StringBuffer sb = new StringBuffer();
-
-    if (traceLvl == TRACE_LEVEL_DEBUG) {
-      sb.append("D_");
-    } else if (traceLvl == TRACE_LEVEL_INFO) {
-      sb.append("I_");
-    } else if (traceLvl == TRACE_LEVEL_WARN) {
-      sb.append("W_");
-    } else if (traceLvl == TRACE_LEVEL_ERROR) {
-      sb.append("E_");
-    } else if (traceLvl == TRACE_LEVEL_FATAL) {
-      sb.append("F_");
-    } else {
-      sb.append("U_");
+  static protected String msgFormat(int traceLvl, String classe, String msgToTrace, Throwable ex) {
+    StringBuilder sb = new StringBuilder();
+    switch (traceLvl) {
+      case TRACE_LEVEL_DEBUG:
+        sb.append("D_");
+        break;
+      case TRACE_LEVEL_INFO:
+        sb.append("I_");
+        break;
+      case TRACE_LEVEL_WARN:
+        sb.append("W_");
+        break;
+      case TRACE_LEVEL_ERROR:
+        sb.append("E_");
+        break;
+      case TRACE_LEVEL_FATAL:
+        sb.append("F_");
+        break;
+      default:
+        sb.append("U_");
+        break;
     }
     sb.append(msgToTrace);
     if ((classe != null) && (classe.length() > 0)) {

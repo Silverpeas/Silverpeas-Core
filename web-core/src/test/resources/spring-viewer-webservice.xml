@@ -35,6 +35,7 @@
 
   <ctx:annotation-config/>
   <ctx:component-scan base-package="org.silverpeas.viewer.web" />
+  <ctx:component-scan base-package="org.silverpeas.attachment.mock" />  
   <import resource="spring-webservice.xml" />
 </beans>
 

@@ -24,6 +24,9 @@
 
 package com.stratelia.webactiv.util.viewGenerator.html.icons;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.Tag;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -42,18 +45,27 @@ public class IconTag extends TagSupport {
   private String action = null;
   private String imagePath = null;
 
+  @Override
   public int doEndTag() throws JspException {
 
     Tag parent = findAncestorWithClass(this, IconPaneTag.class);
     if (parent != null) {
-      IconPane iconPane = (IconPane) pageContext
-          .getAttribute(IconPaneTag.ICONPANE_PAGE_ATT);
+      IconPane iconPane = (IconPane) pageContext.getAttribute(IconPaneTag.ICONPANE_PAGE_ATT);
       Icon icon = iconPane.addIcon();
       icon.setProperties(iconName, altText, action);
+    } else {
+      try {
+        Icon icon = new IconWA();
+        icon.setProperties(iconName, altText, action);
+        pageContext.getOut().println(icon.print());
+      } catch (IOException ex) {
+         throw new JspException("Icon Tag", ex);
+      }
     }
     return EVAL_PAGE;
   }
 
+  @Override
   public int doStartTag() throws JspException {
     return EVAL_BODY_INCLUDE;
   }

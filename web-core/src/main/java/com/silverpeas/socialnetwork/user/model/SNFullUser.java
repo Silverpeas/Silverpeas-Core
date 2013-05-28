@@ -31,10 +31,11 @@ package com.silverpeas.socialnetwork.user.model;
 import com.silverpeas.session.SessionInfo;
 import com.silverpeas.session.SessionManagement;
 import com.silverpeas.session.SessionManagementFactory;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
 import java.io.File;
 import java.util.Collection;
 
@@ -51,7 +52,7 @@ public class SNFullUser {
   private String phone;
 
   public SNFullUser(String userId) {
-    userFull = new OrganizationController().getUserFull(userId);
+    userFull = OrganisationControllerFactory.getOrganisationController().getUserFull(userId);
     this.phone = userFull.getValue("phone");
 
     // return the url of profil Photo

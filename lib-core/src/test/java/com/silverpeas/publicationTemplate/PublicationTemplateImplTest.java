@@ -25,10 +25,13 @@ package com.silverpeas.publicationTemplate;
 
 import java.io.FileInputStream;
 
+import javax.validation.constraints.AssertTrue;
+
 import org.exolab.castor.mapping.Mapping;
 import org.exolab.castor.xml.Unmarshaller;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.silverpeas.util.GlobalContext;
 import org.xml.sax.InputSource;
 
 import com.silverpeas.form.RecordTemplate;
@@ -37,6 +40,8 @@ import com.silverpeas.form.record.GenericRecordTemplate;
 import static com.silverpeas.publicationTemplate.Assertion.assertEquals;
 import static com.silverpeas.util.PathTestUtil.SEPARATOR;
 import static com.silverpeas.util.PathTestUtil.TARGET_DIR;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -46,8 +51,7 @@ public class PublicationTemplateImplTest {
 
   public static final String MAPPINGS_PATH = TARGET_DIR
           + "test-classes" + SEPARATOR + "templateRepository" + SEPARATOR + "mapping";
-  public static final String TEMPLATES_PATH = TARGET_DIR + "test-classes" + SEPARATOR + "templateRepository"
-          + SEPARATOR + "template";
+  public static final String TEMPLATES_PATH = TARGET_DIR + "test-classes" + SEPARATOR + "templateRepository";
 
   public PublicationTemplateImplTest() {
   }
@@ -56,21 +60,18 @@ public class PublicationTemplateImplTest {
   public static void setUpClass() throws Exception {
         PublicationTemplateManager.mappingRecordTemplateFilePath = MAPPINGS_PATH +
             SEPARATOR + "templateMapping.xml";
-    PublicationTemplateManager.mappingPublicationTemplateFilePath = MAPPINGS_PATH +
-            SEPARATOR + "templateFilesMapping.xml";
     PublicationTemplateManager.templateDir = TEMPLATES_PATH;
   }
 
   @Test
   public void testGetRecordTemplateSimple() throws Exception {
-    String xmlFileName = "data.xml";
+    String xmlFileName = "template" + SEPARATOR + "data.xml";
     RecordTemplate expectedTemplate = getExpectedRecordTemplate(xmlFileName);
     PublicationTemplateImpl instance = new PublicationTemplateImpl();
     instance.setDataFileName(xmlFileName);
     instance.setFileName("personne.xml");
     RecordTemplate result = instance.getRecordTemplate();
     assertEquals(expectedTemplate, result);
-
   }
 
   /**
@@ -79,12 +80,49 @@ public class PublicationTemplateImplTest {
    * @return the record template that is serialized in the specified XML file.
    * @throws Exception if the record template cannot be deserialized.
    */
-  private RecordTemplate getExpectedRecordTemplate(final String XmlFileName) throws Exception {
+  private RecordTemplate getExpectedRecordTemplate(final String xmlFileName) throws Exception {
     Mapping mapping = new Mapping();
     mapping.loadMapping(MAPPINGS_PATH + SEPARATOR + "templateMapping.xml");
     Unmarshaller unmarshaller = new Unmarshaller(mapping);
     RecordTemplate template = (GenericRecordTemplate) unmarshaller.unmarshal(new InputSource(
-            new FileInputStream(TEMPLATES_PATH + SEPARATOR + XmlFileName)));
+            new FileInputStream(TEMPLATES_PATH + SEPARATOR + xmlFileName)));
     return template;
+  }
+  
+  @Test
+  public void testTemplateVisibilityOnApplications() throws Exception {
+    // template.xml is only applicable to component kmelia
+    GlobalContext globalContext = new GlobalContext("WA1");
+    globalContext.setComponentName("kmelia");
+    PublicationTemplateManager manager = PublicationTemplateManager.getInstance();
+    
+    // template is visible to all kmelia instances
+    assertThat(manager.isPublicationTemplateVisible("template.xml", globalContext), is(true));
+    
+    globalContext.setComponentName("webPages");
+    // template is not visible to other components
+    assertThat(manager.isPublicationTemplateVisible("template.xml", globalContext), is(false));
+  }
+  
+  @Test
+  public void testTemplateVisibilityOnInstances() throws Exception {
+    // template.xml is only applicable to only both instances
+    GlobalContext globalContext = new GlobalContext("WA1");
+    globalContext.setComponentName("webPages");
+    PublicationTemplateManager manager = PublicationTemplateManager.getInstance();
+    
+    // template is not visible to all webPages instances
+    assertThat(manager.isPublicationTemplateVisible("sandbox.xml", globalContext), is(false));
+    
+    globalContext.setComponentName("kmelia");
+    // template is not visible to other components
+    assertThat(manager.isPublicationTemplateVisible("sandbox.xml", globalContext), is(false));
+    
+    globalContext.setComponentName(null);
+    globalContext.setComponentId("kmelia123");
+    assertThat(manager.isPublicationTemplateVisible("sandbox.xml", globalContext), is(false));
+    
+    globalContext.setComponentId("kmelia12");
+    assertThat(manager.isPublicationTemplateVisible("sandbox.xml", globalContext), is(true));    
   }
 }

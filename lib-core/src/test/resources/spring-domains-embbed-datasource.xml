@@ -35,5 +35,4 @@
   <jdbc:embedded-database id="jpaDataSource" type="H2">
     <jdbc:script location="classpath:/com/silverpeas/domains/silverpeasdriver/create-database.sql" />
   </jdbc:embedded-database>
-
 </beans>

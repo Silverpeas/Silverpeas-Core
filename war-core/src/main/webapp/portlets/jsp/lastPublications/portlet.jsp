@@ -67,7 +67,7 @@ function jumpToComponent(componentId) {
 List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
 int i = 0;
 for (PublicationDetail pub : publications) {
-    UserDetail pubUpdater = m_MainSessionCtrl.getOrganizationController().getUserDetail(pub.getUpdaterId());
+    UserDetail pubUpdater = m_MainSessionCtrl.getOrganisationController().getUserDetail(pub.getUpdaterId());
     String url = m_sContext + URLManager.getURL("kmelia", null, pub.getPK().getInstanceId()) + pub.getURL();
 %>
 	<% if (i != 0) { %>
@@ -85,9 +85,9 @@ for (PublicationDetail pub : publications) {
     <% if ("checked".equalsIgnoreCase(pref.getValue("displayDescription", "")) && StringUtil.isDefined(pub.getDescription(language))) { %>
       <br/><%=EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pub.getDescription(language))) %>
     <% } %>
-    
+
     <% i++; %>
-     
+
 <% } %>
 <br/>
 <c:if test="${rssUrl != null}">

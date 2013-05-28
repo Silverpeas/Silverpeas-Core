@@ -34,7 +34,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -143,7 +143,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       }
       currentGroups = new String[groupIds.length][4];
       for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-        Group theCurrentGroup = getOrganizationController().getGroup(groupIds[iGrp]);
+        Group theCurrentGroup = getOrganisationController().getGroup(groupIds[iGrp]);
         currentGroups[iGrp][0] = theCurrentGroup.getId();
         currentGroups[iGrp][1] = theCurrentGroup.getName();
         currentGroups[iGrp][2] = String.valueOf(theCurrentGroup.getUserIds().length);

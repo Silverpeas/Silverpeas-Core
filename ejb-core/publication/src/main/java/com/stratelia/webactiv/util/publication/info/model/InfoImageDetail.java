@@ -46,15 +46,14 @@ public class InfoImageDetail extends InfoAttachmentDetail implements Serializabl
   }
 
   public String getWebURL() {
-    return FileServerUtils.getWebUrl(getPK().getSpace(), getPK()
+    return FileServerUtils.getWebUrl(getPK()
         .getComponentName(), getLogicalName(), getPhysicalName(), getType(),
         "images");
   }
 
   public String getUrl(String serverNameAndPort) {
     return serverNameAndPort
-        + FileServerUtils.getUrl(getPK().getSpace(),
-        getPK().getComponentName(), getLogicalName(), getPhysicalName(),
+        + FileServerUtils.getUrl(getPK().getComponentName(), getLogicalName(), getPhysicalName(),
         getType(), "images");
   }
 

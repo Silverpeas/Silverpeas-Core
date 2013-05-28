@@ -27,6 +27,9 @@
 <%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
+<%@page import="java.util.List"%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@ include file="thumbnailHeader.jsp"%>
 
 <%
@@ -41,53 +44,49 @@
     if (!StringUtil.isDefined(thumbnailHeight) && StringUtil.isDefined(thumbnailWidth)) {
       thumbnailHeight = Long.toString(Math.round(Integer.parseInt(thumbnailWidth) * 0.75));
     }
-    
+
 	ThumbnailSessionController thumbnailScc = (ThumbnailSessionController) request.getAttribute("thumbnail");
 	ThumbnailDetail currentThumbnail = (ThumbnailDetail) request.getAttribute("thumbnaildetail");
 	boolean isCreateMode = currentThumbnail == null;
-	
+
 	boolean isAddMode = true;
 	boolean isUpdateFileMode = "update".equals(action);
 	if(isUpdateFileMode){
 		isAddMode = false;
 		isCreateMode = true;
 	}
-	
+
 	// case update
 	String vignette_url = null;
 	if(!isCreateMode){
-		vignette_url = FileServer.getUrl("useless", currentThumbnail.getInstanceId(), "vignette",
-											currentThumbnail.getOriginalFileName(), 
-											currentThumbnail.getMimeType(),
-											"images");
+		vignette_url = FileServerUtils.getUrl(currentThumbnail.getInstanceId(), "vignette",
+        currentThumbnail.getOriginalFileName(),currentThumbnail.getMimeType(), "images");
 	}
-	
+
 	boolean error = false;
 	if(result != null && !"ok".equals(result)){
 		error = true;
 	}
 %>
 
-
-<%@page import="java.util.List"%>
-<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%><script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.Jcrop.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery.Jcrop.css">
 <style>
-.jcrop-holder { 
-	float: left; 
+.jcrop-holder {
+	float: left;
 }
-.container { 
+.container {
 	height:auto;
 }
 
-#visuVignette { 
+#visuVignette {
 	height:100%;
-	background-color:#FFF; 
-	border:1px solid #CCCCCC; 
-	width:230px; 
-	float:right; 
-	/*margin:0px 50px;*/ 
-	padding:0px 0px 20px 0px; 
+	background-color:#FFF;
+	border:1px solid #CCCCCC;
+	width:230px;
+	float:right;
+	/*margin:0px 50px;*/
+	padding:0px 0px 20px 0px;
 	text-align:center;
 }
 
@@ -99,7 +98,7 @@
 #visuVignette .txtlibform {
 	color:#909090;
 	text-align:center;
-	padding-right:0; 
+	padding-right:0;
 }
 
 #visuVignette #preview {
@@ -147,7 +146,7 @@ function initThumbnailManager(){
 		});
 }
 <%}%>
- 
+
 // Our simple event handler, called from onChange and onSelect
 // event handlers, as per the Jcrop invocation above
 function showPreview(coords)
@@ -162,7 +161,7 @@ function showPreview(coords)
 		var thumbheight = Math.round(ry * cropbox.height);
 		var xStart = Math.round(rx * coords.x);
 		var yStart = Math.round(ry * coords.y);
-		 
+
 		$('#preview').css({
 			width: thumbwidth + 'px',
 			height: thumbheight + 'px',
@@ -197,7 +196,7 @@ if(thumbnailWidth != null){%>
 					<td class="txtlibform"><%=resource.getString("thumbnail." + result)%></td>
 				</tr>
 			<% } else if(isCreateMode) { %>
-				<tr align="center">	
+				<tr align="center">
 					<td class="txtlibform"><%=resource.getString("thumbnail.path")%></td>
       				<td>
       				<%if(isUpdateFileMode){%>

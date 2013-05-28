@@ -26,7 +26,7 @@ package org.silverpeas.viewer.web;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.silverpeas.viewer.web.mock.AttachmentServiceMockWrapper;
+import org.silverpeas.attachment.mock.SimpleDocumentServiceWrapper;
 import org.silverpeas.viewer.web.mock.PreviewServiceMockWrapper;
 
 import com.silverpeas.web.TestResources;
@@ -38,8 +38,8 @@ import com.silverpeas.web.TestResources;
 public class ViewerTestResources extends TestResources {
 
   @Inject
-  @Named("attachmentService")
-  private AttachmentServiceMockWrapper attachmentServiceMockWrapper;
+  @Named("simpleDocumentService")
+  private SimpleDocumentServiceWrapper attachmentServiceMockWrapper;
 
   @Inject
   @Named("previewService")
@@ -48,7 +48,7 @@ public class ViewerTestResources extends TestResources {
   public static final String JAVA_PACKAGE = "org.silverpeas.viewer.web";
   public static final String SPRING_CONTEXT = "spring-viewer-webservice.xml";
 
-  public AttachmentServiceMockWrapper getAttachmentServiceMock() {
+  public SimpleDocumentServiceWrapper getAttachmentServiceMock() {
     return attachmentServiceMockWrapper;
   }
 

@@ -30,22 +30,23 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.io.File.separatorChar;
+
 /**
  * @author ehugonnet
  */
 public class PathTestUtil {
 
-  public static final char SEPARATOR = File.separatorChar;
-  private final static Properties TESTS_PROPS = new Properties();
+  public static final char SEPARATOR = separatorChar;
+  private static final Properties TESTS_PROPS = new Properties();
   public static String BUILD_PATH = "";
   public static String TARGET_DIR = "";
   static {
     try {
       TESTS_PROPS.load(PathTestUtil.class.getClassLoader().getResourceAsStream(
           "maven.properties"));
-      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', SEPARATOR);
-      TARGET_DIR =
-          System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar;
+      BUILD_PATH = TESTS_PROPS.getProperty("build.dir").replace('/', separatorChar);
+      TARGET_DIR = System.getProperty("basedir") + separatorChar + "target" + separatorChar;
     } catch (IOException ex) {
       Logger.getLogger(PathTestUtil.class.getName()).log(Level.SEVERE, null, ex);
     }

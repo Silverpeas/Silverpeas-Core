@@ -24,22 +24,19 @@
 
 package com.silverpeas.form;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This abstract class implements the form interface and provides for all concretes classes a
@@ -112,8 +109,8 @@ public abstract class AbstractForm implements Form {
 
       boolean jsAdded = false;
       if (StringUtil.isDefined(pagesContext.getComponentId()) && StringUtil.isDefined(getName())) {
-        ComponentInstLight component =
-            new OrganizationController().getComponentInstLight(pagesContext.getComponentId());
+        ComponentInstLight component =  OrganisationControllerFactory.getOrganisationController()
+            .getComponentInstLight(pagesContext.getComponentId());
         if (component != null && component.isWorkflow()) {
           out.append("<script type=\"text/javascript\" src=\"/weblib/workflows/")
               .append(component.getName()).append("/").append(getName())
@@ -121,7 +118,7 @@ public abstract class AbstractForm implements Form {
           jsAdded = true;
         }
       }
-      
+
       if (!jsAdded) {
         if (!fieldTemplates.isEmpty()) {
           FieldTemplate fieldTemplate = fieldTemplates.get(0);

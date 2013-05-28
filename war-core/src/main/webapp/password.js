@@ -47,6 +47,9 @@ function handlePasswordForm(params) {
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
     var errorMsg = "";
+    if ($pwdInput.val() == $('#oldPassword').val()) {
+      errorMsg += "- " + $.i18n.prop('authentication.password.newMustBeDifferentToOld') + "\n";
+    }
     $pwdInput.password('verify', {onError : function() {
       errorMsg += "- " + $.i18n.prop('authentication.password.error') + "\n";
     }});

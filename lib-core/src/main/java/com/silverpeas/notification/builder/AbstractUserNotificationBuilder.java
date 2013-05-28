@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import org.apache.commons.lang3.StringUtils;
 
 import com.silverpeas.util.CollectionUtil;
@@ -50,7 +51,6 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
 
   /**
    * Default constructor
-   * @param notification
    */
   protected AbstractUserNotificationBuilder() {
     // Nothing to do
@@ -58,7 +58,8 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
 
   /**
    * Default constructor
-   * @param notification
+   * @param title
+   * @param content
    */
   protected AbstractUserNotificationBuilder(final String title, final String content) {
     this();
@@ -145,13 +146,28 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
 
   protected abstract Collection<String> getUserIdsToNotify();
 
+  /**
+   * Collection of identifiers of users that don't have to be notified ...
+   * @return
+   */
+  protected Collection<String> getUserIdsToExcludeFromNotifying() {
+    return null;
+  }
+
+  protected Collection<String> getGroupIdsToNotify() {
+    return null;
+  }
+
   protected final void performUsersToBeNotified() {
     final Collection<String> userIdsToNotify = getUserIdsToNotify();
+    final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();
+    final Collection<String> groupIdsToNotify = getGroupIdsToNotify();
 
     // Stopping the process if no user to notify
-    if (stopWhenNoUserToNotify() && CollectionUtil.isEmpty(userIdsToNotify)) {
+    if (stopWhenNoUserToNotify() &&
+        CollectionUtil.isEmpty(userIdsToNotify) && CollectionUtil.isEmpty(groupIdsToNotify)) {
       SilverTrace.warn("notification", "IUserNotificationBuider.build()",
-          "IUserNotificationBuider.EX_NO_USER_TO_NOTIFY");
+          "IUserNotificationBuider.EX_NO_USER_OR_GROUP_TO_NOTIFY");
       stop();
     }
 
@@ -159,6 +175,20 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
       // There is at least one user to notify
       for (final String userId : userIdsToNotify) {
         getNotificationMetaData().addUserRecipient(new UserRecipient(userId));
+      }
+    }
+
+    if (CollectionUtil.isNotEmpty(userIdsToExcludeFromNotifying)) {
+      // There is at least one user to notify
+      for (final String userId : userIdsToExcludeFromNotifying) {
+        getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(userId));
+      }
+    }
+
+    if (CollectionUtil.isNotEmpty(groupIdsToNotify)) {
+      // There is at least one group to notify
+      for (final String groupId : groupIdsToNotify) {
+        getNotificationMetaData().addGroupRecipient(new GroupRecipient(groupId));
       }
     }
   }

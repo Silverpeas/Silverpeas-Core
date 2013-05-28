@@ -52,7 +52,7 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
     PortletPreferences pref = request.getPreferences();
     String instanceId = pref.getValue("instanceId", "");
 
-    if (m_MainSessionCtrl.getOrganizationController().isComponentAvailable(
+    if (m_MainSessionCtrl.getOrganisationController().isComponentAvailable(
         instanceId, m_MainSessionCtrl.getUserId())) {
       request.setAttribute("URL", URLManager.getURL(null, null, instanceId) + "portlet");
     }

@@ -24,10 +24,9 @@
 
 package com.silverpeas.admin;
 
-import java.sql.Connection;
-
 import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
 import com.silverpeas.admin.components.InstanciationException;
+import java.sql.Connection;
 
 public class FakeComponentInstanciator implements ComponentsInstanciatorIntf {
 

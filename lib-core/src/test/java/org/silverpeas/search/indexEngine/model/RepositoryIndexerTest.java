@@ -24,15 +24,9 @@
 package org.silverpeas.search.indexEngine.model;
 
 import java.io.File;
-import java.util.Date;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.silverpeas.util.PathTestUtil;
-import static org.junit.Assert.*;
 
 /**
  *

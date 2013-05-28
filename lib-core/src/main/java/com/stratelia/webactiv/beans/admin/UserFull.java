@@ -24,16 +24,18 @@
 
 package com.stratelia.webactiv.beans.admin;
 
-import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.silverpeas.util.ArrayUtil;
 import org.silverpeas.profile.token.UserTokenKey;
 import org.silverpeas.token.exception.TokenException;
 import org.silverpeas.token.exception.TokenRuntimeException;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import static org.silverpeas.token.service.TokenServiceFactory.getTokenService;
 
 public class UserFull extends UserDetail {
 
@@ -50,7 +52,7 @@ public class UserFull extends UserDetail {
    * @return the full profile of the user.
    */
   public static UserFull getById(String userId) {
-    return getOrganizationController().getUserFull(userId);
+    return getOrganisationController().getUserFull(userId);
   }
 
   /** Creates new UserFull */
@@ -109,7 +111,7 @@ public class UserFull extends UserDetail {
     if (m_pDomainDriver != null) {
       return m_pDomainDriver.getPropertiesNames();
     }
-    return new String[0];
+    return ArrayUtil.EMPTY_STRING_ARRAY;
 
   }
 

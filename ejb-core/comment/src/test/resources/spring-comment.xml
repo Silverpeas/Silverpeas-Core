@@ -49,10 +49,10 @@
        It delegate to the Spring container the management of the life-cycle of the DefaultCommentService objects. -->
   <bean id="commentServiceFactory" class="com.silverpeas.comment.service.CommentServiceFactory"
         factory-method="getFactory"/>
-  
+
   <!-- The factory of the controller of the organization dedicated to non IoC managed beans -->
   <bean id="organizationControllerFactory"
-        class="com.stratelia.webactiv.beans.admin.OrganizationControllerFactory"
+        class="org.silverpeas.core.admin.OrganisationControllerFactory"
         factory-method="getFactory" />
 
 </beans>

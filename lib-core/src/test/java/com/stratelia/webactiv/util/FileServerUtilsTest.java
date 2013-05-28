@@ -28,8 +28,11 @@
  */
 package com.stratelia.webactiv.util;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  *
@@ -60,9 +63,9 @@ public class FileServerUtilsTest {
     String url =  FileServerUtils.getUrlToTempDir("hello_world.pdf");
     assertEquals("/silverpeas/TempFileServer/hello_world.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre.pdf");
-    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre.pdf", url);
+    assertEquals("/silverpeas/TempFileServer/Mon%2520%25C5%2593uvre.pdf", url);
     url =  FileServerUtils.getUrlToTempDir("Mon œuvre & mon été.pdf");
-    assertEquals("/silverpeas/TempFileServer/Mon%20œuvre%20&%20mon%20été.pdf", url);
+    assertEquals("/silverpeas/TempFileServer/Mon%2520%25C5%2593uvre%2520&%2520mon%2520%25C3%25A9t%25C3%25A9.pdf", url);
   }
 
 }

@@ -36,27 +36,27 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
  * @author ehugonnet
  */
 public class ComponentParameterTag extends AbstractSetVarTagSupport {
-  
+
   private static final long serialVersionUID = 1L;
   private String parameter;
   private String componentId;
-  
 
-  
+
+
   public void setComponentId(String componentId) {
     this.componentId = componentId;
   }
-  
+
   public void setParameter(String parameter) {
     this.parameter = parameter;
   }
-  
+
   @Override
   public int doEndTag() throws JspException {
     MainSessionController mainSessionCtrl = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl != null && StringUtil.isDefined(getVar())) {
-      pageContext.setAttribute(getVar(), mainSessionCtrl.getOrganizationController().
+      pageContext.setAttribute(getVar(), mainSessionCtrl.getOrganisationController().
           getComponentParameterValue(componentId, parameter), getScope());
     }
     return EVAL_PAGE;

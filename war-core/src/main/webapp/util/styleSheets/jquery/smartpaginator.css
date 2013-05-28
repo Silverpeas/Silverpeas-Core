@@ -58,6 +58,7 @@
 	width:16px;
     text-decoration: none;
     vertical-align: top;
+  border-spacing:0;
 }
 .pager span
 {

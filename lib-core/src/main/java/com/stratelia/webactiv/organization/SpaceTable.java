@@ -229,6 +229,20 @@ public class SpaceTable extends Table<SpaceRow> {
   static final private String SELECT_SUBSPACE_IDS =
       "select id from ST_Space where domainFatherId = ? "
       + "and spaceStatus is null order by orderNum";
+  
+  /**
+   * Returns direct sub spaces of given space.
+   * @param superSpaceId
+   * @return all direct sub spaces of given space.
+   * @throws AdminPersistenceException
+   */
+  public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws AdminPersistenceException {
+    return getRows(SELECT_SUBSPACES, superSpaceId);
+  }
+  
+  static final private String SELECT_SUBSPACES =
+    "select "+SPACE_COLUMNS+" from ST_Space where domainFatherId = ? "
+    + "and spaceStatus is null order by orderNum";
 
   /**
    * Inserts in the database a new space row.

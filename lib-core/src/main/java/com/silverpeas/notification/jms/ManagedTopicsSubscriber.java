@@ -38,7 +38,7 @@ import javax.jms.TopicSubscriber;
  * represent a topic subscriber with the capability to subscribe to one or more topics and each of
  * theses subscriptions will be represented actually by a JMS topic subscriber.
  */
-class ManagedTopicsSubscriber {
+final class ManagedTopicsSubscriber {
 
   private static Map<String, ManagedTopicsSubscriber> subscribers = Collections.synchronizedMap(
       new HashMap<String, ManagedTopicsSubscriber>());
@@ -66,6 +66,15 @@ class ManagedTopicsSubscriber {
     return new ManagedTopicsSubscriber(UUID.randomUUID().toString());
   }
 
+  /**
+   * Gets all the managed subscribers that were saved on behalf of the JMS implementation of the
+   * Notification API.
+   * @return a collection of managed topic subscribers.
+   */
+  public static Collection<ManagedTopicsSubscriber> getAllManagedTopicSubscribers() {
+    return Collections.unmodifiableCollection(subscribers.values());
+  }
+
   private final String id;
   private final List<TopicSubscriber> subscriptions = new ArrayList<TopicSubscriber>();
 
@@ -91,7 +100,7 @@ class ManagedTopicsSubscriber {
    * Gets the JMS TopicSubscriber instance matching the subscription of this subscriber to the
    * specified topic.
    * @param topicName the topic name.
-   * @return the TopicSubscriber matching the subsciption of this subscriber.
+   * @return the TopicSubscriber matching the subscription of this subscriber.
    * @throws JMSException if an error occurs while getting the subscription for the specified topic.
    */
   public TopicSubscriber getSubscription(String topicName) throws JMSException {
@@ -103,6 +112,20 @@ class ManagedTopicsSubscriber {
       }
     }
     return subscription;
+  }
+
+  /**
+   * Gets a collection of JMS TopicSubscriber instances matching all the subscriptions of this
+   * subscriber.
+   * The returned collection is just a view on the subscriptions of this subscriber and won't
+   * reflect any change that will be occurred in the subscriptions of this subscriber; if a
+   * subscription is removed while parsing the collection, it is not reflected and it will be
+   * present in the collection.
+   * @return a collection of JMS TopicSubscriber, each of them representing a subscription of this
+   * subscriber.
+   */
+  public Collection<TopicSubscriber> getAllSubscriptions() {
+    return Collections.unmodifiableCollection(new ArrayList<TopicSubscriber>(subscriptions));
   }
 
   /**

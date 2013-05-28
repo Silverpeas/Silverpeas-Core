@@ -24,13 +24,14 @@
 
 package org.silverpeas.attachment.notification;
 
-import static com.silverpeas.notification.NotificationTopic.onTopic;
-import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
-
 import javax.inject.Inject;
 
+import org.silverpeas.attachment.model.SimpleDocument;
+
 import com.silverpeas.notification.NotificationPublisher;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+
+import static com.silverpeas.notification.NotificationTopic.onTopic;
+import static com.silverpeas.notification.RegisteredTopics.ATTACHMENT_TOPIC;
 
 /**
  * A service to notify about the events which occurs on attachment. It provides an easy access to
@@ -38,7 +39,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
  */
 public class AttachmentNotificationService {
 
-  private static AttachmentNotificationService instance = new AttachmentNotificationService();
+  private static final AttachmentNotificationService instance = new AttachmentNotificationService();
 
   /**
    * Gets an instance of the service.
@@ -53,9 +54,9 @@ public class AttachmentNotificationService {
 
   /**
    * Notifies the registered beans a given node (with and its children) comes to be deleted.
-   * @param nodes the nodes that are deleted.
+   * @param attachment the document that is deleted.
    */
-  public void notifyOnDeletionOf(final AttachmentDetail attachment) {
+  public void notifyOnDeletionOf(final SimpleDocument attachment) {
     AttachmentDeletionNotification deletion = new AttachmentDeletionNotification(attachment);
     publisher.publish(deletion, onTopic(ATTACHMENT_TOPIC.getTopicName()));
   }

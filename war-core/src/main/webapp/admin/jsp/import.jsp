@@ -43,30 +43,34 @@
 
 <%
 // Ze graffik factory
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+  GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
+      GraphicElementFactory.GE_FACTORY_SESSION_ATT);
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+  MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(
+      MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-String language = m_MainSessionCtrl.getFavoriteLanguage();
-ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
+  String language = m_MainSessionCtrl.getFavoriteLanguage();
+  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 
-String  m_context                           = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().
+      getString("ApplicationURL");
 
 
 // Icones operationBar
-String addNotif                           = m_context + "/util/icons/addEvent.gif";
-String paramNotif                           = m_context + "/util/icons/confServer.gif";
+  String addNotif = m_context + "/util/icons/addEvent.gif";
+  String paramNotif = m_context + "/util/icons/confServer.gif";
 
 // Icones diverses
-String delete																	= m_context + "/util/icons/delete.gif";
-String modif																	= m_context + "/util/icons/update.gif";
-String up																			= m_context + "/util/icons/arrow/arrowUp.gif";
-String down																		= m_context + "/util/icons/arrow/arrowDown.gif";
-String mandatoryField													= m_context + "/util/icons/squareRed.gif";
+  String delete = m_context + "/util/icons/delete.gif";
+  String modif = m_context + "/util/icons/update.gif";
+  String up = m_context + "/util/icons/arrow/arrowUp.gif";
+  String down = m_context + "/util/icons/arrow/arrowDown.gif";
+  String mandatoryField = m_context + "/util/icons/squareRed.gif";
 
 // Pixels
-String noColorPix                             = m_context + "/util/icons/colorPix/1px.gif";
+  String noColorPix = m_context + "/util/icons/colorPix/1px.gif";
 
 // Divers
-String separator = "<TABLE CELLPADDING=2 CELLSPACING=0 BORDER=0><TR><TD><img src="+noColorPix+"></TD></TR></TABLE>";
+  String separator = "<TABLE CELLPADDING=2 CELLSPACING=0 BORDER=0><TR><TD><img src=" + noColorPix
+      + "></TD></TR></TABLE>";
 %>

@@ -24,8 +24,6 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="headLog.jsp" %>
 
 <%
@@ -33,11 +31,11 @@
       new ResourceLocator("com.silverpeas.authentication.multilang.authentication", "");
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%>
-  </title>
-  <link REL="SHORTCUT ICON" HREF="<%=request.getContextPath()%>/util/icons/favicon.ico">
+  <title><%=generalMultilang.getString("GML.popupTitle")%></title>
+  <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
   <script src="<%=m_context%>/util/javaScript/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -74,7 +72,6 @@
 
 <body>
 <form id="changePwdForm" action="#" method="post">
-  <div id="top"></div>
   <!-- Background foncé -->
   <div class="page"> <!-- Centrage horizontal des éléments (960px) -->
     <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
@@ -83,18 +80,14 @@
       <div class="cadre">
         <div id="header">
           <img src="<%=logo%>" class="logo" alt=""/>
-
-          <p class="information"><%=authenticationBundle
-              .getString("authentication.password.expired") %><br/>
+          <p class="information"><%=authenticationBundle.getString("authentication.password.expired") %><br/>
             <%
               String message = (String) request.getAttribute("message");
               if (message != null) {
             %>
-            <span><%=message%></span><br/>
-            <%
-              }
-            %></p>
-
+            	<span><%=message%></span><br/>
+            <% } %>
+          </p>
           <div class="clear"></div>
         </div>
         <p><label><span><%=authenticationBundle.getString(

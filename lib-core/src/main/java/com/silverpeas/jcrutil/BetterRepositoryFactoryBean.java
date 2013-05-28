@@ -1,10 +1,9 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
@@ -13,23 +12,16 @@
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.jcrutil;
 
-/**
- * Created on Aug 31, 2005
- *
- * $Id: BetterRepositoryFactoryBean.java,v 1.2 2009/04/01 14:10:07 ehugonnet Exp $ $Revision: 1.2 $
- */
-import com.silverpeas.util.StringUtil;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -41,13 +33,15 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.PreDestroy;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
@@ -60,11 +54,16 @@ import org.springframework.core.io.ResourceLoader;
 import org.springmodules.jcr.RepositoryFactoryBean;
 import org.xml.sax.InputSource;
 
+import org.silverpeas.util.Charsets;
+import com.silverpeas.util.StringUtil;
+
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files.
  * Use this factory bean when you have to manually configure the repository; for retrieving the
  * repository from JNDI use the JndiObjectFactoryBean
- * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration : <code>
+ * <code>
+ * {@link org.springframework.jndi.JndiObjectFactoryBean}. Sample configuration :
+ * <code>
  * &lt;bean id="repository" class="BetterRepositoryFactoryBean"&gt;
  * &lt;!-- normal factory beans params --&gt;
  *   &lt;property name="configuration" value="classpath:repository.xml" /&gt;
@@ -77,12 +76,16 @@ import org.xml.sax.InputSource;
  *   &lt;/property&gt;
  * &lt;/bean&gt;
  * </code>
+ *
  * @see org.springframework.jndi.JndiObjectFactoryBean
- * @author Costin Leau
  * @author Emmanuel Hugonnet
  */
 public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
+  /**
+   * Should System properties be available as configuration keys.
+   */
+  private boolean useSystemProperties = false;
   /**
    * Default repository configuration file.
    */
@@ -125,9 +128,9 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     try {
       InitialContext ic = new InitialContext();
       prepareContext(ic, jndiName);
-      RegistryHelper.registerRepository(new InitialContext(), jndiName, getConfiguration()
-          .getFile().
-          getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(), true);
+      RegistryHelper.registerRepository(new InitialContext(), jndiName,
+          getConfiguration().getFile().getAbsolutePath(), getHomeDir().getFile().getAbsolutePath(),
+          true);
       return (Repository) ic.lookup(jndiName);
     } catch (RepositoryException ex) {
       Logger.getLogger(BetterRepositoryFactoryBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -167,15 +170,13 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     }
 
     if (this.configuration == null) {
-      log.debug("no configuration resource specified, using the default one:" +
-          DEFAULT_CONF_FILE);
+      log.debug("no configuration resource specified, using the default one:" + DEFAULT_CONF_FILE);
       configuration = new ClassPathResource(DEFAULT_CONF_FILE);
     }
 
     if (homeDir == null) {
       if (log.isDebugEnabled()) {
-        log.debug("no repository home dir specified, using the default one:" +
-            DEFAULT_REP_DIR);
+        log.debug("no repository home dir specified, using the default one:" + DEFAULT_REP_DIR);
       }
       homeDir = new FileSystemResource(DEFAULT_REP_DIR);
     }
@@ -191,11 +192,13 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   }
 
   /**
-   * Performs variable replacement on the given string value. Each <code>${...}</code> sequence
-   * within the given value is replaced with the value of the named parser variable. If a variable
-   * is not found in the properties an IllegalArgumentException is thrown unless
-   * <code>ignoreMissing</code> is <code>true</code>. In the later case, the missing variable is not
-   * replaced.
+   * Performs variable replacement on the given string value. Each
+   * <code>${...}</code> sequence within the given value is replaced with the value of the named
+   * parser variable. If a variable is not found in the properties an IllegalArgumentException is
+   * thrown unless
+   * <code>ignoreMissing</code> is
+   * <code>true</code>. In the later case, the missing variable is not replaced.
+   *
    * @param variables
    * @param value the original value
    * @param ignoreMissing if <code>true</code>, missing variables are not replaced.
@@ -214,7 +217,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     while (q != -1) {
       result.append(value.substring(p, q)); // Text before ${
       p = q;
-      q = value.indexOf("}", q + 2); // Find }
+      q = value.indexOf('}', q + 2); // Find }
       if (q != -1) {
         String variable = value.substring(p + 2, q);
         String replacement = variables.getProperty(variable);
@@ -222,8 +225,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
           if (ignoreMissing) {
             replacement = "${" + variable + '}';
           } else {
-            throw new IllegalArgumentException("Replacement not found for ${" +
-                variable + "}.");
+            throw new IllegalArgumentException("Replacement not found for ${" + variable + "}.");
           }
         }
         result.append(replacement);
@@ -238,6 +240,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
   /**
    * Shutdown method.
    */
+  @PreDestroy
   @Override
   public void destroy() throws Exception {
     log.info("Shutdown the JCR repository...");
@@ -246,6 +249,14 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
       ((JackrabbitRepository) repository).shutdown();
     }
     super.destroy();
+  }
+
+  public void testCleanUp() throws IOException {
+    // force cast (but use only the interface)
+    if (repository instanceof JackrabbitRepository) {
+      ((JackrabbitRepository) repository).shutdown();
+    }
+    FileUtils.deleteQuietly(homeDir.getFile());
   }
 
   /**
@@ -298,13 +309,28 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     this.jndiName = jndiName;
   }
 
+  public boolean isUseSystemProperties() {
+    return useSystemProperties;
+  }
+
+  public void setUseSystemProperties(boolean useSystemProperties) {
+    this.useSystemProperties = useSystemProperties;
+  }
+
   /**
    * Load all the configuration properties
+   *
    * @return
    */
   protected Properties loadConfigurationKeys() {
     Iterator<String> iter = configurationProperties.iterator();
-    Properties props = new Properties();
+
+    Properties props;
+    if (isUseSystemProperties()) {
+      props = new Properties(System.getProperties());
+    } else {
+      props = new Properties();
+    }
     ResourceLoader loader = new DefaultResourceLoader(this.getClass().getClassLoader());
     String location = "";
     while (iter.hasNext()) {
@@ -320,6 +346,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
 
   /**
    * Load a Resource as a String.
+   *
    * @param config the resource
    * @return the String filled with the content of the Resource
    * @throws IOException
@@ -328,7 +355,7 @@ public class BetterRepositoryFactoryBean extends RepositoryFactoryBean {
     StringWriter out = new StringWriter();
     Reader reader = null;
     try {
-      reader = new InputStreamReader(config.getInputStream());
+      reader = new InputStreamReader(config.getInputStream(), Charsets.UTF_8);
       char[] buffer = new char[8];
       int c;
       while ((c = reader.read(buffer)) > 0) {

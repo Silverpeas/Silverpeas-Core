@@ -38,13 +38,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.silverpeas.clipboardPeas.control.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.session.SessionManagement" %>
 <%@ page import="com.silverpeas.session.SessionManagementFactory" %>
+>>>>>>> master
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+    String m_context = URLManager.getApplicationURL();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     ClipboardSessionController clipboardSC = (ClipboardSessionController) request.getAttribute("clipboardScc");
     if (clipboardSC != null) clipboardSC.doIdle(Integer.parseInt(clipboardSC.getIntervalInSec()));
@@ -52,8 +54,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     int nbConnectedUsers = 0;
     String language = m_MainSessionCtrl.getFavoriteLanguage();
-    ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.homePage.multilang.homePageBundle", language);
-    ResourceLocator homePageSettings = new ResourceLocator("com.stratelia.webactiv.homePage.homePageSettings", "");
+    ResourceLocator message = new ResourceLocator("org.silverpeas.homePage.multilang.homePageBundle", language);
+    ResourceLocator homePageSettings = new ResourceLocator("org.silverpeas.homePage.homePageSettings", "");
     String connectedUsers = message.getString("connectedUsers");
     boolean displayConnectedUsers = homePageSettings.getBoolean("displayConnectedUsers", true) && lookHelper != null && lookHelper.getSettings("displayConnectedUsers", true);
     if (displayConnectedUsers) {

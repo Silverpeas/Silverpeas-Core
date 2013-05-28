@@ -23,61 +23,60 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-    response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-    response.setHeader("Pragma","no-cache");        //HTTP 1.0
-    response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache");        //HTTP 1.0
+  response.setDateHeader("Expires", -1);          //prevents caching at the proxy server
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
-<%@ include file="check.jsp"%>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}"/>
+<view:setConstant var="mainSessionControllerAtt" constant="com.stratelia.silverpeas.peasCore.MainSessionController.MAIN_SESSION_CONTROLLER_ATT"/>
+<c:set var="mainSessionController" value="${sessionScope[mainSessionControllerAtt]}"/>
+<html>
 <head>
-<title>Utilitaires Silverpeas</title>
-	<%
-		out.println(gef.getLookStyleSheet());
-	%>
-	<script language="javascript">
-		function launchTool()
-		{
-			location.href=document.getElementById('tool').value;
-		}
-	</script>
+  <title>Utilitaires Silverpeas</title>
+  <view:looknfeel/>
+  <script language="javascript">
+    function launchTool() {
+      location.href = document.getElementById('tool').value;
+    }
+  </script>
 </head>
 <body>
-<%
-	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=launchTool();", false);
-  Button homeButton = (Button) gef.getFormButton("Accueil Silverpeas", m_context+"/admin/jsp/MainFrameSilverpeasV5.jsp", false);
+<c:if test="${mainSessionController.currentUserDetail.accessAdmin}">
 
-	out.println(window.printBefore());
+  <view:window>
+    <div style="text-align: center;"><h2>Utilitaires Silverpeas</h2></div>
+    <view:frame>
+      <view:board>
+        <div style="text-align: center;">
+        <b><label for="tool">Sélectionner un utilitaire :</label></b>
+        <br>
+        <br/>
 
-%>
-	<center><h2>Utilitaires Silverpeas</h2></center>
-<%
-	out.println(frame.printBefore());
-	out.println(board.printBefore());
- %>
- <center>
-		<b>Sélectionner un utilitaire :</b><br>
-		<br/>
-		<form name="tools" method="get">
-				<select name="tool" id="tool" size="5">
-						<option selected value="checkAttachments/checkAttachments.jsp?attachmentType=dummy">Vérification des fichiers joints</option>
-						<option selected value="domainSP2LDAP/domainSP2LDAP.jsp">Migration des utilisateurs du domaine Silverpeas vers un domaine LDAP</option>
-				</select>
-				</tr>
-		</form>
-<%
-	out.println(board.printAfter());
-	ButtonPane buttonPane = gef.getButtonPane();
-  buttonPane.addButton(validateButton);
-  buttonPane.addButton(homeButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-</center>
+        <form name="tools" method="get" action="">
+          <select name="tool" id="tool" size="5">
+            <option selected value="domainSP2LDAP/domainSP2LDAP.jsp">Migration des utilisateurs du domaine Silverpeas vers un domaine LDAP</option>
+          </select>
+        </form>
+      </view:board>
+      <div style="text-align: center;">
+        <c:url var="homePage" value="/admin/jsp/MainFrameSilverpeasV5.jsp"/>
+        <fmt:message key="GML.validate" var="validateLabel"/>
+        <view:buttonPane>
+          <view:button label="${validateLabel}" action="javascript:onClick=launchTool();"/>
+          <view:button label="Accueil Silverpeas" action="${homePage}"/>
+        </view:buttonPane>
+      </div>
+    </view:frame>
+  </view:window>
+  </div>
+</c:if>
 </body>
 </html>

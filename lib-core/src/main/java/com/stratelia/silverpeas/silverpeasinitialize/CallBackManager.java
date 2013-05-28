@@ -54,8 +54,10 @@ public class CallBackManager {
   public final static int ACTION_ON_WYSIWYG = 8;
   public final static int ACTION_ATTACHMENT_ADD = 9;
   public final static int ACTION_ATTACHMENT_UPDATE = 10;
+  public final static int ACTION_ATTACHMENT_REMOVE = 11;
   public final static int ACTION_VERSIONING_ADD = 12;
   public final static int ACTION_VERSIONING_UPDATE = 13;
+  public final static int ACTION_VERSIONING_REMOVE = 14;
   public final static int ACTION_COMMENT_ADD = 15;
   public final static int ACTION_COMMENT_REMOVE = 16;
   public final static int ACTION_CUTANDPASTE = 17;

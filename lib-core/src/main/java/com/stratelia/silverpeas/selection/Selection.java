@@ -27,6 +27,8 @@ package com.stratelia.silverpeas.selection;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.util.PairObject;
 
+import java.util.Collection;
+
 public final class Selection {
   final public static String TYPE_USERS_GROUPS = "UsersGroups";
   final public static String TYPE_SPACES_COMPONENTS = "SpacesComponents";
@@ -217,6 +219,14 @@ public final class Selection {
     }
   }
 
+  public void setSelectedElements(Collection<String> selectedElements) {
+    if (selectedElements != null) {
+      setSelectedElements(selectedElements.toArray(new String[selectedElements.size()]));
+    } else {
+      setSelectedElements((String[]) null);
+    }
+  }
+
   public String getFirstSelectedElement() {
     if (selectedElements != null && selectedElements.length > 0 && StringUtil.isDefined(
         selectedElements[0])) {
@@ -234,6 +244,14 @@ public final class Selection {
       this.selectedSets = selectedSets;
     } else {
       this.selectedSets = new String[0];
+    }
+  }
+
+  public void setSelectedSets(Collection<String> selectedSets) {
+    if (selectedSets != null) {
+      setSelectedSets(selectedSets.toArray(new String[selectedSets.size()]));
+    } else {
+      setSelectedSets((String[]) null);
     }
   }
 

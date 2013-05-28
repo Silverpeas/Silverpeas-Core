@@ -24,16 +24,19 @@
 
 package com.silverpeas.jcrutil.servlets;
 
-import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
-import com.stratelia.webactiv.util.ResourceLocator;
 import javax.jcr.Repository;
+
 import org.apache.jackrabbit.server.CredentialsProvider;
+
+import com.silverpeas.jcrutil.security.impl.SilverpeasBasicCredentialsProvider;
+
+import com.stratelia.webactiv.util.ResourceLocator;
 
 public class SimpleWebdavServlet extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServlet {
 
   private static final long serialVersionUID = -1609493516113921269L;
   private static final ResourceLocator resources = new ResourceLocator(
-      "com.stratelia.webactiv.util.jcr", "");
+      "org.silverpeas.util.jcr", "");
   /**
    * the jcr repository
    */

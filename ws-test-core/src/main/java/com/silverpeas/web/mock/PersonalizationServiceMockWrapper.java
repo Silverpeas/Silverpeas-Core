@@ -20,10 +20,12 @@
  */
 package com.silverpeas.web.mock;
 
+import javax.inject.Named;
+
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.util.Default;
-import javax.inject.Named;
+
 import static org.mockito.Mockito.mock;
 
 /**

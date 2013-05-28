@@ -34,12 +34,12 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.util.ResourceLocator;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.silverpeas.core.admin.OrganisationController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -71,7 +71,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     LookHelper helper = (LookHelper) session.getAttribute(LookHelper.SESSION_ATT);
-    OrganizationController orgaController = m_MainSessionCtrl.getOrganizationController();
+    OrganisationController orgaController = m_MainSessionCtrl.getOrganisationController();
     String userId = m_MainSessionCtrl.getUserId();
 
     res.setContentType("application/json");
@@ -96,7 +96,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
       try {
-        String componentId = psc.addComponent(helper.getUserId(), componentName, 
+        String componentId = psc.addComponent(helper.getUserId(), componentName,
             getComponentLabel(componentName, helper));
         writer.write(getResult(componentName, componentId, null, helper).toString());
       } catch (Exception e) {
@@ -226,7 +226,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
           .getURL(URLManager.CMP_TODO, null, null) + "todo.jsp");
       addNotificationsAsTool(jsonArray, helper, message);
       addTool(jsonArray, helper, "interestVisible", "subscriptions", message.getString(
-          "MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null) 
+          "MyInterestCenters"), URLManager.getURL(URLManager.CMP_PDCSUBSCRIPTION, null, null)
           + "subscriptionList.jsp");
       addTool(jsonArray, helper, "favRequestVisible", "requests", message.getString("FavRequests"),
           URLManager.getURL(URLManager.CMP_INTERESTCENTERPEAS, null, null) + "iCenterList.jsp");

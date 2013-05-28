@@ -91,7 +91,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
 
   private UserGroupProfileEntity(Group group) {
     this.group = group;
-    this.domainName = Group.getOrganizationController().getDomain(group.getDomainId()).getName();
+    this.domainName = Group.getOrganisationController().getDomain(group.getDomainId()).getName();
     this.userCount = group.getTotalNbUsers();
   }
 
@@ -203,7 +203,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
   @Override
   public void setDomainId(String newDomainId) {
     this.group.setDomainId(newDomainId);
-    this.domainName = Group.getOrganizationController().getDomain(newDomainId).getName();
+    this.domainName = Group.getOrganisationController().getDomain(newDomainId).getName();
   }
 
   @Override

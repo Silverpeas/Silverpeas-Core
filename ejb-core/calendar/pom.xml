@@ -18,8 +18,9 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
       </testResource>
-    </testResources>
+    </testResources> 
   </build>
+  
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
@@ -27,5 +28,5 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+  </dependencies> 
 </project>

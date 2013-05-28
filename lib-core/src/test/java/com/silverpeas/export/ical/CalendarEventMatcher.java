@@ -81,11 +81,11 @@ public class CalendarEventMatcher extends TypeSafeMatcher<String> {
       failureMessage.append("DTEND").append(asIcalDate(expectedEvent.getEndDate()));
       return false;
     }
-    String timeZone = expectedEvent.getStartDate().getTimeZone().getID();
-    if (!actualICalContent.contains("TZID:" + timeZone + "\r\n")) {
-      failureMessage.append("TZID:").append(timeZone);
-      return false;
-    }
+//    String timeZone = expectedEvent.getStartDate().getTimeZone().getID();
+//    if (!actualICalContent.contains("TZID:" + timeZone + "\r\n")) {
+//      failureMessage.append("TZID:").append(timeZone);
+//      return false;
+//    }
     if (!actualICalContent.contains(asIcalCategories(expectedEvent.getCategories()))) {
       failureMessage.append(asIcalCategories(expectedEvent.getCategories()));
       return false;
@@ -199,7 +199,7 @@ public class CalendarEventMatcher extends TypeSafeMatcher<String> {
     if (aDate instanceof Date) {
       icalDate = ";VALUE=DATE:";
     } else {
-      icalDate = ":";
+      icalDate = ";TZID=" + aDate.getTimeZone().getID() + ":";
     }
     icalDate += aDate.toICal();
     return icalDate;

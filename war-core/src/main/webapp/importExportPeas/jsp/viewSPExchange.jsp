@@ -24,6 +24,7 @@
 
 --%>
 
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -91,7 +92,11 @@ if (importReport != null)
 					unitReport = (UnitReport)itUnitReports.next();
 					if (unitReport.getError() != -1)
 					{
-						out.println("<font color=\"red\">"+Encode.javaStringToHtmlString(unitReport.getLabel()+" : " + unitReport.getItemName() + ", "+resource.getString("GML.error")+" : " + getErrorMessage(unitReport.getError(), resource)) + ", "+resource.getString("importExportPeas.Status")+" : " +getStatusMessage(unitReport.getStatus(), resource)+"</font><br>");
+						out.println("<font color=\"red\">" + EncodeHelper.javaStringToHtmlString(unitReport
+                  .getLabel() + " : " + unitReport.getItemName() + ", " + resource.getString(
+                  "GML.error") + " : " + getErrorMessage(unitReport.getError(), resource)) + ", "
+                  + resource.getString("importExportPeas.Status") + " : " + getStatusMessage(
+                  unitReport.getStatus(), resource) + "</font><br>");
 					}
 				}
 			}

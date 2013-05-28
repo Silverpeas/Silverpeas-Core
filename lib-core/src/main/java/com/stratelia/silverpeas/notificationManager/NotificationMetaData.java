@@ -37,6 +37,7 @@ import com.silverpeas.notification.model.NotificationResourceData;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
+
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
@@ -50,6 +51,7 @@ public class NotificationMetaData implements java.io.Serializable {
   private String link;
   private String sessionId;
   private Collection<UserRecipient> userRecipients;
+  private Collection<UserRecipient> userRecipientsToExclude;
   private Collection<GroupRecipient> groupRecipients;
   private String componentId;
   private boolean isAnswerAllowed = false;
@@ -105,6 +107,7 @@ public class NotificationMetaData implements java.io.Serializable {
     link = "";
     sessionId = "";
     userRecipients = new ArrayList<UserRecipient>();
+    userRecipientsToExclude = new ArrayList<UserRecipient>();
     groupRecipients = new ArrayList<GroupRecipient>();
     componentId = "";
     isAnswerAllowed = false;
@@ -234,10 +237,9 @@ public class NotificationMetaData implements java.io.Serializable {
     } else {
       result = contents.get(language);
     }
-    SilverTrace.info("notificationManager",
-        "NotificationMetaData.getContent()", "root.MSG_GEN_EXIT_METHOD",
-        "result = " + result);
-    return EncodeHelper.javaStringToHtmlParagraphe(result);
+    SilverTrace.info("notificationManager", "NotificationMetaData.getContent()",
+        "root.MSG_GEN_EXIT_METHOD", "result = " + result);
+    return EncodeHelper.convertWhiteSpacesForHTMLDisplay(result);
   }
 
   /**
@@ -365,6 +367,54 @@ public class NotificationMetaData implements java.io.Serializable {
   public void addUserRecipients(Collection<UserRecipient> users) {
     if (users != null) {
       this.userRecipients.addAll(users);
+    }
+  }
+
+  /**
+   * Set message user recipients to exclude
+   * @param users the user ids that must not receive this message
+   */
+  public void setUserRecipientsToExclude(Collection<UserRecipient> users) {
+    if (users != null) {
+      this.userRecipientsToExclude = new ArrayList<UserRecipient>(users);
+    } else {
+      this.userRecipientsToExclude = new ArrayList<UserRecipient>();
+    }
+  }
+
+  /**
+   * Get message user recipients to exclude
+   * @return the message user recipients
+   */
+  public Collection<UserRecipient> getUserRecipientsToExclude() {
+    return userRecipientsToExclude;
+  }
+
+  /**
+   * Add a user recipient to user recipients to exclude
+   * @param user recipient that must not be notified
+   */
+  public void addUserRecipientToExclude(UserRecipient user) {
+    userRecipientsToExclude.add(user);
+  }
+
+  /**
+   * Add a user recipient to user recipients to exclude
+   * @param users recipient that must not be notified
+   */
+  public void addUserRecipientsToExclude(UserRecipient[] users) {
+    if (users != null) {
+      this.userRecipientsToExclude.addAll(Arrays.asList(users));
+    }
+  }
+
+  /**
+   * Add a user recipient to user recipients to exclude
+   * @param users recipient that must not be notified
+   */
+  public void addUserRecipientsToExclude(Collection<UserRecipient> users) {
+    if (users != null) {
+      this.userRecipientsToExclude.addAll(users);
     }
   }
 

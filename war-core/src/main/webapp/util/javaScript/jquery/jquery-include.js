@@ -1,5 +1,5 @@
 /**
- * $.include - script inclusion jQuery plugin
+ * jQuery.include - script inclusion jQuery plugin
  * Based on idea from http://www.gnucitizen.org/projects/jquery-include/
  * @author Tobiasz Cudnik
  * @link http://meta20.net/.include_script_inclusion_jQuery_plugin
@@ -44,7 +44,7 @@ jQuery.extend({
         dependency = [dependency];
       setTimeout(function(){
         var valid = true;
-        $.each(dependency, function(k, v){
+        jQuery.each(dependency, function(k, v){
           if (! v() ) {
             valid = false;
             return false;
@@ -66,7 +66,7 @@ jQuery.extend({
   ready: function () {
     if (jQuery.isReady) return;
     imReady = true;
-    $.each(jQuery.includeStates, function(url, state) {
+    jQuery.each(jQuery.includeStates, function(url, state) {
       if (! state)
         return imReady = false;
     });

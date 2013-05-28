@@ -144,10 +144,9 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     if (highlightCreationItems()) {
       result.append("if ($('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
           .append("').length > 0) {");
-      if (getCreationItems().isEmpty()) {
+      if (!getCreationItems().isEmpty()) {
         result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
-          .append("').css({'display':'none'});");
-      } else {
+        .append("').css({'display':'block'});");
         for (String item : getCreationItems()) {
           result.append("$('#").append(OperationsOfCreationAreaTag.CREATION_AREA_ID)
               .append("').append('").append(item).append("');");

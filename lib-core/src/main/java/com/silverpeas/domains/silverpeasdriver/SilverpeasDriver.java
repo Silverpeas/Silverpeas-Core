@@ -154,7 +154,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     oldUser.setLoginmail("");
 
     // Only update password when this field has been filled
-    if (StringUtil.isDefined(userFull.getPassword())) {
+    if (StringUtil.isDefined(userFull.getPassword()) &&
+        !userFull.getPassword().equals(oldUser.getPassword())) {
        oldUser.setPassword(encrypt(userFull.getPassword()));
     }
     oldUser.setPasswordValid(userFull.isPasswordValid());

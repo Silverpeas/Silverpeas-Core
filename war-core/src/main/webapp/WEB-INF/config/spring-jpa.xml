@@ -45,7 +45,19 @@
   <jpa:repositories base-package="org.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
-
+  
+  <!-- JTA Configuration 
+  <bean id="jpaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager"
+    p:transactionManagerName="java:/TransactionManager" p:userTransactionName="UserTransaction"/>
+    
+  <util:map id="jpaPropertyMap">
+    <entry key="hibernate.hbm2ddl.auto" value="validate"/>
+    <entry key="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+    <entry key="hibernate.transaction.factory_class" value="org.hibernate.transaction.CMTTransactionFactory" />
+    <entry key="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup" />
+  </util:map>
+  
+  -->
 
   <bean id="jpaTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
         p:entityManagerFactory-ref="entityManagerFactory"/>

@@ -20,21 +20,20 @@
  */
 package com.silverpeas.util.web.servlet;
 
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.SilverpeasDiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.List;
 
 /**
  * Utility class for file uploading.
@@ -43,7 +42,9 @@ import org.apache.commons.io.IOUtils;
  */
 public class FileUploadUtil {
 
-  public static final String DEFAULT_ENCODING = "UTF-8";
+
+  public static final String DEFAULT_ENCODING = CharEncoding.UTF_8;
+
   private static ServletFileUpload upload = new ServletFileUpload(
       new SilverpeasDiskFileItemFactory());
 
@@ -114,14 +115,17 @@ public class FileUploadUtil {
     return getParameter(items, parameterName, null);
   }
 
+  @SuppressWarnings("unchecked")
   public static String getOldParameter(List items, String parameterName) {
     return getParameter((List<FileItem>) items, parameterName, null);
   }
 
+  @SuppressWarnings("unchecked")
   public static String getOldParameter(List items, String parameterName, String defaultValue) {
     return getParameter((List<FileItem>) items, parameterName, defaultValue);
   }
 
+  @SuppressWarnings("unchecked")
   public static FileItem getOldFile(List items, String parameterName) {
     return getFile((List<FileItem>) items, parameterName);
   }
@@ -153,25 +157,7 @@ public class FileUploadUtil {
     if (file == null || !StringUtil.isDefined(file.getName())) {
       return "";
     }
-    String fileName = convertPathToServerOS(file.getName());
-    return fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1, fileName.length())
-        .trim();
-  }
-
-  /**
-   * Convert a path to the current OS path format.
-   *
-   * @param undeterminedOsPath
-   * @return server OS pah.
-   */
-  public static String convertPathToServerOS(String undeterminedOsPath) {
-    if (undeterminedOsPath == null || !StringUtil.isDefined(undeterminedOsPath)) {
-      return "";
-    }
-    String localPath = undeterminedOsPath;
-    localPath = localPath.replace('\\', File.separatorChar);
-    localPath = localPath.replace('/', File.separatorChar);
-    return localPath;
+    return  FileUtil.getFilename(file.getName());
   }
 
   public static void saveToFile(File file, FileItem item) throws IOException {

@@ -82,6 +82,13 @@ public class UserGroupsSearchCriteriaBuilder {
     return this;
   }
 
+  public UserGroupsSearchCriteriaBuilder withGroupIds(String[] groupIds) {
+    if (groupIds != null && groupIds.length > 0) {
+      searchCriteria.onGroupIds(groupIds);
+    }
+    return this;
+  }
+
   public UserGroupsSearchCriteriaBuilder withSuperGroupId(String groupId) {
     if (isDefined(groupId)) {
       searchCriteria.onSuperGroupId(groupId);

@@ -46,6 +46,10 @@ function showInformation() {
 	});
 }
 
+function showHelp() {
+	$('#message').popup('help');
+}
+
 function showValidation() {
 	$('#message').popup('validation', {
 	    title : "Title of the popup",
@@ -73,6 +77,7 @@ function showConfirmation() {
 <ul>
 <li><a href="javascript:onclick=showBasic()">Display basic message (No buttons)</a></li>
 <li><a href="javascript:onclick=showInformation()">Display information message (One button)</a></li>
+<li><a href="javascript:onclick=showHelp()">Display help message (One button + specific class)</a></li>
 <li><a href="javascript:onclick=showValidation()">Display validation message (Two buttons)</a></li>
 <li><a href="javascript:onclick=showConfirmation()">Afficher message de confirmation (Two buttons + one icon)</a></li>
 </ul>
