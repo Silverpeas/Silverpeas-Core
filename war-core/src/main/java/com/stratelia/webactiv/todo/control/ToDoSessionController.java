@@ -43,7 +43,6 @@ import com.stratelia.webactiv.calendar.control.CalendarBmHome;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -691,6 +690,25 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       spacesMap.put(spaceId, resultSpace);
     }
     return resultSpace;
+  }
+  
+  /**
+   * Remove all the todo passed in parameter
+   * @param tabTodoId
+   * @throws TodoException
+   * @see
+   */
+  public void removeTabToDo(String[] tabTodoId) throws TodoException {
+    SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
+        "root.MSG_GEN_ENTER_METHOD");
+    try {
+      calendarBm.removeTabToDo(tabTodoId, getUserId());
+      SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
+          "root.MSG_GEN_EXIT_METHOD");
+    } catch (Exception e) {
+      throw new TodoException("ToDoSessionController.removeTabToDo()",
+          SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
+    }
   }
 
 }

@@ -357,6 +357,32 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
       DBUtil.close(con);
     }
   }
+  
+  @Override
+  public void removeTabToDo(String[] tabTodoId, String userId) throws RemoteException {
+    SilverTrace.info("calendar", "CalendarBmEJB. removeTabToDo(String[] tabTodoId, String userId)",
+        "root.MSG_GEN_ENTER_METHOD");
+    Connection con = getConnection();
+    try {
+      ToDoHeader todo;
+      for(String todoId : tabTodoId) {
+        todo = ToDoDAO.getToDoHeader(con, todoId);
+        try {
+          removeIndex(todo, userId);
+        } catch (Exception e) {
+          SilverTrace.warn("calendar",
+              "CalendarBmEJB.removeTabToDo(String[] tabTodoId, String userId)",
+              "root.EX_INDEX_FAILED", "", e);
+        }
+      }
+      AttendeeDAO.removeTabToDoAttendee(con, tabTodoId, userId);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("CalendarBmEJB.removeTabToDo(String[] tabTodoId, String userId)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
+    } finally {
+      DBUtil.close(con);
+    }
+  }
 
   /**
    * methods for all schedules type
@@ -364,7 +390,7 @@ public class CalendarBmEJB implements CalendarBmBusinessSkeleton, SessionBean {
   @Override
   public Collection<JournalHeader> getDaySchedulablesForUser(String day, String userId,
       String categoryId, String participation) throws RemoteException {
-    SilverTrace.info("calendar", "CalendarBmEJB. removeToDo(String id)",
+    SilverTrace.info("calendar", "CalendarBmEJB. getDaySchedulablesForUser(String id)",
         "root.MSG_GEN_ENTER_METHOD", "day=" + day + "userId=" + userId
         + "categoryId=" + categoryId + "participation=" + participation);
     Connection con = getConnection();

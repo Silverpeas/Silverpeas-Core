@@ -155,6 +155,11 @@ public interface CalendarBmBusinessSkeleton {
    * removeToDoByInstanceId remove all todo of the specified instance
    */
   public void removeToDoByInstanceId(String instanceId) throws RemoteException;
+  
+  /**
+   * removeTabToDo() remove the todo entry specified by the id for the specified userId
+   */
+  public void removeTabToDo(String[] tabTodoId, String userId) throws RemoteException;
 
   /**
    * getJournalHeader() returns the journalHeader represented by the journalId
