@@ -142,6 +142,28 @@ public class AttendeeDAO {
     }
   }
 
+  public static void removeTabToDoAttendee(Connection con, String[] tabTodoId, String userId) throws SQLException {
+    String statement = "DELETE FROM "+AttendeeDAO.TODOTABLENAME+" WHERE userId = ? and todoId in (?)";
+    PreparedStatement prepStmt = null;
+    String listTodoId = "";
+    for (String todoId : tabTodoId) {
+      if(listTodoId.equals("")) {
+        listTodoId += todoId;
+      } else {
+        listTodoId += ", "+todoId;
+      }
+    }
+    try {
+      prepStmt = con.prepareStatement(statement);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, listTodoId);
+      prepStmt.executeUpdate();
+    } finally {
+      DBUtil.close(prepStmt);
+    }
+  }
+
+
   public static void removeJournal(Connection con, String journalId)
       throws SQLException {
     removeAttendees(con, journalId, AttendeeDAO.JOURNALCOLUMNNAMES,

@@ -170,10 +170,43 @@ function jumpToComponent(componentId) {
 	
 }
 
+function areYouSure(){
+    return confirm("<%=resource.getString("todoDeleteSelectConfirm")%>");
+}
+
+function deleteSelectedToDo() {
+	  var boxItems = document.todoCheckForm.todoCheck;
+    var selectItems = "";
+    if (boxItems != null){
+	    // au moins une checkbox existe
+	    var nbBox = boxItems.length;
+	    if ( (nbBox == null) && (boxItems.checked == true) ){
+	            selectItems += boxItems.value;
+	    } else{
+	      for (i=0;i<boxItems.length ;i++ ){
+		  if (boxItems[i].checked == true){
+	         selectItems += boxItems[i].value+",";
+	        }
+	      }
+	      selectItems = selectItems.substring(0,selectItems.length-1);
+	    }
+    }
+    if ( (selectItems.length > 0) && (areYouSure()) ) {
+	  document.todoCheckForm.action = "DeleteParticipantTodo";
+	  document.todoCheckForm.submit();
+    }
+}
+
+function deleteAllToDo() {
+    document.todoEditForm.Action.value = "Add";
+    document.todoEditForm.ToDoId.value = "";
+    document.todoEditForm.submit();
+}
+
 </script>
 </head>
 <body>
-
+<form name="todoCheckForm" action="todo.jsp" method="post">
 <%
 	Window window = graphicFactory.getWindow();
 
@@ -183,6 +216,8 @@ function jumpToComponent(componentId) {
 	OperationPane operationPane = window.getOperationPane();
 	 
 	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
+	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("supprimerTachesSelectionnees"), "javascript:onClick=deleteSelectedToDo()");
+	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("supprimerToutesTaches"), "javascript:onClick=deleteAllToDo()");
 
 	out.println(window.printBefore());
 %>
@@ -211,6 +246,8 @@ function jumpToComponent(componentId) {
 
 	ArrayColumn column = arrayPane.addArrayColumn(todo.getString("actions"));
 	column.setSortable(false);
+	ArrayColumn columnOp = arrayPane.addArrayColumn(todo.getString("GML.operation"));
+	columnOp.setSortable(false);
 	
 	Collection		todos		= todo.getToDos();
     Iterator		i			= todos.iterator();
@@ -328,13 +365,16 @@ function jumpToComponent(componentId) {
 					j++;
 
 					arrayLine.addArrayCellText(text.toString());
+			} else {
+			  arrayLine.addArrayCellText("");
 			}
-
+			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
         }
 				out.println(arrayPane.print());
 			out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+</form>
 
 <form name="todoEditForm" action="todoEdit.jsp" method="post">
   <input type="hidden" name="ToDoId"/>

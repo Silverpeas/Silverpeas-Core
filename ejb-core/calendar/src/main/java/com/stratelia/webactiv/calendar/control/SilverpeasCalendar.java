@@ -159,6 +159,11 @@ public interface SilverpeasCalendar {
   public void removeToDoByInstanceId(String instanceId) ;
 
   /**
+   * removeTabToDo() remove the todo entry specified by the id for the specified userId
+   */
+  public void removeTabToDo(String[] tabTodoId, String userId) throws RemoteException;
+
+  /**
    * getJournalHeader() returns the journalHeader represented by the journalId
    */
   public JournalHeader getJournalHeader(String journalId)
