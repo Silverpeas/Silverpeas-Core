@@ -5,11 +5,10 @@
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
@@ -29,21 +28,24 @@ package com.stratelia.webactiv.beans.admin;
 
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.util.ArrayUtil;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.util.ListSlice;
-
-import javax.inject.Named;
+import com.stratelia.webactiv.util.ResourceLocator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Named;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
+
+import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 import static com.silverpeas.util.ArrayUtil.EMPTY_USER_DETAIL_ARRAY;
+
 import static com.stratelia.webactiv.beans.admin.AdminReference.getAdminService;
-import static org.apache.commons.lang3.ArrayUtils.EMPTY_STRING_ARRAY;
 
 /**
  * This objet is used by all the admin jsp such as SpaceManagement, UserManagement, etc... It
@@ -148,6 +150,17 @@ public class OrganizationController implements OrganisationController {
       SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",
           "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "space Id: '" + sClientSpaceId
           + "', user Id: '" + sUserId + "'", e);
+      return EMPTY_STRING_ARRAY;
+    }
+  }
+
+  @Override
+  public String[] getAvailCompoIds(String sUserId) {
+    try {
+      return getAdminService().getAvailCompoIds(sUserId);
+    } catch (AdminException e) {
+      SilverTrace.error("admin", "OrganizationController.getAvailCompoIds",
+          "admin.MSG_ERR_GET_USER_AVAILABLE_COMPONENT_IDS", "user Id: '" + sUserId + "'", e);
       return EMPTY_STRING_ARRAY;
     }
   }
@@ -478,7 +491,7 @@ public class OrganizationController implements OrganisationController {
   public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
     try {
       return getAdminService().searchGroups(criteria);
-    } catch(AdminException ex) {
+    } catch (AdminException ex) {
       SilverTrace.error("admin", "OrganizationController.getGroupsMatchingCriteria",
           "admin.EX_ERR_GET_USER_DETAILS", "criteria: '" + criteria.toString(), ex);
     }
@@ -859,6 +872,7 @@ public class OrganizationController implements OrganisationController {
    * of several tools, each of them providing an administrative feature. Each tool in the
    * administration component have the same identifier that refers in fact the administration
    * console.
+   *
    * @param toolId the unique identifier of the tool.
    * @return true if the tool belongs to the administration component.
    */
@@ -870,8 +884,9 @@ public class OrganizationController implements OrganisationController {
   /**
    * Is the specified tool is available in Silverpeas?
    * </p>
-   * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool
-   * is identified by a unique identifier and it is unique to each user.
+   * A tool in Silverpeas is a singleton component that is dedicated to a given user. Each tool is
+   * identified by a unique identifier and it is unique to each user.
+   *
    * @param toolId the unique identifier of a tool.
    * @return true if the tool is available, false otherwise.
    */
@@ -890,13 +905,14 @@ public class OrganizationController implements OrganisationController {
   }
 
   /**
-   * Is the specified component instance available among the components instances accessibles by
-   * the specified user?
+   * Is the specified component instance available among the components instances accessibles by the
+   * specified user?
    * </p>
    * A component is an application in Silverpeas to perform some tasks and to manage some resources.
    * Each component in Silverpeas can be instanciated several times, each of them corresponding then
-   * to a running application in Silverpeas and it is uniquely identified from others instances by
-   * a given identifier.
+   * to a running application in Silverpeas and it is uniquely identified from others instances by a
+   * given identifier.
+   *
    * @param componentId the unique identifier of a component instance.
    * @param userId the unique identifier of a user.
    * @return true if the component instance is available, false otherwise.
@@ -1178,5 +1194,84 @@ public class OrganizationController implements OrganisationController {
           "admin.MSG_ERR_GET_AVAILABLE_COMPONENTIDS", e);
       return EMPTY_STRING_ARRAY;
     }
+  }
+
+  @Override
+  public List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria) {
+    List<String> componentIds = new ArrayList<String>();
+
+    if (criteria.hasCriterionOnWorkspace()) {
+      if (criteria.hasCriterionOnComponentInstance()) {
+        componentIds.add(criteria.getComponentInstanceId());
+      } else {
+        String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
+            criteria.getUser().getId());
+        for (String aComponentId : availableComponentIds) {
+          if (isSearchable(aComponentId, null)) {
+            componentIds.add(aComponentId);
+          }
+        }
+      }
+    } else {
+      String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
+          criteria.getUser().getId());
+      List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch(
+          criteria.getUser().getId());
+      for (String aComponentId : availableComponentIds) {
+        if (isSearchable(aComponentId, excludedComponentIds)) {
+          componentIds.add(aComponentId);
+        }
+      }
+    }
+    return componentIds;
+  }
+
+  private boolean isSearchable(String componentId, List<String> exclusionList) {
+    if (exclusionList != null && !exclusionList.isEmpty() && exclusionList.contains(componentId)) {
+      return false;
+    }
+    if (componentId.startsWith("silverCrawler")
+        || componentId.startsWith("gallery")
+        || componentId.startsWith("kmelia")) {
+      boolean isPrivateSearch = "yes".equalsIgnoreCase(
+          getComponentParameterValue(componentId, "privateSearch"));
+      if (isPrivateSearch) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  private List<String> getComponentsExcludedFromGlobalSearch(String userId) {
+    List<String> excluded = new ArrayList<String>();
+
+    // exclude all components of all excluded spaces
+    List<String> spaces = getItemsExcludedFromGlobalSearch("SpacesExcludedFromGlobalSearch");
+    for (String space : spaces) {
+      String[] availableComponentIds = getAvailCompoIds(space, userId);
+      excluded.addAll(Arrays.asList(availableComponentIds));
+    }
+
+    // exclude components explicitly excluded
+    List<String> components =
+        getItemsExcludedFromGlobalSearch("ComponentsExcludedFromGlobalSearch");
+    excluded.addAll(components);
+
+    return excluded;
+  }
+
+  private List<String> getItemsExcludedFromGlobalSearch(String parameterName) {
+    ResourceLocator searchSettings = new ResourceLocator(
+        "org.silverpeas.pdcPeas.settings.pdcPeasSettings", "");
+    List<String> items = new ArrayList<String>();
+    String param = searchSettings.getString(parameterName);
+    if (StringUtil.isDefined(param)) {
+      String[] componentIds = param.split(",");
+      items.addAll(Arrays.asList(componentIds));
+    }
+    return items;
   }
 }

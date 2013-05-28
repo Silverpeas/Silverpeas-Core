@@ -1,41 +1,35 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web;
 
+import com.silverpeas.thesaurus.ThesaurusException;
+import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.silverpeas.thesaurus.ThesaurusException;
-import com.silverpeas.web.Exposable;
-
-import com.stratelia.silverpeas.pdc.model.UsedAxis;
 /**
  * A web entity representing the classification plan (named PdC). The classification plan can be
  * either the one modeled for the Silverpeas system or the one parametrized for a given Silverpeas
@@ -44,13 +38,12 @@ import com.stratelia.silverpeas.pdc.model.UsedAxis;
  */
 @XmlRootElement
 public class PdcEntity implements Exposable {
-  private static final long serialVersionUID = 6798294501268706300L;
 
+  private static final long serialVersionUID = 6798294501268706300L;
   /**
    * The value representing an absence of thesaurus.
    */
   public static final UserThesaurusHolder NoThesaurus = null;
-
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement
@@ -60,6 +53,7 @@ public class PdcEntity implements Exposable {
    * Creates a new web entity of a PdC containing the specified axis whose terms are expressed in
    * the specified language and with the specified user thesaurus. The web representation of the PdC
    * is identified at the specified URI.
+   *
    * @param withUsedAxis the axis to use in the PdC.
    * @param inLanguage the language in which the PdC's terms should be translated.
    * @param atURI the URI at which the PdC can be found.
@@ -78,6 +72,7 @@ public class PdcEntity implements Exposable {
   /**
    * A convenient method to enhance the readability of the method calls in which the axis are passed
    * as argument.
+   *
    * @param axis the axis of the PdC.
    * @return the specified axis.
    */
@@ -88,6 +83,7 @@ public class PdcEntity implements Exposable {
   /**
    * A convenient method to enhance the readability of the method calls that expect the language as
    * argument.
+   *
    * @param language the language of a user.
    * @return the language.
    */
@@ -97,6 +93,7 @@ public class PdcEntity implements Exposable {
 
   /**
    * Gets the URI at which this resource is published and can be accessed.
+   *
    * @return the web resource URI.
    */
   @Override
@@ -106,6 +103,7 @@ public class PdcEntity implements Exposable {
 
   /**
    * Gets the axis of this PdC.
+   *
    * @return an unmodifiable list of PdC axis.
    */
   public List<PdcAxis> getAxis() {
@@ -114,6 +112,7 @@ public class PdcEntity implements Exposable {
 
   /**
    * Adds the specified PdC axis among the others axis of this PdC.
+   *
    * @param axis the axis of this PdC.
    * @return itself.
    */
@@ -124,6 +123,7 @@ public class PdcEntity implements Exposable {
 
   /**
    * A convenient method to enhance the readability of creators.
+   *
    * @param uri the URI at which the classification is published.
    * @return the classification URI.
    */
@@ -132,7 +132,6 @@ public class PdcEntity implements Exposable {
   }
 
   protected PdcEntity() {
-
   }
 
   private static List<PdcAxis> fromUsedAxis(final List<UsedAxis> theAxisToUse, String inLanguage,
@@ -184,5 +183,4 @@ public class PdcEntity implements Exposable {
     }
     return "PdcEntity{uri=" + getURI() + ", axis=" + axisArray.toString() + '}';
   }
-
 }

@@ -23,19 +23,11 @@
  */
 package com.silverpeas.web.mock;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Named;
-
-import org.silverpeas.core.admin.OrganisationController;
-import org.silverpeas.util.ListSlice;
-
 import com.silverpeas.admin.components.WAComponent;
-
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.ComponentSearchCriteria;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.GroupsSearchCriteria;
@@ -46,16 +38,20 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserDetailsSearchCriteria;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Named;
+import org.silverpeas.core.admin.OrganisationController;
+import org.silverpeas.util.ListSlice;
 
 import static org.mockito.Mockito.mock;
 
 /**
- * A wrapper around an OrganizationController mock for testing purpose.
- * It is managed by the IoC container and it plays the role of an OrganizationController instance
- * for the business objects involved in a test. For doing, it delegates the invoked methods to
- * the wrapped mock.
- * You can get the wrapped mock for registering some behaviours an OrganizationController instance
- * should have in the tests.
+ * A wrapper around an OrganizationController mock for testing purpose. It is managed by the IoC
+ * container and it plays the role of an OrganizationController instance for the business objects
+ * involved in a test. For doing, it delegates the invoked methods to the wrapped mock. You can get
+ * the wrapped mock for registering some behaviours an OrganizationController instance should have
+ * in the tests.
  */
 @Named("organizationController")
 public class OrganizationControllerMockWrapper implements OrganisationController {
@@ -64,11 +60,12 @@ public class OrganizationControllerMockWrapper implements OrganisationController
   private OrganisationController mock;
 
   public OrganizationControllerMockWrapper() {
-   mock = mock(OrganisationController.class);
+    mock = mock(OrganisationController.class);
   }
 
   /**
    * Gets the mock of the OrganizationController class wrapped by this instance.
+   *
    * @return an OrganizationController mock.
    */
   public OrganisationController getOrganizationControllerMock() {
@@ -77,7 +74,7 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public String[] searchUsersIds(String groupId, String componentId, String[] profileId,
-          UserDetail filterUser) {
+      UserDetail filterUser) {
     return mock.searchUsersIds(groupId, componentId, profileId, filterUser);
   }
 
@@ -98,7 +95,7 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-          Group modelGroup) {
+      Group modelGroup) {
     return mock.searchGroupsIds(isRootGroup, componentId, profileId, modelGroup);
   }
 
@@ -119,7 +116,7 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public boolean isObjectAvailable(int objectId, ObjectType objectType, String componentId,
-          String userId) {
+      String userId) {
     return mock.isObjectAvailable(objectId, objectType, componentId, userId);
   }
 
@@ -145,13 +142,13 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
-          List<String> profileNames) {
+      List<String> profileNames) {
     return mock.getUsersIdsByRoleNames(componentId, objectId, objectType, profileNames);
   }
 
   @Override
   public String[] getUsersIdsByRoleNames(String componentId,
-          List<String> profileNames) {
+      List<String> profileNames) {
     return mock.getUsersIdsByRoleNames(componentId, profileNames);
   }
 
@@ -162,7 +159,7 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public String[] getUserProfiles(String userId, String componentId, int objectId,
-          ObjectType objectType) {
+      ObjectType objectType) {
     return mock.getUserProfiles(userId, componentId, objectId, objectType);
   }
 
@@ -208,7 +205,7 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public List<SpaceInstLight> getSubSpacesContainingComponent(String spaceId, String userId,
-          String componentName) {
+      String componentName) {
     return mock.getSubSpacesContainingComponent(spaceId, userId, componentName);
   }
 
@@ -449,9 +446,9 @@ public class OrganizationControllerMockWrapper implements OrganisationController
 
   @Override
   public String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String sComponentRootName,
-          boolean inCurrentSpace, boolean inAllSpaces) {
+      boolean inCurrentSpace, boolean inAllSpaces) {
     return mock.getAllComponentIdsRecur(sSpaceId, sUserId, sComponentRootName, inCurrentSpace,
-            inAllSpaces);
+        inAllSpaces);
   }
 
   @Override
@@ -502,5 +499,15 @@ public class OrganizationControllerMockWrapper implements OrganisationController
   @Override
   public boolean isAdminTool(String toolId) {
     return mock.isAdminTool(toolId);
+  }
+
+  @Override
+  public String[] getAvailCompoIds(String sUserId) {
+    return mock.getAvailCompoIds(sUserId);
+  }
+
+  @Override
+  public List<String> getSearchableComponentsByCriteria(ComponentSearchCriteria criteria) {
+    return mock.getSearchableComponentsByCriteria(criteria);
   }
 }
