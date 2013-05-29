@@ -171,7 +171,7 @@ function jumpToComponent(componentId) {
 }
 
 function areYouSure(){
-    return confirm("<%=resource.getString("todoDeleteSelectConfirm")%>");
+    return confirm("<%=todo.getString("todoDeleteSelectConfirm")%>");
 }
 
 function deleteSelectedToDo() {
@@ -192,15 +192,9 @@ function deleteSelectedToDo() {
 	    }
     }
     if ( (selectItems.length > 0) && (areYouSure()) ) {
-	  document.todoCheckForm.action = "DeleteParticipantTodo";
-	  document.todoCheckForm.submit();
+	    document.todoCheckForm.action = "DeleteTodo";
+    	document.todoCheckForm.submit();
     }
-}
-
-function deleteAllToDo() {
-    document.todoEditForm.Action.value = "Add";
-    document.todoEditForm.ToDoId.value = "";
-    document.todoEditForm.submit();
 }
 
 </script>
@@ -217,7 +211,6 @@ function deleteAllToDo() {
 	 
 	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
 	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("supprimerTachesSelectionnees"), "javascript:onClick=deleteSelectedToDo()");
-	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("supprimerToutesTaches"), "javascript:onClick=deleteAllToDo()");
 
 	out.println(window.printBefore());
 %>
@@ -293,10 +286,11 @@ function deleteAllToDo() {
             ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));
             cellText.setCompareOn(todoHeader.getPriority());
             StringBuffer text = new StringBuffer();
+            Collection attendees = todo.getToDoAttendees(todoHeader.getId());
+            Iterator att;
             if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) 
             {
-              Collection attendees = todo.getToDoAttendees(todoHeader.getId());
-              Iterator att = attendees.iterator();
+              att = attendees.iterator();
               int countAttendees = 0;
               while (att.hasNext()) {
                 if (countAttendees > 0)
@@ -353,7 +347,7 @@ function deleteAllToDo() {
 									text.append("on.gif");
 								text.append("\" alt=\""+String.valueOf(k*10)+"%\" title=\""+String.valueOf(k*10)+"%\"/></a>");
 						}
-					} else
+					} else {
 						if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) {
 							text.append("<a href=\"javascript:onclick=closeToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/unlock.gif\" alt=\""+(todo.getString("cadenas_ouvert"))+"\" title=\""+(todo.getString("cadenas_ouvert"))+"\"/>" ).append("</a>");
 						}
@@ -362,13 +356,25 @@ function deleteAllToDo() {
 							text.append("<a href=\"javascript:onclick=reopenToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/lock.gif\" alt=\""+(todo.getString("cadenas_clos"))+"\" title=\""+(todo.getString("cadenas_clos"))+"\"/>" ).append("</a>");
 						} 
 						else text.append("&nbsp;");
+					}
 					j++;
 
 					arrayLine.addArrayCellText(text.toString());
+					if (todoHeader.getDelegatorId().equals(todo.getUserId())) {//je peux supprimer les taches manuelles dont je suis l'organisateur (le créateur)
+					  arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
+					} else {
+					 arrayLine.addArrayCellText("");
+					}
 			} else {
 			  arrayLine.addArrayCellText("");
+			  att = attendees.iterator();
+			  Attendee firstAttendee = (Attendee) att.next();
+			  if (attendees.size() == 1 && todoHeader.getDelegatorId().equals(firstAttendee.getUserId())) {//je peux supprimer les taches automatiques dont je suis l'initiateur (le créateur) et le responsable
+			     arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
+			  } else {
+			    arrayLine.addArrayCellText("");
+			  }
 			}
-			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
         }
 				out.println(arrayPane.print());
 			out.println(frame.printAfter());

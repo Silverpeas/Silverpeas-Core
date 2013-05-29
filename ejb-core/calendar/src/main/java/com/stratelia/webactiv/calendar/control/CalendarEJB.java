@@ -47,7 +47,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
-@Stateless(name = "Calendar", description = "Claendar EJB to manage calendars in Silverpeas")
+@Stateless(name = "Calendar", description = "Calendar EJB to manage calendars in Silverpeas")
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class CalendarEJB implements SilverpeasCalendar {
 
@@ -294,7 +294,7 @@ public class CalendarEJB implements SilverpeasCalendar {
 
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.removeToDo(String id)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
+          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
     } finally {
       DBUtil.close(con);
     }
@@ -320,32 +320,6 @@ public class CalendarEJB implements SilverpeasCalendar {
       throw new CalendarRuntimeException(
           "CalendarEJB.removeToDoByInstanceId(String instanceId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public void removeTabToDo(String[] tabTodoId, String userId) throws RemoteException {
-    SilverTrace.info("calendar", "CalendarBmEJB. removeTabToDo(String[] tabTodoId, String userId)",
-        "root.MSG_GEN_ENTER_METHOD");
-    Connection con = getConnection();
-    try {
-      ToDoHeader todo;
-      for(String todoId : tabTodoId) {
-        todo = ToDoDAO.getToDoHeader(con, todoId);
-        try {
-          removeIndex(todo, userId);
-        } catch (Exception e) {
-          SilverTrace.warn("calendar",
-              "CalendarBmEJB.removeTabToDo(String[] tabTodoId, String userId)",
-              "root.EX_INDEX_FAILED", "", e);
-        }
-      }
-      AttendeeDAO.removeTabToDoAttendee(con, tabTodoId, userId);
-    } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarBmEJB.removeTabToDo(String[] tabTodoId, String userId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
     } finally {
       DBUtil.close(con);
     }

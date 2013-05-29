@@ -657,7 +657,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      calendarBm.removeTabToDo(tabTodoId, getUserId());
+      for(String todoId : tabTodoId) {
+        removeToDo(todoId);
+      }
       SilverTrace.info("todo", "ToDoSessionController.removeTabToDo()",
           "root.MSG_GEN_EXIT_METHOD");
     } catch (Exception e) {
