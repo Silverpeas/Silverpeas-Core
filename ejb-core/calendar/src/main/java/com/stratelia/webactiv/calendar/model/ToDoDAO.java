@@ -144,7 +144,7 @@ public class ToDoDAO {
     }
   }
   
-  public static void removeTabToDo(Connection con, String[] tabTodoId) throws SQLException {
+  /*public static void removeTabToDo(Connection con, String[] tabTodoId) throws SQLException {
     String statement = "DELETE FROM CalendarToDo WHERE id in (?)";
     PreparedStatement prepStmt = null;
     String listTodoId = "";
@@ -162,7 +162,7 @@ public class ToDoDAO {
     } finally {
       DBUtil.close(prepStmt);
     }
-  }
+  }*/
 
   public static Collection<ToDoHeader> getNotCompletedToDoHeadersForUser(Connection con,
       String userId) throws SQLException, CalendarException {

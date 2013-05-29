@@ -33,7 +33,6 @@ import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.calendar.socialnetwork.SocialInformationEvent;
 
 import javax.ejb.Local;
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -157,11 +156,6 @@ public interface SilverpeasCalendar {
    * removeToDoByInstanceId remove all todo of the specified instance
    */
   public void removeToDoByInstanceId(String instanceId) ;
-
-  /**
-   * removeTabToDo() remove the todo entry specified by the id for the specified userId
-   */
-  public void removeTabToDo(String[] tabTodoId, String userId);
 
   /**
    * getJournalHeader() returns the journalHeader represented by the journalId
