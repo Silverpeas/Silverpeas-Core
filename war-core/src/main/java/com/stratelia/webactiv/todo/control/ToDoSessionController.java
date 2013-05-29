@@ -272,8 +272,8 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
-    notifyAttendees(id, "Cloture de la tache '" + todo.getName() + "'",
-        "La tache intitulé '" + todo.getName() + "' a été cloturée.\n");
+    notifyAttendees(id, "Cloture de la tâche '" + todo.getName() + "'",
+        "La tâche intitulée '" + todo.getName() + "' a été cloturée.\n");
     SilverTrace.info("todo", "ToDoSessionController.closeToDo()", "root.MSG_GEN_EXIT_METHOD");
   }
 

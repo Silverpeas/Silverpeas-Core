@@ -59,11 +59,18 @@ public class ToDoHeader extends Schedulable implements Cloneable {
   }
 
   public void setCompletedDate(java.util.Date date) {
-    completedDate = new java.util.Date(date.getTime());
+    if(date != null) {
+      completedDate = new java.util.Date(date.getTime());
+    } else {
+      completedDate = null;
+    }
   }
 
   public java.util.Date getCompletedDate() {
-    return new java.util.Date(completedDate.getTime());
+    if(completedDate != null) {
+      return new java.util.Date(completedDate.getTime());
+    }
+    return completedDate;
   }
 
   public void setCompletedDay(String day) {
