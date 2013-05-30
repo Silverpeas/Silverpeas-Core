@@ -1031,20 +1031,20 @@
 		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
 		</c:when>
 		<c:otherwise>
-		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
+			<label for="fileName" class="label-ui-dialog"><fmt:message key="attachment.version.actual" /></label>
+		    <span id="fileName" class="champ-ui-dialog"></span>
+		    
+		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="attachment.version.new" /></label>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
 
-		    <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
 		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
 		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
 		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
-
-		    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
-		    <span id="fileName" class="champ-ui-dialog"></span>
-		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
-
+		    
+		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
 		    <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
 		    <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
 	    </c:otherwise>
@@ -1065,6 +1065,10 @@
 
     <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
     <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" /></span>
+    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
+    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
+    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
     <c:if test="${isVersionActive}">
       <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
       <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="typeVersionPublic" checked="checked"/><fmt:message key="attachment.version_public.label"/>
@@ -1072,10 +1076,6 @@
       <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
       <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
     </c:if>
-    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
-    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
-    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
