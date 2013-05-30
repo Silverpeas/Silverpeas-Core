@@ -767,25 +767,27 @@
               }
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
               submitUrl = submitUrl + '/' +encodeURI(filename);
+              $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                dataType: "json",
-                data: formData,
-                success:function(data) {
-                  reloadIncludingPage();
-                  $(this).dialog("close");
-                }
-              });
-            } else {
-              $('#add-attachment-form').attr('action', submitUrl);
-              $('#add-attachment-form').submit();
-            }}, '<fmt:message key="GML.cancel"/>': function() {
+	                processData: false,
+	                contentType: false,
+	                type: 'POST',
+	                dataType: "json",
+	                data: formData,
+	                success:function(data) {
+	                  reloadIncludingPage();
+	                  $(this).dialog("close");
+	                }
+              	});
+              } else {
+                $('#add-attachment-form').attr('action', submitUrl);
+                $('#add-attachment-form').submit();
+              }},
+           '<fmt:message key="GML.cancel"/>': function() {
               $(this).dialog("close");
-            }
+           }
           }, close: function() {
           }
         });
@@ -803,8 +805,9 @@
               if( filename !== '') {
                 submitUrl = submitUrl + '/' +encodeURI(filename);
               } else {
-              submitUrl = submitUrl + '/no_file';
+                submitUrl = submitUrl + '/no_file';
               }
+              $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -1110,3 +1113,5 @@
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
+
+<view:progressMessage/>
