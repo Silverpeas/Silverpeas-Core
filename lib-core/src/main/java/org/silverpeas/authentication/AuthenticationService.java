@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+import com.stratelia.webactiv.beans.admin.UserFull;
 import org.silverpeas.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.authentication.exception.AuthenticationException;
 import org.silverpeas.authentication.exception.AuthenticationHostException;
@@ -342,12 +343,26 @@ public class AuthenticationService {
    */
   public void changePassword(AuthenticationCredential credential, String newPassword)
       throws AuthenticationException {
+    changePasswordAndEmail(credential, newPassword, null);
+  }
+
+  /**
+   * Changes the password and email of the specified user credential with the specified new ones.
+   * In order to change the password and email of a user, the user will be first authenticated.
+   * The specified credential won't be updated by the password change.
+   * @param credential the current authentication credential of the user.
+   * @param newPassword User new password the new password to set.
+   * @param email User email the email to set.
+   * @throws AuthenticationException if an error occurs while changing the password and email of the
+   * specified credential.
+   */
+  public void changePasswordAndEmail(AuthenticationCredential credential, String newPassword,
+      String email) throws AuthenticationException {
     // Test data coming from calling page
     String login = credential.getLogin();
     String oldPassword = credential.getPassword();
     String domainId = credential.getDomainId();
-    if (login == null || oldPassword == null || domainId == null
-        || newPassword == null) {
+    if (login == null || oldPassword == null || domainId == null || newPassword == null) {
       throw new AuthenticationBadCredentialException("AuthenticationService.changePassword",
           SilverpeasException.ERROR, "authentication.EX_NULL_VALUE_DETECTED");
     }
@@ -372,7 +387,7 @@ public class AuthenticationService {
     }
 
     // Treatments on password change
-    onPasswordChanged(credential);
+    onPasswordAndEmailChanged(credential, email);
   }
 
   /**
@@ -525,15 +540,16 @@ public class AuthenticationService {
     }
 
     // Treatments on password change
-    onPasswordChanged(credential);
+    onPasswordAndEmailChanged(credential, null);
   }
 
   /**
    * Treatments on password change.
    *
    * @param credential
+   * @param email
    */
-  private void onPasswordChanged(AuthenticationCredential credential) {
+  private void onPasswordAndEmailChanged(AuthenticationCredential credential, final String email) {
     AdminController admin = new AdminController(null);
     UserDetail user = UserDetail
         .getById(admin.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
@@ -542,14 +558,22 @@ public class AuthenticationService {
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
         .notifyPasswordChange();
 
+    // Updating some data
+    UserFull userFull = admin.getUserFull(user.getId());
+
     // Reset the counter of number of successful connections for the given user.
-    user.setNbSuccessfulLoginAttempts(0);
+    userFull.setNbSuccessfulLoginAttempts(0);
 
     // Register the date of credential change
-    user.setLastLoginCredentialUpdateDate(new Date());
+    userFull.setLastLoginCredentialUpdateDate(new Date());
+
+    // Set email
+    if (StringUtil.isDefined(email)) {
+      userFull.seteMail(email);
+    }
 
     // Persisting user data changes.
-    admin.updateUser(user);
+    admin.updateUserFull(userFull);
   }
 
   /**
