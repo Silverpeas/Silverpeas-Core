@@ -111,16 +111,16 @@ public class WysiwygController {
   }
 
   /**
-   * Turn over all the files attached according to the parameters id, componentId, context.
+   * Turn over all the images attached according to the parameters id, componentId.
    *
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
    */
-  public static String[][] searchAllAttachments(String id, String componentId) {
+  public static String[][] getImages(String id, String componentId) {
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
+        listDocumentsByForeignKeyAndType(new ForeignPK(id, componentId), DocumentType.image, null);
     int nbImages = attachments.size();
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
@@ -128,7 +128,7 @@ public class WysiwygController {
       String path = attD.getAttachmentPath();
       imagesList[i][0] = path;
       imagesList[i][1] = attD.getFilename();
-      SilverTrace.info("wysiwyg", "WysiwygController.searchAllAttachments()",
+      SilverTrace.info("wysiwyg", "WysiwygController.getImages()",
           "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);
     }
     return imagesList;

@@ -96,7 +96,6 @@ if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   componentId = request.getParameter("ComponentId");
   objectId = request.getParameter("ObjectId");
   String context = request.getParameter("Context");
-  imagesContext = DocumentType.image.toString();
   url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
 
