@@ -23,11 +23,11 @@
  */
 package org.silverpeas.viewer.util;
 
+import org.apache.commons.exec.LogOutputStream;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.exec.LogOutputStream;
 
 import static com.silverpeas.util.StringUtil.newline;
 
@@ -36,7 +36,15 @@ import static com.silverpeas.util.StringUtil.newline;
  */
 public class CollectingLogOutputStream extends LogOutputStream {
 
-  private final List<String> lines = new LinkedList<String>();
+  private final List<String> lines;
+
+  public CollectingLogOutputStream() {
+    this(new LinkedList<String>());
+  }
+
+  public CollectingLogOutputStream(List<String> lines) {
+    this.lines = lines;
+  }
 
   @Override
   protected void processLine(String line, int level) {

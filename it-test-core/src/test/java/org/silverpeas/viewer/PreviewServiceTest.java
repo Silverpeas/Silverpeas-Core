@@ -1,22 +1,18 @@
 package org.silverpeas.viewer;
 
-import java.io.File;
-import java.net.URL;
-
-import javax.inject.Inject;
-
 import com.silverpeas.util.ImageUtil;
-
 import com.stratelia.webactiv.util.FileRepositoryManager;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.net.URL;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -70,8 +66,8 @@ public class PreviewServiceTest {
 
   @Test
   public void testDocxFileWithSpecialChars() throws Exception {
-    final Preview preview = previewService.getPreview("file ' - '' .docx", getDocumentNamed(
-        "file ' - '' .docx"));
+    final Preview preview =
+        previewService.getPreview("file ' - '' .docx", getDocumentNamed("file ' - '' .docx"));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
@@ -153,8 +149,8 @@ public class PreviewServiceTest {
 
   @Test
   public void testJpgFileWithSpecialChars() throws Exception {
-    final Preview preview = previewService.getPreview("file ' - '' .jpg", getDocumentNamed(
-        "file ' - '' .jpg"));
+    final Preview preview =
+        previewService.getPreview("file ' - '' .jpg", getDocumentNamed("file ' - '' .jpg"));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
@@ -184,10 +180,9 @@ public class PreviewServiceTest {
   }
 
   @Test
-  @Ignore
   public void testPdfFileWithSpecialChars() throws Exception {
-    final Preview preview = previewService.getPreview("file ' - '' .pdf", getDocumentNamed(
-        "file ' - '' .pdf"));
+    final Preview preview =
+        previewService.getPreview("file ' - '' .pdf", getDocumentNamed("file ' - '' .pdf"));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
