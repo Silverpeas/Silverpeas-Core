@@ -48,6 +48,8 @@ import static org.apache.commons.lang3.StringUtils.split;
 
 public class StringUtil extends StringUtils {
 
+  public static String newline = System.getProperty("line.separator");
+
   private static final char[] PUNCTUATION
       = new char[]{'&', '\"', '\'', '{', '(', '[', '-', '|', '`',
         '_', '\\', '^', '@', ')', ']', '=', '+', '}', '?', ',', '.', ';', '/', ':', '!', '§',

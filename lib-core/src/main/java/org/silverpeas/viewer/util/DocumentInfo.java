@@ -48,15 +48,13 @@ public class DocumentInfo {
           widthOk = false;
           heightOk = false;
           for (final String info : outputLine.split(" ")) {
-            if (info.indexOf("width") >= 0) {
-              maxWidh =
-                  Math.max(maxWidh,
-                      Integer.valueOf(info.replaceAll("width=", "").replaceAll("\\.[0-9]{1,}", "")));
+            if (info.contains("width")) {
+              maxWidh = Math.max(maxWidh,
+                  Integer.valueOf(info.replaceAll("width=", "").replaceAll("\\.[0-9]+", "")));
               widthOk = true;
-            } else if (info.indexOf("height") >= 0) {
-              maxHeight =
-                  Math.max(maxHeight, Integer.valueOf(info.replaceAll("height=", "").replaceAll(
-                      "\\.[0-9]{1,}", "")));
+            } else if (info.contains("height")) {
+              maxHeight = Math.max(maxHeight,
+                  Integer.valueOf(info.replaceAll("height=", "").replaceAll("\\.[0-9]+", "")));
               heightOk = true;
             }
           }

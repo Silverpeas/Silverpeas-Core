@@ -1,25 +1,25 @@
 package org.silverpeas.viewer;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import java.io.File;
 import java.net.URL;
 
 import javax.inject.Inject;
 
+import com.silverpeas.util.ImageUtil;
+
+import com.stratelia.webactiv.util.FileRepositoryManager;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.silverpeas.util.ImageUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-viewer.xml")
@@ -61,6 +61,17 @@ public class PreviewServiceTest {
   @Test
   public void testDocxFile() throws Exception {
     final Preview preview = previewService.getPreview("file.docx", getDocumentNamed("file.docx"));
+    assertThat(preview, notNullValue());
+    assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
+    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
+    assertThat(previewSize[0], is("595"));
+    assertThat(previewSize[1], is("842"));
+  }
+
+  @Test
+  public void testDocxFileWithSpecialChars() throws Exception {
+    final Preview preview = previewService.getPreview("file ' - '' .docx", getDocumentNamed(
+        "file ' - '' .docx"));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
@@ -141,6 +152,17 @@ public class PreviewServiceTest {
   }
 
   @Test
+  public void testJpgFileWithSpecialChars() throws Exception {
+    final Preview preview = previewService.getPreview("file ' - '' .jpg", getDocumentNamed(
+        "file ' - '' .jpg"));
+    assertThat(preview, notNullValue());
+    assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
+    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
+    assertThat(previewSize[0], is("1000"));
+    assertThat(previewSize[1], is("750"));
+  }
+
+  @Test
   public void testJpegFile() throws Exception {
     // The uppercase letter of the following file extension is not a mistake
     final Preview preview = previewService.getPreview("file.jpEg", getDocumentNamed("file.jpEg"));
@@ -154,6 +176,18 @@ public class PreviewServiceTest {
   @Test
   public void testPdfFile() throws Exception {
     final Preview preview = previewService.getPreview("file.pdf", getDocumentNamed("file.pdf"));
+    assertThat(preview, notNullValue());
+    assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
+    final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());
+    assertThat(previewSize[0], is("595"));
+    assertThat(previewSize[1], is("842"));
+  }
+
+  @Test
+  @Ignore
+  public void testPdfFileWithSpecialChars() throws Exception {
+    final Preview preview = previewService.getPreview("file ' - '' .pdf", getDocumentNamed(
+        "file ' - '' .pdf"));
     assertThat(preview, notNullValue());
     assertThat(preview.getPhysicalFile().getName().length(), greaterThan(10));
     final String[] previewSize = ImageUtil.getWidthAndHeight(preview.getPhysicalFile());

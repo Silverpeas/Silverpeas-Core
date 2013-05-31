@@ -368,15 +368,15 @@ public class HtmlSearchResultTag extends TagSupport {
           EncodeHelper.javaStringToHtmlString(sLocation)).append("</span>");
     }
     if (gsr.isPreviewable()) {
-      result.append(" <img onclick=\"javascript:previewFile(this, ").append(gsr.getAttachmentId())
-          .append(",").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
+      result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"preview-file\" src=\"").append(settings.getIcon("pdcPeas.file.preview"))
           .append("\" alt=\"").append(settings.getString("GML.preview")).append("\" title=\"")
           .append(settings.getString("GML.preview")).append("\"/>");
     }
     if (gsr.isViewable()) {
-      result.append(" <img onclick=\"javascript:viewFile(this, ").append(gsr.getAttachmentId())
-          .append(",").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
+      result.append(" <img onclick=\"javascript:viewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"view-file\" src=\"").append(settings.getIcon("pdcPeas.file.view"))
           .append("\" alt=\"").append(settings.getString("GML.view")).append("\" title=\"")
           .append(settings.getString("GML.view")).append("\"/>");
