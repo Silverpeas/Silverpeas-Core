@@ -23,6 +23,8 @@
  */
 package com.silverpeas.util;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * @author Yohann Chastagnier
@@ -185,32 +185,6 @@ public class MapUtil {
     }
 
     // map result
-    return result;
-  }
-
-  /**
-   * Transforming a map into an other map with same keys
-   *
-   * @param <K>
-   * @param <VI>
-   * @param <VO>
-   * @param map
-   * @param extractor
-   * @return
-   */
-  public static <K extends Object, VI extends Object, VO extends Object> HashMap<K, VO> mapToMap(
-      final Map<K, VI> map, final ExtractionMap<VI, VO> extractor) {
-    final LinkedHashMap<K, VO> result;
-    if (map == null) {
-      result = null;
-    } else if (map.isEmpty()) {
-      result = new LinkedHashMap<K, VO>();
-    } else {
-      result = new LinkedHashMap<K, VO>((int) (map.size() * 0.75f));
-      for (final Map.Entry<K, VI> toPerform : map.entrySet()) {
-        result.put(toPerform.getKey(), extractor.getValue(toPerform.getValue()));
-      }
-    }
     return result;
   }
 

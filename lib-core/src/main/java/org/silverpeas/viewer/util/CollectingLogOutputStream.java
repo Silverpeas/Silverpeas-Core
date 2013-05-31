@@ -23,16 +23,19 @@
  */
 package org.silverpeas.viewer.util;
 
-import org.apache.commons.exec.LogOutputStream;
-
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.exec.LogOutputStream;
+
+import static com.silverpeas.util.StringUtil.newline;
+
 /**
-* User: Yohann Chastagnier
-* Date: 29/05/13
-*/
+ * User: Yohann Chastagnier Date: 29/05/13
+ */
 public class CollectingLogOutputStream extends LogOutputStream {
+
   private final List<String> lines = new LinkedList<String>();
 
   @Override
@@ -40,7 +43,17 @@ public class CollectingLogOutputStream extends LogOutputStream {
     lines.add(line);
   }
 
+  @SuppressWarnings("unchecked")
   public List<String> getLines() {
-    return lines;
+    return Collections.unmodifiableList(lines);
+  }
+
+  public String getMessage() {
+    StringBuilder builder = new StringBuilder(512 * lines.size());
+    for (String line : lines) {
+      builder.append(line);
+      builder.append(newline);
+    }
+    return builder.toString();
   }
 }

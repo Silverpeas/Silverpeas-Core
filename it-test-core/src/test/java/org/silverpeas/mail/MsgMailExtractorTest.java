@@ -40,46 +40,50 @@ import com.stratelia.webactiv.util.DateUtil;
 
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
-import org.apache.poi.hsmf.datatypes.RecipientChunks;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.silverpeas.converter.DocumentFormat.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
- * User: Yohann Chastagnier
- * Date: 21/01/13
+ * User: Yohann Chastagnier Date: 21/01/13
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "/spring-mail-extractor.xml")
 public class MsgMailExtractorTest {
-  private static String FILENAME_MAIL_WITH_ATTACHMENTS = "mailWithAttachments.msg";
 
-  private static DateFormat DATE_MAIL_FORMAT =
-      new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+  private final static String FILENAME_MAIL_WITH_ATTACHMENTS = "mailWithAttachments.msg";
+
+  private final static DateFormat DATE_MAIL_FORMAT = new SimpleDateFormat(
+      "EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
   /**
    * This unit test is support for MSG exploration solution testing.
+   *
    * @throws Exception
    */
   @Test
   public void readMailWithAttachmentsMSG() throws Exception {
-    MAPIMessage msg =
-        new MAPIMessage(getDocumentFromName(FILENAME_MAIL_WITH_ATTACHMENTS).getPath());
+    MAPIMessage msg = new MAPIMessage(getDocumentFromName(FILENAME_MAIL_WITH_ATTACHMENTS).getPath());
     msg.setReturnNullOnMissingChunk(true);
 
-    System.out.println("FROM : " + msg.getDisplayFrom());
-
-    System.out.println("TO : ");
-    for (RecipientChunks recipientChunks : msg.getRecipientDetailsChunks()) {
-      System.out.println("\t" + recipientChunks.getRecipientName() +
-          " " + recipientChunks.getRecipientEmailAddress());
-    }
-
-    System.out.print("ATTACHMENTS : ");
+    assertThat(msg.getDisplayFrom(), is("Nicolas Eysseric"));
+    assertThat(msg.getRecipientDetailsChunks(), is(notNullValue()));
+    assertThat(msg.getRecipientDetailsChunks().length, is(2));
+    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientName(), is("Aurore ADR. DELISSNYDER"));
+    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientEmailAddress(), is(
+        "Aurore.DELISSNYDER@hydrostadium.fr"));
+    assertThat(msg.getRecipientDetailsChunks()[1].getRecipientName(), is("Ludovic BERTIN"));
+    assertThat(msg.getRecipientDetailsChunks()[1].getRecipientEmailAddress(), is(
+        "ludovic.bertin@oosphere.com"));
     AttachmentChunks[] attachments = msg.getAttachmentFiles();
+    assertThat(attachments, is(notNullValue()));
+    assertThat(attachments.length, is(2));
     if (attachments != null && attachments.length > 0) {
       System.out.print("\n");
       for (AttachmentChunks attachmentChunks : attachments) {
@@ -99,6 +103,7 @@ public class MsgMailExtractorTest {
 
   /**
    * Gets the message from email.
+   *
    * @param msg
    * @return
    * @throws Exception
@@ -116,6 +121,7 @@ public class MsgMailExtractorTest {
 
   /**
    * Gets readable string from RTF text.
+   *
    * @param rtfText
    * @return
    * @throws Exception
@@ -124,12 +130,13 @@ public class MsgMailExtractorTest {
     ByteArrayOutputStream htmlText = new ByteArrayOutputStream();
     DocumentFormatConverterFactory.getFactory().getToHTMLConverter()
         .convert(new ByteArrayInputStream(rtfText.getBytes()), inFormat(rtf), htmlText,
-            inFormat(html));
+        inFormat(html));
     return htmlText.toString();
   }
 
   /**
    * Gets the reception date of email.
+   *
    * @param msg
    * @return
    * @throws Exception
@@ -144,6 +151,7 @@ public class MsgMailExtractorTest {
 
   /**
    * Extracts the reception date from an email.
+   *
    * @param msg
    * @return
    * @throws Exception
@@ -163,6 +171,7 @@ public class MsgMailExtractorTest {
 
   /**
    * Gets the file from its name.
+   *
    * @param name
    * @return
    * @throws Exception
