@@ -49,7 +49,6 @@ public class ViewServiceTest {
   }
 
   @Test
-  @Ignore
   public void testPdfFileViewWithSpecialChars() throws Exception {
     if (SwfToolManager.isActivated()) {
       final DocumentView view = viewService.getDocumentView("file ' - '' .pdf", getDocumentNamed(
@@ -62,7 +61,6 @@ public class ViewServiceTest {
   }
 
   @Test
-  @Ignore
   public void testPdfFileViewWithSpaces() throws Exception {
     if (SwfToolManager.isActivated()) {
       final DocumentView view = viewService.getDocumentView("file with spaces.pdf",
@@ -75,7 +73,6 @@ public class ViewServiceTest {
   }
 
   @Test
-  @Ignore
   public void testPdfFileViewWithQuotes() throws Exception {
     if (SwfToolManager.isActivated()) {
       final DocumentView view = viewService.getDocumentView("file_with_'_quotes_'.pdf",
