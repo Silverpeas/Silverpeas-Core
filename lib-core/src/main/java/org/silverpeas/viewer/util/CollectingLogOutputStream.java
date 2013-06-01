@@ -23,16 +23,16 @@
  */
 package org.silverpeas.viewer.util;
 
-import org.apache.commons.exec.LogOutputStream;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.exec.LogOutputStream;
+
 import static com.silverpeas.util.StringUtil.newline;
 
 /**
- * User: Yohann Chastagnier Date: 29/05/13
+ * Helper class to collectect the output of a command execution.
  */
 public class CollectingLogOutputStream extends LogOutputStream {
 

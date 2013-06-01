@@ -23,14 +23,6 @@
  */
 package org.silverpeas.viewer.util;
 
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.viewer.SwfToolManager;
-import org.silverpeas.viewer.exception.PreviewException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,22 +30,35 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.viewer.SwfToolManager;
+import org.silverpeas.viewer.exception.PreviewException;
+
+import com.silverpeas.util.StringUtil;
+
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import static org.apache.commons.io.FilenameUtils.*;
 
 /**
  * Some centralized tools to use SwfTools API
+ *
  * @author Yohann Chastagnier
  */
 public class SwfUtil {
 
   public static final String SWF_DOCUMENT_EXTENSION = "swf";
-  public static String PAGE_FILENAME_SEPARATOR = "-";
+  public static final String PAGE_FILENAME_SEPARATOR = "-";
 
-  private static String OUTPUT_COMMAND = "-o";
-  private static String TO_SWF_ENDING_COMMAND = "-f -T 9 -t -s storeallcharacters";
+  private static final String OUTPUT_COMMAND = "-o";
+  private static final String TO_SWF_ENDING_COMMAND = "-f -T 9 -t -s storeallcharacters";
 
   /**
    * Indicates if Swf utils is activated
+   *
    * @return
    */
   public static boolean isActivated() {
@@ -62,11 +67,11 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into an image file.
+   *
    * @param fileIn the pdf file
    * @param fileOut the image file
    */
   public static void fromPdfToImage(final File fileIn, final File fileOut) {
-
     // First Step : converting first page of PDF file into a SWF file
     final File swfFile = changeFileExtension(fileOut, SWF_DOCUMENT_EXTENSION);
     fromPdfToSwf(fileIn, swfFile, false, "-p 1-1");
@@ -77,6 +82,7 @@ public class SwfUtil {
 
   /**
    * Converts a SWF file into an image file.
+   *
    * @param fileIn the Swf file
    * @param fileOut the image file
    */
@@ -86,6 +92,7 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into a SWF file.
+   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    */
@@ -95,6 +102,7 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into a SWF file.
+   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    * @param oneFilePerPage if true it activates one swf file per page
@@ -106,6 +114,7 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into a SWF file.
+   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    * @param oneFilePerPage if true it activates one swf file per page
@@ -128,6 +137,7 @@ public class SwfUtil {
 
   /**
    * Return some document info from a PDF file
+   *
    * @param pdfFile
    * @return
    */
@@ -137,6 +147,7 @@ public class SwfUtil {
 
   /**
    * Changes the extension of a file
+   *
    * @param fileExtension
    * @return
    */
@@ -147,19 +158,19 @@ public class SwfUtil {
 
   /**
    * Centralizing command exececution code
+   *
    * @param commandLine
    * @return
    */
   private static List<String> exec(final CommandLine commandLine) {
     SilverTrace.info("util", "SwfUtil.exec", "Command " + commandLine);
-    System.out.println(commandLine);
     final List<String> result = new LinkedList<String>();
     final List<String> errors = new LinkedList<String>();
+    CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
     final Process process;
     try {
       process = Runtime.getRuntime().exec(commandLine.toStrings());
       final Thread errEater = new Thread(new Runnable() {
-
         @Override
         public void run() {
           try {
@@ -171,7 +182,6 @@ public class SwfUtil {
       });
       errEater.start();
       final Thread outEater = new Thread(new Runnable() {
-
         @Override
         public void run() {
           try {
@@ -183,22 +193,29 @@ public class SwfUtil {
       });
       outEater.start();
       process.waitFor();
-      CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
       int exitStatus = process.exitValue();
       if (exitStatus != 0) {
-        throw new RuntimeException(
-            "Exit error status : " + exitStatus + " " + logErrors.getMessage());
+        throw new RuntimeException("Exit error status : " + exitStatus + " "
+            + logErrors.getMessage());
       }
-    } catch (final Exception e) {
+    } catch (final IOException e) {
       SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
       throw new PreviewException(e);
+    } catch (final InterruptedException e) {
+      SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
+      throw new PreviewException(e);
+    } catch (final RuntimeException e) {
+      SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
+      throw new PreviewException(e);
+    } finally {
+      IOUtils.closeQuietly(logErrors);
     }
     return result;
   }
 
   static CommandLine buildPdfToSwfCommandLine(final String endingCommand, File inputFile,
       File outputFile) {
-    Map<String, File> files = new HashMap<String, File>();
+    Map<String, File> files = new HashMap<String, File>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("pdf2swf");
@@ -214,7 +231,7 @@ public class SwfUtil {
   }
 
   static CommandLine buildPdfDocumentInfoCommandLine(File file) {
-    Map<String, File> files = new HashMap<String, File>();
+    Map<String, File> files = new HashMap<String, File>(1);
     files.put("file", file);
     CommandLine commandLine = new CommandLine("pdf2swf");
     commandLine.addArgument("-qq");
@@ -225,7 +242,7 @@ public class SwfUtil {
   }
 
   static CommandLine buildSwfToImageCommandLine(File inputFile, File outputFile) {
-    Map<String, File> files = new HashMap<String, File>();
+    Map<String, File> files = new HashMap<String, File>(2);
     files.put("inputFile", inputFile);
     files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("swfrender");
