@@ -23,28 +23,25 @@
  */
 package org.silverpeas.viewer.util;
 
-import java.io.File;
-import java.util.List;
-
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.silverpeas.viewer.SwfToolManager;
 import org.silverpeas.viewer.exception.PreviewException;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecuteResultHandler;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.io.FilenameUtils.*;
 
 /**
  * Some centralized tools to use SwfTools API
- *
  * @author Yohann Chastagnier
  */
 public class SwfUtil {
@@ -57,7 +54,6 @@ public class SwfUtil {
 
   /**
    * Indicates if Swf utils is activated
-   *
    * @return
    */
   public static boolean isActivated() {
@@ -66,7 +62,6 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into an image file.
-   *
    * @param fileIn the pdf file
    * @param fileOut the image file
    */
@@ -82,18 +77,15 @@ public class SwfUtil {
 
   /**
    * Converts a SWF file into an image file.
-   *
    * @param fileIn the Swf file
    * @param fileOut the image file
    */
   public static void fromSwfToImage(final File fileIn, final File fileOut) {
-    exec(buildSwfToImageCommandLine(FileUtil.convertFilePath(fileIn), FileUtil.convertFilePath(
-        fileOut)));
+    exec(buildSwfToImageCommandLine(fileIn, fileOut));
   }
 
   /**
    * Converts a PDF file into a SWF file.
-   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    */
@@ -103,7 +95,6 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into a SWF file.
-   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    * @param oneFilePerPage if true it activates one swf file per page
@@ -115,7 +106,6 @@ public class SwfUtil {
 
   /**
    * Converts a PDF file into a SWF file.
-   *
    * @param fileIn the pdf file
    * @param fileOut the swf file
    * @param oneFilePerPage if true it activates one swf file per page
@@ -123,7 +113,7 @@ public class SwfUtil {
    */
   public static void fromPdfToSwf(final File fileIn, final File fileOut,
       final boolean oneFilePerPage, final String endingCommand) {
-    String outputFile;
+    File outputFile = fileOut;
     if (oneFilePerPage) {
       final StringBuilder onePageFile = new StringBuilder(512);
       onePageFile.append(getFullPath(fileOut.getPath()));
@@ -131,87 +121,118 @@ public class SwfUtil {
       onePageFile.append(PAGE_FILENAME_SEPARATOR);
       onePageFile.append("%.");
       onePageFile.append(getExtension(fileOut.getPath()));
-      outputFile = FileUtil.convertFilePath(new File(onePageFile.toString()));
-    } else {
-      outputFile = FileUtil.convertFilePath(fileOut);
+      outputFile = new File(onePageFile.toString());
     }
-    exec(buildPdfToSwfCommandLine(endingCommand, FileUtil.convertFilePath(fileIn), outputFile));
+    exec(buildPdfToSwfCommandLine(endingCommand, fileIn, outputFile));
   }
 
   /**
    * Return some document info from a PDF file
-   *
    * @param pdfFile
    * @return
    */
   public static DocumentInfo getPdfDocumentInfo(final File pdfFile) {
-    return new DocumentInfo().addFromSwfToolsOutput(exec(buildPdfDocumentInfoCommandLine(
-        FileUtil.convertFilePath(pdfFile))));
+    return new DocumentInfo().addFromSwfToolsOutput(exec(buildPdfDocumentInfoCommandLine(pdfFile)));
   }
 
   /**
    * Changes the extension of a file
-   *
    * @param fileExtension
    * @return
    */
   private static File changeFileExtension(final File file, final String fileExtension) {
-    return new File(getFullPath(file.getPath()) + getBaseName(file.getPath()) + '.' + fileExtension);
+    return new File(
+        getFullPath(file.getPath()) + getBaseName(file.getPath()) + '.' + fileExtension);
   }
 
   /**
    * Centralizing command exececution code
-   *
    * @param commandLine
    * @return
    */
   private static List<String> exec(final CommandLine commandLine) {
-    DefaultExecutor executor = new DefaultExecutor();
+    SilverTrace.info("util", "SwfUtil.exec", "Command " + commandLine);
+    System.out.println(commandLine);
+    final List<String> result = new LinkedList<String>();
+    final List<String> errors = new LinkedList<String>();
+    final Process process;
     try {
-      DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
-      CollectingLogOutputStream out = new CollectingLogOutputStream();
-      executor.setStreamHandler(new PumpStreamHandler(out));
-      SilverTrace.info("util", "SwfUtil.exec", "Command " + commandLine);
-      System.out.println(commandLine);
-      executor.execute(commandLine, resultHandler);
-      resultHandler.waitFor();
-      int exitStatus = resultHandler.getExitValue();
+      process = Runtime.getRuntime().exec(commandLine.toStrings());
+      final Thread errEater = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            errors.addAll(IOUtils.readLines(process.getErrorStream()));
+          } catch (final IOException e) {
+            throw new PreviewException(e);
+          }
+        }
+      });
+      errEater.start();
+      final Thread outEater = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+          try {
+            result.addAll(IOUtils.readLines(process.getInputStream()));
+          } catch (final IOException e) {
+            throw new PreviewException(e);
+          }
+        }
+      });
+      outEater.start();
+      process.waitFor();
+      CollectingLogOutputStream logErrors = new CollectingLogOutputStream(errors);
+      int exitStatus = process.exitValue();
       if (exitStatus != 0) {
-        throw new RuntimeException("Exit error status : " + exitStatus + " " + out.getMessage());
+        throw new RuntimeException(
+            "Exit error status : " + exitStatus + " " + logErrors.getMessage());
       }
-      return out.getLines();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       SilverTrace.error("util", "SwfUtil.exec", "Command execution error", e);
       throw new PreviewException(e);
     }
+    return result;
   }
 
-  static CommandLine buildPdfToSwfCommandLine(final String endingCommand, String inputFile,
-      String outputFile) {
+  static CommandLine buildPdfToSwfCommandLine(final String endingCommand, File inputFile,
+      File outputFile) {
+    Map<String, File> files = new HashMap<String, File>();
+    files.put("inputFile", inputFile);
+    files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("pdf2swf");
-    commandLine.addArgument(inputFile, false);
+    commandLine.addArgument("${inputFile}", false);
     commandLine.addArgument(OUTPUT_COMMAND);
-    commandLine.addArgument(outputFile, false);
+    commandLine.addArgument("${outputFile}", false);
     commandLine.addArguments(TO_SWF_ENDING_COMMAND, false);
     if (StringUtil.isDefined(endingCommand)) {
       commandLine.addArguments(endingCommand, false);
     }
+    commandLine.setSubstitutionMap(files);
     return commandLine;
   }
 
-  static CommandLine buildPdfDocumentInfoCommandLine(String file) {
+  static CommandLine buildPdfDocumentInfoCommandLine(File file) {
+    Map<String, File> files = new HashMap<String, File>();
+    files.put("file", file);
     CommandLine commandLine = new CommandLine("pdf2swf");
     commandLine.addArgument("-qq");
-    commandLine.addArgument(file, false);
+    commandLine.addArgument("${file}", false);
     commandLine.addArgument("--info");
+    commandLine.setSubstitutionMap(files);
     return commandLine;
   }
 
-  static CommandLine buildSwfToImageCommandLine(String inputFile, String outputFile) {
+  static CommandLine buildSwfToImageCommandLine(File inputFile, File outputFile) {
+    Map<String, File> files = new HashMap<String, File>();
+    files.put("inputFile", inputFile);
+    files.put("outputFile", outputFile);
     CommandLine commandLine = new CommandLine("swfrender");
-    commandLine.addArgument(inputFile, false);
+    commandLine.addArgument("${inputFile}", false);
     commandLine.addArgument(OUTPUT_COMMAND);
-    commandLine.addArgument(outputFile, false);
+    commandLine.addArgument("${outputFile}", false);
+    commandLine.setSubstitutionMap(files);
     return commandLine;
   }
 }

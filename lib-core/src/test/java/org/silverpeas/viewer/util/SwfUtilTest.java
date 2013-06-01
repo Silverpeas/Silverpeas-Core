@@ -23,20 +23,19 @@
  */
 package org.silverpeas.viewer.util;
 
-import java.io.File;
-
 import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FilenameUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.silverpeas.util.FileUtil.convertFilePath;
+import java.io.File;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author ehugonnet
  */
 public class SwfUtilTest {
@@ -65,13 +64,13 @@ public class SwfUtilTest {
   public void testLinuxBuildPdfToSwfCommandLineWithoutEndingCommand() {
     System.setProperty(OS_KEY, "Linux");
     String endingCommand = "";
-    String inputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
-    String outputFile = convertFilePath(new File("/silverpeas/viewer/",
-        "file ' - '' .swf"));
+    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
+    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildPdfToSwfCommandLine(endingCommand, inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("pdf2swf /silverpeas/viewer/file\\ \\'\\ -\\ \\'\\'\\ .pdf "
-        + "-o /silverpeas/viewer/file\\ \\'\\ -\\ \\'\\'\\ .swf -f -T 9 -t -s storeallcharacters"));
+    assertThat(separatorsToUnix(result.toString()),
+        is("pdf2swf /silverpeas/viewer/file ' - '' .pdf " +
+            "-o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
   }
 
   /**
@@ -80,11 +79,11 @@ public class SwfUtilTest {
   @Test
   public void testLinuxBuildPdfDocumentInfoCommandLine() {
     System.setProperty(OS_KEY, "Linux");
-    String file = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
+    File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
     CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("pdf2swf -qq /silverpeas/viewer/file\\ \\'\\ -\\ \\'\\'\\ .pdf"
-        + " --info"));
+    assertThat(separatorsToUnix(result.toString()),
+        is("pdf2swf -qq /silverpeas/viewer/file ' - '' .pdf" + " --info"));
   }
 
   /**
@@ -93,12 +92,13 @@ public class SwfUtilTest {
   @Test
   public void testLinuxBuildSwfToImageCommandLine() {
     System.setProperty(OS_KEY, "Linux");
-    String inputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
-    String outputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .swf"));
+    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
+    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("swfrender /silverpeas/viewer/file\\ \\'\\ -\\ \\'\\'\\ .pdf"
-        + " -o /silverpeas/viewer/file\\ \\'\\ -\\ \\'\\'\\ .swf"));
+    assertThat(separatorsToUnix(result.toString()),
+        is("swfrender /silverpeas/viewer/file ' - '' .pdf" +
+            " -o /silverpeas/viewer/file ' - '' .swf"));
   }
 
   /**
@@ -108,13 +108,13 @@ public class SwfUtilTest {
   public void testBuildPdfToSwfCommandLineWithoutEndingCommand() {
     System.setProperty(OS_KEY, "Windows XP");
     String endingCommand = "";
-    String inputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
-    String outputFile = convertFilePath(new File("/silverpeas/viewer/",
-        "file ' - '' .swf"));
+    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
+    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildPdfToSwfCommandLine(endingCommand, inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("pdf2swf \"/silverpeas/viewer/file ' - '' .pdf\" "
-        + "-o \"/silverpeas/viewer/file ' - '' .swf\" -f -T 9 -t -s storeallcharacters"));
+    assertThat(separatorsToUnix(result.toString()),
+        is("pdf2swf /silverpeas/viewer/file ' - '' .pdf " +
+            "-o /silverpeas/viewer/file ' - '' .swf -f -T 9 -t -s storeallcharacters"));
   }
 
   /**
@@ -123,11 +123,11 @@ public class SwfUtilTest {
   @Test
   public void testBuildPdfDocumentInfoCommandLine() {
     System.setProperty(OS_KEY, "Windows XP");
-    String file = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
+    File file = new File("/silverpeas/viewer/", "file ' - '' .pdf");
     CommandLine result = SwfUtil.buildPdfDocumentInfoCommandLine(file);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("pdf2swf -qq \"/silverpeas/viewer/file ' - '' .pdf\""
-        + " --info"));
+    assertThat(separatorsToUnix(result.toString()),
+        is("pdf2swf -qq /silverpeas/viewer/file ' - '' .pdf" + " --info"));
   }
 
   /**
@@ -136,12 +136,16 @@ public class SwfUtilTest {
   @Test
   public void testBuildSwfToImageCommandLine() {
     System.setProperty(OS_KEY, "Windows XP");
-    String inputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .pdf"));
-    String outputFile = convertFilePath(new File("/silverpeas/viewer/", "file ' - '' .swf"));
+    File inputFile = new File("/silverpeas/viewer/", "file ' - '' .pdf");
+    File outputFile = new File("/silverpeas/viewer/", "file ' - '' .swf");
     CommandLine result = SwfUtil.buildSwfToImageCommandLine(inputFile, outputFile);
     assertThat(result, is(notNullValue()));
-    assertThat(result.toString(), is("swfrender \"/silverpeas/viewer/file ' - '' .pdf\""
-        + " -o \"/silverpeas/viewer/file ' - '' .swf\""));
+    assertThat(separatorsToUnix(result.toString()),
+        is("swfrender /silverpeas/viewer/file ' - '' .pdf" +
+            " -o /silverpeas/viewer/file ' - '' .swf"));
   }
 
+  private static String separatorsToUnix(String filePath) {
+    return FilenameUtils.separatorsToUnix(filePath).replaceAll("[a-zA-Z]:", "");
+  }
 }
