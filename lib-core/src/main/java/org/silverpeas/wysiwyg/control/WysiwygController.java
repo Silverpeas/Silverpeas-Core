@@ -894,15 +894,29 @@ public class WysiwygController {
   }
 
   public static void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
-      String newComponentId, String newObjectId) throws WysiwygException {
-    for (String language : I18NHelper.getAllSupportedLanguages()) {
-      String wysiwyg = load(newComponentId, newObjectId, language);
-      if (StringUtil.isDefined(wysiwyg)) {
-        wysiwyg = replaceInternalImagesPath(wysiwyg, oldComponentId, oldObjectId, newComponentId,
-            newObjectId);
-        // overwrite
-        createFile(createPath(newComponentId, WYSIWYG_CONTEXT), getWysiwygFileName(newObjectId,
-            language), wysiwyg);
+      String newComponentId, String newObjectId) {
+    ForeignPK foreignKey = new ForeignPK(oldObjectId, newComponentId);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
+    if (documents != null && !documents.isEmpty()) {
+      for (SimpleDocument document : documents) {
+        for (String language : I18NHelper.getAllSupportedLanguages()) {
+          String wysiwyg = load(newComponentId, newObjectId, language);
+          if (StringUtil.isDefined(wysiwyg)) {
+            List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
+            for (SimpleDocument image : images) {
+              wysiwyg = replaceInternalImagesPath(wysiwyg, oldComponentId, oldObjectId,
+                  newComponentId, newObjectId);
+              image.getPk().setComponentName(oldComponentId);
+              SimpleDocumentPK imageCopyPk = new SimpleDocumentPK(image.getId(), newComponentId);
+              imageCopyPk.setOldSilverpeasId(image.getOldSilverpeasId());
+              wysiwyg = replaceInternalImageId(wysiwyg, image.getPk(), imageCopyPk);
+            }
+            AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
+                new ByteArrayInputStream(wysiwyg.getBytes(Charsets.UTF_8)), true, true);
+          }
+        }
       }
     }
   }
