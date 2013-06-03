@@ -40,12 +40,6 @@ import org.silverpeas.search.indexEngine.parser.Parser;
 import org.silverpeas.search.indexEngine.parser.ParserManager;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
@@ -90,6 +84,8 @@ public class IndexManager {
   public static final String SERVER_NAME = "serverName";
   public static final String EMBEDDED_FILE_IDS = "embeddedFileIds";
   public static final String FIELDS_FOR_FACETS = "fieldsForFacet";
+  public static final String FILENAME = "filename";
+  
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
    */
@@ -331,8 +327,11 @@ public class IndexManager {
     doc.add(new Field(KEY, indexEntry.getPK().toString(), Store.YES, Index.NOT_ANALYZED));
     Iterator<String> languages = indexEntry.getLanguages();
     if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
-      doc.add(new Field(getFieldName(TITLE, indexEntry.getLang()), indexEntry.getTitle(indexEntry.
-          getLang()), Store.YES, Index.NOT_ANALYZED));
+      String lang = indexEntry.getLang();
+      if (StringUtil.isDefined(indexEntry.getTitle(lang))) {
+        doc.add(new Field(getFieldName(TITLE, lang), indexEntry.getTitle(lang), Store.YES, Index.ANALYZED));
+      }
+      doc.add(new Field(getFieldName(FILENAME, lang), indexEntry.getFilename(), Store.YES, Index.NOT_ANALYZED));
     } else {
       while (languages.hasNext()) {
         String language = languages.next();
@@ -386,10 +385,14 @@ public class IndexManager {
       doc.add(new Field(CONTENT, indexEntry.getObjectId(), Store.NO, Index.NOT_ANALYZED));
     }
     if (!isWysiwyg(indexEntry)) {
-      if (indexEntry.getObjectType() != null
-          && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
-            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
+      if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
+        String lang = indexEntry.getLang();
+        if (indexEntry.getTitle(lang) != null) {
+          doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getTitle(lang), Store.NO,
+              Index.ANALYZED));
+        }
+        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), Store.NO,
+            Index.NOT_ANALYZED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
@@ -416,8 +419,11 @@ public class IndexManager {
       }
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
-        doc.add(new Field(getFieldName(HEADER, indexEntry.getLang()), indexEntry.getTitle(
-            indexEntry.getLang()).toLowerCase(), Store.NO, Index.NOT_ANALYZED));
+        String lang = indexEntry.getLang();
+        if (indexEntry.getTitle(lang) != null) {
+          doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getTitle(lang), Store.NO, Index.ANALYZED));
+        }
+        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), Store.NO, Index.NOT_ANALYZED));
       } else {
         doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(), Store.NO, Index.ANALYZED));
       }

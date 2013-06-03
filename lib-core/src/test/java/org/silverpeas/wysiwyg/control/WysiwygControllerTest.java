@@ -20,31 +20,32 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.jcrutil.model.SilverpeasRegister;
-import com.silverpeas.util.ForeignPK;
-import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.Test;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.util.Charsets;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import javax.jcr.RepositoryException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import javax.jcr.RepositoryException;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.Charsets;
+
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.jcrutil.model.SilverpeasRegister;
+import com.silverpeas.util.ForeignPK;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.jackrabbit.api.JackrabbitRepository;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author ehugonnet
- */
 public class WysiwygControllerTest {
 
   public WysiwygControllerTest() {
@@ -110,8 +111,8 @@ public class WysiwygControllerTest {
     String componentId = "webSites45";
     String result = WysiwygController.getNodePath(currentPath, componentId);
     assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
-    currentPath =
-        "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1/repertoire1/repertoire2/";
+    currentPath
+        = "/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1/repertoire1/repertoire2/";
     result = WysiwygController.getNodePath(currentPath, componentId);
     assertThat(result, is("/home/ehugonnet/programs/silverpeas/data/web/website.war/webSites45/1"));
   }
@@ -191,16 +192,59 @@ public class WysiwygControllerTest {
       String expectedContent = "Hello World";
       String userId = "7";
       String language = "en";
-      WysiwygController.createFileAndAttachment(expectedContent, new ForeignPK(messageId,componentId), userId, language);
+      WysiwygController.createFileAndAttachment(expectedContent, new ForeignPK(messageId,
+          componentId), userId, language);
       String content = WysiwygController.load(componentId, messageId, language);
       assertThat(content, is(expectedContent));
       List<SimpleDocument> lockedFiles = AttachmentServiceFactory.getAttachmentService()
           .listDocumentsLockedByUser(userId, null);
       assertThat(lockedFiles, is(notNullValue()));
       assertThat(lockedFiles, hasSize(0));
-    }finally {
+    } finally {
       ((JackrabbitRepository) context.getBean(BasicDaoFactory.JRC_REPOSITORY)).shutdown();
       context.close();
+    }
+  }
+
+  @Test
+  public void testReplaceInternalImageId() throws IOException {
+    InputStream in = WysiwygController.class.getResourceAsStream("24wysiwyg_fr.txt");
+    InputStream resultIn = WysiwygController.class.getResourceAsStream("move_result.txt");
+    try {
+      String content = IOUtils.toString(in);
+      String result = IOUtils.toString(resultIn);
+      SimpleDocumentPK oldPk = new SimpleDocumentPK("dd99f10b-0640-40d3-9ef4-8b84d29a7c85",
+          "kmelia1");
+      oldPk.setOldSilverpeasId(34L);
+      SimpleDocumentPK newPk = new SimpleDocumentPK("f2eb803f-cb46-4988-b89d-045c4e846da4",
+          "kmelia1");
+      newPk.setOldSilverpeasId(41L);
+      String move = WysiwygController.replaceInternalImageId(content, oldPk, newPk);
+      assertThat(move, is(result));
+    } finally {
+      IOUtils.closeQuietly(in);
+      IOUtils.closeQuietly(resultIn);
+    }
+  }
+
+  @Test
+  public void testReplaceInternalImageIdInOtherInstance() throws IOException {
+    InputStream in = WysiwygController.class.getResourceAsStream("24wysiwyg_fr.txt");
+    InputStream resultIn = WysiwygController.class.getResourceAsStream("move_out_result.txt");
+    try {
+      String content = IOUtils.toString(in);
+      String result = IOUtils.toString(resultIn);
+      SimpleDocumentPK oldPk = new SimpleDocumentPK("359d2924-b6c6-461c-a459-2eef38f12c3c",
+          "kmelia1");
+      oldPk.setOldSilverpeasId(34L);
+      SimpleDocumentPK newPk = new SimpleDocumentPK("f2eb803f-cb46-4988-b89d-045c4e846da4",
+          "kmelia18");
+      newPk.setOldSilverpeasId(41L);
+      String move = WysiwygController.replaceInternalImageId(content, oldPk, newPk);
+      assertThat(move, is(result));
+    } finally {
+      IOUtils.closeQuietly(in);
+      IOUtils.closeQuietly(resultIn);
     }
   }
 }

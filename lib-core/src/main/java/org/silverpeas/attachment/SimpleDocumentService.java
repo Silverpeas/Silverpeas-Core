@@ -74,7 +74,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 
@@ -110,10 +109,7 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void createIndex(SimpleDocument document, Date startOfVisibility, Date endOfVisibility) {
     String language = I18NHelper.checkLanguage(document.getLanguage());
-    String objectType = "Attachment" + document.getId();
-    if (I18NHelper.isI18N) {
-      objectType += "_" + language;
-    }
+    String objectType = "Attachment" + document.getId() + "_" + language;
     FullIndexEntry indexEntry = new FullIndexEntry(document.getInstanceId(), objectType, document.
         getForeignId());
     indexEntry.setLang(language);
@@ -126,12 +122,9 @@ public class SimpleDocumentService implements AttachmentService {
       indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
     }
 
-    String title = document.getTitle();
-    if (!StringUtil.isDefined(title)) {
-      title = FilenameUtils.getBaseName(document.getFilename());
-    }
-    indexEntry.setTitle(title, language);
-    indexEntry.setKeywords(title, language);
+    indexEntry.setTitle(document.getTitle(), language);
+    indexEntry.setPreview(document.getDescription(), language);
+    indexEntry.setFilename(document.getFilename());
     indexEntry.addFileContent(document.getAttachmentPath(), CharEncoding.UTF_8, document.
         getContentType(), language);
     if (StringUtil.isDefined(document.getXmlFormId())) {
@@ -928,13 +921,15 @@ public class SimpleDocumentService implements AttachmentService {
   @Override
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (resources.getBoolean("attachment.index.incorporated", true)) {
-      ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
-      List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
-      for (SimpleDocument currentDocument : documents) {
-        SimpleDocument version = currentDocument.getLastPublicVersion();
-        if (version != null) {
-          indexEntry.addFileContent(version.getAttachmentPath(), CharEncoding.UTF_8, version.
-              getContentType(), indexEntry.getLang());
+      if (!indexEntry.getObjectType().startsWith("Attachment")) {
+        ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+        List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
+        for (SimpleDocument currentDocument : documents) {
+          SimpleDocument version = currentDocument.getLastPublicVersion();
+          if (version != null) {
+            indexEntry.addFileContent(version.getAttachmentPath(), CharEncoding.UTF_8, version.
+                getContentType(), indexEntry.getLang());
+          }
         }
       }
     }

@@ -127,11 +127,13 @@ public class EMLExtractor implements MailExtractor {
     String body = "";
     for (int i = 0; i < partsNumber; i++) {
       Part part = multipart.getBodyPart(i);
-      if (part.getContentType().contains(MimeTypes.HTML_MIME_TYPE)) {
+      if (part.isMimeType(MimeTypes.HTML_MIME_TYPE)) {
         // if present, return always HTML part
         return (String) part.getContent();
-      } else if (part.getContentType().indexOf(MimeTypes.PLAIN_TEXT_MIME_TYPE) >= 0) {
+      } else if (part.isMimeType(MimeTypes.PLAIN_TEXT_MIME_TYPE)) {
         body = EncodeHelper.javaStringToHtmlParagraphe((String) part.getContent());
+      } else if (part.getContent() instanceof Multipart) {
+        return getBody((Multipart) part.getContent());
       }
     }
     return body;
@@ -159,7 +161,8 @@ public class EMLExtractor implements MailExtractor {
         String fileName = getFileName(part);
         if (fileName != null) {
           MailAttachment attachment = new MailAttachment(fileName);
-          String dir = FileRepositoryManager.getTemporaryPath() + "mail" + System.currentTimeMillis();
+          String dir = FileRepositoryManager.getTemporaryPath() + "mail" + System
+              .currentTimeMillis();
           File file = new File(dir, fileName);
           FileUtils.copyInputStreamToFile(part.getInputStream(), file);
           attachment.setPath(file.getAbsolutePath());

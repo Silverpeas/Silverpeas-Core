@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -50,6 +49,7 @@ import org.silverpeas.search.searchEngine.model.AxisFilter;
 import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
 import org.silverpeas.search.searchEngine.model.QueryDescription;
 import org.silverpeas.viewer.ViewerFactory;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
@@ -76,7 +76,6 @@ import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.security.ComponentSecurity;
-
 import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.containerManager.ContainerPeas;
 import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
@@ -1279,13 +1278,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     // Initialize loop variables
-
-    LinkedList<String> returnedObjects = new LinkedList<String>();
     Map<String, String> places = null;
     List<GlobalSilverResult> results = new ArrayList<GlobalSilverResult>();
 
     // Retrieve list of object type filter
     List<String> objectTypeFilter = getListObjectTypeFilter();
+    
+    List<String> wysiwygSuffixes = new ArrayList<String>();
+    for (String language : I18NHelper.getAllSupportedLanguages()) {
+      wysiwygSuffixes.add(WysiwygController.WYSIWYG_CONTEXT+"_"+language+".txt");
+    }
+    
     for (MatchingIndexEntry result : matchingIndexEntries) {
       boolean processThisResult = processResult(result, objectTypeFilter);
 
@@ -1302,45 +1305,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         // WARNING : LINE BELOW HAS BEEN ADDED TO NOT SHOW WYSIWYG ALONE IN SEARCH
         // RESULT PAGE
-        if (title.endsWith("wysiwyg.txt")
+        if (isWysiwyg(title, wysiwygSuffixes)
             && (componentId.startsWith("kmelia") || componentId.startsWith("kmax"))) {
           continue;
-        }
-
-        // Added by NEY - 22/01/2004
-        // Some explanations to lines below
-        // If a publication have got the word "truck" in its title and an
-        // associated wysiwyg which content the same word
-        // The search engine will return 2 same lines (One for the publication and
-        // the other for the wysiwyg)
-        // Following lines filters one and only one line. The choice between both
-        // lines is not important.
-        if ("Wysiwyg".equals(result.getObjectType())) {
-          // We must search if the eventual associated Publication have not been
-          // already added to the result
-          String objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-              + result.getComponent();
-          if (returnedObjects.contains(objectIdAndObjectType)) {
-            // the Publication have already been added
-            continue;
-          } else {
-            objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-                + result.getComponent();
-            returnedObjects.add(objectIdAndObjectType);
-          }
-        } else if ("Publication".equals(result.getObjectType())) {
-          // We must search if the eventual associated Wysiwyg have not been
-          // already added to the result
-          String objectIdAndObjectType = result.getObjectId() + "&&Wysiwyg&&"
-              + result.getComponent();
-          if (returnedObjects.contains(objectIdAndObjectType)) {
-            // the Wysiwyg have already been added
-            continue;
-          } else {
-            objectIdAndObjectType = result.getObjectId() + "&&Publication&&"
-                + result.getComponent();
-            returnedObjects.add(objectIdAndObjectType);
-          }
         }
 
         // Check if it's an external search before searching components information
@@ -1385,6 +1352,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       places.clear();
     }
     return results;
+  }
+  
+  private boolean isWysiwyg(String filename, List<String> wysiwygSuffixes) {
+    for (String suffix : wysiwygSuffixes) {
+      if (filename.endsWith(suffix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

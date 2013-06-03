@@ -42,7 +42,6 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.wysiwyg.WysiwygException;
 import org.silverpeas.wysiwyg.control.WysiwygController;
 
 import com.silverpeas.form.DataRecord;
@@ -1357,14 +1356,14 @@ public class PublicationBmEJB implements PublicationBm {
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-      List<String> fatherIds, PublicationPK pubPK, String sorting, List<String> status) {
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+      PublicationPK pubPK, String sorting, List<String> status) {
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, sorting, status, true);
   }
 
   @Override
-  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(
-      List<String> fatherIds, PublicationPK pubPK, String sorting, List<String> status,
+  public Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
+      PublicationPK pubPK, String sorting, List<String> status,
       boolean filterOnVisibilityPeriod) {
     Connection con = getConnection();
     try {
@@ -1453,7 +1452,7 @@ public class PublicationBmEJB implements PublicationBm {
               List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(
                   wysiwygContent);
               WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-            } catch (WysiwygException e) {
+            } catch (Exception e) {
               SilverTrace.warn("form", "PublicationBmEJB.updateIndexEntryWithWysiwygContent",
                   "root.MSG_GEN_ENTER_METHOD", "Unable to extract linked files from object"
                   + indexEntry.getObjectId(), e);
@@ -1924,8 +1923,8 @@ public class PublicationBmEJB implements PublicationBm {
    * @
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(
-      List<String> myContactsIds, List<String> options, Date begin, Date end) {
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> myContactsIds,
+      List<String> options, Date begin, Date end) {
     Connection con = getConnection();
     try {
       return PublicationDAO.getSocialInformationsListOfMyContacts(con, myContactsIds, options,
