@@ -36,13 +36,14 @@
 
   $.responsibles = {
     labels : {
-      platformResponsible : ''
+      platformResponsible : '',
+      sendMessage : ''
     },
     renderSpaceResponsibles : function(target, userId, spaceId) {
       __loadMissingPlugins(false);
       var data = __getResponsibles(true, spaceId);
       $(target).empty();
-      $(target).append(__prepareContent(userId, true, data.usersAndGroupsRoles));
+      __prepareContent($(target), userId, true, data.usersAndGroupsRoles);
       __loadUserZoomPlugins();
     },
     displaySpaceResponsibles : function(userId, spaceId) {
@@ -73,7 +74,7 @@
     }
     $display = $('<div>', {id : 'responsible-popup-content'}).css('display',
         'none').appendTo(document.body);
-    $display.append(__prepareContent(userId, isSpace, data.usersAndGroupsRoles));
+    __prepareContent($display, userId, isSpace, data.usersAndGroupsRoles);
     __loadUserZoomPlugins();
 
     // Popup
@@ -106,19 +107,25 @@
 
   /**
    * Prepares the content to display.
+   * @param $target
    * @param userId
    * @param isSpace
    * @param usersAndGroupsRoles
    * @private
    */
-  function __prepareContent(userId, isSpace, usersAndGroupsRoles) {
-    var $roles = $('<ul>');
+  function __prepareContent($target, userId, isSpace, usersAndGroupsRoles) {
+    var $newLine = null;
     $.each(['Manager', 'admin'], function(index, role) {
       var usersAndGroups = usersAndGroupsRoles[role];
       var dataOfUsers = __getAllDataOfUsers(usersAndGroups);
       if (dataOfUsers.length > 0) {
-        $roles.append($('<li>', {class : 'role'}).append(usersAndGroups.label));
-        __renderRoleResponsibles(userId, dataOfUsers).appendTo($roles);
+        $target.append($newLine);
+        if (isSpace) {
+          $target.append($('<h5>',
+              {class : 'textePetitBold title-list-responsible-user'}).append(usersAndGroups.label));
+        }
+        __prepareRoleResponsibles($target, userId, dataOfUsers);
+        $newLine = $('<br/>');
       }
     });
     if (isSpace) {
@@ -133,37 +140,47 @@
         });
       });
       if (administrators.length > 0) {
-        $roles.append($('<li>',
-            {class : 'role'}).append($.responsibles.labels.platformResponsible));
-        __renderRoleResponsibles(userId, administrators).appendTo($roles);
+        $target.append($newLine);
+        $target.append($('<h5>',
+            {class : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+        __prepareRoleResponsibles($target, userId, administrators);
+        $newLine = $('<br/>');
       }
     }
-    return $('<div>', {class : 'responsibles-roles'}).append($roles);
   }
 
   /**
-   * Render role responsibles.
+   * Prepare role responsibles.
+   * @param $target
    * @param userId
    * @param dataOfUsers
-   * @returns {null}
    * @private
    */
-  function __renderRoleResponsibles(userId, dataOfUsers) {
-    var $users = null;
-    if (dataOfUsers.length > 0) {
-      $users = $('<ul>', {class : 'users'});
+  function __prepareRoleResponsibles($target, userId, dataOfUsers) {
+    if ($.isArray(dataOfUsers) && dataOfUsers.length > 0) {
+      var $users = $('<ul>', {class : 'list-responsible-user'});
       $.each(dataOfUsers, function(index, user) {
         var $user = $('<span>').append(' ' + user.fullName);
         if (userId !== user.id && !user.anonymous) {
           $user.addClass('userToZoom');
           $user.attr('rel', user.id);
         }
-        $users.append($('<li>', {class : 'user'}).append($('<div>',
-                {class : 'avatar'}).append($('<img>', {src : user.avatar}))).append($('<div>',
-                {class : 'user-identity'}).append($user)));
+        var $photoProfil = $('<div>', {class : 'profilPhoto'}).append($('<a>').append($('<img>',
+            {class : 'avatar', src : user.avatar})));
+        var $userName = $('<div>', {class : 'userName'});
+        var $action = null;
+        if (userId !== user.id && !user.anonymous) {
+          $userName.append($('<a>', {class : 'userToZoom', rel : user.id}).append(user.fullName));
+          $action = $('<div>', {class : 'action'}).append($('<a>',
+              {href : '#', class : 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
+        } else {
+          $userName.append($('<a>').append(user.fullName));
+        }
+        $users.append($('<li>', {class : 'intfdcolor'}).append($('<div>',
+            {class : 'content'}).append($photoProfil).append($userName).append($action)));
       });
+      $target.append($users);
     }
-    return $users;
   }
 
   /**
@@ -239,6 +256,13 @@
         dataType : "script"
       });
     }
+    if (!$.messageMe) {
+      $.ajax({
+        url : webContext + "/util/javaScript/silverpeas-messageme.js",
+        async : false,
+        dataType : "script"
+      });
+    }
   }
 
   /**
@@ -247,10 +271,6 @@
   function __loadUserZoomPlugins() {
     $.ajax({
       url : webContext + "/util/javaScript/silverpeas-invitme.js",
-      dataType : "script"
-    });
-    $.ajax({
-      url : webContext + "/util/javaScript/silverpeas-messageme.js",
       dataType : "script"
     });
     $.ajax({

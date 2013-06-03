@@ -151,7 +151,7 @@
  </portlet>
 
   <portlet>
-    <description>Responsables(s) de l'espace</description>
+    <description>Responsables de l'espace</description>
     <portlet-name>SpaceResponsiblesPortlet</portlet-name>
     <display-name>SpaceResponsiblesPortlet</display-name>
     <portlet-class>com.silverpeas.portlets.SpaceResponsiblesPortlet</portlet-class>

@@ -328,13 +328,6 @@ public class SPDesktopServlet extends HttpServlet {
         PortletWindowData portletWindowData =
             getPortletWindowDataObject(request, portletContent, portletRegistryContext, spContext);
 
-        // If the user is on its personal space, SpaceResponsiblesPortlet is not displayed
-        String spaceId = request.getParameter("SpaceId");
-        if ((StringUtil.isNotDefined(spaceId) || SpaceInst.PERSONAL_SPACE_ID.equals(spaceId)) &&
-            "silverpeas.SpaceResponsiblesPortlet".equals(portletWindowData.getPortletName())) {
-          continue;
-        }
-
         if (portletWindowData.isThin()) {
           portletWindowContentsThin.add(portletWindowData);
         } else if (portletWindowData.isThick()) {
@@ -488,6 +481,7 @@ public class SPDesktopServlet extends HttpServlet {
       String spContext) throws PortletRegistryException {
     PortletWindowDataImpl portletWindowData = new PortletWindowDataImpl();
     portletWindowData.init(request, portletRegistryContext, portletContent.getPortletWindowName());
+
     if (!portletContent.isInMinimizedWindowState()) {
       portletWindowData.setContent(portletContent.getContent());
     }
@@ -504,6 +498,13 @@ public class SPDesktopServlet extends HttpServlet {
       portletWindowData.setRole(null);
     } else {
       portletWindowData.setRole("admin");
+    }
+
+    // If the user is on its personal space, SpaceResponsiblesPortlet is not displayed
+    String spaceId = request.getParameter("SpaceId");
+    if ("silverpeas.SpaceResponsiblesPortlet".equals(portletWindowData.getPortletName()) &&
+        (StringUtil.isNotDefined(spaceId) || SpaceInst.PERSONAL_SPACE_ID.equals(spaceId))) {
+      portletWindowData.setDisplayed(false);
     }
 
     return portletWindowData;

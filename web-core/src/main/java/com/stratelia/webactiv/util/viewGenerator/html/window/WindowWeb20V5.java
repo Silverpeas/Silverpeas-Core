@@ -58,13 +58,13 @@ public class WindowWeb20V5 extends AbstractWindow {
         final String label;
         final String action;
         if (OperationPaneType.space.equals(getOperationPane().getType())) {
-          label = GeneralPropertiesManager.getString("GML.space.responsibles", "Responsable(s)")
+          label = GeneralPropertiesManager.getString("GML.space.responsibles", "Responsables")
               .replaceAll("''", "'");
           action = "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
               "','" +
               getGEF().getSpaceId() + "')";
         } else {
-          label = GeneralPropertiesManager.getString("GML.component.responsibles", "Responsable(s)")
+          label = GeneralPropertiesManager.getString("GML.component.responsibles", "Responsables")
               .replaceAll("''", "'");
           action =
               "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +

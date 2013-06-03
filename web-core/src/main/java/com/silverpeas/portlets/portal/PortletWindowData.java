@@ -39,6 +39,8 @@ public interface PortletWindowData {
       PortletRegistryContext portletRegistryContext, String portletWindowName)
       throws PortletRegistryException;
 
+  public boolean isDisplayed();
+
   public String getPortletName();
 
   public String getPortletWindowName();

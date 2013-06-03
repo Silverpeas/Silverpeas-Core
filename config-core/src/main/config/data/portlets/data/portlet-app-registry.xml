@@ -37,9 +37,9 @@
         <String value="text/html"/>
       </Collection>
       <Collection name="displayNameMap">
-        <String name="fr" value="Responsables(s) de l'espace"/>
-        <String name="en" value="Responsible(s) for application"/>
-        <String name="de" value="Responsible(s) for application"/>
+        <String name="fr" value="Responsables de l'espace"/>
+        <String name="en" value="Responsibles for application"/>
+        <String name="de" value="Responsibles for application"/>
       </Collection>
       <Collection name="descriptionMap">
         <String name="fr" value="SpaceResponsiblesPortlet"/>

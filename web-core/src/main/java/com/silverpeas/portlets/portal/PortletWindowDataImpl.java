@@ -46,6 +46,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
   private String portletName;
   private String title;
   private CharSequence content;
+  private boolean displayed;
   private boolean view;
   private boolean edit;
   private boolean help;
@@ -69,6 +70,7 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
     setPortletName(thePortletName);
     setPortletWindowName(portletWindowName);
     setRequestURL(request.getRequestURL());
+    setDisplayed(true);
     setView(portletRegistryContext.hasView(thePortletName));
     setEdit(portletRegistryContext.hasEdit(thePortletName));
     setHelp(portletRegistryContext.hasHelp(thePortletName));
@@ -119,6 +121,15 @@ public class PortletWindowDataImpl implements PortletWindowData, Comparable, Ser
 
   public void setContent(CharSequence content) {
     this.content = content;
+  }
+
+  @Override
+  public boolean isDisplayed() {
+    return displayed;
+  }
+
+  public void setDisplayed(final boolean displayed) {
+    this.displayed = displayed;
   }
 
   @Override

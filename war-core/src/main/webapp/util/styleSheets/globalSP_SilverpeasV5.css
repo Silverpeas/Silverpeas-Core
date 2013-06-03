@@ -5387,7 +5387,7 @@ input.search:focus {
 /** created action bar **/
 /*******************************/
 #menubar-creation-actions {
-	display: none;	
+	display: none;
 }
 
 #menubar-creation-actions,
@@ -5679,44 +5679,83 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 /*******************************/
-/** Responsibles **/
+/**       Responsibles        **/
 /*******************************/
 
-.responsibles-roles {
+#responsible-popup-content {
   max-width: 750px;
+  max-height: 400px;
 }
 
-.responsibles-roles ul {
+.list-responsible-user {
+  margin: 0;
+  padding: 0;
   list-style-type: none;
-}
-
-.responsibles-roles .role {
-  font-weight: bold;
-  font-size: 10pt;
-  margin-bottom: 5px;
-}
-
-.responsibles-roles .user {
-  width: 200px;
   display: inline-block;
-  margin-right: 10px;
-  margin-bottom: 5px;
+  width: 100%
 }
 
-.responsibles-roles .user div {
-  display: table-cell;
+.list-responsible-user li {
+  float: left;
+  width: 31.5%;
+  min-width: 225px;
+  *width: 225px;
+  border: 1px solid #cfcfcf;
+  position: relative;
+  padding: 0;
+  margin: 0 1.5% 1.5% 0;
+  height: 56px;
+  background-color: #FFF;
 }
 
-.responsibles-roles .user .avatar {
-  padding-right: 5px;
-  vertical-align: middle;
+.list-responsible-user li div.content {
+  padding: 0 0 0 50px;
 }
 
-.responsibles-roles .user .avatar img {
-  width: 50px;
-  height: auto;
+.list-responsible-user .profilPhoto {
+  width: 40px;
+  height: 50px;
+  background-color: #FFF;
+  text-align: center;
+  border: 1px solid #cfcfcf;
+  position: absolute;
+  top: 2px;
+  left: 2px;
 }
 
-.responsibles-roles .user .user-identity {
-  vertical-align: middle;
+.list-responsible-user .profilPhoto img {
+  width: auto;
+  height: 50px;
+}
+
+.list-responsible-user .userName {
+  padding-top: 4px;
+}
+
+.list-responsible-user .userName a,
+#portletPages .list-responsible-user .userName a {
+  font-size: 14px;
+  color: #333333;
+  font-weight: bold;
+  line-height: 12px;
+  white-space: normal;
+}
+
+.list-responsible-user .action {
+  position: absolute;
+  bottom: 0px;
+  left: 50px;
+}
+
+#portletPages .list-responsible-user .action a,
+.list-responsible-user .action a {
+  color: #333366
+}
+
+.title-list-responsible-user {
+  border-bottom: 1px solid #cfcfcf;
+  padding: 0 0 0.5em 0;
+  margin: 0 0 1em 0;
+  text-align: center;
+  display: table;
 }
