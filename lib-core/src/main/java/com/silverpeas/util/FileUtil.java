@@ -20,6 +20,21 @@
  */
 package com.silverpeas.util;
 
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.exec.util.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.util.mail.Mail;
+
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -34,24 +49,6 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-
-import javax.activation.MimetypesFileTypeMap;
-
-import org.silverpeas.util.mail.Mail;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-
-import org.apache.commons.exec.util.StringUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 
 public class FileUtil implements MimeTypes {
 
@@ -445,5 +442,12 @@ public class FileUtil implements MimeTypes {
     path = path.replaceAll("\\&", "\\\\&");
     path = path.replaceAll("\\|", "\\\\|");
     return path;
+  }
+
+  public static boolean deleteEmptyDir(File directory) {
+    if(directory.exists() && directory.isDirectory() && directory.list() != null && directory.list().length == 0) {
+      return directory.delete();
+    }
+    return false;
   }
 }

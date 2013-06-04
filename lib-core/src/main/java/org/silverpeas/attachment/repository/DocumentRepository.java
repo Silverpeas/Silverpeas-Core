@@ -23,16 +23,22 @@
  */
 package org.silverpeas.attachment.repository;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.silverpeas.jcrutil.BasicDaoFactory;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import org.apache.commons.io.FileUtils;
+import org.silverpeas.attachment.model.DocumentType;
+import org.silverpeas.attachment.model.HistorisedDocument;
+import org.silverpeas.attachment.model.SimpleAttachment;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.util.jcr.NodeIterable;
+import org.silverpeas.util.jcr.PropertyIterable;
 
 import javax.inject.Named;
 import javax.jcr.ItemNotFoundException;
@@ -54,25 +60,16 @@ import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 import javax.jcr.version.VersionIterator;
 import javax.jcr.version.VersionManager;
-
-import org.silverpeas.attachment.model.DocumentType;
-import org.silverpeas.attachment.model.HistorisedDocument;
-import org.silverpeas.attachment.model.SimpleAttachment;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.util.jcr.NodeIterable;
-import org.silverpeas.util.jcr.PropertyIterable;
-
-import com.silverpeas.jcrutil.BasicDaoFactory;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-
-import org.apache.commons.io.FileUtils;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
@@ -1080,11 +1077,12 @@ public class DocumentRepository {
     }
     if (!source.equals(target)) {
       FileUtils.moveDirectory(source, target);
+      FileUtil.deleteEmptyDir(source.getParentFile());
     }
   }
 
   public void mergeAttachment(Session session, SimpleDocument attachment, SimpleDocument clone)
-      throws ItemNotFoundException, RepositoryException {
+      throws RepositoryException {
     Node originalNode = session.getNodeByIdentifier(attachment.getId());
     Set<String> existingAttachements = new HashSet<String>(I18NHelper.getNumberOfLanguages());
     for (Node child : new NodeIterable(originalNode.getNodes())) {
