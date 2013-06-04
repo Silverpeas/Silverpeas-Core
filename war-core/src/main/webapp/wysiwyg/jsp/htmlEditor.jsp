@@ -80,7 +80,6 @@ String specificURL = "";		//For Websites only
 
 String wysiwygTextValue = "";
 String context = URLManager.getApplicationURL();
-String imagesContext = "";
 String userId = "";
 String exit = "";
 String indexIt = "";
@@ -148,7 +147,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
               collectionImages.length);
     } else {
       SilverTrace.debug("wysiwyg", "Wysiwyg.htmlEditorJSP", "objectId=" + objectId);
-      collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
+      collectionImages = WysiwygController.getImages(objectId, componentId);
     }
   }
   if("SaveHtmlAndExit".equals(actionWysiwyg)) {
@@ -212,8 +211,7 @@ if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) |
             collectionImages.length);
     specificURL = "/website/" + componentId + "/" + objectId + "/";
   } else {
-    imagesContext = WysiwygController.getImagesFileName(objectId);
-    collectionImages = WysiwygController.searchAllAttachments(objectId, componentId);
+    collectionImages = WysiwygController.getImages(objectId, componentId);
   }
   session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 

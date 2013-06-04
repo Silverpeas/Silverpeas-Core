@@ -1,0 +1,10 @@
+<p>
+	Test avec des accents &eacute; &amp; &egrave;</p>
+<p>
+	1ere image ajout&eacute;e <img alt="" height="84" src="/silverpeas/attached_file/componentId/kmelia1/attachmentId/f2eb803f-cb46-4988-b89d-045c4e846da4/lang/fr/name/JavaDukeFY13_Adventurer_full_clr.png" width="84" /></p>
+<p>
+	&nbsp;</p>
+<p>
+	&nbsp;</p>
+<p>
+	2&egrave;me image : <img alt="" src="/silverpeas/attached_file/componentId/kmelia1/attachmentId/359d2924-b6c6-461c-a459-2eef38f12c3c/lang/fr/name/silverpeas.png" style="width: 147px; height: 93px;" /></p>

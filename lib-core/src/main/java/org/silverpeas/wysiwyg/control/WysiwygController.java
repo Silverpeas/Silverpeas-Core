@@ -20,22 +20,18 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -49,17 +45,24 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.WysiwygException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 
 /**
  * Central service to manage Wysiwyg.
@@ -111,16 +114,16 @@ public class WysiwygController {
   }
 
   /**
-   * Turn over all the files attached according to the parameters id, componentId, context.
+   * Turn over all the images attached according to the parameters id, componentId.
    *
    * @param id the id of the object to which this wysiwyg is attached.
    * @param componentId the id of component.
    * @return imagesList a table of string[N][2] with in logical index [N][0] = path name [N][1] =
    * logical name of the file.
    */
-  public static String[][] searchAllAttachments(String id, String componentId) {
+  public static String[][] getImages(String id, String componentId) {
     List<SimpleDocument> attachments = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKey(new ForeignPK(id, componentId), null);
+        listDocumentsByForeignKeyAndType(new ForeignPK(id, componentId), DocumentType.image, null);
     int nbImages = attachments.size();
     String[][] imagesList = new String[nbImages][2];
     for (int i = 0; i < nbImages; i++) {
@@ -128,7 +131,7 @@ public class WysiwygController {
       String path = attD.getAttachmentPath();
       imagesList[i][0] = path;
       imagesList[i][1] = attD.getFilename();
-      SilverTrace.info("wysiwyg", "WysiwygController.searchAllAttachments()",
+      SilverTrace.info("wysiwyg", "WysiwygController.getImages()",
           "root.MSG_GEN_PARAM_VALUE", imagesList[i][0] + "] [" + imagesList[i][1]);
     }
     return imagesList;
@@ -409,18 +412,20 @@ public class WysiwygController {
    * Creation of the file and its attachment.
    *
    * @param textHtml String : contains the text published by the wysiwyg.
-   * @param foreignKey  the id of object to which is attached the wysiwyg.
+   * @param foreignKey the id of object to which is attached the wysiwyg.
    * @param context the context images/wysiwyg....
    * @param userId the user creating the wysiwyg.
    * @param contentLanguage the language of the content of the wysiwyg.
    */
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String context, String userId, String contentLanguage) {
-    createFileAndAttachment(textHtml, foreignKey, context, userId, contentLanguage, true, true);
+    createFileAndAttachment(textHtml, foreignKey, DocumentType.valueOf(context), userId,
+        contentLanguage, true, true);
   }
 
   private static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
-      String context, String userId, String contentLanguage, boolean indexIt, boolean invokeCallback) {
+      DocumentType context, String userId, String contentLanguage, boolean indexIt,
+      boolean invokeCallback) {
     String fileName = getWysiwygFileName(foreignKey.getId(), contentLanguage);
     if (!StringUtil.isDefined(textHtml)) {
       return;
@@ -434,12 +439,13 @@ public class WysiwygController {
     SimpleDocument document = new SimpleDocument(docPk, foreignKey.getId(), 0, false, userId,
         new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
         MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
-    document.setDocumentType(DocumentType.valueOf(context));
+    document.setDocumentType(context);
     AttachmentServiceFactory.getAttachmentService().createAttachment(document,
         new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, invokeCallback);
     if (invokeCallback) {
       CallBackManager callBackManager = CallBackManager.get();
-      callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, foreignKey.getInstanceId(), foreignKey.getId());
+      callBackManager.invoke(CallBackManager.ACTION_ON_WYSIWYG, iUserId, foreignKey.getInstanceId(),
+          foreignKey.getId());
     }
     AttachmentServiceFactory.getAttachmentService().unlock(new UnlockContext(document.getId(),
         userId, document.getLanguage()));
@@ -450,7 +456,7 @@ public class WysiwygController {
    *
    *
    * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey  the id of object to which is attached the wysiwyg.
+   * @param foreignKey the id of object to which is attached the wysiwyg.
    * @param userId the author of the content.
    * @param contentLanguage the language of the content.
    */
@@ -476,11 +482,11 @@ public class WysiwygController {
    *
    *
    * @param textHtml
-   * @param foreignKey  the id of object to which is attached the wysiwyg.
+   * @param foreignKey the id of object to which is attached the wysiwyg.
    * @param context
    * @param userId
    */
-  private static void saveFile(String textHtml, WAPrimaryKey foreignKey, String context,
+  private static void saveFile(String textHtml, WAPrimaryKey foreignKey, DocumentType context,
       String userId, String language, boolean indexIt) {
     String fileName = getWysiwygFileName(foreignKey.getId(), language);
     SilverTrace.info("wysiwyg", "WysiwygController.updateFileAndAttachment()",
@@ -490,7 +496,7 @@ public class WysiwygController {
     if (document != null) {
       document.setLanguage(I18NHelper.checkLanguage(language));
       document.setSize(textHtml.getBytes(Charsets.UTF_8).length);
-      document.setDocumentType(DocumentType.valueOf(context));
+      document.setDocumentType(context);
       AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
           new ByteArrayInputStream(textHtml.getBytes(Charsets.UTF_8)), indexIt, true);
     } else {
@@ -513,12 +519,14 @@ public class WysiwygController {
 
   public static void updateFileAndAttachment(String textHtml, String componentId,
       String objectId, String userId, String language, boolean indexIt) {
-    saveFile(textHtml, new ForeignPK(objectId, componentId), WYSIWYG_CONTEXT, userId, language, indexIt);
+    saveFile(textHtml, new ForeignPK(objectId, componentId), DocumentType.wysiwyg, userId, language,
+        indexIt);
   }
 
   public static void save(String textHtml, String componentId, String objectId, String userId,
       String language, boolean indexIt) {
-    saveFile(textHtml,  new ForeignPK(objectId, componentId), WYSIWYG_CONTEXT, userId, language, indexIt);
+    saveFile(textHtml, new ForeignPK(objectId, componentId), DocumentType.wysiwyg, userId, language,
+        indexIt);
   }
 
   /**
@@ -554,11 +562,16 @@ public class WysiwygController {
   public static void deleteWysiwygAttachmentsOnly(String spaceId, String componentId,
       String objectId) throws WysiwygException {
     try {
+      ForeignPK foreignKey = new ForeignPK(objectId, componentId);
       List<SimpleDocument> docs = AttachmentServiceFactory.getAttachmentService().
-          listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId),
-          DocumentType.wysiwyg, null);
+          listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
       for (SimpleDocument wysiwygAttachment : docs) {
         AttachmentServiceFactory.getAttachmentService().deleteAttachment(wysiwygAttachment);
+      }
+      docs = AttachmentServiceFactory.getAttachmentService().listDocumentsByForeignKeyAndType(
+          foreignKey, DocumentType.image, null);
+      for (SimpleDocument document : docs) {
+        AttachmentServiceFactory.getAttachmentService().deleteAttachment(document);
       }
     } catch (Exception exc) {
       throw new WysiwygException("WysiwygController.deleteWysiwygAttachments()",
@@ -574,8 +587,8 @@ public class WysiwygController {
    * @param lang
    * @return
    */
-  public static String loadFileAndAttachment(ForeignPK foreignPk, String context, String lang) {
-    SimpleDocument document = searchAttachmentDetail(foreignPk, context, lang)  ;
+  public static String loadFileAndAttachment(ForeignPK foreignPk, DocumentType context, String lang) {
+    SimpleDocument document = searchAttachmentDetail(foreignPk, context, lang);
     if (document != null) {
       return loadContent(document, lang);
     }
@@ -583,9 +596,13 @@ public class WysiwygController {
   }
 
   public static String loadContent(SimpleDocument doc, String lang) {
+    return loadContent(doc.getPk(), lang);
+  }
+
+  private static String loadContent(SimpleDocumentPK pk, String lang) {
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     try {
-      AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, doc.getPk(), lang);
+      AttachmentServiceFactory.getAttachmentService().getBinaryContent(buffer, pk, lang);
       return new String(buffer.toByteArray(), Charsets.UTF_8);
     } finally {
       IOUtils.closeQuietly(buffer);
@@ -602,8 +619,8 @@ public class WysiwygController {
    */
   public static String load(String componentId, String objectId, String language) {
     String currentLanguage = I18NHelper.checkLanguage(language);
-    String content = loadFileAndAttachment(new ForeignPK(objectId, componentId), WYSIWYG_CONTEXT,
-        currentLanguage);
+    String content = loadFileAndAttachment(new ForeignPK(objectId, componentId),
+        DocumentType.wysiwyg, currentLanguage);
     if (!StringUtil.isDefined(content)) {
       try {
         content = loadFromFileSystemDirectly(new ForeignPK(objectId, componentId), currentLanguage);
@@ -624,8 +641,7 @@ public class WysiwygController {
    * @return
    * @throws WysiwygException
    */
-  public static List<String> getEmbeddedAttachmentIds(String content)
-      throws WysiwygException {
+  public static List<String> getEmbeddedAttachmentIds(String content) {
     List<String> attachmentIds = new ArrayList<String>();
 
     if (content != null) {
@@ -686,18 +702,18 @@ public class WysiwygController {
   }
 
   /**
-   * Search all file attached by primary key of customer object and context of
-   * file attached
+   * Search all file attached by primary key of customer object and context of file attached
    *
    * @param foreignKey the id of the attached object.
    * @param context String : for example wysiwyg.
    * @return SimpleDocument
    */
-  private static SimpleDocument searchAttachmentDetail(WAPrimaryKey foreignKey, String context, String lang) {
+  private static SimpleDocument searchAttachmentDetail(WAPrimaryKey foreignKey, DocumentType context,
+      String lang) {
     String language = I18NHelper.checkLanguage(lang);
     List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignKey, DocumentType.valueOf(context), language);
-    if(!documents.isEmpty()) {
+        .listDocumentsByForeignKeyAndType(foreignKey, context, language);
+    if (!documents.isEmpty()) {
       return documents.get(0);
     }
     return null;
@@ -756,13 +772,33 @@ public class WysiwygController {
     ForeignPK targetPk = new ForeignPK(objectId, componentId);
     for (SimpleDocument doc : documents) {
       doc.getFile().setCreatedBy(userId);
-      AttachmentServiceFactory.getAttachmentService().copyDocument(doc, targetPk);
+      SimpleDocumentPK pk = AttachmentServiceFactory.getAttachmentService().copyDocument(doc,
+          targetPk);
+      SimpleDocument copy = AttachmentServiceFactory.getAttachmentService().searchDocumentById(pk,
+          doc.getLanguage());
+      String content = replaceInternalImagesPath(loadContent(copy, doc.getLanguage()),
+          oldComponentId, oldObjectId, componentId, objectId);
+
+      List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
+          listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
+      for (SimpleDocument image : images) {
+        SimpleDocumentPK imageCopyPk = AttachmentServiceFactory.getAttachmentService().copyDocument(
+            image, targetPk);
+        content = replaceInternalImageId(content, image.getPk(), imageCopyPk);
+      }
+      AttachmentServiceFactory.getAttachmentService().updateAttachment(copy,
+          new ByteArrayInputStream(content.getBytes(Charsets.UTF_8)), true, true);
     }
-    List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
-        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
-    for (SimpleDocument image : images) {
-      AttachmentServiceFactory.getAttachmentService().copyDocument(image, targetPk);
-    }
+
+  }
+
+  static String replaceInternalImageId(String wysiwygContent, SimpleDocumentPK oldPK,
+      SimpleDocumentPK newPK) {
+    String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
+    String fromOldId = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK
+        .getOldSilverpeasId() + "/";
+    String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
+    return wysiwygContent.replaceAll(from, to).replaceAll(fromOldId, to);
   }
 
   /**
@@ -858,15 +894,29 @@ public class WysiwygController {
   }
 
   public static void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
-      String newComponentId, String newObjectId) throws WysiwygException {
-    for (String language : I18NHelper.getAllSupportedLanguages()) {
-      String wysiwyg = load(newComponentId, newObjectId, language);
-      if (StringUtil.isDefined(wysiwyg)) {
-        wysiwyg = replaceInternalImagesPath(wysiwyg, oldComponentId, oldObjectId, newComponentId,
-            newObjectId);
-        // overwrite
-        createFile(createPath(newComponentId, WYSIWYG_CONTEXT), getWysiwygFileName(newObjectId,
-            language), wysiwyg);
+      String newComponentId, String newObjectId) {
+    ForeignPK foreignKey = new ForeignPK(oldObjectId, newComponentId);
+    List<SimpleDocument> documents = AttachmentServiceFactory.getAttachmentService().
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
+    if (documents != null && !documents.isEmpty()) {
+      for (SimpleDocument document : documents) {
+        for (String language : I18NHelper.getAllSupportedLanguages()) {
+          String wysiwyg = load(newComponentId, newObjectId, language);
+          if (StringUtil.isDefined(wysiwyg)) {
+            List<SimpleDocument> images = AttachmentServiceFactory.getAttachmentService().
+                listDocumentsByForeignKeyAndType(foreignKey, DocumentType.image, null);
+            for (SimpleDocument image : images) {
+              wysiwyg = replaceInternalImagesPath(wysiwyg, oldComponentId, oldObjectId,
+                  newComponentId, newObjectId);
+              image.getPk().setComponentName(oldComponentId);
+              SimpleDocumentPK imageCopyPk = new SimpleDocumentPK(image.getId(), newComponentId);
+              imageCopyPk.setOldSilverpeasId(image.getOldSilverpeasId());
+              wysiwyg = replaceInternalImageId(wysiwyg, image.getPk(), imageCopyPk);
+            }
+            AttachmentServiceFactory.getAttachmentService().updateAttachment(document,
+                new ByteArrayInputStream(wysiwyg.getBytes(Charsets.UTF_8)), true, true);
+          }
+        }
       }
     }
   }
@@ -887,8 +937,8 @@ public class WysiwygController {
 
   public static List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
-    OrganisationController orgaController =
-        OrganisationControllerFactory.getOrganisationController();
+    OrganisationController orgaController = OrganisationControllerFactory
+        .getOrganisationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (String compoId : compoIds) {
       if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
@@ -910,7 +960,7 @@ public class WysiwygController {
   public static List<ComponentInstLight> getStorageFile(String userId) {
     // instiate all needed objects
     List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
-    OrganisationController controller =  OrganisationControllerFactory.getOrganisationController();
+    OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
     // gets all kmelia components
     String[] compoIds = controller.getCompoId("kmelia");
     for (String compoId : compoIds) {
@@ -934,8 +984,7 @@ public class WysiwygController {
     for (String attachmentId : embeddedAttachmentIds) {
       try {
         SimpleDocument attachment = AttachmentServiceFactory.getAttachmentService().
-            searchDocumentById(
-            new SimpleDocumentPK(attachmentId), null);
+            searchDocumentById(new SimpleDocumentPK(attachmentId), null);
         if (attachment != null) {
           indexEntry.addLinkedFileContent(attachment.getAttachmentPath(), CharEncoding.UTF_8,
               attachment.getContentType(), attachment.getLanguage());
@@ -965,9 +1014,8 @@ public class WysiwygController {
         FileFolderManager.createFolder(path);
       }
       return path;
-    } catch (Exception e) {
-      throw new AttachmentException(
-          "Wysiwyg.createPath(String spaceId, String componentId, String context)",
+    } catch (UtilException e) {
+      throw new AttachmentException("Wysiwyg.createPath(spaceId, componentId, context)",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
     }
   }

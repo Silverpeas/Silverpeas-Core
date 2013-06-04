@@ -48,6 +48,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
   private boolean viewable = false;
   private boolean previewable = false;
   private String attachmentId = null;
+  private String attachmentFilename = null;
   private boolean versioned = false;
   private boolean selected = false;
   private MatchingIndexEntry indexEntry = null;
@@ -83,6 +84,7 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
     super.setScore(mie.getScore());
     this.embeddedFileIds = mie.getEmbeddedFileIds();
     this.formFieldsForFacets = mie.getXMLFormFieldsForFacets();
+    this.attachmentFilename = mie.getFilename();
 
     if (mie.getThumbnail() != null) {
       File image;
@@ -251,6 +253,10 @@ public class GlobalSilverResult extends GlobalSilverContent implements java.io.S
 
   public String getAttachmentId() {
     return attachmentId;
+  }
+  
+  public String getAttachmentFilename() {
+    return attachmentFilename;
   }
 
   public void setVersioned(boolean versioned) {

@@ -60,7 +60,7 @@
       ComponentContext componentContext = mainSessionCtrl.createComponentContext(null, componentId);
       VersioningSessionController component = new VersioningSessionController(mainSessionCtrl, componentContext);
       session.setAttribute("Silverpeas_versioningPeas", component);
-    versioningSC = component;
+      versioningSC = component;
     }
   versioningSC.setProfile(request.getParameter("profile"));
   %>
@@ -676,20 +676,25 @@
         $.ajax({
           url: translationsUrl,
           type: "GET",
+          async: false,
           cache: false,
           success: function(data) {
-        	if (data.length > 1) {
-        	  $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
-	          for(var i = 0 ; i < data.length; i++) {
-	            $("#delete-language-" + data[i].lang).show();
-	          }
-	          $("#attachment-delete-select-lang").show();
-	          $("#button-delete-all").show();
-        	} else {
-        	  $("#attachment-delete-select-lang").hide();
-           	  $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
-           	  $("#button-delete-all").hide();
-        	}
+            if (data.length > 1) {
+              $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionWhichTranslations" />');
+              for(var i = 0 ; i < data.length; i++) {
+                $("#delete-language-" + data[i].lang).show();
+              }
+              $("#attachment-delete-select-lang").show();
+              $("#button-delete-all").show();
+            } else {
+              $("#attachment-delete-select-lang").hide();
+              $("#attachment-delete-warning-message").html('<fmt:message key="attachment.suppressionConfirmation" /> <b>' + filename + '</b> ?');
+              $("#button-delete-content").hide();
+              $("#button-delete-all").show();
+            }
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
           }
         });</c:if>
       },
@@ -698,46 +703,59 @@
       width: 400,
       modal: true,
       buttons: {
-        '<fmt:message key="GML.delete"/>': function() {
-          var attachmentId = $(this).data("id");
-      <c:choose>
-        <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">      
-          $("input[name='languagesToDelete']").filter(':checked').each(function() {
-            deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
-            $.ajax({
-              url: deleteUrl,
-              type: "DELETE",
-              cache: false,
-              async: false,
-              success: function(data) {}
-            });
-          });
-          reloadIncludingPage();
-          $("#dialog-attachment-delete").dialog("close");
-        </c:when>
-          <c:otherwise>
-              deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
-              $.ajax({
-                url: deleteUrl,
-                type: "DELETE",
-                cache: false,
-                success: function(data) {
-                  reloadIncludingPage();
-                  $(this).dialog("close");
-                }
-              });
-            </c:otherwise>
-          </c:choose>
+        '<fmt:message key="GML.delete"/>': {
+        	id: "button-delete-content",
+        	text: "<fmt:message key="GML.delete"/>",
+        	click: function() {
+            var attachmentId = $(this).data("id");
+            <c:choose>
+              <c:when test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
+                $("input[name='languagesToDelete']").filter(':checked').each(function() {
+                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId + '/content/' + this.value;
+                  $.ajax({
+                    url: deleteUrl,
+                    type: "DELETE",
+                    cache: false,
+                    async: false,
+                    success: function(data) {},
+                    error: function(jqXHR, textStatus, errorThrown) {
+                      alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+                    }
+                  });
+                });
+                reloadIncludingPage();
+                $("#dialog-attachment-delete").dialog("close");
+              </c:when>
+              <c:otherwise>
+                  deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
+                  $.ajax({
+                    url: deleteUrl,
+                    type: "DELETE",
+                    cache: false,
+                    async: false,
+                    success: function(data) {
+                      reloadIncludingPage();
+                      $(this).dialog("close");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                      alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+                    }
+                  });
+                </c:otherwise>
+              </c:choose>
+           }
         },
         '<fmt:message key="attachment.dialog.button.deleteAll"/>': {
         	id: "button-delete-all",
         	text: "<fmt:message key="attachment.dialog.button.deleteAll"/>",
         	click: function() {
+            var attachmentId = $(this).data("id");
         		deleteUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + attachmentId;
                 $.ajax({
                   url: deleteUrl,
                   type: "DELETE",
                   cache: false,
+                  async: false,
                   success: function(data) {
                     reloadIncludingPage();
                     $(this).dialog("close");
@@ -751,7 +769,7 @@
       },
       close: function() {
       }
-    });      
+    });
 
       $("#dialog-attachment-add").dialog({
         autoOpen: false,
@@ -760,32 +778,34 @@
         width: 550,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() { 
+          '<fmt:message key="GML.ok"/>': function() {
               var filename =  $.trim( $("#file_create").val().split('\\').pop());
-              if( filename === '') { 
+              if( filename === '') {
                 return false;
               }
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/create"/>';
               submitUrl = submitUrl + '/' +encodeURI(filename);
+              $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#add-attachment-form")[0]);
                 $.ajax(submitUrl, {
-                processData: false,
-                contentType: false,
-                type: 'POST',
-                dataType: "json",
-                data: formData,
-                success:function(data) {
-                  reloadIncludingPage();
-                  $(this).dialog("close");
-                }
-              });
-            } else {              
-              $('#add-attachment-form').attr('action', submitUrl);
-              $('#add-attachment-form').submit();
-            }}, '<fmt:message key="GML.cancel"/>': function() {
+	                processData: false,
+	                contentType: false,
+	                type: 'POST',
+	                dataType: "json",
+	                data: formData,
+	                success:function(data) {
+	                  reloadIncludingPage();
+	                  $(this).dialog("close");
+	                }
+              	});
+              } else {
+                $('#add-attachment-form').attr('action', submitUrl);
+                $('#add-attachment-form').submit();
+              }},
+           '<fmt:message key="GML.cancel"/>': function() {
               $(this).dialog("close");
-            }
+           }
           }, close: function() {
           }
         });
@@ -797,14 +817,15 @@
         width: 550,
         modal: true,
         buttons: {
-          '<fmt:message key="GML.ok"/>': function() {              
+          '<fmt:message key="GML.ok"/>': function() {
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId');
               var filename =  $.trim( $("#file_upload").val().split('\\').pop());
-              if( filename !== '') { 
+              if( filename !== '') {
                 submitUrl = submitUrl + '/' +encodeURI(filename);
               } else {
-              submitUrl = submitUrl + '/no_file';
-              }  
+                submitUrl = submitUrl + '/no_file';
+              }
+              $.progressMessage();
               if ("FormData" in window) {
                 var formData = new FormData($("#update-attachment-form")[0]);
                 $.ajax(submitUrl, {
@@ -818,7 +839,7 @@
                   $(this).dialog("close");
                 }
               });
-            } else { 
+            } else {
               $('#update-attachment-form').attr('action', submitUrl);
               $('#update-attachment-form').submit();
             } },
@@ -856,7 +877,7 @@
           height: 'auto',
           width: 550
         });
-        
+
         function submitCheckin(submitUrl) {
           if ("FormData" in window) {
             var formData = new FormData($("#checkin-attachment-form")[0]);
@@ -866,12 +887,15 @@
               type: 'POST',
               dataType: "json",
               data: formData,
-              success:function(data) {     
+              success:function(data) {
                 reloadIncludingPage();
                 $(this).dialog("close");
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
               }
             });
-          } else {              
+          } else {
             $('#checkin-attachment-form').attr('action', submitUrl);
             $('#checkin-attachment-form').submit();
             reloadIncludingPage();
@@ -897,7 +921,7 @@
               $('#force').val('true');
               $('#webdav').val('false');
               var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
-              submitCheckin(submitUrl);              
+              submitCheckin(submitUrl);
             },
             '<fmt:message key="GML.cancel"/>': function() {
               clearCheckin();
@@ -963,7 +987,7 @@
     $('#checkin_oldId').val('');
     $('#force').val('false');
     $('#webdav').val('false');
-    $('#comment').val('false');   
+    $('#comment').val('false');
   }
 
   function loadAttachment(id, lang) {
@@ -1018,27 +1042,27 @@
 		    <span id="fileName" class="champ-ui-dialog"></span>
 		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
 		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
-		    
+
 			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
 		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
 		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
 		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
 		</c:when>
 		<c:otherwise>
-		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
-		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
-		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
-		    
-		    <label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
+			<label for="fileName" class="label-ui-dialog"><fmt:message key="attachment.version.actual" /></label>
+		    <span id="fileName" class="champ-ui-dialog"></span>
+
+		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="attachment.version.new" /></label>
+		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
+
+			<label for="fileTitle" class="label-ui-dialog"><fmt:message key="Title"/></label>
 		    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitle" /></span>
 		    <label for="fileDescription" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
 		    <span class="champ-ui-dialog"><textarea name="fileDescription" cols="60" rows="3" id="fileDescription"></textarea></span>
-		    
-		    <label for="fileName" class="label-ui-dialog"><fmt:message key="GML.file" /></label>
-		    <span id="fileName" class="champ-ui-dialog"></span>
-		    <label for="file_upload" class="label-ui-dialog"><fmt:message key="fichierJoint" /></label>
-		    <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_upload" /></span>
-		    
+
+		    <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
+		    <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="versionType" checked="checked"/><fmt:message key="attachment.version_public.label"/>
+		    <input value="1" type="radio" name="versionType" id="versionType"/><fmt:message key="attachment.version_wip.label"/></span>
 		    <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
 		    <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
 	    </c:otherwise>
@@ -1051,14 +1075,18 @@
   <form name="add-attachment-form" id="add-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8" target="iframe-post-form">
     <input type="hidden" name="foreignId" id="foreignId" value="<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />" />
     <input type="hidden" name="indexIt" id="indexIt" value="<c:out value="${indexIt}" />" />
-    
+
     <c:if test="${silfn:isI18n() && not isVersionActive && not view:booleanValue(param.notI18n)}">
       <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
       <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="langCreate" langCode="${contentLanguage}" includeLabel="false"/></span>
     </c:if>
-    
+
     <label for="file_create" class="label-ui-dialog"><fmt:message key="fichierJoint"/></label>
     <span class="champ-ui-dialog"><input type="file" name="file_upload" size="50" id="file_create" /></span>
+    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
+    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
+    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
+    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
     <c:if test="${isVersionActive}">
       <label for="versionType" class="label-ui-dialog"><fmt:message key="attachment.version.label"/></label>
       <span class="champ-ui-dialog"><input value="0" type="radio" name="versionType" id="typeVersionPublic" checked="checked"/><fmt:message key="attachment.version_public.label"/>
@@ -1066,10 +1094,6 @@
       <label for="commentMessage" class="label-ui-dialog"><fmt:message key="attachment.dialog.comment"/></label>
       <span class="champ-ui-dialog"><textarea name="commentMessage" cols="60" rows="3" id="commentMessage"></textarea></span>
     </c:if>
-    <label for="fileTitleCreate" class="label-ui-dialog"><fmt:message key="Title"/></label>
-    <span class="champ-ui-dialog"><input type="text" name="fileTitle" size="60" id="fileTitleCreate" /></span>
-    <label for="fileDescriptionCreate" class="label-ui-dialog"><fmt:message key="GML.description" /></label>
-    <span class="champ-ui-dialog"><textarea name="fileDescription" rows="3" id="fileDescriptionCreate"></textarea></span>
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
@@ -1107,3 +1131,5 @@
     <input type="submit" value="Submit" style="display:none" />
   </form>
 </div>
+
+<view:progressMessage/>

@@ -367,18 +367,20 @@ public class DocumentRepositoryTest {
       documentRepository.storeContent(docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      foreignId = "node25";
-      SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      String otherForeignId = "node25";
+      SimpleDocument docNode25_1
+          = new SimpleDocument(emptyId, otherForeignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode25_1);
       documentRepository.storeContent(docNode25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
-      SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      SimpleDocument docNode25_2
+          = new SimpleDocument(emptyId, otherForeignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode25_2);
       documentRepository.storeContent(docNode25_2, content);
       session.save();
       List<SimpleDocument> docs = documentRepository.listDocumentsByForeignId(session, instanceId,
-          "node18", "fr");
+          foreignId, "fr");
       assertThat(docs, is(notNullValue()));
       assertThat(docs.size(), is(2));
       assertThat(docs, containsInAnyOrder(docNode18_1, docNode18_2));
@@ -458,6 +460,7 @@ public class DocumentRepositoryTest {
       SimpleAttachment attachment = createEnglishSimpleAttachment();
       String foreignId = "node18";
       SimpleDocument docNode18_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      docNode18_1.setDocumentType(DocumentType.wysiwyg);
       documentRepository.createDocument(session, docNode18_1);
       documentRepository.storeContent(docNode18_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -467,18 +470,20 @@ public class DocumentRepositoryTest {
       documentRepository.storeContent(docNode18_2, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createEnglishSimpleAttachment();
-      foreignId = "node25";
-      SimpleDocument docNode25_1 = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      String otherForeignId = "node25";
+      SimpleDocument docNode25_1
+          = new SimpleDocument(emptyId, otherForeignId, 10, false, attachment);
       documentRepository.createDocument(session, docNode25_1);
       documentRepository.storeContent(docNode25_1, content);
       emptyId = new SimpleDocumentPK("-1", instanceId);
       attachment = createFrenchSimpleAttachment();
-      SimpleDocument docNode25_2 = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      SimpleDocument docNode25_2
+          = new SimpleDocument(emptyId, otherForeignId, 15, false, attachment);
       documentRepository.createDocument(session, docNode25_2);
       documentRepository.storeContent(docNode25_2, content);
       session.save();
       NodeIterator nodes = documentRepository.selectDocumentsByForeignId(session, instanceId,
-          "node18");
+          foreignId);
       assertThat(nodes, is(notNullValue()));
       assertThat(nodes.hasNext(), is(true));
       assertThat(nodes.nextNode().getIdentifier(), is(docNode18_1.getId()));

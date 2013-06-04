@@ -507,7 +507,7 @@ public class SimpleDocument implements Serializable {
     String versionDir = getMajorVersion() + "_" + getMinorVersion();
     String lang = language;
     if (!StringUtil.isDefined(lang)) {
-      lang = I18NHelper.defaultLanguage;
+      lang = defaultLanguage;
     }
     return directory + getNodeName() + separatorChar + versionDir + separatorChar + lang
         + separatorChar;
