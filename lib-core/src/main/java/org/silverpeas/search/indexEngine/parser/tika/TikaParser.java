@@ -21,18 +21,17 @@
  */
 package org.silverpeas.search.indexEngine.parser.tika;
 
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import org.apache.tika.Tika;
+
 import org.silverpeas.search.indexEngine.parser.Parser;
 
-/**
- *
- * @author ehugonnet
- */
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import org.apache.tika.Tika;
+
 public class TikaParser implements Parser {
 
   private final Tika tika = initTika();
