@@ -32,8 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import static com.silverpeas.pdc.web.PdcTestResources.JAVA_PACKAGE;
 import static com.silverpeas.pdc.web.PdcTestResources.SPRING_CONTEXT;

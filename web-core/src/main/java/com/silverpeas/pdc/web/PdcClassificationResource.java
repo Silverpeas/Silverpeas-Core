@@ -63,7 +63,7 @@ import static com.silverpeas.pdc.web.PdcServiceProvider.inComponentOfId;
  */
 @Service
 @RequestScoped
-@Path("pdc/{componentId}/{contentId}")
+@Path("pdc/classification/{componentId:[a-zA-Z]+[0-9]+}/{contentId}")
 @Authorized
 public class PdcClassificationResource extends RESTWebService {
 
@@ -171,7 +171,7 @@ public class PdcClassificationResource extends RESTWebService {
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
+      throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -205,13 +205,13 @@ public class PdcClassificationResource extends RESTWebService {
           position,
           forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
-      URI itsURI = getUriInfo().getBaseUriBuilder().path("pdc/{componentId}/{contentId}").
-          build(getComponentId(), getContentId());
+      URI itsURI = getUriInfo().getBaseUriBuilder().path(
+          "pdc/classification/{componentId}/{contentId}").build(getComponentId(), getContentId());
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (PdcException ex) {
-      throw new WebApplicationException(ex, Status.NOT_FOUND);
+      throw new WebApplicationException(ex, Status.BAD_REQUEST);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }

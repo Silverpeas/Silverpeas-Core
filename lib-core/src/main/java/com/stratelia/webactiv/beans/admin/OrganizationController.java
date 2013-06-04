@@ -1213,8 +1213,7 @@ public class OrganizationController implements OrganisationController {
         }
       }
     } else {
-      String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
-          criteria.getUser().getId());
+      String[] availableComponentIds = getAvailCompoIds(criteria.getUser().getId());
       List<String> excludedComponentIds = getComponentsExcludedFromGlobalSearch(
           criteria.getUser().getId());
       for (String aComponentId : availableComponentIds) {

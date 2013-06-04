@@ -20,7 +20,6 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.pdc.web.PdcFilterCriteria.AxisValueCriterion;
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.web.ResourceGettingTest;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -170,7 +169,7 @@ public class PdcGettingForSearchTest extends ResourceGettingTest<PdcTestResource
     for (UsedAxis aUsedAxis : usedAxis) {
       List<Value> values = new ArrayList<Value>();
       for (AxisValueCriterion aCriterion : criteria) {
-        if (aCriterion.getAxisIdAsInt() == aUsedAxis.getAxisId()) {
+        if (aCriterion.getAxisId() == aUsedAxis.getAxisId()) {
           for (Iterator it = aUsedAxis._getAxisValues().iterator(); it.hasNext();) {
             Value aValue = (Value) it.next();
             if (aValue.getFullPath().equals(aCriterion.getValuePath())) {

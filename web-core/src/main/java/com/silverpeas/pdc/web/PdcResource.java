@@ -56,7 +56,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 @Service
 @RequestScoped
-@Path("pdc/{componentId}")
+@Path("pdc/{componentId:[a-zA-Z]+[0-9]+}")
 @Authorized
 public class PdcResource extends RESTWebService {
 

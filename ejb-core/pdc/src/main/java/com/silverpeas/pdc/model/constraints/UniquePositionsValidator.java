@@ -48,7 +48,7 @@ public class UniquePositionsValidator implements
     for (int p = 0; p < positions.size(); p++) {
       PdcPosition currentPosition = positions.get(p);
       for (int i = 0; i < positions.size(); i++) {
-        if (p != i) {
+        if (p != i && currentPosition.getValues().size() == positions.get(i).getValues().size()) {
           if (currentPosition.getValues().containsAll(positions.get(i).getValues())) {
             return false;
           }

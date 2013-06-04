@@ -22,7 +22,6 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.pdc.service.PdcClassificationService;
-import com.silverpeas.pdc.web.PdcFilterCriteria.AxisValueCriterion;
 import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
@@ -31,7 +30,6 @@ import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
-import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -325,8 +323,7 @@ public class PdcServiceProvider {
     }
     if (criteria.hasCriterionOnAxisValues()) {
       for (AxisValueCriterion axisValueCriterion : criteria.getAxisValues()) {
-        context.addCriteria(new SearchCriteria(axisValueCriterion.getAxisIdAsInt(),
-            axisValueCriterion.getValuePath()));
+        context.addCriteria(axisValueCriterion);
       }
     }
     return context;

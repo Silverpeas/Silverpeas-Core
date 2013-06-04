@@ -23,9 +23,7 @@ package com.silverpeas.pdc.web;
 import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
-import com.silverpeas.pdc.web.PdcFilterCriteria.AxisValueCriterion;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.web.RESTWebService;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.util.List;
@@ -119,13 +117,9 @@ public class FilteredPdcResource extends RESTWebService {
   }
 
   private void setAxisValues(PdcFilterCriteria criteria, String axisValues) {
-    if (StringUtil.isDefined(axisValues)) {
-      String[] values = axisValues.split(",");
-      for (String aValue : values) {
-        String[] valueParameter = aValue.split(":");
-        criteria.onAxisValue(new AxisValueCriterion(valueParameter[0], valueParameter[1]));
-      }
-    }
+    List<AxisValueCriterion> axisValuesCriteria = AxisValueCriterion.fromFlattenedAxisValues(
+        axisValues);
+    criteria.onAxisValues(axisValuesCriteria);
   }
 
   private UserThesaurusHolder withThesaurusAccordingTo(UserPreferences userPreferences) {

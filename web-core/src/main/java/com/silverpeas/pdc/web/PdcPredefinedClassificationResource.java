@@ -79,11 +79,11 @@ import javax.ws.rs.*;
  */
 @Service
 @RequestScoped
-@Path("pdc/{componentId}/classification")
+@Path("pdc/classification/{componentId:[a-zA-Z]+[0-9]+}")
 @Authorized
 public class PdcPredefinedClassificationResource extends RESTWebService {
 
-  private static final String BASE_URI_PATH = "pdc/{componentId}/classification";
+  private static final String BASE_URI_PATH = "pdc/classification/{componentId:[a-zA-Z]+[0-9]+}";
   @Inject
   private PdcServiceProvider pdcServiceProvider;
   @PathParam("componentId")

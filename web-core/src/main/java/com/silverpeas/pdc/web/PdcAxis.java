@@ -1,38 +1,34 @@
 /**
  * Copyright (C) 2000 - 2012 Silverpeas
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
  *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * As a special exception to the terms and conditions of version 3.0 of the GPL, you may
+ * redistribute this Program in connection with Free/Libre Open Source Software ("FLOSS")
+ * applications as described in Silverpeas's FLOSS exception. You should have received a copy of the
+ * text describing the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import static com.silverpeas.util.StringUtil.isDefined;
 
@@ -48,6 +44,8 @@ import static com.silverpeas.util.StringUtil.isDefined;
 @XmlRootElement
 public class PdcAxis {
 
+  public static final int PRIMARY_AXIS = 0;
+  public static final int SECONDARY_AXIS = 1;
   @XmlElement(required = true)
   private int id;
   @XmlElement
@@ -60,6 +58,8 @@ public class PdcAxis {
   private String invariantValue;
   @XmlElement
   private boolean invariant = false;
+  @XmlElement(defaultValue = "0")
+  private int type = PRIMARY_AXIS;
   @XmlElement(required = true)
   private List<PdcAxisValueEntity> values = new ArrayList<PdcAxisValueEntity>();
 
@@ -67,6 +67,7 @@ public class PdcAxis {
    * Creates a PdC axis from the specified configured axis for a specific component instance and in
    * which the terms are expressed in the specified language and whose synonyms are set with the
    * specified user thesaurus.
+   *
    * @param axis an axis of the PdC potentially configured for a given Silverpeas component
    * instance.
    * @param inLanguage the language to use to translate the terms of the axis.
@@ -79,9 +80,11 @@ public class PdcAxis {
   public static PdcAxis fromTheUsedAxis(final UsedAxis axis, String inLanguage,
       final UserThesaurusHolder withThesaurus) throws ThesaurusException {
     String andOriginValue = axis._getBaseValuePath() + axis.getBaseValue() + "/";
+    int axisType = (PdcBm.PRIMARY_AXIS.equals(axis._getAxisType()) ? PRIMARY_AXIS : SECONDARY_AXIS);
     List<PdcAxisValueEntity> theAxisValues =
         fromValues(axis._getAxisValues(), andOriginValue, inLanguage, withThesaurus);
     PdcAxis pdcAxis = new PdcAxis(axis.getAxisId(), axis._getAxisName(inLanguage)).
+        ofType(axisType).
         withAsPdcAxisValues(theAxisValues, andOriginValue).
         withInvariance(axis.getVariant() == 0).
         withObligation(axis.getMandatory() == 1);
@@ -93,6 +96,7 @@ public class PdcAxis {
 
   /**
    * Gets the unique identifier of this axis in the PdC.
+   *
    * @return the axis unique identifier.
    */
   public int getId() {
@@ -101,6 +105,7 @@ public class PdcAxis {
 
   /**
    * Is this axis is mandatory in the classification on the PdC.
+   *
    * @return true if this axis is mandatory when classifying a content onto the PdC.
    */
   public boolean isMandatory() {
@@ -111,6 +116,7 @@ public class PdcAxis {
    * Is this axis is invariant in the classification on the PdC. An invariant axis in a
    * classification is an axis that can have only a single possible value per classification,
    * whatever the positions onto the PdC.
+   *
    * @return true if this axis in an invariant one when classifying a content onto the PdC.
    */
   public boolean isInvariant() {
@@ -119,6 +125,7 @@ public class PdcAxis {
 
   /**
    * Gets the name of this axis.
+   *
    * @return the axis name.
    */
   public String getName() {
@@ -127,6 +134,7 @@ public class PdcAxis {
 
   /**
    * Gets the value in the axis that is invariant.
+   *
    * @return the identifier of the invariant value of the axis or an empty string if there is no
    * invariant value.
    */
@@ -136,6 +144,7 @@ public class PdcAxis {
 
   /**
    * Gets the value that is set as the origin in this axis.
+   *
    * @return the identifier of the axis origin value.
    */
   public String getOriginValue() {
@@ -143,7 +152,17 @@ public class PdcAxis {
   }
 
   /**
+   * Gets the type of this axis.
+   *
+   * @return the type: PRIMARY_AXIS or SECONDARY_AXIS.
+   */
+  public int getType() {
+    return type;
+  }
+
+  /**
    * Gets the values that made up this axis.
+   *
    * @return an unmodifiable list of axis' values.
    */
   public List<PdcAxisValueEntity> getValues() {
@@ -152,6 +171,7 @@ public class PdcAxis {
 
   /**
    * Adds the specified values into this axis and sets the value used as origin in this axis.
+   *
    * @param originValueId the identifier of the origin value.
    * @param values the PdC values to set.
    * @return itself.
@@ -159,6 +179,17 @@ public class PdcAxis {
   public PdcAxis withAsPdcAxisValues(final List<PdcAxisValueEntity> values, String originValueId) {
     this.originValue = originValueId;
     this.values.addAll(values);
+    return this;
+  }
+
+  /**
+   * Sets the type of the axis.
+   *
+   * @param axisType the type of the axis. It accepts a value among PRIMARY_AXIS and SECONDARY_AXIS.
+   * @return itself.
+   */
+  public PdcAxis ofType(int axisType) {
+    this.type = axisType;
     return this;
   }
 

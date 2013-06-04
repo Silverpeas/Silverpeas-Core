@@ -312,7 +312,8 @@ QueryParser.Operator defaultOperand = WAIndexSearcher.defaultOperand;
 <![endif]-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.autocomplete.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
-
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc-widgets.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 <script type="text/javascript">
 var icWindow = window;
 
@@ -417,7 +418,11 @@ function addValue(selectItem, axisId)
 }
 
 function sendQuery() {
-	if (document.AdvancedSearch.query.value == "*")
+	var values = $('#used_pdc').pdc('selectedValues');
+  if (values.length > 0) {
+    document.AdvancedSearch.AxisValueCouples.value = values.flatten();
+  }
+  if (document.AdvancedSearch.query.value == "*")
 		document.AdvancedSearch.query.value = "";
 	if (checkDates())
 	{
@@ -896,16 +901,13 @@ if (searchType == 2 && !isPDCSubscription) {
 	out.println("<br/>");
 }
 	
-if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
-	out.println(board.printBefore());
-	String axisIcon = resource.getIcon("pdcPeas.icoPrimaryAxis");
-	displayAxisByType(showAllAxis, resource.getString("pdcPeas.primaryAxis"), primaryAxis, searchContext, activeThesaurus, jargon, resource, axisIcon, out);
-	if (secondaryAxis != null){
-		axisIcon = resource.getIcon("pdcPeas.icoSecondaryAxis");
-		displayAxisByType(showAllAxis, resource.getString("pdcPeas.secondaryAxis"), secondaryAxis, searchContext, activeThesaurus, jargon, resource, axisIcon, out);
-	}
-	out.println(board.printAfter());
-} 
+if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {%>
+  <div class="tableFrame">
+    <div class="tableBoard">
+      <fieldset id="used_pdc" class="skinFieldset"></fieldset>
+    </div>
+  </div>
+<% }
 %>
 <!-- fin de la recherche -->
 <% if (!showAllAxis) { %>
@@ -945,5 +947,29 @@ out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
+<script type="text/javascript">
+    <%
+  List<SearchCriteria> criteriaOnAxisValues = searchContext.getCriterias();
+  StringBuilder valuesInJs = new StringBuilder("[");
+  if (criteriaOnAxisValues.size() > 0) {
+    valuesInJs.append("{axisId: ").append(criteriaOnAxisValues.get(0).getAxisId()).
+        append(", id: '" + criteriaOnAxisValues.get(0).getValue()).append("'}");
+    for(int i = 1; i < criteriaOnAxisValues.size(); i++) {
+      valuesInJs.append(", {axisId: ").append(criteriaOnAxisValues.get(0).getAxisId()).
+        append(", id: '" + criteriaOnAxisValues.get(0).getValue()).append("'}");
+    }
+  }
+  valuesInJs.append("]");
+    %>
+    var showSecondaryAxis = <%= ("YES".equals(showSndSearchAxis) ? true: false)%>;
+    var componentId = <%= componentSelected != null ? "'" + componentSelected + "'": null %>
+    var workspaceId = <%= spaceSelected != null ? "'" + spaceSelected + "'": null %>
+      $('#used_pdc').pdc('used', {
+        component: componentId,
+        workspace: workspaceId,
+        withSecondaryAxis: showSecondaryAxis,
+        values: <%= valuesInJs %>
+      });
+</script>
 </body>
 </html>

@@ -42,16 +42,14 @@
 
 /**
  * Build the URI identifying the classification on the PdC of the specified resource.
- * The resource is an object of type:
- * {
- *   context: the name of Silverpeas web application context,
- *   component: the unique identifier of the component instance into which contents are published,
- *   content: the unique identifier of the classified content.
- * }
+ * The name of the Silverpeas web context is provided by the 'context' property of the resource.
+ * @param {{context: string, component: string, content: number}} resource the resource representing
+ * a content belonging to a given component instance in Silverpeas.
+ * @returns {String} the URI of the PdC to use for classifying the specified resource.
  */
 function uriOfPdCClassification(resource) {
-  var uri = resource.context + '/services/pdc/' + resource.component + '/';
-  if (resource.content != null && resource.content.length > 0) {
+  var uri = resource.context + '/services/pdc/classification/' + resource.component + '/';
+  if (resource.content && resource.content.length > 0) {
     uri += resource.content;
   } else {
     uri += 'new';
@@ -63,18 +61,63 @@ function uriOfPdCClassification(resource) {
 
 /**
  * Build the URI identifying the PdC parameterized for the specified resource.
- * The resource is an object of type:{
- *   context: the name of Silverpeas web application context,
- *   component: the unique identifier of the component instance for which the PdC has been eventually
- *   parametrized,
- *   content: the unique identifier of the content to classify or null. If this parameter is set,
- *   the axis are then parameterized according to the existing classification of the content (if any).
- * }
+ * The name of the Silverpeas web context is provided by the 'context' property of the resource.
+ * If resource.content is set, then the axis are parameterized according to the existing
+ * classification of the context (if any).
+ * @param {{context: string, component: string, content: ?number}} resource the resource representing
+ * a content belonging to a given component instance in Silverpeas.
+ * @returns {String} the URI of the PdC to use for classifying the specified resource.
  */
 function uriOfPdC(resource) {
   var uri = resource.context + '/services/pdc/' + resource.component;
-  if (resource.content != null && resource.content.length > 0) {
+  if (resource.content && resource.content.length > 0) {
     uri += '?contentId=' + resource.content;
+  }
+  return uri;
+}
+
+/**
+ * Build the URI identifying the PdC with the axis and values used in the classification of
+ * contents. Only the axis and their values that are part of a classification are defined in this
+ * PdC.
+ * The filter is an object of type:
+ * {
+ *   context: the name of Silverpeas web application context,
+ *   component: the unique identifier of the component instance to which the classified contents has
+ *   to belong.
+ *   workspace: the unique identifier of the workspace into which the classified contents has to be
+ *   published.
+ *   values: an array of axis values with which the contents to consider has to be classified. An
+ *   axis value is an object of type:
+ *   {
+ *     axisId: the unique identifier of the axis,
+ *     value: the path of the value in the axis tree, from the root axis value. For example /O/1/3
+ *     where each number is a value identifier in the path.
+ *   }
+ * }
+ * Only the context field of the filter is mandatory.
+ * @param {object} filter the query filter to used. @see the description of the filter above.
+ * @return {string} the URI of the filtered PdC used in the classification of contents.
+ */
+function uriOfUsedPdc(filter) {
+  var uri = filter.context + '/services/pdc/filter/used';
+  if (filter) {
+    if (filter.workspace && filter.workspace.length > 0) {
+      uri += '?workspaceId=' + filter.workspace;
+    }
+    if (filter.component && filter.component.length > 0) {
+      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'componentId=' + filter.component;
+    }
+    if (filter.values && filter.values.length > 0) {
+      var flattenedValues = filter.values[0].axisId + ':' + filter.values[0].id;
+      for (var i = 1; i < filter.values.length; i++) {
+        flattenedValues += ',' + filter.values[i].axisId + ':' + filter.values[i].id;
+      }
+      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'values=' + flattenedValues;
+    }
+    if (filter.withSecondaryAxis) {
+      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'withSecondaryAxis=' + filter.withSecondaryAxis;
+    }
   }
   return uri;
 }
@@ -82,6 +125,8 @@ function uriOfPdC(resource) {
 /**
  * Splits the specified URI in two parts: the first one is the URI authority plus the URI path and
  * the last one is the URI query.
+ * @param {string} uri the URI to split in two parts.
+ * @return {Array} an array with the two parts of the URI.
  */
 function splitUri(uri) {
   return uri.match(/[a-zA-Z0-9:=\/.\-_!\*\~\(\)'&;,\+\$#%@]+/gi);
@@ -99,10 +144,13 @@ function splitUri(uri) {
  *   node: the unique identifier of the node for which a predefined classification has been set or
  *   null. If null, the predefined classification for the component instance is fetched.
  * }
+ * @param {Object} resource the resource to which a predefined classification has be defined.
+ * @see its description above.
+ * @return {String} the URI of a predefined classification related to the specified resource.
  */
 function uriOfPredefinedClassification(resource) {
-  var uri = resource.context + '/services/pdc/' + resource.component + '/classification';
-  if (resource.node != null && resource.node.length > 0) {
+  var uri = resource.context + '/services/pdc/classification/' + resource.component;
+  if (resource.node && resource.node.length > 0) {
     uri += '?nodeId=' + resource.node;
   }
   return uri;
@@ -151,28 +199,28 @@ function uriOfPredefinedClassification(resource) {
  *  ascendant: is the value an ascendant one from the axis origin that was configured for the
  *             component instance,
  *  origin: is this value the configured (or the default one) axis origin,
+ *  classifiedContentsCount: the count of contents that are classified onto this value,
  *  synonyms: [ the synonyms of the value term as strings ]
  * }
  */
-function loadPdC(uri, onSuccess, onError) {
+function loadPdC(uri, onSuccess, onError, synchronously) {
   $.ajax({
     url: uri,
     type: 'GET',
     dataType: 'json',
-    cache: false,
-    success: function(pdc) {
-      onSuccess(pdc);
-    },
-    error: function(jqXHR, textStatus, errorThrown) {
-      onError({
-        uri: uri,
-        axis: []
-      }, {
-        status: jqXHR.status,
-        message: errorThrown
-      });
-    }
-  })
+    async: (synchronously !== true),
+    cache: false
+  }).done(function(pdc) {
+    onSuccess(pdc);
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    onError({
+      uri: uri,
+      axis: []
+    }, {
+      status: jqXHR.status,
+      message: errorThrown
+    });
+  });
 }
 
 /**************************************************************************************************/
@@ -253,7 +301,7 @@ function loadClassification(uri, onSuccess, onError) {
  */
 function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
   var confirmed = true;
-  if (confirmationMsg != null && confirmationMsg.length > 0)
+  if (confirmationMsg && confirmationMsg.length > 0)
     confirmed = window.confirm(confirmationMsg);
   if (confirmed) {
     var uri_parts = splitUri(uri);
@@ -265,13 +313,13 @@ function deletePosition(uri, position, confirmationMsg, onSuccess, onError) {
         onSuccess();
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        if (onError == null)
-          alert(errorThrown);
-        else
+        if (typeof onError === 'function')
           onError({
             status: jqXHR.status,
             message: errorThrown
           });
+        else
+          alert(errorThrown);
       }
     });
   }
@@ -302,13 +350,13 @@ function postPosition(uri, position, onSuccess, onError) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      if (onError == null)
-        alert(errorThrown);
-      else
+      if (typeof onError === 'function')
         onError({
           status: jqXHR.status,
           message: errorThrown
         });
+      else
+        alert(errorThrown);
     }
   });
 }
@@ -340,13 +388,13 @@ function updatePosition(uri, position, onSuccess, onError) {
       onSuccess(classification);
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      if (onError == null)
-        alert(errorThrown);
-      else
+      if (typeof onError === 'function')
         onError({
           status: jqXHR.status,
           message: errorThrown
         });
+      else
+        alert(errorThrown);
     }
   });
 }
@@ -369,7 +417,7 @@ function updatePosition(uri, position, onSuccess, onError) {
 function findPosition(withValues, inSomePositions) {
   var position = null;
   for (var p = 0; p < inSomePositions.length; p++) {
-    if (inSomePositions[p].values.length == withValues.length) {
+    if (inSomePositions[p].values.length === withValues.length) {
       position = {
         index: p,
         position: inSomePositions[p]
@@ -377,15 +425,15 @@ function findPosition(withValues, inSomePositions) {
       for (var v1 = 0; v1 < withValues.length; v1++) {
         var found = false;
         for (var v2 = 0; v2 < inSomePositions[p].values.length && !found; v2++) {
-          found = withValues[v1].axisId == inSomePositions[p].values[v2].axisId &&
-                  withValues[v1].id == inSomePositions[p].values[v2].id;
+          found = withValues[v1].axisId === inSomePositions[p].values[v2].axisId &&
+                  withValues[v1].id === inSomePositions[p].values[v2].id;
         }
         if (!found) {
           position = null;
           break;
         }
       }
-      if (position != null)
+      if (position !== null)
         break;
     }
   }
@@ -409,7 +457,7 @@ function sortValues(values) {
   for (var i = 1; i < values.length; i++) {
     var pivot = values[i], j = i;
     while (j > 0 && values[j - 1].axisId > pivot.axisId) {
-      values[j] = values[j - 1]
+      values[j] = values[j - 1];
       j--;
     }
     values[j] = pivot;
@@ -424,7 +472,7 @@ function sortValues(values) {
  * A position is in a classification if it already exists a position with exactly the same values.
  */
 function isAlreadyInClassification(position, classification) {
-  return findPosition(position.values, classification.positions) != null;
+  return findPosition(position.values, classification.positions) !== null;
 }
 
 /**************************************************************************************************/
@@ -470,7 +518,7 @@ function areNotAlreadyInClassification(somePositions, classification) {
  */
 function removePosition(position, positions) {
   for (var i = 0; i < positions.length; i++) {
-    if (positions[i].id == position.id) {
+    if (positions[i].id === position.id) {
       positions.splice(i, 1);
       break;
     }
@@ -542,14 +590,14 @@ function removePosition(position, positions) {
       return this.each(function() {
         var $thisPdcPositions = $(this), settings = $thisPdcPositions.data('PdcPositionSettings');
         settings.positions = positions;
-        if (optionalParameter != null) {
-          if (optionalParameter.title != null && optionalParameter.title.length > 0)
+        if (optionalParameter) {
+          if (optionalParameter.title && optionalParameter.title.length > 0)
             $('label[for="' + settings.id + '_allpositions"]').html(optionalParameter.title);
-          if (optionalParameter.update == true || optionalParameter.update == false)
+          if (typeof optionalParameter.update === 'boolean')
             settings.update.activated = optionalParameter.update;
-          if (optionalParameter.addition == true || optionalParameter.addition == false)
+          if (typeof optionalParameter.addition === 'boolean')
             settings.addition.activated = optionalParameter.addition;
-          if (optionalParameter.deletion == true || optionalParameter.deletion == false)
+          if (typeof optionalParameter.deletion === 'boolean')
             settings.deletion.activated = optionalParameter.deletion;
         }
         $('#' + settings.id + '_allpositions').children().remove();
@@ -634,7 +682,7 @@ function removePosition(position, positions) {
         href: '#'
       }).addClass('add_position').html(settings.addition.title).click(function() {
         settings.onAddition();
-      }).appendTo($("#" + settings.id + '_allpositions'))
+      }).appendTo($("#" + settings.id + '_allpositions'));
     }
   }
 
@@ -707,8 +755,8 @@ function removePosition(position, positions) {
 /**************************************************************************************************/
 
 /**
- * A Widget to render the axis of the PdC in order to select some of their values to create or to
- * update a position.
+ * A Widget to render the axis of the PdC in order to select some of their values to create, to
+ * update a position or to filter some values in a search.
  * If the multiValuation plugin parameter is set, then several values can be selected for one single
  * axis. In this case, a position will be generated for each different selected value of the axis.
  */
@@ -721,7 +769,7 @@ function removePosition(position, positions) {
       treeId: anAxisValue.treeId,
       meaning: anAxisValue.meaning,
       synonyms: anAxisValue.synonyms
-    }
+    };
   }
 
   function SelectedPositions(fromValues) {
@@ -730,7 +778,7 @@ function removePosition(position, positions) {
     // only for multiple values of a given single axis and they will produce each of them another
     // position
     this.matrix = [];
-    if (fromValues != null && fromValues.length > 0) {
+    if (fromValues && fromValues.length > 0) {
       this.matrix[0] = {};
       for (var i = 0; i < fromValues.length; i++) {
         this.matrix[0][axisprefix + fromValues[i].axisId] = fromValues[i];
@@ -738,39 +786,39 @@ function removePosition(position, positions) {
     }
 
     this.put = function(positionIndex, axisId, value) {
-      if (this.matrix[positionIndex] == null)
+      if (!this.matrix[positionIndex])
         this.matrix[positionIndex] = {};
       this.matrix[positionIndex][axisprefix + axisId] = value;
       for (var i = 1; i < positionIndex; i++) {
-        if (this.matrix[i] == null)
+        if (!this.matrix[i])
           this.matrix[i] = {};
       }
-    }
+    };
 
     this.remove = function(positionIndex, axisId) {
       this.matrix[positionIndex][axisprefix + axisId] = null;
-    }
+    };
 
     this.clear = function() {
       this.matrix = [];
-    }
+    };
 
     this.at = function(positionIndex, axisId) {
-      if (this.matrix[positionIndex] != null)
+      if (this.matrix[positionIndex])
         return this.matrix[positionIndex][axisprefix + axisId];
       return null;
-    }
+    };
 
     this.all = function() {
       var positions = [];
 
       function contains(position) {
         for (var ipos = 0; ipos < positions.length; ipos++)
-          if (position.values.length == positions[ipos].values.length) {
+          if (position.values.length === positions[ipos].values.length) {
             var ok = true;
             for (var ival = 0; ival < position.values.length && ok; ival++) {
-              if (position.values[ival].axisId != positions[ipos].values[ival].axisId ||
-                      position.values[ival].id != positions[ipos].values[ival].id)
+              if (position.values[ival].axisId !== positions[ipos].values[ival].axisId ||
+                      position.values[ival].id !== positions[ipos].values[ival].id)
                 ok = false;
             }
             if (ok)
@@ -783,7 +831,7 @@ function removePosition(position, positions) {
         if (values.length > 0) {
           var position = {
             values: values
-          }
+          };
           sortValues(position);
           if (!contains(position))
             positions.push(position);
@@ -791,8 +839,8 @@ function removePosition(position, positions) {
       }
 
       if (this.matrix.length > 0) {
-        var firstidx = 0
-        if (!this.matrix[0] || this.matrix[0].length == 0) {
+        var firstidx = 0;
+        if (!this.matrix[0] || this.matrix[0].length === 0) {
           // the index 0 has a specific meaning: if left empty, it means no values to permit the
           // generation of positions with one single value when combining the different selected
           // axis values. So, in a such case, to simplify the positions generation, a virtual
@@ -805,7 +853,7 @@ function removePosition(position, positions) {
           var values = [];
           for (var axis in this.matrix[i]) {
             if (this.matrix[i][axis]) {
-              if (positions.length == 0)
+              if (positions.length === 0)
                 values.push(aPositionValueFrom(this.matrix[i][axis]));
               var maxpos = positions.length - 1;
               for (var pos = 0; pos <= maxpos; pos++) {
@@ -824,11 +872,11 @@ function removePosition(position, positions) {
           positions = positions.slice(firstidx, positions.length);
       }
       return positions;
-    }
+    };
 
     this.size = function() {
       return this.matrix.length;
-    }
+    };
   }
 
   function areMandatoryAxisValued(axis, positions) {
@@ -838,7 +886,7 @@ function removePosition(position, positions) {
         if (axis[iaxis].mandatory) {
           var isValued = false;
           for (var ival = 0; ival < values.length; ival++) {
-            if (values[ival].axisId == axis[iaxis].id) {
+            if (values[ival].axisId === axis[iaxis].id) {
               isValued = true;
               break;
             }
@@ -853,8 +901,8 @@ function removePosition(position, positions) {
 
   function informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions) {
     var positions = selectedPositions.all();
-    if (positions.length == 0) {
-      alert(settings.positionError)
+    if (positions.length === 0) {
+      alert(settings.positionError);
     } else {
       if (!areMandatoryAxisValued(settings.axis, positions)) {
         alert(settings.mandatoryAxisError);
@@ -890,6 +938,80 @@ function removePosition(position, positions) {
   }
 
   /**
+   * Reloads the display of the pdc's axis.
+   * @param {Object} the axis to display
+   * @param {Object} settings the settings of the plugin. It contains the axis to update.
+   * @param {Array} selectedPositions the values already selected by the user.
+   */
+  function reloadAxis(axisToDisplay, settings, selectedPositions) {
+    var axis = settings.axis;
+    for (var i = 0; i < axis.length; i++) {
+      $('#' + settings.id + '_' + axis[i].id).parent().remove();
+    }
+    for (var i = 0; i < axisToDisplay.length; i++) {
+      var currentAxisDiv = $('<div>', {
+        id: settings.id + '_' + axisToDisplay[i].id
+      }).addClass('champs pdcAxis').appendTo($('<div>').addClass('field').append($('<label >', {
+        'for': settings.id + '_' + axisToDisplay[i].id + '_0'
+      }).addClass('txtlibform').html(axisToDisplay[i].name)).appendTo(settings.parent));
+
+      renderAxis(currentAxisDiv, settings, selectedPositions, axisToDisplay[i]);
+    }
+    settings.axis = axisToDisplay;
+  }
+
+  /**
+   * Renders the values of the specified axis within the specified selection element by taking care
+   * of the plugin settings and the already selected positions.
+   * @param {object} anAxis the axis for which the values has to be rendered.
+   * @param {object} axisValuesSelection the HTML selection element.
+   * @param {object} settings the plugin settings.
+   * @param {array} selectedPositions the positions selected in the PdC.
+   */
+  function renderValues(anAxis, axisValuesSelection, settings, selectedPositions) {
+    var path = [];
+    $.each(anAxis.values, function(valueIndex, aValue) {
+      var level = '';
+      path.splice(aValue.level, path.length - aValue.level);
+      path[aValue.level] = aValue.term;
+      aValue.meaning = path.join(' / ');
+      if (aValue.id !== '/0/' || settings.rootValueDisplay) {
+        for (var i = 0; i < aValue.level; i++) {
+          level += '&nbsp;&nbsp;';
+        }
+        var valueText = level + aValue.term;
+        if (settings.classifiedContentCount)
+          valueText += ' (' + aValue.classifiedContentsCount + ')';
+        var option =
+                $('<option>').attr('value', valueIndex).html(valueText).appendTo(axisValuesSelection);
+        if (aValue.ascendant) {
+          option.attr('value', 'A').attr('disabled', true).addClass("intfdcolor51");
+        }
+        if (anAxis.invariantValue && anAxis.invariantValue !== aValue.id) {
+          selectedPositions.put(0, anAxis.id, aValue);
+          option.attr('disabled', true);
+        }
+        if (selectedPositions.size() === 1 && selectedPositions.at(0, anAxis.id) &&
+                aValue.id === selectedPositions.at(0, anAxis.id).id) {
+          option.attr('selected', true);
+        }
+
+        // in the case of a duplicate select, disable any options that were previously selected for the
+        // same axis
+        if (settings.multiValuation && i > 0 && selectedPositions.size() > 0) {
+          for (var ipos = 0; ipos < selectedPositions.size(); ipos++) {
+            var selectedValue = selectedPositions.at(ipos, anAxis.id);
+            if (selectedValue && aValue === selectedValue) {
+              option.attr('disabled', true);
+              break;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
    * Renders the specified axis as an XHMLT select element. Each option represents a value of the
    * axis.
    * If a value is set among the first selected position, then the corresponding option is preselected.
@@ -901,7 +1023,7 @@ function removePosition(position, positions) {
   function renderAxis($axisDiv, settings, selectedPositions, anAxis) {
     var mandatoryField = '', idPrefix = settings.id + '_' + anAxis.id + '_', i = 0;
     if (anAxis.mandatory)
-      mandatoryField = 'mandatoryField'
+      mandatoryField = 'mandatoryField';
 
     // each select id ends with a number indicating the occurrence of duplicate selects
     // compute then the next free number for the select occurrence to render
@@ -910,13 +1032,19 @@ function removePosition(position, positions) {
     }
 
     // render the select with the values of the specified axis
+    if (settings.axisTypeDisplay) {
+      if (anAxis.type === 0)
+        $('<img>', {src: settings.primaryAxisIcon, alt: anAxis.name}).appendTo($axisDiv);
+      else
+        $('<img>', {src: settings.secondaryAxisIcon, alt: anAxis.name}).appendTo($axisDiv);
+    }
     var axisValuesSelection = $('<select>', {
       'id': idPrefix + i,
       'name': anAxis.name
     }).addClass(mandatoryField).appendTo($axisDiv).change(function() {
       // take care of the change of the option selection (axis value selection)
       var theValue = $('select[id=' + idPrefix + i + '] option:selected').val();
-      if (theValue == 0) {
+      if (theValue === '-1') {
         selectedPositions.remove(i, anAxis.id);
       } else {
         var previousValue = selectedPositions.at(i, anAxis.id);
@@ -926,8 +1054,8 @@ function removePosition(position, positions) {
           // disable the other identical options in duplicate selects (to avoid the position duplication)
           var j = 0;
           while (contains($axisDiv, idPrefix + j)) {
-            if (j != i) {
-              if (previousValue != null) {
+            if (j !== i) {
+              if (previousValue) {
                 var index = anAxis.values.indexOf(previousValue);
                 $("select[id=" + idPrefix + j + "] option[value='" + index + "']").attr('disabled', false);
               }
@@ -935,6 +1063,14 @@ function removePosition(position, positions) {
             }
             j++;
           }
+        }
+      }
+      // whether the rendered axis have to be updated with the change of the value
+      if (!settings.multiValuation) {
+        var selectedValue = (theValue === '-1' ? null : anAxis.values[theValue]);
+        var updatedAxis = settings.onValueChange(anAxis, selectedValue);
+        if (updatedAxis && updatedAxis.length > 0) {
+          reloadAxis(updatedAxis, settings, selectedPositions);
         }
       }
     });
@@ -952,50 +1088,14 @@ function removePosition(position, positions) {
         alt: settings.anotherValueLegend
       })).appendTo($axisDiv);
     }
-    var path = [];
 
-    var option = $('<option>').attr('value', '0').html('&nbsp;').appendTo(axisValuesSelection);
+    var option = $('<option>').attr('value', '-1').html('&nbsp;').appendTo(axisValuesSelection);
 
     // browse the values of the current axis and for each of them print out an option XHTML element
     // take care of the selected values to preselect the corresponding options
     if (anAxis.mandatory && anAxis.values[anAxis.values.length - 2].ascendant)
       selectedPositions.put(0, anAxis.id, anAxis.values[anAxis.values.length - 1]);
-    $.each(anAxis.values, function(valueIndex, aValue) {
-      var level = '';
-      path.splice(aValue.level, path.length - aValue.level);
-      path[aValue.level] = aValue.term;
-      aValue.meaning = path.join(' / ');
-      if (aValue.id != '/0/') {
-        for (var i = 0; i < aValue.level; i++) {
-          level += '&nbsp;&nbsp;';
-        }
-        var option =
-                $('<option>').attr('value', valueIndex).html(level + aValue.term).appendTo(axisValuesSelection);
-        if (aValue.ascendant) {
-          option.attr('value', 'A').attr('disabled', true).addClass("intfdcolor51");
-        }
-        if (anAxis.invariantValue != null && anAxis.invariantValue != aValue.id) {
-          selectedPositions.put(0, anAxis.id, aValue);
-          option.attr('disabled', true);
-        }
-        if (selectedPositions.size() == 1 && selectedPositions.at(0, anAxis.id) != null &&
-                aValue.id == selectedPositions.at(0, anAxis.id).id) {
-          option.attr('selected', true);
-        }
-
-        // in the case of a duplicate select, disable any options that were previously selected for the
-        // same axis
-        if (settings.multiValuation && i > 0 && selectedPositions.size() > 0) {
-          for (var ipos = 0; ipos < selectedPositions.size(); ipos++) {
-            var selectedValue = selectedPositions.at(ipos, anAxis.id);
-            if (selectedValue != null && aValue == selectedValue) {
-              option.attr('disabled', true);
-              break;
-            }
-          }
-        }
-      }
-    });
+    renderValues(anAxis, axisValuesSelection, settings, selectedPositions);
 
     if (anAxis.mandatory) {
       option.attr('disabled', true).addClass('emphasis').html(settings.mandatoryAxisText);
@@ -1015,7 +1115,7 @@ function removePosition(position, positions) {
       }).appendTo($axisDiv);
     }
 
-    if (selectedPositions.at(i, anAxis.id) == null) {
+    if (!selectedPositions.at(i, anAxis.id)) {
       option.attr('selected', true);
     } else {
       $('<span>').html('<i>' + selectedPositions.at(i, anAxis.id).synonyms.join(', ') + '</i>&nbsp;').appendTo($axisDiv);
@@ -1043,17 +1143,27 @@ function removePosition(position, positions) {
       labelCancel: 'Annuler', /* the label of the canceling button in the dialog box */
       multiValuation: false, /* can axis be multivalued? If true, each different value on a given axis generates a different position */
       dialogBox: true, /* is the selector should be displayed as a modal dialog box? */
+      classifiedContentCount: false, /* is the number of classified contents should be displayed with each axis value? */
+      axisTypeDisplay: false, /* is the icon to indicate the type of the axis should be displayed? */
+      rootValueDisplay: false, /* is the root value of each axis should be displayed ? */
+      primaryAxisIcon: '/pdcPeas/jsp/icons/primary.gif',
+      secondaryAxisIcon: '/pdcPeas/jsp/icons/secondary.gif',
       axis: [], /* the different axis of the PdC to render */
       values: [], /* the values to pre-select in the widget */
+      onValueChange: function(axis, value) {
+      }, /* function to invoke each time a value is selected for an axis.
+       * If the display of the axis has to be reloaded, the function should returns an array with all the axis to render.
+       * WARNING: this function is supported only with non multivaluation */
       onValuesSelected: function(positions) {
-      } /* function invoked when a set of values have been selected through the widget */
+      } /* function invoked when a set of values have been selected and validated through the widget */
     }, options);
 
     return this.each(function() {
       var $thisPdcAxisValuesSelector = $(this), selectedPositions = new SelectedPositions(settings.values),
               hasMandatoryAxis = false, hasInvariantAxis = false;
+      settings.parent = $thisPdcAxisValuesSelector;
       settings.id = $thisPdcAxisValuesSelector.attr('id');
-      if (settings.id == null || settings.id.length == 0)
+      if (!settings.id || settings.id.length === 0)
         settings.id = 'pdc-edition-box';
       $thisPdcAxisValuesSelector.children().remove();
 
@@ -1061,7 +1171,7 @@ function removePosition(position, positions) {
       $.each(settings.axis, function(axisindex, anAxis) {
         var currentAxisDiv = $('<div>', {
           id: settings.id + '_' + anAxis.id
-        }).addClass('champs').appendTo($('<div>').addClass('field').append($('<label >', {
+        }).addClass('champs pdcAxis').appendTo($('<div>').addClass('field').append($('<label >', {
           'for': settings.id + '_' + anAxis.id + '_0'
         }).addClass('txtlibform').html(anAxis.name)).appendTo($thisPdcAxisValuesSelector));
 
@@ -1069,10 +1179,9 @@ function removePosition(position, positions) {
         hasInvariantAxis = anAxis.invariant || hasInvariantAxis;
 
         renderAxis(currentAxisDiv, settings, selectedPositions, anAxis);
-
       });
 
-      if (!settings.dialogBox) {
+      if (!settings.dialogBox && settings.onValuesSelected) {
         $thisPdcAxisValuesSelector.append($('<a>').attr('href', '#').
                 addClass('valid_position').
                 addClass('milieuBoutonV5').
@@ -1115,7 +1224,8 @@ function removePosition(position, positions) {
           buttons: [{
               text: settings.labelOk,
               click: function() {
-                informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
+                if (settings.onValuesSelected)
+                  informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
               }
             }, {
               text: settings.labelCancel,
@@ -1127,7 +1237,7 @@ function removePosition(position, positions) {
           close: function() {
             $thisPdcAxisValuesSelector.dialog("destroy");
           }
-        })
+        });
       }
     });
   };
