@@ -136,7 +136,8 @@ public class PublicationTemplateManager {
       }
       PublicationTemplate thePubTemplate = loadPublicationTemplate(fileName);
       RecordTemplate recordTemplate = thePubTemplate.getRecordTemplate();
-      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, fileName);
+      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, fileName,
+          thePubTemplate.isDataEncrypted());
     } catch (FormException e) {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.addDynamicPublicationTemplate", "form.EXP_INSERT_FAILED",

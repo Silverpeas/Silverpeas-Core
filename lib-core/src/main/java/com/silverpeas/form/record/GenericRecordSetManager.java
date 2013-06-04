@@ -88,20 +88,21 @@ public class GenericRecordSetManager {
    */
   public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template) throws FormException {
-    return createRecordSet(externalId, template, null);
+    return createRecordSet(externalId, template, null, false);
   }
 
   // public GenericRecordSet createRecordSet(String externalId, RecordTemplate
   // template, String templateName, boolean migration) throws FormException {
 
   public GenericRecordSet createRecordSet(String externalId,
-      RecordTemplate template, String templateName) throws FormException {
+      RecordTemplate template, String templateName, boolean encrypted) throws FormException {
 
     Connection con = null;
     IdentifiedRecordTemplate identifiedTemplate = new IdentifiedRecordTemplate(
         template);
     identifiedTemplate.setExternalId(externalId);
     identifiedTemplate.setTemplateName(templateName);
+    identifiedTemplate.setEncrypted(encrypted);
 
     try {
       con = getConnection();
