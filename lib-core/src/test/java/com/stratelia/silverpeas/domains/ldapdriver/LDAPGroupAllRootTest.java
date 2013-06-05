@@ -60,12 +60,12 @@ public class LDAPGroupAllRootTest {
 
   @BeforeClass
   public static void prepareSettings() throws Exception {
-    settings.LDAPHost = "localhost";
-    settings.LDAPPort = 1389;
+    settings.configuration.setLdapHost("localhost");
+    settings.configuration.setLdapPort(1389);
     settings.LDAPSearchRecurs = true;
     settings.LDAPUserBaseDN = "dc=silverpeas,dc=org";
-    settings.LDAPAccessLoginDN = "cn=Directory Manager,cn=Root DNs,cn=config";
-    settings.LDAPAccessPasswd = "password";
+    settings.configuration.setUsername("cn=Directory Manager,cn=Root DNs,cn=config");
+    settings.configuration.setPassword("password".getBytes(Charsets.UTF_8));
     settings.LDAPOpAttributesUsed = true;
 
     settings.usersClassName = "person";
