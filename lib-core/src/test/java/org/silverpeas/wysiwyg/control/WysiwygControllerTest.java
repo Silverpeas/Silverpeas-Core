@@ -121,17 +121,17 @@ public class WysiwygControllerTest {
    * Test of ignoreAntiSlash method, of class WysiwygController.
    */
   @Test
-  public void testIgnoreSlashAndAntislash() {
+  public void testSuppressLeadingSlashesOrAntislashes() {
     String chemin = "\\\\rep1\\rep2\\rep3";
-    String result = WysiwygController.ignoreSlashAndAntislash(chemin);
+    String result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1\\rep2\\rep3"));
 
     chemin = "\\rep1\\rep2\\rep3";
-    result = WysiwygController.ignoreSlashAndAntislash(chemin);
+    result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1\\rep2\\rep3"));
 
     chemin = "/rep1/rep2/rep3";
-    result = WysiwygController.ignoreSlashAndAntislash(chemin);
+    result = WysiwygController.suppressLeadingSlashesOrAntislashes(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
   }
 
@@ -139,18 +139,21 @@ public class WysiwygControllerTest {
    * Test of ignoreAntiSlash method, of class WysiwygController.
    */
   @Test
-  public void testIgnoreSlash() {
+  public void testIgnoreLeadingSlash() {
     String chemin = "\\\\rep1\\rep2\\rep3";
-    String result = WysiwygController.ignoreSlash(chemin);
+    String result = WysiwygController.ignoreLeadingSlash(chemin);
     assertThat(result, is("\\\\rep1\\rep2\\rep3"));
 
     chemin = "//rep1/rep2/rep3";
-    result = WysiwygController.ignoreSlash(chemin);
+    result = WysiwygController.ignoreLeadingSlash(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
 
     chemin = "/rep1/rep2/rep3";
-    result = WysiwygController.ignoreSlash(chemin);
+    result = WysiwygController.ignoreLeadingSlash(chemin);
     assertThat(result, is("rep1/rep2/rep3"));
+    chemin = "";
+    result = WysiwygController.ignoreLeadingSlash(chemin);
+    assertThat(result, is(""));
   }
 
   /**
@@ -169,6 +172,18 @@ public class WysiwygControllerTest {
     chemin = "/rep1/rep2/rep3";
     result = WysiwygController.supprDoubleAntiSlash(chemin);
     assertThat(result, is("/rep1/rep2/rep3"));
+  }
+
+  @Test
+  public void testSuppressFinalSlash() {
+    String result = WysiwygController.suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3/");
+    assertThat(result, is("\\\\id\\\\rep1\\\\rep2\\\\rep3"));
+
+    result = WysiwygController.suppressFinalSlash("\\\\id\\\\rep1\\\\rep2\\\\rep3////");
+    assertThat(result, is("\\\\id\\\\rep1\\\\rep2\\\\rep3"));
+
+    result = WysiwygController.suppressFinalSlash("");
+    assertThat(result, is(""));
   }
 
   /**
