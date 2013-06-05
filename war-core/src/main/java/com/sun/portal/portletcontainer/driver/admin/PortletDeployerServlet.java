@@ -212,7 +212,7 @@ public class PortletDeployerServlet extends HttpServlet {
   private boolean isParameterPresent(HttpServletRequest request,
       String parameter) {
     String name = request.getParameter(parameter);
-    return (name == null ? false : true);
+    return (name != null);
   }
 
   private String getLanguage(HttpServletRequest request) {

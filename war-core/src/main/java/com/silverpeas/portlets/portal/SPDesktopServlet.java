@@ -500,13 +500,6 @@ public class SPDesktopServlet extends HttpServlet {
       portletWindowData.setRole("admin");
     }
 
-    // If the user is on its personal space, SpaceResponsiblesPortlet is not displayed
-    String spaceId = request.getParameter("SpaceId");
-    if ("silverpeas.SpaceResponsiblesPortlet".equals(portletWindowData.getPortletName()) &&
-        (StringUtil.isNotDefined(spaceId) || SpaceInst.PERSONAL_SPACE_ID.equals(spaceId))) {
-      portletWindowData.setDisplayed(false);
-    }
-
     return portletWindowData;
   }
 

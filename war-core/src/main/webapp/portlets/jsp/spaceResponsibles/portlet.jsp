@@ -49,7 +49,7 @@
       </script>
     </c:when>
     <c:otherwise>
-      <fmt:message key="GML.personalSpace.location"/>.
+      <fmt:message key="GML.personalSpace.responsibles"/>.
     </c:otherwise>
   </c:choose>
 </view:frame>

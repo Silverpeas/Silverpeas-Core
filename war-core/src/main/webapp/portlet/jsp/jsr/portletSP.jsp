@@ -108,7 +108,7 @@
 </dt>
 <dd>
   <c:choose>
-    <c:when test="${portlet.displayed and portlet.minimized==false}">
+    <c:when test="${portlet.minimized==false}">
       <div class="portlet-content">
         <c:out value="${portlet.content}" escapeXml="false"/>
       </div>
