@@ -23,6 +23,18 @@ package com.silverpeas.util;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.exec.util.StringUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.silverpeas.util.mail.Mail;
+
+import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -37,18 +49,8 @@ import java.util.MissingResourceException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import javax.activation.MimetypesFileTypeMap;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.silverpeas.util.mail.Mail;
 
-public class FileUtil implements MimeTypes  {
+public class FileUtil implements MimeTypes {
 
   private static final ResourceLocator MIME_TYPES_EXTENSIONS = new ResourceLocator(
       "org.silverpeas.util.attachment.mime_types", "");
@@ -57,11 +59,11 @@ public class FileUtil implements MimeTypes  {
   private static final MimetypesFileTypeMap MIME_TYPES = new MimetypesFileTypeMap();
   private static final ClassLoader loader = java.security.AccessController.doPrivileged(
       new java.security.PrivilegedAction<ConfigurationClassLoader>() {
-    @Override
-    public ConfigurationClassLoader run() {
-      return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
-    }
-  });
+        @Override
+        public ConfigurationClassLoader run() {
+          return new ConfigurationClassLoader(FileUtil.class.getClassLoader());
+        }
+      });
 
   /**
    * Utility method for migration of Silverpeas configuration from : com.silverpeas,
@@ -285,7 +287,7 @@ public class FileUtil implements MimeTypes  {
   public static boolean isImage(final String filename) {
     return FilenameUtils.isExtension(filename, ImageUtil.IMAGE_EXTENTIONS);
   }
-  
+
   /**
    * Indicates if the current file is of type mail.
    *
@@ -387,7 +389,7 @@ public class FileUtil implements MimeTypes  {
     }
     FileUtils.copyFile(source, destination);
   }
-  
+
   /*
    * Remove any \ or / from the filename thus avoiding conflicts on the server.
    *
@@ -395,7 +397,7 @@ public class FileUtil implements MimeTypes  {
    * @return
    */
   public static String getFilename(String fileName) {
-     if (!StringUtil.isDefined(fileName)) {
+    if (!StringUtil.isDefined(fileName)) {
       return "";
     }
     String logicalName = convertPathToServerOS(fileName);
@@ -407,6 +409,7 @@ public class FileUtil implements MimeTypes  {
 
   /**
    * Convert a path to the current OS path format.
+   *
    * @param undeterminedOsPath
    * @return server OS pah.
    */
@@ -417,5 +420,34 @@ public class FileUtil implements MimeTypes  {
     String localPath = undeterminedOsPath;
     localPath = localPath.replace('\\', File.separatorChar).replace('/', File.separatorChar);
     return localPath;
+  }
+
+  public static String convertFilePath(File file) {
+    if (OsEnum.getOS().isWindows()) {
+      return StringUtils.quoteArgument(file.getAbsolutePath());
+    }
+    String path = file.getAbsolutePath();
+    path = path.replaceAll("\\\\", "\\\\\\\\");
+    path = path.replaceAll("\\s", "\\\\ ");
+    path = path.replaceAll("<", "\\\\<");
+    path = path.replaceAll(">", "\\\\>");
+    path = path.replaceAll("'", "\\\\'");
+    path = path.replaceAll("\"", "\\\\\"");
+    path = path.replaceAll("\\{", "\\\\{");
+    path = path.replaceAll("}", "\\\\}");
+    path = path.replaceAll("\\(", "\\\\(");
+    path = path.replaceAll("\\)", "\\\\)");
+    path = path.replaceAll("\\[", "\\\\[");
+    path = path.replaceAll("\\]", "\\\\]");
+    path = path.replaceAll("\\&", "\\\\&");
+    path = path.replaceAll("\\|", "\\\\|");
+    return path;
+  }
+
+  public static boolean deleteEmptyDir(File directory) {
+    if(directory.exists() && directory.isDirectory() && directory.list() != null && directory.list().length == 0) {
+      return directory.delete();
+    }
+    return false;
   }
 }

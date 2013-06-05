@@ -64,6 +64,7 @@ public class IndexEntry implements Serializable {
   private Map<String, String> previews = null;
   private Map<String, String> keywordsI18N = null;
   private String serverName = null;
+  private String filename = null;
 
   /**
    * This constructor set the key part of the IndexEntry but leave empty the object type. This
@@ -481,4 +482,13 @@ public class IndexEntry implements Serializable {
   public void setServerName(String serverName) {
     this.serverName = serverName;
   }
+  
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
 }

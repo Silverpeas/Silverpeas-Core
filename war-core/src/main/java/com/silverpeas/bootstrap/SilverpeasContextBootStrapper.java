@@ -20,14 +20,12 @@
  */
 package com.silverpeas.bootstrap;
 
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.GeneralSecurityException;
@@ -38,8 +36,16 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.security.SilverpeasSSLSocketFactory;
+
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.context.ContextLoaderListener;
 
@@ -154,12 +160,11 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
       for (int i = 0; i < jars.length; i++) {
         jarURLs[i] = jars[i].toURI().toURL();
       }
-      URLClassLoader ourClassLoader = new URLClassLoader(jarURLs,
-          SilverpeasContextBootStrapper.class.getClassLoader());
+      addURLs(jarURLs);
       String[] classNames = GeneralPropertiesManager.getString(CLASSES_TO_LOAD).split(",");
       for (String className : classNames) {
         try {
-          Class aClass = ourClassLoader.loadClass(className);
+          Class aClass = ClassLoader.getSystemClassLoader().loadClass(className);
           Class<? extends Provider> jceProvider = aClass.asSubclass(Provider.class);
           Security.insertProviderAt(jceProvider.newInstance(), 0);
         } catch (Throwable t) {
@@ -169,7 +174,24 @@ public class SilverpeasContextBootStrapper implements ServletContextListener {
       }
     } catch (Exception ex) {
       Logger.getLogger(SilverpeasContextBootStrapper.class.getSimpleName()).log(Level.SEVERE,
-              ex.getMessage(), ex);
+          ex.getMessage(), ex);
+    }
+  }
+
+  private static void addURLs(URL[] urls) throws NoSuchMethodException, IllegalArgumentException,
+      IllegalAccessException, InvocationTargetException {
+    ClassLoader cl = ClassLoader.getSystemClassLoader();
+    if (cl instanceof URLClassLoader) {
+      URLClassLoader urlClassloader = (URLClassLoader) cl;
+      // addURL is a protected method, but we can use reflection to call it
+      Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
+      // change access to true, otherwise, it will throw exception
+      method.setAccessible(true);
+      for (URL url : urls) {
+        method.invoke(urlClassloader, new Object[]{url});
+      }
+    } else {
+      // SystemClassLoader is not URLClassLoader....
     }
   }
 }

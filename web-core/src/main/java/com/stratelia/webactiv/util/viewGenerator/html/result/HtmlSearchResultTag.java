@@ -33,6 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import com.silverpeas.SilverpeasServiceProvider;
@@ -298,20 +299,19 @@ public class HtmlSearchResultTag extends TagSupport {
     if (gsr.getType() != null &&
         (gsr.getType().startsWith("Attachment") || gsr.getType().startsWith("Versioning") || gsr
         .getType().equals("LinkedFile"))) {
-      String fileType = sName.substring(sName.lastIndexOf(".") + 1, sName.length());
+      String fileType = FilenameUtils.getExtension(gsr.getAttachmentFilename());
       String fileIcon = FileRepositoryManager.getFileIcon(fileType);
-      sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
-      // no preview, display this is an attachment
-      if (gsr.getType().startsWith("Attachment") || gsr.getType().equals("LinkedFile")) {
-        sDescription = null;
+      if (!StringUtil.isDefined(sName)) {
+        sName = gsr.getAttachmentFilename();
       }
+      sName = "<img src=\"" + fileIcon + "\" class=\"fileIcon\"/>" + sName;
     }
 
     result.append("<td class=\"content\">");
 
     result.append("<table cellspacing=\"0\" cellpadding=\"0\"><tr>");
 
-    if (gsr.getThumbnailURL() != null && gsr.getThumbnailURL().length() > 0) {
+    if (StringUtil.isDefined(gsr.getThumbnailURL())) {
       if ("UserFull".equals(gsr.getType())) {
         result.append("<td><img class=\"avatar\" src=\"").append(
             URLManager.getApplicationURL()).append(gsr.getThumbnailURL()).append("\" /></td>");
@@ -368,15 +368,15 @@ public class HtmlSearchResultTag extends TagSupport {
           EncodeHelper.javaStringToHtmlString(sLocation)).append("</span>");
     }
     if (gsr.isPreviewable()) {
-      result.append(" <img onclick=\"javascript:previewFile(this, ").append(gsr.getAttachmentId())
-          .append(",").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
+      result.append(" <img onclick=\"javascript:previewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"preview-file\" src=\"").append(settings.getIcon("pdcPeas.file.preview"))
           .append("\" alt=\"").append(settings.getString("GML.preview")).append("\" title=\"")
           .append(settings.getString("GML.preview")).append("\"/>");
     }
     if (gsr.isViewable()) {
-      result.append(" <img onclick=\"javascript:viewFile(this, ").append(gsr.getAttachmentId())
-          .append(",").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
+      result.append(" <img onclick=\"javascript:viewFile(this, '").append(gsr.getAttachmentId())
+          .append("',").append(gsr.isVersioned()).append(",'").append(gsr.getInstanceId())
           .append("');\" class=\"view-file\" src=\"").append(settings.getIcon("pdcPeas.file.view"))
           .append("\" alt=\"").append(settings.getString("GML.view")).append("\" title=\"")
           .append(settings.getString("GML.view")).append("\"/>");
