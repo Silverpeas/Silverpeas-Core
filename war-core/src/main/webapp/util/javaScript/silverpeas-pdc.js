@@ -32,6 +32,7 @@
     context: webContext,
     workspace: null,
     component: null,
+    values: [],
     withSecondaryAxis: false
   };
 
@@ -49,6 +50,7 @@
         var settings = $(this).data('settings');
         loadPdC(settings.pdcUri, function(loadedPdC) {
           settings.selectorParameters.axis = loadedPdC.axis;
+          settings.selectorParameters.values = getValues(settings.values, loadedPdC.axis);
           $this.pdcAxisValuesSelector(settings.selectorParameters);
         }, function(pdc, error) {
           alert(error.message);
@@ -120,7 +122,7 @@
       primaryAxisIcon: webContext + '/pdcPeas/jsp/icons/primary.gif',
       secondaryAxisIcon: webContext + '/pdcPeas/jsp/icons/secondary.gif',
       axis: [],
-      values: settings.values,
+      values: [],
       onValueChange: function(axis, value) {
         var updatedAxis, settings = $this.data('settings'), values = $this.data('values');
         if (value === null)
@@ -129,8 +131,10 @@
           values.put(value);
         var flattenedValues = values.flatten();
         var url = settings.pdcUri;
-        if (values.length > 0)
-          url += (url.lastIndexOf('?') > 0 ? '&' : '?') + 'values=' + flattenedValues;
+        if (flattenedValues.length > 0) {
+          url += (url.indexOf('values=') > 0 ? '' : (url.indexOf('?') > 0 ? '&values=' : '?values=')) +
+                  flattenedValues;
+        }
         loadPdC(url, function(loadedPdC) {
           updatedAxis = loadedPdC.axis;
         }, function(pdc, error) {
@@ -184,6 +188,25 @@
     };
     $this.data('values', values);
     $this.data('settings', settings);
+  }
+
+  function getValues(valueIds, axis) {
+    var values = [];
+    for (var v = 0; v < valueIds.length; v++) {
+      var found = false;
+      for (var a = 0; a < axis.length && !found; a++) {
+        found = (axis[a].id === valueIds[v].axisId ? axis[a] : false);
+      }
+      if (found) {
+        for (var i = 0; i < found.values.length; i++) {
+          if (found.values[i].id === valueIds[v].id) {
+            values.push(found.values[i]);
+            break;
+          }
+        }
+      }
+    }
+    return values;
   }
 
 })(jQuery);

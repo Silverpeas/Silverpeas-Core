@@ -25,6 +25,8 @@
 --%>
 
 
+<%@page import="com.stratelia.silverpeas.pdc.control.PdcBm"%>
+<%@page import="com.silverpeas.pdc.PdcServiceFactory"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -955,8 +957,8 @@ out.println(frame.printAfter());
     valuesInJs.append("{axisId: ").append(criteriaOnAxisValues.get(0).getAxisId()).
         append(", id: '" + criteriaOnAxisValues.get(0).getValue()).append("'}");
     for(int i = 1; i < criteriaOnAxisValues.size(); i++) {
-      valuesInJs.append(", {axisId: ").append(criteriaOnAxisValues.get(0).getAxisId()).
-        append(", id: '" + criteriaOnAxisValues.get(0).getValue()).append("'}");
+      valuesInJs.append(", {axisId: ").append(criteriaOnAxisValues.get(i).getAxisId()).
+        append(", id: '" + criteriaOnAxisValues.get(i).getValue()).append("'}");
     }
   }
   valuesInJs.append("]");

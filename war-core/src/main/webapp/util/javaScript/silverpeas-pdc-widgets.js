@@ -944,10 +944,7 @@ function removePosition(position, positions) {
    * @param {Array} selectedPositions the values already selected by the user.
    */
   function reloadAxis(axisToDisplay, settings, selectedPositions) {
-    var axis = settings.axis;
-    for (var i = 0; i < axis.length; i++) {
-      $('#' + settings.id + '_' + axis[i].id).parent().remove();
-    }
+    settings.parent.children().remove();
     for (var i = 0; i < axisToDisplay.length; i++) {
       var currentAxisDiv = $('<div>', {
         id: settings.id + '_' + axisToDisplay[i].id
