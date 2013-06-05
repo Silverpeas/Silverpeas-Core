@@ -223,8 +223,11 @@ $(document).ready(function(){
 
 	<div id="avatarDialog">
 		<form name="photoForm" action="UpdatePhoto" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
+			<div>
+	          <div><fmt:message key="profil.descriptionImage" /></div>
+	        </div>
 	        <div>
-	          <div class="txtlibform">Image :</div>
+	          <div class="txtlibform"><fmt:message key="profil.image" /> :</div>
 	          <div><input type="file" name="WAIMGVAR0" size="60"/></div>
 	        </div>
 	      </form>
