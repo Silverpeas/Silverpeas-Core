@@ -179,7 +179,7 @@ public class MetaData {
 
   private String cleanString(String value) {
     if (StringUtil.isDefined(value)) {
-      return value.replace("ï¿½ï¿½", "").replace("&amp#0;", "").replace("&#0;", "");
+      return value.replace("\u0000", "").replace("ï¿½ï¿½", "").trim();
     }
     return value;
   }
