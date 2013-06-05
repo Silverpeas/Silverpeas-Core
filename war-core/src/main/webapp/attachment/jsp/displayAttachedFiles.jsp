@@ -500,7 +500,7 @@
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               window.open(url, '_self');
             } else if (download) {
-              var url = $('#url' + oldId).attr('href');
+              var url = $('#url_' + oldId).attr('href');
               window.open(url);
             }
           } else {
