@@ -38,6 +38,7 @@
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
+<%@ page import="org.silverpeas.attachment.tag.MenuHelper" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -212,12 +213,16 @@
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
           <c:if test="${contextualMenuEnabled}">
-            <%com.silverpeas.attachment.MenuHelper.displayActions((SimpleDocument) pageContext.
-                    getAttribute("currentAttachment"), (Boolean) pageContext.getAttribute("useXMLForm"),
-                    (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
-                    getAttribute("webdavEditingEnable"), userId, (String) pageContext.getAttribute(
-                    "contentLanguage"), attResources, URLManager.getServerURL(request),
-                    (Boolean) pageContext.getAttribute("showMenuNotif"), (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>
+            <%
+              MenuHelper.displayActions((SimpleDocument) pageContext.
+                  getAttribute("currentAttachment"),
+                  (Boolean) pageContext.getAttribute("useXMLForm"),
+                  (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
+                  getAttribute("webdavEditingEnable"), userId,
+                  (String) pageContext.getAttribute("contentLanguage"), attResources,
+                  URLManager.getServerURL(request),
+                  (Boolean) pageContext.getAttribute("showMenuNotif"),
+                  (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>
           </c:if>
           <span class="lineMain">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
@@ -500,7 +505,7 @@
               var url = "<%=URLManager.getFullApplicationURL(request)%>/attachment/jsp/launch.jsp?documentUrl=" + eval("webDav".concat(oldId));
               window.open(url, '_self');
             } else if (download) {
-              var url = $('#url' + oldId).attr('href');
+              var url = $('#url_' + oldId).attr('href');
               window.open(url);
             }
           } else {

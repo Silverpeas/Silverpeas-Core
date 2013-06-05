@@ -18,29 +18,32 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.attachment;
+package org.silverpeas.attachment.tag;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
+
+import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-import javax.servlet.jsp.JspWriter;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import org.silverpeas.attachment.model.SimpleDocument;
-
-import com.silverpeas.util.i18n.I18NHelper;
-
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
+import static com.silverpeas.util.StringUtil.newline;
 
 /**
  * @author ehugonnet
  */
 public class MenuHelper {
 
-  static final String NEW_LINE = System.getProperty("line.separator");
   private final static String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
+
+  private final static String menuItemTemplate = "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
+
+  private final static String checkoutJsTemplate = "checkout('%1$s',%2$s,%3$s);";
+  private final static String checkoutAndDownloadJsTemplate = "checkoutAndDownload('%1$s',%2$s,%3$s);";
 
   public static boolean isAdmin(String userId) {
     return OrganisationControllerFactory.getOrganisationController().getUserDetail(userId)
@@ -64,69 +67,63 @@ public class MenuHelper {
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(1024);
     builder.append("<div id=\"basicmenu").append(attachmentId).append("\" class=\"yuimenu\">").
-        append(NEW_LINE);
-    builder.append("<div class=\"bd\">").append(NEW_LINE);
-    builder.append("<ul class=\"first-of-type\">").append(NEW_LINE);
-    builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkout('").
-        append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
-        append(")\">").append(resources.getString("checkOut")).append("</a></li>").append(NEW_LINE);
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndDownload('")
-        .append(attachment.getId()).append("',").append(attachmentId).append(",").append(webDavOK).
-        append(");\">").append(resources.getString("attachment.checkOutAndDownload")).append(
-        "</a></li>").append(NEW_LINE);
+        append(newline);
+    builder.append("<div class=\"bd\">").append(newline);
+    builder.append("<ul class=\"first-of-type\">").append(newline);
+    builder.append(String.format(menuItemTemplate, String.format(checkoutJsTemplate,
+        attachment.getId(), attachmentId, webDavOK), resources.getString("checkOut")));
+    builder.append(String.format(menuItemTemplate, String.format(checkoutAndDownloadJsTemplate,
+        attachment.getId(), attachmentId, webDavOK), resources.getString("attachment.checkOutAndDownload")));
     builder.
         append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('")
         .append(attachment.getId()).append("',").append(attachmentId).append(");\">").
         append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>").append(
-        NEW_LINE);
+        newline);
     builder.append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin('").
         append(attachment.getId()).append("',").append(attachmentId).append(",").append(attachment.
         isOpenOfficeCompatible()).append(", false)\">").append(resources.getString("checkIn")).
         append("</a></li>").append(
-        NEW_LINE);
-    builder.append("</ul>").append(NEW_LINE);
-    builder.append("<ul>").append(NEW_LINE);
+        newline);
+    builder.append("</ul>").append(newline);
+    builder.append("<ul>").append(newline);
     builder.
         append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('")
         .append(attachment.getId()).append("', '").append(language).append("');\">").append(
-        resources.getString("GML.modify")).append("</a></li>").append(NEW_LINE);
+        resources.getString("GML.modify")).append("</a></li>").append(newline);
     if (useXMLForm) {
       builder.append(
           "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
       builder.append(attachmentId).append("','").append(language).append("');\">");
       builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(
-          NEW_LINE);
+          newline);
     }
     builder.
         append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('")
         .append(attachment.getId()).append("', '").append(StringEscapeUtils.escapeEcmaScript(
         attachment.getFilename())).append("')\">").append(resources.getString("GML.delete")).append(
-        "</a></li>").append(NEW_LINE);
-    builder.append("</ul>").append(NEW_LINE);
-    builder.append("<ul>").append(NEW_LINE);
+        "</a></li>").append(newline);
+    builder.append("</ul>").append(newline);
+    builder.append("<ul>").append(newline);
     builder.
         append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('")
         .append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
-        append("</a></li>").append(NEW_LINE);
-    builder.append("</ul>").append(NEW_LINE);
-    builder.append("<ul>").append(NEW_LINE);
+        append("</a></li>").append(newline);
+    builder.append("</ul>").append(newline);
+    builder.append("<ul>").append(newline);
     builder.
         append(
         "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('");
     builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify")).append(
-        NEW_LINE);
+        newline);
     builder.append("</a></li>");
-    builder.append("</ul>").append(NEW_LINE);
-    builder.append("</div>").append(NEW_LINE);
-    builder.append("</div>").append(NEW_LINE);
+    builder.append("</ul>").append(newline);
+    builder.append("</div>").append(newline);
+    builder.append("</div>").append(newline);
 
     builder.append("<script type=\"text/javascript\">");
 
