@@ -123,14 +123,15 @@ public class SPDesktopServlet extends HttpServlet {
       response.sendRedirect(spaceHomePage);
     } else {
       spaceId = getSpaceId(request);
-      String userId = getMainSessionController(request).getUserId();
+      MainSessionController mainSessionController = getMainSessionController(request);
+      String userId = mainSessionController.getUserId();
       String spContext = userId;
       if (isDefined(spaceId)) {
         spContext = spaceId;
       }
       setUserIdAndSpaceIdInRequest(spaceId, userId, request);
 
-      DesktopMessages.init(request);
+      DesktopMessages.init(mainSessionController.getFavoriteLanguage());
       SilverTrace.debug("portlet", "SPDesktopServlet.doGetPost", "root.MSG_GEN_PARAM_VALUE",
           "DesktopMessages initialized !");
       DriverUtil.init(request);

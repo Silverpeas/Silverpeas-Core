@@ -80,7 +80,7 @@ public class UploadServlet extends HttpServlet {
       throws ServletException, IOException {
 
     // Initialize DesktopMessages' Resource Bundle
-    DesktopMessages.init(request);
+    DesktopMessages.init(getLanguage(request));
     try {
       uploadFile(request, response);
     } catch (PortletRegistryException pre) {
