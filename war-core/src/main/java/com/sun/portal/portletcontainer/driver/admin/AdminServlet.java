@@ -72,7 +72,7 @@ public class AdminServlet extends HttpServlet {
     String userId = getUserId(request);
     String language = getLanguage(request);
 
-    DesktopMessages.init(request);
+    DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
     PortletAdminData portletAdminData = null;
