@@ -20,18 +20,22 @@
  */
 package org.silverpeas.wysiwyg.control;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.attachment.AttachmentException;
 import org.silverpeas.attachment.AttachmentServiceFactory;
 import org.silverpeas.attachment.model.DocumentType;
@@ -45,24 +49,17 @@ import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.util.Charsets;
 import org.silverpeas.wysiwyg.WysiwygException;
 
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.MimeTypes;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-
-import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
-import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
-import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.CharEncoding;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Central service to manage Wysiwyg.
@@ -214,7 +211,7 @@ public class WysiwygController {
     int longueur = componentId.length();
     int index = path.lastIndexOf(componentId);
     String chemin = path.substring(index + longueur);
-    chemin = ignoreSlashAndAntislash(chemin);
+    chemin = suppressLeadingSlashesOrAntislashes(chemin);
     chemin = supprDoubleAntiSlash(chemin);
     return chemin;
   }
@@ -252,13 +249,9 @@ public class WysiwygController {
   static String getNodePath(String currentPath, String componentId) {
     String chemin = currentPath;
     if (chemin != null) {
-      chemin = supprAntiSlashFin(chemin);
-      int longueur = componentId.length();
-      int indexComponent = chemin.lastIndexOf(componentId);
-      indexComponent = indexComponent + longueur;
-      String finChemin = chemin.substring(indexComponent);
-      finChemin = ignoreSlash(finChemin);
-      finChemin = ignoreSlashAndAntislash(finChemin);
+      chemin = suppressFinalSlash(chemin);
+      int indexComponent = chemin.lastIndexOf(componentId) + componentId.length();
+      String finChemin = suppressLeadingSlashesOrAntislashes(chemin.substring(indexComponent));
       int index = -1;
       if (finChemin.contains("/")) {
         index = finChemin.indexOf('/');
@@ -270,40 +263,25 @@ public class WysiwygController {
 
       if (index == -1) {
         return chemin;
-      } else {
-        int indexRacine = chemin.indexOf(finChemin);
-        return chemin.substring(0, indexRacine + index);
       }
+      return chemin.substring(0, chemin.indexOf(finChemin) + index);
     }
     return "";
   }
 
   /* supprAntiSlashFin */
-  static String supprAntiSlashFin(String path) {
-    /* ex : ....\\id\\rep1\\rep2\\rep3\\ */
-    /* res : ....\\id\\rep1\\rep2\\rep3 */
-    int longueur = path.length();
-
-    if ("/".equals(path.substring(longueur - 1))) {
-      return path.substring(0, longueur - 1);
+  static String suppressFinalSlash(String path) {
+    if (path.endsWith("/")) {
+      return suppressFinalSlash(path.substring(0, path.length() - 1));
     }
     return path;
   }
 
-  static String ignoreSlash(String chemin) {
-    /* ex : /rep1/rep2/rep3 */
-    /* res = rep1/rep2/rep3 */
-    String res = chemin;
-    boolean ok = false;
-    while (!ok) {
-      char car = res.charAt(0);
-      if (car == '/') {
-        res = res.substring(1);
-      } else {
-        ok = true;
-      }
+  static String ignoreLeadingSlash(String chemin) {
+    if (chemin.startsWith("/")) {
+      return ignoreLeadingSlash(chemin.substring(1));
     }
-    return res;
+    return chemin;
   }
 
   static String supprDoubleAntiSlash(String chemin) {
@@ -322,10 +300,9 @@ public class WysiwygController {
     return res.toString();
   }
 
-  static String ignoreSlashAndAntislash(String chemin) {
-    char firstChar = chemin.charAt(0);
-    if (firstChar == '\\' || firstChar == '/') {
-      return ignoreSlashAndAntislash(chemin.substring(1));
+  static String suppressLeadingSlashesOrAntislashes(String chemin) {
+    if (chemin.startsWith("\\") || chemin.startsWith("/")) {
+      return suppressLeadingSlashesOrAntislashes(chemin.substring(1));
     }
     return chemin;
   }
