@@ -46,7 +46,7 @@ import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganis
 /**
  * @author ehugonnet
  */
-public class MenuHelper extends TagSupport {
+public class SimpleDocumentContextualMenu extends TagSupport {
 
   private SimpleDocument attachment;
   private boolean useXMLForm;
