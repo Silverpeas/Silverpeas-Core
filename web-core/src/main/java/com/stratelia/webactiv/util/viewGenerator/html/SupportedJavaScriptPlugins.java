@@ -50,6 +50,10 @@ public enum SupportedJavaScriptPlugins {
    */
   breadcrumb,
   /**
+   * Silverpeas plugin to provide user and group profile informations.
+   */
+  profile,
+  /**
    * Silverpeas plugin to print out a popup with information about a given user and with some
    * social functions (invitation, messaging,...).
    * The HTML element on which the plugin is invoked must present the rel attribute valued with the
