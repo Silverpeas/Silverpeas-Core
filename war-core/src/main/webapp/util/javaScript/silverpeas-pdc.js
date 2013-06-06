@@ -32,7 +32,8 @@
     context: webContext,
     workspace: null,
     component: null,
-    values: [],
+    values: [], /* an array of value object with at least the following properties:
+     id for the value path and axisId for the unique identifier of the axis it belongs to.*/
     withSecondaryAxis: false
   };
 
@@ -48,7 +49,8 @@
         var $this = $(this);
         init($this, parameters);
         var settings = $(this).data('settings');
-        loadPdC(settings.pdcUri, function(loadedPdC) {
+        var url = uriOfUsedPdc(settings);
+        loadPdC(url, function(loadedPdC) {
           settings.selectorParameters.axis = loadedPdC.axis;
           settings.selectorParameters.values = getValues(settings.values, loadedPdC.axis);
           $this.pdcAxisValuesSelector(settings.selectorParameters);
@@ -72,7 +74,7 @@
      * in the string.
      */
     selectedValues: function() {
-      return $(this).data('values');
+      return $(this).data('settings').values;
     }
   };
 
@@ -97,7 +99,6 @@
     if (parameters) {
       $.extend(true, settings, parameters);
     }
-    settings.pdcUri = uriOfUsedPdc(settings);
     $.i18n.properties({
       name: 'pdcBundle',
       path: webContext + '/services/bundles/org/silverpeas/pdcPeas/multilang/',
@@ -124,17 +125,12 @@
       axis: [],
       values: [],
       onValueChange: function(axis, value) {
-        var updatedAxis, settings = $this.data('settings'), values = $this.data('values');
+        var updatedAxis, settings = $this.data('settings');
         if (value === null)
-          values.removeByAxis(axis);
+          settings.values.removeByAxis(axis);
         else
-          values.put(value);
-        var flattenedValues = values.flatten();
-        var url = settings.pdcUri;
-        if (flattenedValues.length > 0) {
-          url += (url.indexOf('values=') > 0 ? '' : (url.indexOf('?') > 0 ? '&values=' : '?values=')) +
-                  flattenedValues;
-        }
+          settings.values.put(value);
+        var url = uriOfUsedPdc(settings);
         loadPdC(url, function(loadedPdC) {
           updatedAxis = loadedPdC.axis;
         }, function(pdc, error) {
@@ -145,16 +141,18 @@
       },
       onValuesSelected: null
     };
-    var values = [];
+    if (!settings.values)
+      settings.values = [];
+    var values = settings.values;
     values.put = function(aValue) {
       /**
        * Put the specified value into the array. If a value for the same axis already exists, then
        * the specified value replaces it, otherwise it is just pushed at the end of the array.
        */
       var found = false;
-      for (var i = 0; i < values.length && !found; i++) {
-        if (values[i].axisId === aValue.axisId) {
-          values[i] = aValue;
+      for (var i = 0; i < this.length && !found; i++) {
+        if (this[i].axisId === aValue.axisId) {
+          this[i] = aValue;
           found = true;
         }
       }
@@ -165,9 +163,9 @@
       /**
        * Removes the value for the specified axis.
        */
-      for (var i = 0; i < values.length; i++) {
-        if (values[i].axisId === axis.id) {
-          values.splice(i, 1);
+      for (var i = 0; i < this.length; i++) {
+        if (this[i].axisId === axis.id) {
+          this.splice(i, 1);
           break;
         }
       }
@@ -186,7 +184,6 @@
       }
       return v;
     };
-    $this.data('values', values);
     $this.data('settings', settings);
   }
 

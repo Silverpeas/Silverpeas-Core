@@ -597,7 +597,7 @@ function deleteUser()
 
 </script>
 </head>
-<body onload="onLoadStart();">
+<body id="advanced-search" onload="onLoadStart();">
 <%
 if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
@@ -949,6 +949,9 @@ out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <view:progressMessage/>
+<%
+  if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
+%>
 <script type="text/javascript">
     <%
   List<SearchCriteria> criteriaOnAxisValues = searchContext.getCriterias();
@@ -973,5 +976,8 @@ out.println(frame.printAfter());
         values: <%= valuesInJs %>
       });
 </script>
+<%
+  }
+%>
 </body>
 </html>

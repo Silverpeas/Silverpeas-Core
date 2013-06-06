@@ -1185,7 +1185,7 @@ function removePosition(position, positions) {
                 html(settings.labelOk).click(function() {
           informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
         }));
-      } else {
+      } else if (!settings.onValueChange) {
         $thisPdcAxisValuesSelector.append($('<br>').attr('clear', 'all'));
       }
       if (settings.axis.length > 0) {
