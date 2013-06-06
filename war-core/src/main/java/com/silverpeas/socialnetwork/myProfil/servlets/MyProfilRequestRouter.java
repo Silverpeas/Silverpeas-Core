@@ -320,8 +320,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void setUserSettingsIntoRequest(HttpServletRequest request, MyProfilSessionController sc) {
     request.setAttribute("preferences", sc.getPreferences());
     request.setAttribute("SpaceTreeview", sc.getSpaceTreeview());
     request.setAttribute("AllLanguages", DisplayI18NHelper.getLanguages());
@@ -338,8 +337,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     }
   }
 
-  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc)
-      throws PeasCoreException {
+  private void updateUserSettings(HttpServletRequest request, MyProfilSessionController sc) {
     UserPreferences preferences = sc.getPreferences();
     preferences.setLanguage(request.getParameter("SelectedLanguage"));
     preferences.setLook(request.getParameter("SelectedLook"));

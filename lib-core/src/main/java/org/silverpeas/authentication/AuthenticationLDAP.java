@@ -406,8 +406,7 @@ public class AuthenticationLDAP extends Authentication {
     return newQuotedPassword.getBytes(Charsets.UTF_16LE);
   }
 
-  private LDAPModification[] changeOpenDSPassword(String newPassword) throws
-      UnsupportedEncodingException {
+  private LDAPModification[] changeOpenDSPassword(String newPassword) {
     // prepare password change
     return new LDAPModification[]{new LDAPModification(LDAPModification.REPLACE, new LDAPAttribute(
       "userPassword",

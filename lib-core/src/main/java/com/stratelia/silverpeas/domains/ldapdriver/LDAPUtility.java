@@ -92,8 +92,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public LDAPConnection getConnection(String connectionId)
-      throws AdminException {
+  static public LDAPConnection getConnection(String connectionId) {
     return (connectInfos.get(connectionId)).connection;
   }
 
@@ -106,8 +105,7 @@ public class LDAPUtility {
    * @throws AdminException
    * @see
    */
-  static public boolean recoverConnection(String connectionId, LDAPException ex)
-      throws AdminException {
+  static public boolean recoverConnection(String connectionId, LDAPException ex) {
     int nbRetry = 0;
     boolean reOpened = false;
 

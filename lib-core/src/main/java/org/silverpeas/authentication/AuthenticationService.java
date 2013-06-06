@@ -442,8 +442,7 @@ public class AuthenticationService {
    * @param login a user login
    * @return the generated authentication key.
    */
-  private String computeGenerationKey(String login)
-      throws AuthenticationException {
+  private String computeGenerationKey(String login) {
     // Random key generation
     long nStart = login.hashCode() * new Date().getTime() * (m_AutoInc++);
     Random rand = new Random(nStart);

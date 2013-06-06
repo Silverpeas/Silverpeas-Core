@@ -207,8 +207,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * @return true if this instance need to generate a specific result template, false else if
    * @throws JspTagException
    */
-  private boolean isResultTemplating(String instanceId, String componentName)
-      throws JspTagException {
+  private boolean isResultTemplating(String instanceId, String componentName) {
     boolean doResultTemplating = false;
     Boolean cacheResult = componentSettings.get(componentName);
     if (cacheResult != null) {
@@ -237,7 +236,7 @@ public class HtmlSearchResultTag extends TagSupport {
    * @throws JspTagException
    */
   private String generateHTMLSearchResult(ResourcesWrapper settings, String componentName,
-      String extraInformation) throws JspTagException {
+      String extraInformation) {
     // initialize html result
     StringBuilder result = new StringBuilder();
     String downloadSrc = "<img src=\"" + settings.getIcon("pdcPeas.download") +
@@ -393,19 +392,19 @@ public class HtmlSearchResultTag extends TagSupport {
 
     return result.toString();
   }
-  
+
   /**
    * @return a UserPreferences object from Personalization service.
    * @throws JspTagException
    */
-  private UserPreferences getUserPreferences() throws JspTagException {
+  private UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
   /**
    * @return a ResourcesWrapper which encapsulate pdcPeas settings and bundles
    */
-  private ResourcesWrapper getSettings() throws JspTagException {
+  private ResourcesWrapper getSettings() {
     if (settings == null) {
       String language = getUserPreferences().getLanguage();
       ResourceLocator messages =
@@ -418,7 +417,7 @@ public class HtmlSearchResultTag extends TagSupport {
     }
     return settings;
   }
-  
+
   public void setSettings(ResourcesWrapper settings) {
     this.settings = settings;
   }

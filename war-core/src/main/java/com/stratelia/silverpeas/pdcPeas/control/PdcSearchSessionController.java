@@ -1875,7 +1875,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static String[] KEYWORDS = null;
   private boolean isThesaurusEnableByUser = false;
 
-  private boolean getActiveThesaurusByUser() throws PdcException {
+  private boolean getActiveThesaurusByUser() {
     return getPersonalization().isThesaurusEnabled();
   }
 

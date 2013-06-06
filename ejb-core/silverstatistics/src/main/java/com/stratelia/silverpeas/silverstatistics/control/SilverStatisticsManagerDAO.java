@@ -65,7 +65,7 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   static void insertDataStatsCumul(Connection con, StatType statsType,
-      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException {
     StringBuilder insertStatementBuf = new StringBuilder("INSERT INTO ");
     insertStatementBuf.append(conf.getTableName(statsType)).append("Cumul" + "(");
     String insertStatement;
@@ -164,7 +164,7 @@ public class SilverStatisticsManagerDAO {
    * @see
    */
   public static void putDataStatsCumul(Connection con, StatType statsType,
-      List<String> valueKeys, StatisticsConfig conf) throws SQLException, IOException {
+      List<String> valueKeys, StatisticsConfig conf) throws SQLException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
     StringBuilder updateStatementBuf = new StringBuilder("UPDATE ");
     String tableName = conf.getTableName(statsType);
@@ -310,11 +310,10 @@ public class SilverStatisticsManagerDAO {
    * @param statsType
    * @param conf
    * @throws SQLException
-   * @throws IOException
    * @see
    */
   public static void makeStatCumul(Connection con, StatType statsType, StatisticsConfig conf)
-      throws SQLException, IOException {
+      throws SQLException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT * FROM ").append(
         conf.getTableName(statsType));
     String selectStatement;
@@ -367,10 +366,6 @@ public class SilverStatisticsManagerDAO {
         putDataStatsCumul(con, statsType, valueKeys, conf);
       }
     } catch (SQLException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
-          "silverstatistics.MSG_ALIMENTATION_BD", e);
-      throw e;
-    } catch (IOException e) {
       SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatCumul",
           "silverstatistics.MSG_ALIMENTATION_BD", e);
       throw e;
@@ -468,9 +463,6 @@ public class SilverStatisticsManagerDAO {
           try {
             makeStatCumul(con, currentType, conf);
           } catch (SQLException e) {
-            SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
-                "silverstatistics.MSG_CUMUL_BD", e);
-          } catch (IOException e) {
             SilverTrace.error("silverstatistics", "SilverStatisticsManagerDAO.makeStatAllCumul",
                 "silverstatistics.MSG_CUMUL_BD", e);
           } finally {

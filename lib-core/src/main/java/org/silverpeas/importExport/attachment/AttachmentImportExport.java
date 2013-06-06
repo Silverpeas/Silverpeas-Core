@@ -55,7 +55,7 @@ import org.apache.commons.io.IOUtils;
  * Classe de gestion des attachments dans le moteur d'importExport de silverpeas.
  */
 public class AttachmentImportExport {
-  
+
   private final ResourceLocator resources = new ResourceLocator(
       "org.silverpeas.importExport.settings.importSettings", "");
 
@@ -150,7 +150,8 @@ public class AttachmentImportExport {
     File fileToCreate = new File(path + physicalName);
     while (fileToCreate.exists()) {
       SilverTrace.info("attachment", "AttachmentImportExport.copyFile()",
-          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists=" + fileToCreate.getAbsolutePath());
+          "root.MSG_GEN_PARAM_VALUE", "fileToCreate already exists=" + fileToCreate
+          .getAbsolutePath());
 
       // To prevent overwriting
       physicalName = String.valueOf(System.currentTimeMillis()) + '.' + type;
@@ -288,21 +289,15 @@ public class AttachmentImportExport {
 
         if (extensionFilter == null || FileRepositoryManager.getFileExtension(attachment.
             getFilename()).equalsIgnoreCase(extensionFilter)) {
-          try {
-            copyAttachment(attachment, exportPath);
-            String physicalName = relativeExportPath + File.separator + FileServerUtils.
-                replaceAccentChars(attachment.getFilename());
-            AttachmentDetail attachDetail =
-                new AttachmentDetail(new AttachmentPK(attachment.getId(),
-                attachment.getInstanceId()), physicalName, attachment.getFilename(), attachment.
-                getDescription(), attachment.getContentType(),
-                attachment.getSize(), attachment.getDocumentType().toString(), attachment.
-                getCreated(), new ForeignPK(attachment.getForeignId(), attachment.getInstanceId()));
-            listToReturn.add(attachDetail);
-          } catch (IOException ex) {
-            // TODO: gerer ou ne pas gerer telle est la question
-            ex.printStackTrace();
-          }
+          copyAttachment(attachment, exportPath);
+          String physicalName = relativeExportPath + File.separator + FileServerUtils.
+              replaceAccentChars(attachment.getFilename());
+          AttachmentDetail attachDetail = new AttachmentDetail(new AttachmentPK(attachment.getId(),
+              attachment.getInstanceId()), physicalName, attachment.getFilename(), attachment.
+              getDescription(), attachment.getContentType(),
+              attachment.getSize(), attachment.getDocumentType().toString(), attachment.
+              getCreated(), new ForeignPK(attachment.getForeignId(), attachment.getInstanceId()));
+          listToReturn.add(attachDetail);
         }
       }
     }
@@ -310,7 +305,7 @@ public class AttachmentImportExport {
     return listToReturn;
   }
 
-  private void copyAttachment(SimpleDocument attDetail, String exportPath) throws IOException {
+  private void copyAttachment(SimpleDocument attDetail, String exportPath) {
     String fichierJointExport = exportPath + File.separatorChar + FileServerUtils.
         replaceAccentChars(
         attDetail.getFilename());

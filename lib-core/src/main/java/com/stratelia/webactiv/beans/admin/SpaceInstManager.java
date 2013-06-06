@@ -253,7 +253,7 @@ public class SpaceInstManager {
     }
   }
 
-  private SpaceInst spaceRow2SpaceInst(SpaceRow space) throws AdminException {
+  private SpaceInst spaceRow2SpaceInst(SpaceRow space) {
     // Set the attributes of the space Inst
     SpaceInst spaceInst = new SpaceInst();
     spaceInst.setId(idAsString(space.id));
@@ -347,8 +347,7 @@ public class SpaceInstManager {
     }
   }
 
-  private int getSpaceLevel(int spaceId)
-      throws AdminException {
+  private int getSpaceLevel(int spaceId) {
     return TreeCache.getSpaceLevel(Integer.toString(spaceId));
   }
 

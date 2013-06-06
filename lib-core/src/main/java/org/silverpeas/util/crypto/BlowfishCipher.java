@@ -23,11 +23,11 @@ package org.silverpeas.util.crypto;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import org.silverpeas.util.Charsets;
 
-import java.util.Arrays;
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * Blowfish is a keyed, symmetric block cipher, designed in 1993 by Bruce Schneier and included in a
@@ -114,7 +114,7 @@ public class BlowfishCipher implements Cipher {
     return uncrypted;
   }
 
-  private BlowfishKey getSymmetricKey() throws CryptoException {
+  private BlowfishKey getSymmetricKey() {
     return blowfishKey;
   }
 

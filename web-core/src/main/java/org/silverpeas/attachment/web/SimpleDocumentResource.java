@@ -328,7 +328,7 @@ public class SimpleDocumentResource extends RESTWebService {
     }
     StreamingOutput stream = new StreamingOutput() {
       @Override
-      public void write(OutputStream output) throws IOException, WebApplicationException {
+      public void write(OutputStream output) throws WebApplicationException {
         try {
           AttachmentServiceFactory.getAttachmentService().getBinaryContent(output,
               new SimpleDocumentPK(getSimpleDocumentId()), language);

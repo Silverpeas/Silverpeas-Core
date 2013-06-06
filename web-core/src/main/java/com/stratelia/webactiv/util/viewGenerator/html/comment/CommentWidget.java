@@ -190,17 +190,17 @@ public abstract class CommentWidget extends TagSupport {
     return resourceType;
   }
 
-  private UserPreferences getUserPreferences() throws JspTagException {
+  private UserPreferences getUserPreferences() {
     return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(getUserId());
   }
 
-  private ResourcesWrapper getSettings() throws JspTagException {
+  private ResourcesWrapper getSettings() {
     String language = getUserPreferences().getLanguage();
-    ResourceLocator messages = new ResourceLocator(
-        "com.stratelia.webactiv.util.comment.multilang.comment", language);
+    ResourceLocator messages = new ResourceLocator("org.silverpeas.util.comment.multilang.comment",
+        language);
     ResourcesWrapper resources = new ResourcesWrapper(messages,
-        new ResourceLocator("com.stratelia.webactiv.util.comment.icons", ""),
-        new ResourceLocator("com.stratelia.webactiv.util.comment.Comment", ""), language);
+        new ResourceLocator("org.silverpeas.util.comment.icons", ""),
+        new ResourceLocator("org.silverpeas.util.comment.Comment", ""), language);
 
     return resources;
 
@@ -224,7 +224,7 @@ public abstract class CommentWidget extends TagSupport {
    * is required to be included within the the XHTML header section.
    * @return the javascript code to handle a list of comments on a given resource.
    */
-  private String setUpJQueryCommentPlugin() throws JspTagException {
+  private String setUpJQueryCommentPlugin() {
     String context = URLManager.getApplicationURL();
 
     OrganisationController controller = OrganisationControllerFactory.getOrganisationController();

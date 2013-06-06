@@ -123,8 +123,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
     }
   }
 
-  private List<AxisHeader> persistence2AxisHeaders(Collection<AxisHeaderPersistence> silverpeasBeans)
-      throws PersistenceException, PdcException {
+  private List<AxisHeader> persistence2AxisHeaders(Collection<AxisHeaderPersistence> silverpeasBeans) {
     List<AxisHeader> resultingAxisHeaders = new ArrayList<AxisHeader>();
     if (silverpeasBeans != null) {
       for (AxisHeaderPersistence silverpeasBean : silverpeasBeans) {
@@ -993,8 +992,7 @@ public class PdcBmImpl implements PdcBm, ContainerInterface {
    * @return a list of each pathes found
    * @throws PdcException
    */
-  private ArrayList<String> getPathes(Connection con, String refValue, String treeId)
-      throws PdcException {
+  private ArrayList<String> getPathes(Connection con, String refValue, String treeId) {
     ArrayList<String> pathList = new ArrayList<String>();
     TreeNodePK refNodePK = new TreeNodePK(refValue);
     try {

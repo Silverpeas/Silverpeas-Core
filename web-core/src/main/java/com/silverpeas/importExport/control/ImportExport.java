@@ -1165,23 +1165,18 @@ public class ImportExport {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
+    // Creates export folder
+    File fileExportDir = createExportDir(userDetail);
+
+    // Export files attached to publications
     try {
-      // Creates export folder
-      File fileExportDir = createExportDir(userDetail);
-
-      // Export files attached to publications
-      try {
-        pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath());
-      } catch (IOException e1) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
-      }
-
-      // Create ZIP file
-      createZipFile(fileExportDir, exportReport);
+      pub_Typ_Mger.processExportOfFilesOnly(exportReport, userDetail, listItemsToExport,
+          fileExportDir.getPath());
     } catch (IOException e1) {
-      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+      throw new ImportExportException("ImportExport", "root.EX_CANT_EXPORT_FILES", e1);
     }
+    // Create ZIP file
+    createZipFile(fileExportDir, exportReport);
     return exportReport;
   }
 
@@ -1190,29 +1185,25 @@ public class ImportExport {
     PublicationsTypeManager pub_Typ_Mger = new PublicationsTypeManager();
     ExportReport exportReport = new ExportReport();
 
+    // Stockage de la date de démarrage de l'export dans l'objet rapport
+    exportReport.setDateDebut(new Date());
+
+    File fileExportDir = createExportDir(userDetail);
+
     try {
-      // Stockage de la date de démarrage de l'export dans l'objet rapport
-      exportReport.setDateDebut(new Date());
-
-      File fileExportDir = createExportDir(userDetail);
-
-      try {
-        // création des répertoires avec le nom des thèmes et des publications
-        pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
-            fileExportDir.getPath(), true, false);
-      } catch (IOException e1) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
-      }
-
-      // Création du zip
-      createZipFile(fileExportDir, exportReport);
+      // création des répertoires avec le nom des thèmes et des publications
+      pub_Typ_Mger.processExport(exportReport, userDetail, listItemsToExport,
+          fileExportDir.getPath(), true, false);
     } catch (IOException e1) {
       throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
     }
+
+    // Création du zip
+    createZipFile(fileExportDir, exportReport);
     return exportReport;
   }
 
-  private File createExportDir(UserDetail userDetail) throws ImportExportException, IOException {
+  private File createExportDir(UserDetail userDetail) throws ImportExportException {
     String thisExportDir = generateExportDirName(userDetail, "export");
     String tempDir = FileRepositoryManager.getTemporaryPath();
     File fileExportDir = new File(tempDir + thisExportDir);

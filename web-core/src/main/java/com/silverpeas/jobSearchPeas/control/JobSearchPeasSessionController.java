@@ -447,7 +447,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    * @throws RemoteException
    */
-  private List<SearchResult> searchResultPublication(String searchField) throws RemoteException {
+  private List<SearchResult> searchResultPublication(String searchField) {
     List<SearchResult> result = new ArrayList<SearchResult>();
 
     PublicationDetail publication;

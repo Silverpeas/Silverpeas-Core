@@ -142,7 +142,7 @@ public class SilverStatisticsDAO {
    * @throws IOException
    */
   public static void putDataStats(Connection con, StatType type, List<String> valueKeys,
-      StatisticsConfig conf) throws SQLException, IOException {
+      StatisticsConfig conf) throws SQLException {
     StringBuilder selectStatementBuf = new StringBuilder("SELECT ");
     StringBuffer updateStatementBuf = new StringBuffer("UPDATE ");
     String tableName = conf.getTableName(type);

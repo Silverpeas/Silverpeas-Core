@@ -20,6 +20,10 @@
  */
 package com.stratelia.silverpeas.pdc.control;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngineException;
 import com.stratelia.silverpeas.classifyEngine.ObjectValuePair;
@@ -41,9 +45,6 @@ import com.stratelia.silverpeas.util.JoinStatement;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PdcClassifyBmImpl implements PdcClassifyBm {
 
@@ -53,14 +54,11 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
   private String m_dbName = JNDINames.PDC_DATASOURCE;
 
   public PdcClassifyBmImpl() {
-
     try {
       classifyEngine = new ClassifyEngine();
       containerManager = new ContainerManager();
       contentManager = new ContentManager();
-    } catch (ClassifyEngineException ex) {
     } catch (ContentManagerException ex) {
-    } catch (ContainerManagerException ex) {
     }
   }
 
@@ -82,7 +80,6 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
     try {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
-
       // Vérification de la contrainte invariante
       int nPositionId = classifyEngine.classifySilverObject(connection, silverObjectId, position);
       // Call the containerManager to register the association containerInstance
@@ -90,8 +87,8 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       containerManager.addContainerContentInstanceLink(connection, nPositionId, sComponentId);
       return 0;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.addPosition",
-          SilverpeasException.ERROR, "Pdc.CANNOT_ADD_POSITION", e);
+      throw new PdcException("PdcClassifyBmImpl.addPosition", SilverpeasException.ERROR,
+          "Pdc.CANNOT_ADD_POSITION", e);
     } finally {
       DBUtil.close(connection);
     }
@@ -103,16 +100,15 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       classifyEngine.updateSilverObjectPosition(null, position);
       return 0;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.updatePosition",
-          SilverpeasException.ERROR, "Pdc.CANNOT_UPDATE_POSITION", e);
+      throw new PdcException("PdcClassifyBmImpl.updatePosition", SilverpeasException.ERROR,
+          "Pdc.CANNOT_UPDATE_POSITION", e);
     }
   }
 
   @Override
   public int updatePositions(List<Value> classifyValues, int silverObjectId) throws PdcException {
     try {
-      classifyEngine.updateSilverObjectPositions(null, classifyValues,
-          silverObjectId);
+      classifyEngine.updateSilverObjectPositions(null, classifyValues, silverObjectId);
       return 0;
     } catch (Exception e) {
       throw new PdcException("PdcClassifyBmImpl.updatePositions",
@@ -128,28 +124,21 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       // Open the connection
       connection = DBUtil.makeConnection(m_dbName);
       classifyEngine.unclassifySilverObjectByPositionId(connection, nPositionId);
-
       // Call the containerManager to unregister the association
-      // containerInstance - ContentInstance(SilverObjectId)
-      containerManager.removeContainerContentInstanceLink(connection,
-          nPositionId, sComponentId);
-
+      containerManager.removeContainerContentInstanceLink(connection, nPositionId, sComponentId);
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.deletePosition",
-          SilverpeasException.ERROR, "Pdc.CANNOT_DELETE_POSITION", e);
+      throw new PdcException("PdcClassifyBmImpl.deletePosition", SilverpeasException.ERROR,
+          "Pdc.CANNOT_DELETE_POSITION", e);
     } finally {
       DBUtil.close(connection);
     }
   }
 
   @Override
-  public List<Position> getPositions(int silverObjectId, String sComponentId)
-      throws PdcException {
-    List<Position> positions = null;
-
+  public List<Position> getPositions(int silverObjectId, String sComponentId) throws PdcException {
     try {
       // Get all the positions for the given silverObjectId
-      positions = classifyEngine.findPositionsBySilverOjectId(silverObjectId);
+      List<Position> positions = classifyEngine.findPositionsBySilverOjectId(silverObjectId);
 
       // Extract the positiondIds
       ArrayList<Integer> alPositionIds = new ArrayList<Integer>();
@@ -161,7 +150,6 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
       // Get only the positions for the given componentId
       List<Integer> alFilteredPositionIds = containerManager.filterPositionsByComponentId(
           alPositionIds, sComponentId);
-
       // Rebuild the positions
       List<Position> alFinalPositions = new ArrayList<Position>();
       for (Position position : positions) {
@@ -172,11 +160,10 @@ public class PdcClassifyBmImpl implements PdcClassifyBm {
           }
         }
       }
-
       return positions;
     } catch (Exception e) {
-      throw new PdcException("PdcClassifyBmImpl.getPositions",
-          SilverpeasException.ERROR, "Pdc.CANNOT_GET_POSITIONS", e);
+      throw new PdcException("PdcClassifyBmImpl.getPositions", SilverpeasException.ERROR,
+          "Pdc.CANNOT_GET_POSITIONS", e);
     }
   }
 

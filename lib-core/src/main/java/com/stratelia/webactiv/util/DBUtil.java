@@ -293,8 +293,7 @@ public class DBUtil {
     throw new SQLException("Update impossible : Ligne non existante");
   }
 
-  public static int getMaxFromTable(Connection con, String tableName, String idName)
-      throws SQLException {
+  public static int getMaxFromTable(Connection con, String tableName, String idName) {
     if (!StringUtil.isDefined(tableName) || !StringUtil.isDefined(idName)) {
       return 1;
     }

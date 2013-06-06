@@ -345,8 +345,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
         Integer.toString(getCurrentAxis().getAxisHeader().getRootId()));
   }
 
-  private void refreshCurrentValueAndCurrentAxis(Value value, Axis axis)
-      throws PdcException {
+  private void refreshCurrentValueAndCurrentAxis(Value value, Axis axis) {
     // Supprime la valeur courante dans la session
     setCurrentValue(value);
     // Recharge le détail de l'axe courant
@@ -354,7 +353,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
     setCurrentAxis(axis);
   }
 
-  private void refreshCurrentAxis(Axis axis) throws PdcException {
+  private void refreshCurrentAxis(Axis axis) {
     // Recharge le détail de l'axe courant
     // afin de prendre en compte la suppression
     setCurrentAxis(axis);

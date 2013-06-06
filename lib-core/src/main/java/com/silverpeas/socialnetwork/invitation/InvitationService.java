@@ -247,7 +247,7 @@ public class InvitationService {
    * @throws SQLException
    */
 
-  private Connection getConnection() throws UtilException, SQLException {
+  private Connection getConnection() throws UtilException {
     return DBUtil.makeConnection(JNDINames.DATABASE_DATASOURCE);
   }
 

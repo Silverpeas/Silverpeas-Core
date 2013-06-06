@@ -20,6 +20,14 @@
  */
 package com.silverpeas.workflow.engine.instance;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+
 import com.silverpeas.form.*;
 import com.silverpeas.form.displayers.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.fieldType.TextField;
@@ -32,26 +40,21 @@ import com.silverpeas.workflow.api.Workflow;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.*;
 import com.silverpeas.workflow.api.instance.Participant;
-import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.model.*;
+import com.silverpeas.workflow.api.model.Form;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.LazyProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceDataRecord;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.jdo.WorkflowJDOManager;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
 import org.exolab.castor.jdo.Database;
 import org.exolab.castor.jdo.OQLQuery;
 import org.exolab.castor.jdo.PersistenceException;
 import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library to
@@ -790,7 +793,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    *
    * @param resolvedState the resolved state
    * @return this user as a Participant object
-   * @throws WorkflowException  
+   * @throws WorkflowException
    */
   @Override
   public Participant getParticipant(String resolvedState) throws WorkflowException {
@@ -931,9 +934,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
   /**
    * Update the named field with the value of the given field.
+   *
    * @param fieldName
    * @param copiedField
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   public void setField(String fieldName, Field copiedField) throws WorkflowException {
     Field updatedField = getField(fieldName);
@@ -951,11 +955,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   *  Get the data associated to the given action
+   * Get the data associated to the given action
    *
    * @param actionName action name
    * @return
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   @Override
   public DataRecord getActionRecord(String actionName) throws WorkflowException {
@@ -963,7 +967,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       actionData = new HashMap<String, DataRecord>(0);
     }
 
-    DataRecord data =  actionData.get(actionName);
+    DataRecord data = actionData.get(actionName);
     if (data == null) {
       HistoryStep step = getMostRecentStep(actionName);
       if (step != null) {
@@ -979,12 +983,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   * 
+   *
    * @param formName
    * @param role
    * @param lang
    * @return DataRecord
-   * @throws WorkflowException 
+   * @throws WorkflowException
    */
   @Override
   public DataRecord getFormRecord(String formName, String role, String lang)
@@ -1012,7 +1016,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    *
    * @param actionName action name
    * @return
-   * @throws WorkflowException  
+   * @throws WorkflowException
    */
   @Override
   public DataRecord getNewActionRecord(String actionName) throws WorkflowException {
@@ -1287,9 +1291,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query =
-          db.
-          getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+      query = db.
+          getOQLQuery(
+          "SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
           + "WHERE undoStep.instanceId = $1 "
           + "AND undoStep.action = \"addActiveState\" "
           + "AND undoStep.parameters = $2");
@@ -1470,8 +1474,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           + wkUser.getRole());
 
       boolean userMatch = wkUser.getUserId() != null && wkUser.getUserId().equals(userId);
-      boolean usersRoleMatch =
-          wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
+      boolean usersRoleMatch = wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(
+          roleName);
       boolean userGroupsMatch = false;
       if (StringUtil.isDefined(wkUser.getGroupId())) {
         // check if one of userGroups matches with working group
@@ -1883,9 +1887,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query =
-          db.
-          getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+      query = db.
+          getOQLQuery(
+          "SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
           + "WHERE undoStep.stepId = $1 ");
 
       // Execute the query
@@ -2039,15 +2043,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       // Constructs the query
       db = WorkflowJDOManager.getDatabase();
       db.begin();
-      query =
-          db.
-          getOQLQuery("SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
+      query = db.
+          getOQLQuery(
+          "SELECT undoStep FROM com.silverpeas.workflow.engine.instance.UndoHistoryStep undoStep "
           + "WHERE undoStep.instanceId = $1 "
           + "AND undoStep.action = $2 "
           + "AND undoStep.parameters = $3 ");
 
       // Search for all steps that activates the given state
-
       // Tests if user is a working user for this state
       WorkingUser wkUser = new WorkingUser();
       wkUser.setUserId(user.getUserId());
@@ -2374,6 +2377,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
   /**
    * Returns this instance title.
+   *
+   * @param role
+   * @param lang
+   * @return
    */
   public String getTitle(String role, String lang) {
     String title = null;
@@ -2383,18 +2390,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       template = getProcessModel().getPresentation();
     } catch (WorkflowException e) {
     }
-
     if (template != null) {
       title = template.getTitle(role, lang);
-
-      try {
-        LazyProcessInstanceDataRecord dataRecord = new LazyProcessInstanceDataRecord(this, role,
-            lang);
-        title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
-      } catch (WorkflowException e) {
-        SilverTrace.error("workflowEngine", "ProcessInstanceImpl.getTitle()",
-            "workflowEngine.EX_GET_TITLE");
-      }
+      LazyProcessInstanceDataRecord dataRecord = new LazyProcessInstanceDataRecord(this, role,
+          lang);
+      title = DataRecordUtil.applySubstitution(title, dataRecord, lang);
     }
 
     if (title == null) {
