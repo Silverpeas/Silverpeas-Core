@@ -135,10 +135,10 @@ public class PortletDeployerServlet extends HttpServlet {
 
     String language = getLanguage(request);
 
-    DesktopMessages.init(request);
+    DesktopMessages.init(language);
     response.setContentType("text/html;charset=UTF-8");
     HttpSession session = AdminUtils.getClearedSession(request);
-    PortletAdminData portletAdminData = null;
+    PortletAdminData portletAdminData;
     try {
       portletAdminData = PortletAdminDataFactory.getPortletAdminData(null);
     } catch (PortletRegistryException pre) {
@@ -158,19 +158,18 @@ public class PortletDeployerServlet extends HttpServlet {
       } else {
         StringBuilder messageBuffer = new StringBuilder();
         boolean success = false;
-        for (int i = 0; i < portletsToUndeploy.length; i++) {
-          String warName = portletsToUndeploy[i];
+        for (String warName : portletsToUndeploy) {
           try {
             success = portletAdminData.undeploy(warName, true);
           } catch (Exception ex) {
             success = false;
             if (ex instanceof WebAppDeployerException) {
-              Object[] tokens = { warName + ".war" };
-              messageBuffer.append(DesktopMessages.getLocalizedString(
-                  AdminConstants.WAR_NOT_UNDEPLOYED, tokens));
+              Object[] tokens = {warName + ".war"};
+              messageBuffer.append(
+                  DesktopMessages.getLocalizedString(AdminConstants.WAR_NOT_UNDEPLOYED, tokens));
             } else {
-              messageBuffer.append(DesktopMessages
-                  .getLocalizedString(AdminConstants.UNDEPLOYMENT_FAILED));
+              messageBuffer
+                  .append(DesktopMessages.getLocalizedString(AdminConstants.UNDEPLOYMENT_FAILED));
               messageBuffer.append(".");
               messageBuffer.append(ex.getMessage());
             }
