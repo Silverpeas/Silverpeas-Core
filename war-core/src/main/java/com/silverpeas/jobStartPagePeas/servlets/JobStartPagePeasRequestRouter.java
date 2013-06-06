@@ -35,13 +35,11 @@ import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.exception.QuotaRuntimeException;
 import org.silverpeas.util.UnitUtil;
 
-import com.silverpeas.admin.components.Option;
 import com.silverpeas.admin.components.Parameter;
 import com.silverpeas.admin.components.ParameterInputType;
 import com.silverpeas.admin.components.ParameterSorter;
 import com.silverpeas.admin.components.WAComponent;
 import com.silverpeas.admin.localized.LocalizedComponent;
-import com.silverpeas.admin.localized.LocalizedOption;
 import com.silverpeas.admin.localized.LocalizedParameter;
 import com.silverpeas.admin.localized.LocalizedParameterSorter;
 import com.silverpeas.jobStartPagePeas.JobStartPagePeasSettings;
@@ -1124,7 +1122,8 @@ public class JobStartPagePeasRequestRouter extends
     for (Parameter parameter : parameters) {
       localizedParameters.add(new LocalizedParameter(parameter, sessionController.getLanguage()));
     }
-    List<LocalizedParameter> visibleParameters = sessionController.getVisibleParameters(localizedParameters);
+    List<LocalizedParameter> visibleParameters =
+        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
@@ -1158,7 +1157,7 @@ public class JobStartPagePeasRequestRouter extends
         getComponentByName(componentName), sessionController.getLanguage());
     setSpacesNameInRequest(sessionController, request);
     List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(componentInstSelected.getSortedParameters());
+        sessionController.getVisibleParameters(componentName, componentInstSelected.getSortedParameters());
     Parameter hiddenParam = createIsHiddenParam("no");
     visibleParameters.add(0, new LocalizedParameter(hiddenParam, sessionController.getLanguage()));
     if (JobStartPagePeasSettings.isPublicParameterEnable) {
@@ -1189,7 +1188,7 @@ public class JobStartPagePeasRequestRouter extends
       localizedParameters.add(new LocalizedParameter((parameter), sessionController.getLanguage()));
     }
     List<LocalizedParameter> visibleParameters =
-        sessionController.getVisibleParameters(localizedParameters);
+        sessionController.getVisibleParameters(waComponent.getName(), localizedParameters);
     String isHidden = "no";
     if (componentInst.isHidden()) {
       isHidden = "yes";
