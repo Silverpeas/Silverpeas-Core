@@ -30,6 +30,7 @@ import com.silverpeas.subscribe.SubscriptionSubscriber;
 import com.silverpeas.subscribe.constant.SubscriberType;
 import com.silverpeas.subscribe.constant.SubscriptionMethod;
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
@@ -112,13 +113,14 @@ public class SubscriptionDao {
 
     PreparedStatement prepStmt = null;
     try {
+      String space = subscription.getResource().getPK().getSpace();
       prepStmt = con.prepareStatement(ADD_SUBSCRIPTION);
       prepStmt.setString(1, subscription.getSubscriber().getId());
       prepStmt.setString(2, subscription.getSubscriber().getType().getName());
       prepStmt.setString(3, subscription.getSubscriptionMethod().getName());
       prepStmt.setString(4, subscription.getResource().getId());
       prepStmt.setString(5, subscription.getResource().getType().getName());
-      prepStmt.setString(6, subscription.getResource().getPK().getSpace());
+      prepStmt.setString(6, (StringUtil.isDefined(space) ? space : "-"));
       prepStmt.setString(7, subscription.getResource().getInstanceId());
       prepStmt.setString(8, subscription.getCreatorId());
       prepStmt.setTimestamp(9, new Timestamp(
@@ -276,7 +278,6 @@ public class SubscriptionDao {
 
   /**
    * Method declaration
-   *
    * @param con
    * @param resource
    * @param method
@@ -471,7 +472,11 @@ public class SubscriptionDao {
                 creationDate);
         break;
       default:
-        throw new AssertionError("There is no reason to be here !");
+        if (SubscriptionResourceType.UNKNOWN.equals(resourceType)) {
+          throw new AssertionError("There is no reason to be here !");
+        }
+        subscription =
+            new PKSubscription(subscriber, resource, subscriptionMethod, creatorId, creationDate);
     }
     return subscription;
   }
@@ -495,7 +500,12 @@ public class SubscriptionDao {
         resource = new ComponentSubscriptionResource(instanceId);
         break;
       default:
-        resource = null;
+        if (SubscriptionResourceType.UNKNOWN.equals(resourceType)) {
+          resource = null;
+        } else {
+          resource =
+              new PKSubscriptionResource(new ForeignPK(resourceId, instanceId), resourceType);
+        }
     }
     return resource;
   }

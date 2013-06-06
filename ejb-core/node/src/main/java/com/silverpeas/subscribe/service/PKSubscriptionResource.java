@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception. You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,28 +24,31 @@
 package com.silverpeas.subscribe.service;
 
 import com.silverpeas.subscribe.constant.SubscriptionResourceType;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * User: Yohann Chastagnier
- * Date: 20/02/13
+ * A subscription resource related to a PKSubscription.
  */
-public class NodeSubscriptionResource extends AbstractSubscriptionResource<NodePK> {
+public class PKSubscriptionResource extends AbstractSubscriptionResource<WAPrimaryKey> {
 
   /**
-   * A way to get an instance of a node subscription resource.
-   * @param nodePK
+   * A way to get an instance of a PK subscription resource.
+   * @param pk
+   * @param subscriptionResourceType
    * @return
    */
-  public static NodeSubscriptionResource from(NodePK nodePK) {
-    return new NodeSubscriptionResource(nodePK);
+  public static PKSubscriptionResource from(WAPrimaryKey pk,
+      SubscriptionResourceType subscriptionResourceType) {
+    return new PKSubscriptionResource(pk, subscriptionResourceType);
   }
 
   /**
    * Default constructor.
-   * @param nodePK
+   * @param pk
+   * @param subscriptionResourceType
    */
-  protected NodeSubscriptionResource(final NodePK nodePK) {
-    super(nodePK.getId(), SubscriptionResourceType.NODE, nodePK);
+  protected PKSubscriptionResource(final WAPrimaryKey pk,
+      final SubscriptionResourceType subscriptionResourceType) {
+    super(pk.getId(), subscriptionResourceType, pk);
   }
 }

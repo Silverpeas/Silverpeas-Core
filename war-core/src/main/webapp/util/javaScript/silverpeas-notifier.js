@@ -84,3 +84,19 @@ function __noty(customOptions) {
   }, customOptions);
   noty(options);
 }
+
+/**
+ * On page ending load, notification can be handled ...
+ * Just add DOM element container with the right style class name.
+ */
+jQuery(document).ready(function() {
+  jQuery(".notyInfo").each(function() {
+    notyInfo($(this).html());
+  });
+  jQuery(".notySuccess").each(function() {
+    notySuccess($(this).html());
+  });
+  jQuery(".notyError").each(function() {
+    notyError($(this).html());
+  });
+});
