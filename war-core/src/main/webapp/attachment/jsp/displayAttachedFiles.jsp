@@ -879,15 +879,11 @@
         });
 
         function submitCheckin(submitUrl) {
-          if ("FormData" in window) {
-            var formData = new FormData($("#checkin-attachment-form")[0]);
             $.ajax(submitUrl, {
-              processData: false,
-              contentType: false,
               type: 'POST',
               dataType: "json",
-              data: formData,
-              success:function(data) {
+              data: $("#checkin-attachment-form").serialize(),
+              success:function(result) {
                 reloadIncludingPage();
                 $(this).dialog("close");
               },
@@ -895,12 +891,6 @@
                 alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
               }
             });
-          } else {
-            $('#checkin-attachment-form').attr('action', submitUrl);
-            $('#checkin-attachment-form').submit();
-            reloadIncludingPage();
-            $(this).dialog("close");
-          }
         }
 
         $("#dialog-attachment-checkin").dialog({
