@@ -30,7 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-
+<%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%@ page import="com.silverpeas.util.ForeignPK" %>
 <%@ page import="org.silverpeas.attachment.AttachmentServiceFactory" %>
@@ -38,7 +38,6 @@
 <%@ page import="org.silverpeas.attachment.model.SimpleDocument" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.ComponentContext" %>
 <%@ page import="org.silverpeas.attachment.web.VersioningSessionController" %>
-<%@ page import="org.silverpeas.attachment.tag.MenuHelper" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -213,16 +212,9 @@
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
           <c:if test="${contextualMenuEnabled}">
-            <%
-              MenuHelper.displayActions((SimpleDocument) pageContext.
-                  getAttribute("currentAttachment"),
-                  (Boolean) pageContext.getAttribute("useXMLForm"),
-                  (Boolean) pageContext.getAttribute("useFileSharing"), (Boolean) pageContext.
-                  getAttribute("webdavEditingEnable"), userId,
-                  (String) pageContext.getAttribute("contentLanguage"), attResources,
-                  URLManager.getServerURL(request),
-                  (Boolean) pageContext.getAttribute("showMenuNotif"),
-                  (Boolean) pageContext.getAttribute("useContextualMenu"), out);%>
+            <menu:simpleDocument attachment="${currentAttachment}" contentLanguage="${contentLanguage}"
+                                 showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
+                                 useFileSharing="${useFileSharing}" useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           </c:if>
           <span class="lineMain">
               <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">

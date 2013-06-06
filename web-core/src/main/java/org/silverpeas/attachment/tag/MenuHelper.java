@@ -20,48 +20,115 @@
  */
 package org.silverpeas.attachment.tag;
 
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.OrganisationControllerFactory;
-
-import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
+import org.silverpeas.attachment.model.SimpleDocument;
+
+import com.silverpeas.util.i18n.I18NHelper;
+
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import static com.silverpeas.util.StringUtil.newline;
+import static javax.servlet.jsp.tagext.Tag.EVAL_PAGE;
+import static org.silverpeas.core.admin.OrganisationControllerFactory.getOrganisationController;
 
 /**
  * @author ehugonnet
  */
-public class MenuHelper {
+public class MenuHelper extends TagSupport {
 
-  private final static String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
+  private SimpleDocument attachment;
+  private boolean useXMLForm;
+  private boolean useFileSharing;
+  private boolean useWebDAV;
+  private String contentLanguage;
+  private boolean showMenuNotif;
+  private boolean useContextualMenu;
 
-  private final static String menuItemTemplate = "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
-
-  private final static String checkoutJsTemplate = "checkout('%1$s',%2$s,%3$s);";
-  private final static String checkoutAndDownloadJsTemplate = "checkoutAndDownload('%1$s',%2$s,%3$s);";
-
-  public static boolean isAdmin(String userId) {
-    return OrganisationControllerFactory.getOrganisationController().getUserDetail(userId)
-        .isAccessAdmin();
+  public void setAttachment(SimpleDocument attachment) {
+    this.attachment = attachment;
   }
 
-  public static boolean isWorker(String userId, SimpleDocument attachment) {
+  public void setUseXMLForm(boolean useXMLForm) {
+    this.useXMLForm = useXMLForm;
+  }
+
+  public void setUseFileSharing(boolean useFileSharing) {
+    this.useFileSharing = useFileSharing;
+  }
+
+  public void setUseWebDAV(boolean useWebDAV) {
+    this.useWebDAV = useWebDAV;
+  }
+
+  public void setContentLanguage(String lang) {
+    this.contentLanguage = lang;
+  }
+
+  public void setShowMenuNotif(boolean showMenuNotif) {
+    this.showMenuNotif = showMenuNotif;
+  }
+
+  public void setUseContextualMenu(boolean useContextualMenu) {
+    this.useContextualMenu = useContextualMenu;
+  }
+
+  private static final String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
+
+  private static final String menuItemTemplate = "<li class=\"yuimenuitem\">"
+      + "<a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
+  private static final long serialVersionUID = 1L;
+
+  @Override
+  public int doStartTag() throws JspException {
+    try {
+      MainSessionController mainSessionController = (MainSessionController) pageContext.getSession()
+          .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      String favoriteLanguage = mainSessionController.getFavoriteLanguage();
+      ResourceLocator messages = new ResourceLocator(
+          "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
+      String httpServerBase = URLManager.getServerURL((HttpServletRequest) pageContext.getRequest());
+      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useFileSharing, useWebDAV,
+          mainSessionController.getUserId(), contentLanguage, messages, httpServerBase,
+          showMenuNotif, useContextualMenu));
+      return EVAL_BODY_INCLUDE;
+    } catch (IOException ioex) {
+      throw new JspException(ioex);
+    }
+  }
+
+  @Override
+  public int doEndTag() throws JspException {
+    return EVAL_PAGE;
+  }
+
+  boolean isAdmin(String userId) {
+    return getOrganisationController().getUserDetail(userId).isAccessAdmin();
+  }
+
+  boolean isWorker(String userId, SimpleDocument attachment) {
     return userId.equals(attachment.getEditedBy());
   }
 
-  public static boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
+  boolean isEditable(String userId, SimpleDocument attachment, boolean useWebDAV) {
     return useWebDAV && attachment.isOpenOfficeCompatible() && isWorker(userId, attachment);
   }
 
-  public static void displayActions(SimpleDocument attachment, boolean useXMLForm,
+  String prepareActions(SimpleDocument attachment, boolean useXMLForm,
       boolean useFileSharing, boolean useWebDAV, String userId, String lang,
-      ResourcesWrapper resources, String httpServerBase, boolean showMenuNotif,
-      boolean useContextualMenu, JspWriter out) throws IOException {
+      ResourceLocator resources, String httpServerBase, boolean showMenuNotif,
+      boolean useContextualMenu) throws UnsupportedEncodingException {
     String language = I18NHelper.checkLanguage(lang);
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
@@ -70,69 +137,43 @@ public class MenuHelper {
         append(newline);
     builder.append("<div class=\"bd\">").append(newline);
     builder.append("<ul class=\"first-of-type\">").append(newline);
-    builder.append(String.format(menuItemTemplate, String.format(checkoutJsTemplate,
-        attachment.getId(), attachmentId, webDavOK), resources.getString("checkOut")));
-    builder.append(String.format(menuItemTemplate, String.format(checkoutAndDownloadJsTemplate,
-        attachment.getId(), attachmentId, webDavOK), resources.getString("attachment.checkOutAndDownload")));
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkoutAndEdit('")
-        .append(attachment.getId()).append("',").append(attachmentId).append(");\">").
-        append(resources.getString("attachment.checkOutAndEditOnline")).append("</a></li>").append(
-        newline);
-    builder.append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:checkin('").
-        append(attachment.getId()).append("',").append(attachmentId).append(",").append(attachment.
-        isOpenOfficeCompatible()).append(", false)\">").append(resources.getString("checkIn")).
-        append("</a></li>").append(
-        newline);
+    prepareMenuItem(builder, "checkout('" + attachment.getId() + "'," + attachmentId + ','
+        + webDavOK + ");", resources.getString("checkOut"));
+    prepareMenuItem(builder, "checkoutAndDownload('" + attachment.getId() + "'," + attachmentId
+        + ',' + webDavOK + ");", resources.getString("attachment.checkOutAndDownload"));
+    prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId
+        + ");", resources.getString("attachment.checkOutAndEditOnline"));
+    prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + ','
+        + attachment.isOpenOfficeCompatible() + ", false);", resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:updateAttachment('")
-        .append(attachment.getId()).append("', '").append(language).append("');\">").append(
-        resources.getString("GML.modify")).append("</a></li>").append(newline);
+    prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
+        resources.getString("GML.modify"));
     if (useXMLForm) {
-      builder.append(
-          "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:EditXmlForm('");
-      builder.append(attachmentId).append("','").append(language).append("');\">");
-      builder.append(resources.getString("attachment.xmlForm.Edit")).append("</a></li>").append(
-          newline);
+      prepareMenuItem(builder, "EditXmlForm('" + attachment.getId() + "','" + language + "');",
+          resources.getString("attachment.xmlForm.Edit"));
     }
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:deleteAttachment('")
-        .append(attachment.getId()).append("', '").append(StringEscapeUtils.escapeEcmaScript(
-        attachment.getFilename())).append("')\">").append(resources.getString("GML.delete")).append(
-        "</a></li>").append(newline);
+    prepareMenuItem(builder, "deleteAttachment('" + attachment.getId() + "','" + StringEscapeUtils
+        .escapeEcmaScript(attachment.getFilename()) + "');", resources.getString("GML.delete"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:ShareAttachment('")
-        .append(attachmentId).append("')\">").append(resources.getString("attachment.share")).
-        append("</a></li>").append(newline);
+    prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
+        "attachment.share"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
-    builder.
-        append(
-        "<li class=\"yuimenuitem\"><a class=\"yuimenuitemlabel\" href=\"javascript:notifyAttachment('");
-    builder.append(attachmentId).append("')\">").append(resources.getString("GML.notify")).append(
-        newline);
+    prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
+        "GML.notify"));
     builder.append("</a></li>");
     builder.append("</ul>").append(newline);
     builder.append("</div>").append(newline);
     builder.append("</div>").append(newline);
-
     builder.append("<script type=\"text/javascript\">");
-
     String oMenuId = "oMenu" + attachmentId;
 
     builder.append("var ").append(oMenuId).append(";");
     builder.append("var webDav").append(attachmentId).append(" = \"");
-    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(), CharEncoding.UTF_8)).
-        append("\";");
+    builder.append(URLEncoder.encode(httpServerBase + attachment.getWebdavUrl(),
+        CharEncoding.UTF_8)).append("\";");
     builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
         "\", function () {");
     if (useContextualMenu) {
@@ -141,14 +182,13 @@ public class MenuHelper {
       builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
     } else {
       builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).
-          append("\"");
-      builder.append(", {");
+          append("\"").append(", {");
     }
     builder.append("hidedelay: 100, ");
     builder.append("effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
     builder.append(oMenuId).append(".render();");
     if (attachment.isReadOnly()) {
-      builder.append(configureCheckout(attachmentId, true));
+      configureCheckout(builder, attachmentId, true);
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureCheckoutAndEdit(attachmentId, !isEditable(userId, attachment,
           useWebDAV)));
@@ -186,48 +226,49 @@ public class MenuHelper {
 
     builder.append("});");
     builder.append("</script>");
-    out.print(builder.toString());
+    return builder.toString();
   }
 
-  public static String configureCheckout(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "0", disable);
+  StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {
+    return buffer.append(String.format(menuItemTemplate, javascript, label));
   }
 
-  public static String configureCheckoutAndDownload(String attachmentId, boolean disable) {
+  StringBuilder configureCheckout(StringBuilder buffer, String attachmentId, boolean disable) {
+    return buffer.append(String.format(template, attachmentId, "0", disable));
+  }
+
+  String configureCheckoutAndDownload(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "1", disable);
   }
 
-  public static String configureCheckoutAndEdit(String attachmentId, boolean disable) {
+  String configureCheckoutAndEdit(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "2", disable);
   }
 
-  public static String configureCheckin(String attachmentId, boolean disable) {
+  String configureCheckin(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "3", disable);
   }
 
-  public static String configureUpdate(String attachmentId, boolean disable) {
+  String configureUpdate(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 1", disable);
   }
 
-  public static String configureDelete(String attachmentId, boolean useXmlForm, boolean disable) {
+  String configureDelete(String attachmentId, boolean useXmlForm, boolean disable) {
     if (useXmlForm) {
       return String.format(template, attachmentId, "2, 1", disable);
     }
     return String.format(template, attachmentId, "1, 1", disable);
   }
 
-  public static String configureXmlForm(String attachmentId, boolean disable) {
+  String configureXmlForm(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "1, 1", disable);
   }
 
-  public static String configureFileSharing(String attachmentId, boolean disable) {
+  String configureFileSharing(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 2", disable);
   }
 
-  public static String configureNotify(String attachmentId, boolean disable) {
+  String configureNotify(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 3", disable);
-  }
-
-  private MenuHelper() {
   }
 }
