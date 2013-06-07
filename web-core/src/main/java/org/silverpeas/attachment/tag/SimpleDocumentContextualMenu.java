@@ -159,6 +159,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
         "attachment.share"));
+    prepareMenuItem(builder, "switchState('" + attachment.getId() + "');", resources.getString(
+        "attachment.switchState"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(

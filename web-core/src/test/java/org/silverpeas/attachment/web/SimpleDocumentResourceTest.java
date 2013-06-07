@@ -58,16 +58,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.silverpeas.web.TestResources.USER_ID_IN_TEST;
+import static com.silverpeas.web.WebResourceTesting.HTTP_SESSIONKEY;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.silverpeas.attachment.web.SimpleDocumentTestResource.*;
 
 /**
@@ -78,7 +75,7 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
 
   private UserDetail user;
   private String sessionKey;
-  private Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
+  private final Date creationDate = RandomGenerator.getOutdatedCalendar().getTime();
 
   public SimpleDocumentResourceTest() {
     super("org.silverpeas.attachment.web", "spring-jcr-webservice.xml");
@@ -193,9 +190,8 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     form.bodyPart(fdp);
     WebResource webResource = resource();
     SimpleDocumentEntity result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/test.pdf")
-        .header(
-        HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(MULTIPART_FORM_DATA)
-        .post(SimpleDocumentEntity.class, form);
+        .header(HTTP_SESSIONKEY, getSessionKey()).accept(APPLICATION_JSON_TYPE).type(
+        MULTIPART_FORM_DATA).post(SimpleDocumentEntity.class, form);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Upload test"));
     assertThat(result.getDescription(),
@@ -270,6 +266,28 @@ public class SimpleDocumentResourceTest extends ResourceGettingTest<SimpleDocume
     assertThat(result, is(notNullValue()));
     assertThat(result, is(
         "{\"status\":true, \"id\":-1, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+  }
+
+  @Test
+  public void testSwitchDocumentVersionState() {
+    String lang = "fr";
+    SimpleDocumentPK pk = new SimpleDocumentPK(DOCUMENT_ID, INSTANCE_ID);
+    pk.setOldSilverpeasId(56);
+    SimpleDocument document = new SimpleDocument(pk, "18", 10, false, new SimpleAttachment(
+        "test.pdf", lang, "Test", "Ceci est un test.", 500L, MimeTypes.PDF_MIME_TYPE,
+        USER_ID_IN_TEST, creationDate, null));
+    AttachmentService service = mock(AttachmentService.class);
+    when(service.searchDocumentById(eq(new SimpleDocumentPK(DOCUMENT_ID)), eq(lang))).
+        thenReturn(document);
+    when(service.lock(eq(DOCUMENT_ID), anyString(), eq(lang))).thenReturn(true);
+    getTestResources().setAttachmentService(service);
+    WebResource webResource = resource();
+    String result = webResource.path(RESOURCE_PATH + DOCUMENT_ID + "/switchState").header(
+        HTTP_SESSIONKEY, getSessionKey()).put(String.class);
+    assertThat(result, is(notNullValue()));
+    assertThat(result, is(
+        "{\"status\":true, \"id\":56, \"attachmentId\":\"deadbeef-face-babe-cafe-babecafebabe\"}"));
+    verify(service).changeVersionState(new SimpleDocumentPK(DOCUMENT_ID));
   }
 
   @Override

@@ -376,13 +376,12 @@
   function viewPublicVersions(docId) {
       url = '<c:out value="${allVersionsUrl}" />&DocId=' + docId;
       windowName = "publicVersionsWindow";
-      larg = "800";
-      haut = "475";
       windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
       if (!publicVersionsWindow.closed && publicVersionsWindow.name == "publicVersionsWindow") {
         publicVersionsWindow.close();
       }
-      publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+      publicVersionsWindow = SP_openWindow(url,windowName, "800", "475",
+      "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
     }
 
   <view:settings var="maximumFileSize" settings="org.silverpeas.util.uploads.uploadSettings" key="MaximumFileSize" defaultValue="${10000000}" />
@@ -515,6 +514,11 @@
 
     function checkoutAndEdit(id, oldId) {
       checkout(id, oldId, true, true, false);
+    }
+
+    function switchState(id) {
+      $("#dialog-attachment-switch").data("id", id).dialog("open");
+      pageMustBeReloadingAfterSorting = true;
     }
 
     function checkin(id, oldId, webdav, forceRelease) {
@@ -890,6 +894,33 @@
             });
         }
 
+        $("#dialog-attachment-switch").dialog({
+        autoOpen: false,
+        title: "<fmt:message key="attachment.dialog.switch"/>",
+        height: 'auto',
+        width: 550,
+        modal: true,
+        buttons: {
+          '<fmt:message key="GML.ok"/>': function() {
+            var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $("#dialog-attachment-switch").data('id') + '/switchState';
+            $.ajax(submitUrl, {
+              type: 'PUT',
+              dataType: "json",
+              success:function(result) {
+                reloadIncludingPage();
+                $(this).dialog("close");
+              },
+              error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + ' : ' + textStatus + ' :' + errorThrown);
+              }
+            });
+          },
+          close: function() {
+            $(this).dialog("close");
+          }
+        }
+      });
+
         $("#dialog-attachment-checkin").dialog({
         autoOpen: false,
         title: "<fmt:message key="attachment.dialog.checkin"/>",
@@ -898,9 +929,9 @@
         modal: true,
         buttons: {
           '<fmt:message key="GML.ok"/>': function() {
-            $('#force').val($(this).data('forceRelease'));
-            $('#webdav').val($(this).data('webdav'));
-            $('#checkin_oldId').val($(this).data('oldId'));
+            $('#force').val($("#dialog-attachment-checkin").data('forceRelease'));
+            $('#webdav').val($("#dialog-attachment-checkin").data('webdav'));
+            $('#checkin_oldId').val($("#dialog-attachment-checkin").data('oldId'));
             var submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + $(this).data('attachmentId') + '/unlock';
             submitCheckin(submitUrl);
           },
@@ -919,7 +950,7 @@
             clearCheckin();
           }
         });
-      });
+
 
       $('#attachmentList').bind('sortupdate', function(event, ui) {
         var reg = new RegExp("attachment", "g");
@@ -935,6 +966,9 @@
         }
         sortAttachments(param);
       });
+
+      });
+
 
       function sortAttachments(orderedList) {
         $.post('<c:url value="/Attachment" />', { orderedList:orderedList, Action:'Sort'}, function(data){
@@ -1097,6 +1131,8 @@
       </div>
     </c:if>
 </div>
+
+    <div id="dialog-attachment-switch" style="display:none"></div>
 
  <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
