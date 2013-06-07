@@ -23,6 +23,7 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <fmt:setLocale value="${pageContext.request.locale.language}"/>
@@ -32,15 +33,18 @@
 
 <%@ include file="headLog.jsp" %>
 
-<%
-  ResourceLocator authenticationBundle =
-      new ResourceLocator("org.silverpeas.authentication.multilang.authentication", "");
-%>
+<fmt:setLocale value="${requestScope.locale}"/>
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
+<view:setBundle basename="org.silverpeas.authentication.multilang.authentication" var="authenticationBundle"/>
+
+<c:set var="templateLocationBase" value="core:admin"/>
+<c:set var="titleTemplate" value="firstLogin_email"/>
+<c:set var="isEmailAddress" value="${requestScope.isThatUserMustFillEmailAddressOnFirstLogin}"/>
+<c:set var="emailAddress" value="${isEmailAddress ? requestScope.emailAddress : ''}"/>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title><%=generalMultilang.getString("GML.popupTitle")%>
-  </title>
+  <title><fmt:message key="GML.popupTitle"/></title>
   <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <link type="text/css" rel="stylesheet" href="<%=styleSheet%>"/>
   <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/silverpeas-password.css"/>
@@ -48,6 +52,9 @@
   <script src="<%=m_context%>/util/javaScript/jquery/jquery.json-2.3.min.js" type="text/javascript"></script>
   <script src="<%=m_context%>/util/javaScript/jquery/jquery.i18n.properties-min-1.0.9.js" type="text/javascript"></script>
   <script src="<%=m_context%>/password.js" type="text/javascript"></script>
+  <c:if test="${isEmailAddress}">
+    <view:includePlugin name="qtip"/>
+  </c:if>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -70,7 +77,55 @@
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
         passwordInputId : 'newPassword'
-      })
+      });
+      <c:if test="${isEmailAddress}">
+      $('#changePwdForm').on("submit", function() {
+        if (!$('#emailAddress').val().trim()) {
+          alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
+          return false;
+        }
+        return true;
+      });
+      var $emailMessage = $('#emailAddressMessage');
+      if ($emailMessage.length > 0 && $emailMessage.html().trim()) {
+        var $emailAddress = $('#emailAddress');
+        $emailAddress.qtip({
+          content : $emailMessage,
+          style : {
+            width : 'auto',
+            color : 'black',
+            border : {
+              width : 1,
+              radius : 1
+            },
+            padding : 7,
+            textAlign : 'left',
+            tip : true,
+            name : 'cream'
+          },
+          position : {
+            adjust : {
+              screen : true
+            },
+            corner : {
+              target : 'bottomLeft',
+              tooltip : 'topRight'
+            }
+          },
+          show : {
+            delay : 0,
+            when : {
+              event : 'displayQTip'
+            }
+          },
+          hide : {
+            when : 'hideQTip',
+            fixed : true
+          }
+        });
+        $emailAddress.trigger("displayQTip");
+      }
+      </c:if>
     });
   </script>
   <script src="<%=m_context%>/util/javaScript/silverpeas-password.js" type="text/javascript"></script>
@@ -79,8 +134,8 @@
 <body>
 <form id="changePwdForm" action="#" method="post">
   <div class="page">
-    <div class="titre"><%=authenticationBundle.getString("authentication.logon.title") %>
-    </div>
+    <div class="titre">
+      <fmt:message key="authentication.logon.title" bundle="${authenticationBundle}"/></div>
     <div id="backgroundBig">
       <div class="cadre">
         <div id="header" style="display: table; width: 100%">
@@ -88,24 +143,34 @@
             <img src="<%=logo%>" class="logo" alt=""/>
           </div>
           <div class="information" style="display: table-cell; width: 100%; text-align: right">
-            <%=authenticationBundle.getString("authentication.password.change")%>
+            <fmt:message key="authentication.password.change" bundle="${authenticationBundle}"/>
+            <c:if test="${isEmailAddress}">
+              <fmt:message key="GML.and"/>
+              <fmt:message key="authentication.email.label" var="tmp" bundle="${authenticationBundle}"/>
+              ${fn:toLowerCase(tmp)}
+            </c:if>
             <c:if test="${not empty requestScope.message}">
               <br/><span><c:out value="${requestScope.message}" escapeXml="false"/></span>
             </c:if>
           </div>
           <div class="clear"></div>
         </div>
-        <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.old") %></span><input type="password" name="oldPassword" id="oldPassword"/></label>
+        <p>
+          <label><span><fmt:message key="authentication.password.old" bundle="${authenticationBundle}"/></span><input type="password" name="oldPassword" id="oldPassword"/></label>
         </p>
 
-        <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.new") %></span><input type="password" name="newPassword" id="newPassword"/></label>
+        <p>
+          <label><span><fmt:message key="authentication.password.new" bundle="${authenticationBundle}"/></span><input type="password" name="newPassword" id="newPassword"/></label>
         </p>
 
-        <p><label><span><%=authenticationBundle.getString(
-            "authentication.password.confirm") %></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
+        <p>
+          <label><span><fmt:message key="authentication.password.confirm" bundle="${authenticationBundle}"/></span><input type="password" name="confirmPassword" id="confirmPassword"/></label>
         </p>
+        <c:if test="${isEmailAddress}">
+          <p>
+            <label><span><fmt:message key="authentication.email.label" bundle="${authenticationBundle}"/></span><input type="text" name="emailAddress" id="emailAddress" value="${emailAddress}"/></label>
+          </p>
+        </c:if>
         <input type="hidden" name="login" value="${param.Login}"/>
         <input type="hidden" name="domainId" value="${param.DomainId}"/>
         <br/>
@@ -117,12 +182,16 @@
 
         <p>
           <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
-            <%=authenticationBundle.getString("authentication.password.showRules") %>
+            <fmt:message key="authentication.password.showRules" bundle="${authenticationBundle}"/>
           </a></span>
         </p>
       </div>
     </div>
   </div>
 </form>
+<c:if test="${isEmailAddress}">
+  <div id="emailAddressMessage" style="display: none; max-width: 400px; text-align: left;">
+    <view:applyTemplate locationBase="${templateLocationBase}" name="${titleTemplate}"/></div>
+</c:if>
 </body>
 </html>
