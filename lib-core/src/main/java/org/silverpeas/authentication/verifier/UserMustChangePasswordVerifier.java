@@ -45,6 +45,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifier {
   public static final String ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN =
       "Error_PwdMustBeChangedOnFirstLogin";
+  public static final String ERROR_PWD_AND_EMAIL_MUST_BE_CHANGED_ON_FIRST_LOGIN =
+      "Error_PwdAndEmailMustBeChangedOnFirstLogin";
 
   private enum UserFirstLoginStep {
     CHANGE_PASSWORD,
@@ -55,6 +57,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
       new ConcurrentHashMap<String, UserFirstLoginStep>();
 
   protected static boolean isThatUserMustChangePasswordOnFirstLogin = false;
+  protected static boolean isThatUserMustFillEmailAddressOnFirstLogin = false;
   protected static boolean isMaxConnectionActivated = false;
   protected static boolean isOffsetConnectionActivated = false;
   protected static int nbMaxConnectionsForForcing = 0;
@@ -62,6 +65,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
   static {
     setup(settings.getBoolean("userMustChangePasswordOnFirstLogin", false),
+        settings.getBoolean("userMustFillEmailAddressOnFirstLogin", false),
         settings.getInteger("nbSuccessfulUserConnectionsBeforeForcingPasswordChange", 0),
         settings.getInteger("nbSuccessfulUserConnectionsBeforeProposingToChangePassword", 0));
   }
@@ -70,11 +74,13 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * Initializing settings.
    */
   protected static void setup(boolean userMustChangePasswordOnFirstLogin,
+      boolean userMustFillEmailAddressOnFirstLogin,
       int nbSuccessfulUserConnectionsBeforeForcingPasswordChange,
       int nbSuccessfulUserConnectionsBeforeProposingToChangePassword) {
 
     // Default values
     isThatUserMustChangePasswordOnFirstLogin = false;
+    isThatUserMustFillEmailAddressOnFirstLogin = false;
     isMaxConnectionActivated = false;
     isOffsetConnectionActivated = false;
     nbMaxConnectionsForForcing = 0;
@@ -83,6 +89,7 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
 
     // Custom values
     isThatUserMustChangePasswordOnFirstLogin = userMustChangePasswordOnFirstLogin;
+    isThatUserMustFillEmailAddressOnFirstLogin = userMustFillEmailAddressOnFirstLogin;
     nbMaxConnectionsForForcing = nbSuccessfulUserConnectionsBeforeForcingPasswordChange;
     if (nbMaxConnectionsForForcing > 0) {
       isMaxConnectionActivated = true;
@@ -107,14 +114,20 @@ public class UserMustChangePasswordVerifier extends AbstractAuthenticationVerifi
    * @return
    */
   public String getDestinationOnFirstLogin(HttpServletRequest request) {
+    String errorCode =
+        (!isThatUserMustFillEmailAddressOnFirstLogin) ? ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN :
+            ERROR_PWD_AND_EMAIL_MUST_BE_CHANGED_ON_FIRST_LOGIN;
     if (request != null) {
-      String message = getString("authentication.logon." + ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN,
-          (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
+      String message = getString("authentication.logon." + errorCode, (getUser() != null && StringUtil.isDefined(getUser().getId())) ?
               getUser().getUserPreferences().getLanguage() : I18NHelper.defaultLanguage);
       request.setAttribute("message", message);
+      request.setAttribute("isThatUserMustFillEmailAddressOnFirstLogin",
+          isThatUserMustFillEmailAddressOnFirstLogin);
+      if (isThatUserMustFillEmailAddressOnFirstLogin && getUser() != null) {
+        request.setAttribute("emailAddress", getUser().geteMail());
+      }
     }
-    return otherSettings.getString("passwordChangeOnFirstLoginURL") + "?ErrorCode=" +
-        ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN;
+    return otherSettings.getString("passwordChangeOnFirstLoginURL") + "?ErrorCode=" + errorCode;
   }
 
   /**
