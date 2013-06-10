@@ -51,14 +51,14 @@ public abstract class AbstractDomainService implements DomainService {
       throws DomainConflictException, AdminException {
 
     // Check 1 - Detects white spaces in domain name
-    if (StringUtils.contains(domainName, ' ')) {
+   /*if (StringUtils.contains(domainName, ' ')) {
       throw new WhiteSpacesDetectedException(domainName);
     }
 
     // Check 2 - Detects non-alphanumerics characters
     if (!StringUtils.isAlphanumeric(domainName)) {
       throw new NonAlphaNumericDetectedException(domainName);
-    }
+    }*/
 
     // Check 3 - Check domain name availability in database
     Admin adminService = AdminReference.getAdminService();

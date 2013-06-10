@@ -33,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringUtils;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
@@ -47,6 +48,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminException;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 @Named("sqlDomainService")
@@ -70,6 +72,8 @@ public class SQLDomainService extends AbstractDomainService {
 
     // Commons checks
     super.checkDomainName(domainName);
+    
+    
 
     // Check properties files availability
     // org.silverpeas.domains.domain<domainName>.properties
@@ -86,19 +90,36 @@ public class SQLDomainService extends AbstractDomainService {
       throw new DomainPropertiesAlreadyExistsException(domainName);
     }
   }
+  
+   
 
   @Override
   public String createDomain(Domain domainToCreate) throws DomainConflictException,
       DomainCreationException {
 
     // Check domain name
-    String domainName = domainToCreate.getName();
+    String initialDomainName = domainToCreate.getName();
     try {
-      checkDomainName(domainName);
+      checkDomainName(initialDomainName);
     } catch (AdminException e) {
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
+    
+    //check fileSystem
+   //TODO String domainName = getFileName(initialDomainName);
+    
+    //remplace les caractères espace par caractère '_'
+    String domainName = initialDomainName;
+    if (StringUtils.contains(domainName, ' ')) {
+      domainName = initialDomainName.replaceAll(" ", "_");
+    }
+
+    //remplace les caractères non compatibles fichiers fileSystem par '_'
+    domainName = FileServerUtils.replaceInvalidPathChars(domainName);
+    
+    //set nouveau nom pour le fileSystem
+    domainToCreate.setName(domainName);
 
     // Generates domain properties file
     generateDomainPropertiesFile(domainToCreate);
@@ -107,6 +128,7 @@ public class SQLDomainService extends AbstractDomainService {
     generateDomainAuthenticationPropertiesFile(domainToCreate);
 
     // Create storage
+    domainToCreate.setName(initialDomainName);
     try {
       dao.createDomainStorage(domainToCreate);
     } catch (Exception e) {
@@ -183,6 +205,7 @@ public class SQLDomainService extends AbstractDomainService {
         "root.MSG_GEN_ENTER_METHOD");
 
     String domainName = domainToCreate.getName();
+    
     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
 
     SilverpeasTemplate template = getNewTemplate();
