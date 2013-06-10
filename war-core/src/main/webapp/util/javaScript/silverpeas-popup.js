@@ -74,6 +74,34 @@
   var methods = {
 
     /**
+     * The modal free dialog : configure as you want your popup.
+     */
+    free : function(options) {
+
+      // Common settings
+      var settings = __extendCommonSettings(options);
+
+      // Internal settings
+      settings = $.extend(__buildInternalSettings({
+        buttonDisplayed : false,
+        width : 'auto'
+      }), settings);
+
+      if (__isIE7()) {
+        // Width & Height
+        if (options.width) {
+          settings.width = options.width;
+        }
+        if (options.height) {
+          settings.height = eval(options.height) + 27;
+        }
+      }
+
+      // Dialog
+      return __openPopup($(this), settings);
+    },
+
+    /**
      * The modal basic dialog. (scroll is deactivated)
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,

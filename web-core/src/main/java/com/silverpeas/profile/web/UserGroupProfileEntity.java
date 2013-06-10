@@ -105,7 +105,7 @@ public class UserGroupProfileEntity extends Group implements Exposable {
     if (isDefined(getSuperGroupId())) {
       this.parentUri = computeParentUriOfGroupByUri(groupUri);
     }
-    this.usersUri = computeUsersUriOfGroupById(getId());
+    this.usersUri = computeUsersUriOfGroupById(groupUri, getId());
     return this;
   }
 

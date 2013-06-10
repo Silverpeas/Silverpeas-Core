@@ -37,6 +37,7 @@
     if(SpaceInst.PERSONAL_SPACE_ID.equals(currentSpaceId)) {
       currentSpaceId = null;
     }
+  request.setAttribute("spaceId", currentSpaceId);
     Boolean disableMove = (Boolean) request.getAttribute("DisableMove");
     if (disableMove == null)
         disableMove = Boolean.FALSE;
@@ -51,6 +52,11 @@
     if (!disableMove.booleanValue())
     {
         OperationPane operationPane = window.getOperationPane();
+        if (currentSpaceId != null) {
+          operationPane.setType(OperationPaneType.space);
+        } else {
+          operationPane.setType(OperationPaneType.personalSpace);
+        }
         operationPane.addOperation("", message.getString("portlets.createPortlet"), "javascript:openAdmin()");
     }
 
@@ -110,4 +116,6 @@
 </body>
 
 
-<%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants"%></html>
+<%@page import="com.sun.portal.portletcontainer.invoker.WindowInvokerConstants"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPaneType" %>
+</html>
