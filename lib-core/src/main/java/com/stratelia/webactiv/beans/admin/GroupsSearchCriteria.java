@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,7 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 public class GroupsSearchCriteria implements SearchCriteria {
 
+  private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String GROUP_ID = "groupId";
   private static final String SUPERGROUP_ID = "parentId";
   private static final String ROLE_NAMES = "roleIds";
@@ -105,6 +108,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
     return this;
   }
 
+  @Override
+  public GroupsSearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
+    criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    return this;
+  }
+
   /**
    * The groups must belong to either the mixed domain or the specified one.
    * @param domainId the unique identifier of a domain.
@@ -141,6 +150,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnDomainIdSet() {
     return criteria.containsKey(DOMAIN_IDS);
+  }
+
+  public boolean isCriterionOnAccessLevelsSet() {
+    return criteria.containsKey(USER_ACCESS_LEVELS);
   }
 
   public boolean isCriterionOnMixedDomainIdSet() {
@@ -225,6 +238,14 @@ public class GroupsSearchCriteria implements SearchCriteria {
        }
      }
      return null;
+  }
+
+  /**
+   * Gets access level criterion.
+   * @return the access level criterion.
+   */
+  public UserAccessLevel[] getCriterionOnAccessLevels() {
+    return (UserAccessLevel[]) criteria.get(USER_ACCESS_LEVELS);
   }
 
   /**

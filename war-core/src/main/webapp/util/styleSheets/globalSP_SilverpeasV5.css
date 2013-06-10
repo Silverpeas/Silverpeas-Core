@@ -5095,7 +5095,7 @@ input.search:focus {
   position:absolute;
   width:310px;
   display: block;
-  z-index: 1000;
+  z-index: 100000;
 }
 
 .userzoom-infoConnection img {
@@ -5387,7 +5387,7 @@ input.search:focus {
 /** created action bar **/
 /*******************************/
 #menubar-creation-actions {
-	display: none;	
+	display: none;
 }
 
 #menubar-creation-actions,
@@ -5676,4 +5676,86 @@ ul.tagit li.tagit-choice a.tagit-close {
 .ui-dialog .champ-ui-dialog input[type=file],
 .ui-dialog .champ-ui-dialog textarea {
   width: 90%;
+}
+
+/*******************************/
+/**       Responsibles        **/
+/*******************************/
+
+#responsible-popup-content {
+  max-width: 750px;
+  max-height: 400px;
+}
+
+.list-responsible-user {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display: inline-block;
+  width: 100%
+}
+
+.list-responsible-user li {
+  float: left;
+  width: 31.5%;
+  min-width: 225px;
+  *width: 225px;
+  border: 1px solid #cfcfcf;
+  position: relative;
+  padding: 0;
+  margin: 0 1.5% 1.5% 0;
+  height: 56px;
+  background-color: #FFF;
+}
+
+.list-responsible-user li div.content {
+  padding: 0 0 0 50px;
+}
+
+.list-responsible-user .profilPhoto {
+  width: 40px;
+  height: 50px;
+  background-color: #FFF;
+  text-align: center;
+  border: 1px solid #cfcfcf;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+
+.list-responsible-user .profilPhoto img {
+  width: auto;
+  height: 50px;
+}
+
+.list-responsible-user .userName {
+  padding-top: 4px;
+}
+
+.list-responsible-user .userName a,
+#portletPages .list-responsible-user .userName a {
+  font-size: 14px;
+  color: #333333;
+  font-weight: bold;
+  line-height: 12px;
+  white-space: normal;
+}
+
+.list-responsible-user .action {
+  position: absolute;
+  bottom: 0px;
+  left: 50px;
+}
+
+#portletPages .list-responsible-user .action a,
+.list-responsible-user .action a {
+  color: #333366
+}
+
+.title-list-responsible-user {
+  border-bottom: 1px solid #cfcfcf;
+  padding: 0 0 0.5em 0;
+  margin: 0 0 1em 0;
+  text-align: center;
+  display: table;
 }

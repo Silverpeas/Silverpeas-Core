@@ -26,6 +26,8 @@ package com.stratelia.webactiv.beans.admin.dao;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.PaginationPage;
 import com.stratelia.webactiv.beans.admin.SearchCriteria;
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -98,6 +100,25 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
       domainIds.add(domainId);
       tables.add("st_group");
       getFixedQuery().append("st_group.domainId = ").append(Integer.valueOf(domainId));
+    }
+    return this;
+  }
+
+  @Override
+  public GroupSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
+    if (accessLevels != null && accessLevels.length > 0) {
+      tables.add("st_user");
+      StringBuilder accessLevelsAsCodes = new StringBuilder();
+      for (UserAccessLevel accessLevel : accessLevels) {
+        if (accessLevelsAsCodes.length() > 0) {
+          accessLevelsAsCodes.append(",");
+        }
+        accessLevelsAsCodes.append("'");
+        accessLevelsAsCodes.append(accessLevel.getCode());
+        accessLevelsAsCodes.append("'");
+      }
+      getFixedQuery().append("(st_user.accessLevel in (").append(accessLevelsAsCodes.toString())
+          .append("))");
     }
     return this;
   }

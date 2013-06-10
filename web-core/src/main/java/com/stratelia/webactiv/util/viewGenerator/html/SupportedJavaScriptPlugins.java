@@ -83,6 +83,10 @@ public enum SupportedJavaScriptPlugins {
    */
   wysiwyg,
   /**
+   * Silverpeas plugin to display responsibles for space or component.
+   */
+  responsibles,
+  /**
    * Silverpeas plugin to open a modal dialog box based on the JQuery UI Dialog.
    */
   popup,

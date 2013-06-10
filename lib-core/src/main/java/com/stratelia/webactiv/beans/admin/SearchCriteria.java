@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.beans.admin;
 
+import org.silverpeas.admin.user.constant.UserAccessLevel;
+
 /**
  * Criteria to use in a search of resources managed and exposed in Silverpeas (like user profiles or
  * user groups).
@@ -81,6 +83,15 @@ public interface SearchCriteria {
    * @return the criteria enriched with a criterion on the user groups.
    */
   SearchCriteria onGroupIds(String... groupIds);
+
+  /**
+   * Appends a criterion on the user access level for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   *
+   * @param accessLevels the access levels aimed.
+   * @return the criteria enriched with a criterion on the user access level.
+   */
+  SearchCriteria onAccessLevels(UserAccessLevel... accessLevels);
 
   /**
    * Appends a criterion on the resources name for which the search must be constrained to. The name

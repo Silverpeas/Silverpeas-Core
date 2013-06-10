@@ -23,16 +23,16 @@
  */
 package org.silverpeas.admin.web;
 
+import com.silverpeas.util.StringUtil;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.ws.rs.core.UriInfo;
-
-import com.silverpeas.util.StringUtil;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 
 /**
  * Base URIs from which the REST-based ressources representing admin entities are defined.
@@ -47,6 +47,9 @@ public final class AdminResourceURIs {
   public static final String SPACES_APPEARANCE_URI_PART = "appearance";
   public static final String SPACES_PERSONAL_URI_PART = "personal";
 
+  public static final String USERS_AND_GROUPS_ROLES_URI_PART = "usersAndGroupsRoles";
+
+  public static final String ROLES_PARAM = "roles";
   public static final String FORCE_GETTING_FAVORITE_PARAM = "forceGettingFavorite";
   public static final String GET_NOT_USED_COMPONENTS_PARAM = "getNotUsedComponents";
   public static final String GET_USED_COMPONENTS_PARAM = "getUsedComponents";
@@ -97,6 +100,19 @@ public final class AdminResourceURIs {
   }
 
   /**
+   * Builds a space users and groups roles URI
+   * @param spaceId
+   * @param role
+   * @param uriInfo
+   * @return
+   */
+  public static URI buildURIOfSpaceUsersAndGroupsRoles(final String spaceId,
+      final SilverpeasRole role, final UriInfo uriInfo) {
+    return buildURI(uriInfo, SPACES_BASE_URI, spaceId,
+        USERS_AND_GROUPS_ROLES_URI_PART + "?roles=" + role.getName());
+  }
+
+  /**
    * Builds a component URI
    * @param component
    * @param uriInfo
@@ -116,6 +132,19 @@ public final class AdminResourceURIs {
    */
   public static URI buildURIOfComponent(final String componentId, final UriInfo uriInfo) {
     return buildURI(uriInfo, COMPONENTS_BASE_URI, componentId);
+  }
+
+  /**
+   * Builds a component users and groups roles URI
+   * @param componentId
+   * @param role
+   * @param uriInfo
+   * @return
+   */
+  public static URI buildURIOfComponentUsersAndGroupsRoles(final String componentId,
+      final SilverpeasRole role, final UriInfo uriInfo) {
+    return buildURI(uriInfo, COMPONENTS_BASE_URI, componentId,
+        USERS_AND_GROUPS_ROLES_URI_PART + "?roles=" + role.getName());
   }
 
   /**

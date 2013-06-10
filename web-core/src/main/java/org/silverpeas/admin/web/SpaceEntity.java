@@ -31,6 +31,8 @@ import static org.silverpeas.admin.web.AdminResourceURIs.SPACES_SPACES_URI_PART;
 import static org.silverpeas.admin.web.AdminResourceURIs.buildURI;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
