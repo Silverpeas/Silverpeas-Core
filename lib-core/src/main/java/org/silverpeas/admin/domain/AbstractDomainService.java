@@ -24,13 +24,10 @@
 
 package org.silverpeas.admin.domain;
 
-import org.apache.commons.lang.StringUtils;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
 import org.silverpeas.admin.domain.exception.DomainDeletionException;
 import org.silverpeas.admin.domain.exception.NameAlreadyExistsInDatabaseException;
-import org.silverpeas.admin.domain.exception.NonAlphaNumericDetectedException;
-import org.silverpeas.admin.domain.exception.WhiteSpacesDetectedException;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
@@ -48,19 +45,9 @@ public abstract class AbstractDomainService implements DomainService {
    * @throws AdminException if a technical problem occurs during checks
    */
   protected void checkDomainName(String domainName)
-      throws DomainConflictException, AdminException {
+      throws AdminException, NameAlreadyExistsInDatabaseException {
 
-    // Check 1 - Detects white spaces in domain name
-    if (StringUtils.contains(domainName, ' ')) {
-      throw new WhiteSpacesDetectedException(domainName);
-    }
-
-    // Check 2 - Detects non-alphanumerics characters
-    if (!StringUtils.isAlphanumeric(domainName)) {
-      throw new NonAlphaNumericDetectedException(domainName);
-    }
-
-    // Check 3 - Check domain name availability in database
+    // Check domain name availability in database
     Admin adminService = AdminReference.getAdminService();
     Domain[] tabDomain = adminService.getAllDomains();
     for (Domain domain : tabDomain) {
@@ -113,5 +100,4 @@ public abstract class AbstractDomainService implements DomainService {
       throw new DomainDeletionException("AbstractDomainService.unRegisterDomain()", e);
     }
   }
-
 }
