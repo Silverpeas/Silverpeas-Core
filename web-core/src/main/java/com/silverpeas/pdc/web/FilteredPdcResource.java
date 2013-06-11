@@ -96,7 +96,7 @@ public class FilteredPdcResource extends RESTWebService {
     try {
       List<UsedAxis> axis = pdcServiceProvider().getAxisUsedInClassificationsByCriteria(criteria);
       UserPreferences userPreferences = getUserPreferences();
-      return aPdcEntity(
+      return aPdcEntityWithUsedAxis(
           withAxis(axis),
           inLanguage(userPreferences.getLanguage()),
           atURI(getUriInfo().getRequestUri()),

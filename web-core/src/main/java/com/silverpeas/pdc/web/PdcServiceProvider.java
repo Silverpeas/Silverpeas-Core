@@ -26,6 +26,7 @@ import com.silverpeas.thesaurus.control.ThesaurusManager;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.PdcException;
@@ -293,6 +294,25 @@ public class PdcServiceProvider {
       usedAxis.addAll(filteredAxis);
     }
     return usedAxis;
+  }
+
+  /**
+   * Gets all the axis of the PdC in Silverpeas.
+   *
+   * It takes only care of primary axis.
+   *
+   * @return the axis of the PdC.
+   * @throws PdcException if an error occurs while getting the PdC's axis.
+   */
+  public List<Axis> getAllAxis() throws PdcException {
+    List<Axis> pdcAxis = new ArrayList<Axis>();
+    List<AxisHeader> headers = getPdcBm().getAxisByType(PdcBm.PRIMARY_AXIS);
+    for (AxisHeader aHeader : headers) {
+      String treeId = getPdcBm().getTreeId(aHeader.getPK().getId());
+      List<Value> values = getPdcBm().getAxisValues(Integer.valueOf(treeId));
+      pdcAxis.add(new Axis(aHeader, values));
+    }
+    return pdcAxis;
   }
 
   private PdcBm getPdcBm() {

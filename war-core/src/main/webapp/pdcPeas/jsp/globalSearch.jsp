@@ -329,25 +329,10 @@ function onLoadStart() {
   <%}%>
 }
 
-function getPdcContextAsString()
-{
-	var axisValueCouples = "";
-	var myForm = document.AdvancedSearch;
-	var myElement;
-	for (var i=0;i<myForm.length;i++ ){
-		myElement = myForm.elements[i];
-		if (myElement.name.substring(0, 4) == "Axis"){
-			if (myElement.value.length>0)
-				axisValueCouples += myElement.name.substring(4, myElement.name.length)+"-"+myElement.value+",";
-		}
-	}
-	
-	return axisValueCouples;
-}
-
 function saveAsInterestCenter() {
 	
-	document.AdvancedSearch.AxisValueCouples.value = getPdcContextAsString();
+  var values = $('#used_pdc').pdc('selectedValues');
+	document.AdvancedSearch.AxisValueCouples.value = values.flatten();
 	
 	if (document.AdvancedSearch.iCenterId.selectedIndex)
 		icName = document.AdvancedSearch.iCenterId.options[document.AdvancedSearch.iCenterId.selectedIndex].text;
@@ -446,10 +431,10 @@ function addSubscription() {
 		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("pdcSubscription.Name.NotEmpty"))%>');
 		return;
 	}
+	var values = $('#used_pdc').pdc('selectedValues');
+	var axisValueCouples = values.flatten();
 	
-	var axisValueCouples = getPdcContextAsString();
-	
-	if (axisValueCouples.length==0) {
+	if (axisValueCouples.length===0) {
 		alert('<%=resource.getString("pdcSubscription.Values.NotEmpty")%>');
 		return;
 	}
@@ -953,6 +938,9 @@ out.println(frame.printAfter());
   if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
 %>
 <script type="text/javascript">
+    var showSecondaryAxis = <%= ("YES".equals(showSndSearchAxis) ? true: false)%>;
+    var componentId = <%= componentSelected != null ? "'" + componentSelected + "'": null %>;
+    var workspaceId = <%= spaceSelected != null ? "'" + spaceSelected + "'": null %>;
     <%
   List<SearchCriteria> criteriaOnAxisValues = searchContext.getCriterias();
   StringBuilder valuesInJs = new StringBuilder("[");
@@ -965,16 +953,21 @@ out.println(frame.printAfter());
     }
   }
   valuesInJs.append("]");
+  if (isPDCSubscription) {
+  %>
+     $('#used_pdc').pdc('all', {
+        values: <%= valuesInJs %>
+      });
+  <%
+  } else {
     %>
-    var showSecondaryAxis = <%= ("YES".equals(showSndSearchAxis) ? true: false)%>;
-    var componentId = <%= componentSelected != null ? "'" + componentSelected + "'": null %>
-    var workspaceId = <%= spaceSelected != null ? "'" + spaceSelected + "'": null %>
       $('#used_pdc').pdc('used', {
         component: componentId,
         workspace: workspaceId,
         withSecondaryAxis: showSecondaryAxis,
         values: <%= valuesInJs %>
       });
+   <% } %>
 </script>
 <%
   }

@@ -39,6 +39,34 @@
 
   var methods = {
     /**
+     * Renders a widget with all the axis of the PdC.
+     * The user can select some of the values with the widget.
+     */
+    all: function(parameters) {
+      return this.each(function() {
+        var $this = $(this);
+        init($this, parameters);
+        var settings = $(this).data('settings');
+        var url = uriOfPdC(settings);
+        loadPdC(url, function(loadedPdC) {
+          settings.selectorParameters.axis = loadedPdC.axis;
+          settings.selectorParameters.values = getValues(settings.values, loadedPdC.axis);
+          settings.selectorParameters.classifiedContentCount = false;
+          settings.selectorParameters.onValueChange = function(axis, value) {
+            settings = $this.data('settings');
+            if (value === null)
+              settings.values.removeByAxis(axis);
+            else
+              settings.values.put(value);
+            return null;
+          };
+          $this.pdcAxisValuesSelector(settings.selectorParameters);
+        }, function(pdc, error) {
+          alert(error.message);
+        });
+      });
+    },
+    /**
      * Renders a widget with the axis of the PdC that are used in the classification of the contents
      * in Silverpeas. For each axis, only the values actually used in a classification are rendered
      * with the axis and for each of them the count of contents having this value in their classification.
@@ -53,6 +81,21 @@
         loadPdC(url, function(loadedPdC) {
           settings.selectorParameters.axis = loadedPdC.axis;
           settings.selectorParameters.values = getValues(settings.values, loadedPdC.axis);
+          settings.selectorParameters.onValueChange = function(axis, value) {
+            var updatedAxis, settings = $this.data('settings');
+            if (value === null)
+              settings.values.removeByAxis(axis);
+            else
+              settings.values.put(value);
+            var url = uriOfUsedPdc(settings);
+            loadPdC(url, function(loadedPdC) {
+              updatedAxis = loadedPdC.axis;
+            }, function(pdc, error) {
+              alert(error.message);
+            }, true);
+
+            return updatedAxis;
+          };
           $this.pdcAxisValuesSelector(settings.selectorParameters);
         }, function(pdc, error) {
           alert(error.message);
@@ -60,7 +103,7 @@
       });
     },
     /**
-     * Function to get the axis' values selected by the user through the widget above.
+     * Function to get the axis' values selected by the user through one of the widget above.
      * @returns {Array} an array of axis' values. A value is an object of type:
      * {
      *   id: the unique identifier of the value, that is its path from the root axis' value,
@@ -124,21 +167,6 @@
       secondaryAxisIcon: webContext + '/pdcPeas/jsp/icons/secondary.gif',
       axis: [],
       values: [],
-      onValueChange: function(axis, value) {
-        var updatedAxis, settings = $this.data('settings');
-        if (value === null)
-          settings.values.removeByAxis(axis);
-        else
-          settings.values.put(value);
-        var url = uriOfUsedPdc(settings);
-        loadPdC(url, function(loadedPdC) {
-          updatedAxis = loadedPdC.axis;
-        }, function(pdc, error) {
-          alert(error.message);
-        }, true);
-
-        return updatedAxis;
-      },
       onValuesSelected: null
     };
     if (!settings.values)

@@ -141,7 +141,7 @@ public class PdcGettingForSearchTest extends ResourceGettingTest<PdcTestResource
   }
 
   public PdcEntity toWebEntity(List<UsedAxis> axis, String uri) throws ThesaurusException {
-    return PdcEntity.aPdcEntity(axis, FRENCH, URI.create(uri), getTestResources().
+    return PdcEntity.aPdcEntityWithUsedAxis(axis, FRENCH, URI.create(uri), getTestResources().
         aThesaurusHolderFor(
         theUser));
   }

@@ -22,6 +22,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.silverpeas.web.Exposable;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.net.URI;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class PdcEntity implements Exposable {
    * the specified language and with the specified user thesaurus. The web representation of the PdC
    * is identified at the specified URI.
    *
-   * @param withUsedAxis the axis to use in the PdC.
+   * @param usedAxis the axis to use in the PdC.
    * @param inLanguage the language in which the PdC's terms should be translated.
    * @param atURI the URI at which the PdC can be found.
    * @param withThesaurus the thesaurus to use with this PdC. The thesaurus will be use to set the
@@ -64,9 +65,14 @@ public class PdcEntity implements Exposable {
    * @throws ThesaurusException if an error occurs while using the thesaurus to find the synonyms of
    * values of the different PdC's axis.
    */
-  public static PdcEntity aPdcEntity(final List<UsedAxis> withUsedAxis, String inLanguage,
+  public static PdcEntity aPdcEntityWithUsedAxis(final List<UsedAxis> usedAxis, String inLanguage,
       final URI atURI, final UserThesaurusHolder withThesaurus) throws ThesaurusException {
-    return new PdcEntity(atURI).withAsAxis(fromUsedAxis(withUsedAxis, inLanguage, withThesaurus));
+    return new PdcEntity(atURI).withAsAxis(fromUsedAxis(usedAxis, inLanguage, withThesaurus));
+  }
+
+  public static PdcEntity aPdcEntityWithAxis(final List<Axis> usedAxis, String inLanguage,
+      final URI atURI, final UserThesaurusHolder withThesaurus) throws ThesaurusException {
+    return new PdcEntity(atURI).withAsAxis(fromAxis(usedAxis, inLanguage, withThesaurus));
   }
 
   /**
@@ -139,6 +145,15 @@ public class PdcEntity implements Exposable {
     List<PdcAxis> axis = new ArrayList<PdcAxis>();
     for (UsedAxis usedAxis : theAxisToUse) {
       axis.add(PdcAxis.fromTheUsedAxis(usedAxis, inLanguage, usingThesaurus));
+    }
+    return axis;
+  }
+
+  private static List<PdcAxis> fromAxis(final List<Axis> theAxis, String inLanguage,
+      final UserThesaurusHolder usingThesaurus) throws ThesaurusException {
+    List<PdcAxis> axis = new ArrayList<PdcAxis>();
+    for (Axis anAxis : theAxis) {
+      axis.add(PdcAxis.fromTheAxis(anAxis, inLanguage, usingThesaurus));
     }
     return axis;
   }

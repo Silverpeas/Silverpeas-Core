@@ -20,12 +20,15 @@
  */
 package com.silverpeas.pdc.web;
 
-import com.silverpeas.annotation.Authorized;
+import com.silverpeas.annotation.Authenticated;
 import com.silverpeas.annotation.RequestScoped;
 import com.silverpeas.annotation.Service;
 import com.silverpeas.personalization.UserPreferences;
 import com.silverpeas.web.RESTWebService;
+import com.silverpeas.web.UserPriviledgeValidation;
+import com.silverpeas.web.UserPriviledgeValidationFactory;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import java.util.List;
 import javax.inject.Inject;
@@ -56,13 +59,12 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 @Service
 @RequestScoped
-@Path("pdc/{componentId:[a-zA-Z]+[0-9]+}")
-@Authorized
+@Path("pdc")
+@Authenticated
 public class PdcResource extends RESTWebService {
 
   @Inject
   private PdcServiceProvider pdcServiceProvider;
-  @PathParam("componentId")
   private String componentId;
 
   /**
@@ -85,8 +87,11 @@ public class PdcResource extends RESTWebService {
    * serialized in JSON.
    */
   @GET
+  @Path("{componentId:[a-zA-Z]+[0-9]+}")
   @Produces(MediaType.APPLICATION_JSON)
-  public PdcEntity getPdcForClassification(@QueryParam("contentId") String content) {
+  public PdcEntity getPdcForClassification(@PathParam("componentId") String component, @QueryParam(
+      "contentId") String content) {
+    setComponentId(component);
     try {
       List<UsedAxis> axis;
       if (isDefined(content)) {
@@ -99,8 +104,8 @@ public class PdcResource extends RESTWebService {
       }
 
       UserPreferences userPreferences = getUserPreferences();
-      return aPdcEntity(
-          withAxis(axis),
+      return aPdcEntityWithUsedAxis(
+          axis,
           inLanguage(userPreferences.getLanguage()),
           atURI(getUriInfo().getRequestUri()),
           withThesaurusAccordingTo(userPreferences));
@@ -113,13 +118,54 @@ public class PdcResource extends RESTWebService {
     }
   }
 
+  /**
+   * Gets the PdC. The PdC is sent back in JSON. If the user isn't authentified, a 401 HTTP code is
+   * returned. If the user isn't authorized to access the requested component instance, a 403 is
+   * returned. If the resource content isn't indicated as query parameter, a 400 HTTP code is
+   * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
+   *
+   * @return a web entity representing the PdC. The entity is serialized in JSON.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public PdcEntity getPdc() {
+    try {
+      List<Axis> axis = pdcServiceProvider().getAllAxis();
+
+      UserPreferences userPreferences = getUserPreferences();
+      return aPdcEntityWithAxis(
+          axis,
+          inLanguage(userPreferences.getLanguage()),
+          atURI(getUriInfo().getRequestUri()),
+          withThesaurusAccordingTo(userPreferences));
+    } catch (WebApplicationException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
   @Override
   public String getComponentId() {
+    return componentId;
+  }
+
+  /**
+   * Sets the specified identifier of the component instance to which the resource is referred. The
+   * access right against the component is checked in the setting.
+   *
+   * @param componentId the unique identifier a component instance.
+   */
+  private void setComponentId(String componentId) {
     int index = componentId.indexOf("?contentId");
     if (index > 0) {
-      return componentId.substring(0, index);
+      this.componentId = componentId.substring(0, index);
+    } else {
+      this.componentId = componentId;
     }
-    return componentId;
+    UserPriviledgeValidationFactory factory = UserPriviledgeValidationFactory.getFactory();
+    UserPriviledgeValidation validation = factory.getUserPriviledgeValidation();
+    validateUserAuthorization(validation);
   }
 
   private PdcServiceProvider pdcServiceProvider() {

@@ -124,13 +124,19 @@ public class PdcBmMock extends PdcBmImpl {
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException {
     List<UsedAxis> usedAxis = new ArrayList<UsedAxis>();
     ClassificationPlan pdc = aClassificationPlan();
-    List<UsedAxis> allAxis = pdc.getAxis();
+    List<UsedAxis> allAxis = pdc.getUsedAxis();
     for (UsedAxis anAxis : allAxis) {
       if (anAxis.getInstanceId().equals(instanceId)) {
         usedAxis.add(anAxis);
       }
     }
     return usedAxis;
+  }
+
+  @Override
+  public List<AxisHeader> getAxis() throws PdcException {
+    ClassificationPlan pdc = aClassificationPlan();
+    return pdc.getAxisHeaders(null);
   }
 
   @Override

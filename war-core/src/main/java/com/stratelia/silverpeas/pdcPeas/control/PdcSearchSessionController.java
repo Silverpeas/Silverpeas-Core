@@ -20,37 +20,6 @@
  */
 package com.stratelia.silverpeas.pdcPeas.control;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.silverpeas.attachment.AttachmentServiceFactory;
-import org.silverpeas.attachment.model.SimpleDocument;
-import org.silverpeas.attachment.model.SimpleDocumentPK;
-import org.silverpeas.search.PlainSearchResult;
-import org.silverpeas.search.SearchEngineFactory;
-import org.silverpeas.search.searchEngine.model.AxisFilter;
-import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
-import org.silverpeas.search.searchEngine.model.QueryDescription;
-import org.silverpeas.viewer.ViewerFactory;
-import org.silverpeas.wysiwyg.control.WysiwygController;
-
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldDisplayer;
@@ -123,6 +92,35 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.silverpeas.attachment.AttachmentServiceFactory;
+import org.silverpeas.attachment.model.SimpleDocument;
+import org.silverpeas.attachment.model.SimpleDocumentPK;
+import org.silverpeas.search.PlainSearchResult;
+import org.silverpeas.search.SearchEngineFactory;
+import org.silverpeas.search.searchEngine.model.AxisFilter;
+import org.silverpeas.search.searchEngine.model.MatchingIndexEntry;
+import org.silverpeas.search.searchEngine.model.QueryDescription;
+import org.silverpeas.viewer.ViewerFactory;
+import org.silverpeas.wysiwyg.control.WysiwygController;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
 
@@ -677,12 +675,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String instanceId = result.getInstanceId();
     String type = result.getType();
     if (StringUtil.isDefined(type)) {
-      SearchTypeConfigurationVO searchType = getSearchType(instanceId, type);
-      if (searchType != null) {
-        FacetEntryVO facetEntry = new FacetEntryVO(searchType.getName(), String.valueOf(searchType.
+      SearchTypeConfigurationVO theSearchType = getSearchType(instanceId, type);
+      if (theSearchType != null) {
+        FacetEntryVO facetEntry = new FacetEntryVO(theSearchType.getName(), String.valueOf(
+            theSearchType.
             getConfigId()));
         if (getSelectedFacetEntries() != null) {
-          if (String.valueOf(searchType.getConfigId()).equals(getSelectedFacetEntries().
+          if (String.valueOf(theSearchType.getConfigId()).equals(getSelectedFacetEntries().
               getDatatype())) {
             facetEntry.setSelected(true);
           }
@@ -953,8 +952,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
         // check datatype facet
         if (visible && filterDatatype) {
-          SearchTypeConfigurationVO searchType = getSearchType(gsrInstanceId, gsResult.getType());
-          if (searchType == null || !datatypeFilter.equals(String.valueOf(searchType.getConfigId()))) {
+          SearchTypeConfigurationVO theSearchType = getSearchType(gsrInstanceId, gsResult.getType());
+          if (theSearchType == null || !datatypeFilter.equals(String.valueOf(theSearchType.
+              getConfigId()))) {
             visible = false;
           }
         }
@@ -967,8 +967,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             visible = false;
           } else {
             if (!gsrFormFieldsForFacets.isEmpty()) {
-              Map<String, String> selectedFacetEntries = filter.getFormFieldSelectedFacetEntries();
-              for (Map.Entry<String, String> facet : selectedFacetEntries.entrySet()) {
+              Map<String, String> theSelectedFacetEntries = filter.
+                  getFormFieldSelectedFacetEntries();
+              for (Map.Entry<String, String> facet : theSelectedFacetEntries.entrySet()) {
                 // get stored value relative to given facet
                 String resultFieldValue = gsrFormFieldsForFacets.get(facet.getKey());
                 SilverTrace.debug("pdcPeas", "PdcSearchSessionController.filterResult",
@@ -1283,12 +1284,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
     // Retrieve list of object type filter
     List<String> objectTypeFilter = getListObjectTypeFilter();
-    
+
     List<String> wysiwygSuffixes = new ArrayList<String>();
     for (String language : I18NHelper.getAllSupportedLanguages()) {
-      wysiwygSuffixes.add(WysiwygController.WYSIWYG_CONTEXT+"_"+language+".txt");
+      wysiwygSuffixes.add(WysiwygController.WYSIWYG_CONTEXT + "_" + language + ".txt");
     }
-    
+
     for (MatchingIndexEntry result : matchingIndexEntries) {
       boolean processThisResult = processResult(result, objectTypeFilter);
 
@@ -1353,7 +1354,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
     return results;
   }
-  
+
   private boolean isWysiwyg(String filename, List<String> wysiwygSuffixes) {
     for (String suffix : wysiwygSuffixes) {
       if (filename.endsWith(suffix)) {
@@ -1623,7 +1624,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     SilverTrace.info("pdcPeas",
         "PdcSearchSessionController.setCurrentComponentIds()",
         "root.MSG_GEN_ENTER_METHOD", "# componentId = " + componentList.size());
-    String componentId = null;
+    String componentId;
     for (int i = 0; componentList != null && i < componentList.size(); i++) {
       componentId = componentList.get(i);
       SilverTrace.debug("pdcPeas",
@@ -2175,7 +2176,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       int id = Integer.parseInt(icId);
       InterestCenter ic = (new InterestCenterUtil()).getICByID(id);
       getSearchContext().clearCriterias();
-      List<Criteria> criterias = ic.getPdcContext();
+      List<? extends Criteria> criterias = ic.getPdcContext();
       for (Criteria criteria : criterias) {
         searchContext.addCriteria(new SearchCriteria(criteria.getAxisId(), criteria.getValue()));
       }
@@ -2461,7 +2462,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * array of 3 String (String[0]=domain name, String[1]=domain url page, String[2]=internal Id)
    */
   public void setSearchDomains() {
-    ResourceLocator resource = null;
+    ResourceLocator resource;
     List<String[]> domains = new ArrayList<String[]>();
 
     try {
@@ -2925,10 +2926,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private SearchTypeConfigurationVO getSearchType(String componentId, String type) {
     ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
     if (component != null) {
-      for (SearchTypeConfigurationVO searchType : getSearchTypeConfig()) {
-        if (searchType.getComponents().contains(component.getName())) {
-          if (searchType.getTypes().isEmpty() || searchType.getTypes().contains(type)) {
-            return searchType;
+      for (SearchTypeConfigurationVO aSearchType : getSearchTypeConfig()) {
+        if (aSearchType.getComponents().contains(component.getName())) {
+          if (aSearchType.getTypes().isEmpty() || aSearchType.getTypes().contains(type)) {
+            return aSearchType;
           }
         }
       }

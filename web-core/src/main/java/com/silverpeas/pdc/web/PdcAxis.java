@@ -22,6 +22,7 @@ package com.silverpeas.pdc.web;
 
 import com.silverpeas.thesaurus.ThesaurusException;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.silverpeas.pdc.model.Value;
 import java.util.ArrayList;
@@ -91,6 +92,34 @@ public class PdcAxis {
     if (isDefined(axis._getInvariantValue())) {
       pdcAxis.setInvariantValue(axis._getInvariantValue());
     }
+    return pdcAxis;
+  }
+
+  /**
+   * Creates a PdC axis from the specified configured axis for a specific component instance and in
+   * which the terms are expressed in the specified language and whose synonyms are set with the
+   * specified user thesaurus.
+   *
+   * @param axis an axis of the PdC potentially configured for a given Silverpeas component
+   * instance.
+   * @param inLanguage the language to use to translate the terms of the axis.
+   * @param withThesaurus the thesaurus to use to set the synonyms of the axis values. Null if no
+   * thesaurus are available or if no synonyms require to be set.
+   * @return the PdcAxis instance corresponding to the specified business axis.
+   * @throws ThesaurusException if an error occurs while using the thesaurus when setting up the PdC
+   * axis.
+   */
+  public static PdcAxis fromTheAxis(final Axis axis, String inLanguage,
+      final UserThesaurusHolder withThesaurus) throws ThesaurusException {
+    String andOriginValue = "/0/";
+    int axisType = (PdcBm.PRIMARY_AXIS.equals(axis.getAxisHeader().getAxisType()) ? PRIMARY_AXIS
+        : SECONDARY_AXIS);
+    List<PdcAxisValueEntity> theAxisValues =
+        fromValues(axis.getValues(), andOriginValue, inLanguage, withThesaurus);
+    PdcAxis pdcAxis = new PdcAxis(axis.getAxisHeader().getPK().getId(), axis.getAxisHeader().
+        getName(inLanguage)).
+        ofType(axisType).
+        withAsPdcAxisValues(theAxisValues, andOriginValue);
     return pdcAxis;
   }
 
@@ -293,6 +322,11 @@ public class PdcAxis {
 
   private PdcAxis(int axisId, String axisName) {
     this.id = axisId;
+    this.name = axisName;
+  }
+
+  private PdcAxis(String axisId, String axisName) {
+    this.id = Integer.valueOf(axisId);
     this.name = axisName;
   }
 

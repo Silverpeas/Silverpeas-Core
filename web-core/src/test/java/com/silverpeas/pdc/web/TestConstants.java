@@ -34,6 +34,7 @@ public interface TestConstants {
   static final String NODE_ID = "5";
   static final String CONTENT_CLASSIFICATION_PATH = "pdc/classification/" + COMPONENT_INSTANCE_ID
       + "/" + CONTENT_ID;
+  static final String PDC_PATH = "pdc";
   static final String CONTENT_PDC_PATH = "pdc/" + COMPONENT_INSTANCE_ID + "?contentId=" + CONTENT_ID;
   static final String USED_PDC_PATH = "pdc/filter/used";
   static final String PDC_PATH_WITH_NO_CONTENT = "pdc/" + COMPONENT_INSTANCE_ID;
@@ -46,7 +47,8 @@ public interface TestConstants {
   static final String UNKNOWN_CONTENT_CLASSIFICATION_PATH = "pdc/classification/kmelia3/2";
   static final String FRENCH = "fr";
   static final String CLASSIFICATION_URI = WEB_CONTEXT + CONTENT_CLASSIFICATION_PATH;
-  static final String PDC_URI = WEB_CONTEXT + PDC_PATH_WITH_NO_CONTENT;
+  static final String PDC_URI_WITH_NO_CONTENT = WEB_CONTEXT + PDC_PATH_WITH_NO_CONTENT;
+  static final String PDC_URI = WEB_CONTEXT + PDC_PATH;
   static final String NODE_DEFAULT_CLASSIFICATION_URI = WEB_CONTEXT
       + NODE_DEFAULT_CLASSIFICATION_PATH;
   static final String COMPONENT_DEFAULT_CLASSIFICATION_URI = WEB_CONTEXT

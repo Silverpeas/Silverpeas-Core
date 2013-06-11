@@ -22,6 +22,8 @@ package com.silverpeas.pdc.web.beans;
 
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.Translation;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.AxisHeader;
 import com.stratelia.silverpeas.pdc.model.AxisHeaderI18N;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
@@ -58,12 +60,32 @@ public class ClassificationPlan {
   }
 
   /**
-   * Gets the axis of this classification plan.
+   * Gets the axis of this classification plan ready to be used in a classification.
    *
    * @return an unmodifiable list with the axis of this classification plan.
    */
-  public List<UsedAxis> getAxis() {
+  public List<UsedAxis> getUsedAxis() {
     return Collections.unmodifiableList(pdcAxis);
+  }
+
+  /**
+   * Gets the axis of this classification plan.
+   *
+   * It takes care only primary axis as expected by the tests.
+   *
+   * @return an unmodifiable list with the axis of this classification plan.
+   */
+  public List<Axis> getAxis() {
+    List<Axis> axis = new ArrayList<Axis>(pdcAxis.size());
+    for (UsedAxis aUsedAxis : pdcAxis) {
+      if (aUsedAxis._getAxisType().equals(PdcBm.PRIMARY_AXIS)) {
+        String axisId = String.valueOf(aUsedAxis.getAxisId());
+        List<Value> values = getValuesOfAxisById(axisId);
+        Axis anAxis = new Axis(getAxisHeader(axisId), values);
+        axis.add(anAxis);
+      }
+    }
+    return Collections.unmodifiableList(axis);
   }
 
   /**

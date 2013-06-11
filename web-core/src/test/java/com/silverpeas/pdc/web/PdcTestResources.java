@@ -33,6 +33,7 @@ import com.silverpeas.web.TestResources;
 import com.silverpeas.web.mock.OrganizationControllerMockWrapper;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.model.Axis;
 import com.stratelia.silverpeas.pdc.model.UsedAxis;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import java.net.URI;
@@ -133,14 +134,6 @@ public class PdcTestResources extends TestResources {
     return getPdcClassificationServiceMock().findAPreDefinedClassification(nodeId, componentId);
   }
 
-//
-//  public void getPredefinedPdcClassificationForWholeComponent() {
-//    classificationRepository.findPredefinedClassificationByComponentInstanceId(COMPONENT_INSTANCE_ID);
-//  }
-//
-//  public void getPredefinedPdcClassificationForNode() {
-//    classificationRepository.findPredefinedClassificationByNodeId(NODE_ID, COMPONENT_INSTANCE_ID);
-//  }
   /**
    * Gets the current PdC classification used in the test.
    *
@@ -153,6 +146,11 @@ public class PdcTestResources extends TestResources {
   public List<UsedAxis> getAxisUsedInClassification() {
     ClassificationPlan pdc = ClassificationPlan.aClassificationPlan();
     return pdc.getAxisUsedInClassification();
+  }
+
+  public List<Axis> getAxisInPdC() {
+    ClassificationPlan pdc = ClassificationPlan.aClassificationPlan();
+    return pdc.getAxis();
   }
 
   /**

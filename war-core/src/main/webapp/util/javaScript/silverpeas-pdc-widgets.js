@@ -60,18 +60,21 @@ function uriOfPdCClassification(resource) {
 /**************************************************************************************************/
 
 /**
- * Build the URI identifying the PdC parameterized for the specified resource.
+ * Build the URI identifying the PdC. The PdC can be the one parameterized for the specified resource.
  * The name of the Silverpeas web context is provided by the 'context' property of the resource.
  * If resource.content is set, then the axis are parameterized according to the existing
  * classification of the context (if any).
  * @param {{context: string, component: string, content: ?number}} resource the resource representing
  * a content belonging to a given component instance in Silverpeas.
- * @returns {String} the URI of the PdC to use for classifying the specified resource.
+ * @returns {String} the URI of the PdC.
  */
 function uriOfPdC(resource) {
-  var uri = resource.context + '/services/pdc/' + resource.component;
-  if (resource.content && resource.content.length > 0) {
-    uri += '?contentId=' + resource.content;
+  var uri = resource.context + '/services/pdc';
+  if (resource.component && resource.component.length > 0) {
+    uri += '/' + resource.component;
+    if (resource.content && resource.content.length > 0) {
+      uri += '?contentId=' + resource.content;
+    }
   }
   return uri;
 }
