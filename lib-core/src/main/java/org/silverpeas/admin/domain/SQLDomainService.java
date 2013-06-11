@@ -67,31 +67,30 @@ public class SQLDomainService extends AbstractDomainService {
     adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
 
-  @Override
+ /* @Override
   protected void checkDomainName(String domainName) throws DomainConflictException, AdminException {
 
     // Commons checks
     super.checkDomainName(domainName);
     
-    
-
-    // Check properties files availability
-    // org.silverpeas.domains.domain<domainName>.properties
-    // org.silverpeas.authentication.autDomain<domainName>.properties
-    String authenticationPropertiesPath =
-        FileRepositoryManager.getDomainAuthenticationPropertiesPath(domainName);
-    String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(domainName);
-
-    if (new File(authenticationPropertiesPath).exists()) {
-      throw new DomainAuthenticationPropertiesAlreadyExistsException(domainName);
-    }
-
-    if (new File(domainPropertiesPath).exists()) {
-      throw new DomainPropertiesAlreadyExistsException(domainName);
-    }
-  }
+  }*/
   
-   
+   private void checkFileName(String fileDomainName) throws DomainAuthenticationPropertiesAlreadyExistsException, DomainPropertiesAlreadyExistsException {
+     // Check properties files availability
+     // org.silverpeas.domains.domain<domainName>.properties
+     // org.silverpeas.authentication.autDomain<domainName>.properties
+     String authenticationPropertiesPath =
+         FileRepositoryManager.getDomainAuthenticationPropertiesPath(fileDomainName);
+     String domainPropertiesPath = FileRepositoryManager.getDomainPropertiesPath(fileDomainName);
+
+     if (new File(authenticationPropertiesPath).exists()) {
+       throw new DomainAuthenticationPropertiesAlreadyExistsException(fileDomainName);
+     }
+
+     if (new File(domainPropertiesPath).exists()) {
+       throw new DomainPropertiesAlreadyExistsException(fileDomainName);
+     }
+   }
 
   @Override
   public String createDomain(Domain domainToCreate) throws DomainConflictException,
@@ -106,20 +105,20 @@ public class SQLDomainService extends AbstractDomainService {
           e);
     }
     
-    //check fileSystem
-   //TODO String domainName = getFileName(initialDomainName);
-    
     //remplace les caractères espace par caractère '_'
-    String domainName = initialDomainName;
-    if (StringUtils.contains(domainName, ' ')) {
-      domainName = initialDomainName.replaceAll(" ", "_");
+    String fileDomainName = initialDomainName;
+    if (StringUtils.contains(fileDomainName, ' ')) {
+      fileDomainName = initialDomainName.replaceAll(" ", "_");
     }
 
-    //remplace les caractères non compatibles fichiers fileSystem par '_'
-    domainName = FileServerUtils.replaceInvalidPathChars(domainName);
+    //remplace les caractères non compatibles fichiers fileSystem et nom de tables BD par '_'
+    fileDomainName = FileServerUtils.replaceInvalidPathChars(fileDomainName);
+    
+    //check fileSystem
+    checkFileName(fileDomainName);
     
     //set nouveau nom pour le fileSystem
-    domainToCreate.setName(domainName);
+    domainToCreate.setName(fileDomainName);
 
     // Generates domain properties file
     generateDomainPropertiesFile(domainToCreate);
@@ -128,11 +127,10 @@ public class SQLDomainService extends AbstractDomainService {
     generateDomainAuthenticationPropertiesFile(domainToCreate);
 
     // Create storage
-    domainToCreate.setName(initialDomainName);
     try {
       dao.createDomainStorage(domainToCreate);
     } catch (Exception e) {
-      removePropertiesFiles(domainName);
+      removePropertiesFiles(fileDomainName);
       throw new DomainCreationException("SQLDomainService.createDomain", domainToCreate.toString(),
           e);
     }
@@ -142,17 +140,24 @@ public class SQLDomainService extends AbstractDomainService {
     if (!StringUtil.isDefined(domainToCreate.getDriverClassName())) {
       domainToCreate.setDriverClassName("com.stratelia.silverpeas.domains.sqldriver.SQLDriver");
     }
-    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + domainName);
-    domainToCreate.setAuthenticationServer("autDomain" + domainName);
+    domainToCreate.setPropFileName("org.silverpeas.domains.domain" + fileDomainName);
+    domainToCreate.setAuthenticationServer("autDomain" + fileDomainName);
     domainToCreate.setTheTimeStamp("0");
+    
+    // Enregistre le nom initial dans la table st_domain
+    domainToCreate.setName(initialDomainName);
     String domainId = registerDomain(domainToCreate);
+    
+    //set nouveau nom pour le fileSystem
+    domainToCreate.setName(fileDomainName);
+    
     if (!StringUtil.isDefined(domainId)) {
       try {
         dao.deleteDomainStorage(domainToCreate);
       } catch (Exception e) {
-        removePropertiesFiles(domainName);
+        removePropertiesFiles(fileDomainName);
       }
-      removePropertiesFiles(domainName);
+      removePropertiesFiles(fileDomainName);
     }
 
     return domainId;
