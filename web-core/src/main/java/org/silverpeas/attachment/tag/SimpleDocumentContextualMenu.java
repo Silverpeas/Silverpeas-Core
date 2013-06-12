@@ -144,7 +144,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     prepareMenuItem(builder, "checkoutAndEdit('" + attachment.getId() + "'," + attachmentId
         + ");", resources.getString("attachment.checkOutAndEditOnline"));
     prepareMenuItem(builder, "checkin('" + attachment.getId() + "'," + attachmentId + ','
-        + attachment.isOpenOfficeCompatible() + ", false);", resources.getString("checkIn"));
+        + attachment.isOpenOfficeCompatible() + ", false ," + attachment.isVersioned() + ");",
+        resources.getString("checkIn"));
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "updateAttachment('" + attachment.getId() + "','" + language + "');",
@@ -194,8 +195,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureCheckoutAndEdit(attachmentId, !isEditable(userId, attachment,
           useWebDAV)));
-      builder.append(configureCheckin(attachmentId,
-          !isWorker(userId, attachment) && !isAdmin(userId)));
+      builder.append(configureCheckin(attachmentId, !isWorker(userId, attachment)
+          && !isAdmin(userId)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureDelete(attachmentId, useXMLForm, true));
       if (!userId.equals(attachment.getEditedBy())) {
