@@ -33,7 +33,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.lang.StringUtils;
 import org.silverpeas.admin.domain.exception.DomainAuthenticationPropertiesAlreadyExistsException;
 import org.silverpeas.admin.domain.exception.DomainConflictException;
 import org.silverpeas.admin.domain.exception.DomainCreationException;
@@ -66,14 +65,6 @@ public class SQLDomainService extends AbstractDomainService {
         new ResourceLocator("org.silverpeas.domains.templateDomainSQL", "");
     adminSettings = new ResourceLocator("org.silverpeas.beans.admin.admin", "");
   }
-
- /* @Override
-  protected void checkDomainName(String domainName) throws DomainConflictException, AdminException {
-
-    // Commons checks
-    super.checkDomainName(domainName);
-    
-  }*/
   
    private void checkFileName(String fileDomainName) throws DomainAuthenticationPropertiesAlreadyExistsException, DomainPropertiesAlreadyExistsException {
      // Check properties files availability
@@ -91,6 +82,23 @@ public class SQLDomainService extends AbstractDomainService {
        throw new DomainPropertiesAlreadyExistsException(fileDomainName);
      }
    }
+   
+   //transformation du nom du domaine, nécessaire pour pouvoir créer les fichiers sur le fileSystem 
+   //et créer les tables dans la BD
+   private String getCorrectDomainFileName(String domainName) {
+     //remplace les caractères accentués non compatibles avec les fichiers fileSystem et les noms de tables BD par les caractères non accentués correspondants
+     String fileDomainName = FileServerUtils.replaceAccentChars(domainName);
+     
+     //remplace les caractères spéciaux et les espaces non compatibles avec les fichiers fileSystem et les noms de tables BD par caractère '_'
+     fileDomainName =  fileDomainName.replaceAll("[^A-Za-z0-9]", "_");
+     
+     //tronque le nom à 42 caractères pour être compatible avec les noms de tables BD
+     if (fileDomainName.length()>42) {
+       fileDomainName = fileDomainName.substring(0, 42);
+     }
+     
+     return fileDomainName;
+   }
 
   @Override
   public String createDomain(Domain domainToCreate) throws DomainConflictException,
@@ -105,19 +113,13 @@ public class SQLDomainService extends AbstractDomainService {
           e);
     }
     
-    //remplace les caractères espace par caractère '_'
-    String fileDomainName = initialDomainName;
-    if (StringUtils.contains(fileDomainName, ' ')) {
-      fileDomainName = initialDomainName.replaceAll(" ", "_");
-    }
-
-    //remplace les caractères non compatibles fichiers fileSystem et nom de tables BD par '_'
-    fileDomainName = FileServerUtils.replaceInvalidPathChars(fileDomainName);
+    //file domain name
+    String fileDomainName = getCorrectDomainFileName(initialDomainName);
     
     //check fileSystem
     checkFileName(fileDomainName);
     
-    //set nouveau nom pour le fileSystem
+    //set nouveau nom pour le fileSystem et la BD
     domainToCreate.setName(fileDomainName);
 
     // Generates domain properties file
@@ -148,7 +150,7 @@ public class SQLDomainService extends AbstractDomainService {
     domainToCreate.setName(initialDomainName);
     String domainId = registerDomain(domainToCreate);
     
-    //set nouveau nom pour le fileSystem
+    //set nouveau nom pour le fileSystem et la BD
     domainToCreate.setName(fileDomainName);
     
     if (!StringUtil.isDefined(domainId)) {
@@ -166,12 +168,17 @@ public class SQLDomainService extends AbstractDomainService {
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
 
-    // unregister new Domain
+    //set nouveau nom pour le fileSystem et la BD
+    String domainPropertiesPath = domainToRemove.getPropFileName();
+    String fileDomainName = domainPropertiesPath.substring(29); //supprime org.silverpeas.domains.domain
+    domainToRemove.setName(fileDomainName);
+    
+    // unregister new Domain dans st_domain
     String domainId = unRegisterDomain(domainToRemove);
     if (!StringUtil.isDefined(domainId)) {
       throw new DomainDeletionException("SQLDomainService.deleteDomain");
     }
-
+    
     // Remove storage
     try {
       dao.deleteDomainStorage(domainToRemove);
