@@ -160,8 +160,12 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachment.getId() + "');", resources.getString(
         "attachment.share"));
-    prepareMenuItem(builder, "switchState('" + attachment.getId() + "');", resources.getString(
-        "attachment.switchState"));
+    String message = resources.getString("attachment.switchState.toVersioned");
+    if (attachment.isVersioned()) {
+      message = resources.getString("attachment.switchState.toSimple");
+    }
+    prepareMenuItem(builder, "switchState('" + attachment.getId() + "');", message);
+
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
@@ -211,6 +215,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
           isOpenOfficeCompatible()));
     }
     builder.append(configureFileSharing(attachmentId, !useFileSharing));
+    builder.append(configureSwitchState(attachmentId, attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
     builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
     builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
@@ -269,6 +274,10 @@ public class SimpleDocumentContextualMenu extends TagSupport {
 
   String configureFileSharing(String attachmentId, boolean disable) {
     return String.format(template, attachmentId, "0, 2", disable);
+  }
+
+  String configureSwitchState(String attachmentId, boolean disable) {
+    return String.format(template, attachmentId, "1, 2", disable);
   }
 
   String configureNotify(String attachmentId, boolean disable) {

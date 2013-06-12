@@ -489,6 +489,7 @@
               <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", true);</c:when>
               <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", true);</c:otherwise>
             </c:choose>
+            oMenu.getItem(1,2).cfg.setProperty("disabled", true);
             $('#worker' + oldId).html("<fmt:message key="readOnly"/> <%=m_MainSessionCtrl.getCurrentUserDetail().getDisplayedName()%> <fmt:message key="at"/> <%=DateUtil.getOutputDate(new Date(), language)%>");
             $('#worker' + oldId).css({'visibility':'visible'});
             if (edit) {
@@ -543,6 +544,7 @@
         <c:when test="${useXMLForm}">oMenu.getItem(2, 1).cfg.setProperty("disabled", false);</c:when>
         <c:otherwise>oMenu.getItem(1, 1).cfg.setProperty("disabled", false);</c:otherwise>
       </c:choose>
+      oMenu.getItem(1,2).cfg.setProperty("disabled", false);
       $('#worker' + id).html("");
       $('#worker' + id).css({'visibility':'hidden'});
       if (pageMustBeReloadingAfterSorting) {
@@ -1135,7 +1137,9 @@
     </c:if>
 </div>
 
-<div id="dialog-attachment-switch" style="display:none"></div>
+<div id="dialog-attachment-switch" style="display:none">
+  <span>Prout</span>
+</div>
 
  <div id="dialog-attachment-checkin" style="display:none">
   <form name="checkin-attachment-form" id="checkin-attachment-form" method="post" accept-charset="UTF-8" target="iframe-post-form">
