@@ -299,14 +299,12 @@ public class PdcServiceProvider {
   /**
    * Gets all the axis of the PdC in Silverpeas.
    *
-   * It takes only care of primary axis.
-   *
    * @return the axis of the PdC.
    * @throws PdcException if an error occurs while getting the PdC's axis.
    */
   public List<Axis> getAllAxis() throws PdcException {
     List<Axis> pdcAxis = new ArrayList<Axis>();
-    List<AxisHeader> headers = getPdcBm().getAxisByType(PdcBm.PRIMARY_AXIS);
+    List<AxisHeader> headers = getPdcBm().getAxis();
     for (AxisHeader aHeader : headers) {
       String treeId = getPdcBm().getTreeId(aHeader.getPK().getId());
       List<Value> values = getPdcBm().getAxisValues(Integer.valueOf(treeId));

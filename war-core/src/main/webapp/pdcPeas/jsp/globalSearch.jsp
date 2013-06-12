@@ -182,19 +182,6 @@ void displayAxisByType(boolean showAllAxis, String axisLabel, List axis, SearchC
 
 %>
 <%
-String strpdcs = (String)request.getAttribute("isPDCSubscription");
-boolean isPDCSubscription = false;
-if (strpdcs != null && strpdcs.equalsIgnoreCase("true")) {
-   isPDCSubscription = true;
-}
-
-boolean isNewPDCSubscription = false;
-String strisNewPDC = (String)request.getAttribute("isNewPDCSubscription");
-if (strisNewPDC != null && strisNewPDC.equalsIgnoreCase("true")) {
-   isNewPDCSubscription = true;
-}
-PDCSubscription subscription 		= (PDCSubscription) request.getAttribute("PDCSubscription");
-
 //recuperation des parametres pour le PDC
 List			primaryAxis			= (List) request.getAttribute("ShowPrimaryAxis");
 List			secondaryAxis		= (List) request.getAttribute("ShowSecondaryAxis");
@@ -426,30 +413,6 @@ function sendSelectionQuery() {
 	document.AdvancedSearch.submit();
 }
 
-function addSubscription() {
-	if (document.all["scName"].value == '') {
-		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("pdcSubscription.Name.NotEmpty"))%>');
-		return;
-	}
-	var values = $('#used_pdc').pdc('selectedValues');
-	var axisValueCouples = values.flatten();
-	
-	if (axisValueCouples.length===0) {
-		alert('<%=resource.getString("pdcSubscription.Values.NotEmpty")%>');
-		return;
-	}
-	
-	document.AdvancedSearch.AxisValueCouples.value = axisValueCouples;
-	
-	<% if (isNewPDCSubscription) { %>
-		document.AdvancedSearch.action = "addSubscription";
-	<% } else {%>
-		document.AdvancedSearch.action = "updateSubscription";
-	<% } %>
-	
-	document.AdvancedSearch.submit();
-}
-
 var errorMsg;
 var errorNb;
 function areDatesOK(afterDate, beforeDate)
@@ -584,7 +547,6 @@ function deleteUser()
 </head>
 <body id="advanced-search" onload="onLoadStart();">
 <%
-if (!isPDCSubscription) {
 	browseBar.setComponentName(resource.getString("pdcPeas.SearchPage"));
 	if (searchType == 2) {
 		// affichage de l'icone voir les axes secondaires ou les cacher
@@ -620,12 +582,6 @@ if (!isPDCSubscription) {
 	if (xmlSearchVisible) {
 		tabs.addTab(resource.getString("pdcPeas.SearchXml"), "ChangeSearchTypeToXml", searchType==3);
 	}
-} else {
-	browseBar.setComponentName(resource.getString("pdcSubscription.path"));
-	if (isNewPDCSubscription) {
-    	browseBar.setExtraInformation(resource.getString("pdcSubscription.newSubsription"));
-	}
-}
 out.println(window.printBefore());
 %>
 <center>
@@ -640,38 +596,8 @@ out.println(window.printBefore());
   <input type="hidden" name="mode"/>
   <input type="hidden" name="AxisValueCouples"/>
   <input type="hidden" name="sortOrder" value="<%=sortOrder%>"/>
-
-  <% if (isNewPDCSubscription) { %>
-     <input type="hidden" name="isNewPDCSubscription" value="true"/>
-  <% } 
-
-	if (isPDCSubscription) { 
-    	String initialName = (subscription != null)? subscription.getName(): "";
-      	String paramName = request.getParameter("scName");
-      	String scResName = (paramName != null )? paramName : initialName;
-      
-      	out.println(frame.printBefore());
-      	out.println(board.printBefore());
-  %>
-        <table cellpadding="5" cellspacing="0" border="0" width="100%">
-		<tr>
-        	<td valign="top" nowrap align="left" class="txtlibform" width="30%"><%=resource.getString("pdcSubscription.Name")%> :</td>
-            <td align="left"><input type="text" name="scName" size="50" maxlength="100" value="<%=scResName%>"/><input type="hidden" name="isPDCSubscription" value="true"/></td>
-        </tr>
-        </table>
-  <%    
-  		out.println(board.printAfter());
-  		out.println("<br/>");
-        out.println("<center>");
-        buttonPane.addButton((Button) gef.getFormButton(resource.getString("pdcSubscription.ok"), "javascript:addSubscription()", false));
-        out.println(buttonPane.print());
-        out.println("</center>");
-		out.println(frame.printAfter());
-		out.println("<br/>");
-		out.println(frame.printBefore());
- 	} %>
 <%
-if (!activeSelection.booleanValue() && !isPDCSubscription)
+if (!activeSelection.booleanValue())
 {
 	if (!showAllAxis) {
 		out.println(tabs.print());
@@ -884,11 +810,11 @@ if (!activeSelection.booleanValue() && !isPDCSubscription)
 		out.println(board.printAfter());
 	}
 }
-if (searchType == 2 && !isPDCSubscription) {
+if (searchType == 2) {
 	out.println("<br/>");
 }
 	
-if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {%>
+if (activeSelection.booleanValue() || searchType == 2) {%>
   <div class="tableFrame">
     <div class="tableBoard">
       <fieldset id="used_pdc" class="skinFieldset"></fieldset>
@@ -935,7 +861,7 @@ out.println(frame.printAfter());
 %>
 <view:progressMessage/>
 <%
-  if (activeSelection.booleanValue() || searchType == 2 || isPDCSubscription) {
+  if (activeSelection.booleanValue() || searchType == 2) {
 %>
 <script type="text/javascript">
     var showSecondaryAxis = <%= ("YES".equals(showSndSearchAxis) ? true: false)%>;
@@ -953,21 +879,13 @@ out.println(frame.printAfter());
     }
   }
   valuesInJs.append("]");
-  if (isPDCSubscription) {
   %>
-     $('#used_pdc').pdc('all', {
-        values: <%= valuesInJs %>
-      });
-  <%
-  } else {
-    %>
       $('#used_pdc').pdc('used', {
         component: componentId,
         workspace: workspaceId,
         withSecondaryAxis: showSecondaryAxis,
         values: <%= valuesInJs %>
       });
-   <% } %>
 </script>
 <%
   }

@@ -20,8 +20,11 @@
  */
 package com.silverpeas.pdcSubscriptionPeas.servlets;
 
+import com.silverpeas.pdc.web.AxisValueCriterion;
 import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.pdcSubscriptionPeas.control.PdcSubscriptionSessionController;
+import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
@@ -108,6 +111,30 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
           pdcSC.deleteComponentSubscription(subscriptions);
         }
         destination = getDestination("ViewSubscriptionComponent", pdcSC, request);
+      } else if (function.startsWith("PDCSubscription")) {
+        String subscriptionId = request.getParameter("pdcSId");
+        if (StringUtil.isDefined(subscriptionId)) {
+          PDCSubscription pdcSubscription = pdcSC.setAsCurrentPDCSubscription(subscriptionId);
+          request.setAttribute("PDCSubscription", pdcSubscription);
+          request.setAttribute("PDCSubscriptionName", pdcSubscription.getName());
+          request.setAttribute("IsNewPDCSubscription", false);
+        } else {
+          request.setAttribute("PDCSubscriptionName", "");
+          request.setAttribute("IsNewPDCSubscription", true);
+        }
+        destination = rootDest + "subscription.jsp";
+      } else if (function.startsWith("addSubscription")) {
+        String name = request.getParameter("SubscriptionName");
+        String values = request.getParameter("AxisValueCouples");
+        List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
+        pdcSC.createPDCSubscription(name, criteria);
+        destination = getDestination("subscriptionList", pdcSC, request);
+      } else if (function.startsWith("updateSubscription")) {
+        String name = request.getParameter("SubscriptionName");
+        String values = request.getParameter("AxisValueCouples");
+        List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(values);
+        pdcSC.updateCurrentSubscription(name, criteria);
+        destination = getDestination("subscriptionList", pdcSC, request);
       }
     } catch (Exception e) {
       SilverTrace.error("pdcSubscriptionPeas",
@@ -176,5 +203,10 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
     }
     request.setAttribute("PathContext", pathContext);
     return "subscriptionList.jsp";
+  }
+
+  public List<? extends Criteria> criteriasFromAxisValues(String axisValues) {
+    List<? extends Criteria> criteria = AxisValueCriterion.fromFlattenedAxisValues(axisValues);
+    return criteria;
   }
 }

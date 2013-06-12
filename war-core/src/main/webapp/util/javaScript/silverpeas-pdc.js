@@ -207,7 +207,7 @@
       if (this.length > 0) {
         var v = this[0].axisId + ':' + this[0].id;
         for (var i = 1; i < this.length; i++) {
-          v += ',' + this[1].axisId + ':' + this[1].id;
+          v += ',' + this[i].axisId + ':' + this[i].id;
         }
       }
       return v;

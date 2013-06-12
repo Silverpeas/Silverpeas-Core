@@ -22,12 +22,10 @@ package com.stratelia.silverpeas.pdcPeas.servlets;
 
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.classifyEngine.Criteria;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdcPeas.control.PdcSearchSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 public class InterestCentersHelper {
@@ -59,9 +57,6 @@ public class InterestCentersHelper {
       ic.setAfterDate(getDate(request.getParameter("createafterdate"), pdcSC));
       ic.setBeforeDate(getDate(request.getParameter("createbeforedate"), pdcSC));
       ic.setAuthorID(request.getParameter("authorSearch"));
-
-      List<? extends Criteria> criteria = PdcSubscriptionHelper.getCriteriasFromRequest(request);
-      ic.setPdcContext(criteria);
 
       int icId = pdcSC.saveICenter(ic);
       request.setAttribute("requestSaved", "yes");

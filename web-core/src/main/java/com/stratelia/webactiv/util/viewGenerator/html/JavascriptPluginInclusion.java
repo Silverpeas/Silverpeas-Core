@@ -25,11 +25,10 @@ package com.stratelia.webactiv.util.viewGenerator.html;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import java.text.MessageFormat;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
-
-import java.text.MessageFormat;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -65,6 +64,8 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_POPUP = "silverpeas-popup.js";
   private static final String SILVERPEAS_PREVIEW = "silverpeas-preview.js";
   private static final String SILVERPEAS_VIEW = "silverpeas-view.js";
+  private static final String SILVERPEAS_PDC_WIDGET = "silverpeas-pdc-widgets.js";
+  private static final String SILVERPEAS_PDC = "silverpeas-pdc.js";
   private static final String flexPaperPath = javascriptPath + "flexpaper/";
   private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String jqueryNotifierPath = jqueryPath + "noty/";
@@ -118,6 +119,13 @@ public class JavascriptPluginInclusion {
 
   public static ElementContainer includeIFramePost(final ElementContainer xhtml) {
     xhtml.addElement(script((jqueryPath + JQUERY_IFRAME_POST)));
+    return xhtml;
+  }
+
+  public static ElementContainer includePdc(final ElementContainer xhtml) {
+    script pdc = new script().setType(JAVASCRIPT_TYPE).setSrc(;
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
+    xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
     return xhtml;
   }
 

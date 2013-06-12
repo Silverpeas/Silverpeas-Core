@@ -61,6 +61,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
 
   private PdcSubscriptionBm scBm = null;
   private PdcBm pdcBm = null;
+  private PDCSubscription currentPDCSubscription = null;
 
   /**
    * Constructor Creates new PdcSubscription Session Controller
@@ -209,7 +210,7 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     subscription.setId(scBm.createPDCSubscription(subscription));
   }
 
-  public void updateIC(PDCSubscription subscription) throws RemoteException {
+  public void updatePDCSubscription(PDCSubscription subscription) throws RemoteException {
     initEJB();
     scBm.updatePDCSubscription(subscription);
   }
@@ -276,5 +277,38 @@ public class PdcSubscriptionSessionController extends AbstractComponentSessionCo
     if (scBm != null) {
       scBm = null;
     }
+  }
+
+  public PDCSubscription getCurrentPDCSubscription() {
+    return currentPDCSubscription;
+  }
+
+  public void setCurrentPDCSubscription(PDCSubscription currentPDCSubscription) {
+    this.currentPDCSubscription = currentPDCSubscription;
+  }
+
+  public void createPDCSubscription(String name, final List<? extends Criteria> criteria) throws
+      RemoteException {
+    PDCSubscription subscription =
+        new PDCSubscription(-1, name, criteria, Integer.parseInt(getUserId()));
+    createPDCSubscription(subscription);
+  }
+
+  public void updateCurrentSubscription(String name, final List<? extends Criteria> criteria) throws
+      RemoteException {
+    PDCSubscription subscription = getCurrentPDCSubscription();
+    if (StringUtil.isDefined(name)) {
+      subscription.setName(name);
+    }
+
+    subscription.setPdcContext(criteria);
+    updatePDCSubscription(subscription);
+  }
+
+  public PDCSubscription setAsCurrentPDCSubscription(String subscriptionId) throws RemoteException {
+    int id = Integer.valueOf(subscriptionId);
+    PDCSubscription pdcSubscription = getPDCSubsriptionById(id);
+    setCurrentPDCSubscription(pdcSubscription);
+    return pdcSubscription;
   }
 }

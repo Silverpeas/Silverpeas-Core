@@ -30,7 +30,6 @@ import com.silverpeas.form.TypeManager;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 import com.silverpeas.interestCenter.model.InterestCenter;
 import com.silverpeas.interestCenter.util.InterestCenterUtil;
-import com.silverpeas.pdcSubscription.model.PDCSubscription;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
@@ -2186,22 +2185,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           "PdcSearchSessionController.loadICenter", SilverpeasException.ERROR,
           "pdcPeas.EX_LOAD_IC", e);
     }
-  }
-  /**
-   * ***************************************************************************************************************
-   */
-  /**
-   * PDC Subscriptions methods /
-   * ****************************************************************************************************************
-   */
-  private PDCSubscription pdcSubscription;
-
-  public PDCSubscription getPDCSubscription() {
-    return pdcSubscription;
-  }
-
-  public void setPDCSubscription(PDCSubscription subscription) {
-    this.pdcSubscription = subscription;
   }
 
   /**

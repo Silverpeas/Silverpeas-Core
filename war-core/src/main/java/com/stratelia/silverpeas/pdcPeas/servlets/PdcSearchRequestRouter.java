@@ -134,13 +134,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     String destination = "";
     // controller to inform the request
     try {
-      PdcSubscriptionHelper.init(pdcSC, request);
-      if (function.startsWith("PDCSubscription") || function.startsWith("addSubscription")
-          || function.startsWith("updateSubscription")) {
-        // Processing of the Pdc subscriptions actions
-        destination = processPDCSubscriptionActions(function, pdcSC, request);
-
-      } else if (function.startsWith("ToSearchToSelect")
+      if (function.startsWith("ToSearchToSelect")
           || function.startsWith("ValidateSelectedObjects")) {
 
         // Processing of the Pdc selection actions
@@ -1554,25 +1548,6 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
     }
 
     return res;
-  }
-
-  private String processPDCSubscriptionActions(String function, PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
-    String destination = "";
-
-    if (function.startsWith("PDCSubscription")) {
-      clearUserChoices(pdcSC);
-      PdcSubscriptionHelper.loadSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    } else if (function.startsWith("addSubscription")) {
-      PdcSubscriptionHelper.addSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-
-    } else if (function.startsWith("updateSubscription")) {
-      PdcSubscriptionHelper.updateSubscription(pdcSC, request);
-      destination = doGlobalView(pdcSC, request);
-    }
-    return destination;
   }
 
   private String processPDCSelectionActions(String function, PdcSearchSessionController pdcSC,
