@@ -79,7 +79,8 @@
 
     // Popup
     $display.popup('free', {
-      title : title
+      title : title,
+      width : '500px'
     });
   }
 
@@ -121,8 +122,9 @@
       if (dataOfUsers.length > 0) {
         $target.append($newLine);
         if (isSpace) {
-          $target.append($('<h5>',
-              {class : 'textePetitBold title-list-responsible-user'}).append(usersAndGroups.label));
+          $target.append($('<h5>',{
+        	  'class' : 'textePetitBold title-list-responsible-user'
+          }).append(usersAndGroups.label));
         }
         __prepareRoleResponsibles($target, userId, dataOfUsers);
         $newLine = $('<br/>');
@@ -142,7 +144,7 @@
       if (administrators.length > 0) {
         $target.append($newLine);
         $target.append($('<h5>',
-            {class : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
+            {'class' : 'textePetitBold title-list-responsible-user'}).append($.responsibles.labels.platformResponsible));
         __prepareRoleResponsibles($target, userId, administrators);
         $newLine = $('<br/>');
       }
@@ -158,26 +160,26 @@
    */
   function __prepareRoleResponsibles($target, userId, dataOfUsers) {
     if ($.isArray(dataOfUsers) && dataOfUsers.length > 0) {
-      var $users = $('<ul>', {class : 'list-responsible-user'});
+      var $users = $('<ul>', {'class' : 'list-responsible-user'});
       $.each(dataOfUsers, function(index, user) {
         var $user = $('<span>').append(' ' + user.fullName);
         if (userId !== user.id && !user.anonymous) {
           $user.addClass('userToZoom');
           $user.attr('rel', user.id);
         }
-        var $photoProfil = $('<div>', {class : 'profilPhoto'}).append($('<a>').append($('<img>',
-            {class : 'avatar', src : user.avatar})));
-        var $userName = $('<div>', {class : 'userName'});
+        var $photoProfil = $('<div>', {'class' : 'profilPhoto'}).append($('<a>').append($('<img>',
+            {'class' : 'avatar', src : user.avatar})));
+        var $userName = $('<div>', {'class' : 'userName'});
         var $action = null;
         if (userId !== user.id && !user.anonymous) {
-          $userName.append($('<a>', {class : 'userToZoom', rel : user.id}).append(user.fullName));
-          $action = $('<div>', {class : 'action'}).append($('<a>',
-              {href : '#', class : 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
+          $userName.append($('<a>', {'class' : 'userToZoom', rel : user.id}).append(user.fullName));
+          $action = $('<div>', {'class' : 'action'}).append($('<a>',
+              {href : '#', 'class' : 'link notification'}).append($.responsibles.labels.sendMessage)).messageMe(user);
         } else {
           $userName.append($('<a>').append(user.fullName));
         }
-        $users.append($('<li>', {class : 'intfdcolor'}).append($('<div>',
-            {class : 'content'}).append($photoProfil).append($userName).append($action)));
+        $users.append($('<li>', {'class' : 'intfdcolor'}).append($('<div>',
+            {'class' : 'content'}).append($photoProfil).append($userName).append($action)));
       });
       $target.append($users);
     }
