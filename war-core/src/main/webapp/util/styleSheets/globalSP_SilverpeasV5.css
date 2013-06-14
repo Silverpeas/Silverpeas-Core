@@ -3310,6 +3310,13 @@ caption {
   margin:0;
 }
 
+#avatarDialog #avatar-policy {
+  color:#333333; 
+  font-size:10px;
+  margin-top: 5px;
+  float: left;
+}
+
 #myProfileFiche .action .invitation {
   /*display: none;*/
 }
