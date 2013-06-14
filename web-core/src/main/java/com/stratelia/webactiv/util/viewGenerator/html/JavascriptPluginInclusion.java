@@ -35,6 +35,7 @@ import org.apache.ecs.xhtml.script;
  * <p/>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionalities of the underlying plugin.
+ *
  * @author mmoquillon
  */
 public class JavascriptPluginInclusion {
@@ -86,6 +87,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
+   *
    * @param src
    * @return
    */
@@ -95,6 +97,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
+   *
    * @param content
    * @return
    */
@@ -104,6 +107,7 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of link instantiation.
+   *
    * @param href
    * @return
    */
@@ -179,10 +183,10 @@ public class JavascriptPluginInclusion {
     StringBuilder responsiblePluginLabels = new StringBuilder();
     responsiblePluginLabels.append("$.responsibles.labels.platformResponsible = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.platform.responsibles", "")).append("';");
+        .getString("GML.platform.responsibles", "")).append("';");
     responsiblePluginLabels.append("$.responsibles.labels.sendMessage = '").append(
         GeneralPropertiesManager.getGeneralMultilang(language)
-            .getString("GML.notification.send", "")).append("';");
+        .getString("GML.notification.send", "")).append("';");
     xhtml.addElement(scriptContent(responsiblePluginLabels.toString()));
     return xhtml;
   }
