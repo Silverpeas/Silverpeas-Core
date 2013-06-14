@@ -37,17 +37,31 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
-<view:setBundle basename="org.silverpeas.pdcPeas.multilang.pdcBundle" />
+<view:setBundle basename="org.silverpeas.pdcSubscriptionPeas.multilang.pdcSubscriptionBundle" />
 <c:set var="isNewSubscription" value="${requestScope.IsNewPDCSubscription}"/>
 <c:set var="subscription" value="${requestScope.PDCSubscription}"/>
 <c:set var="subscriptionName" value="${requestScope.PDCSubscriptionName}"/>
-<c:set var="componentId" value="${requestScope.componentId}"/>
 
-<fmt:message key="pdcSubscription.path" var="componentId"/>
+<fmt:message key="Path" var="path"/>
 <fmt:message key="GML.ok" var="okLabel"/>
 <fmt:message key="GML.cancel" var="cancelLabel"/>
 <fmt:message key="pdcSubscription.Name.NotEmpty" var="invalidName"/>
 <fmt:message key="pdcSubscription.Values.NotEmpty" var="invalidValues"/>
+<fmt:message key="pdcSubscription.Update" var="updateSubscription"/>
+<fmt:message key="pdcSubscription.New" var="newSubscription"/>
+
+<c:choose>
+<c:when test="${!isNewSubscription}">
+	<view:browseBar extraInformations="${updateSubscription}">
+	<view:browseBarElt label="${path}" link="subscriptionList.jsp"></view:browseBarElt>
+	</view:browseBar>
+</c:when>
+<c:otherwise>
+	<view:browseBar extraInformations="${newSubscription}">
+		<view:browseBarElt label="${path}" link="subscriptionList.jsp"></view:browseBarElt>
+	</view:browseBar>
+</c:otherwise>
+</c:choose>
 
 <html>
   <head>
@@ -56,26 +70,22 @@
   </head>
   <body>
     <view:window>
-      <center>
+    <view:frame>
         <form id="PdcSubscription" name="PdcSubscription" action="addSubscription" method="POST">
           <input type="hidden" name="AxisValueCouples"/>
-          <view:frame>
             <view:board>
               <span class="txtlibform"><fmt:message key="pdcSubscription.Name"/>&nbsp;:</span>
               <input type="text" name="SubscriptionName" size="50" maxlength="100" value="${subscriptionName}"/>
             </view:board>
-          </view:frame>
-            <view:frame>
-              <view:board>
+            <view:board>
                 <fieldset id="used_pdc" class="skinFieldset"></fieldset>
-              </view:board>
-            </view:frame>
+            </view:board>
             <view:buttonPane>
               <view:button label="${okLabel}" action="javascript:sendSubscription()"/>
               <view:button label="${cancelLabel}" action="javascript:goBack()"/>
             </view:buttonPane>
         </form>
-      </center>
+    </view:frame>
     </view:window>
     <script type="text/javascript">
       var values = [];
