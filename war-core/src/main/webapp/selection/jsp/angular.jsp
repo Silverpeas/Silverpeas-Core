@@ -57,6 +57,7 @@
     <view:includePlugin name="pagination"/>
     <view:includePlugin name="breadcrumb"/>
     <script type="text/javascript" src="/silverpeas/util/javaScript/angular.min.js"></script>
+    <script type="text/javascript" src="/silverpeas/selection/jsp/javaScript/silverpeas-angular.js"></script>
     <title><fmt:message key="selection.UserSelectionPanel"/></title>
     <style  type="text/css" >
       html, body {height:100%; overflow:hidden; margin:0px; padding:0px}
@@ -138,74 +139,28 @@
           resource: '${resourceId}',
           roles: '${roles}',
           domain: '${domainId}'});
-        /* some services */
-        angular.module('userSelector').factory('service', function(context, $http, $log) {
-          var userRootURL = webContext + '/services/profile/users';
-          var groupRootURL = webContext + '/services/profile/groups';
-          var defaultQuery = '';
-          if (context.resource)
-            defaultQuery += '?resource=' + context.resource;
-          if (context.domain)
-            defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?':'&') + 'domain=' + context.domain;
-          if (context.roles)
-            defaultQuery += (defaultQuery.indexOf('?') < 0 ? '?':'&') + 'roles=' + context.roles;
-          return {
-            getAllUsers: function() {
-              var filter =  defaultQuery += (context.component? ((defaultQuery.indexOf('?') < 0 ? '?':'&') +
-                      'component=' + context.component):'');
-              filter += (defaultQuery.indexOf('?') < 0 ? '?':'&') + 'page=1;10';
-              return $http.get(userRootURL + filter).error(function(data, status) {
-                alert(status);
-              });
-            },
 
-            getAllGroups: function() {
-              var filter = (context.componentId? '/application/' + context.component:'') + defaultQuery;
-              return $http.get(groupRootURL + filter).error(function(data, status) {
-                alert(status);
-              });
-            },
-
-            getSubGroupsOf: function(group) {
-              return $http.get(groupRootURL + '/' + group.id +'/groups').error(function(data, status) {
-                alert(status);
-              });
-            },
-
-            getUser: function(userId) {
-              return $http.get(userRootURL + '/' + userId + defaultQuery).error(function(data, status) {
-                alert(status);
-              });
-            },
-
-            getUsersInGroup: function(group) {
-              var filter = (defaultQuery.indexOf('?') < 0 ? '?':'&') + 'group=' + group.id + '&page=1;10'
-              return $http.get(userRootURL + defaultQuery + filter).error(function(data, status) {
-                alert(status);
-              });
-            },
-
-            getRelationshipsOf: function(user) {
-              return $http.get(userRootURL + '/' + user.id + '/contacts' + defaultQuery).error(function(data, status) {
-                alert(status);
-              });
-            }
-          };
-        });
         /* the main controller */
-        angular.module('userSelector').controller('mainController', function(service, $scope) {
-            service.getAllGroups().success(function(data) {
-              $scope.groups = data;
+        angular.module('userSelector', ['silverpeas']).controller('mainController', function(context, User, UserGroup, $scope) {
+            User.setContext(context);
+            UserGroup.setContext(context);
+
+            var rootGroup = { name: '<fmt:message key="selection.RootUserGroups"/>', root: true };
+            $scope.groups = UserGroup.get();
+            //UserGroup.get().then(updateGroups);
+            $scope.currentGroup = rootGroup;
+
+            $scope.users = User.get({page: {number:1, size: 10}});
+            //User.get({page: {number:1, size: 10}}).then(updateUsers);
+            User.get(${currentUserId}).then(function(user) {
+              $scope.me = user;
             });
 
-            $scope.currentGroup = null;
-            service.getAllUsers().success(function(data) {
-              $scope.users = data;
-            });
             $scope.searchedGroups = '<fmt:message key="selection.searchUserGroups"/>';
             $scope.searchedUsers = '<fmt:message key="selection.searchUsers"/>';
             $scope.selectedUsers = {};
             $scope.selectedGroups = {};
+
             $scope.selectAllGroups = function() {
               for (var i = 0; i < $scope.groups.length; i++)
                 $scope.selectedGroups[$scope.groups[i].id] = $scope.groups[i];
@@ -221,32 +176,31 @@
               $scope.selectedGroups[group.id] = group;
             };
             $scope.goToMyContacts = function() {
-              service.getRelationshipsOf({id: "${currentUserId}"}).success(function(data){
-                $scope.users = data;
-              });
+              $scope.users = $scope.me.relationships();
+              highlightFilter($('#filter_contact'));
             };
             $scope.goToAllUsers = function() {
-              service.getAllUsers().success(function(data) {
-                $scope.users = data;
-              });
+              $scope.users = User.get({page: {number:1, size: 10}});
+              highlightFilter($('#filter_users'));
             };
             $scope.goToGroup = function(group) {
-              service.getSubGroupsOf(group).success(function(data){
-                $scope.groups = data;
-              });
-              service.getUsersInGroup(group).success(function(data){
-                $scope.users = data;
-              });
               $('#breadcrumb').breadcrumb('set', group);
             };
 
             $('#breadcrumb').breadcrumb({
-              root: { name: '<fmt:message key="selection.RootUserGroups"/>' },
+              root: rootGroup,
               oninit: function() {
-
               },
               onchange: function(group) {
-                $scope.goToGroup(group);
+                if (group.root) {
+                  $scope.groups = UserGroup.get(); //.then(updateGroups);
+                  $scope.users = User.get({page: {number:1, size: 10}}); //.then(updateUsers);
+                  $scope.currentGroup = group;
+                } else {
+                  $scope.groups = group.subgroups(); //.then(updateGroups);
+                  $scope.users = group.users({page: {number:1, size: 10}}); //.then(updateUsers);
+                }
+                $scope.currentGroup = group;
                 highlightFilter($('#breadcrumb'));
             }
           });
