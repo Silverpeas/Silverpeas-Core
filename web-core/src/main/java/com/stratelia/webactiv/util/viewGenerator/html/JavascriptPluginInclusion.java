@@ -123,7 +123,6 @@ public class JavascriptPluginInclusion {
   }
 
   public static ElementContainer includePdc(final ElementContainer xhtml) {
-    script pdc = new script().setType(JAVASCRIPT_TYPE).setSrc(;
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(javascriptPath + SILVERPEAS_PDC));
     return xhtml;
